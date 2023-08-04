@@ -1,20 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaPlay, FaPause, FaStop, FaPlus, FaMinus } from "react-icons/fa";
+import { FaPause, FaStop, FaPlus, FaMinus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import moment from "moment-timezone";
-import { getCountryForTimezone } from 'countries-and-timezones'
+import { getCountryForTimezone } from "countries-and-timezones";
 
 const WorkTime = () => {
   // ******************** State Vars ************************ //
   const [timezones, setTimezones] = useState([]);
-  const [selectedTimezone, setSelectedTimezone] = useState("");
+  const [selectedTimezone, setSelectedTimezone] = useState("Africa/Abidjan");
   const [isRunning, setIsRunning] = useState(false);
   const [worldTime, setWorldTime] = useState([{}]);
   const [msg, setMsg] = useState("");
   const [time, setTime] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const intervalRef = useRef(null);
-  const clockLimit = 3 
+  const clockLimit = 3;
 
   // ******************** Stop Watch Start And Reset Functions ************************ //
 
@@ -30,22 +30,24 @@ const WorkTime = () => {
     setIsRunning(!isRunning);
   };
 
-  const handleReset = () => {
-    clearInterval(intervalRef.current);
-    setIsRunning(false);
-    setTime(0);
-  };
+  // const handleReset = () => {
+  //   clearInterval(intervalRef.current);
+  //   setIsRunning(false);
+  //   setTime(0);
+  // };
 
   // *************************** Stop Watch Time And Progress Functions **************************** //
 
   const formatTime = (milliseconds) => {
     const hours = Math.floor(milliseconds / 3600000);
     const minutes = Math.floor((milliseconds % 3600000) / 60000);
-    const seconds = Math.floor((milliseconds % 60000) / 1000);
+    // const seconds = Math.floor((milliseconds % 60000) / 1000);
 
     return `${hours.toString().padStart(2, "0")} : ${minutes
       .toString()
-      .padStart(2, "0")} : ${seconds.toString().padStart(2, "0")}`;
+      .padStart(2, "0")} 
+      `;
+    // : ${seconds.toString().padStart(2, "0")}
   };
 
   const getProgress = () => {
@@ -55,13 +57,11 @@ const WorkTime = () => {
 
   // *************************** Getting Other Cities Lang Code For Flag **************************** //
 
-
   const getCountryCodeFromTimezone = (timezone) => {
     const country = getCountryForTimezone(timezone);
-    let countryCode = country.id
+    let countryCode = country.id;
     return country ? countryCode.toLocaleLowerCase() : null;
   };
-
 
   // *************************** Getting Other Cities and Time **************************** //
 
@@ -76,7 +76,7 @@ const WorkTime = () => {
   };
 
   const getTargetTime = (zone) => {
-    const targetDate = moment().tz(zone).format("LTS");
+    const targetDate = moment().tz(zone).format("LT");
     return targetDate;
   };
 
@@ -86,20 +86,19 @@ const WorkTime = () => {
     const indexToRemove = data.filter((item) => item !== name);
 
     localStorage.setItem("myTimeZones", JSON.stringify(indexToRemove));
-    setMsg("")
+    setMsg("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const storedData = localStorage.getItem("myTimeZones");
     const data = storedData ? JSON.parse(storedData) : [];
-    if (data.length < clockLimit){
+    if (data.length < clockLimit) {
       data.push(selectedTimezone);
       localStorage.setItem("myTimeZones", JSON.stringify(data));
       setModalOpen(false);
-    }
-    else{
-      setMsg("You Can Add Only 3 Clocks.")
+    } else {
+      setMsg("You Can Add Only 3 Clocks.");
     }
   };
 
@@ -110,7 +109,13 @@ const WorkTime = () => {
       const storedData = localStorage.getItem("myTimeZones");
       const data = storedData ? JSON.parse(storedData) : [];
       let myZones = [];
-      data.map((d) => myZones.push({ name: d, time: getTargetTime(d) ,img : getCountryCodeFromTimezone(d)}));
+      data.map((d) =>
+        myZones.push({
+          name: d,
+          time: getTargetTime(d),
+          img: getCountryCodeFromTimezone(d),
+        })
+      );
       setWorldTime(myZones);
     }, 1000);
     return () => clearInterval(interval);
@@ -120,73 +125,120 @@ const WorkTime = () => {
   }, []);
 
   return (
+    
     <div className="flex flex-col items-center justify-center ml-1 mr-3">
+            <h1 className="font-semibold">Work Time</h1>
+
+      {/* ********************************** Working Time ******************************* */}
       <div
-        className="w-64 drop-shadow-lg shadow-black xl h-64 z-10 rounded-full border-[10px] border-[#e3e3e3] flex justify-center items-center"
+        className="w-56 h-56 drop-shadow-lg shadow-black  z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
         style={{
           background: `conic-gradient(from 0deg at 50% 50%, #25a8e0 ${getProgress()}deg, #fff 0 ${getProgress()}deg, #fff)`,
         }}
       >
-        <div className="w-56 h-56 rounded-full bg-[#e3e3e3] flex  flex-col items-center justify-center text-xl m-0">
+        <div className="w-[11.5rem] h-[11.5rem] rounded-full bg-[#e3e3e3] flex  flex-col items-center justify-center text-xl m-0">
           <div>
-            <div className="text-2xl font-semibold text-[#283b91]">
+            <div className="text-xl font-semibold text-[#283b91]">
               {formatTime(time)}
             </div>
-            <div className="text-xl font-semibold text-center mb-8 text-[#283b91]">
+            <div className="text-xl tracking-wider  font-semibold text-center mb-5 text-[#283b91]">
               Hrs
             </div>
           </div>
-          <div className="flex space-x-4">
+          <div className="flex gap-3">
             <button
-              className="px-3 py-2 bg-[#283b91] text-white rounded-md text-sm hover:bg-[#283bbf]"
+              className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
               onClick={handleStartStop}
             >
-              {isRunning ? <FaPause /> : <FaPlay />}
-            </button>
-            <button
-              className="px-3 py-2 bg-red-500 text-white rounded-md text-sm hover:bg-red-600"
-              onClick={handleReset}
-            >
-              <FaStop />
+              {isRunning ? <FaPause /> : <FaStop />}
             </button>
           </div>
         </div>
       </div>
-
-      <div className=" absolute mb-40  p-10  top-[7rem] left-[56rem]">
-        <div className="flex overflow-y-auto w-full roundScroll h-52 flex-col gap-5">
+      {/* ********************************** World Times ******************************* */}
+      <div className="w-1/4 sm:flex hidden">
+      <div
+        className={`
+        ${ worldTime.length >= 1 ? "ml-12" : "w-1/2 ml-36" }
+          -mt-52  `}
+      >
+        <div className="flex w-full  h-52 flex-col gap-6">
           {worldTime.map((time, index) => (
             <div key={index} className="z-0">
-              <div className="flex items-center justify-end pl-14 rounded-md bg-[#e3e3e3] w-72 py-1">
-                <img src={`https://flagcdn.com/w320/${time.img}.png`} alt="logo" className="w-9 rounded-full h-9" />
+              <div className={`flex items-center justify-end ${index === 1 ? "" : "pr-4"} rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}>
+                <img
+                  src={`https://flagcdn.com/w320/${time.img}.png`}
+                  alt="logo"
+                  className="w-8 h-8 border-white border-2 text-xs rounded-full"
+                />
                 <div className="flex items-center flex-col ml-3">
-                  <div className="rounded-md px-1 w-28 text-center bg-[#f8f8f8]">
+                  <div className="rounded-md font-semibold px-1 w-16 text-center text-xs text-[#283b91] bg-[#f8f8f8]">
                     {time.time}
                   </div>
-                  <div className="text-xs mt-1 text-center">{`${time.name?.substring(time.name.indexOf("/") + 1)}`}</div>
+                  <div className="text-xs mt-0 text-center text-[#283b91]">{`${time.name?.substring(
+                    time.name.indexOf("/") + 1
+                  )}`}</div>
                 </div>
                 <FaMinus
                   onClick={() => {
                     deleteTime(time.name);
                   }}
-                  className="ml-2 mr-4 text-[#283b91] text-sm"
+                  className="ml-2 mr-2 text-[#283b91] self-start text-sm"
                 />
               </div>
             </div>
           ))}
+          <div style={{justifyContent:"right"}} className={`${ worldTime.length >= 1 ? "w-[70%]" : "w-[180%]" } flex items-center`}>
+            <div style={{justifyContent:"right"}} className={`p-1 flex  ${ worldTime.length >= 1 ? "w-[21%]" : "w-[51%]" } rounded-md justify-center items-end`}>
+              <FaPlus
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+                className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
+              />
+            </div>
+          </div>
         </div>
       </div>
-      <div className="absolute ml-96 mt-48 z-0">
-        <div
-          onClick={() => {
-            setModalOpen(true);
-          }}
-          className="flex items-center justify-end p-1 rounded-md bg-[#e3e3e3]  py-1"
-        >
-          <FaPlus className="text-[#283b91] text-sm" />
-        </div>
       </div>
-
+      {/* ********************************** Mobile Viwe World Times ******************************* */}
+        <div className=" sm:hidden flex w-full justify-center h-52 flex-col gap-3">
+          {worldTime.map((time, index) => (
+            <div key={index} className="z-0">
+              <div className={`flex items-center justify-center rounded-md bg-[#e3e3e3] py-[0.20rem]`}>
+                <img
+                  src={`https://flagcdn.com/w320/${time.img}.png`}
+                  alt="logo"
+                  className="w-8 h-8 border-white border-2 text-xs rounded-full"
+                />
+                <div className="flex items-center flex-col ml-3">
+                  <div className="rounded-md font-semibold px-1 w-16 text-center text-xs text-[#283b91] bg-[#f8f8f8]">
+                    {time.time}
+                  </div>
+                  <div className="text-xs mt-0 text-center text-[#283b91]">{`${time.name?.substring(
+                    time.name.indexOf("/") + 1
+                  )}`}</div>
+                </div>
+                <FaMinus
+                  onClick={() => {
+                    deleteTime(time.name);
+                  }}
+                  className="ml-2  text-[#283b91] self-start text-sm"
+                />
+              </div>
+            </div>
+          ))}
+          <div  className="flex justify-center items-center">
+            <div className="p-1 flex  w-full rounded-md justify-center items-end">
+              <FaPlus
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+                className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
+              />
+            </div>
+          </div>
+        </div>
       {/* ******************** Model **********************/}
       {modalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
@@ -204,39 +256,40 @@ const WorkTime = () => {
                 <IoClose />
               </button>
             </div>
-            {
-msg ?
-<div className="flex justify-center items-center p-5 border rounded-lg mt-5">{msg}</div>
-:
-              <form onSubmit={handleSubmit} className="w-full px-5  mt-5">
-              <div className=" mb-3">
-                <label htmlFor="timezone" className="mr-2  mb-3">
-                  Select Timezone:
-                </label>
-                <select
-                  id="timezone"
-                  name="timezone"
-                  value={selectedTimezone}
-                  onChange={(e) => {
-                    setSelectedTimezone(e.target.value);
-                  }}
-                  className="w-full py-2 px-3 border rounded focus:outline-none"
-                >
-                  {timezones.map((timezone) => (
-                    <option key={timezone} value={timezone}>
-                      {timezone}
-                    </option>
-                  ))}
-                </select>
+            {msg ? (
+              <div className="flex justify-center items-center p-5 border rounded-lg mt-5">
+                {msg}
               </div>
-              <button
-                type="submit"
-                className="bg-blue-500 mt-5 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Add Time Zone
-              </button>
-            </form>
-        }
+            ) : (
+              <form onSubmit={handleSubmit} className="w-full px-5  mt-5">
+                <div className=" mb-3">
+                  <label htmlFor="timezone" className="mr-2  mb-3">
+                    Select Timezone:
+                  </label>
+                  <select
+                    id="timezone"
+                    name="timezone"
+                    value={selectedTimezone}
+                    onChange={(e) => {
+                      setSelectedTimezone(e.target.value);
+                    }}
+                    className="w-full py-2 px-3 border rounded focus:outline-none"
+                  >
+                    {timezones.map((timezone) => (
+                      <option key={timezone} value={timezone}>
+                        {timezone}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  className="bg-blue-500 mt-5 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Add Time Zone
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

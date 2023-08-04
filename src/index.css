@@ -7,6 +7,15 @@
   padding:0px;
 }
 
+@font-face {
+  font-family: 'SF-Pro-Display';
+  src:url('./app/shared/fonts/sf-pro-display-cufonfonts/SFPRODISPLAYREGULAR.OTF') format('opentype');
+}
+
+body{
+  font-family: 'SF-Pro-Display';
+}
+
 .scroll::-webkit-scrollbar {
   width: 6px;
 }
@@ -36,3 +45,21 @@
     outline: 1px solid #1976d246;
   }
   
+
+  .xScroll::-webkit-scrollbar {
+    width: 2px;
+    height: 5px;
+  }
+  
+  .xScroll::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
+    border-radius: 10px;
+  }
+  
+  .xScroll::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #202f75;
+    outline: 1px solid #1976d246;
+  }
+  
+

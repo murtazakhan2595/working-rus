@@ -3,6 +3,10 @@ import { SiPowerpages } from "react-icons/si";
 import { FaListUl } from "react-icons/fa";
 import { AiFillStar } from "react-icons/ai";
 import { IoChatbubbles } from "react-icons/io5";
+import project1 from "../../../assets/images/upcomingProject1.png";
+import project2 from "../../../assets/images/upcomingProject2.png";
+import project3 from "../../../assets/images/upcomingProject3.png";
+
 
 
 
@@ -26,21 +30,21 @@ const UpcomingProjects = () => {
     <div className="flex flex-col mb-3 w-[95%] px-3 shadow-lg py-3 bg-white rounded-lg mx-auto justify-center">
     <div className="mb-5 text-sm font-medium">Upcoming Projects</div>
     <div className="flex pb-3 items-center border-b gap-4">
-      <SiPowerpages className="text-blue-800 text-3xl"/>
+      <img src={project1} alt=""/>
       <div className="flex flex-col gap-1">
         <div className="text-xs font-medium">Landing Page Design</div>
         <div className="text-xs opacity-60">From 16 February to 18 February</div>
       </div>
     </div>
     <div className="flex pb-3 my-3 items-center border-b gap-4">
-      <SiPowerpages className="text-blue-800 text-3xl"/>
+    <img src={project2} alt=""/>
       <div className="flex flex-col gap-1">
         <div className="text-xs font-medium">Weekly Meeting With Designers</div>
         <div className="text-xs opacity-60">From 21 February to 25 February</div>
       </div>
     </div>
     <div className="flex pb-3 items-center border-b gap-4">
-      <SiPowerpages className="text-blue-800 text-3xl"/>
+    <img src={project3} alt=""/>
       <div className="flex flex-col gap-1">
         <div className="text-xs font-medium">Finalizing Components</div>
         <div className="text-xs opacity-60">From 28 February to 30 February</div>
