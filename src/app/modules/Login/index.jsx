@@ -14,6 +14,11 @@ function Login() {
     setEmail("");
     setPassword("");
   };
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handlePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <>
@@ -24,6 +29,7 @@ function Login() {
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
+          overflowY:"hidden"
         }}
       >
         <div>
@@ -61,36 +67,74 @@ function Login() {
                     className="bg-zinc-100 w-full  
                     rounded-md py-1.5 text-gray-900 placeholder-style
                      placeholder:text-gray-400 border-l-8 border-cyan-500
-                      placeholder:mx-2   sm:text-sm sm:leading-8 
+                      placeholder:mx-2 pl-3  sm:text-sm sm:leading-8 
                       "
                   />
                 </div>
               </div>
 
               <div>
-                <div className="mt-2">
+                <div className="mt-2 relative">
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     autoComplete="current-password"
                     title="Enter Your Password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-zinc-100 border-l-8 placeholder-style border-cyan-600 block w-full  rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-8"
+                    className="bg-zinc-100 w-full rounded-md py-1.5 text-gray-900 placeholder-style placeholder:text-gray-400 border-l-8 border-cyan-500 placeholder:mx-2 pl-3 sm:text-sm sm:leading-8"
                   />
+                  <button
+                    type="button"
+                    onClick={handlePasswordVisibility}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  >
+                    {showPassword ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-cyan-500 cursor-pointer"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 3a7 7 0 017 7 6.999 6.999 0 01-2.1 5H12a5 5 0 00-4.8 3.46A5.999 5.999 0 005 10a7 7 0 017-7zm-.1 11H10a3 3 0 001.1-5 3.001 3.001 0 00-2.2-1 3 3 0 002.9 4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-cyan-500 cursor-pointer"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M9.25 14C5.981 14 3.118 11.681 2 9.5c1.118-2.18 3.98-4.5 7.25-4.5s6.132 2.32 7.25 4.5c-1.118 2.181-3.981 4.5-7.25 4.5zm0-2C7.561 12 5.116 10.07 4 8.5c1.116-1.57 3.561-3.5 5.25-3.5S10.384 6.93 11.5 8.5c-1.116 1.57-3.561 3.5-5.25 3.5zM10 7a1 1 0 110-2 1 1 0 010 2z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                  </button>
                 </div>
+
                 <div className="text-sm text-right my-2">
-                  <a href="#" className="font-semibold  text-cyan-500 hover:text-indigo-300 no-underline">
+                  <a
+                    href="#"
+                    className="font-semibold  text-cyan-500 hover:text-cyan-900 no-underline"
+                  >
                     Forgot password?
                   </a>
                 </div>
               </div>
 
-              
-              <div >
+              <div>
                 <button
                   type="submit"
                   className="flex w-full mt-4 justify-center rounded-md bg-cyan-600 px-3 py-1.5 text-sm font-semibold 
