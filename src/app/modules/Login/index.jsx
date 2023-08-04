@@ -1,171 +1,81 @@
 import React, { useState } from "react";
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
-  const handleCheckboxChange = (e) => {
-    setIsChecked(e.target.checked);
-  };
+import { IoIosArrowBack, IoIosSearch, IoIosArrowForward } from "react-icons/io";
+import { LiaHomeSolid } from "react-icons/lia";
+import { MdOutlineGroups2 ,MdOutlinePayment} from "react-icons/md";
+import { BiTimeFive } from "react-icons/bi";
+import { PiShootingStarBold } from "react-icons/pi";
+import {Outlet} from "react-router-dom";
+const Sidebar = ({isSidebarOpen,setIsSidebarOpen}) => {
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
-    setEmail("");
-    setPassword("");
-  };
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handlePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const handleSidebarToggle = () => {
+    setIsSidebarOpen((prev) => !prev);
   };
 
   return (
-    <>
+    <div className="flex">
+      {/* Sidebar content goes here */}
       <div
-        className="h-screen"
-        style={{
-          backgroundImage: "url(/login-bg.png)",
-          backgroundSize: "100% 100%",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          overflowY:"hidden"
-        }}
+        className={`bg-[#2f4acf] h-screen w-64 p-4  ${
+          isSidebarOpen ? "" : "hidden"
+        }`}
       >
-        <div>
-          <img
-            src="./Tecbrix-logo.png"
-            className="ml-6 mt-4"
-            alt="Tecbrix logo"
-          />
-          <div className="md:mx-auto sm:mx-auto md:w-fit sm:w-full sm:max-w-lg pt-4 ">
-            <form
-              className="space-y-3 bg-white my-2 py-16 border border-gray-300 rounded-lg shadow-md p-8 m-8 max-w-800 "
-              onSubmit={handleSubmit}
-              method="POST"
-            >
-              <div>
-                <h2 className="text-cyan-600 text-center text-2xl font-extrabold leading-9 tracking-tight">
-                  Login Account
-                </h2>
-                <p className="text-center mx-4 text-gray-500">
-                  Please Login to start your day and be productive at the best.
-                </p>
-              </div>
-              <div>
-                <div className="mt-2">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    title="Enter Your Email"
-                    placeholder="Email ID"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-zinc-100 w-full  
-                    rounded-md py-1.5 text-gray-900 placeholder-style
-                     placeholder:text-gray-400 border-l-8 border-cyan-500
-                      placeholder:mx-2 pl-3  sm:text-sm sm:leading-8 
-                      "
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="mt-2 relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    autoComplete="current-password"
-                    title="Enter Your Password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-zinc-100 w-full rounded-md py-1.5 text-gray-900 placeholder-style placeholder:text-gray-400 border-l-8 border-cyan-500 placeholder:mx-2 pl-3 sm:text-sm sm:leading-8"
-                  />
-                  <button
-                    type="button"
-                    onClick={handlePasswordVisibility}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  >
-                    {showPassword ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-cyan-500 cursor-pointer"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 3a7 7 0 017 7 6.999 6.999 0 01-2.1 5H12a5 5 0 00-4.8 3.46A5.999 5.999 0 005 10a7 7 0 017-7zm-.1 11H10a3 3 0 001.1-5 3.001 3.001 0 00-2.2-1 3 3 0 002.9 4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-cyan-500 cursor-pointer"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M9.25 14C5.981 14 3.118 11.681 2 9.5c1.118-2.18 3.98-4.5 7.25-4.5s6.132 2.32 7.25 4.5c-1.118 2.181-3.981 4.5-7.25 4.5zm0-2C7.561 12 5.116 10.07 4 8.5c1.116-1.57 3.561-3.5 5.25-3.5S10.384 6.93 11.5 8.5c-1.116 1.57-3.561 3.5-5.25 3.5zM10 7a1 1 0 110-2 1 1 0 010 2z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-
-                <div className="text-sm text-right my-2">
-                  <a
-                    href="#"
-                    className="font-semibold  text-cyan-500 hover:text-cyan-900 no-underline"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
-              </div>
-
-              <div>
-                <button
-                  type="submit"
-                  className="flex w-full mt-4 justify-center rounded-md bg-cyan-600 px-3 py-1.5 text-sm font-semibold 
-                leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
-                focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Login
-                </button>
-              </div>
-              <div className="flex   ">
-                <input
-                  id="keepSignedIn"
-                  name="keepSignedIn"
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={handleCheckboxChange}
-                  className=" justify-start w-3 rounded text-cyan-500 focus:ring-indigo-500"
-                />
-                <label
-                  htmlFor="keepSignedIn"
-                  className="ml-2 justify-start font-semibold  text-sm text-gray text-cyan-500 "
-                >
-                  Keep me signed in
-                </label>
-              </div>
-            </form>
-          </div>
+        <div className="text-xl bg-white py-3 px-7 flex flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 rounded-md">
+          <img src="/logo.png" className="inline-block w-10" alt="logo" />
+          <h1 className="inline-block">TECBRIX</h1>
         </div>
-      </div>
-    </>
-  );
-}
+        <ul>
+          <li>
+            <div className="relative">
+              <IoIosSearch className="absolute top-3 left-3 text-white" />
+              <input
+                type="search"
+                placeholder="Search"
+                className="focus:outline-none focus:border-non bg-[#8292e2] py-2 pl-10 pr-4 text-white placeholder-white border-none w-56 rounded-md"
+              />
+            </div>
+          </li>
 
-export default Login;
+          <li className="flex mb-3 mt-5 bg-blue-900 rounded-md py-2 px-4 items-center gap-1">
+            <LiaHomeSolid className="text-white text-xl" />{" "}
+            <p className="text-white">Home</p>
+          </li>
+
+          <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
+            <MdOutlineGroups2 className="text-white text-xl" />{" "}
+            <p className="text-white">Team</p>
+          </li>
+
+          <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
+            <BiTimeFive className="text-white text-xl" />{" "}
+            <p className="text-white">Time</p>
+          </li>
+          
+          <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
+            <MdOutlinePayment className="text-white text-xl" />{" "}
+            <p className="text-white">Pay</p>
+          </li>
+
+          <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
+            <PiShootingStarBold className="text-white text-xl" />{" "}
+            <p className="text-white">Perfomance</p>
+          </li>
+          <hr className="opacity-40"/>
+        </ul>
+      </div>
+
+      {/* Sidebar collapse button */}
+      <button
+        className={`bg-[#2f4acf] text-white p-2 absolute ${
+          isSidebarOpen ? "left-64" : "left-0"
+        } rounded-e-lg top-0 mt-4 mr-4`}
+        onClick={handleSidebarToggle}
+      >
+        {isSidebarOpen ? <IoIosArrowBack /> : <IoIosArrowForward />}
+      </button>
+     
+        <Outlet />
+    </div>
+  );
+};
+
+export default Sidebar;
