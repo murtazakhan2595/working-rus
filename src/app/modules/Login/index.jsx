@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BiShow, BiHide } from "react-icons/bi";
+import { TbEyeClosed } from "react-icons/tb";
 
 function Login() {
   const [login, setLogin] = useState({ email: "", password: "" });
@@ -33,7 +34,7 @@ function Login() {
       }}
     >
       <img
-        src="./Tecbrix-logo.png"
+        src="./tecbrix-logo.png"
         className="ml-6 mt-4 w-[150px] h-auto md:w-[160px] md:h-auto"
         alt="Tecbrix logo"
       />
@@ -95,9 +96,9 @@ function Login() {
                     className="absolute right-2 top-1/2 transform -translate-y-1/2"
                   >
                     {showPassword ? (
-                      <BiHide className="text-[#1176BC]" />
+                      <BiShow className="text-gray-400" />
                     ) : (
-                      <BiShow className="text-[#1176BC]" />
+                      <TbEyeClosed className="text-gray-400" />
                     )}
                   </button>
                 </div>
@@ -105,7 +106,7 @@ function Login() {
                 <div className="text-sm text-right my-2">
                   <a
                     href="#"
-                    className="font-semibold text-[#1176BC] hover:text-cyan-900 no-underline text-sm"
+                    className="font-semibold text-[#1176BC] hover:text-cyan-900 no-underline text-sm font-montserrat tracking-tight"
                   >
                     Forgot password ?
                   </a>
@@ -115,27 +116,27 @@ function Login() {
               <div>
                 <button
                   type="submit"
-                  className="flex w-full mt-4 justify-center rounded-md bg-gradient-to-r from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-lg font-semibold 
+                  className="flex w-full mt-4 justify-center rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-lg font-semibold 
               leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
               focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat font-black"
                 >
                   Login
                 </button>
               </div>
-              <div className="flex pb-2">
+              <div className="flex pb-2 items-center">
                 <input
                   id="keepSignedIn"
                   name="keepSignedIn"
                   type="checkbox"
                   checked={isChecked}
                   onChange={handleCheckboxChange}
-                  className="justify-start w-3 rounded text-cyan-500 focus:ring-indigo-500"
+                  className="justify-start w-3 "
                 />
                 <label
                   htmlFor="keepSignedIn"
-                  className="ml-2 justify-start font-semibold  text-sm text-gray text-[#1176BC]"
+                  className="ml-2 justify-start font-medium text-sm text-gray text-[#1176BC] font-montserrat tracking-tighter"
                 >
-                  Keep me signed in
+                  Keep me Signed In
                 </label>
               </div>
             </form>
