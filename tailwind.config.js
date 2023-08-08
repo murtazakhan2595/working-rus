@@ -3,6 +3,9 @@ module.exports = {
   purge: ['./src/**/*.{js,jsx}', './public/index.html'],
   content: [],
   theme: {
+    fontFamily: {
+      montserrat: ['Montserrat', 'sans-serif'],
+    },
     extend: {},
     screens: {
       'xs': '320px',
