@@ -6,12 +6,13 @@ import Dashboard from './app/modules/Dashboard';
 import Login from './app/modules/Login';
 function App() {
   let width = window.screen.width;
-  const [isSidebarOpen, setIsSidebarOpen] = useState(width <= 1280 ? false :true);
+  let val = width <= 1280 ? false :true
+  const [isSidebarOpen, setIsSidebarOpen] = useState(val);
 
   return (
     <Routes>
         <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />} >
-        <Route exact path="/" element={<Dashboard/>} />
+        <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen}/>} />
         </Route>
         <Route path="/login" element={<Login/>} />
     </Routes>

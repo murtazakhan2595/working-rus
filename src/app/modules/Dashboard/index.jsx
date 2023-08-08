@@ -1,3 +1,4 @@
+import { useState } from "react";
 import WorkTime from "./WorkTime";
 import TodoList from "./Todolist";
 import { IoIosSearch } from "react-icons/io";
@@ -8,14 +9,17 @@ import NotificationBox from "./NotificationBox";
 import Calendar from "./Calender";
 import UpcomingProjects from "./UpcomingProjects";
 import "./index.css";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+
 const Dashboard = ({ isSidebarOpen }) => {
+  const [isBarOpen, seIsBarOpen] = useState(false);
   return (
     <>
       {/* ##########################   First Column   ########################## */}
 
       <div
-        className={`bg-[#f9f9f9] h-screen overflow-y-auto scroll ${
-          isSidebarOpen ? "xl:w-[64%] w-[86%]" : "xl:w-[80%] w-[100%]"
+        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${
+          isSidebarOpen ? "xl:w-[64%] w-[100%]" : "xl:w-[78%] w-[100%]"
         }`}
       >
         {/***********************   Dashboard Header   **********************************/}
@@ -32,13 +36,51 @@ const Dashboard = ({ isSidebarOpen }) => {
             />
           </div>
         </div>
+
+        {/* **********************   Bar   ********************************* */}
+        <div
+          className={`bg-[#ebebeb] ml-10 rounded-s-lg mb-6 pr-1 pl-5 gap-3  justify-between py-2  ${
+            isBarOpen ? "flex" : "hidden"
+          }`}
+        >
+          <div className="flex gap-5 flex-wrap">
+            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+              <div>Total Eployees</div>
+              <div className="text-2xl text-[#283b91]">368</div>
+            </div>
+
+            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+              <div>Total Leaves</div>
+              <div className="text-2xl text-[#283b91]">11</div>
+            </div>
+
+            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+              <div>Attendence</div>
+              <div className="text-2xl text-[#283b91]">75%</div>
+            </div>
+
+            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+              <div>Total Clients</div>
+              <div className="text-2xl text-[#283b91]">15</div>
+            </div>
+          </div>
+          <div className="flex text-[#f7f7f8] px-2 py-1 justify-self-end items-center rounded-lg">
+            <IoIosArrowForward
+              className="text-3xl"
+              onClick={() => {
+                seIsBarOpen(!isBarOpen);
+              }}
+            />
+          </div>
+        </div>
+
         {/* **********************   Todos List & Working Time   ********************************* */}
         <div className="flex 2xl:flex-row xl:flex-col-reverse lg:flex-row flex-col-reverse justify-between 2xl:ml-10  mx-auto xl:self-end xl:items-end">
           {/***********************   Todos List   **********************************/}
-            <TodoList isSidebarOpen={isSidebarOpen} />
+          <TodoList isSidebarOpen={isSidebarOpen} />
           {/***********************   Working Time   **********************************/}
           <div
-            className={`flex flex-col 2xl:w-[50%] w-full sm:w-[70%] justify-start self-start gap-2 items-center sm:items-start ${
+            className={`flex flex-col 2xl:w-[50%] w-full sm:w-[100%] justify-start self-start gap-2 items-center sm:items-start ${
               isSidebarOpen ? "" : "3xl:ml-20"
             }`}
           >
@@ -50,7 +92,8 @@ const Dashboard = ({ isSidebarOpen }) => {
       </div>
 
       {/* ##########################   Second Column   ########################## */}
-      <div className="scroll flex-col xl:flex hidden h-screen overflow-y-auto 3xl:w-[22%] xl:w-[28%] bg-[#f2f2f2]">
+
+      <div className="scroll relative flex-col xl:flex hidden h-screen overflow-y-auto 3xl:w-[22%] z-10 xl:w-[23%] bg-[#f2f2f2]">
         {/***********************   ProFile Header   **********************************/}
         <div className="flex pt-3 pb-1 justify-end px-5 items-center gap-3">
           <div className="text-3xl w-10 h-10 rounded-full border bg-white"></div>{" "}
@@ -72,6 +115,17 @@ const Dashboard = ({ isSidebarOpen }) => {
 
         <UpcomingProjects />
       </div>
+      <button
+        className={`absolute bg-[#283b91] z-0 text-white px1 md:pr-1 py-3 right-1 3xl:right-[21.5%] xl:right-[22.3%] rounded-s-lg top-[5rem] mt-4 ml-4  ${
+          isBarOpen ? "hidden" : ""
+        }`}
+        onClick={() => {
+          seIsBarOpen(!isBarOpen);
+          console.log(isSidebarOpen);
+        }}
+      >
+        {isBarOpen ? "" : <IoIosArrowBack className="text-3xl" />}
+      </button>
     </>
   );
 };

@@ -4,7 +4,7 @@ import { TbAlertCircleFilled } from "react-icons/tb";
 
 const TaskPlanner = () => {
   return (
-      <div className="md:px-10 w-full mb-5 px-5">
+      <div className="md:px-10 w-full md:mb-1 mb-5 px-5">
 
         <div className="flex gap-5 mb-1 items-center">
           <img src={taskImg} alt="" className="h-10 w-10" />
