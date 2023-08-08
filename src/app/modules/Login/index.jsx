@@ -41,15 +41,15 @@ function Login() {
         <div className="flex justify-center items-center min-h-full">
           <div className="md:mx-auto sm:mx-auto md:w-fit w-full max-w-md">
             <form
-              className="space-y-3 bg-white my-2 lg:py-12 py-4 rounded-3xl shadow-md p-8 m-6 max-w-800 shadow-xl border border-gray-100 shadow-gray-300"
+              className="space-y-3 bg-white my-2 lg:py-12 py-4 rounded-3xl shadow-md p-8 m-6 max-w-800 shadow-xl border border-gray-100 shadow-custom"
               onSubmit={handleSubmit}
               method="POST"
             >
               <div>
-                <h2 className="text-cyan-600 text-center text-2xl lg:text-3xl font-montserrat font-[700] leading-9 tracking-tight py-4 mb-2">
+                <h2 className="text-[#1176BC] text-center text-2xl lg:text-3xl font-montserrat font-[700] leading-9 tracking-tight py-4 mb-2">
                   Login Account
                 </h2>
-                <p className="text-center text-center text-gray-600 lg:text-base text-sm font-montserrat pb-3 lg:pb-6">
+                <p className="text-center text-center text-[#353535] lg:text-base text-sm font-montserrat pb-3 lg:pb-6">
                   Please Login to start your day and be productive at the best.
                 </p>
               </div>
@@ -68,7 +68,7 @@ function Login() {
                       setLogin({ ...login, email: e.target.value })
                     }
                     className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
-   placeholder:text-gray-400 border-l-8 border-cyan-500 placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
+   placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
                   />
                 </div>
               </div>
@@ -87,7 +87,7 @@ function Login() {
                     onChange={(e) =>
                       setLogin({ ...login, password: e.target.value })
                     }
-                    className="bg-zinc-100 w-full rounded-md py-2 text-gray-900 placeholder-style placeholder:text-gray-400 border-l-8 border-cyan-500 placeholder:mx-2 pl-2  sm:leading-8 focus:outline-none md:text-base text-sm font-montserrat"
+                    className="bg-zinc-100 w-full rounded-md py-2 text-gray-900 placeholder-style placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2  sm:leading-8 focus:outline-none md:text-base text-sm font-montserrat"
                   />
                   <button
                     type="button"
@@ -95,9 +95,9 @@ function Login() {
                     className="absolute right-2 top-1/2 transform -translate-y-1/2"
                   >
                     {showPassword ? (
-                      <BiHide className="text-cyan-900" />
+                      <BiHide className="text-[#1176BC]" />
                     ) : (
-                      <BiShow className="text-cyan-900" />
+                      <BiShow className="text-[#1176BC]" />
                     )}
                   </button>
                 </div>
@@ -105,7 +105,7 @@ function Login() {
                 <div className="text-sm text-right my-2">
                   <a
                     href="#"
-                    className="font-semibold text-cyan-500 hover:text-cyan-900 no-underline text-sm"
+                    className="font-semibold text-[#1176BC] hover:text-cyan-900 no-underline text-sm"
                   >
                     Forgot password ?
                   </a>
@@ -115,7 +115,7 @@ function Login() {
               <div>
                 <button
                   type="submit"
-                  className="flex w-full mt-4 justify-center rounded-md bg-cyan-600 px-3 py-1.5 text-lg font-semibold 
+                  className="flex w-full mt-4 justify-center rounded-md bg-gradient-to-r from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-lg font-semibold 
               leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
               focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat font-black"
                 >
@@ -133,7 +133,7 @@ function Login() {
                 />
                 <label
                   htmlFor="keepSignedIn"
-                  className="ml-2 justify-start font-semibold  text-sm text-gray text-cyan-500"
+                  className="ml-2 justify-start font-semibold  text-sm text-gray text-[#1176BC]"
                 >
                   Keep me signed in
                 </label>
