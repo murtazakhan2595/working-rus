@@ -139,6 +139,46 @@ function Login() {
                   Keep me Signed In
                 </label>
               </div>
+                <div className="flex pb-2 items-center">
+                  <input
+                    id="keepSignedIn"
+                    name="keepSignedIn"
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={handleCheckboxChange}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="keepSignedIn"
+                    className=" justify-start font-medium text-sm text-gray text-[#1176BC] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
+                  >
+                    <span
+                      className={`absolute left-0 top-0 w-4 h-4 ${
+                        isChecked ? 'bg-[#1176BC]' : 'bg-gray-300'
+                      } transition-all duration-300`}
+                      style={{
+                        border: 'none' 
+                      }}
+                    >
+                      {isChecked && (
+                        <svg
+                          className="w-3 h-3 text-white ml-0.5 mt-0.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </span>
+                    Keep me Signed In
+                  </label>
+                </div>
             </form>
           </div>
         </div>
