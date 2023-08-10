@@ -3,26 +3,55 @@ import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
 import loginBg from "../.././../assets/images/login-bg.png";
 import logo from "../.././../assets/images/tecbrix-logo.png";
+import Joi from "joi";
 
 function Login() {
-  const [login, setLogin] = useState({ email: "", password: "" });
+  const initialValues = { email: "", password: "" };
+  const [login, setLogin] = useState(initialValues);
   const [isChecked, setIsChecked] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleCheckboxChange = (e) => {
     setIsChecked(e.target.checked);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Email:", login.email);
-    console.log("Password:", login.password);
-    setLogin({ email: "", password: "" });
-  };
-  const [showPassword, setShowPassword] = useState(false);
-
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // let result = registerationSchema.validate(login, { abortEarly: false });
+    let { error } = loginSchema.validate(login, { abortEarly: false });
+    if (error) {
+      const newErrors = {};
+      console.log(error.details);
+      error.details.forEach((detail) => {
+        newErrors[detail.path[0]] = detail.message;
+      });
+      setErrors(newErrors);
+    } else {
+      setErrors({});
+      setLogin(initialValues);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setLogin((prevLogin) => ({
+      ...prevLogin,
+      [id]: value,
+    }));
+  };
+
+  const loginSchema = Joi.object({
+    email: Joi.string()
+      .email({ tlds: { allow: false } })
+      .required()
+      .label("Email"),
+    password: Joi.string().min(3).required().label("Password"),
+  });
 
   return (
     <div
@@ -65,14 +94,12 @@ function Login() {
                     autoComplete="email"
                     title="Enter Your Email"
                     placeholder="Email ID"
-                    required
                     value={login.email}
-                    onChange={(e) =>
-                      setLogin({ ...login, email: e.target.value })
-                    }
+                    onChange={handleChange}
                     className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
    placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
                   />
+                  <div className="text-sm text-rose-500">{errors.email}</div>
                 </div>
               </div>
 
@@ -85,17 +112,17 @@ function Login() {
                     placeholder="Password"
                     autoComplete="current-password"
                     title="Enter Your Password"
-                    required
                     value={login.password}
-                    onChange={(e) =>
-                      setLogin({ ...login, password: e.target.value })
-                    }
+                    onChange={handleChange}
                     className="bg-zinc-100 w-full rounded-md py-2 text-gray-900 placeholder-style placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2  sm:leading-8 focus:outline-none md:text-base text-sm font-montserrat"
                   />
+
                   <button
                     type="button"
                     onClick={handlePasswordVisibility}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    className={`absolute top-0 right-2 translate-y-[70%] ${
+                      showPassword ? "text-gray-400" : ""
+                    }`}
                   >
                     {showPassword ? (
                       <BiShow className="text-gray-400" />
@@ -103,6 +130,7 @@ function Login() {
                       <TbEyeClosed className="text-gray-400" />
                     )}
                   </button>
+                  <div className="text-sm text-rose-500">{errors.password}</div>
                 </div>
 
                 <div className="text-sm text-right my-2">
