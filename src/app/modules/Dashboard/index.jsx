@@ -19,11 +19,11 @@ const Dashboard = ({ isSidebarOpen }) => {
 
       <div
         className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${
-          isSidebarOpen ? "xl:w-[64%] w-[100%]" : "xl:w-[78%] w-[100%]"
+          isSidebarOpen ? "3xl:w-[67%] xl:w-[64%] w-[100%]" : "3xl:w-[79%] xl:w-[78%] w-[100%]"
         }`}
       >
         {/***********************   Dashboard Header   **********************************/}
-        <div className="py-8 px-10 flex gap-3  items-center">
+        <div className="py-8 px-10 flex gap-3  items-center justify-center md:justify-start">
           <h1 className="text-3xl leading-none font-semibold  opacity-80 tracking-widest">
             DashBoard
           </h1>
@@ -32,7 +32,7 @@ const Dashboard = ({ isSidebarOpen }) => {
             <input
               type="search"
               placeholder="Search"
-              className="focus:outline-none focus:border-non bg-gray-200 py-1 pl-8 pr-4 text-white placeholder-white border-none md:w-64 sm:flex w-[12.5rem] hidden rounded-md"
+              className="focus:outline-none focus:border-non bg-gray-200 py-1 pl-8 pr-4 text-white placeholder-white border-none  md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
             />
           </div>
         </div>
@@ -43,23 +43,23 @@ const Dashboard = ({ isSidebarOpen }) => {
             isBarOpen ? "flex" : "hidden"
           }`}
         >
-          <div className="flex gap-5 flex-wrap">
-            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+          <div className="flex gap-[1.2rem] flex-wrap">
+            <div className="flex bg-[#f7f7f8] w-44 md:w-auto px-2 py-1 gap-3 items-center rounded-lg">
               <div>Total Eployees</div>
               <div className="text-2xl text-[#283b91]">368</div>
             </div>
 
-            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+            <div className="flex bg-[#f7f7f8] w-44 md:w-auto px-2 py-1 gap-3 items-center rounded-lg">
               <div>Total Leaves</div>
               <div className="text-2xl text-[#283b91]">11</div>
             </div>
 
-            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+            <div className="flex bg-[#f7f7f8] w-44 md:w-auto px-2 py-1 gap-3 items-center rounded-lg">
               <div>Attendence</div>
               <div className="text-2xl text-[#283b91]">75%</div>
             </div>
 
-            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+            <div className="flex bg-[#f7f7f8] w-44 md:w-auto px-2 py-1 gap-3 items-center rounded-lg">
               <div>Total Clients</div>
               <div className="text-2xl text-[#283b91]">15</div>
             </div>
@@ -75,12 +75,13 @@ const Dashboard = ({ isSidebarOpen }) => {
         </div>
 
         {/* **********************   Todos List & Working Time   ********************************* */}
-        <div className="flex 2xl:flex-row xl:flex-col-reverse lg:flex-row flex-col-reverse justify-between 2xl:ml-10  mx-auto xl:self-end xl:items-end">
+        {/* <div className="flex 2xl:flex-row sm:flex-row flex-col-reverse justify-between sm:mr-14 xl:self-end xl:items-end"> */}
+        <div className="flex  md:flex-row xs:flex-col-reverse justify-between md:mr-14 m-1 lg:mr-1 xl:self-end xl:items-end">
           {/***********************   Todos List   **********************************/}
           <TodoList isSidebarOpen={isSidebarOpen} />
           {/***********************   Working Time   **********************************/}
           <div
-            className={`flex flex-col 2xl:w-[50%] w-full sm:w-[100%] justify-start self-start gap-2 items-center sm:items-start ${
+            className={`flex flex-col w-full md:pr-8 self-start gap-2 items-center md:items-end ${
               isSidebarOpen ? "" : "3xl:ml-20"
             }`}
           >
@@ -116,7 +117,7 @@ const Dashboard = ({ isSidebarOpen }) => {
         <UpcomingProjects />
       </div>
       <button
-        className={`absolute bg-[#283b91] z-0 text-white px1 md:pr-1 py-3 right-1 3xl:right-[21.5%] xl:right-[22.3%] rounded-s-lg top-[5rem] mt-4 ml-4  ${
+        className={`absolute bg-[#283b91] z-0 text-white px1 md:pr-1 py-3 right-0 3xl:right-[21.8%] xl:right-[22.3%] rounded-s-lg top-[3rem] mt-4 ml-4  ${
           isBarOpen ? "hidden" : ""
         }`}
         onClick={() => {

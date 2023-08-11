@@ -3,7 +3,7 @@ import { TbCircleChevronsDown } from "react-icons/tb";
 import todoImg from "../../../assets/images/todolist.png"
 const Dashboard = ({isSidebarOpen}) => {
   return (
-    <div className="relative flex flex-col pt-5 justify-start 2xl:ml-0 md:ml-12 items-start 2xl:w-[50%] w-[90%] mx-auto ">
+    <div className="relative flex flex-col pt-5 justify-start sm:ml-5 sm:w-[95%] sm:mr-7 md:w-[60%] w-[90%] md:ml-10 items-start mx-auto ">
 <img
     className="absolute top-0 right-0 transform translate-y-[-5%] translate-x-[-50%]"
     src={todoImg}

@@ -1,12 +1,14 @@
 
 import React from "react";
-import { IoIosArrowBack, IoIosSearch, IoIosArrowForward } from "react-icons/io";
+import { IoIosSearch } from "react-icons/io";
 import { LiaHomeSolid } from "react-icons/lia";
 import { MdOutlineGroups2 ,MdOutlinePayment} from "react-icons/md";
 import { BiTimeFive } from "react-icons/bi";
 import { PiShootingStarBold } from "react-icons/pi";
 import {Outlet} from "react-router-dom";
 import sidebg from './sidebarBG.png'
+import { TbLayoutSidebarRightCollapse ,TbLayoutSidebarLeftCollapse} from "react-icons/tb";
+
 const MobSidebar = ({isSidebarOpen,setIsSidebarOpen}) => {
 
   const handleSidebarToggle = () => {
@@ -66,22 +68,22 @@ const MobSidebar = ({isSidebarOpen,setIsSidebarOpen}) => {
         </ul>
       {/* Sidebar collapse button */}
       <button
-        className={`bg-[#283b91] text-white p-2 absolute ${
+        className={`bg-[#283b91] text-white z-10 p-2 absolute ${
           isSidebarOpen ? "left-56" : "left-0"
         } rounded-e-lg top-0 mt-4 mr-4`}
         onClick={handleSidebarToggle}
       >
-        {isSidebarOpen ? <IoIosArrowBack /> : <IoIosArrowForward />}
+        {isSidebarOpen ? <TbLayoutSidebarLeftCollapse className="text-xl" /> : <TbLayoutSidebarRightCollapse className="text-xl" /> }
       </button>
       </div>
 
       <button
-        className={`bg-[#283b91] text-white p-2 absolute ${
+        className={`bg-[#283b91] text-white z-10 p-2 absolute ${
           isSidebarOpen ? "hidden" : "left-0"
-        } rounded-e-lg top-0 mt-4 mr-4`}
+        } rounded-e-lg top-3 mt-4 mr-4`}
         onClick={handleSidebarToggle}
       >
-        {isSidebarOpen ? <IoIosArrowBack /> : <IoIosArrowForward />}
+        {isSidebarOpen ? <TbLayoutSidebarLeftCollapse className="text-xl" /> : <TbLayoutSidebarRightCollapse className="text-xl" />}
       </button>
 
      

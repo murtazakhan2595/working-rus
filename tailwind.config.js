@@ -8,11 +8,11 @@ module.exports = {
     },
     extend: {},
     screens: {
-      'xs': '320px',
-      // => @media (min-width: 640px) { ... }
+      'xs': '300px',
+      // => @media (min-width: 320px) { ... }
 
       'sm': '425px',
-      // => @media (min-width: 640px) { ... }
+      // => @media (min-width: 426px) { ... }
 
       'md': '768px',
       // => @media (min-width: 768px) { ... }
@@ -26,7 +26,7 @@ module.exports = {
       '2xl': '1440px',
       // => @media (min-width: 1280px) { ... }
 
-      '3xl': '1536px',
+      '3xl': '1600px',
       // => @media (min-width: 1536px) { ... }
   }
   },
