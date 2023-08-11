@@ -6,7 +6,11 @@ module.exports = {
     fontFamily: {
       montserrat: ['Montserrat', 'sans-serif'],
     },
-    extend: {},
+    extend: {
+      boxShadow: {
+        'custom': '5px 10px 18px rgba(0, 0, 0, 0.45)',
+      },
+    },
     screens: {
       'xs': '300px',
       // => @media (min-width: 320px) { ... }
