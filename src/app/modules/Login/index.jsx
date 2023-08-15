@@ -22,6 +22,7 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(login);
     // let result = registerationSchema.validate(login, { abortEarly: false });
     let { error } = loginSchema.validate(login, { abortEarly: false });
     if (error) {
@@ -147,8 +148,8 @@ function Login() {
                 <button
                   type="submit"
                   className="flex w-full mt-4 justify-center rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-lg font-semibold 
-              leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
-              focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat font-black"
+                  leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
+                  focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat font-black"
                 >
                   Login
                 </button>
