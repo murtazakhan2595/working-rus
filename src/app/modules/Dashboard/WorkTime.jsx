@@ -3,6 +3,7 @@ import { FaPause, FaStop, FaPlus, FaMinus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import moment from "moment-timezone";
 import { getCountryForTimezone } from "countries-and-timezones";
+import Select from "react-select";
 
 const WorkTime = () => {
   // ******************** State Vars ************************ //
@@ -11,6 +12,7 @@ const WorkTime = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [worldTime, setWorldTime] = useState([{}]);
   const [msg, setMsg] = useState("");
+  const [bottomMsg, setBottomMsg] = useState("");
   const [time, setTime] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const intervalRef = useRef(null);
@@ -93,10 +95,18 @@ const WorkTime = () => {
     e.preventDefault();
     const storedData = localStorage.getItem("myTimeZones");
     const data = storedData ? JSON.parse(storedData) : [];
+    const existsInArray = data.includes(selectedTimezone);
     if (data.length < clockLimit) {
-      data.push(selectedTimezone);
-      localStorage.setItem("myTimeZones", JSON.stringify(data));
-      setModalOpen(false);
+      console.log(existsInArray);
+      if (existsInArray) {
+        setBottomMsg("Time Zone Already Exist Choose Another One.");
+      } else {
+        data.push(selectedTimezone);
+        localStorage.setItem("myTimeZones", JSON.stringify(data));
+        setModalOpen(false);
+        setMsg("")
+        setBottomMsg("")
+      }
     } else {
       setMsg("You Can Add Only 3 Clocks.");
     }
@@ -125,9 +135,8 @@ const WorkTime = () => {
   }, []);
 
   return (
-    
-    <div className="flex flex-col items-center justify-center ml-1 mr-3">
-            <h1 className="font-semibold">Work Time</h1>
+    <div className="flex flex-col items-center justify-center ml-1 mr-3 md:pr-[25%] md:ml-10">
+      <h1 className="font-semibold">Work Time</h1>
 
       {/* ********************************** Working Time ******************************* */}
       <div
@@ -156,89 +165,105 @@ const WorkTime = () => {
         </div>
       </div>
       {/* ********************************** World Times ******************************* */}
-      <div className="w-1/4 sm:flex hidden">
-      <div
-        className={`
-        ${ worldTime.length >= 1 ? "ml-12" : "w-1/2 ml-36" }
+      <div className="w-1/4 md:flex hidden">
+        <div
+          className={`
+        ${worldTime.length >= 1 ? "ml-12" : "w-1/2 ml-36"}
           -mt-52  `}
-      >
-        <div className="flex w-full  h-52 flex-col gap-6">
-          {worldTime.map((time, index) => (
-            <div key={index} className="z-0">
-              <div className={`flex items-center justify-end ${index === 1 ? "" : "pr-4"} rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}>
-                <img
-                  src={`https://flagcdn.com/w320/${time.img}.png`}
-                  alt="logo"
-                  className="w-8 h-8 border-white border-2 text-xs rounded-full"
-                />
-                <div className="flex items-center flex-col ml-3">
-                  <div className="rounded-md font-semibold px-1 w-16 text-center text-xs text-[#283b91] bg-[#f8f8f8]">
-                    {time.time}
+        >
+          <div className="flex w-full  h-52 flex-col gap-6 md:mr-0 mr-16">
+            {worldTime.map((time, index) => (
+              <div key={index} className="z-0">
+                <div
+                  className={`flex items-center justify-end ${
+                    index === 1 ? "" : "pr-4"
+                  } rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}
+                >
+                  <img
+                    src={`https://flagcdn.com/w320/${time.img}.png`}
+                    alt="logo"
+                    className="w-8 h-8 border-white border-2 text-xs rounded-full"
+                  />
+                  <div className="flex items-center flex-col ml-3">
+                    <div className="rounded-md font-semibold px-1 w-16 text-center text-xs text-[#283b91] bg-[#f8f8f8]">
+                      {time.time}
+                    </div>
+                    <div className="text-xs mt-0 text-center text-[#283b91]">{`${time.name?.substring(
+                      time.name.indexOf("/") + 1
+                    )}`}</div>
                   </div>
-                  <div className="text-xs mt-0 text-center text-[#283b91]">{`${time.name?.substring(
-                    time.name.indexOf("/") + 1
-                  )}`}</div>
+                  <FaMinus
+                    onClick={() => {
+                      deleteTime(time.name);
+                    }}
+                    className="ml-2 mr-2 text-[#283b91] self-start text-sm"
+                  />
                 </div>
-                <FaMinus
+              </div>
+            ))}
+            <div
+              style={{ justifyContent: "right" }}
+              className={`${
+                worldTime.length >= 1 ? "w-[70%]" : "w-[180%]"
+              } flex items-center`}
+            >
+              <div
+                style={{ justifyContent: "right" }}
+                className={`p-1 flex  ${
+                  worldTime.length >= 1 ? "w-[21%]" : "w-[51%]"
+                } rounded-md justify-center items-end`}
+              >
+                <FaPlus
                   onClick={() => {
-                    deleteTime(time.name);
+                    setModalOpen(true);
                   }}
-                  className="ml-2 mr-2 text-[#283b91] self-start text-sm"
+                  className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
                 />
               </div>
             </div>
-          ))}
-          <div style={{justifyContent:"right"}} className={`${ worldTime.length >= 1 ? "w-[70%]" : "w-[180%]" } flex items-center`}>
-            <div style={{justifyContent:"right"}} className={`p-1 flex  ${ worldTime.length >= 1 ? "w-[21%]" : "w-[51%]" } rounded-md justify-center items-end`}>
-              <FaPlus
-                onClick={() => {
-                  setModalOpen(true);
-                }}
-                className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
-              />
-            </div>
           </div>
         </div>
-      </div>
       </div>
       {/* ********************************** Mobile Viwe World Times ******************************* */}
-        <div className=" sm:hidden flex w-full justify-center h-52 flex-col gap-3">
-          {worldTime.map((time, index) => (
-            <div key={index} className="z-0">
-              <div className={`flex items-center justify-center rounded-md bg-[#e3e3e3] py-[0.20rem]`}>
-                <img
-                  src={`https://flagcdn.com/w320/${time.img}.png`}
-                  alt="logo"
-                  className="w-8 h-8 border-white border-2 text-xs rounded-full"
-                />
-                <div className="flex items-center flex-col ml-3">
-                  <div className="rounded-md font-semibold px-1 w-16 text-center text-xs text-[#283b91] bg-[#f8f8f8]">
-                    {time.time}
-                  </div>
-                  <div className="text-xs mt-0 text-center text-[#283b91]">{`${time.name?.substring(
-                    time.name.indexOf("/") + 1
-                  )}`}</div>
+      <div className=" md:hidden flex w-full justify-center h-52 flex-col gap-3">
+        {worldTime.map((time, index) => (
+          <div key={index} className="z-0">
+            <div
+              className={`flex items-center justify-center rounded-md bg-[#e3e3e3] py-[0.20rem]`}
+            >
+              <img
+                src={`https://flagcdn.com/w320/${time.img}.png`}
+                alt="logo"
+                className="w-8 h-8 border-white border-2 text-xs rounded-full"
+              />
+              <div className="flex items-center flex-col ml-3">
+                <div className="rounded-md font-semibold px-1 w-16 text-center text-xs text-[#283b91] bg-[#f8f8f8]">
+                  {time.time}
                 </div>
-                <FaMinus
-                  onClick={() => {
-                    deleteTime(time.name);
-                  }}
-                  className="ml-2  text-[#283b91] self-start text-sm"
-                />
+                <div className="text-xs mt-0 text-center text-[#283b91]">{`${time.name?.substring(
+                  time.name.indexOf("/") + 1
+                )}`}</div>
               </div>
-            </div>
-          ))}
-          <div  className="flex justify-center items-center">
-            <div className="p-1 flex  w-full rounded-md justify-center items-end">
-              <FaPlus
+              <FaMinus
                 onClick={() => {
-                  setModalOpen(true);
+                  deleteTime(time.name);
                 }}
-                className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
+                className="ml-2  text-[#283b91] self-start text-sm"
               />
             </div>
           </div>
+        ))}
+        <div className="flex justify-center items-center">
+          <div className="p-1 flex  w-full rounded-md justify-center items-end">
+            <FaPlus
+              onClick={() => {
+                setModalOpen(true);
+              }}
+              className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
+            />
+          </div>
         </div>
+      </div>
       {/* ******************** Model **********************/}
       {modalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
@@ -251,6 +276,8 @@ const WorkTime = () => {
                 className="bg-red-500 hover:bg-red-700 text-white font-bold px-1 py-1 rounded "
                 onClick={() => {
                   setModalOpen(false);
+                  setMsg("");
+                  setBottomMsg("");
                 }}
               >
                 <IoClose />
@@ -266,21 +293,21 @@ const WorkTime = () => {
                   <label htmlFor="timezone" className="mr-2  mb-3">
                     Select Timezone:
                   </label>
-                  <select
-                    id="timezone"
-                    name="timezone"
-                    value={selectedTimezone}
+                  <Select
+                    className="basic-single"
+                    classNamePrefix="select"
+                    defaultValue={timezones[0]}
+                    isClearable
+                    isSearchable
                     onChange={(e) => {
-                      setSelectedTimezone(e.target.value);
+                      setSelectedTimezone(e.value);
+                      console.log(e.value);
                     }}
-                    className="w-full py-2 px-3 border rounded focus:outline-none"
-                  >
-                    {timezones.map((timezone) => (
-                      <option key={timezone} value={timezone}>
-                        {timezone}
-                      </option>
-                    ))}
-                  </select>
+                    options={timezones.map((timezone) => ({
+                      value: timezone,
+                      label: timezone,
+                    }))}
+                  />
                 </div>
                 <button
                   type="submit"
@@ -290,6 +317,9 @@ const WorkTime = () => {
                 </button>
               </form>
             )}
+          {bottomMsg && <div className="flex justify-center items-center p-5 border rounded-lg mt-5">
+                {bottomMsg}
+              </div> }
           </div>
         </div>
       )}
