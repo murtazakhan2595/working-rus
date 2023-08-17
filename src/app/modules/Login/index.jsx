@@ -4,8 +4,13 @@ import { TbEyeClosed } from "react-icons/tb";
 import loginBg from "../.././../assets/images/login-bg.png";
 import logo from "../.././../assets/images/tecbrix-logo.png";
 import Joi from "joi";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
   const initialValues = { email: "", password: "" };
   const [login, setLogin] = useState(initialValues);
   const [isChecked, setIsChecked] = useState(false);
@@ -20,21 +25,47 @@ function Login() {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(login);
-    // let result = registerationSchema.validate(login, { abortEarly: false });
-    let { error } = loginSchema.validate(login, { abortEarly: false });
+
+    const { error } = loginSchema.validate(login, { abortEarly: false });
+
     if (error) {
       const newErrors = {};
-      console.log(error.details);
       error.details.forEach((detail) => {
         newErrors[detail.path[0]] = detail.message;
       });
       setErrors(newErrors);
-    } else {
-      setErrors({});
+      return; // Exit early if there are validation errors
+    }
+
+    try {
+      // Simulating a response delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Simulating random success or failure
+      const isSuccess = Math.random() < 0.5;
+
+      if (isSuccess) {
+        toast.success("Login successful!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      } else {
+        toast.error("Login failed. Please try again.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+
+      // Reset the form
       setLogin(initialValues);
+    } catch (error) {
+      toast.error("An error occurred during login.", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      console.error(error);
     }
   };
 
@@ -214,6 +245,7 @@ function Login() {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }

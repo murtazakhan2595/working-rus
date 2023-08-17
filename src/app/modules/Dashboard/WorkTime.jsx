@@ -104,8 +104,8 @@ const WorkTime = () => {
         data.push(selectedTimezone);
         localStorage.setItem("myTimeZones", JSON.stringify(data));
         setModalOpen(false);
-        setMsg("")
-        setBottomMsg("")
+        setMsg("");
+        setBottomMsg("");
       }
     } else {
       setMsg("You Can Add Only 3 Clocks.");
@@ -317,9 +317,11 @@ const WorkTime = () => {
                 </button>
               </form>
             )}
-          {bottomMsg && <div className="flex justify-center items-center p-5 border rounded-lg mt-5">
+            {bottomMsg && (
+              <div className="flex justify-center items-center p-5 border rounded-lg mt-5">
                 {bottomMsg}
-              </div> }
+              </div>
+            )}
           </div>
         </div>
       )}
