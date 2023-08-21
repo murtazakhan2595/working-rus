@@ -28,6 +28,9 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Clear any existing validation errors
+    setErrors({});
+
     const { error } = loginSchema.validate(login, { abortEarly: false });
 
     if (error) {
@@ -54,13 +57,13 @@ function Login() {
           navigate("/");
         }, 2000);
       } else {
+        // Clear the password field on login failure
+        setLogin({ ...login, password: "" });
+
         toast.error("Login failed. Please try again.", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
-
-      // Reset the form
-      setLogin(initialValues);
     } catch (error) {
       toast.error("An error occurred during login.", {
         position: toast.POSITION.TOP_RIGHT,
@@ -70,10 +73,14 @@ function Login() {
   };
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setLogin((prevLogin) => ({
-      ...prevLogin,
-      [id]: value,
+    const { name, value } = e.target;
+    const updatedLogin = { ...login, [name]: value };
+    setLogin(updatedLogin);
+
+    // Clear the specific field's validation error
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: undefined,
     }));
   };
 
@@ -82,7 +89,7 @@ function Login() {
       .email({ tlds: { allow: false } })
       .required()
       .label("Email"),
-    password: Joi.string().min(3).required().label("Password"),
+    password: Joi.string().required().label("Password"),
   });
 
   return (
@@ -103,9 +110,9 @@ function Login() {
       />
       <div className="flex justify-center items-center min-h-[80vh]">
         <div className="flex justify-center items-center min-h-full">
-          <div className="md:mx-auto sm:mx-auto md:w-fit w-full max-w-md">
+          <div className="md:mx-auto md:w-fit w-full max-w-md">
             <form
-              className="space-y-3 bg-white my-2 lg:py-12 py-4 rounded-3xl shadow-md p-8 m-6 max-w-800 shadow-xl border border-gray-100 shadow-custom"
+              className="space-y-3 bg-white my-2 lg:py-12 py-6 rounded-3xl shadow-md p-8 m-6 max-w-800 shadow-xl border border-gray-100 shadow-custom"
               onSubmit={handleSubmit}
               method="POST"
             >
@@ -178,7 +185,7 @@ function Login() {
               <div>
                 <button
                   type="submit"
-                  className="flex w-full mt-4 justify-center rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-lg font-semibold 
+                  className="flex w-full mt-4 justify-center rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-sm md:text-lg font-semibold 
                   leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
                   focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat font-black"
                 >
