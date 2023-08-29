@@ -1,15 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import taskImg from "../../../assets/images/task.png";
 import { TbAlertCircleFilled } from "react-icons/tb";
+import TaskModal from "./TaskModal";
+import { tasks, tasksTitle } from "../../../data/Data";
 
 const TaskPlanner = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="md:px-10 w-full md:mb-1 mb-5 px-5">
-      <div className="flex gap-5 mb-1 items-center">
-        <img src={taskImg} alt="" className="h-10 w-10" />
-        <div className="text-2xl font-bold text-[#1E2022] tracking-widest">
-          Task Planner
+      <div className="flex justify-between items-center">
+        <div className="flex gap-5 mb-1 items-center">
+          <img src={taskImg} alt="" className="h-10 w-10" />
+          <div className="text-2xl font-bold text-[#1E2022] tracking-widest">
+            Task Planner
+          </div>
         </div>
+        <button
+          onClick={openModal}
+          className="rounded-md px-3 py-2 text-sm md:text-base bg-[#283b91] text-white font-montserrat whitespace-nowrap"
+        >
+          Add Task
+        </button>
       </div>
       <div className="flex gap-6 my-2">
         <div className="text-blue-600">Ongoing</div>
@@ -19,36 +39,61 @@ const TaskPlanner = () => {
 
       <div className="w-full overflow-x-auto  xScroll">
         <div className="w-fit md:w-full">
-          <div className="flex justify-around py-3 rounded-md shadow-md bg-white">
-            <div className="text-[#283b91] w-40 text-center">Task Name</div>
-            <div className="text-[#283b91] w-28 text-center">Assign By</div>
-            <div className="text-[#283b91] w-28 text-center">Due Date</div>
-            <div className="text-[#283b91] w-28 text-center">Status</div>
-            <div className="text-[#283b91] w-40 text-center">Progress</div>
-            <div className="text-[#283b91] w-28 text-center">Priorty</div>
+          <div className="flex justify-around py-3 rounded-md shadow-md bg-white text-[#283b91] text-center">
+            {tasksTitle.map((column, index) => (
+              <div key={index} className={`px-2 ${column.width}`}>
+                {column.label}
+              </div>
+            ))}
           </div>
           <div className="h-[30vh] roundScroll overflow-auto mt-6">
-            <div className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7]">
-              <div className="text-[#283b91] w-40 text-center text-sm">
+            {tasks.map((task, index) => (
+              <div
+                key={index}
+                className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
+              >
+                <div className="w-40">{task.taskName}</div>
+                <div className="w-28">{task.assignBy}</div>
+                <div className="w-28">{task.dueDate}</div>
+                <div className="w-28">{task.status}</div>
+                <div className="top-1 relative w-40 h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="absolute top-0 left-0 h-full bg-[#2a42be] group-hover:bg-[#00ffff]"
+                    style={{ width: `${task.progress}%` }}
+                  ></div>
+                </div>
+                <div className="w-28 text-center text-sm">
+                  {task.priority === "high" && (
+                    <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />
+                  )}
+                  {task.priority === "medium" && (
+                    <TbAlertCircleFilled className="text-[#ffa500] text-center text-2xl mx-auto" />
+                  )}
+                  {task.priority === "low" && (
+                    <TbAlertCircleFilled className="text-green-600 text-center text-2xl mx-auto" />
+                  )}
+                </div>
+              </div>
+            ))}
+            {/* <div className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#283b91]">
+              <div className="text-white w-40 text-center text-sm">
                 Office Landing Page
               </div>
-              <div className="text-[#283b91] w-28 text-center text-sm">
+              <div className="text-white w-28 text-center text-sm">
                 Sarrah Jones
               </div>
-              <div className="text-[#283b91] w-28 text-center text-sm">
+              <div className="text-white w-28 text-center text-sm">
                 30/5/2023
               </div>
-              <div className="text-[#283b91] w-28 text-center text-sm">
-                InProgress
+              <div className="text-white w-28 text-center text-sm">Testing</div>
+              <div className="text-white text-center text-sm top-1 relative w-40 h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div className="absolute top-0 left-0 h-full bg-[#00ffff] w-[75%]"></div>
               </div>
-              <div className="text-[#283b91] text-center text-sm top-1 relative w-40 h-3 bg-gray-200 rounded-full overflow-hidden">
-                <div className="absolute top-0 left-0 h-full bg-[#2a42be] w-[55%]"></div>
+              <div className="text-white w-28 text-center text-sm">
+                <TbAlertCircleFilled className="text-[#00ff0c] text-center text-2xl mx-auto" />
               </div>
-              <div className="text-[#283b91] w-28 text-center text-sm">
-                <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />
-              </div>
-            </div>
-
+            </div> */}
+            {/* 
             <div className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#283b91]">
               <div className="text-white w-40 text-center text-sm">
                 Office Landing Page
@@ -129,10 +174,11 @@ const TaskPlanner = () => {
               <div className="text-[#283b91] w-28 text-center text-sm">
                 <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
+      {isModalOpen && <TaskModal onClose={closeModal} />}
     </div>
   );
 };
