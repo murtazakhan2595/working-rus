@@ -64,12 +64,12 @@ export const todoList = [
   {
     id: 2,
     text: "Schedule The Meeting",
-    completed: false,
+    completed: true,
   },
   {
     id: 3,
     text: "Update The Page",
-    completed: false,
+    completed: true,
   },
   {
     id: 4,
