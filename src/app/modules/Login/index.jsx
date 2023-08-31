@@ -9,28 +9,27 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
-import { connect } from 'react-redux';
-import { setUserProfile , setToken } from '../../../state/actions/UserAction';
+import { connect } from "react-redux";
+import { setUserProfile, setToken } from "../../../state/actions/UserAction";
 
-function Login({ setUserProfile , baseUrl , setToken }) {
-
-
-
+function Login({ setUserProfile, baseUrl, setToken }) {
   const navigate = useNavigate();
-  const cookies = new Cookies()
+  const cookies = new Cookies();
   const currentUname = cookies.get("uname");
   const currentPwd = cookies.get("pwd");
-  const [values , setValues] = useState({ username: currentUname ? currentUname : "", password: currentPwd ? currentPwd : "" })
+  const [values, setValues] = useState({
+    username: currentUname ? currentUname : "",
+    password: currentPwd ? currentPwd : "",
+  });
   const [isChecked, setIsChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
   const handleUpdateProfile = (data) => {
-    let updateProfile = {id : data.id , username : data.username}
+    let updateProfile = { id: data.id, username: data.username };
     setUserProfile(updateProfile);
   };
-  
-  
+
   const handleCheckboxChange = (e) => {
     setIsChecked(e.target.checked);
   };
@@ -57,51 +56,41 @@ function Login({ setUserProfile , baseUrl , setToken }) {
     }
 
     try {
+      let response = await axios.post(`${baseUrl}/token/`, {
+        username: values.username,
+        password: values.password,
+      });
 
-      let response = await axios.post(
-        `${baseUrl}/token/`,
-        {
-          username: values.username,
-          password: values.password,
+      if (response.status === 200) {
+        cookies.set("token", response.data.access, { path: "*" });
+        let token = cookies.get("token");
+        let res = await axios.get(`${baseUrl}/user/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (res.status === 200) {
+          handleUpdateProfile(res.data);
+          setToken(token);
+          setValues({});
+          cookies.set("uname", values.username, { path: "/" });
+          cookies.set("pwd", values.password, { path: "/" });
+          toast.success("Login successful!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+          return;
         }
-      );
-
-if (response.status === 200) {
-  cookies.set("token", response.data.access, { path: "*" });
-  let token = cookies.get("token");
-  let res = await axios.get(`${baseUrl}/user/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    }});
-  if (res.status === 200) {
-    handleUpdateProfile(res.data)
-    setToken(token)
-    setValues({})
-      cookies.set("uname", values.username, { path: "/" });
-      cookies.set("pwd", values.password, { path: "/" });
-    toast.success("Login successful!", {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
-    return;
-  }
-  else {
-    setValues({ ...values, password: "" });
-    toast.error("Login failed. Please try again.", {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-  }
-} 
+      }
 
       // Simulating a response delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
-      toast.error("An error occurred during login.", {
+      toast.error(error.response.data.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.error(error);
     }
   };
 
@@ -119,11 +108,15 @@ if (response.status === 200) {
 
   const loginSchema = Joi.object({
     username: Joi.string()
-      .required()
-      .label("UserName"),
-    password: Joi.string().required().label("Password"),
+      .required("User Name Required")
+      .label("UserName")
+      .messages({
+        "string.empty": `Enter Your Username`,
+      }),
+    password: Joi.string().required().label("Password").messages({
+      "string.empty": `Enter Your Password`,
+    }),
   });
-  
 
   return (
     <div
@@ -282,4 +275,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { setUserProfile , setToken })(Login);
+export default connect(mapStateToProps, { setUserProfile, setToken })(Login);
