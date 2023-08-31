@@ -9,6 +9,7 @@ import NotificationBox from "./NotificationBox";
 import Calendar from "./Calender";
 import UpcomingProjects from "./UpcomingProjects";
 import "./index.css";
+import { Link } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 const Dashboard = ({ isSidebarOpen }) => {
@@ -25,7 +26,9 @@ const Dashboard = ({ isSidebarOpen }) => {
         {/***********************   Dashboard Header   **********************************/}
         <div className="py-8 px-10 flex gap-3  items-center justify-center md:justify-start">
           <h1 className="text-3xl leading-none font-semibold  opacity-80 tracking-widest">
+            <Link to="/login">
             DashBoard
+            </Link>
           </h1>
           <div className="relative">
             <IoIosSearch className="absolute top-2 left-3 text-white" />

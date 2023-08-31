@@ -2,6 +2,7 @@ import React from "react";
 import { IoIosSearch } from "react-icons/io";
 import { LiaHomeSolid } from "react-icons/lia";
 import { MdOutlineGroups2, MdOutlinePayment } from "react-icons/md";
+import { MdLock } from "react-icons/md";
 import { BiTimeFive } from "react-icons/bi";
 import { PiShootingStarBold } from "react-icons/pi";
 import { Outlet } from "react-router-dom";
@@ -11,8 +12,14 @@ import {
   TbLayoutSidebarLeftCollapse,
 } from "react-icons/tb";
 import logo from "../../../../assets/images/logo.png";
+import { setUserLogout } from "../../../../state/actions/UserAction";
+import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  const navigate = useNavigate();
+  const cookies = new Cookies();
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
   };
@@ -67,6 +74,17 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             <p className="text-white">Perfomance</p>
           </li>
           <hr className="opacity-40" />
+          <li
+            onClick={() => {
+              cookies.set("token", "", { path: "*" });
+              setUserLogout();
+              navigate("/");
+            }}
+            className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1"
+          >
+            <MdLock className="text-white text-xl" />{" "}
+            <p className="text-white">Logout</p>
+          </li>
         </ul>
       </div>
 
@@ -89,4 +107,11 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   );
 };
 
-export default Sidebar;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+    baseUrl: state.user.baseUrl,
+    isLogin: state.user.isLogin,
+  };
+};
+export default connect(mapStateToProps, { setUserLogout })(Sidebar);

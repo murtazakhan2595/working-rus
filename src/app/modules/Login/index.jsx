@@ -8,15 +8,29 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
+import { connect } from 'react-redux';
+import { setUserProfile , setToken } from '../../../state/actions/UserAction';
 
-function Login() {
+function Login({ setUserProfile , baseUrl , setToken }) {
+
+
+
   const navigate = useNavigate();
-  const initialValues = { email: "", password: "" };
-  const [login, setLogin] = useState(initialValues);
+  const cookies = new Cookies()
+  const currentUname = cookies.get("uname");
+  const currentPwd = cookies.get("pwd");
+  const [values , setValues] = useState({ username: currentUname ? currentUname : "", password: currentPwd ? currentPwd : "" })
   const [isChecked, setIsChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const handleUpdateProfile = (data) => {
+    let updateProfile = {id : data.id , username : data.username}
+    setUserProfile(updateProfile);
+  };
+  
+  
   const handleCheckboxChange = (e) => {
     setIsChecked(e.target.checked);
   };
@@ -31,7 +45,7 @@ function Login() {
     // Clear any existing validation errors
     setErrors({});
 
-    const { error } = loginSchema.validate(login, { abortEarly: false });
+    const { error } = loginSchema.validate(values, { abortEarly: false });
 
     if (error) {
       const newErrors = {};
@@ -43,27 +57,46 @@ function Login() {
     }
 
     try {
+
+      let response = await axios.post(
+        `${baseUrl}/token/`,
+        {
+          username: values.username,
+          password: values.password,
+        }
+      );
+
+if (response.status === 200) {
+  cookies.set("token", response.data.access, { path: "*" });
+  let token = cookies.get("token");
+  let res = await axios.get(`${baseUrl}/user/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }});
+  if (res.status === 200) {
+    handleUpdateProfile(res.data)
+    setToken(token)
+    setValues({})
+      cookies.set("uname", values.username, { path: "/" });
+      cookies.set("pwd", values.password, { path: "/" });
+    toast.success("Login successful!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+    return;
+  }
+  else {
+    setValues({ ...values, password: "" });
+    toast.error("Login failed. Please try again.", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  }
+} 
+
       // Simulating a response delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Simulating random success or failure
-      const isSuccess = Math.random() < 0.5;
-
-      if (isSuccess) {
-        toast.success("Login successful!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
-      } else {
-        // Clear the password field on login failure
-        setLogin({ ...login, password: "" });
-
-        toast.error("Login failed. Please try again.", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
     } catch (error) {
       toast.error("An error occurred during login.", {
         position: toast.POSITION.TOP_RIGHT,
@@ -74,8 +107,8 @@ function Login() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const updatedLogin = { ...login, [name]: value };
-    setLogin(updatedLogin);
+    const updatedVal = { ...values, [name]: value };
+    setValues(updatedVal);
 
     // Clear the specific field's validation error
     setErrors((prevErrors) => ({
@@ -85,12 +118,12 @@ function Login() {
   };
 
   const loginSchema = Joi.object({
-    email: Joi.string()
-      .email({ tlds: { allow: false } })
+    username: Joi.string()
       .required()
-      .label("Email"),
+      .label("UserName"),
     password: Joi.string().required().label("Password"),
   });
+  
 
   return (
     <div
@@ -112,7 +145,7 @@ function Login() {
         <div className="flex justify-center items-center min-h-full">
           <div className="md:mx-auto md:w-fit w-full max-w-md">
             <form
-              className="space-y-3 bg-white my-2 lg:py-12 py-6 rounded-3xl shadow-md p-8 m-6 max-w-800 shadow-xl border border-gray-100 shadow-custom"
+              className="space-y-3 bg-white my-2 lg:py-12 py-6 rounded-3xl p-8 m-6 max-w-800 border border-gray-100 shadow-md"
               onSubmit={handleSubmit}
               method="POST"
             >
@@ -120,25 +153,25 @@ function Login() {
                 <h2 className="text-[#1176BC] text-center text-2xl lg:text-3xl font-montserrat font-[700] leading-9 tracking-tight py-4 mb-2">
                   Login Account
                 </h2>
-                <p className="text-center text-center text-[#353535] lg:text-base text-sm font-montserrat pb-3 lg:pb-6">
+                <p className="text-center text-[#353535] lg:text-base text-sm font-montserrat pb-3 lg:pb-6">
                   Please Login to start your day and be productive at the best.
                 </p>
               </div>
               <div>
                 <div className="mt-2">
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    title="Enter Your Email"
-                    placeholder="Email ID"
-                    value={login.email}
+                    id="username"
+                    name="username"
+                    type="text"
+                    autoComplete="username"
+                    title="Enter Your User Name"
+                    placeholder="User Name"
+                    value={values.username}
                     onChange={handleChange}
                     className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
    placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
                   />
-                  <div className="text-sm text-rose-500">{errors.email}</div>
+                  <div className="text-sm text-rose-500">{errors.username}</div>
                 </div>
               </div>
 
@@ -151,7 +184,7 @@ function Login() {
                     placeholder="Password"
                     autoComplete="current-password"
                     title="Enter Your Password"
-                    value={login.password}
+                    value={values.password}
                     onChange={handleChange}
                     className="bg-zinc-100 w-full rounded-md py-2 text-gray-900 placeholder-style placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2  sm:leading-8 focus:outline-none md:text-base text-sm font-montserrat"
                   />
@@ -187,27 +220,11 @@ function Login() {
                   type="submit"
                   className="flex w-full mt-4 justify-center rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-sm md:text-lg font-semibold 
                   leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
-                  focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat font-black"
+                  focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat"
                 >
                   Login
                 </button>
               </div>
-              {/* <div className="flex pb-2 items-center">
-                <input
-                  id="keepSignedIn"
-                  name="keepSignedIn"
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={handleCheckboxChange}
-                  className="justify-start w-3 "
-                />
-                <label
-                  htmlFor="keepSignedIn"
-                  className="ml-2 justify-start font-medium text-sm text-gray text-[#1176BC] font-montserrat tracking-tighter"
-                >
-                  Keep me Signed In
-                </label>
-              </div> */}
               <div className="flex pb-2 items-center">
                 <input
                   id="keepSignedIn"
@@ -257,4 +274,12 @@ function Login() {
   );
 }
 
-export default Login;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
+
+export default connect(mapStateToProps, { setUserProfile , setToken })(Login);
