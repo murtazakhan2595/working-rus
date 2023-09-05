@@ -14,7 +14,6 @@ const TaskModal = ({ onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log("Form values:", addTask);
   };
   return ReactDOM.createPortal(
     <>

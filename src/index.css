@@ -46,6 +46,22 @@ body{
   }
   
 
+  .boardScroll::-webkit-scrollbar {
+    
+    width: 6px;
+  }
+  
+  .boardScroll::-webkit-scrollbar-track {
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
+  }
+  
+  .boardScroll::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #7992aa;
+    outline: 1px solid #1976d246;
+  }
+
   .xScroll::-webkit-scrollbar {
     width: 2px;
     height: 5px;

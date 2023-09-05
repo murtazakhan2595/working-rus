@@ -4,7 +4,7 @@ import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
-import Profile from "./app/modules/Profile";
+import Board from "./app/modules/Board";
 
 import axios from "axios";
 import Cookies from "universal-cookie";
@@ -64,12 +64,16 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
 
     <Routes>
       <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>}>
-        {isLogin && ( <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen} />}/> )}
+      {isLogin ?
+      <>
+          <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen} />}/>  
+       <Route path="/board" element={<Board />} />
+      </>
+          : ""}
       </Route>
       {!isLogin && (
       <>
           <Route path="/" element={<Login />} />
-          <Route path="/profile" element={<Profile />} />
         </>
         )}
     </Routes>

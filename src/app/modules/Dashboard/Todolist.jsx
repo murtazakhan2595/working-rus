@@ -61,7 +61,6 @@ const Dashboard = ({ isSidebarOpen }) => {
     }))
 
     const updatedTodo = updatedTodos.find(todo => todo.id === id);
-    console.log('Updated Todo: ', updatedTodo)
   }
 
   const handleAdd = () => {
@@ -76,7 +75,6 @@ const Dashboard = ({ isSidebarOpen }) => {
         id: Date.now(),
         text: newTodoText
       };
-      console.log(newTodo)
       setTodos([newTodo, ...todos])
       setShowAddInput(false)
       setNewTodoText("")

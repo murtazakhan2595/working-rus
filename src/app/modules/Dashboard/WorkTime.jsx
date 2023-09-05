@@ -97,7 +97,6 @@ const WorkTime = () => {
     const data = storedData ? JSON.parse(storedData) : [];
     const existsInArray = data.includes(selectedTimezone);
     if (data.length < clockLimit) {
-      console.log(existsInArray);
       if (existsInArray) {
         setBottomMsg("Time Zone Already Exist Choose Another One.");
       } else {
@@ -301,7 +300,6 @@ const WorkTime = () => {
                     isSearchable
                     onChange={(e) => {
                       setSelectedTimezone(e.value);
-                      console.log(e.value);
                     }}
                     options={timezones.map((timezone) => ({
                       value: timezone,
