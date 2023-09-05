@@ -1,19 +1,20 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
-*{
-  margin:0px;
-  padding:0px;
+* {
+  margin: 0px;
+  padding: 0px;
 }
 
 @font-face {
-  font-family: 'SF-Pro-Display';
-  src:url('./app/shared/fonts/sf-pro-display-cufonfonts/SFPRODISPLAYREGULAR.OTF') format('opentype');
+  font-family: "SF-Pro-Display";
+  src: url("./app/shared/fonts/sf-pro-display-cufonfonts/SFPRODISPLAYREGULAR.OTF")
+    format("opentype");
 }
 
-body{
-  font-family: 'SF-Pro-Display';
+body {
+  font-family: "SF-Pro-Display";
 }
 
 .scroll::-webkit-scrollbar {
@@ -29,37 +30,49 @@ body{
   outline: 1px solid #1976d246;
 }
 
+.roundScroll::-webkit-scrollbar {
+  width: 10px;
+}
 
-  .roundScroll::-webkit-scrollbar {
-    width: 10px;
-  }
-  
-  .roundScroll::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
-    border-radius: 10px;
-  }
-  
-  .roundScroll::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #202f75;
-    outline: 1px solid #1976d246;
-  }
-  
+.roundScroll::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
+  border-radius: 10px;
+}
 
-  .xScroll::-webkit-scrollbar {
-    width: 2px;
-    height: 5px;
-  }
-  
-  .xScroll::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
-    border-radius: 10px;
-  }
-  
-  .xScroll::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #202f75;
-    outline: 1px solid #1976d246;
-  }
-  
+.roundScroll::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #202f75;
+  outline: 1px solid #1976d246;
+}
 
+/* scroll style 2 */
+.roundScrollsm::-webkit-scrollbar {
+  width: 5px;
+}
+
+.roundScrollsm::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
+  border-radius: 10px;
+}
+
+.roundScrollsm::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #202f75;
+  outline: 1px solid #1976d246;
+}
+
+.xScroll::-webkit-scrollbar {
+  width: 2px;
+  height: 5px;
+}
+
+.xScroll::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
+  border-radius: 10px;
+}
+
+.xScroll::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #202f75;
+  outline: 1px solid #1976d246;
+}

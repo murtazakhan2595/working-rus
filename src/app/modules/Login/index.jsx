@@ -40,12 +40,9 @@ function Login({ setUserProfile, baseUrl, setToken }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     // Clear any existing validation errors
     setErrors({});
-
     const { error } = loginSchema.validate(values, { abortEarly: false });
-
     if (error) {
       const newErrors = {};
       error.details.forEach((detail) => {
@@ -60,6 +57,8 @@ function Login({ setUserProfile, baseUrl, setToken }) {
         username: values.username,
         password: values.password,
       });
+
+      console.log(response.data);
 
       if (response.status === 200) {
         cookies.set("token", response.data.access, { path: "*" });
