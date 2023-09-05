@@ -93,10 +93,6 @@ const TaskModal = ({ onClose }) => {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-<<<<<<< HEAD
-=======
-    console.log('Form Data', formData);
->>>>>>> 1a6a7658bed4c1f46fca16dae164126ac2950eae
   };
 
 
