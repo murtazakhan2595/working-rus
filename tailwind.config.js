@@ -1,39 +1,39 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  purge: ['./src/**/*.{js,jsx}', './public/index.html'],
+  purge: ["./src/**/*.{js,jsx}", "./public/index.html"],
   content: [],
   theme: {
     fontFamily: {
-      montserrat: ['Montserrat', 'sans-serif'],
+      montserrat: ["Montserrat", "sans-serif"],
+      sfpro: ["SF Pro Display", "sans-serif"],
     },
     extend: {
       boxShadow: {
-        'custom': '5px 10px 18px rgba(0, 0, 0, 0.45)',
+        custom: "5px 10px 18px rgba(0, 0, 0, 0.45)",
       },
     },
     screens: {
-      'xs': '300px',
+      xs: "300px",
       // => @media (min-width: 320px) { ... }
 
-      'sm': '425px',
+      sm: "425px",
       // => @media (min-width: 426px) { ... }
 
-      'md': '768px',
+      md: "768px",
       // => @media (min-width: 768px) { ... }
 
-      'lg': '1024px',
+      lg: "1024px",
       // => @media (min-width: 1024px) { ... }
 
-      'xl': '1280px',
+      xl: "1280px",
       // => @media (min-width: 1280px) { ... }
 
-      '2xl': '1440px',
+      "2xl": "1440px",
       // => @media (min-width: 1280px) { ... }
 
-      '3xl': '1600px',
+      "3xl": "1600px",
       // => @media (min-width: 1536px) { ... }
-  }
+    },
   },
   plugins: [],
-}
-
+};

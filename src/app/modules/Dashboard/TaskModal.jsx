@@ -1,138 +1,374 @@
-import { useState } from "react";
-import ReactDOM from "react-dom";
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+import Datepicker from './Datepicker'; // Import your Datepicker component
+import Select from 'react-select';
+import { RxCross2 } from 'react-icons/rx';
+import { images, newImages, priority } from '../../../data/Data';
+
+const status = [
+  { value: 'inprogress', label: 'In-Progress' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'testing', label: 'Testing' },
+];
 
 const TaskModal = ({ onClose }) => {
-  const initialValues = {
-    task: "",
-    assignBy: "",
-    dueDate: "",
-    status: "",
-    progress: "",
-    priority: "",
+  const initialData = {
+    title: '',
+    desc: '',
+    dueDate: null,
+    status: null,
+    priority: null,
+    assignedTo: [],
+    assignedBy: [],
   };
-  const [addTask, setAddTask] = useState(initialValues);
 
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [assignToList, setAssignToList] = useState(false);
+  const [assignByList, setAssignByList] = useState(false);
+  const [formData, setFormData] = useState(initialData);
+  const [assignedToList, setAssignedToList] = useState([]);
+  const [assignedByList, setAssignedByList] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null); // State variable for the selected date
+
+  // Function to handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Function to handle date changes
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    setFormData((prevData) => ({
+      ...prevData,
+      dueDate: date,
+    }));
+  };
+
+  // Function to handle select changes
+  const handleSelectChange = (name, selectedOption) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: selectedOption,
+    }));
+  };
+
+  // Function to handle assigning users to "Assigned to"
+  const handleAssignToClick = (index) => {
+    setActiveIndex(index);
+    setAssignToList(true);
+    setAssignByList(false);
+  };
+
+  // Function to handle assigning users to "Assigned by"
+  const handleAssignByClick = (index) => {
+    setActiveIndex(index);
+    setAssignByList(true);
+    setAssignToList(false);
+  };
+
+  // Function to handle assigning users to "Assigned to"
+  const handleAssignToSelect = (user) => {
+    setAssignedToList((prevList) => [...prevList, user]);
+    setAssignToList(false);
+    setFormData((prevData) => ({
+      ...prevData,
+      assignedTo: [...prevData.assignedTo, user],
+    }));
+  };
+
+  // Function to handle selecting a user for "Assigned by"
+  const handleAssignBySelect = (user) => {
+    setAssignedByList((prevList) => [...prevList, user]);
+    setAssignByList(false);
+    setFormData((prevData) => ({
+      ...prevData,
+      assignedBy: [...prevData.assignedBy, user],
+    }));
+  };
+
+  // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+<<<<<<< HEAD
+=======
+    console.log('Form Data', formData);
+>>>>>>> 1a6a7658bed4c1f46fca16dae164126ac2950eae
   };
+
+
   return ReactDOM.createPortal(
     <>
-      <div className="fixed inset-0 bg-gray-900 opacity-40"></div>
-
+      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"></div>
       <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-2xl shadow-lg w-5/6 md:w-1/2 lg:w-1/2">
-          {/* <h2 className="mb-4 text-lg font-semibold">Add Task</h2> */}
-          <form
-            // className="space-y-3 bg-white my-2 lg:py-12 py-6 rounded-3xl shadow-md p-8 m-6 max-w-800 shadow-xl border border-gray-100"
-            onSubmit={handleSubmit}
-            method="POST"
-          >
-            <div>
-              <h2 className="text-[#1176BC] text-center text-lg font-montserrat font-[700] leading-9 tracking-tight  mb-2">
-                Task Details
-              </h2>
+        <div className="md:mx-auto w-full max-w-lg relative">
+          <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 max-w-800 border border-gray-100 shadow-md relative">
+            <div className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer" onClick={onClose}>
+              <RxCross2 />
             </div>
+            <form className="" onSubmit={handleSubmit}>
+              <h2 className="text-2xl font-sfpro leading-3 font-bold mb-8">Create New Task</h2>
+              <div className="flex flex-col">
+                <label htmlFor="title" className="font-sfpro text-lg font-semibold">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  id="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-4"
+                  placeholder="TecBrix Dashboard Design"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="desc" className="font-sfpro text-lg font-semibold">
+                  Description
+                </label>
+                <textarea
+                  name="desc"
+                  id="desc"
+                  cols="50"
+                  rows="2"
+                  value={formData.desc}
+                  onChange={handleInputChange}
+                  className="rounded-md bg-white text-black w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-4"
+                ></textarea>
+              </div>
 
-            <div className="mt-2">
-              <input
-                id="task"
-                name="task"
-                type="text"
-                placeholder="Task Name"
-                // value={addTask.task}
-                // onChange={handleChange}
-                className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
-   placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
-              />
-              {/* <div className="text-sm text-rose-500">{errors.email}</div> */}
-            </div>
-            <div className="mt-2">
-              <input
-                id="assignBy"
-                name="assignBy"
-                type="text"
-                placeholder="Assign By"
-                // value={addTask.assignBy}
-                // onChange={handleChange}
-                className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
-   placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
-              />
-              {/* <div className="text-sm text-rose-500">{errors.email}</div> */}
-            </div>
-            <div className="mt-2">
-              <input
-                id="dueDate"
-                name="dueDate"
-                type="date"
-                placeholder="Due Date"
-                // value={addTask.dueDate}
-                // onChange={handleChange}
-                className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
-   placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
-              />
-              {/* <div className="text-sm text-rose-500">{errors.email}</div> */}
-            </div>
-            <div className="mt-2">
-              <input
-                id="status"
-                name="status"
-                type="number"
-                placeholder="Status"
-                // value={addTask.status}
-                // onChange={handleChange}
-                className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
-   placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
-              />
-              {/* <div className="text-sm text-rose-500">{errors.email}</div> */}
-            </div>
-            <div className="mt-2">
-              <input
-                id="progress"
-                name="progress"
-                type="number"
-                placeholder="Progress"
-                // value={addTask.progress}
-                // onChange={handleChange}
-                className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
-   placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
-              />
-              {/* <div className="text-sm text-rose-500">{errors.email}</div> */}
-            </div>
-            <div className="mt-2">
-              <input
-                id="priority"
-                name="priority"
-                type="text"
-                placeholder="Priority"
-                // value={addTask.priority}
-                // onChange={handleChange}
-                className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
-   placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
-              />
-              {/* <div className="text-sm text-rose-500">{errors.email}</div> */}
-            </div>
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col">
+                  <label htmlFor="dueDate" className="py-1 font-sfpro text-lg font-semibold">
+                    Due Date
+                  </label>
+                  <Datepicker onChange={handleDateChange} />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="status" className="py-1 font-sfpro text-lg font-semibold">
+                    Status
+                  </label>
+                  <Select
+                    options={status}
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        borderRadius: '0.375rem',
+                        borderWidth: 0,
+                        boxShadow: 'none',
+                        '&:hover': {
+                          borderColor: 'transparent',
+                        },
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        borderWidth: 0,
+                        boxShadow: 'none',
+                        marginTop: 0,
+                        borderRadius: '0.375rem',
+                      }),
+                    }}
+                    onChange={(selectedOption) => handleSelectChange('status', selectedOption)}
+                    value={formData.status}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="priority" className="py-1 font-sfpro text-lg font-semibold">
+                    Priority
+                  </label>
+                  <Select
+                    options={priority}
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        borderRadius: '0.375rem',
+                        borderWidth: 0,
+                        boxShadow: 'none',
+                        '&:hover': {
+                          borderColor: 'transparent',
+                        },
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        borderWidth: 0,
+                        boxShadow: 'none',
+                        marginTop: 0,
+                        borderRadius: '0.375rem',
+                      }),
+                    }}
+                    onChange={(selectedOption) => handleSelectChange('priority', selectedOption)}
+                    value={formData.priority}
+                  />
+                </div>
+              </div>
+              <label htmlFor="assign" className="py-1 font-sfpro text-lg font-semibold">
+                Assigned
+              </label>
+              <div className="flex justify-start bg-white rounded-md mt-2">
+                <h3 className="w-1/2 pl-4">Assigned to</h3>
+                <h3 className="w-1/2 pl-4">Assigned by</h3>
+              </div>
+              <div className="flex gap-x-6 mt-1">
+                <div className="relative">
+                  <div
+                    className="w-[180px] mx-auto overflow-x-scroll"
+                    style={{
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                      WebkitOverflowScrolling: 'touch',
+                    }}
+                  >
+                    <style>
+                      {`
+                      ::-webkit-scrollbar {
+                        width: 0.5em;
+                      }
+                      ::-webkit-scrollbar-thumb {
+                        background-color: transparent;
+                      }
+                    `}
+                    </style>
+                    <div className="flex space-x-2 p-2">
+                      {assignedToList.map((user, userIndex) => (
+                        <img
+                          key={user.id}
+                          src={user.imageUrl}
+                          alt={user.name}
+                          className={`w-9 h-9 rounded-full cursor-pointer ${userIndex === activeIndex ? 'border-2 border-blue-500' : ''
+                            }`}
+                          onClick={() => handleAssignToClick(userIndex)}
+                        />
+                      ))}
+                      <div
+                        className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedToList.length ? 'border-2 border-blue-500' : ''
+                          }`}
+                        onClick={() => handleAssignToClick(assignedToList.length)}
+                      >
+                        <span className="text-white text-2xl flex justify-center items-center">+</span>
+                      </div>
+                    </div>
+                    {assignToList && (
+                      <div className="absolute top-5 left-40 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
+                        <input
+                          type="text"
+                          placeholder="Search"
+                          className="mt-2 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-white"
+                        />
+                        <div className="overflow-y-auto max-h-32 roundScrollsm">
+                          <ul className="text-black">
+                            {newImages.map((user) => (
+                              <div
+                                className="flex gap-3 px-2 py-1"
+                                key={user.id}
+                                onClick={() => handleAssignToSelect(user)}
+                              >
+                                <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
+                                <p className="gap-3 text-sm">{user.name}</p>
+                              </div>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex justify-center">
+                    {images.slice(0, 3).map((_, index) => (
+                      <span
+                        key={index}
+                        className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === activeIndex ? 'bg-blue-500' : ''
+                          }`}
+                        onClick={() => handleAssignToClick(index)}
+                      />
+                    ))}
+                  </div>
+                </div>
 
-            <div className="mt-2 flex flex-wrap justify-between">
-              <button
-                type="submit"
-                className="flex w-4/6 justify-center rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-sm md:text-lg font-semibold 
-    leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
-    focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat"
-              >
-                Add Task
+                <div className="relative">
+                  <div
+                    className="w-[180px] mx-auto overflow-x-scroll"
+                    style={{
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                      WebkitOverflowScrolling: 'touch',
+                    }}
+                  >
+                    <style>
+                      {`
+                      ::-webkit-scrollbar {
+                        width: 0.5em;
+                      }
+                      ::-webkit-scrollbar-thumb {
+                        background-color: transparent;
+                      }
+                    `}
+                    </style>
+                    <div className="flex space-x-2 p-2">
+                      {assignedByList.map((user, userIndex) => (
+                        <img
+                          key={user.id}
+                          src={user.imageUrl}
+                          alt={user.name}
+                          className={`w-9 h-9 rounded-full cursor-pointer ${userIndex === activeIndex ? 'border-2 border-blue-500' : ''
+                            }`}
+                          onClick={() => handleAssignByClick(userIndex)}
+                        />
+                      ))}
+                      <div
+                        className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedByList.length ? 'border-2 border-blue-500' : ''
+                          }`}
+                        onClick={() => handleAssignByClick(assignedByList.length)}
+                      >
+                        <span className="text-white text-2xl flex justify-center items-center">+</span>
+                      </div>
+                    </div>
+                    {assignByList && (
+                      <div className="absolute top-5 left-40 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
+                        <input
+                          type="text"
+                          placeholder="Search"
+                          className="mt-2 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-white"
+                        />
+                        <div className="overflow-y-auto max-h-32 roundScrollsm">
+                          <ul className="text-black">
+                            {newImages.map((user) => (
+                              <div
+                                className="flex gap-3 px-2 py-1"
+                                key={user.id}
+                                onClick={() => handleAssignBySelect(user)}
+                              >
+                                <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
+                                <p className="gap-3 text-sm">{user.name}</p>
+                              </div>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex justify-center">
+                    {images.slice(0, 3).map((_, index) => (
+                      <span
+                        key={index}
+                        className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === activeIndex ? 'bg-blue-500' : ''
+                          }`}
+                        onClick={() => handleAssignByClick(index)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <button type="submit" className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white">
+                Done
               </button>
-              <button
-                className="w-20p md:w-1/6 px-3  hover:text-gray-800 border border-gray-500 rounded-md text-gray-500 font-montserrat"
-                onClick={onClose}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </>,
-    document.querySelector(".form-modal")
+    document.querySelector('.form-modal')
   );
 };
 

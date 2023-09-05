@@ -1,3 +1,5 @@
+import { TbAlertCircleFilled } from "react-icons/tb";
+
 export const tasks = [
   {
     id: 1,
@@ -96,4 +98,91 @@ export const todoList = [
     text: "Assign Work To Alex", // Changed text to make it unique
     completed: false,
   },
+];
+
+export const priority = [
+  {
+    value: "low",
+    label: <TbAlertCircleFilled className="text-green-600 text-2xl" />,
+  },
+  {
+    value: "medium",
+    label: <TbAlertCircleFilled className="text-[#ffa500] text-2xl" />,
+  },
+  {
+    value: "high",
+    label: <TbAlertCircleFilled className="text-red-600 text-2xl" />,
+  },
+];
+
+export const images = [
+  {
+    id: 1,
+    name: "Syed Umair",
+    imageUrl: "https://i.ibb.co/ZYW3VTp/brown-brim.png",
+  },
+  {
+    id: 2,
+    name: "Moattar Ali",
+    imageUrl: "https://i.ibb.co/ypkgK0X/blue-beanie.png",
+  },
+  {
+    id: 3,
+    name: "Asra Fatima",
+    imageUrl: "https://i.ibb.co/QdJwgmp/brown-cowboy.png",
+  },
+  {
+    id: 4,
+    name: "John wick",
+    imageUrl: "",
+    isPlusIcon: true,
+  },
+  // {
+  //   "id": 5,
+  //   "name": "Grey Brim",
+  //   "imageUrl": "https://i.ibb.co/RjBLWxB/grey-brim.png",
+  // },
+  // {
+  //   "id": 6,
+  //   "name": "Grey Brim",
+  //   "imageUrl": "https://i.ibb.co/RjBLWxB/grey-brim.png",
+  // },
+];
+export const newImages = [
+  {
+    id: 1,
+    name: "Syed Umair",
+    imageUrl: "https://i.ibb.co/ZYW3VTp/brown-brim.png",
+  },
+  {
+    id: 2,
+    name: "Moattar Ali",
+    imageUrl: "https://i.ibb.co/ypkgK0X/blue-beanie.png",
+  },
+  {
+    id: 3,
+    name: "Asra Fatima",
+    imageUrl: "https://i.ibb.co/QdJwgmp/brown-cowboy.png",
+  },
+  {
+    id: 4,
+    name: "Asra Fatima",
+    imageUrl: "https://i.ibb.co/QdJwgmp/brown-cowboy.png",
+  },
+  {
+    id: 5,
+    name: "John wick",
+    imageUrl: "",
+    isPlusIcon: true,
+  },
+  // {
+  //   "id": 5,
+  //   "name": "Grey Brim",
+  //   "imageUrl": "https://i.ibb.co/RjBLWxB/grey-brim.png",
+  // },
+  // {
+  //   "id": 6,
+  //   "name": "Grey Brim",
+  //   "imageUrl": "https://i.ibb.co/RjBLWxB/grey-brim.png",
+  // },
 ];
