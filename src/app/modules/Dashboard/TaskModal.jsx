@@ -106,7 +106,6 @@ const TaskModal = ({ onClose }) => {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form Data', formData);
   };
 
   // Close dropdown when clicking outside

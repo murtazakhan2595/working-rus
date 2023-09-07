@@ -5,7 +5,7 @@ import { MdOutlineGroups2, MdOutlinePayment } from "react-icons/md";
 import { MdLock } from "react-icons/md";
 import { BiTimeFive } from "react-icons/bi";
 import { PiShootingStarBold } from "react-icons/pi";
-import { Outlet } from "react-router-dom";
+import { Outlet , Link } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
 import {
   TbLayoutSidebarRightCollapse,
@@ -48,12 +48,12 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               />
             </div>
           </li>
-
-          <li className="flex mb-3 mt-5 bg-blue-900 rounded-md py-2 px-4 items-center gap-1">
+          <Link to="/">
+          <li className="flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1">
             <LiaHomeSolid className="text-white text-xl" />{" "}
             <p className="text-white">Home</p>
           </li>
-
+</Link>
           <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
             <MdOutlineGroups2 className="text-white text-xl" />{" "}
             <p className="text-white">Team</p>
@@ -73,6 +73,14 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             <PiShootingStarBold className="text-white text-xl" />{" "}
             <p className="text-white">Perfomance</p>
           </li>
+          <hr className="opacity-40" />
+          <Link to="/board">
+          <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
+            <PiShootingStarBold className="text-white text-xl" />{" "}
+            <p className="text-white">Board</p>
+          </li>
+          </Link>
+
           <hr className="opacity-40" />
           <li
             onClick={() => {

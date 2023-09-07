@@ -16,7 +16,6 @@ export const setToken = (token) => {
 };  
 
 export const setUserLogout = () => {
-  console.log("first")
   return {
     type: 'SET_USER_LOGOUT',
   };
