@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Datepicker from './Datepicker'; // Import your Datepicker component
 import Select from 'react-select';
@@ -22,13 +22,17 @@ const TaskModal = ({ onClose }) => {
     assignedBy: [],
   };
 
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [assignToList, setAssignToList] = useState(false);
   const [assignByList, setAssignByList] = useState(false);
   const [formData, setFormData] = useState(initialData);
   const [assignedToList, setAssignedToList] = useState([]);
   const [assignedByList, setAssignedByList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null); // State variable for the selected date
+
+
+  const dropdownToRef = useRef(null);
+  const dropdownByRef = useRef(null);
 
   // Function to handle input changes
   const handleInputChange = (e) => {
@@ -57,37 +61,46 @@ const TaskModal = ({ onClose }) => {
   };
 
   // Function to handle assigning users to "Assigned to"
-  const handleAssignToClick = (index) => {
-    setActiveIndex(index);
-    setAssignToList(true);
+  const handleAssignToClick = () => {
+    setAssignToList(!assignToList);
     setAssignByList(false);
   };
 
   // Function to handle assigning users to "Assigned by"
-  const handleAssignByClick = (index) => {
-    setActiveIndex(index);
-    setAssignByList(true);
+  const handleAssignByClick = () => {
+    setAssignByList(!assignByList);
     setAssignToList(false);
   };
 
-  // Function to handle assigning users to "Assigned to"
-  const handleAssignToSelect = (user) => {
-    setAssignedToList((prevList) => [...prevList, user]);
-    setAssignToList(false);
-    setFormData((prevData) => ({
-      ...prevData,
-      assignedTo: [...prevData.assignedTo, user],
-    }));
+  // Function to handle selecting a user for "Assigned to" or "Assigned by"
+  const handleAssignSelect = (user, list) => {
+    const updatedList = [...list];
+    const userIndex = updatedList.findIndex((u) => u.id === user.id);
+
+    if (userIndex === -1) {
+      updatedList.push(user);
+    } else {
+      updatedList.splice(userIndex, 1);
+    }
+
+    if (list === assignedToList) {
+      setAssignedToList(updatedList);
+      setFormData((prevData) => ({
+        ...prevData,
+        assignedTo: updatedList,
+      }));
+    } else if (list === assignedByList) {
+      setAssignedByList(updatedList);
+      setFormData((prevData) => ({
+        ...prevData,
+        assignedBy: updatedList,
+      }));
+    }
   };
 
-  // Function to handle selecting a user for "Assigned by"
-  const handleAssignBySelect = (user) => {
-    setAssignedByList((prevList) => [...prevList, user]);
-    setAssignByList(false);
-    setFormData((prevData) => ({
-      ...prevData,
-      assignedBy: [...prevData.assignedBy, user],
-    }));
+  // Function to check if a user is selected
+  const isUserSelected = (user, list) => {
+    return list.some((u) => u.id === user.id);
   };
 
   // Function to handle form submission
@@ -95,6 +108,27 @@ const TaskModal = ({ onClose }) => {
     e.preventDefault();
     console.log('Form Data', formData);
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownToRef.current && !dropdownToRef.current.contains(event.target)) {
+        setAssignToList(false);
+        setActiveIndex(-1); // Reset activeIndex to -1
+      }
+      if (dropdownByRef.current && !dropdownByRef.current.contains(event.target)) {
+        setAssignByList(false);
+        setActiveIndex(-1); // Reset activeIndex to -1
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
 
 
   return ReactDOM.createPortal(
@@ -205,13 +239,17 @@ const TaskModal = ({ onClose }) => {
                 Assigned
               </label>
               <div className="flex justify-start bg-white rounded-md mt-2">
-                <h3 className="w-1/2 pl-4">Assigned to</h3>
-                <h3 className="w-1/2 pl-4">Assigned by</h3>
+                <h3 className="w-1/2 pl-4" onClick={handleAssignToClick}>
+                  Assigned to
+                </h3>
+                <h3 className="w-1/2 pl-4" onClick={handleAssignByClick}>
+                  Assigned by
+                </h3>
               </div>
               <div className="flex gap-x-6 mt-1">
-                <div className="relative">
+                <div className="relative" ref={dropdownToRef}>
                   <div
-                    className="w-[180px] mx-auto overflow-x-scroll"
+                    className="w-[150px] mx-auto overflow-x-scroll"
                     style={{
                       scrollbarWidth: 'none',
                       msOverflowStyle: 'none',
@@ -220,35 +258,43 @@ const TaskModal = ({ onClose }) => {
                   >
                     <style>
                       {`
-                      ::-webkit-scrollbar {
-                        width: 0.5em;
-                      }
-                      ::-webkit-scrollbar-thumb {
-                        background-color: transparent;
-                      }
-                    `}
+      ::-webkit-scrollbar {
+        width: 0.5em;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: transparent;
+      }
+      `}
                     </style>
                     <div className="flex space-x-2 p-2">
                       {assignedToList.map((user, userIndex) => (
-                        <img
+                        <div
                           key={user.id}
-                          src={user.imageUrl}
-                          alt={user.name}
-                          className={`w-9 h-9 rounded-full cursor-pointer ${userIndex === activeIndex ? 'border-2 border-blue-500' : ''
-                            }`}
-                          onClick={() => handleAssignToClick(userIndex)}
-                        />
+                          className="relative group cursor-pointer"
+                        >
+                          <div className="w-9 h-9 rounded-full">
+                            <img
+                              src={user.imageUrl}
+                              alt={user.name}
+                              className={`w-9 h-9 rounded-full cursor-pointer ${userIndex === activeIndex ? 'border-2 border-blue-500' : ''
+                                }`}
+                              onClick={() => handleAssignSelect(user, assignedToList)}
+                            />
+                          </div>
+                        </div>
                       ))}
                       <div
                         className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedToList.length ? 'border-2 border-blue-500' : ''
                           }`}
-                        onClick={() => handleAssignToClick(assignedToList.length)}
+                        onClick={handleAssignToClick}
                       >
-                        <span className="text-white text-2xl flex justify-center items-center">+</span>
+                        <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
+                          +
+                        </span>
                       </div>
                     </div>
                     {assignToList && (
-                      <div className="absolute top-5 left-40 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
+                      <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
                         <input
                           type="text"
                           placeholder="Search"
@@ -258,12 +304,18 @@ const TaskModal = ({ onClose }) => {
                           <ul className="text-black">
                             {newImages.map((user) => (
                               <div
-                                className="flex gap-3 px-2 py-1"
+                                className={`flex gap-3 px-2 py-1 relative group cursor-pointer ${isUserSelected(user, assignedToList) ? 'bg-gray-200' : ''
+                                  }`}
                                 key={user.id}
-                                onClick={() => handleAssignToSelect(user)}
+                                onClick={() => handleAssignSelect(user, assignedToList)}
                               >
                                 <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
                                 <p className="gap-3 text-sm">{user.name}</p>
+                                {isUserSelected(user, assignedToList) && (
+                                  <span className="absolute top-2 right-1 w-4 h-4 bg-green-500 rounded-full text-white flex items-center justify-center">
+                                    ✓
+                                  </span>
+                                )}
                               </div>
                             ))}
                           </ul>
@@ -277,15 +329,15 @@ const TaskModal = ({ onClose }) => {
                         key={index}
                         className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === activeIndex ? 'bg-blue-500' : ''
                           }`}
-                        onClick={() => handleAssignToClick(index)}
+                        onClick={handleAssignToClick}
                       />
                     ))}
                   </div>
                 </div>
 
-                <div className="relative">
+                <div className="relative" ref={dropdownByRef}>
                   <div
-                    className="w-[180px] mx-auto overflow-x-scroll"
+                    className="w-[150px] mx-auto overflow-x-scroll"
                     style={{
                       scrollbarWidth: 'none',
                       msOverflowStyle: 'none',
@@ -294,35 +346,43 @@ const TaskModal = ({ onClose }) => {
                   >
                     <style>
                       {`
-                      ::-webkit-scrollbar {
-                        width: 0.5em;
-                      }
-                      ::-webkit-scrollbar-thumb {
-                        background-color: transparent;
-                      }
-                    `}
+      ::-webkit-scrollbar {
+        width: 0.5em;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: transparent;
+      }
+      `}
                     </style>
                     <div className="flex space-x-2 p-2">
                       {assignedByList.map((user, userIndex) => (
-                        <img
+                        <div
                           key={user.id}
-                          src={user.imageUrl}
-                          alt={user.name}
-                          className={`w-9 h-9 rounded-full cursor-pointer ${userIndex === activeIndex ? 'border-2 border-blue-500' : ''
-                            }`}
-                          onClick={() => handleAssignByClick(userIndex)}
-                        />
+                          className={`relative group cursor-pointer`}
+                        >
+                          <div className="w-9 h-9 rounded-full">
+                            <img
+                              src={user.imageUrl}
+                              alt={user.name}
+                              className={`w-9 h-9 rounded-full cursor-pointer ${userIndex === activeIndex ? 'border-2 border-blue-500' : ''
+                                }`}
+                              onClick={() => handleAssignSelect(user, assignedByList)}
+                            />
+                          </div>
+                        </div>
                       ))}
                       <div
                         className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedByList.length ? 'border-2 border-blue-500' : ''
                           }`}
-                        onClick={() => handleAssignByClick(assignedByList.length)}
+                        onClick={handleAssignByClick}
                       >
-                        <span className="text-white text-2xl flex justify-center items-center">+</span>
+                        <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
+                          +
+                        </span>
                       </div>
                     </div>
                     {assignByList && (
-                      <div className="absolute top-5 left-40 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
+                      <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
                         <input
                           type="text"
                           placeholder="Search"
@@ -332,12 +392,18 @@ const TaskModal = ({ onClose }) => {
                           <ul className="text-black">
                             {newImages.map((user) => (
                               <div
-                                className="flex gap-3 px-2 py-1"
+                                className={`flex gap-3 px-2 py-1 relative group cursor-pointer ${isUserSelected(user, assignedByList) ? 'bg-gray-200' : ''
+                                  }`}
                                 key={user.id}
-                                onClick={() => handleAssignBySelect(user)}
+                                onClick={() => handleAssignSelect(user, assignedByList)}
                               >
                                 <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
                                 <p className="gap-3 text-sm">{user.name}</p>
+                                {isUserSelected(user, assignedByList) && (
+                                  <span className="absolute top-2 right-1 w-4 h-4 bg-green-500 rounded-full text-white flex items-center justify-center">
+                                    ✓
+                                  </span>
+                                )}
                               </div>
                             ))}
                           </ul>
@@ -351,11 +417,12 @@ const TaskModal = ({ onClose }) => {
                         key={index}
                         className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === activeIndex ? 'bg-blue-500' : ''
                           }`}
-                        onClick={() => handleAssignByClick(index)}
+                        onClick={handleAssignByClick}
                       />
                     ))}
                   </div>
                 </div>
+
               </div>
               <button type="submit" className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white">
                 Done
