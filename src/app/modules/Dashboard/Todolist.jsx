@@ -188,17 +188,14 @@ const Dashboard = ({ isSidebarOpen }) => {
             <div className="bg-white p-3 rounded-lg shadow-lg">
               <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold">Delete Item</h1>
-                <div className=" top-0 right-0 p-2 rounded-md bg-gray-400">
-                  <RxCross2
-                    className="cursor-pointer text-white"
-                    onClick={() => setShowDeleteConfirmation(false)}
-                  />
+                <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer">
+                  <RxCross2 onClick={() => setShowDeleteConfirmation(false)} />
                 </div>
               </div>
-              <p className="text-gray-700 mt-2">Are you sure you want to delete <br /> this item?</p>
+              <p className="text-gray-700 mt-2">Are you sure you want to delete this item?</p>
               <div className="mt-4 flex justify-end">
                 <button
-                  className="px-4 py-1.5 mr-2 text-white bg-red-500 rounded"
+                  className="px-4 py-1 mr-2 text-white bg-red-500 rounded"
                   onClick={handleDelete}
                 >
                   Delete

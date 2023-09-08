@@ -37,11 +37,13 @@ const Datepicker = ({ onChange }) => {
                 onChange={handleDateChange}
                 customInput={<InputDay />}
             />
+            -
             <DatePicker
                 selected={startDate}
                 onChange={handleDateChange}
                 customInput={<InputMonth />}
             />
+            -
             <DatePicker
                 selected={startDate}
                 onChange={handleDateChange}
