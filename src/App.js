@@ -61,19 +61,32 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
         </div>
       )}
 
-    <Routes>
-      <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>}>
-      {isLogin ?
-      <>
-          <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen} />}/>  
-       <Route path="/board" element={<Board />} />
-      </>
-          : ""}
-      </Route>
-      {!isLogin && (
-      <>
-          <Route path="/" element={<Login />} />
-        </>
+      <Routes>
+        <Route
+          element={
+            <Sidebar
+              isSidebarOpen={isSidebarOpen}
+              setIsSidebarOpen={setIsSidebarOpen}
+            />
+          }
+        >
+          {!isLogin ? (
+            <>
+              <Route
+                exact
+                path="/"
+                element={<Dashboard isSidebarOpen={isSidebarOpen} />}
+              />
+              <Route path="/board" element={<Board />} />
+            </>
+          ) : (
+            ""
+          )}
+        </Route>
+        {isLogin && (
+          <>
+            <Route path="/" element={<Login />} />
+          </>
         )}
       </Routes>
     </>
