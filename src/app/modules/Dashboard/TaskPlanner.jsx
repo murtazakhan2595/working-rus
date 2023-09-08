@@ -6,6 +6,11 @@ import { tasks, tasksTitle } from "../../../data/Data";
 
 const TaskPlanner = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [taskData, setTaskData] = useState({})
+
+  const updateTaskData = (data) => {
+    setTaskData(data)
+  }
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -178,7 +183,7 @@ const TaskPlanner = () => {
           </div>
         </div>
       </div>
-      {isModalOpen && <TaskModal onClose={closeModal} />}
+      {isModalOpen && <TaskModal onClose={closeModal} updateTaskData={updateTaskData} />}
     </div>
   );
 };
