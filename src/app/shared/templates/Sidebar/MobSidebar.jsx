@@ -4,10 +4,11 @@ import { LiaHomeSolid } from "react-icons/lia";
 import { MdOutlineGroups2, MdOutlinePayment } from "react-icons/md";
 import { MdLock } from "react-icons/md";
 import { BiTimeFive } from "react-icons/bi";
+import { BsClipboardCheck } from "react-icons/bs";
 import { PiShootingStarBold } from "react-icons/pi";
 import { Outlet } from "react-router-dom";
 import logo from "../../../../assets/images/logo.png";
-
+import { Link } from 'react-router-dom'
 import sidebg from "./sidebarBG.png";
 import {
   TbLayoutSidebarRightCollapse,
@@ -20,10 +21,8 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 
 const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
-
   const navigate = useNavigate();
   const cookies = new Cookies();
-
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -53,11 +52,12 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               />
             </div>
           </li>
-
-          <li className="flex mb-3 mt-5 bg-blue-900 rounded-md py-2 px-4 items-center gap-1">
-            <LiaHomeSolid className="text-white text-xl" />{" "}
-            <p className="text-white">Home</p>
-          </li>
+          <Link to="/">
+            <li className="flex mb-3 mt-5 bg-blue-900 rounded-md py-2 px-4 items-center gap-1">
+              <LiaHomeSolid className="text-white text-xl" />{" "}
+              <p className="text-white">Home</p>
+            </li>
+          </Link>
 
           <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
             <MdOutlineGroups2 className="text-white text-xl" />{" "}
@@ -78,6 +78,13 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             <PiShootingStarBold className="text-white text-xl" />{" "}
             <p className="text-white">Perfomance</p>
           </li>
+          <Link to="/board">
+            <li className="flex mb-3 mt-3  rounded-md py-2 px-4 items-center gap-1">
+              <BsClipboardCheck className="text-white text-xl" />{" "}
+              <p className="text-white">Board</p>
+            </li>
+          </Link>
+
           <hr className="opacity-40" />
           <li
             onClick={() => {
@@ -123,7 +130,6 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     </div>
   );
 };
-
 
 const mapStateToProps = (state) => {
   return {

@@ -39,6 +39,7 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
       if (response.status === 200) {
         handleUpdateProfile(response.data);
         setToken(token);
+        cookies.set("token", token, { path: "*" });
         return;
       }
     } catch (error) {
@@ -52,6 +53,22 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
 
   return (
     <>
+
+    <Routes>
+      {isLogin ?
+        <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>}>
+          <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen} />}/>  
+          <Route path="/board" element={<Board />} />
+        </Route>
+          : ""}
+      {!isLogin && (
+        <>
+          <Route path="/" element={<Login />} />
+        </>
+        )}
+      </Routes>
+
+
       {isLogin === null && (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
           <div className="text-center">
@@ -60,22 +77,6 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
           </div>
         </div>
       )}
-
-    <Routes>
-      <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>}>
-      {isLogin ?
-      <>
-          <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen} />}/>  
-       <Route path="/board" element={<Board />} />
-      </>
-          : ""}
-      </Route>
-      {!isLogin && (
-      <>
-          <Route path="/" element={<Login />} />
-        </>
-        )}
-      </Routes>
     </>
   );
 }
