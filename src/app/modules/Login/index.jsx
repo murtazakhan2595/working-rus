@@ -58,7 +58,6 @@ function Login({ setUserProfile, baseUrl, setToken }) {
         password: values.password,
       });
 
-      console.log(response.data);
 
       if (response.status === 200) {
         cookies.set("token", response.data.access, { path: "*" });
@@ -72,8 +71,8 @@ function Login({ setUserProfile, baseUrl, setToken }) {
           handleUpdateProfile(res.data);
           setToken(token);
           setValues({});
-          cookies.set("uname", values.username, { path: "/" });
-          cookies.set("pwd", values.password, { path: "/" });
+          cookies.set("uname", values.username, { path: "*" });
+          cookies.set("pwd", values.password, { path: "*" });
           toast.success("Login successful!", {
             position: toast.POSITION.TOP_RIGHT,
           });

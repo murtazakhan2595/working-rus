@@ -4,6 +4,7 @@ import { LiaHomeSolid } from "react-icons/lia";
 import { MdOutlineGroups2, MdOutlinePayment } from "react-icons/md";
 import { MdLock } from "react-icons/md";
 import { BiTimeFive } from "react-icons/bi";
+import { BsClipboardCheck } from "react-icons/bs";
 import { PiShootingStarBold } from "react-icons/pi";
 import { Outlet , Link } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
@@ -73,10 +74,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             <PiShootingStarBold className="text-white text-xl" />{" "}
             <p className="text-white">Perfomance</p>
           </li>
-          <hr className="opacity-40" />
           <Link to="/board">
-          <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-            <PiShootingStarBold className="text-white text-xl" />{" "}
+          <li className="flex mb-3 mt-3  rounded-md py-2 px-4 items-center gap-1">
+            <BsClipboardCheck className="text-white text-xl" />{" "}
             <p className="text-white">Board</p>
           </li>
           </Link>
