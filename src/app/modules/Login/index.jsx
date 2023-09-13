@@ -28,11 +28,11 @@ function Login({ setUserProfile, baseUrl, setToken }) {
   const handleUpdateProfile = (data) => {
     let updateProfile = { id: data.id, username: data.username };
     setUserProfile(updateProfile);
-  };
+  }
 
   const handleCheckboxChange = (e) => {
     setIsChecked(e.target.checked);
-  };
+  }
 
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -49,7 +49,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
         newErrors[detail.path[0]] = detail.message;
       });
       setErrors(newErrors);
-      return; // Exit early if there are validation errors
+      return;
     }
 
     try {

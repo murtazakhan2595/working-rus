@@ -58,7 +58,7 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
       {isLogin ?
         <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>}>
           <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen} />}/>  
-          <Route path="/board" element={<Board />} />
+          <Route path="/board/:id" element={<Board />} />
         </Route>
           : ""}
       {!isLogin && (

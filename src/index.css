@@ -30,6 +30,11 @@ body {
   outline: 1px solid #1976d246;
 }
 
+.hideScroll::-webkit-scrollbar {
+  width: 0px;
+}
+
+
 .roundScroll::-webkit-scrollbar {
   width: 10px;
 }
