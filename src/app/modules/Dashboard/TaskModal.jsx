@@ -4,6 +4,12 @@ import Datepicker from './Datepicker'; // Import your Datepicker component
 import Select from 'react-select';
 import { RxCross2 } from 'react-icons/rx';
 import { assigToData, assigByData, priority } from '../../../data/Data';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { connect } from "react-redux";
+import Joi from 'joi';
+
 
 const status = [
   { value: 'inprogress', label: 'In-Progress' },
@@ -11,7 +17,7 @@ const status = [
   { value: 'testing', label: 'Testing' },
 ];
 
-const TaskModal = ({ onClose }) => {
+const TaskModal = ({ onClose, token, baseUrl }) => {
   const initialData = {
     title: '',
     desc: '',
@@ -35,8 +41,10 @@ const TaskModal = ({ onClose }) => {
   const [searchResultsAssignBy, setSearchResultsAssignBy] = useState(assigByData);
   const [currentPageAssignTo, setCurrentPageAssignTo] = useState(1);
   const [currentPageAssignBy, setCurrentPageAssignBy] = useState(1);
+  const [validationErrors, setValidationErrors] = useState({});
 
-  const usersPerPage = 2;
+
+  const usersPerPage = 3;
 
   const dropdownToRef = useRef(null);
   const dropdownByRef = useRef(null);
@@ -55,12 +63,15 @@ const TaskModal = ({ onClose }) => {
   // Function to handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    setValidationErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: null,
+    }));
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
-
   // Function to handle date changes
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -72,6 +83,10 @@ const TaskModal = ({ onClose }) => {
 
   // Function to handle select changes
   const handleSelectChange = (name, selectedOption) => {
+    setValidationErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: null,
+    }));
     setFormData((prevData) => ({
       ...prevData,
       [name]: selectedOption,
@@ -121,11 +136,67 @@ const TaskModal = ({ onClose }) => {
     return list.some((u) => u.id === user.id);
   };
 
-  // Function to handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('form data', formData)
+  const headers = {
+    Authorization: `Bearer ${token}`,
   };
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errors = validateForm(formData);
+
+    if (Object.keys(errors).length === 0) {
+      try {
+        const postData = {
+          name: formData.title,
+          description: formData.desc,
+          assigned_to: formData.assignedTo[0].id,
+          assigned_by: formData.assignedBy[0].id,
+          board_id: null,
+          status: formData.status.label,
+        };
+
+        const response = await axios.post(
+          `${baseUrl}/task/`,
+          postData,
+          { headers }
+        );
+
+        console.log('Response:', response.data);
+
+        // Show a success toast
+        toast.success('Card added successfully', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+
+        setTimeout(() => {
+          onClose();
+        }, 2000); // Close the modal after 2 seconds
+      } catch (error) {
+        console.error('Error:', error);
+
+        // Show an error toast
+        toast.error('Something went wrong', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    } else {
+      // Display validation errors
+      setValidationErrors(errors);
+    }
+  };
+
+
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -164,6 +235,39 @@ const TaskModal = ({ onClose }) => {
     setSearchResultsAssignBy(filteredUsers);
   };
 
+
+  const schema = Joi.object({
+    title: Joi.string().required().label('Title'),
+    desc: Joi.string().required().label('Description'),
+    dueDate: Joi.date().iso().label('Due Date'),
+    status: Joi.string().required().label('Status'),
+    priority: Joi.string().required().label('Priority'),
+    assignedTo: Joi.array().min(1).required().label('Assigned To'),
+    assignedBy: Joi.array().min(1).required().label('Assigned By'),
+  });
+
+  const validateForm = (data) => {
+    const result = schema.validate(data, { abortEarly: false });
+    const errors = {};
+
+    if (result.error) {
+      for (let item of result.error.details) {
+        errors[item.path[0]] = item.message;
+      }
+    }
+
+    if (!data.assignedTo || data.assignedTo.length === 0) {
+      errors.assignedTo = "select at least one user";
+    }
+
+    if (!data.assignedBy || data.assignedBy.length === 0) {
+      errors.assignedBy = "select at least one user";
+    }
+
+    return errors;
+  };
+
+
   return ReactDOM.createPortal(
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"></div>
@@ -188,6 +292,7 @@ const TaskModal = ({ onClose }) => {
                   className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-4"
                   placeholder="TecBrix Dashboard Design"
                 />
+                {validationErrors.title && <span className="text-red-500 text-sm">{validationErrors.title}</span>}
               </div>
               <div className="flex flex-col">
                 <label htmlFor="desc" className="font-sfpro text-lg font-semibold">
@@ -202,6 +307,8 @@ const TaskModal = ({ onClose }) => {
                   onChange={handleInputChange}
                   className="rounded-md bg-white text-black w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-4"
                 ></textarea>
+                {validationErrors.desc && <span className="text-red-500 text-sm">{validationErrors.desc}</span>}
+
               </div>
 
               <div className="flex justify-between items-center mb-4">
@@ -238,6 +345,8 @@ const TaskModal = ({ onClose }) => {
                     onChange={(selectedOption) => handleSelectChange('status', selectedOption)}
                     value={formData.status}
                   />
+                  {validationErrors.status && <span className="text-red-500 text-sm">{validationErrors.status}</span>}
+
                 </div>
                 <div className="flex flex-col max-w-[80px]">
                   <label htmlFor="priority" className="py-1 font-sfpro text-lg font-semibold">
@@ -280,7 +389,7 @@ const TaskModal = ({ onClose }) => {
                 </h3>
               </div>
               <div className="flex gap-x-6 mt-1">
-                <div className="relative" ref={dropdownToRef}>
+                <div className="relative w-full" ref={dropdownToRef}>
 
                   <style>
                     {`
@@ -292,42 +401,47 @@ const TaskModal = ({ onClose }) => {
       }
       `}
                   </style>
-                  <div className="flex space-x-2 p-2 w-[140px]">
-                    <div className="mx-auto overflow-x-scroll flex gap-x-1"
+
+
+                  <div className="flex space-x-2 px-2 pt-2 pb-0 ">
+                    <div
+                      className=" overflow-x-scroll flex gap-x-1"
                       style={{
                         scrollbarWidth: 'none',
                         msOverflowStyle: 'none',
                         WebkitOverflowScrolling: 'touch',
-                      }}>
+                      }}
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === null ? 'border-2 border-blue-500' : ''
+                          }`}
+                        onClick={handleAssignToClick}
+                      >
+                        <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
+                          +
+                        </span>
+                      </div>
                       {assignedTo.map((user, userIndex) => (
-                        <div
-                          key={user.id}
-                          className="relative group cursor-pointer"
-                        >
+                        <div key={user.id} className="relative group cursor-pointer">
                           <div className="w-9 h-9 rounded-full">
                             <img
                               src={user.imageUrl}
                               alt={user.name}
                               className={`w-9 h-9 rounded-full cursor-pointer ${userIndex === activeIndex ? 'border-2 border-blue-500' : ''
                                 }`}
-                              onClick={() => handleAssignSelect(user, assignedToList)}
+                            // onClick={() => handleAssignSelect(user, assignedToList)}
+                            // onClick={() => handleAssignSelect(user, userIndex)}
                             />
                           </div>
                         </div>
                       ))}
-                    </div>
-                    <div
-                      className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedToList.length ? 'border-2 border-blue-500' : ''
-                        }`}
-                      onClick={handleAssignToClick}
-                    >
-                      <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
-                        +
-                      </span>
+                      {/* Render "+" button */}
+
                     </div>
                   </div>
+
                   {assignToList && (
-                    <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
+                    <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md z-50">
                       <input
                         type="search"
                         placeholder="Search"
@@ -360,19 +474,21 @@ const TaskModal = ({ onClose }) => {
                     </div>
                   )}
 
-                  <div className="flex justify-center">
-                    <div className="flex justify-center mt-2">
-                      {Array.from({ length: Math.ceil(assignedToList.length / usersPerPage) }, (_, index) => (
-                        <span
-                          key={index}
-                          className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === currentPageAssignTo - 1 ? 'bg-blue-500' : ''}`}
-                          onClick={() => setCurrentPageAssignTo(index + 1)}
-                        />
-                      ))}
-                    </div>
+                  <div className="flex justify-center mx-auto -mt-2">
+                    {Array.from({ length: Math.ceil(assignedToList.length / usersPerPage) }, (_, index) => (
+                      <span
+                        key={index}
+                        className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === currentPageAssignTo - 1 ? 'bg-blue-500' : ''}`}
+                        onClick={() => setCurrentPageAssignTo(index + 1)}
+                      />
+                    ))}
                   </div>
+
+                  {validationErrors.assignedTo && (
+                    <p className="text-red-500">{validationErrors.assignedTo}</p>
+                  )}
                 </div>
-                <div className="relative" ref={dropdownByRef}>
+                <div className="relative w-full" ref={dropdownByRef}>
 
                   <style>
                     {`
@@ -384,42 +500,47 @@ const TaskModal = ({ onClose }) => {
       }
       `}
                   </style>
-                  <div className="flex space-x-2 p-2 w-[140px]">
-                    <div className="mx-auto overflow-x-scroll flex gap-x-1"
+
+
+                  <div className="flex justify-items-center space-x-2 px-2 pt-2 pb-0 ">
+                    <div
+                      className=" overflow-x-scroll flex justify-items-center gap-x-1"
                       style={{
                         scrollbarWidth: 'none',
                         msOverflowStyle: 'none',
                         WebkitOverflowScrolling: 'touch',
-                      }}>
+                      }}
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === null ? 'border-2 border-blue-500' : ''
+                          }`}
+                        onClick={handleAssignByClick}
+                      >
+                        <span className="text-white text-2xl flex justify-items-center justify-center items-center plus-icon w-9 h-9">
+                          +
+                        </span>
+                      </div>
                       {assignedBy.map((user, userIndex) => (
-                        <div
-                          key={user.id}
-                          className="relative group cursor-pointer"
-                        >
+                        <div key={user.id} className="relative group cursor-pointer">
                           <div className="w-9 h-9 rounded-full">
                             <img
                               src={user.imageUrl}
                               alt={user.name}
                               className={`w-9 h-9 rounded-full cursor-pointer ${userIndex === activeIndex ? 'border-2 border-blue-500' : ''
                                 }`}
-                              onClick={() => handleAssignSelect(user, assignedByList)}
+                            // onClick={() => handleAssignSelect(user, assignedToList)}
+                            // onClick={() => handleAssignSelect(user, userIndex)}
                             />
                           </div>
                         </div>
                       ))}
-                    </div>
-                    <div
-                      className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedByList.length ? 'border-2 border-blue-500' : ''
-                        }`}
-                      onClick={handleAssignByClick}
-                    >
-                      <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
-                        +
-                      </span>
+                      {/* Render "+" button */}
+
                     </div>
                   </div>
+
                   {assignByList && (
-                    <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
+                    <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md z-50">
                       <input
                         type="search"
                         placeholder="Search"
@@ -433,7 +554,7 @@ const TaskModal = ({ onClose }) => {
                         <ul className="text-black">
                           {searchResultsAssignBy.map((user) => (
                             <div
-                              className={`flex gap-3 px-2 py-1 relative group cursor-pointer ${isUserSelected(user, assignedToList) ? 'bg-gray-200' : ''
+                              className={`flex gap-3 px-2 py-1 relative group cursor-pointer ${isUserSelected(user, assignedByList) ? 'bg-gray-200' : ''
                                 }`}
                               key={user.id}
                               onClick={() => handleAssignSelect(user, assignedByList)}
@@ -452,19 +573,21 @@ const TaskModal = ({ onClose }) => {
                     </div>
                   )}
 
-                  <div className="flex justify-center">
-                    <div className="flex justify-center mt-2">
-                      {Array.from({ length: Math.ceil(assignedByList.length / usersPerPage) }, (_, index) => (
-                        <span
-                          key={index}
-                          className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === currentPageAssignBy - 1 ? 'bg-blue-500' : ''}`}
-                          onClick={() => setCurrentPageAssignBy(index + 1)}
-                        />
-                      ))}
-                    </div>
+                  {/* <div className="block mx-auto"> */}
+                  <div className="flex justify-center mx-auto -mt-2">
+                    {Array.from({ length: Math.ceil(assignedByList.length / usersPerPage) }, (_, index) => (
+                      <span
+                        key={index}
+                        className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === currentPageAssignBy - 1 ? 'bg-blue-500' : ''}`}
+                        onClick={() => setCurrentPageAssignBy(index + 1)}
+                      />
+                    ))}
                   </div>
+                  {/* </div> */}
+                  {validationErrors.assignedBy && (
+                    <p className="text-red-500">{validationErrors.assignedBy}</p>
+                  )}
                 </div>
-
               </div>
               <button type="submit" className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white">
                 Done
@@ -473,9 +596,23 @@ const TaskModal = ({ onClose }) => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>,
     document.querySelector('.form-modal')
   );
 };
 
-export default TaskModal;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+    baseUrl: state.user.baseUrl,
+    token: state.user.token,
+    isLogin: state.user.isLogin,
+  };
+};
+
+export default connect(mapStateToProps)(TaskModal);
+
+
+
+

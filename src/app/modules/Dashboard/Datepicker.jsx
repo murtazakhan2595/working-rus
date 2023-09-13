@@ -6,31 +6,43 @@ const Datepicker = ({ onChange }) => {
     const [startDate, setStartDate] = useState(new Date());
 
     const InputDay = React.forwardRef(({ onClick }, ref) => (
-        <button className="bg-white py-1.5 px-3 rounded-md" onClick={(e) => {
-            e.stopPropagation();
-            onClick(e);
-        }}
-            ref={ref}>
+        <button
+            type="button"
+            className="bg-white py-1.5 px-3 rounded-md"
+            onClick={(e) => {
+                e.stopPropagation();
+                onClick(e);
+            }}
+            ref={ref}
+        >
             {startDate.getDate()}
         </button>
     ));
 
     const InputMonth = React.forwardRef(({ onClick }, ref) => (
-        <button className="bg-white py-1.5 px-3 rounded-md" onClick={(e) => {
-            e.stopPropagation();
-            onClick(e);
-        }}
-            ref={ref}>
+        <button
+            type="button"
+            className="bg-white py-1.5 px-3 rounded-md"
+            onClick={(e) => {
+                e.stopPropagation();
+                onClick(e);
+            }}
+            ref={ref}
+        >
             {startDate.toLocaleString('default', { month: 'short' })}
         </button>
     ));
 
     const InputYear = React.forwardRef(({ onClick }, ref) => (
-        <button className="bg-white py-1.5 px-3 rounded-md" onClick={(e) => {
-            e.stopPropagation();
-            onClick(e);
-        }}
-            ref={ref}>
+        <button
+            type="button"
+            className="bg-white py-1.5 px-3 rounded-md"
+            onClick={(e) => {
+                e.stopPropagation();
+                onClick(e);
+            }}
+            ref={ref}
+        >
             {startDate.getFullYear()}
         </button>
     ));
@@ -38,14 +50,13 @@ const Datepicker = ({ onChange }) => {
     const handleDateChange = (date) => {
         setStartDate(date);
         if (onChange) {
-            onChange(date); // Call the onChange callback with the selected date
+            onChange(date);
         }
     };
 
     const handleDatepickerClick = (event) => {
         event.preventDefault();
     };
-
 
     return (
         <div className='flex items-center'>

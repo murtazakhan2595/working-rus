@@ -1,11 +1,11 @@
 const initialState = {
   userProfile: {},
-  isLogin : null ,
-  token : "",
+  isLogin: null,
+  token: "",
   baseUrl:
     window.location.href.indexOf("https") === -1
-      ? "http://127.0.0.1:8000/api"
-      : "https://f1-api.tecbrix.cloud/api/v1/",
+      ? "http://hrms-1886226759.eu-west-1.elb.amazonaws.com/api"
+      : "http://hrms-1886226759.eu-west-1.elb.amazonaws.com/api",
 };
 
 const userReducer = (state = initialState, action) => {
@@ -13,17 +13,17 @@ const userReducer = (state = initialState, action) => {
     case "SET_USER_PROFILE":
       return {
         ...state,
-        isLogin : true,
+        isLogin: true,
         userProfile: action.payload,
       };
     case "SET_USER_LOGOUT":
       return {
         ...state,
-        isLogin : false,
-        token : "" ,
+        isLogin: false,
+        token: "",
         userProfile: {},
       };
-    case 'SET_TOKEN':
+    case "SET_TOKEN":
       return {
         ...state,
         token: action.payload,

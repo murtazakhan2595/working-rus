@@ -54,7 +54,7 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
   return (
     <>
       <Routes>
-        {!isLogin ? (
+        {isLogin ? (
           <Route
             element={
               <Sidebar
@@ -73,7 +73,7 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
         ) : (
           ""
         )}
-        {isLogin && (
+        {!isLogin && (
           <>
             <Route path="/" element={<Login />} />
           </>
