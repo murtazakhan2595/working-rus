@@ -53,7 +53,6 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
 
   return (
     <>
-
     <Routes>
       {isLogin ?
         <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>}>
@@ -67,7 +66,6 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
         </>
         )}
       </Routes>
-
 
       {isLogin === null && (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">

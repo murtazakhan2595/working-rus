@@ -6,19 +6,31 @@ const Datepicker = ({ onChange }) => {
     const [startDate, setStartDate] = useState(new Date());
 
     const InputDay = React.forwardRef(({ onClick }, ref) => (
-        <button className="bg-white py-1.5 px-3 rounded-md" onClick={onClick} ref={ref}>
+        <button className="bg-white py-1.5 px-3 rounded-md" onClick={(e) => {
+            e.stopPropagation();
+            onClick(e);
+        }}
+            ref={ref}>
             {startDate.getDate()}
         </button>
     ));
 
     const InputMonth = React.forwardRef(({ onClick }, ref) => (
-        <button className="bg-white py-1.5 px-3 rounded-md" onClick={onClick} ref={ref}>
+        <button className="bg-white py-1.5 px-3 rounded-md" onClick={(e) => {
+            e.stopPropagation();
+            onClick(e);
+        }}
+            ref={ref}>
             {startDate.toLocaleString('default', { month: 'short' })}
         </button>
     ));
 
     const InputYear = React.forwardRef(({ onClick }, ref) => (
-        <button className="bg-white py-1.5 px-3 rounded-md" onClick={onClick} ref={ref}>
+        <button className="bg-white py-1.5 px-3 rounded-md" onClick={(e) => {
+            e.stopPropagation();
+            onClick(e);
+        }}
+            ref={ref}>
             {startDate.getFullYear()}
         </button>
     ));
@@ -30,24 +42,32 @@ const Datepicker = ({ onChange }) => {
         }
     };
 
+    const handleDatepickerClick = (event) => {
+        event.preventDefault();
+    };
+
+
     return (
-        <div>
+        <div className='flex items-center'>
             <DatePicker
                 selected={startDate}
                 onChange={handleDateChange}
                 customInput={<InputDay />}
+                onClick={handleDatepickerClick}
             />
             -
             <DatePicker
                 selected={startDate}
                 onChange={handleDateChange}
                 customInput={<InputMonth />}
+                onClick={handleDatepickerClick}
             />
             -
             <DatePicker
                 selected={startDate}
                 onChange={handleDateChange}
                 customInput={<InputYear />}
+                onClick={handleDatepickerClick}
             />
         </div>
     );

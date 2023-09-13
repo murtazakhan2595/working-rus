@@ -115,7 +115,7 @@ export const priority = [
   },
 ];
 
-export const images = [
+export const assigToData = [
   {
     id: 1,
     name: "Syed Umair",
@@ -148,7 +148,7 @@ export const images = [
   //   "imageUrl": "https://i.ibb.co/RjBLWxB/grey-brim.png",
   // },
 ];
-export const newImages = [
+export const assigByData = [
   {
     id: 1,
     name: "Syed Umair",

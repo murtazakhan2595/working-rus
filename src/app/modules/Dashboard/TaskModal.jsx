@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Datepicker from './Datepicker'; // Import your Datepicker component
 import Select from 'react-select';
 import { RxCross2 } from 'react-icons/rx';
-import { images, newImages, priority } from '../../../data/Data';
+import { assigToData, assigByData, priority } from '../../../data/Data';
 
 const status = [
   { value: 'inprogress', label: 'In-Progress' },
@@ -28,11 +28,29 @@ const TaskModal = ({ onClose }) => {
   const [formData, setFormData] = useState(initialData);
   const [assignedToList, setAssignedToList] = useState([]);
   const [assignedByList, setAssignedByList] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null); // State variable for the selected date
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [searchTermAssignTo, setSearchTermAssignTo] = useState('');
+  const [searchTermAssignBy, setSearchTermAssignBy] = useState('');
+  const [searchResultsAssignTo, setSearchResultsAssignTo] = useState(assigToData);
+  const [searchResultsAssignBy, setSearchResultsAssignBy] = useState(assigByData);
+  const [currentPageAssignTo, setCurrentPageAssignTo] = useState(1);
+  const [currentPageAssignBy, setCurrentPageAssignBy] = useState(1);
 
+  const usersPerPage = 2;
 
   const dropdownToRef = useRef(null);
   const dropdownByRef = useRef(null);
+
+  // Define the getCurrentUsers function
+  const getCurrentUsers = (currentPage, usersPerPage, userList) => {
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    return userList.slice(indexOfFirstUser, indexOfLastUser);
+  };
+
+  const assignedTo = getCurrentUsers(currentPageAssignTo, usersPerPage, assignedToList);
+  const assignedBy = getCurrentUsers(currentPageAssignBy, usersPerPage, assignedByList);
+
 
   // Function to handle input changes
   const handleInputChange = (e) => {
@@ -106,6 +124,7 @@ const TaskModal = ({ onClose }) => {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('form data', formData)
   };
 
   // Close dropdown when clicking outside
@@ -129,6 +148,21 @@ const TaskModal = ({ onClose }) => {
   }, []);
 
 
+  // Function to filter users for "Assign to"
+  const filterAssignToUsers = (term) => {
+    const filteredUsers = assigByData.filter((user) =>
+      user.name.toLowerCase().includes(term.toLowerCase())
+    );
+    setSearchResultsAssignTo(filteredUsers);
+  };
+
+  // Function to filter users for "Assign by"
+  const filterAssignByUsers = (term) => {
+    const filteredUsers = assigByData.filter((user) =>
+      user.name.toLowerCase().includes(term.toLowerCase())
+    );
+    setSearchResultsAssignBy(filteredUsers);
+  };
 
   return ReactDOM.createPortal(
     <>
@@ -205,7 +239,7 @@ const TaskModal = ({ onClose }) => {
                     value={formData.status}
                   />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col max-w-[80px]">
                   <label htmlFor="priority" className="py-1 font-sfpro text-lg font-semibold">
                     Priority
                   </label>
@@ -247,16 +281,9 @@ const TaskModal = ({ onClose }) => {
               </div>
               <div className="flex gap-x-6 mt-1">
                 <div className="relative" ref={dropdownToRef}>
-                  <div
-                    className="w-[150px] mx-auto overflow-x-scroll"
-                    style={{
-                      scrollbarWidth: 'none',
-                      msOverflowStyle: 'none',
-                      WebkitOverflowScrolling: 'touch',
-                    }}
-                  >
-                    <style>
-                      {`
+
+                  <style>
+                    {`
       ::-webkit-scrollbar {
         width: 0.5em;
       }
@@ -264,9 +291,15 @@ const TaskModal = ({ onClose }) => {
         background-color: transparent;
       }
       `}
-                    </style>
-                    <div className="flex space-x-2 p-2">
-                      {assignedToList.map((user, userIndex) => (
+                  </style>
+                  <div className="flex space-x-2 p-2 w-[140px]">
+                    <div className="mx-auto overflow-x-scroll flex gap-x-1"
+                      style={{
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        WebkitOverflowScrolling: 'touch',
+                      }}>
+                      {assignedTo.map((user, userIndex) => (
                         <div
                           key={user.id}
                           className="relative group cursor-pointer"
@@ -282,69 +315,67 @@ const TaskModal = ({ onClose }) => {
                           </div>
                         </div>
                       ))}
-                      <div
-                        className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedToList.length ? 'border-2 border-blue-500' : ''
-                          }`}
-                        onClick={handleAssignToClick}
-                      >
-                        <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
-                          +
-                        </span>
+                    </div>
+                    <div
+                      className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedToList.length ? 'border-2 border-blue-500' : ''
+                        }`}
+                      onClick={handleAssignToClick}
+                    >
+                      <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
+                        +
+                      </span>
+                    </div>
+                  </div>
+                  {assignToList && (
+                    <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
+                      <input
+                        type="search"
+                        placeholder="Search"
+                        className="mt-2 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
+                        onChange={(e) => {
+                          setSearchTermAssignTo(e.target.value);
+                          filterAssignToUsers(e.target.value);
+                        }}
+                      />
+                      <div className="overflow-y-auto max-h-32 roundScrollsm">
+                        <ul className="text-black">
+                          {searchResultsAssignTo.map((user) => (
+                            <div
+                              className={`flex gap-3 px-2 py-1 relative group cursor-pointer ${isUserSelected(user, assignedToList) ? 'bg-gray-200' : ''
+                                }`}
+                              key={user.id}
+                              onClick={() => handleAssignSelect(user, assignedToList)}
+                            >
+                              <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
+                              <p className="gap-3 text-sm">{user.name}</p>
+                              {isUserSelected(user, assignedToList) && (
+                                <span className="absolute top-2 right-1 w-4 h-4 bg-green-500 rounded-full text-white flex items-center justify-center">
+                                  ✓
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </ul>
                       </div>
                     </div>
-                    {assignToList && (
-                      <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
-                        <input
-                          type="text"
-                          placeholder="Search"
-                          className="mt-2 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-white"
-                        />
-                        <div className="overflow-y-auto max-h-32 roundScrollsm">
-                          <ul className="text-black">
-                            {newImages.map((user) => (
-                              <div
-                                className={`flex gap-3 px-2 py-1 relative group cursor-pointer ${isUserSelected(user, assignedToList) ? 'bg-gray-200' : ''
-                                  }`}
-                                key={user.id}
-                                onClick={() => handleAssignSelect(user, assignedToList)}
-                              >
-                                <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
-                                <p className="gap-3 text-sm">{user.name}</p>
-                                {isUserSelected(user, assignedToList) && (
-                                  <span className="absolute top-2 right-1 w-4 h-4 bg-green-500 rounded-full text-white flex items-center justify-center">
-                                    ✓
-                                  </span>
-                                )}
-                              </div>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  )}
+
                   <div className="flex justify-center">
-                    {images.slice(0, 3).map((_, index) => (
-                      <span
-                        key={index}
-                        className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === activeIndex ? 'bg-blue-500' : ''
-                          }`}
-                        onClick={handleAssignToClick}
-                      />
-                    ))}
+                    <div className="flex justify-center mt-2">
+                      {Array.from({ length: Math.ceil(assignedToList.length / usersPerPage) }, (_, index) => (
+                        <span
+                          key={index}
+                          className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === currentPageAssignTo - 1 ? 'bg-blue-500' : ''}`}
+                          onClick={() => setCurrentPageAssignTo(index + 1)}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
-
                 <div className="relative" ref={dropdownByRef}>
-                  <div
-                    className="w-[150px] mx-auto overflow-x-scroll"
-                    style={{
-                      scrollbarWidth: 'none',
-                      msOverflowStyle: 'none',
-                      WebkitOverflowScrolling: 'touch',
-                    }}
-                  >
-                    <style>
-                      {`
+
+                  <style>
+                    {`
       ::-webkit-scrollbar {
         width: 0.5em;
       }
@@ -352,12 +383,18 @@ const TaskModal = ({ onClose }) => {
         background-color: transparent;
       }
       `}
-                    </style>
-                    <div className="flex space-x-2 p-2">
-                      {assignedByList.map((user, userIndex) => (
+                  </style>
+                  <div className="flex space-x-2 p-2 w-[140px]">
+                    <div className="mx-auto overflow-x-scroll flex gap-x-1"
+                      style={{
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        WebkitOverflowScrolling: 'touch',
+                      }}>
+                      {assignedBy.map((user, userIndex) => (
                         <div
                           key={user.id}
-                          className={`relative group cursor-pointer`}
+                          className="relative group cursor-pointer"
                         >
                           <div className="w-9 h-9 rounded-full">
                             <img
@@ -370,55 +407,61 @@ const TaskModal = ({ onClose }) => {
                           </div>
                         </div>
                       ))}
-                      <div
-                        className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedByList.length ? 'border-2 border-blue-500' : ''
-                          }`}
-                        onClick={handleAssignByClick}
-                      >
-                        <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
-                          +
-                        </span>
+                    </div>
+                    <div
+                      className={`w-9 h-9 rounded-full cursor-pointer bg-[#EFEFEF] ${activeIndex === assignedByList.length ? 'border-2 border-blue-500' : ''
+                        }`}
+                      onClick={handleAssignByClick}
+                    >
+                      <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
+                        +
+                      </span>
+                    </div>
+                  </div>
+                  {assignByList && (
+                    <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
+                      <input
+                        type="search"
+                        placeholder="Search"
+                        className="mt-2 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
+                        onChange={(e) => {
+                          setSearchTermAssignBy(e.target.value);
+                          filterAssignByUsers(e.target.value);
+                        }}
+                      />
+                      <div className="overflow-y-auto max-h-32 roundScrollsm">
+                        <ul className="text-black">
+                          {searchResultsAssignBy.map((user) => (
+                            <div
+                              className={`flex gap-3 px-2 py-1 relative group cursor-pointer ${isUserSelected(user, assignedToList) ? 'bg-gray-200' : ''
+                                }`}
+                              key={user.id}
+                              onClick={() => handleAssignSelect(user, assignedByList)}
+                            >
+                              <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
+                              <p className="gap-3 text-sm">{user.name}</p>
+                              {isUserSelected(user, assignedByList) && (
+                                <span className="absolute top-2 right-1 w-4 h-4 bg-green-500 rounded-full text-white flex items-center justify-center">
+                                  ✓
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </ul>
                       </div>
                     </div>
-                    {assignByList && (
-                      <div className="absolute top-11 left-10 w-40 h-40 bg-white rounded-md border border-gray-300 shadow-md pr-2 z-50">
-                        <input
-                          type="text"
-                          placeholder="Search"
-                          className="mt-2 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-white"
-                        />
-                        <div className="overflow-y-auto max-h-32 roundScrollsm">
-                          <ul className="text-black">
-                            {newImages.map((user) => (
-                              <div
-                                className={`flex gap-3 px-2 py-1 relative group cursor-pointer ${isUserSelected(user, assignedByList) ? 'bg-gray-200' : ''
-                                  }`}
-                                key={user.id}
-                                onClick={() => handleAssignSelect(user, assignedByList)}
-                              >
-                                <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
-                                <p className="gap-3 text-sm">{user.name}</p>
-                                {isUserSelected(user, assignedByList) && (
-                                  <span className="absolute top-2 right-1 w-4 h-4 bg-green-500 rounded-full text-white flex items-center justify-center">
-                                    ✓
-                                  </span>
-                                )}
-                              </div>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  )}
+
                   <div className="flex justify-center">
-                    {images.slice(0, 3).map((_, index) => (
-                      <span
-                        key={index}
-                        className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === activeIndex ? 'bg-blue-500' : ''
-                          }`}
-                        onClick={handleAssignByClick}
-                      />
-                    ))}
+                    <div className="flex justify-center mt-2">
+                      {Array.from({ length: Math.ceil(assignedByList.length / usersPerPage) }, (_, index) => (
+                        <span
+                          key={index}
+                          className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === currentPageAssignBy - 1 ? 'bg-blue-500' : ''}`}
+                          onClick={() => setCurrentPageAssignBy(index + 1)}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
 
