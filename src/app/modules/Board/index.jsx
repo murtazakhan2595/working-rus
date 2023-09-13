@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { connect } from "react-redux";
+import { useParams } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
 import { RiArrowDownSFill } from "react-icons/ri";
 import { BsPencil, BsTrash3 } from "react-icons/bs";
@@ -16,14 +17,18 @@ import TaskModal from "../Dashboard/TaskModal";
 import TaskCard from "./TaskCard";
 import TaskView from "./TaskView";
 import "./index.css";
-import {todo , inProgress ,completed} from './cards'
+import { todo, inProgress, completed } from "./cards";
 
 const Board = ({ userProfile, baseUrl }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTaskOpen, setIsTaskOpen] = useState(false);
   const [createCard, setCreateCard] = useState(false);
   const [cardName, setCardName] = useState("");
-
+  const [moreOpen1 , setMoreOpen1] = useState(false)
+  const [moreOpen2 , setMoreOpen2] = useState(false)
+  const [moreOpen3 , setMoreOpen3] = useState(false)
+  const { id } = useParams();
+  
   const closeModal = () => {
     setIsModalOpen(false);
   };
@@ -35,7 +40,7 @@ const Board = ({ userProfile, baseUrl }) => {
   const createList = () => {
     if (!cardName) {
       setCreateCard(false);
-      return
+      return;
     }
     setCreateCard(false);
     let newList = document.createElement("div");
@@ -58,7 +63,7 @@ const Board = ({ userProfile, baseUrl }) => {
     </div>`;
 
     boardList.appendChild(newList);
-    setCardName("")
+    setCardName("");
   };
 
   return (
@@ -93,7 +98,7 @@ const Board = ({ userProfile, baseUrl }) => {
             <AiTwotoneStar className="text-3xl text-[#283b91]" />
           </div>
           <div className="flex font-bold items-center ml-2 tracking-widest ">
-            HRMS Project
+           {id}
           </div>
         </div>
         <div className="flex gap-3">
@@ -120,138 +125,301 @@ const Board = ({ userProfile, baseUrl }) => {
 
       {/* ***************************************************** Board Card ***************************************************** */}
       <div className="flex w-full justify-center ">
-      <div className="flex xScroll  ml-10 pb-2 overflow-x-auto w-[82vw] justify-start">
-        <div id="boardList" className="flex">
-          {/* Box 1 */}
-          <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
-            <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-              <div className="flex justify-center items-center">
-                <div className="text-[#283b91]">Todo </div>
-                <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                  3
-                </div>
-              </div>
-              <AiOutlineMore />
-            </div>
-            <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
-              {todo.map((t , key) => (
-                <>
-                <div key={key}  onClick={()=>(setIsTaskOpen(true))}>
-                <TaskCard title={t.title}/>
-                </div>
-                {isTaskOpen && <TaskView onClose={closeTask} data={{title : t.title , desc : t.desc , p : t.priority ,status :"In-Progress"} } />}
-                </>
-              ))}
-            </div>
-            <div
-              onClick={()=>{setIsModalOpen(true)}}
-              className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-            >
-              Add a Card
-            </div>
-          </div>
-
-          {/* Box 2 */}
-          <div className="bg-[#BFE1EC] mx-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
-            <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-              <div className="flex justify-center items-center">
-                <div className="text-[#283b91]">In Progress </div>
-                <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                  8
-                </div>
-              </div>
-              <AiOutlineMore />
-            </div>
-            <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
-              {inProgress.map((t , key) => (
-                <>
-                <div key={key}  onClick={()=>(setIsTaskOpen(true))}>
-                <TaskCard title={t.title}/>
-                </div>
-                {isTaskOpen && <TaskView onClose={closeTask} data={{title : t.title , desc : t.desc , p : t.priority ,status :"In-Progress"} } />}
-                </>
-              ))}
-            </div>
-            <div
-              onClick={()=>{setIsModalOpen(true)}}
-              className="border  hover:bg-white hover:text-gray-400 bg-gray-200 text-white py-1 rounded-md text-center mx-2"
-            >
-              Add a Card
-            </div>
-          </div>
-
-          {/* Box 3 */}
-          <div className="bg-white mx-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
-            <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-              <div className="flex justify-center items-center">
-                <div className="text-[#283b91]">Completed </div>
-                <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                  3
-                </div>
-              </div>
-              <AiOutlineMore />
-            </div>
-            <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
-              {completed.map((t , key) => (
-                <>
-                <div key={key}  onClick={()=>(setIsTaskOpen(true))}>
-                <TaskCard title={t.title}/>
-                </div>
-                {isTaskOpen && <TaskView onClose={closeTask} data={{title : t.title , desc : t.desc , p : t.priority ,status :"In-Progress"} } />}
-                </>
-              ))}
-            </div>
-            <div
-              onClick={()=>{setIsModalOpen(true)}}
-              className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-            >
-              Add a Card
-            </div>
-          </div>
-        </div>
-
-        {!createCard && (
-          <div
-            onClick={() => {
-              setCreateCard(true);
-            }}
-            className="addCard px-32 flex justify-center items-center h-fit bg-[#F6F6F6] mx-3 text-white rounded-md py-2"
-          >
-            <AiOutlinePlusCircle className="text-3xl" />
-          </div>
-        )}
-
-        {createCard && (
-          <div className="bg-white mx-3 px-2 py-1 h-fit rounded-md w-72">
-            <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-              <form className="flex items-center" onSubmit={createList}>
+        <div className="flex xScroll  ml-10 pb-2 overflow-x-auto w-[82vw] justify-start">
+          <div id="boardList" className="flex">
+            {/* Box 1 */}
+            <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
+              <div className="flex justify-between items-center mb-3 mt-3 ml-2">
                 <div className="flex justify-center items-center">
-                  <input
-                    type="text"
-                    value={cardName}
-                    onChange={(e) => {
-                      setCardName(e.target.value);
-                    }}
-                    className="text-[#283b91]  focus:outline-none"
-                    placeholder="Card Name"
-                  />
+                  <div className="text-[#283b91]">Todo </div>
+                  <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
+                    3
+                  </div>
                 </div>
-                <button type="submit">
-                <MdPlaylistAdd
-                  className="text-[#283b91] mr-2"
-                  />
-                  </button>
-                <IoMdClose
-                  className="text-[#283b91] mr-2"
+                {!moreOpen1 && (<AiOutlineMore
                   onClick={() => {
-                    setCreateCard(false);
+                    setMoreOpen1(!moreOpen1);
                   }}
                 />
-              </form>
+                )}
+                {moreOpen1 && (
+                  <>
+                
+                  <div className="relative">
+                  <AiOutlineMore
+                  onClick={() => {
+                    setMoreOpen1(!moreOpen1);
+                  }}
+                />
+                    <div className="absolute  bg-white rounded-xl border border-gray-300 shadow-md z-50">
+                      <div className="flex flex-col gap-1 py-1">
+                        <div className="flex gap-1 justify-center px-4 bg-gray-200 mt-2 ">
+                          <div className="bg-blue-400 p-3"></div>
+                          <div className="bg-gray-400 p-3"></div>
+                          <div className="bg-red-400 p-3"></div>
+                          <div className="bg-cyan-400 p-3"></div>
+                          <div className="bg-pink-400 p-3"></div>
+                          <div className="bg-purple-400 p-3"></div>
+                        </div>
+                        <div className="px-4 text-sm">
+                          <div className="flex items-center gap-1 my-1">
+                            <div>
+                              <BsPencil />
+                            </div>
+                            <div>Edit</div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div>
+                              <BsTrash3 />
+                            </div>
+                            <div> Delete</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </>
+                )}
+              </div>
+              <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
+                {todo.map((t, key) => (
+                  <>
+                    <div key={key} onClick={() => setIsTaskOpen(true)}>
+                      <TaskCard title={t.title} />
+                    </div>
+                    {isTaskOpen && (
+                      <TaskView
+                        onClose={closeTask}
+                        data={{
+                          title: t.title,
+                          desc: t.desc,
+                          p: t.priority,
+                          status: "In-Progress",
+                        }}
+                      />
+                    )}
+                  </>
+                ))}
+              </div>
+              <div
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+                className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+              >
+                Add a Card
+              </div>
+            </div>
+
+            {/* Box 2 */}
+            <div className="bg-[#BFE1EC] mx-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
+              <div className="flex justify-between items-center mb-3 mt-3 ml-2">
+                <div className="flex justify-center items-center">
+                  <div className="text-[#283b91]">In Progress </div>
+                  <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
+                    8
+                  </div>
+                </div>
+                {!moreOpen2 && (<AiOutlineMore
+                  onClick={() => {
+                    setMoreOpen2(!moreOpen2);
+                  }}
+                />
+                )}
+                {moreOpen2 && (
+                  <>
+                
+                  <div className="relative">
+                  <AiOutlineMore
+                  onClick={() => {
+                    setMoreOpen2(!moreOpen2);
+                  }}
+                />
+                    <div className="absolute  bg-white rounded-xl border border-gray-300 shadow-md z-50">
+                      <div className="flex flex-col gap-1 py-1">
+                        <div className="flex gap-1 justify-center px-4 bg-gray-200 mt-2 ">
+                          <div className="bg-blue-400 p-3"></div>
+                          <div className="bg-gray-400 p-3"></div>
+                          <div className="bg-red-400 p-3"></div>
+                          <div className="bg-cyan-400 p-3"></div>
+                          <div className="bg-pink-400 p-3"></div>
+                          <div className="bg-purple-400 p-3"></div>
+                        </div>
+                        <div className="px-4 text-sm">
+                          <div className="flex items-center gap-1 my-1">
+                            <div>
+                              <BsPencil />
+                            </div>
+                            <div>Edit</div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div>
+                              <BsTrash3 />
+                            </div>
+                            <div> Delete</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </>
+                )}
+              </div>
+              <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
+                {inProgress.map((t, key) => (
+                  <>
+                    <div key={key} onClick={() => setIsTaskOpen(true)}>
+                      <TaskCard title={t.title} />
+                    </div>
+                    {isTaskOpen && (
+                      <TaskView
+                        onClose={closeTask}
+                        data={{
+                          title: t.title,
+                          desc: t.desc,
+                          p: t.priority,
+                          status: "In-Progress",
+                        }}
+                      />
+                    )}
+                  </>
+                ))}
+              </div>
+              <div
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+                className="border  hover:bg-white hover:text-gray-400 bg-gray-200 text-white py-1 rounded-md text-center mx-2"
+              >
+                Add a Card
+              </div>
+            </div>
+
+            {/* Box 3 */}
+            <div className="bg-white mx-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
+              <div className="flex justify-between items-center mb-3 mt-3 ml-2">
+                <div className="flex justify-center items-center">
+                  <div className="text-[#283b91]">Completed </div>
+                  <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
+                    3
+                  </div>
+                </div>
+                {!moreOpen3 && (<AiOutlineMore
+                  onClick={() => {
+                    setMoreOpen3(!moreOpen3);
+                  }}
+                />
+                )}
+                {moreOpen3 && (
+                  <>
+                
+                  <div className="relative">
+                  <AiOutlineMore
+                  onClick={() => {
+                    setMoreOpen3(!moreOpen3);
+                  }}
+                />
+                    <div className="absolute  bg-white rounded-xl border border-gray-300 shadow-md z-50">
+                      <div className="flex flex-col gap-1 py-1">
+                        <div className="flex gap-1 justify-center px-4 bg-gray-200 mt-2 ">
+                          <div className="bg-blue-400 p-3"></div>
+                          <div className="bg-gray-400 p-3"></div>
+                          <div className="bg-red-400 p-3"></div>
+                          <div className="bg-cyan-400 p-3"></div>
+                          <div className="bg-pink-400 p-3"></div>
+                          <div className="bg-purple-400 p-3"></div>
+                        </div>
+                        <div className="px-4 text-sm">
+                          <div className="flex items-center gap-1 my-1">
+                            <div>
+                              <BsPencil />
+                            </div>
+                            <div>Edit</div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div>
+                              <BsTrash3 />
+                            </div>
+                            <div> Delete</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </>
+                )}
+              </div>
+              <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
+                {completed.map((t, key) => (
+                  <>
+                    <div key={key} onClick={() => setIsTaskOpen(true)}>
+                      <TaskCard title={t.title} />
+                    </div>
+                    {isTaskOpen && (
+                      <TaskView
+                        onClose={closeTask}
+                        data={{
+                          title: t.title,
+                          desc: t.desc,
+                          p: t.priority,
+                          status: "In-Progress",
+                        }}
+                      />
+                    )}
+                  </>
+                ))}
+              </div>
+              <div
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+                className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+              >
+                Add a Card
+              </div>
             </div>
           </div>
-        )}
-      </div>
+
+          {!createCard && (
+            <div
+              onClick={() => {
+                setCreateCard(true);
+              }}
+              className="addCard px-32 flex justify-center items-center h-fit bg-[#F6F6F6] mx-3 text-white rounded-md py-2"
+            >
+              <AiOutlinePlusCircle className="text-3xl" />
+            </div>
+          )}
+
+          {createCard && (
+            <div className="bg-white mx-3 px-2 py-1 h-fit rounded-md w-72">
+              <div className="flex justify-between items-center mb-3 mt-3 ml-2">
+                <form className="flex items-center" onSubmit={createList}>
+                  <div className="flex justify-center items-center">
+                    <input
+                      type="text"
+                      value={cardName}
+                      onChange={(e) => {
+                        setCardName(e.target.value);
+                      }}
+                      className="text-[#283b91]  focus:outline-none"
+                      placeholder="Card Name"
+                    />
+                  </div>
+                  <button type="submit">
+                    <MdPlaylistAdd className="text-[#283b91] mr-2" />
+                  </button>
+                  <IoMdClose
+                    className="text-[#283b91] mr-2"
+                    onClick={() => {
+                      setCreateCard(false);
+                    }}
+                  />
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       {isModalOpen && <TaskModal onClose={closeModal} />}
     </div>

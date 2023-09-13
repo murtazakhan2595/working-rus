@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Datepicker from '../Dashboard/Datepicker';
 import Select from 'react-select';
 import { RxCross2 } from 'react-icons/rx';
-import { images, newImages, priority } from '../../../data/Data';
+import { priority } from '../../../data/Data';
 
 const status = [
   { value: 'inprogress', label: 'In-Progress' },
@@ -255,7 +255,7 @@ const TaskView = ({  data ,onClose  }) => {
                         />
                         <div className="overflow-y-auto max-h-32 roundScrollsm">
                           <ul className="text-black">
-                            {newImages.map((user) => (
+                            {/* {newImages.map((user) => (
                               <div
                                 className="flex gap-3 px-2 py-1"
                                 key={user.id}
@@ -264,21 +264,21 @@ const TaskView = ({  data ,onClose  }) => {
                                 <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
                                 <p className="gap-3 text-sm">{user.name}</p>
                               </div>
-                            ))}
+                            ))} */}
                           </ul>
                         </div>
                       </div>
                     )}
                   </div>
                   <div className="flex justify-center">
-                    {images.slice(0, 3).map((_, index) => (
+                    {/* {images.slice(0, 3).map((_, index) => (
                       <span
                         key={index}
                         className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === activeIndex ? 'bg-blue-500' : ''
                           }`}
                         onClick={() => handleAssignToClick(index)}
                       />
-                    ))}
+                    ))} */}
                   </div>
                 </div>
 
@@ -329,7 +329,7 @@ const TaskView = ({  data ,onClose  }) => {
                         />
                         <div className="overflow-y-auto max-h-32 roundScrollsm">
                           <ul className="text-black">
-                            {newImages.map((user) => (
+                            {/* {newImages.map((user) => (
                               <div
                                 className="flex gap-3 px-2 py-1"
                                 key={user.id}
@@ -338,21 +338,21 @@ const TaskView = ({  data ,onClose  }) => {
                                 <img src={user.imageUrl} alt={user.name} className="w-6 h-6 rounded-full gap-3" />
                                 <p className="gap-3 text-sm">{user.name}</p>
                               </div>
-                            ))}
+                            ))} */}
                           </ul>
                         </div>
                       </div>
                     )}
                   </div>
                   <div className="flex justify-center">
-                    {images.slice(0, 3).map((_, index) => (
+                    {/* {images.slice(0, 3).map((_, index) => (
                       <span
                         key={index}
                         className={`w-2 h-2 rounded-full bg-gray-400 mx-1 ${index === activeIndex ? 'bg-blue-500' : ''
                           }`}
                         onClick={() => handleAssignByClick(index)}
                       />
-                    ))}
+                    ))} */}
                   </div>
                 </div>
               </div>
