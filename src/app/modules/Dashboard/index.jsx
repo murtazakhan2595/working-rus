@@ -11,6 +11,7 @@ import UpcomingProjects from "./UpcomingProjects";
 import "./index.css";
 import { Link } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import DailyTaskRpt from "./DailyTaskRpt";
 
 const Dashboard = ({ isSidebarOpen }) => {
   const [isBarOpen, seIsBarOpen] = useState(false);
@@ -19,15 +20,14 @@ const Dashboard = ({ isSidebarOpen }) => {
       {/* ##########################   First Column   ########################## */}
 
       <div
-        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${
-          isSidebarOpen ? "3xl:w-[67%] xl:w-[64%] w-[100%]" : "3xl:w-[79%] xl:w-[78%] w-[100%]"
-        }`}
+        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${isSidebarOpen ? "3xl:w-[67%] xl:w-[64%] w-[100%]" : "3xl:w-[79%] xl:w-[78%] w-[100%]"
+          }`}
       >
         {/***********************   Dashboard Header   **********************************/}
         <div className="py-8 px-10 flex gap-3  items-center justify-center md:justify-start">
           <h1 className="text-3xl leading-none font-semibold  opacity-80 tracking-widest">
             <Link to="/login">
-            DashBoard
+              DashBoard
             </Link>
           </h1>
           <div className="relative">
@@ -42,9 +42,8 @@ const Dashboard = ({ isSidebarOpen }) => {
 
         {/* **********************   Bar   ********************************* */}
         <div
-          className={`bg-[#ebebeb] ml-10 rounded-s-lg mb-6 pr-1 pl-5 gap-3  justify-between py-2  ${
-            isBarOpen ? "flex" : "hidden"
-          }`}
+          className={`bg-[#ebebeb] ml-10 rounded-s-lg mb-6 pr-1 pl-5 gap-3  justify-between py-2  ${isBarOpen ? "flex" : "hidden"
+            }`}
         >
           <div className="flex gap-[1.2rem] flex-wrap">
             <div className="flex bg-[#f7f7f8] w-44 md:w-auto px-2 py-1 gap-3 items-center rounded-lg">
@@ -84,13 +83,14 @@ const Dashboard = ({ isSidebarOpen }) => {
           <TodoList isSidebarOpen={isSidebarOpen} />
           {/***********************   Working Time   **********************************/}
           <div
-            className={`flex flex-col w-full md:pr-8 self-start gap-2 items-center md:items-end ${
-              isSidebarOpen ? "" : "3xl:ml-20"
-            }`}
+            className={`flex flex-col w-full md:pr-8 self-start gap-2 items-center md:items-end ${isSidebarOpen ? "" : "3xl:ml-20"
+              }`}
           >
             <WorkTime />
           </div>
         </div>
+        {/* ******************** Daily Task Report**************/}
+        <DailyTaskRpt />
         {/***********************   Task Planner   **********************************/}
         <TaskPlanner />
       </div>
@@ -120,9 +120,8 @@ const Dashboard = ({ isSidebarOpen }) => {
         <UpcomingProjects />
       </div>
       <button
-        className={`absolute bg-[#283b91] z-0 text-white px1 md:pr-1 py-3 right-0 3xl:right-[21.8%] xl:right-[22.3%] rounded-s-lg top-[3rem] mt-4 ml-4  ${
-          isBarOpen ? "hidden" : ""
-        }`}
+        className={`absolute bg-[#283b91] z-0 text-white px1 md:pr-1 py-3 right-0 3xl:right-[21.8%] xl:right-[22.3%] rounded-s-lg top-[3rem] mt-4 ml-4  ${isBarOpen ? "hidden" : ""
+          }`}
         onClick={() => {
           seIsBarOpen(!isBarOpen);
         }}

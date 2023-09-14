@@ -29,12 +29,12 @@ const TaskPlanner = () => {
             Task Planner
           </div>
         </div>
-        <button
+        {/* <button
           onClick={openModal}
           className="rounded-md px-3 py-2 text-sm md:text-base bg-[#283b91] text-white font-montserrat whitespace-nowrap"
         >
           Add Task
-        </button>
+        </button> */}
       </div>
       <div className="flex gap-6 my-2">
         <div className="text-blue-600">Ongoing</div>

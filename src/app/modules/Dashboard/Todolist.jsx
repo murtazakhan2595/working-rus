@@ -8,11 +8,11 @@ import { BiSolidPlusCircle } from 'react-icons/bi'
 import { MdOutlineAddTask } from 'react-icons/md'
 import { RxCross2 } from 'react-icons/rx'
 import Joi from "joi";
+import axios from "axios";
 
 
 const Dashboard = ({ isSidebarOpen }) => {
-  const initialTodos = todoList;
-  const [todos, setTodos] = useState(initialTodos)
+  const [todos, setTodos] = useState(todoList)
   const [editTexts, setEditTexts] = useState({});
   const [todoToDelete, setTodoToDelete] = useState(null)
   const [newTodoText, setNewTodoText] = useState("")
@@ -23,10 +23,73 @@ const Dashboard = ({ isSidebarOpen }) => {
 
 
   const todoSchema = Joi.object({
-    text: Joi.string().trim().required().label('New Item')
+    text: Joi.string().trim().required().label('Todo')
   })
 
   const addInputRef = useRef(null);
+
+  // Functions for calling api started
+  //  1. Fetch Todos
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await axios.get('fetch end point here')
+        const todosData = response.data;
+        setTodos(todosData)
+      } catch (error) {
+        console.error('Error fetching todos:', error);
+      }
+    }
+    fetchTodos()
+  }, [])
+
+  // 2. Create a todo
+  const createTodo = async () => {
+    try {
+      const response = await axios.post('post end point here', {
+        text: newTodoText,
+        completed: false
+      })
+      const newTodo = response.data;
+      setTodos([newTodo, ...todos]);
+      setShowAddInput(false)
+      setNewTodoText('')
+      setValidationError(null)
+    } catch (error) {
+      console.error('Error creating todo', error)
+    }
+  }
+
+  // 3. Update Todo
+  const updateTodo = async (id, newText) => { // call this function in handle save
+    try {
+      const updatedTodos = todos.map(todo => {
+        if (todo.id === id) {
+          return { ...todo, text: newText };
+        }
+        return todo;
+      })
+      setTodos(updatedTodos)
+
+      await axios.put('update end point here/${id}', { text: newText })
+    } catch (error) {
+      console.error('Error updating todo:', error)
+    }
+  }
+
+  // 4. Function delete todo
+  const deleteTodo = async (id) => {
+    try {
+      const updatedTodos = todos.filter(todo => todo.id !== id)
+      setTodos(updatedTodos)
+
+      await axios.delete('delete end point here/${id}')
+    } catch (error) {
+      console.error('Error deleting todo')
+    }
+  }
+  // Functions for calling api ended
 
   const handleDelete = () => {
     const updatedTodos = todos.filter((todo) => todo.id !== todoToDelete);
