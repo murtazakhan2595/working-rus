@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import taskImg from "../../../assets/images/task.png";
 import { TbAlertCircleFilled } from "react-icons/tb";
-import TaskModal from "./TaskModal";
 import { tasks, tasksTitle } from "../../../data/Data";
 
 const TaskPlanner = () => {
@@ -29,12 +28,6 @@ const TaskPlanner = () => {
             Task Planner
           </div>
         </div>
-        {/* <button
-          onClick={openModal}
-          className="rounded-md px-3 py-2 text-sm md:text-base bg-[#283b91] text-white font-montserrat whitespace-nowrap"
-        >
-          Add Task
-        </button> */}
       </div>
       <div className="flex gap-6 my-2">
         <div className="text-blue-600">Ongoing</div>
@@ -83,7 +76,6 @@ const TaskPlanner = () => {
           </div>
         </div>
       </div>
-      {isModalOpen && <TaskModal onClose={closeModal} updateTaskData={updateTaskData} />}
     </div>
   );
 };

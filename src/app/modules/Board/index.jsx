@@ -13,7 +13,7 @@ import {
 import { FiFilter } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { Link } from "react-router-dom";
-import TaskModal from "../Dashboard/TaskModal";
+import TaskModal from "./TaskModal";
 import TaskCard from "./TaskCard";
 import TaskView from "./TaskView";
 import "./index.css";
