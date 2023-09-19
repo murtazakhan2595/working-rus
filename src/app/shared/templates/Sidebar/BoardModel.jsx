@@ -28,7 +28,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
         newErrors[detail.path[0]] = detail.message;
       });
       setErrors(newErrors);
-      console.log("first", errors);
       return;
     }
 
@@ -44,7 +43,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
         "project_id": 1
       }, { headers }) .then((response) => {
         if (response.status === 201) {
-            console.log("first")
             toast.success("Board Added!", {
                 position: toast.POSITION.TOP_RIGHT,
             });

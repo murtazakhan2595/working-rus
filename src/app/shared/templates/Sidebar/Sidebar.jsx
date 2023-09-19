@@ -53,7 +53,6 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
         })
         .then((response) => {
           if (response.status === 200) {
-            console.log(response);
             setBoards(response.data.results);
             setBoardsCount(response.data.count);
             setNextPage(response.data.next);
@@ -172,7 +171,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                   <div className="max-h-[20vh] overflow-y-auto hideScroll">
                     {boards.map((board, index) => (
                       <div key={index} className="flex flex-col gap-2">
-                        <div onClick={()=>{navigate(`/board/${board.name}`)}} className="flex gap-3 mb-1 cursor-pointer">
+                        <div onClick={()=>{navigate(`/board/${board.id}`)}} className="flex gap-3 mb-1 cursor-pointer">
                           <div className="bg-blue-950 rounded-md p-3"></div>
                           <div className="text-white">{board.name}</div>
                         </div>

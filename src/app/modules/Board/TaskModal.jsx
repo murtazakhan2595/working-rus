@@ -1,34 +1,26 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Datepicker from "../Dashboard/Datepicker";
-import Select from "react-select";
-import { RxCross2, RxPlus, RxPerson } from "react-icons/rx";
-import { priority } from "../../../data/Data";
+import { RxCross2, RxPlus } from "react-icons/rx";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { connect } from "react-redux";
 import Joi from "joi";
+import moment from "moment";
 
-const status = [
-  { value: "inprogress", label: "In-Progress" },
-  { value: "completed", label: "Completed" },
-  { value: "testing", label: "Testing" },
-];
-
-const TaskModal = ({ onClose, token, baseUrl }) => {
+const TaskModal = ({ id ,onClose, currentStatus, token, baseUrl }) => {
   const initialData = {
     title: "",
     desc: "",
-    dueDate: null,
-    status: null,
-    priority: null,
-    assignTo: null,
-    assignBy: null,
   };
 
   const [formData, setFormData] = useState(initialData);
   const [assignToOpen, setAssignToOpen] = useState(false);
   const [assignByOpen, setAssignByOpen] = useState(false);
+  const [dueDate, setDueDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [status, setStatus] = useState(currentStatus);
+  const [priority, setPriority] = useState("Low");
   const [assignToUser, setAssignToUser] = useState({});
   const [assignByUser, setAssignByUser] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
@@ -46,13 +38,6 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
       [name]: value,
     }));
   };
-  // Function to handle date changes
-  const handleDateChange = (date) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      dueDate: date,
-    }));
-  };
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -61,7 +46,7 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm(formData);
-
+    console.log(errors)
     if (Object.keys(errors).length === 0) {
       try {
         const postData = {
@@ -69,14 +54,16 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
           description: formData.desc,
           assigned_to: assignToUser.id,
           assigned_by: assignByUser.id,
-          board_id: 1,
-          status: formData.status,
+          board_id: id,
+          priority: priority,
+          start_date: startDate,
+          end_date: dueDate,
+          status: status,
         };
         const response = await axios.post(`${baseUrl}/task/`, postData, {
           headers,
         });
 
-        console.log("Response:", response.data);
 
         // Show a success toast
         toast.success("Card added successfully", {
@@ -120,7 +107,6 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
         })
         .then((response) => {
           if (response.status === 200) {
-            console.log(response);
             setUsers(response.data.results);
           }
         });
@@ -134,9 +120,6 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
   const schema = Joi.object({
     title: Joi.string().required().label("Title"),
     desc: Joi.string().required().label("Description"),
-    dueDate: Joi.date().iso().label("Due Date"),
-    status: Joi.string().required().label("Status"),
-    priority: Joi.string().required().label("Priority"),
     assignTo: Joi.number().integer().min(1).required().label("Assigned To"),
     assignBy: Joi.number().integer().min(1).required().label("Assigned By"),
   });
@@ -167,7 +150,7 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"></div>
       <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="md:mx-auto w-full max-w-lg relative">
+        <div className="md:mx-auto w-full max-w-3xl relative">
           <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 max-w-800 border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
@@ -175,7 +158,7 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
             >
               <RxCross2 />
             </div>
-            <form className="" onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <h2 className="text-2xl font-sfpro leading-3 font-bold mb-8">
                 Create New Task
               </h2>
@@ -230,9 +213,18 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                     htmlFor="dueDate"
                     className="py-1 font-sfpro text-lg font-semibold"
                   >
+                    Start Date
+                  </label>
+                  <Datepicker onChange={(date)=>{let d = moment(date).format("YYYY-MM-DD").toLowerCase();setStartDate(d)}} />
+                </div>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="dueDate"
+                    className="py-1 font-sfpro text-lg font-semibold"
+                  >
                     Due Date
                   </label>
-                  <Datepicker onChange={handleDateChange} />
+                  <Datepicker onChange={(date)=>{let d = moment(date).format("YYYY-MM-DD").toLowerCase();setDueDate(d)}} />
                 </div>
                 <div className="flex flex-col">
                   <label
@@ -243,50 +235,33 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                   </label>
                   <select
                   name="status"
-                  value={formData.status}
-                    class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                    onChange={handleInputChange}
+                  value={status}
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
+                    onChange={(e)=>{setStatus(e.target.value)}}
                   >
-                    <option disabled selected>Select Status</option>
                     <option value="To Do">Todo</option>
                     <option value="In Progress">In Progress</option>
                     <option value="Completed">Completed</option>
                   </select>
-                  {validationErrors.status && (
-                    <span className="text-red-500 text-sm">
-                      {validationErrors.status}
-                    </span>
-                  )}
                 </div>
-                <div className="flex flex-col max-w-[80px]">
+
+                <div className="flex flex-col"> 
                   <label
                     htmlFor="priority"
                     className="py-1 font-sfpro text-lg font-semibold"
                   >
                     Priority
                   </label>
-                  <Select
-                    options={priority}
-                    styles={{
-                      control: (provided) => ({
-                        ...provided,
-                        borderRadius: "0.375rem",
-                        borderWidth: 0,
-                        boxShadow: "none",
-                        "&:hover": {
-                          borderColor: "transparent",
-                        },
-                      }),
-                      menu: (provided) => ({
-                        ...provided,
-                        borderWidth: 0,
-                        boxShadow: "none",
-                        marginTop: 0,
-                        borderRadius: "0.375rem",
-                      }),
-                    }}
-                    value={formData.priority}
-                  />
+                  <select
+                  name="priority"
+                  value={formData.priority}
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
+                    onChange={(e)=>{setPriority(e.target.value)}}
+                  >
+                    <option value="Low">🟢 Low</option>
+                    <option value="Medium">🟡 Medium</option>
+                    <option value="High">🔴 High</option>
+                  </select>
                 </div>
               </div>
               <label
@@ -423,6 +398,7 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                                       username: user.username,
                                     });
                                     setAssignByOpen(false);
+                                    console.log(user.username)
                                   }}
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
                                   key={user.id}
