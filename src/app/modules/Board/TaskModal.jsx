@@ -26,6 +26,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
   const [assignByUser, setAssignByUser] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
   const [users, setUsers] = useState({});
+  const [filterUsers, setFilterUsers] = useState({});
 
 
   const headers = {
@@ -102,6 +103,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
         .then((response) => {
           if (response.status === 200) {
             setUsers(response.data.results);
+            setFilterUsers(response.data.results);
           }
         });
     } catch (error) {}
@@ -141,7 +143,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"></div>
+      <div className="inset-0 overflow-y-auto z-50 flex items-center justify-center backdrop-blur-sm"></div>
       <div className="fixed inset-0 flex items-center justify-center z-50">
         <div className="md:mx-auto w-full max-w-3xl relative">
           <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 max-w-800 border border-gray-100 shadow-md relative">
@@ -155,6 +157,10 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
               <h2 className="text-2xl font-sfpro leading-3 font-bold mb-8">
                 Create New Task
               </h2>
+
+
+{/* ************************ Name ***************************** */}
+
               <div className="flex flex-col">
                 <label
                   htmlFor="name"
@@ -180,6 +186,10 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                   </span>
                 )}
               </div>
+              
+{/* ************************ Description ***************************** */}
+
+
               <div className="flex flex-col">
                 <label
                   htmlFor="description"
@@ -192,7 +202,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                   <ReactQuill
                     name="description"
                     id="description"
-                    className="text-center"
+                    className="text-center h-[80%]"
                     value={description}
                     onChange={(html)=>{ setValidationErrors((prevErrors) => ({
                       ...prevErrors,
@@ -221,6 +231,8 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                   </span>
                 )}
               </div>
+
+{/* ************************ Dates , Status , Piriorty ***************************** */}
 
               <div className="flex justify-between items-center mb-4">
                 <div className="flex flex-col">
@@ -293,12 +305,18 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                   </select>
                 </div>
               </div>
+              
+
+{/* ************************ Assignee Lable ***************************** */}
+
               <label
                 htmlFor="assign"
                 className="py-1 font-sfpro text-lg font-semibold"
               >
                 Assigned
               </label>
+
+{/* ************************ Assign To , Assign By ***************************** */}
 
               <div className="flex gap-4">
                 {/* ************************** ASSIGN TO ************************** */}
@@ -327,7 +345,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                     )}
                     <div className="relative">
                       {assignToOpen && (
-                        <div className="absolute top-5  w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
+                        <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
                           <div className="flex justify-end pt-[5px] px-[5px]">
                             <RxCross2
                               onClick={() => {
@@ -335,14 +353,13 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                               }}
                             />
                           </div>
-                          <input
-                            type="search"
+                          <input type="search"
                             placeholder="Search"
                             className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
                           />
-                          <div className="overflow-y-auto max-h-28 roundScrollsm">
+                          <div className="overflow-y-auto max-h-24 roundScrollsm">
                             <ul className="text-black">
-                              {users.map((user) => (
+                              {filterUsers.map((user) => (
                                 <div
                                   onClick={() => {
                                     setValidationErrors((prevErrors) => ({
@@ -353,13 +370,15 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                                       id: user.id,
                                       username: user.username,
                                     });
+                                    setFilterUsers(users);
+                                    setFilterUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
                                     setAssignToOpen(false);
                                   }}
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
                                   key={user.id}
                                 >
-                                  <div className="rounded-full bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center border-gray-500">
-                                    {user.username.slice(0, 2)}
+                                  <div className="rounded-full text-sm bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center ">
+                                  {user.username.toUpperCase().slice(0, 2)}
                                   </div>
                                   <p className="gap-3 text-sm">
                                     {user.username}
@@ -408,7 +427,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
 
                     <div className="relative">
                       {assignByOpen && (
-                        <div className="absolute top-5  w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
+                        <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
                           <div className="flex justify-end pt-[5px] px-[5px]">
                             <RxCross2
                               onClick={() => {
@@ -421,9 +440,9 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                             placeholder="Search"
                             className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
                           />
-                          <div className="overflow-y-auto max-h-28 roundScrollsm">
+                          <div className="overflow-y-auto max-h-24 roundScrollsm">
                             <ul className="text-black">
-                              {users.map((user) => (
+                              {filterUsers.map((user) => (
                                 <div
                                   onClick={() => {
                                     setValidationErrors((prevErrors) => ({
@@ -434,12 +453,14 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                                       id: user.id,
                                       username: user.username,
                                     });
+                                    setFilterUsers(users);
+                                    setFilterUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
                                     setAssignByOpen(false);
                                   }}
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
                                   key={user.id}
                                 >
-                                  <div className="rounded-full text-sm bg-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center border-gray-500">
+                                  <div className="rounded-full text-sm bg-pink-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center">
                                     {user.username.toUpperCase().slice(0, 2)}
                                   </div>
                                   <p className="gap-3 text-sm">
