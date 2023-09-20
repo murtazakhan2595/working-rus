@@ -140,3 +140,7 @@ body {
   background-color: #202f75 !important;
   outline: 1px solid #1976d246 !important;
 }
+
+.ql-toolbar.ql-snow .ql-formats {
+  margin-right: 0px !important;
+}

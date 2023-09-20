@@ -1,157 +1,163 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TbCircleChevronsDown, TbCircleChevronsUp } from "react-icons/tb";
-import todoImg from "../../../assets/images/todolist.png"
-import { todoList } from "../../../data/Data";
+import todoImg from "../../../assets/images/todolist.png";
 import { MdCheck, MdDeleteForever } from 'react-icons/md';
-import { AiOutlineEdit } from 'react-icons/ai'
-import { BiSolidPlusCircle } from 'react-icons/bi'
-import { MdOutlineAddTask } from 'react-icons/md'
-import { RxCross2 } from 'react-icons/rx'
+import { AiOutlineEdit } from 'react-icons/ai';
+import { BiSolidPlusCircle } from 'react-icons/bi';
+import { MdOutlineAddTask } from 'react-icons/md';
+import { RxCross2 } from 'react-icons/rx';
 import Joi from "joi";
 import axios from "axios";
+import { connect } from "react-redux";
 
-
-const Dashboard = ({ isSidebarOpen }) => {
-  const [todos, setTodos] = useState(todoList)
+const Dashboard = ({ token, baseUrl }) => {
+  const [todos, setTodos] = useState([]);
   const [editTexts, setEditTexts] = useState({});
-  const [todoToDelete, setTodoToDelete] = useState(null)
-  const [newTodoText, setNewTodoText] = useState("")
-  const [showAddInput, setShowAddInput] = useState(false)
+  const [todoToDelete, setTodoToDelete] = useState(null);
+  const [newTodoText, setNewTodoText] = useState("");
+  const [showAddInput, setShowAddInput] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showAllItems, setShowAllItems] = useState(false);
   const [validationError, setValidationError] = useState(null);
 
-
   const todoSchema = Joi.object({
     text: Joi.string().trim().required().label('Todo')
-  })
+  });
 
   const addInputRef = useRef(null);
 
   // Functions for calling api started
-  //  1. Fetch Todos
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
 
+  //  1. Fetch Todos
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const response = await axios.get('fetch end point here')
+        const response = await axios.get(`${baseUrl}/todotask`, { headers });
         const todosData = response.data;
-        setTodos(todosData)
+        setTodos(todosData);
       } catch (error) {
         console.error('Error fetching todos:', error);
       }
-    }
-    fetchTodos()
-  }, [])
+    };
+    fetchTodos();
+  }, []);
 
   // 2. Create a todo
   const createTodo = async () => {
     try {
-      const response = await axios.post('post end point here', {
-        text: newTodoText,
-        completed: false
-      })
-      const newTodo = response.data;
-      setTodos([newTodo, ...todos]);
-      setShowAddInput(false)
-      setNewTodoText('')
-      setValidationError(null)
+      const response = await axios.post(`${baseUrl}/todotask/`, {
+        description: newTodoText,
+      }, { headers });
+
+      const createdTodo = response.data;
+      const updatedTodos = [...todos, createdTodo];
+      setTodos(updatedTodos);
+
+      setShowAddInput(false);
+      setNewTodoText('');
+      setValidationError(null);
     } catch (error) {
-      console.error('Error creating todo', error)
+      console.error('Error creating todo', error);
     }
-  }
+  };
+
 
   // 3. Update Todo
-  const updateTodo = async (id, newText) => { // call this function in handle save
+  const updateTodo = async (id, newText) => {
     try {
       const updatedTodos = todos.map(todo => {
         if (todo.id === id) {
-          return { ...todo, text: newText };
+          return { ...todo, description: newText };
         }
         return todo;
-      })
-      setTodos(updatedTodos)
+      });
+      setTodos(updatedTodos);
 
-      await axios.put('update end point here/${id}', { text: newText })
+      await axios.put(`${baseUrl}/todotask/${id}`, { description: newText }, { headers });
     } catch (error) {
-      console.error('Error updating todo:', error)
+      console.error('Error updating todo:', error);
     }
-  }
+  };
 
   // 4. Function delete todo
   const deleteTodo = async (id) => {
     try {
-      const updatedTodos = todos.filter(todo => todo.id !== id)
-      setTodos(updatedTodos)
+      const updatedTodos = todos.filter(todo => todo.id !== id);
+      setTodos(updatedTodos);
 
-      await axios.delete('delete end point here/${id}')
+      await axios.delete(`${baseUrl}/todotask/${id}`, { headers });
     } catch (error) {
-      console.error('Error deleting todo')
+      console.error('Error deleting todo', error);
     }
-  }
+  };
   // Functions for calling api ended
 
-  const handleDelete = () => {
-    const updatedTodos = todos.filter((todo) => todo.id !== todoToDelete);
-    setTodos(updatedTodos);
-    setTodoToDelete(null);
-    setShowDeleteConfirmation(false);
-  };
 
   const handleEdit = (id) => {
     const todoToEdit = todos.find((todo) => todo.id === id);
     setEditTexts((prevEditTexts) => ({
       ...prevEditTexts,
-      [id]: todoToEdit.text,
+      [id]: todoToEdit.description,
     }));
   };
   const handleInputChange = (e, id) => {
     setEditTexts((prevEditTexts) => ({
       ...prevEditTexts,
       [id]: e.target.value,
-    }))
-  }
+    }));
+  };
 
   const handleSave = (id) => {
     const updatedTodos = todos.map(todo => {
-      if (todo.id === id) return { ...todo, text: editTexts[id] }
+      if (todo.id === id) return { ...todo, description: editTexts[id] };
       return todo;
-    })
+    });
     setTodos(updatedTodos);
     setEditTexts((prevEditTexts) => ({
       ...prevEditTexts,
       [id]: undefined
-    }))
+    }));
 
     const updatedTodo = updatedTodos.find(todo => todo.id === id);
-  }
+    updateTodo(updatedTodo.id, updatedTodo.description); // Call the updateTodo function here
+  };
 
   const handleAdd = () => {
     const { error } = todoSchema.validate({ text: newTodoText });
     if (error) {
       setValidationError(error.details[0].message);
-      return
+      return;
     }
 
     if (newTodoText.trimEnd() !== "") {
       const newTodo = {
         id: Date.now(),
-        text: newTodoText
+        description: newTodoText,
       };
-      setTodos([newTodo, ...todos])
-      setShowAddInput(false)
-      setNewTodoText("")
-      setValidationError(null)
+      setTodos([newTodo, ...todos]);
+      setShowAddInput(false);
+      setNewTodoText("");
+      setValidationError(null);
+      createTodo(); // Call the createTodo function here
     }
-  }
+  };
 
   const handleCheckboxChange = (id) => {
     const updatedTodos = todos.map(todo => {
-      if (todo.id === id) return { ...todo, completed: !todo.completed }
-      return todo
-    })
+      if (todo.id === id) return { ...todo, completed: !todo.completed };
+      return todo;
+    });
+
+
+    updatedTodos.sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
+
     setTodos(updatedTodos);
-  }
+  };
+
 
   useEffect(() => {
     const handleDocumentClick = (e) => {
@@ -169,14 +175,14 @@ const Dashboard = ({ isSidebarOpen }) => {
     };
   }, []);
 
-
   return (
     <div className="relative flex flex-col pt-5 justify-start sm:ml-5 sm:w-[95%] sm:mr-7 md:w-[60%] w-[90%] md:ml-10 items-start mx-auto ">
       <img
         className="absolute top-0 right-0 transform translate-y-[-15%] translate-x-[-20%]"
         src={todoImg}
         alt=""
-      />        <div className="mb-5 mt-2 pb-3 pl-3 pr-8 pt-3 rounded w-full 2xl:mx-0  bg-white  flex flex-col justify-start gap-3">
+      />
+      <div className="mb-5 mt-2 pb-3 pl-3 pr-8 pt-3 rounded w-full 2xl:mx-0  bg-white  flex flex-col justify-start gap-3">
         <div className={`${showAddInput ? 'block' : 'flex'} justify-between items-center mb-3`}>
           <h1 className="text-xl font-bold ">To-Do List</h1>
           {showAddInput ? (
@@ -223,7 +229,7 @@ const Dashboard = ({ isSidebarOpen }) => {
                       htmlFor={`checkbox-${todo.id}`}
                       className={`text-gray-400 text-sm ${todo.completed ? "line-through" : ""}`}
                     >
-                      {todo.text}
+                      {todo.description}
                     </label>
                   </div>
                 )}
@@ -244,6 +250,9 @@ const Dashboard = ({ isSidebarOpen }) => {
               </div>
             </div>
           ))}
+          {todos.length <= 0 &&
+            <p className="text-3xl text-gray-400">Nothing in todo list</p>
+          }
         </div>
 
         {showDeleteConfirmation && (
@@ -259,7 +268,10 @@ const Dashboard = ({ isSidebarOpen }) => {
               <div className="mt-4 flex justify-end">
                 <button
                   className="px-4 py-1 mr-2 text-white bg-red-500 rounded"
-                  onClick={handleDelete}
+                  onClick={() => {
+                    deleteTodo(todoToDelete);
+                    setShowDeleteConfirmation(false);
+                  }}
                 >
                   Delete
                 </button>
@@ -284,11 +296,15 @@ const Dashboard = ({ isSidebarOpen }) => {
           )}
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 
-export default Dashboard;
+const mapStateToProps = (state) => {
+  return {
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
 
-
-
+export default connect(mapStateToProps)(Dashboard);

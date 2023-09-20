@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { RxCross2 } from 'react-icons/rx';
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { connect } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CustomButton = ({ text, onClick, className }) => {
     return (
@@ -29,10 +33,11 @@ const CustomDatePicker = ({ selectedDate, onChange }) => {
     );
 };
 
-const DailyTaskRpt = () => {
+const DailyTaskRpt = ({ token, baseUrl }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editorHtml, setEditorHtml] = useState("");
     const [selectedDate, setSelectedDate] = useState(new Date());
+
 
     const handleEditorChange = html => {
         setEditorHtml(html);
@@ -46,22 +51,62 @@ const DailyTaskRpt = () => {
         setIsModalOpen(!isModalOpen);
     };
 
-    const handleSubmit = () => {
-        const formattedDate = selectedDate.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
+    const handleSave = () => {
+        try {
+            const dataToSave = JSON.stringify({ description: editorHtml, date: selectedDate });
+            localStorage.setItem('dailyTaskData', dataToSave);
+            closeModal();
 
-        const data = {
-            currentDate: formattedDate,
-            editorData: editorHtml,
-        };
-        console.log('Submitted Data', data);
-
-        setEditorHtml("");
-        closeModal();
+            toast.success('Data saved successfully!', {
+                position: toast.POSITION.TOP_RIGHT,
+            });
+        } catch (error) {
+            console.error('Error saving data:', error);
+            toast.error('Error saving the data. Please try again.', {
+                position: toast.POSITION.TOP_RIGHT,
+            });
+        }
     };
+
+    const handleSubmit = async () => {
+        const data = {
+            description: editorHtml,
+        };
+
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        };
+
+        try {
+            const response = await axios.post(`${baseUrl}/dtr/`, data, { headers });
+            console.log('API Response:', response.data);
+
+            toast.success('DTR submitted successfully!', {
+                position: toast.POSITION.TOP_RIGHT,
+            });
+
+            setEditorHtml("");
+            closeModal();
+            localStorage.removeItem('dailyTaskData');
+        } catch (error) {
+            console.error('API Error:', error);
+
+            // Show an error notification
+            toast.error('Error submitting the form. Please try again.', {
+                position: toast.POSITION.TOP_RIGHT,
+            });
+        }
+    };
+
+
+    useEffect(() => {
+        const savedData = localStorage.getItem('dailyTaskData');
+        if (savedData) {
+            const { description } = JSON.parse(savedData);
+            setEditorHtml(description)
+        }
+    }, [])
 
     return (
         <>
@@ -69,10 +114,10 @@ const DailyTaskRpt = () => {
                 <div>
                     <h1 className='text-xl font-bold lg:pl-12 md:pl-8 py-2 lg:py-0'>Daily Task Report</h1>
                 </div>
-                <div className='bg-[#283B91] flex items-center py-1 text-white rounded-full'>
-                    <span className='z-50 px-3 lg:px-6'><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
+                <div className=' flex items-center py-1 rounded-full'>
+                    <span className='-z-0 px-3 lg:px-6 '><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
                     <button
-                        className='border-2 border-white rounded-full lg:rounded-xl px-7 mr-1 lg:mr-2 hover:bg-white hover:text-[#283B91]'
+                        className='border-2 border-[#283B91] bg-[#283B91] text-white rounded-full lg:rounded-3xl px-7 py-1 mr-1 lg:mr-2 hover:bg-white hover:text-[#283B91]'
                         onClick={handlePopupToggle}
                     >
                         Submit Daily Task Report
@@ -96,11 +141,7 @@ const DailyTaskRpt = () => {
                                         <span className="text-lg"><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
                                     </div>
                                 </div>
-                                {/* Date drop down ended */}
-
-                                {/* Text area */}
                                 <div className="h-72 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
-
                                     <ReactQuill
                                         className='text-center'
                                         style={{ height: "200px" }}
@@ -109,24 +150,19 @@ const DailyTaskRpt = () => {
                                         modules={{
                                             toolbar: {
                                                 container: [
-                                                    ["bold", "italic", "underline", "strike"],
+                                                    [{ size: ["small", false, "large", "huge"] }],
+                                                    ["bold", "italic", "underline"],
                                                     [{ list: "ordered" }, { list: "bullet" }],
                                                     [{ align: [] }],
                                                     ["link", "image"],
-                                                    // [
-                                                    //     { header: "1" },
-                                                    //     { header: "2" },
-                                                    // ],
-                                                    [{ size: ["small", false, "large", "huge"] }],
                                                 ],
                                             },
                                         }}
                                     />
-
                                 </div>
                                 {/* Buttons */}
                                 <div className="flex justify-center space-x-10">
-                                    <CustomButton text="Save" className="custom-class" />
+                                    <CustomButton text="Save" className="custom-class" onClick={handleSave} />
                                     <CustomButton text="Submit" className="custom-class" onClick={handleSubmit} />
                                 </div>
                             </div>
@@ -134,8 +170,16 @@ const DailyTaskRpt = () => {
                     </div>
                 </>
             )}
+            <ToastContainer />
         </>
     );
 }
 
-export default DailyTaskRpt;
+const mapStateToProps = (state) => {
+    return {
+        token: state.user.token,
+        baseUrl: state.user.baseUrl,
+    };
+};
+
+export default connect(mapStateToProps)(DailyTaskRpt);
