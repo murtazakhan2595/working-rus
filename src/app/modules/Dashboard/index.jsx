@@ -101,7 +101,7 @@ const Dashboard = ({ isSidebarOpen }) => {
         {/***********************   ProFile Header   **********************************/}
         <div className="flex pt-3 pb-1 justify-end px-5 items-center gap-3">
           <div className="text-3xl w-10 h-10 rounded-full border bg-white"></div>{" "}
-          <div className=" bg-[#283b91]">Jhone Simth</div>
+          <div className=" text-[#283b91]">Jhone Simth</div>
         </div>
         <div className="flex pt-1 pb-2 justify-end px-5 items-center">
           <div className="p-2 rounded-bl-md rounded-tl-md flex  text-white bg-[#ebebeb]">

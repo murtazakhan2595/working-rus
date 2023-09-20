@@ -1,58 +1,33 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Datepicker from "../Dashboard/Datepicker";
-import Select from "react-select";
-import { RxCross2, RxPlus, RxPerson } from "react-icons/rx";
-import { priority } from "../../../data/Data";
+import { RxCross2, RxPlus } from "react-icons/rx";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { connect } from "react-redux";
 import Joi from "joi";
+import moment from "moment";
+import ReactQuill from "react-quill";
 
-const status = [
-  { value: "inprogress", label: "In-Progress" },
-  { value: "completed", label: "Completed" },
-  { value: "testing", label: "Testing" },
-];
+const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
 
-const TaskModal = ({ onClose, token, baseUrl }) => {
-  const initialData = {
-    title: "",
-    desc: "",
-    dueDate: null,
-    status: null,
-    priority: null,
-    assignTo: null,
-    assignBy: null,
-  };
+  let newDate = new Date()
+  let defaultDate = `${newDate.getFullYear()}-${newDate.getMonth()}-${newDate.getDate()}`
 
-  const [formData, setFormData] = useState(initialData);
   const [assignToOpen, setAssignToOpen] = useState(false);
   const [assignByOpen, setAssignByOpen] = useState(false);
+  const [dueDate, setDueDate] = useState(defaultDate);
+  const [startDate, setStartDate] = useState(defaultDate);
+  const [description, setDescription] = useState("");
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState(currentStatus);
+  const [priority, setPriority] = useState("Low");
   const [assignToUser, setAssignToUser] = useState({});
   const [assignByUser, setAssignByUser] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
   const [users, setUsers] = useState({});
+  const [filterUsers, setFilterUsers] = useState({});
 
-  // Function to handle input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setValidationErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: null,
-    }));
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-  // Function to handle date changes
-  const handleDateChange = (date) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      dueDate: date,
-    }));
-  };
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -60,23 +35,30 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const errors = validateForm(formData);
-
+    const validateData = {
+      name: name,
+      description: description,
+      assigned_to: assignToUser.id,
+      assigned_by: assignByUser.id,
+    };
+    const errors = validateForm(validateData);
+    console.log(errors)
     if (Object.keys(errors).length === 0) {
       try {
         const postData = {
-          name: formData.title,
-          description: formData.desc,
+          name: name,
+          description: description,
           assigned_to: assignToUser.id,
           assigned_by: assignByUser.id,
-          board_id: 1,
-          status: formData.status,
+          board_id: id,
+          priority: priority,
+          start_date: startDate,
+          end_date: dueDate,
+          status: status,
         };
         const response = await axios.post(`${baseUrl}/task/`, postData, {
           headers,
         });
-
-        console.log("Response:", response.data);
 
         // Show a success toast
         toast.success("Card added successfully", {
@@ -120,8 +102,8 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
         })
         .then((response) => {
           if (response.status === 200) {
-            console.log(response);
             setUsers(response.data.results);
+            setFilterUsers(response.data.results);
           }
         });
     } catch (error) {}
@@ -132,21 +114,17 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
   }, []);
 
   const schema = Joi.object({
-    title: Joi.string().required().label("Title"),
-    desc: Joi.string().required().label("Description"),
-    dueDate: Joi.date().iso().label("Due Date"),
-    status: Joi.string().required().label("Status"),
-    priority: Joi.string().required().label("Priority"),
-    assignTo: Joi.number().integer().min(1).required().label("Assigned To"),
-    assignBy: Joi.number().integer().min(1).required().label("Assigned By"),
+    name: Joi.string().required().label("Name"),
+    description: Joi.string().required().label("Description"),
+    assigned_to: Joi.number().integer().min(1).required().label("Assigned To"),
+    assigned_by: Joi.number().integer().min(1).required().label("Assigned By"),
   });
 
   const validateForm = (data) => {
-    data.assignTo = assignToUser.id
-    data.assignBy = assignByUser.id
+    data.assigned_to = assignToUser.id;
+    data.assigned_by = assignByUser.id;
     const result = schema.validate(data, { abortEarly: false });
     const errors = {};
-
     if (result.error) {
       for (let item of result.error.details) {
         errors[item.path[0]] = item.message;
@@ -154,10 +132,10 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
     }
 
     if (!assignToUser.id) {
-      errors.assignTo = "select a assignee";
+      errors.assigned_to = "select a assignee";
     }
     if (!assignByUser.id) {
-      errors.assignBy = "select a reporter";
+      errors.assigned_by = "select a reporter";
     }
 
     return errors;
@@ -165,9 +143,9 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"></div>
+      <div className="inset-0 overflow-y-auto z-50 flex items-center justify-center backdrop-blur-sm"></div>
       <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="md:mx-auto w-full max-w-lg relative">
+        <div className="md:mx-auto w-full max-w-3xl relative">
           <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 max-w-800 border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
@@ -175,54 +153,86 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
             >
               <RxCross2 />
             </div>
-            <form className="" onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <h2 className="text-2xl font-sfpro leading-3 font-bold mb-8">
                 Create New Task
               </h2>
+
+
+{/* ************************ Name ***************************** */}
+
               <div className="flex flex-col">
                 <label
-                  htmlFor="title"
+                  htmlFor="name"
                   className="font-sfpro text-lg font-semibold"
                 >
-                  Title
+                  Name
                 </label>
                 <input
                   type="text"
-                  name="title"
-                  id="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
+                  name="name"
+                  id="name"
+                  value={name}
+                  onChange={(e)=>{setValidationErrors((prevErrors) => ({
+                    ...prevErrors,
+                    name: null,
+                  })); setName(e.target.value)}}
                   className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-4"
                   placeholder="TecBrix Dashboard Design"
                 />
-                {validationErrors.title && (
+                {validationErrors.name && (
                   <span className="text-red-500 text-sm">
-                    {validationErrors.title}
+                    {validationErrors.name}
                   </span>
                 )}
               </div>
+              
+{/* ************************ Description ***************************** */}
+
+
               <div className="flex flex-col">
                 <label
-                  htmlFor="desc"
+                  htmlFor="description"
                   className="font-sfpro text-lg font-semibold"
                 >
                   Description
                 </label>
-                <textarea
-                  name="desc"
-                  id="desc"
-                  cols="50"
-                  rows="2"
-                  value={formData.desc}
-                  onChange={handleInputChange}
-                  className="rounded-md bg-white text-black w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-4"
-                ></textarea>
-                {validationErrors.desc && (
+                {/* Text area */}
+                <div className="h-40 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
+                  <ReactQuill
+                    name="description"
+                    id="description"
+                    className="text-center h-[80%]"
+                    value={description}
+                    onChange={(html)=>{ setValidationErrors((prevErrors) => ({
+                      ...prevErrors,
+                      description: null,
+                    })); setDescription(html)}}
+                    modules={{
+                      toolbar: {
+                        container: [
+                          ["bold", "italic", "underline", "strike"],
+                          [{ list: "ordered" }, { list: "bullet" }],
+                          [{ align: [] }],
+                          ["link", "image"],
+                          // [
+                          //     { header: "1" },
+                          //     { header: "2" },
+                          // ],
+                          [{ size: ["small", false, "large", "huge"] }],
+                        ],
+                      },
+                    }}
+                  />
+                </div>
+                {validationErrors.description && (
                   <span className="text-red-500 text-sm">
-                    {validationErrors.desc}
+                    {validationErrors.description}
                   </span>
                 )}
               </div>
+
+{/* ************************ Dates , Status , Piriorty ***************************** */}
 
               <div className="flex justify-between items-center mb-4">
                 <div className="flex flex-col">
@@ -230,9 +240,28 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                     htmlFor="dueDate"
                     className="py-1 font-sfpro text-lg font-semibold"
                   >
+                    Start Date
+                  </label>
+                  <Datepicker
+                    onChange={(date) => {
+                      let d = moment(date).format("YYYY-MM-DD").toLowerCase();
+                      setStartDate(d);
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="dueDate"
+                    className="py-1 font-sfpro text-lg font-semibold"
+                  >
                     Due Date
                   </label>
-                  <Datepicker onChange={handleDateChange} />
+                  <Datepicker
+                    onChange={(date) => {
+                      let d = moment(date).format("YYYY-MM-DD").toLowerCase();
+                      setDueDate(d);
+                    }}
+                  />
                 </div>
                 <div className="flex flex-col">
                   <label
@@ -242,59 +271,52 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                     Status
                   </label>
                   <select
-                  name="status"
-                  value={formData.status}
-                    class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                    onChange={handleInputChange}
+                    name="status"
+                    value={status}
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
+                    onChange={(e) => {
+                      setStatus(e.target.value);
+                    }}
                   >
-                    <option disabled selected>Select Status</option>
                     <option value="To Do">Todo</option>
                     <option value="In Progress">In Progress</option>
                     <option value="Completed">Completed</option>
                   </select>
-                  {validationErrors.status && (
-                    <span className="text-red-500 text-sm">
-                      {validationErrors.status}
-                    </span>
-                  )}
                 </div>
-                <div className="flex flex-col max-w-[80px]">
+
+                <div className="flex flex-col">
                   <label
                     htmlFor="priority"
                     className="py-1 font-sfpro text-lg font-semibold"
                   >
                     Priority
                   </label>
-                  <Select
-                    options={priority}
-                    styles={{
-                      control: (provided) => ({
-                        ...provided,
-                        borderRadius: "0.375rem",
-                        borderWidth: 0,
-                        boxShadow: "none",
-                        "&:hover": {
-                          borderColor: "transparent",
-                        },
-                      }),
-                      menu: (provided) => ({
-                        ...provided,
-                        borderWidth: 0,
-                        boxShadow: "none",
-                        marginTop: 0,
-                        borderRadius: "0.375rem",
-                      }),
+                  <select
+                    name="priority"
+                    value={priority}
+                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
+                    onChange={(e) => {
+                      setPriority(e.target.value);
                     }}
-                    value={formData.priority}
-                  />
+                  >
+                    <option value="Low">🟢 Low</option>
+                    <option value="Medium">🟡 Medium</option>
+                    <option value="High">🔴 High</option>
+                  </select>
                 </div>
               </div>
+              
+
+{/* ************************ Assignee Lable ***************************** */}
+
               <label
                 htmlFor="assign"
                 className="py-1 font-sfpro text-lg font-semibold"
               >
                 Assigned
               </label>
+
+{/* ************************ Assign To , Assign By ***************************** */}
 
               <div className="flex gap-4">
                 {/* ************************** ASSIGN TO ************************** */}
@@ -323,7 +345,7 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                     )}
                     <div className="relative">
                       {assignToOpen && (
-                        <div className="absolute top-5  w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
+                        <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
                           <div className="flex justify-end pt-[5px] px-[5px]">
                             <RxCross2
                               onClick={() => {
@@ -331,27 +353,32 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                               }}
                             />
                           </div>
-                          <input
-                            type="search"
+                          <input type="search"
                             placeholder="Search"
                             className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
                           />
-                          <div className="overflow-y-auto max-h-28 roundScrollsm">
+                          <div className="overflow-y-auto max-h-24 roundScrollsm">
                             <ul className="text-black">
-                              {users.map((user) => (
+                              {filterUsers.map((user) => (
                                 <div
                                   onClick={() => {
+                                    setValidationErrors((prevErrors) => ({
+                                      ...prevErrors,
+                                      assigned_to: null,
+                                    }));
                                     setAssignToUser({
                                       id: user.id,
                                       username: user.username,
                                     });
+                                    setFilterUsers(users);
+                                    setFilterUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
                                     setAssignToOpen(false);
                                   }}
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
                                   key={user.id}
                                 >
-                                  <div className="rounded-full bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center border-gray-500">
-                                    {user.username.slice(0, 2)}
+                                  <div className="rounded-full text-sm bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center ">
+                                  {user.username.toUpperCase().slice(0, 2)}
                                   </div>
                                   <p className="gap-3 text-sm">
                                     {user.username}
@@ -365,9 +392,9 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                     </div>
                   </div>
                   <div>
-                    {validationErrors.assignTo && (
+                    {validationErrors.assigned_to && (
                       <p className="text-red-500 mt-2">
-                        {validationErrors.assignTo}
+                        {validationErrors.assigned_to}
                       </p>
                     )}
                   </div>
@@ -400,7 +427,7 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
 
                     <div className="relative">
                       {assignByOpen && (
-                        <div className="absolute top-5  w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
+                        <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
                           <div className="flex justify-end pt-[5px] px-[5px]">
                             <RxCross2
                               onClick={() => {
@@ -413,21 +440,27 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                             placeholder="Search"
                             className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
                           />
-                          <div className="overflow-y-auto max-h-28 roundScrollsm">
+                          <div className="overflow-y-auto max-h-24 roundScrollsm">
                             <ul className="text-black">
-                              {users.map((user) => (
+                              {filterUsers.map((user) => (
                                 <div
                                   onClick={() => {
+                                    setValidationErrors((prevErrors) => ({
+                                      ...prevErrors,
+                                      assigned_by: null,
+                                    }));
                                     setAssignByUser({
                                       id: user.id,
                                       username: user.username,
                                     });
+                                    setFilterUsers(users);
+                                    setFilterUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
                                     setAssignByOpen(false);
                                   }}
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
                                   key={user.id}
                                 >
-                                  <div className="rounded-full text-sm bg-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center border-gray-500">
+                                  <div className="rounded-full text-sm bg-pink-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center">
                                     {user.username.toUpperCase().slice(0, 2)}
                                   </div>
                                   <p className="gap-3 text-sm">
@@ -442,9 +475,9 @@ const TaskModal = ({ onClose, token, baseUrl }) => {
                     </div>
                   </div>
                   <div>
-                    {validationErrors.assignBy && (
+                    {validationErrors.assigned_by && (
                       <p className="text-red-500 mt-2">
-                        {validationErrors.assignBy}
+                        {validationErrors.assigned_by}
                       </p>
                     )}
                   </div>

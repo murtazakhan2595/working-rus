@@ -28,7 +28,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
         newErrors[detail.path[0]] = detail.message;
       });
       setErrors(newErrors);
-      console.log("first", errors);
       return;
     }
 
@@ -39,12 +38,11 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
         "Content-Type": "application/json" 
       };
       
-      axios.post("http://127.0.0.1:8000/api/board/", {
+      axios.post(`${baseUrl}/board/`, {
         "name": title,
         "project_id": 1
       }, { headers }) .then((response) => {
         if (response.status === 201) {
-            console.log("first")
             toast.success("Board Added!", {
                 position: toast.POSITION.TOP_RIGHT,
             });
