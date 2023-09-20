@@ -21,6 +21,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [priority, setPriority] = useState(taskData.priority);
   const [validationErrors, setValidationErrors] = useState({});
   const [users, setUsers] = useState({});
+  const [filterUsers, setFilterUsers] = useState({});
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -36,7 +37,6 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
       assigned_by: assignByUser.id,
     };
     const errors = validateForm(validateData);
-console.log(errors)
     if (Object.keys(errors).length === 0) {
       try {
         const postData = {
@@ -101,6 +101,7 @@ console.log(errors)
         .then((response) => {
           if (response.status === 200) {
             setUsers(response.data.results);
+            setFilterUsers(response.data.results)
           }
         });
     } catch (error) {}
@@ -369,13 +370,15 @@ console.log(errors)
                           />
                           <div className="overflow-y-auto max-h-28 roundScrollsm">
                             <ul className="text-black">
-                              {users.map((user) => (
+                              {filterUsers.map((user) => (
                                 <div
                                   onClick={() => {
                                     setAssignToUser({
                                       id: user.id,
                                       username: user.username,
                                     });
+                                    setFilterUsers(users);
+                                    setFilterUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
                                     setAssignToOpen(false);
                                   }}
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
@@ -446,13 +449,15 @@ console.log(errors)
                           />
                           <div className="overflow-y-auto max-h-28 roundScrollsm">
                             <ul className="text-black">
-                              {users.map((user) => (
+                              {filterUsers.map((user) => (
                                 <div
                                   onClick={() => {
                                     setAssignByUser({
                                       id: user.id,
                                       username: user.username,
                                     });
+                                    setFilterUsers(users);
+                                    setFilterUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
                                     setAssignByOpen(false);
                                   }}
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
