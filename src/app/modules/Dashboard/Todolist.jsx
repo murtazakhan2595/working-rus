@@ -251,7 +251,7 @@ const Dashboard = ({ token, baseUrl }) => {
             </div>
           ))}
           {todos.length <= 0 &&
-            <p className="text-3xl text-gray-400">Nothing in todo list</p>
+            <p className="text-lg text-gray-400">Nothing in todo list</p>
           }
         </div>
 

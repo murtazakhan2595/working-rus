@@ -78,7 +78,7 @@ const Dashboard = ({ isSidebarOpen }) => {
 
         {/* **********************   Todos List & Working Time   ********************************* */}
         {/* <div className="flex 2xl:flex-row sm:flex-row flex-col-reverse justify-between sm:mr-14 xl:self-end xl:items-end"> */}
-        <div className="flex  md:flex-row xs:flex-col-reverse justify-between md:mr-14 m-1 lg:mr-1 xl:self-end xl:items-end">
+        <div className="flex  md:flex-row xs:flex-col-reverse justify-between md:mr-14 m-1 lg:mr-1 xl:self-end xl:items-start">
           {/***********************   Todos List   **********************************/}
           <TodoList isSidebarOpen={isSidebarOpen} />
           {/***********************   Working Time   **********************************/}
