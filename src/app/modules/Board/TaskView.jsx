@@ -7,16 +7,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { connect } from "react-redux";
 import Joi from "joi";
 import moment from "moment";
+import ReactQuill from "react-quill";
 
-const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
-  const initialData = {
-    title: taskData.title,
-    desc: taskData.desc,
-  };
 
-  const [formData, setFormData] = useState(initialData);
+const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [assignToOpen, setAssignToOpen] = useState(false);
   const [assignByOpen, setAssignByOpen] = useState(false);
+  const [description, setDescription] = useState(taskData.description);
+  const [name, setName] = useState(taskData.name);
   const [dueDate, setDueDate] = useState(taskData.dueDate);
   const [startDate, setStartDate] = useState(taskData.startDate);
   const [status, setStatus] = useState(taskData.status);
@@ -24,32 +22,26 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [users, setUsers] = useState({});
 
-  // Function to handle input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setValidationErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: null,
-    }));
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
   const headers = {
     Authorization: `Bearer ${token}`,
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const errors = validateForm(formData);
-    console.log(errors)
+
+  const validateData = {
+      name: name,
+      description: description,
+      assigned_to: assignToUser.id,
+      assigned_by: assignByUser.id,
+    };
+    const errors = validateForm(validateData);
+console.log(errors)
     if (Object.keys(errors).length === 0) {
       try {
         const postData = {
-          name: formData.title,
-          description: formData.desc,
+          name: name,
+          description: description,
           assigned_to: assignToUser.id,
           assigned_by: assignByUser.id,
           board_id: id,
@@ -58,10 +50,13 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
           end_date: dueDate,
           status: status,
         };
-        const response = await axios.put(`${baseUrl}/task/${taskData.id}`, postData, {
-          headers,
-        });
-
+        const response = await axios.put(
+          `${baseUrl}/task/${taskData.id}`,
+          postData,
+          {
+            headers,
+          }
+        );
 
         // Show a success toast
         toast.success("Card Updated !", {
@@ -114,7 +109,7 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
   const getAssignee = async () => {
     try {
       await axios
-        .get(`${baseUrl}/emp/${taskData.assignTo}`, {
+        .get(`${baseUrl}/emp/${taskData.assigned_to}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -127,7 +122,7 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
     } catch (error) {}
     try {
       await axios
-        .get(`${baseUrl}/emp/${taskData.assignBy}`, {
+        .get(`${baseUrl}/emp/${taskData.assigned_by}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -141,24 +136,23 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
   };
 
   useEffect(() => {
-    getAssignee()
+    getAssignee();
     getUsers();
   }, []);
 
   const [assignToUser, setAssignToUser] = useState({});
   const [assignByUser, setAssignByUser] = useState({});
 
-
   const schema = Joi.object({
-    title: Joi.string().required().label("Title"),
-    desc: Joi.string().required().label("Description"),
-    assignTo: Joi.number().integer().min(1).required().label("Assigned To"),
-    assignBy: Joi.number().integer().min(1).required().label("Assigned By"),
+    name: Joi.string().required().label("Name"),
+    description: Joi.string().required().label("Description"),
+    assigned_to: Joi.number().integer().min(1).required().label("Assigned To"),
+    assigned_by: Joi.number().integer().min(1).required().label("Assigned By"),
   });
 
   const validateForm = (data) => {
-    data.assignTo = assignToUser.id
-    data.assignBy = assignByUser.id
+    data.assigned_to = assignToUser.id;
+    data.assigned_by = assignByUser.id;
     const result = schema.validate(data, { abortEarly: false });
     const errors = {};
 
@@ -169,10 +163,10 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
     }
 
     if (!assignToUser.id) {
-      errors.assignTo = "select a assignee";
+      errors.assigned_to = "select a assignee";
     }
     if (!assignByUser.id) {
-      errors.assignBy = "select a reporter";
+      errors.assigned_by = "select a reporter";
     }
 
     return errors;
@@ -191,33 +185,64 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
               <RxCross2 />
             </div>
             <form onSubmit={handleSubmit}>
-              <input value={formData.title} onChange={handleInputChange}
-              name="title" id="title"
-                className="text-2xl bg-transparent focus:outline-none font-sfpro leading-3 font-bold mb-8"/>
-               {validationErrors.title && (
+              <input
+                value={name}
+                onChange={(e) => {
+                  setValidationErrors((prevErrors) => ({
+                    ...prevErrors,
+                    name: null,
+                  }));
+                  setName(e.target.value);
+                }}
+                name="name"
+                id="name"
+                className="text-2xl bg-transparent focus:outline-none font-sfpro leading-3 font-bold mb-8"
+              />
+              {validationErrors.name && (
                 <span className="text-red-500 text-sm">
-                  {validationErrors.title}
+                  {validationErrors.name}
                 </span>
               )}
               <div className="flex flex-col">
                 <label
-                  htmlFor="desc"
+                  htmlFor="description"
                   className="font-sfpro text-lg font-semibold"
                 >
                   Description
                 </label>
-                <textarea
-                  name="desc"
-                  id="desc"
-                  cols="50"
-                  rows="2"
-                  value={formData.desc}
-                  onChange={handleInputChange}
-                  className="rounded-md bg-white text-black w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-4"
-                ></textarea>
-                {validationErrors.desc && (
+                <div className="h-40 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
+                  <ReactQuill
+                    name="description"
+                    id="description"
+                    className="text-center"
+                    value={description}
+                    onChange={(html) => {
+                      setValidationErrors((prevErrors) => ({
+                        ...prevErrors,
+                        description: null,
+                      }));
+                      setDescription(html);
+                    }}
+                    modules={{
+                      toolbar: {
+                        container: [
+                          ["bold", "italic", "underline", "strike"],
+                          [{ list: "ordered" }, { list: "bullet" }],
+                          [{ align: [] }],
+                          ["link", "image"],
+                          // [
+                          //     { header: "1" },
+                          //     { header: "2" },
+                          // ],
+                          [{ size: ["small", false, "large", "huge"] }],
+                        ],
+                      },
+                    }}
+                  />
+                </div>
+                {validationErrors.description && (
                   <span className="text-red-500 text-sm">
-                    {validationErrors.desc}
+                    {validationErrors.description}
                   </span>
                 )}
               </div>
@@ -230,8 +255,13 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
                   >
                     Start Date
                   </label>
-                  <Datepicker date={startDate} onChange={(date)=>{let d = moment(date).format("YYYY-MM-DD")
-                  setStartDate(d)}} />
+                  <Datepicker
+                    date={startDate}
+                    onChange={(date) => {
+                      let d = moment(date).format("YYYY-MM-DD");
+                      setStartDate(d);
+                    }}
+                  />
                 </div>
                 <div className="flex flex-col">
                   <label
@@ -240,8 +270,13 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
                   >
                     Due Date
                   </label>
-                  <Datepicker date={dueDate} onChange={(date)=>{let d = moment(date).format("YYYY-MM-DD")
-                  setDueDate(d)}} />
+                  <Datepicker
+                    date={dueDate}
+                    onChange={(date) => {
+                      let d = moment(date).format("YYYY-MM-DD");
+                      setDueDate(d);
+                    }}
+                  />
                 </div>
                 <div className="flex flex-col">
                   <label
@@ -251,10 +286,12 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
                     Status
                   </label>
                   <select
-                  name="status"
-                  value={status}
+                    name="status"
+                    value={status}
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                    onChange={(e)=>{setStatus(e.target.value)}}
+                    onChange={(e) => {
+                      setStatus(e.target.value);
+                    }}
                   >
                     <option value="To Do">Todo</option>
                     <option value="In Progress">In Progress</option>
@@ -262,7 +299,7 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
                   </select>
                 </div>
 
-                <div className="flex flex-col"> 
+                <div className="flex flex-col">
                   <label
                     htmlFor="priority"
                     className="py-1 font-sfpro text-lg font-semibold"
@@ -270,10 +307,12 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
                     Priority
                   </label>
                   <select
-                  name="priority"
-                  value={priority}
+                    name="priority"
+                    value={priority}
                     className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                    onChange={(e)=>{setPriority(e.target.value)}}
+                    onChange={(e) => {
+                      setPriority(e.target.value);
+                    }}
                   >
                     <option value="Low">🟢 Low</option>
                     <option value="Medium">🟡 Medium</option>
@@ -357,9 +396,9 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
                     </div>
                   </div>
                   <div>
-                    {validationErrors.assignTo && (
+                    {validationErrors.assigned_to && (
                       <p className="text-red-500 mt-2">
-                        {validationErrors.assignTo}
+                        {validationErrors.assigned_to}
                       </p>
                     )}
                   </div>
@@ -434,9 +473,9 @@ const TaskModal = ({ id ,onClose, taskData, token, baseUrl }) => {
                     </div>
                   </div>
                   <div>
-                    {validationErrors.assignBy && (
+                    {validationErrors.assigned_by && (
                       <p className="text-red-500 mt-2">
-                        {validationErrors.assignBy}
+                        {validationErrors.assigned_by}
                       </p>
                     )}
                   </div>

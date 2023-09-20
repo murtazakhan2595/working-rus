@@ -108,7 +108,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   };
 
   return (
-    <div className="w-full bg-[#F9F9F9]">
+    <div className="w-full h-screen bg-[#F9F9F9]">
       {/* ***************************************************** Header ***************************************************** */}
       <div className="py-5 pl-10 pr-2 flex gap-3 items-center justify-between">
         <div className="flex items-center">
@@ -165,7 +165,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
       </div>
 
       {/* ***************************************************** Board Card ***************************************************** */}
-      <div className="flex w-full justify-center ">
+      <div className="flex w-full justify-start ">
         <div className="flex xScroll  ml-10 pb-2 overflow-x-auto w-[82vw] justify-start">
           <div id="boardList" className="flex">
             {/* Box 1 */}
@@ -219,14 +219,14 @@ const Board = ({ userProfile, baseUrl, token }) => {
                             onClose={() => closeTask(index)}
                             taskData={{
                               id: t.id,
-                              title: t.name,
-                              desc: t.description,
+                              name: t.name,
+                              description: t.description,
                               dueDate: t.end_date,
                               startDate: t.start_date,
                               priority: t.priority,
                               status: t.status,
-                              assignTo: t.assigned_to,
-                              assignBy: t.assigned_by,
+                              assigned_to: t.assigned_to,
+                              assigned_by: t.assigned_by,
                             }}
                           />
                         )}
@@ -296,14 +296,14 @@ const Board = ({ userProfile, baseUrl, token }) => {
                             onClose={() => closeTask(index)}
                             taskData={{
                               id: t.id,
-                              title: t.name,
-                              desc: t.description,
+                              name: t.name,
+                              description: t.description,
                               dueDate: t.end_date,
                               startDate: t.start_date,
                               priority: t.priority,
                               status: t.status,
-                              assignTo: t.assigned_to,
-                              assignBy: t.assigned_by,
+                              assigned_to: t.assigned_to,
+                              assigned_by: t.assigned_by,
                             }}
                           />
                         )}
@@ -373,14 +373,14 @@ const Board = ({ userProfile, baseUrl, token }) => {
                             onClose={() => closeTask(index)}
                             taskData={{
                               id: t.id,
-                              title: t.name,
-                              desc: t.description,
+                              name: t.name,
+                              description: t.description,
                               dueDate: t.end_date,
                               startDate: t.start_date,
                               priority: t.priority,
                               status: t.status,
-                              assignTo: t.assigned_to,
-                              assignBy: t.assigned_by,
+                              assigned_to: t.assigned_to,
+                              assigned_by: t.assigned_by,
                             }}
                           />
                         )}

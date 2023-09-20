@@ -38,7 +38,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
         "Content-Type": "application/json" 
       };
       
-      axios.post("http://127.0.0.1:8000/api/board/", {
+      axios.post(`${baseUrl}/board/`, {
         "name": title,
         "project_id": 1
       }, { headers }) .then((response) => {
