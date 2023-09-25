@@ -9,7 +9,6 @@ import Joi from "joi";
 import moment from "moment";
 import ReactQuill from "react-quill";
 
-
 const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [assignToOpen, setAssignToOpen] = useState(false);
   const [assignByOpen, setAssignByOpen] = useState(false);
@@ -30,7 +29,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  const validateData = {
+    const validateData = {
       name: name,
       description: description,
       assigned_to: assignToUser.id,
@@ -57,20 +56,18 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             headers,
           }
         );
+        if (response.status === 200) {
+          toast.success("Card Updated !", {
+            position: "top-right",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
 
-        // Show a success toast
-        toast.success("Card Updated !", {
-          position: "top-right",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-
-        setTimeout(() => {
           onClose();
-        }, 1000); // Close the modal after 2 seconds
+        }
       } catch (error) {
         console.error("Error:", error);
 
@@ -101,7 +98,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
         .then((response) => {
           if (response.status === 200) {
             setUsers(response.data.results);
-            setFilterUsers(response.data.results)
+            setFilterUsers(response.data.results);
           }
         });
     } catch (error) {}
@@ -174,11 +171,10 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   };
 
   return (
-    <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"></div>
-      <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="md:mx-auto w-full max-w-3xl relative">
-          <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 max-w-800 border border-gray-100 shadow-md relative">
+    <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
+      <div className="flex items-center justify-center z-50">
+        <div className="md:mx-auto pb-10 pt-28 w-full max-w-3xl relative">
+          <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-full max-w-6xl border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
               onClick={onClose}
@@ -211,7 +207,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                 >
                   Description
                 </label>
-                <div className="h-40 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
+                <div className="h-60 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
                   <ReactQuill
                     name="description"
                     id="description"
@@ -231,10 +227,10 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                           [{ list: "ordered" }, { list: "bullet" }],
                           [{ align: [] }],
                           ["link", "image"],
-                          // [
-                          //     { header: "1" },
-                          //     { header: "2" },
-                          // ],
+                          [
+                              { header: "1" },
+                              { header: "2" },
+                          ],
                           [{ size: ["small", false, "large", "huge"] }],
                         ],
                       },
@@ -294,9 +290,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       setStatus(e.target.value);
                     }}
                   >
-                    <option value="To Do">Todo</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
+                    <option value={3}>Todo</option>
+                    <option value={2}>In Progress</option>
+                    <option value={1}>Completed</option>
                   </select>
                 </div>
 
@@ -378,7 +374,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                                       username: user.username,
                                     });
                                     setFilterUsers(users);
-                                    setFilterUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
+                                    setFilterUsers((prevUsers) =>
+                                      prevUsers.filter((u) => u.id !== user.id)
+                                    );
                                     setAssignToOpen(false);
                                   }}
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
@@ -457,7 +455,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                                       username: user.username,
                                     });
                                     setFilterUsers(users);
-                                    setFilterUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
+                                    setFilterUsers((prevUsers) =>
+                                      prevUsers.filter((u) => u.id !== user.id)
+                                    );
                                     setAssignByOpen(false);
                                   }}
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
@@ -498,7 +498,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
         </div>
       </div>
       <ToastContainer />
-    </>
+    </div>
   );
 };
 

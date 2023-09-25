@@ -4,20 +4,6 @@ import { TbAlertCircleFilled } from "react-icons/tb";
 import { tasks, tasksTitle } from "../../../data/Data";
 
 const TaskPlanner = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [taskData, setTaskData] = useState({})
-
-  const updateTaskData = (data) => {
-    setTaskData(data)
-  }
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
   return (
     <div className="md:px-10 w-full md:mb-1 mb-5 px-5">

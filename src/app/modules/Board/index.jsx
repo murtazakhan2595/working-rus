@@ -195,11 +195,11 @@ const Board = ({ userProfile, baseUrl, token }) => {
                             <div className="flex justify-between">
                               <BsBookmark className="text-xs text- opacity-50" />
                               <div className="flex items-center gap-2">
-                                {t.priority === "Low" ? (
+                                {t.priority === 1 ? (
                                   <div className="text-[0.50rem]">🟢</div>
-                                ) : t.priority === "Medium" ? (
+                                ) : t.priority === 2 ? (
                                   <div className="text-[0.50rem]">🟡</div>
-                                ) : t.priority === "High" ? (
+                                ) : t.priority === 3 ? (
                                   <div className="text-[0.50rem]">🔴</div>
                                 ) : (
                                   ""
@@ -272,11 +272,11 @@ const Board = ({ userProfile, baseUrl, token }) => {
                             <div className="flex justify-between">
                               <BsBookmark className="text-xs text- opacity-50" />
                               <div className="flex items-center gap-2">
-                                {t.priority === "Low" ? (
+                                {t.priority === 1 ? (
                                   <div className="text-[0.50rem]">🟢</div>
-                                ) : t.priority === "Medium" ? (
+                                ) : t.priority === 2 ? (
                                   <div className="text-[0.50rem]">🟡</div>
-                                ) : t.priority === "High" ? (
+                                ) : t.priority === 3 ? (
                                   <div className="text-[0.50rem]">🔴</div>
                                 ) : (
                                   ""
@@ -349,11 +349,11 @@ const Board = ({ userProfile, baseUrl, token }) => {
                             <div className="flex justify-between">
                               <BsBookmark className="text-xs text- opacity-50" />
                               <div className="flex items-center gap-2">
-                                {t.priority === "Low" ? (
+                                {t.priority === 1 ? (
                                   <div className="text-[0.50rem]">🟢</div>
-                                ) : t.priority === "Medium" ? (
+                                ) : t.priority === 2 ? (
                                   <div className="text-[0.50rem]">🟡</div>
-                                ) : t.priority === "High" ? (
+                                ) : t.priority === 3 ? (
                                   <div className="text-[0.50rem]">🔴</div>
                                 ) : (
                                   ""

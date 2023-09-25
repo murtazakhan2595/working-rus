@@ -20,7 +20,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [status, setStatus] = useState(currentStatus);
-  const [priority, setPriority] = useState(1);
+  const [priority, setPriority] = useState(3);
   const [assignToUser, setAssignToUser] = useState({});
   const [assignByUser, setAssignByUser] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
@@ -59,19 +59,17 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
           headers,
         });
 
+        if (response.status === 201){
         // Show a success toast
         toast.success("Card added successfully", {
           position: "top-right",
-          autoClose: 3000,
+          autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
-          draggable: true,
         });
-
-        setTimeout(() => {
           onClose();
-        }, 2000); // Close the modal after 2 seconds
+      }
       } catch (error) {
         console.error("Error:", error);
 
@@ -141,11 +139,10 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
   };
 
   return (
-    <>
-      <div className="inset-0 overflow-y-auto z-50 flex items-center justify-center backdrop-blur-sm"></div>
-      <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="md:mx-auto w-full max-w-3xl relative">
-          <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 max-w-800 border border-gray-100 shadow-md relative">
+    <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
+      <div className="flex items-center justify-center z-50">
+        <div className="md:mx-auto pb-10 pt-28 w-full max-w-3xl relative">
+          <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-full max-w-6xl border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
               onClick={onClose}
@@ -200,11 +197,11 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                     Description
                   </label>
                   {/* Text area */}
-                  <div className="h-40 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
+                  <div className="h-60 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
                     <ReactQuill
                       name="description"
                       id="description"
-                      className="text-center h-[80%]"
+                      className="text-center h-[85%]"
                       value={description}
                       onChange={(html) => {
                         setValidationErrors((prevErrors) => ({
@@ -220,10 +217,10 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                             [{ list: "ordered" }, { list: "bullet" }],
                             [{ align: [] }],
                             ["link", "image"],
-                            // [
-                            //     { header: "1" },
-                            //     { header: "2" },
-                            // ],
+                            [
+                                { header: "1" },
+                                { header: "2" },
+                            ],
                             [{ size: ["small", false, "large", "huge"] }],
                           ],
                         },
@@ -304,9 +301,9 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                         setPriority(e.target.value);
                       }}
                     >
-                      <option value={1}>🟢 Low</option>
+                      <option value={3}>🟢 Low</option>
                       <option value={2}>🟡 Medium</option>
-                      <option value={3}>🔴 High</option>
+                      <option value={1}>🔴 High</option>
                     </select>
                   </div>
                 </div>
@@ -506,7 +503,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
         </div>
       </div>
       <ToastContainer />
-    </>
+    </div>
   );
 };
 
