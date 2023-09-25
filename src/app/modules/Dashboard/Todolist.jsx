@@ -39,6 +39,7 @@ const Dashboard = ({ token, baseUrl }) => {
         const response = await axios.get(`${baseUrl}/todotask`, { headers });
         const todosData = response.data;
         setTodos(todosData);
+        console.log(todosData);
       } catch (error) {
         console.error('Error fetching todos:', error);
       }
@@ -146,17 +147,38 @@ const Dashboard = ({ token, baseUrl }) => {
     }
   };
 
-  const handleCheckboxChange = (id) => {
-    const updatedTodos = todos.map(todo => {
-      if (todo.id === id) return { ...todo, completed: !todo.completed };
-      return todo;
-    });
+  // const handleCheckboxChange = (id) => {
+  //   const updatedTodos = todos.map(todo => {
+  //     if (todo.id === id) return { ...todo, completed: !todo.completed };
+  //     return todo;
+  //   });
 
 
-    updatedTodos.sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
+  //   updatedTodos.sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
 
-    setTodos(updatedTodos);
+  //   setTodos(updatedTodos);
+  // };
+
+  const handleCheckboxChange = async (id, isCompleted) => {
+    try {
+      const updatedTodos = todos.map(todo => {
+        if (todo.id === id) return { ...todo, is_completed: !isCompleted };
+        return todo;
+      });
+
+      updatedTodos.sort((a, b) => (a.is_completed === b.is_completed ? 0 : a.is_completed ? 1 : -1));
+
+      setTodos(updatedTodos);
+      await axios.patch(
+        `${baseUrl}/todotask/${id}`,
+        { is_completed: !isCompleted },
+        { headers }
+      );
+    } catch (error) {
+      console.error('Error updating todo:', error);
+    }
   };
+
 
 
   useEffect(() => {
@@ -222,12 +244,12 @@ const Dashboard = ({ token, baseUrl }) => {
                       type="checkbox"
                       className="accent-[#283b91]"
                       id={`checkbox-${todo.id}`}
-                      checked={todo.completed}
-                      onChange={() => handleCheckboxChange(todo.id)}
+                      checked={todo.is_completed}
+                      onChange={() => handleCheckboxChange(todo.id, todo.is_completed)}
                     />
                     <label
                       htmlFor={`checkbox-${todo.id}`}
-                      className={`text-gray-400 text-sm ${todo.completed ? "line-through" : ""}`}
+                      className={`text-gray-400 text-sm ${todo.is_completed ? "line-through" : ""}`}
                     >
                       {todo.description}
                     </label>
@@ -251,7 +273,7 @@ const Dashboard = ({ token, baseUrl }) => {
             </div>
           ))}
           {todos.length <= 0 &&
-            <p className="text-lg text-gray-400">Nothing in todo list</p>
+            <p className="text-lg text-gray-400 text-center">No data</p>
           }
         </div>
 

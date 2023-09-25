@@ -114,8 +114,8 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                 <div>
                     <h1 className='text-xl font-bold lg:pl-12 md:pl-8 py-2 lg:py-0'>Daily Task Report</h1>
                 </div>
-                <div className=' flex items-center py-1 rounded-full'>
-                    <span className='-z-0 px-3 lg:px-6 '><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
+                <div className='flex items-center py-1 rounded-full'>
+                    <span className='-z-0 px-3 lg:px-6  text-sm'><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
                     <button
                         className='border-2 border-[#283B91] bg-[#283B91] text-white rounded-full lg:rounded-3xl px-7 py-1 mr-1 lg:mr-2 hover:bg-white hover:text-[#283B91]'
                         onClick={handlePopupToggle}
