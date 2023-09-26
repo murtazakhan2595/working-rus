@@ -72,7 +72,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
         console.error("Error:", error);
 
         // Show an error toast
-        toast.error("Something went wrong", {
+        toast.error(error.response.data.name[0], {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -171,7 +171,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   };
 
   return (
-    <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
+    <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen z-50 flex justify-center items-center backdrop-blur-sm  ">
       <div className="flex items-center justify-center z-50">
         <div className="md:mx-auto pb-10 pt-28 w-full max-w-3xl relative">
           <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-full max-w-6xl border border-gray-100 shadow-md relative">
@@ -193,7 +193,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                 }}
                 name="name"
                 id="name"
-                className="text-2xl bg-transparent focus:outline-none font-sfpro leading-3 font-bold mb-8"
+                className="text-2xl w-full bg-transparent focus:outline-none font-sfpro leading-3 font-bold mb-8"
               />
               {validationErrors.name && (
                 <span className="text-red-500 text-sm">
@@ -290,9 +290,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       setStatus(e.target.value);
                     }}
                   >
-                    <option value={3}>Todo</option>
-                    <option value={2}>In Progress</option>
-                    <option value={1}>Completed</option>
+                    <option value="To Do">Todo</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
                   </select>
                 </div>
 

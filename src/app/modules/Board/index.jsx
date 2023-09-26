@@ -16,9 +16,10 @@ import axios from "axios";
 const Board = ({ userProfile, baseUrl, token }) => {
   const [tasks, setTasks] = useState([]);
   const [status, setStatus] = useState("");
-  const [board, setBoard] = useState({});
+  const [board, setBoard] = useState([]);
   const [reload, setReload] = useState(false);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [users, setUsers] = useState([]);
   const location = useLocation();
   const { id } = useParams();
 
@@ -54,7 +55,19 @@ const Board = ({ userProfile, baseUrl, token }) => {
         })
         .then((response) => {
           if (response.status === 200) {
-            setTasks(response.data);
+            const tasksData = response.data;
+
+            const tasksWithBardName = [];
+            for (const task of tasksData) {
+              let username = users.filter((u) => u.id === task.assigned_to);
+              const taskWithname = {
+                ...task,
+                userName: username[0].username,
+              };
+              tasksWithBardName.push(taskWithname);
+              setTasks(tasksWithBardName);
+            }
+            // setTasks(response.data);
           }
         });
     } catch (error) {}
@@ -82,9 +95,28 @@ const Board = ({ userProfile, baseUrl, token }) => {
     } catch (error) {}
   };
 
+  const getUsers = async (url = `${baseUrl}/emp/`) => {
+    try {
+      await axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            setUsers(response.data.results);
+          }
+        });
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
   useEffect(() => {
     getTasks();
-  }, [location, reload, isAddTaskOpen]);
+  }, [location, reload, isAddTaskOpen, users]);
 
   useEffect(() => {
     getBoard();
@@ -107,305 +139,356 @@ const Board = ({ userProfile, baseUrl, token }) => {
     setIsTakViewOpen(updatedModals);
   };
 
+  const getRandomColor = () => {
+    const colorClasses = [
+      "bg-red-400",
+      "bg-blue-600",
+      "bg-green-700",
+      "bg-gray-700",
+      "bg-pink-600",
+    ];
+    const randomIndex = Math.floor(Math.random() * colorClasses.length);
+    return colorClasses[randomIndex];
+  };
   return (
-    <div className="w-full h-screen bg-[#F9F9F9]">
-      {/* ***************************************************** Header ***************************************************** */}
-      <div className="py-5 pl-10 pr-2 flex gap-3 items-center justify-between">
-        <div className="flex items-center">
-          <h1 className="text-3xl mr-2 leading-none font-semibold  opacity-80 tracking-widest">
-            <Link to="/login">My Boards</Link>
-          </h1>
-          <div className="relative">
-            <IoIosSearch className="absolute top-2 left-3 text-white" />
-            <input
-              type="search"
-              placeholder="Search"
-              className="focus:outline-none focus:border-non bg-gray-200 py-1 pl-8 pr-4 text-white placeholder-white border-none  md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
-            />
-          </div>
-        </div>
-        <div className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200">
-          <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>{" "}
-          <div className=" text-[#283b91]">{userProfile.username}</div>
-          <div className=" text-[#283b91]">
-            <RiArrowDownSFill />
-          </div>
-        </div>
-      </div>
-      {/* ***************************************************** Board Header ***************************************************** */}
-      <div className="bg-[#ebebeb] mb-6 pr-1 pl-5 gap-3  justify-between py-2 flex">
-        <div className="flex gap-2">
-          <div className="flex justify-center ml-4 items-center">
-            <AiTwotoneStar className="text-3xl text-[#283b91]" />
-          </div>
-          <div className="flex font-bold items-center ml-2 tracking-widest ">
-            {board.name}
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <div className="flex bg-white px-2 py-1 gap-3 items-center rounded-lg">
-            <div className=" px-4 text-[#283b91]">Share</div>
-          </div>
-          <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
-            <div className=" px-1 text-gray-400">
-              <BsPencil />
+      <div className="w-full h-screen bg-[#F9F9F9]">
+        {/* ***************************************************** Header ***************************************************** */}
+        <div className="py-5 pl-10 pr-2 flex gap-3 items-center justify-between">
+          <div className="flex items-center">
+            <h1 className="text-3xl mr-2 leading-none font-semibold  opacity-80 tracking-widest">
+              <Link to="/login">My Boards</Link>
+            </h1>
+            <div className="relative">
+              <IoIosSearch className="absolute top-2 left-3 text-white" />
+              <input
+                type="search"
+                placeholder="Search"
+                className="focus:outline-none focus:border-non bg-gray-200 py-1 pl-8 pr-4 text-white placeholder-white border-none  md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
+              />
             </div>
           </div>
-          <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
-            <div className=" px-1 text-gray-400">
-              <FiFilter />
-            </div>
-          </div>
-          <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg">
-            <div className=" px-1 text-gray-400">
-              <BsTrash3 />
+          <div className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200">
+            <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>{" "}
+            <div className=" text-[#283b91]">{userProfile.username}</div>
+            <div className=" text-[#283b91]">
+              <RiArrowDownSFill />
             </div>
           </div>
         </div>
-      </div>
+        {/* ***************************************************** Board Header ***************************************************** */}
+        <div className="bg-[#ebebeb] mb-6 pr-1 pl-5 gap-3  justify-between py-2 flex">
+          <div className="flex gap-2">
+            <div className="flex justify-center ml-4 items-center">
+              <AiTwotoneStar className="text-3xl text-[#283b91]" />
+            </div>
+            <div className="flex font-bold items-center ml-2 tracking-widest ">
+              {board.name}
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <div className="flex bg-white px-2 py-1 gap-3 items-center rounded-lg">
+              <div className=" px-4 text-[#283b91]">Share</div>
+            </div>
+            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+              <div className=" px-1 text-gray-400">
+                <BsPencil />
+              </div>
+            </div>
+            <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+              <div className=" px-1 text-gray-400">
+                <FiFilter />
+              </div>
+            </div>
+            <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg">
+              <div className=" px-1 text-gray-400">
+                <BsTrash3 />
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {/* ***************************************************** Board Card ***************************************************** */}
-      <div className="flex w-full justify-start ">
-        <div className="flex xScroll  ml-10 pb-2 overflow-x-auto w-[82vw] justify-start">
-          <div id="boardList" className="flex">
-            {/* Box 1 */}
-            <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
-              <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-                <div className="flex justify-center items-center">
-                  <div className="text-[#283b91]">Todo </div>
-                  <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                    {/* 3 */}
+        {/* ***************************************************** Board Card ***************************************************** */}
+        <div className="flex w-full justify-start ">
+          <div className="flex xScroll  ml-10 pb-2 overflow-x-auto w-[82vw] justify-start">
+            <div id="boardList" className="flex">
+              {/* Box 1 */}
+
+              <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
+                <div className="flex justify-between items-center mb-3 mt-3 ml-2">
+                  <div className="flex justify-center items-center">
+                    <div className="text-[#283b91]">Todo </div>
+                    <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
+                      {/* 3 */}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
-                {tasks.map(
-                  (t, index) =>
-                    t.status === "To Do" && (
-                      <>
-                        <div key={index}>
-                          <div className={`bg-[#F2F2F2] rounded-md p-3 m-2`}>
-                            <div
-                              onClick={() => openTaskView(index)}
-                              className="opacity-70"
-                            >
-                              {t.name}
-                            </div>
-                            <hr className=" bg-white h-[2px] my-2" />
-                            <div className="flex justify-between">
-                              <BsBookmark className="text-xs text- opacity-50" />
-                              <div className="flex items-center gap-2">
-                                {t.priority === 1 ? (
-                                  <div className="text-[0.50rem]">🟢</div>
-                                ) : t.priority === 2 ? (
-                                  <div className="text-[0.50rem]">🟡</div>
-                                ) : t.priority === 3 ? (
-                                  <div className="text-[0.50rem]">🔴</div>
-                                ) : (
-                                  ""
+                <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
+                        {tasks.map(
+                          (t, index) =>
+                            t.status === "To Do" && (
+                              <>
+                                <div key={index}>
+                                  <div
+                                    className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
+                                  >
+                                    <div
+                                      onClick={() => openTaskView(index)}
+                                      className="opacity-70"
+                                    >
+                                      {t.name}
+                                    </div>
+                                    <hr className=" bg-white h-[2px] my-2" />
+                                    <div className="flex justify-between">
+                                      <div className="flex items-center gap-2">
+                                        {/* <BsBookmark className="text-xs text- opacity-50" /> */}
+                                        <div
+                                          title={t.userName}
+                                          className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
+                                        >
+                                          {t.userName.toUpperCase().slice(0, 2)}
+                                        </div>
+                                      </div>
+
+                                      <div className="flex items-center gap-2">
+                                        {t.priority === 1 ? (
+                                          <div className="text-[0.50rem]">
+                                            🟢
+                                          </div>
+                                        ) : t.priority === 2 ? (
+                                          <div className="text-[0.50rem]">
+                                            🟡
+                                          </div>
+                                        ) : t.priority === 3 ? (
+                                          <div className="text-[0.50rem]">
+                                            🔴
+                                          </div>
+                                        ) : (
+                                          ""
+                                        )}
+                                        <BsTrash3
+                                          className="text-xs opacity-50 "
+                                          onClick={() => {
+                                            deleteTasks(t.id);
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                {isTaskViewOpen[index] && (
+                                  <TaskView
+                                    onClose={() => closeTask(index)}
+                                    taskData={{
+                                      id: t.id,
+                                      name: t.name,
+                                      description: t.description,
+                                      dueDate: t.end_date,
+                                      startDate: t.start_date,
+                                      priority: t.priority,
+                                      status: t.status,
+                                      assigned_to: t.assigned_to,
+                                      assigned_by: t.assigned_by,
+                                    }}
+                                  />
                                 )}
-                                <BsTrash3
-                                  className="text-xs opacity-50 "
-                                  onClick={() => {
-                                    deleteTasks(t.id);
-                                  }}
-                                />
+                              </>
+                            )
+                        )}
+                </div>
+                <div
+                  onClick={() => {
+                    setIsAddTaskOpen(true);
+                    setStatus("To Do");
+                  }}
+                  className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+                >
+                  Add a Card
+                </div>
+              </div>
+
+              {/* Box 2 */}
+              <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
+                <div className="flex justify-between items-center mb-3 mt-3 ml-2">
+                  <div className="flex justify-center items-center">
+                    <div className="text-[#283b91]">In Progress </div>
+                    <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
+                      {/* 3 */}
+                    </div>
+                  </div>
+                </div>
+                <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
+                        {tasks.map(
+                          (t, index) =>
+                            t.status === "In Progress" && (
+                              <>
+                                <div key={index}>
+                                  <div
+                                    className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
+                                  >
+                                    <div
+                                      onClick={() => openTaskView(index)}
+                                      className="opacity-70"
+                                    >
+                                      {t.name}
+                                    </div>
+                                    <hr className=" bg-white h-[2px] my-2" />
+                                    <div className="flex justify-between">
+                                      <div className="flex items-center gap-2">
+                                        <div
+                                          title={t.userName}
+                                          className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
+                                        >
+                                          {t.userName.toUpperCase().slice(0, 2)}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        {t.priority === 1 ? (
+                                          <div className="text-[0.50rem]">
+                                            🟢
+                                          </div>
+                                        ) : t.priority === 2 ? (
+                                          <div className="text-[0.50rem]">
+                                            🟡
+                                          </div>
+                                        ) : t.priority === 3 ? (
+                                          <div className="text-[0.50rem]">
+                                            🔴
+                                          </div>
+                                        ) : (
+                                          ""
+                                        )}
+                                        <BsTrash3
+                                          className="text-xs opacity-50 "
+                                          onClick={() => {
+                                            deleteTasks(t.id);
+                                          }}
+                                        />
+                                      </div>{" "}
+                                    </div>
+                                  </div>
+                                </div>
+                                {isTaskViewOpen[index] && (
+                                  <TaskView
+                                    onClose={() => closeTask(index)}
+                                    taskData={{
+                                      id: t.id,
+                                      name: t.name,
+                                      description: t.description,
+                                      dueDate: t.end_date,
+                                      startDate: t.start_date,
+                                      priority: t.priority,
+                                      status: t.status,
+                                      assigned_to: t.assigned_to,
+                                      assigned_by: t.assigned_by,
+                                    }}
+                                  />
+                                )}
+                              </>
+                            )
+                        )}
+                      </div>
+                <div
+                  onClick={() => {
+                    setIsAddTaskOpen(true);
+                    setStatus("In Progress");
+                  }}
+                  className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+                >
+                  Add a Card
+                </div>
+              </div>
+
+              {/* Box 3 */}
+              <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
+                <div className="flex justify-between items-center mb-3 mt-3 ml-2">
+                  <div className="flex justify-center items-center">
+                    <div className="text-[#283b91]">Completed </div>
+                    <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
+                      {/* 3 */}
+                    </div>
+                  </div>
+                </div>
+                <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
+                  {tasks.map(
+                    (t, index) =>
+                      t.status === "Completed" && (
+                        <>
+                          <div key={index}>
+                            <div className={`bg-[#F2F2F2] rounded-md p-3 m-2`}>
+                              <div
+                                onClick={() => openTaskView(index)}
+                                className="opacity-70"
+                              >
+                                {t.name}
+                              </div>
+                              <hr className=" bg-white h-[2px] my-2" />
+                              <div className="flex justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    title={t.userName}
+                                    className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
+                                  >
+                                    {t.userName.toUpperCase().slice(0, 2)}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {t.priority === 1 ? (
+                                    <div className="text-[0.50rem]">🟢</div>
+                                  ) : t.priority === 2 ? (
+                                    <div className="text-[0.50rem]">🟡</div>
+                                  ) : t.priority === 3 ? (
+                                    <div className="text-[0.50rem]">🔴</div>
+                                  ) : (
+                                    ""
+                                  )}
+                                  <BsTrash3
+                                    className="text-xs opacity-50 "
+                                    onClick={() => {
+                                      deleteTasks(t.id);
+                                    }}
+                                  />
+                                </div>{" "}
                               </div>
                             </div>
                           </div>
-                        </div>
-                        {isTaskViewOpen[index] && (
-                          <TaskView
-                            onClose={() => closeTask(index)}
-                            taskData={{
-                              id: t.id,
-                              name: t.name,
-                              description: t.description,
-                              dueDate: t.end_date,
-                              startDate: t.start_date,
-                              priority: t.priority,
-                              status: t.status,
-                              assigned_to: t.assigned_to,
-                              assigned_by: t.assigned_by,
-                            }}
-                          />
-                        )}
-                      </>
-                    )
-                )}
-              </div>
-              <div
-                onClick={() => {
-                  setIsAddTaskOpen(true);
-                  setStatus("To Do");
-                }}
-                className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-              >
-                Add a Card
-              </div>
-            </div>
-
-            {/* Box 2 */}
-            <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
-              <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-                <div className="flex justify-center items-center">
-                  <div className="text-[#283b91]">In Progress </div>
-                  <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                    {/* 3 */}
-                  </div>
+                          {isTaskViewOpen[index] && (
+                            <TaskView
+                              onClose={() => closeTask(index)}
+                              taskData={{
+                                id: t.id,
+                                name: t.name,
+                                description: t.description,
+                                dueDate: t.end_date,
+                                startDate: t.start_date,
+                                priority: t.priority,
+                                status: t.status,
+                                assigned_to: t.assigned_to,
+                                assigned_by: t.assigned_by,
+                              }}
+                            />
+                          )}
+                        </>
+                      )
+                  )}
                 </div>
-              </div>
-              <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
-                {tasks.map(
-                  (t, index) =>
-                    t.status === "In Progress" && (
-                      <>
-                        <div key={index}>
-                          <div className={`bg-[#F2F2F2] rounded-md p-3 m-2`}>
-                            <div
-                              onClick={() => openTaskView(index)}
-                              className="opacity-70"
-                            >
-                              {t.name}
-                            </div>
-                            <hr className=" bg-white h-[2px] my-2" />
-                            <div className="flex justify-between">
-                              <BsBookmark className="text-xs text- opacity-50" />
-                              <div className="flex items-center gap-2">
-                                {t.priority === 1 ? (
-                                  <div className="text-[0.50rem]">🟢</div>
-                                ) : t.priority === 2 ? (
-                                  <div className="text-[0.50rem]">🟡</div>
-                                ) : t.priority === 3 ? (
-                                  <div className="text-[0.50rem]">🔴</div>
-                                ) : (
-                                  ""
-                                )}
-                                <BsTrash3
-                                  className="text-xs opacity-50 "
-                                  onClick={() => {
-                                    deleteTasks(t.id);
-                                  }}
-                                />
-                              </div>{" "}
-                            </div>
-                          </div>
-                        </div>
-                        {isTaskViewOpen[index] && (
-                          <TaskView
-                            onClose={() => closeTask(index)}
-                            taskData={{
-                              id: t.id,
-                              name: t.name,
-                              description: t.description,
-                              dueDate: t.end_date,
-                              startDate: t.start_date,
-                              priority: t.priority,
-                              status: t.status,
-                              assigned_to: t.assigned_to,
-                              assigned_by: t.assigned_by,
-                            }}
-                          />
-                        )}
-                      </>
-                    )
-                )}
-              </div>
-              <div
-                onClick={() => {
-                  setIsAddTaskOpen(true);
-                  setStatus("In Progress");
-                }}
-                className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-              >
-                Add a Card
-              </div>
-            </div>
-
-            {/* Box 3 */}
-            <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
-              <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-                <div className="flex justify-center items-center">
-                  <div className="text-[#283b91]">Completed </div>
-                  <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                    {/* 3 */}
-                  </div>
+                <div
+                  onClick={() => {
+                    setIsAddTaskOpen(true);
+                    setStatus("Completed");
+                  }}
+                  className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+                >
+                  Add a Card
                 </div>
-              </div>
-              <div className="boardScroll overflow-y-auto max-h-[63vh] mb-2">
-                {tasks.map(
-                  (t, index) =>
-                    t.status === "Completed" && (
-                      <>
-                        <div key={index}>
-                          <div className={`bg-[#F2F2F2] rounded-md p-3 m-2`}>
-                            <div
-                              onClick={() => openTaskView(index)}
-                              className="opacity-70"
-                            >
-                              {t.name}
-                            </div>
-                            <hr className=" bg-white h-[2px] my-2" />
-                            <div className="flex justify-between">
-                              <BsBookmark className="text-xs text- opacity-50" />
-                              <div className="flex items-center gap-2">
-                                {t.priority === 1 ? (
-                                  <div className="text-[0.50rem]">🟢</div>
-                                ) : t.priority === 2 ? (
-                                  <div className="text-[0.50rem]">🟡</div>
-                                ) : t.priority === 3 ? (
-                                  <div className="text-[0.50rem]">🔴</div>
-                                ) : (
-                                  ""
-                                )}
-                                <BsTrash3
-                                  className="text-xs opacity-50 "
-                                  onClick={() => {
-                                    deleteTasks(t.id);
-                                  }}
-                                />
-                              </div>{" "}
-                            </div>
-                          </div>
-                        </div>
-                        {isTaskViewOpen[index] && (
-                          <TaskView
-                            onClose={() => closeTask(index)}
-                            taskData={{
-                              id: t.id,
-                              name: t.name,
-                              description: t.description,
-                              dueDate: t.end_date,
-                              startDate: t.start_date,
-                              priority: t.priority,
-                              status: t.status,
-                              assigned_to: t.assigned_to,
-                              assigned_by: t.assigned_by,
-                            }}
-                          />
-                        )}
-                      </>
-                    )
-                )}
-              </div>
-              <div
-                onClick={() => {
-                  setIsAddTaskOpen(true);
-                  setStatus("Completed");
-                }}
-                className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-              >
-                Add a Card
               </div>
             </div>
           </div>
         </div>
+        {isAddTaskOpen && (
+          <TaskModal onClose={closeModal} currentStatus={status} id={id} />
+        )}
+        <ToastContainer />
       </div>
-      {isAddTaskOpen && (
-        <TaskModal onClose={closeModal} currentStatus={status} id={id} />
-      )}
-      <ToastContainer />
-    </div>
   );
 };
 

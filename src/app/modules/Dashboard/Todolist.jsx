@@ -39,7 +39,6 @@ const Dashboard = ({ token, baseUrl }) => {
         const response = await axios.get(`${baseUrl}/todotask`, { headers });
         const todosData = response.data;
         setTodos(todosData);
-        console.log(todosData);
       } catch (error) {
         console.error('Error fetching todos:', error);
       }

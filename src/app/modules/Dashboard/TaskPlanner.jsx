@@ -1,12 +1,95 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import taskImg from "../../../assets/images/task.png";
 import { TbAlertCircleFilled } from "react-icons/tb";
-import { tasks, tasksTitle } from "../../../data/Data";
+import { connect } from "react-redux";
+import { tasksTitle } from "../../../data/Data";
+import { useNavigate } from "react-router-dom";
 
-const TaskPlanner = () => {
+const TaskPlanner = ({ userProfile, baseUrl, token }) => {
+  const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [boards, setBoards] = useState([]);
+  const [nextPage, setNextPage] = useState("");
+
+  const navigate = useNavigate();
+
+  const getTasks = async (
+    url = `${baseUrl}/task/?search={"user_id":[${userProfile.id}]}`
+  ) => {
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const tasksData = response.data;
+
+        const tasksWithBardName = [];
+        for (const task of tasksData) {
+          let username = users.filter((u) => u.id === task.assigned_by);
+          let boardname = boards.filter((b) => b.id === task.board_id);
+          const taskWithname = {
+            ...task,
+            boardName: boardname[0].name,
+            userName: username[0].username,
+          };
+          tasksWithBardName.push(taskWithname);
+          setLoading(false);
+          setTasks(tasksWithBardName);
+        }
+      }
+    } catch (error) {}
+  };
+
+  const getUsers = async (url = `${baseUrl}/emp/`) => {
+    try {
+      await axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            setUsers(response.data.results);
+          }
+        });
+    } catch (error) {}
+  };
+
+  const getBoards = async (url = `${baseUrl}/board/`) => {
+    try {
+      await axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            setBoards((prevTasks) => [...prevTasks, ...response.data.results]);
+            setNextPage(response.data.next);
+          }
+        });
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    do {
+      nextPage ? getBoards(nextPage) : getBoards();
+    } while (nextPage);
+    getUsers();
+  }, []);
+  useEffect(() => {
+    getTasks();
+  }, [users]);
 
   return (
-    <div className="md:px-10 w-full md:mb-1 mb-5 px-5">
+    <div className="md:px-10 w-full md:mb-1 pb-3 px-5">
       <div className="flex justify-between items-center">
         <div className="flex gap-5 mb-1 items-center">
           <img src={taskImg} alt="" className="h-10 w-10" />
@@ -30,40 +113,56 @@ const TaskPlanner = () => {
               </div>
             ))}
           </div>
-          <div className="h-[30vh] roundScroll overflow-auto mt-6">
-            {tasks.map((task, index) => (
-              <div
-                key={index}
-                className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
-              >
-                <div className="w-40">{task.taskName}</div>
-                <div className="w-28">{task.assignBy}</div>
-                <div className="w-28">{task.dueDate}</div>
-                <div className="w-28">{task.status}</div>
-                <div className="top-1 relative w-40 h-3 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="absolute top-0 left-0 h-full bg-[#2a42be] group-hover:bg-[#00ffff]"
-                    style={{ width: `${task.progress}%` }}
-                  ></div>
+          {!loading ? (
+            <div className="h-[30vh] roundScroll overflow-auto mt-6">
+              {tasks.map((task, index) => (
+                <div
+                  onClick={() => {
+                    navigate(`/board/${task.board_id}`);
+                  }}
+                  key={index}
+                  className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
+                >
+                  <div className="w-44">{task.name.substring(0, 25)} ...</div>
+                  <div className="w-28">{task.userName}</div>
+                  <div className="w-28">{task.end_date}</div>
+                  <div className="w-28">{task.status}</div>
+                  <div className="w-28">{task.boardName}</div>
+                  <div className="w-28 text-center text-sm">
+                    {task.priority === 1 && (
+                      <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />
+                    )}
+                    {task.priority === 2 && (
+                      <TbAlertCircleFilled className="text-[#ffa500] text-center text-2xl mx-auto" />
+                    )}
+                    {task.priority === 3 && (
+                      <TbAlertCircleFilled className="text-green-600 text-center text-2xl mx-auto" />
+                    )}
+                  </div>
                 </div>
-                <div className="w-28 text-center text-sm">
-                  {task.priority === "high" && (
-                    <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />
-                  )}
-                  {task.priority === "medium" && (
-                    <TbAlertCircleFilled className="text-[#ffa500] text-center text-2xl mx-auto" />
-                  )}
-                  {task.priority === "low" && (
-                    <TbAlertCircleFilled className="text-green-600 text-center text-2xl mx-auto" />
-                  )}
-                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-[30vh]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+                <p className="text-gray-600 mt-4">Loading...</p>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default TaskPlanner;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+    isLogin: state.user.isLogin,
+  };
+};
+
+export default connect(mapStateToProps)(TaskPlanner);
