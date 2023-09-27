@@ -45,7 +45,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setBoard(response.data);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getTasks = async (
@@ -88,7 +88,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             });
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const deleteTasks = async (taskId) => {
@@ -110,7 +110,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setReload(!reload);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getUsers = async (url = `${baseUrl}/emp/`) => {

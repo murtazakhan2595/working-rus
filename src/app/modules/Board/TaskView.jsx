@@ -8,6 +8,8 @@ import { connect } from "react-redux";
 import Joi from "joi";
 import moment from "moment";
 import ReactQuill from "react-quill";
+import { IoAttachOutline } from "react-icons/io5";
+import { VscMention } from "react-icons/vsc";
 
 const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [assignToOpen, setAssignToOpen] = useState(false);
@@ -21,10 +23,131 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [users, setUsers] = useState({});
   const [filterUsers, setFilterUsers] = useState({});
+  const [comments, setComments] = useState([]);
+  const [comment, setComment] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editedComment, setEditedComment] = useState("");
+  const [loading, setLoading] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null);
 
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
+  // fetch currnet user
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/user/`, { headers });
+        if (response.status === 200) {
+          setCurrentUser(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+    fetchCurrentUser();
+  }, [token]);
+
+  // Comment post api
+  const createComment = async (id) => {
+    console.log(id)
+    try {
+      const response = await axios.post(
+        `${baseUrl}/comments/`,
+        {
+          task_id: id,
+          user_id: currentUser.id,
+          comment: comment,
+        },
+        { headers }
+      );
+
+      const newComment = response.data;
+      const updatedComments = [...comments, newComment];
+      setComments(updatedComments);
+      setComment("");
+      toast.success("Comment added successsfully", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    } catch (error) {
+      console.error("Error creating comment", error);
+    }
+  };
+
+  // fetch comments
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/comments`, { headers });
+        const commentsData = response.data;
+        setComments(commentsData);
+        console.log(commentsData);
+      } catch (error) {
+        console.error("Error fetching todos:", error);
+      }
+    };
+    fetchComments();
+  }, []);
+
+  // editComment 
+  const startEdit = (commentId, commentText) => {
+    setEditingCommentId(commentId)
+    setEditedComment(commentText)
+  }
+
+  const cancelEdit = () => {
+    setEditingCommentId(null);
+    setEditedComment('')
+  }
+
+  const saveEdit = async (id) => {
+    try {
+      await axios.put(`${baseUrl}/comments/${id}/`, { comment: editedComment }, { headers });
+      const updatedComments = comments.map(c => {
+        if (c.id === id) {
+          return { ...c, comment: editedComment }
+        }
+        return c;
+      })
+      setComments(updatedComments)
+      setEditingCommentId(null)
+      setEditedComment('')
+      toast.success("Comment edited successsfully", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    } catch (error) {
+      console.error('Error editing comment', error);
+    }
+  }
+
+  // deleteComment
+  const deleteComment = async (id) => {
+    try {
+      await axios.delete(`${baseUrl}/comments/${id}`, { headers });
+      const updatedComments = comments.filter((c) => c.id !== id);
+      setComments(updatedComments);
+      toast.error("Comment deleted Successfully", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+    } catch (error) {
+      console.error("Error deleting comment", error);
+    }
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,7 +224,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setFilterUsers(response.data.results);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getAssignee = async () => {
@@ -117,7 +240,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setAssignToUser(response.data);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
     try {
       await axios
         .get(`${baseUrl}/emp/${taskData.assigned_by}`, {
@@ -130,7 +253,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setAssignByUser(response.data);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -171,8 +294,8 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   };
 
   return (
-    <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen z-50 flex justify-center items-center backdrop-blur-sm  ">
-      <div className="flex items-center justify-center z-50">
+    <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
+      <div className="flex items-center justify-center z-auto">
         <div className="md:mx-auto pb-10 pt-28 w-full max-w-3xl relative">
           <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-full max-w-6xl border border-gray-100 shadow-md relative">
             <div
@@ -228,8 +351,8 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                           [{ align: [] }],
                           ["link", "image"],
                           [
-                              { header: "1" },
-                              { header: "2" },
+                            { header: "1" },
+                            { header: "2" },
                           ],
                           [{ size: ["small", false, "large", "huge"] }],
                         ],
@@ -485,6 +608,91 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     )}
                   </div>
                 </div>
+              </div>
+
+              {/* ******************* COMMENT ********************************** */}
+              <div>
+                <input
+                  type="text"
+                  name=""
+                  id=""
+                  className="h-14 rounded-lg bg-white w-full mt-4 font-sfpro pl-3 focus:outline-none"
+                  placeholder="Write a comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+                <div className="flex justify-between mt-2">
+                  <div className="flex gap-x-1 text-xl text-gray-400">
+                    <span>
+                      <IoAttachOutline />
+                    </span>
+                    <span>
+                      <VscMention />
+                    </span>
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      className="bg-[#25A8E0] text-white rounded-lg px-6 py-1"
+                      onClick={() => createComment(taskData.id)}
+                    >
+                      Send
+                    </button>
+                  </div>
+                </div>
+
+                {loading ? (
+                  <p>Loading comments...</p>
+                ) : (
+                  <div className="w-full">
+                    <p className="text-gray-400">Comments ({comments.filter(comment => comment.task_id === taskData.id).length})</p>
+                    {comments.filter((c) => c.task_id === taskData.id).length > 0 && (
+                      <div className="flex flex-col gap-2 h-36 overflow-y-scroll roundScrollsm">
+                        {comments.filter((c) => c.task_id === taskData.id).map((c) => (
+                          <div className="flex gap-4 items-start" key={c.id}>
+                            <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white flex-none">
+                              {currentUser ? currentUser.username.slice(0, 2).toUpperCase() : "Loading..."}
+                            </div>
+                            <div className="w-full mr-2 flex-1">
+                              <h1 className="font-semibold font-sfpro">
+                                {currentUser ? currentUser.username : "Loading..."}
+                              </h1>
+                              {editingCommentId === c.id ? (
+                                <input
+                                  type="text"
+                                  value={editedComment}
+                                  onChange={(e) => setEditedComment(e.target.value)}
+                                  autoFocus
+                                  className="border-b border-gray-300 w-full py-2 focus:outline-none pl-2"
+                                />
+                              ) : (
+                                <p className="text-gray-700">{c.comment}</p>
+                              )}
+                              <div className="text-sm space-x-4 text-gray-600">
+                                {editingCommentId === c.id ? (
+                                  <>
+                                    <span className="underline cursor-pointer" onClick={() => saveEdit(c.id)}>Save</span>
+                                    <span className="underline cursor-pointer" onClick={cancelEdit}>Cancel</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <span className="underline cursor-pointer" onClick={() => startEdit(c.id, c.comment)}>Edit</span>
+                                    <span
+                                      className="underline cursor-pointer"
+                                      onClick={() => deleteComment(c.id)}
+                                    >
+                                      Delete
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <button

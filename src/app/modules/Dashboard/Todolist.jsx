@@ -146,18 +146,6 @@ const Dashboard = ({ token, baseUrl }) => {
     }
   };
 
-  // const handleCheckboxChange = (id) => {
-  //   const updatedTodos = todos.map(todo => {
-  //     if (todo.id === id) return { ...todo, completed: !todo.completed };
-  //     return todo;
-  //   });
-
-
-  //   updatedTodos.sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
-
-  //   setTodos(updatedTodos);
-  // };
-
   const handleCheckboxChange = async (id, isCompleted) => {
     try {
       const updatedTodos = todos.map(todo => {
