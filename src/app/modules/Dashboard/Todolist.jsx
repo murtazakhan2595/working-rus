@@ -39,7 +39,6 @@ const Dashboard = ({ token, baseUrl }) => {
         const response = await axios.get(`${baseUrl}/todotask`, { headers });
         const todosData = response.data;
         setTodos(todosData);
-        console.log(todosData);
       } catch (error) {
         console.error('Error fetching todos:', error);
       }
@@ -146,18 +145,6 @@ const Dashboard = ({ token, baseUrl }) => {
       createTodo(); // Call the createTodo function here
     }
   };
-
-  // const handleCheckboxChange = (id) => {
-  //   const updatedTodos = todos.map(todo => {
-  //     if (todo.id === id) return { ...todo, completed: !todo.completed };
-  //     return todo;
-  //   });
-
-
-  //   updatedTodos.sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
-
-  //   setTodos(updatedTodos);
-  // };
 
   const handleCheckboxChange = async (id, isCompleted) => {
     try {
