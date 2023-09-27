@@ -28,128 +28,10 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [users, setUsers] = useState({});
   const [filterUsers, setFilterUsers] = useState({});
-  const [comments, setComments] = useState([]);
-  const [comment, setComment] = useState("");
-  const [editingCommentId, setEditingCommentId] = useState(null);
-  const [editedComment, setEditedComment] = useState("");
-  const [loading, setLoading] = useState(false)
-  const [currentUser, setCurrentUser] = useState(null);
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
-  };
-
-  // fetch currnet user
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/user/`, { headers });
-        if (response.status === 200) {
-          setCurrentUser(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching current user:", error);
-      }
-    };
-    fetchCurrentUser();
-  }, [token]);
-
-  // Comment post api
-  const createComment = async () => {
-    try {
-      const response = await axios.post(
-        `${baseUrl}/comments/`,
-        {
-          task_id: 40,
-          user_id: currentUser.id,
-          comment: comment,
-        },
-        { headers }
-      );
-
-      const newComment = response.data;
-      const updatedComments = [...comments, newComment];
-      setComments(updatedComments);
-      setComment("");
-      toast.success("Comment added successsfully", {
-        position: "top-right",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
-    } catch (error) {
-      console.error("Error creating comment", error);
-    }
-  };
-
-  // fetch comments
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/comments`, { headers });
-        const commentsData = response.data;
-        setComments(commentsData);
-        console.log(commentsData);
-      } catch (error) {
-        console.error("Error fetching todos:", error);
-      }
-    };
-    fetchComments();
-  }, []);
-
-  // editComment 
-  const startEdit = (commentId, commentText) => {
-    setEditingCommentId(commentId)
-    setEditedComment(commentText)
-  }
-
-  const cancelEdit = () => {
-    setEditingCommentId(null);
-    setEditedComment('')
-  }
-
-  const saveEdit = async (id) => {
-    try {
-      await axios.put(`${baseUrl}/comments/${id}/`, { comment: editedComment }, { headers });
-      const updatedComments = comments.map(c => {
-        if (c.id === id) {
-          return { ...c, comment: editedComment }
-        }
-        return c;
-      })
-      setComments(updatedComments)
-      setEditingCommentId(null)
-      setEditedComment('')
-      toast.success("Comment edited successsfully", {
-        position: "top-right",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
-    } catch (error) {
-      console.error('Error editing comment', error);
-    }
-  }
-
-  // deleteComment
-  const deleteComment = async (id) => {
-    try {
-      await axios.delete(`${baseUrl}/comments/${id}`, { headers });
-      const updatedComments = comments.filter((c) => c.id !== id);
-      setComments(updatedComments);
-      toast.error("Comment deleted Successfully", {
-        position: "top-right",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
-    } catch (error) {
-      console.error("Error deleting comment", error);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -612,7 +494,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                   </div>
                 </div>
                 {/* ******************* COMMENT ********************************** */}
-                <div>
+                {/* <div>
                   <input
                     type="text"
                     name=""
@@ -695,7 +577,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                     )
 
                   )}
-                </div>
+                </div> */}
               </div>
               <button
                 type="submit"
