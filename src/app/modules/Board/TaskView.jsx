@@ -57,7 +57,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
         `${baseUrl}/comments/`,
         {
           task_id: id,
-          user_id: 1,
+          user_id: currentUser.id,
           comment: comment,
         },
         { headers }
@@ -195,7 +195,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
         console.error("Error:", error);
 
         // Show an error toast
-        toast.error("Something went wrong", {
+        toast.error(error.response.data.name[0], {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -316,7 +316,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                 }}
                 name="name"
                 id="name"
-                className="text-2xl bg-transparent focus:outline-none font-sfpro leading-3 font-bold mb-8"
+                className="text-2xl w-full bg-transparent focus:outline-none font-sfpro leading-3 font-bold mb-8"
               />
               {validationErrors.name && (
                 <span className="text-red-500 text-sm">
@@ -413,9 +413,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       setStatus(e.target.value);
                     }}
                   >
-                    <option value={3}>Todo</option>
-                    <option value={2}>In Progress</option>
-                    <option value={1}>Completed</option>
+                    <option value="To Do">Todo</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
                   </select>
                 </div>
 
@@ -644,13 +644,15 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                 {loading ? (
                   <p>Loading comments...</p>
                 ) : (
-                  comments.length > 0 && (
-                    <div className="w-full">
-                      <p className="text-gray-400">Comments ({comments.length})</p>
+                  <div className="w-full">
+                    <p className="text-gray-400">Comments ({comments.filter(comment => comment.task_id === taskData.id).length})</p>
+                    {comments.filter((c) => c.task_id === taskData.id).length > 0 && (
                       <div className="flex flex-col gap-2 h-36 overflow-y-scroll roundScrollsm">
-                        {comments.map((c) => (
-                          <div className="flex gap-4 items-center" key={c.id}>
-                            <div className="w-10 h-10 rounded-full bg-gray-600 flex items-start flex-none"></div>
+                        {comments.filter((c) => c.task_id === taskData.id).map((c) => (
+                          <div className="flex gap-4 items-start" key={c.id}>
+                            <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white flex-none">
+                              {currentUser ? currentUser.username.slice(0, 2).toUpperCase() : "Loading..."}
+                            </div>
                             <div className="w-full mr-2 flex-1">
                               <h1 className="font-semibold font-sfpro">
                                 {currentUser ? currentUser.username : "Loading..."}
@@ -688,8 +690,8 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                           </div>
                         ))}
                       </div>
-                    </div>
-                  )
+                    )}
+                  </div>
                 )}
               </div>
 
