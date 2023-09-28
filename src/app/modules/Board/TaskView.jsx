@@ -294,9 +294,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   };
 
   return (
-    <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
-      <div className="flex items-center justify-center z-auto">
-        <div className="md:mx-auto pb-10 pt-28 w-full max-w-3xl relative">
+    <div className="fixed inset-0 w-screen overflow-y-auto scroll z-50 h-screen flex justify-center items-center backdrop-blur-sm  ">
+      <div className="flex items-center justify-center">
+        <div className="md:mx-auto pb-10 pt-64 w-full max-w-3xl relative">
           <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-full max-w-6xl border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"

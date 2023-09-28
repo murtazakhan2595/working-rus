@@ -19,6 +19,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   const [board, setBoard] = useState([]);
   const [reload, setReload] = useState(false);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [boardHidden, setBoardHidden] = useState(false);
   const [users, setUsers] = useState([]);
   const location = useLocation();
   const [tasks, setTasks] = useState({
@@ -140,6 +141,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   };
 
   const closeTask = (index) => {
+    setBoardHidden(false)
     setReload(!reload);
     const updatedModals = [...isTaskViewOpen];
     updatedModals[index] = false;
@@ -157,31 +159,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
     const randomIndex = Math.floor(Math.random() * colorClasses.length);
     return colorClasses[randomIndex];
   };
-
-  // const handleDragEnd = (result) => {
-  //   console.log("first")
-  //   if (!result.destination) {
-  //     return; // Dropped outside of a droppable area
-  //   }
-
-  //   let updatedTasks = [...tasks]
-  //   const [movedTask] = updatedTasks.splice(result.source.index, 1);
-  //   console.log(movedTask);
-  //   updatedTasks.splice(result.destination.index, 0, movedTask);
-  //   console.log(result.destination.droppableId);
-
-  //   const response = axios.patch(
-  //     `${baseUrl}/task/${movedTask.id}`,
-  //     { status: result.destination.droppableId },
-  //     {
-  //       headers :{ Authorization: `Bearer ${token}`
-  //     }
-  //     }
-  //   );
-  // if (response.status === 200){
-  //  setReload(!reload)
-  // }
-  // };
 
   const handleDragEnd = async (result) => {
     if (!result.destination) {
@@ -230,7 +207,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   }, [location]);
 
   return (
-    <div className="w-full h-screen bg-[#F9F9F9]">
+    <div className={`w-full h-screen bg-[#F9F9F9] ${boardHidden ? '' : ''}`}>
       {/* ***************************************************** Header ***************************************************** */}
       <div className="py-5 pl-10 pr-2 flex gap-3 items-center justify-between">
         <div className="flex items-center">
@@ -287,7 +264,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
       </div>
 
       {/* ***************************************************** Board Card ***************************************************** */}
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext onDragEnd={boardHidden ? '' : handleDragEnd}>
         <div className="flex w-full justify-start ">
           <div className="flex xScroll  ml-10 pb-2 overflow-x-auto w-[82vw] justify-start">
             <div id="boardList" className="flex">
@@ -311,6 +288,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                       {tasks["todo"].map((t, index) => (
                         <>
                           <Draggable
+                          isDragDisabled={boardHidden}
                             key={t.id}
                             draggableId={t.id.toString()}
                             index={index}
@@ -325,7 +303,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
                                 >
                                   <div
-                                    onClick={() => openTaskView(index)}
+                                    onClick={() => {openTaskView(index); setBoardHidden(true)}}
                                     className="opacity-70"
                                   >
                                     {t.name}
@@ -418,6 +396,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                       {tasks["inProgress"].map((t, index) => (
                         <>
                           <Draggable
+                          isDragDisabled={boardHidden}
                             key={t.id}
                             draggableId={t.id.toString()}
                             index={index}
@@ -432,7 +411,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
                                 >
                                   <div
-                                    onClick={() => openTaskView(index)}
+                                    onClick={() => {openTaskView(index); setBoardHidden(true)}}
                                     className="opacity-70"
                                   >
                                     {t.name}
@@ -525,6 +504,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                       {tasks["completed"].map((t, index) => (
                         <>
                           <Draggable
+                          isDragDisabled={boardHidden} 
                             key={t.id}
                             draggableId={t.id.toString()}
                             index={index}
@@ -539,7 +519,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
                                 >
                                   <div
-                                    onClick={() => openTaskView(index)}
+                                    onClick={() => {openTaskView(index); setBoardHidden(true)}}
                                     className="opacity-70"
                                   >
                                     {t.name}
