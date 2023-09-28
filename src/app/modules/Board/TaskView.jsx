@@ -10,6 +10,8 @@ import moment from "moment";
 import ReactQuill from "react-quill";
 import { IoAttachOutline } from "react-icons/io5";
 import { VscMention } from "react-icons/vsc";
+import { AiOutlineEdit } from "react-icons/ai";
+import { MdDeleteForever } from "react-icons/md";
 
 const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [assignToOpen, setAssignToOpen] = useState(false);
@@ -297,7 +299,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
     <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
       <div className="flex items-center justify-center z-auto">
         <div className="md:mx-auto pb-10 pt-28 w-full max-w-3xl relative">
-          <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-full max-w-6xl border border-gray-100 shadow-md relative">
+          <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-[655px] max-w-5xl border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
               onClick={onClose}
@@ -646,10 +648,13 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                 ) : (
                   <div className="w-full">
                     <p className="text-gray-400">Comments ({comments.filter(comment => comment.task_id === taskData.id).length})</p>
+                    {/* show comments are conditionally */}
                     {comments.filter((c) => c.task_id === taskData.id).length > 0 && (
-                      <div className="flex flex-col gap-2 h-36 overflow-y-scroll roundScrollsm">
+                      <div className="flex flex-col gap-2 max-h-36 overflow-y-auto roundScrollsm">
+                        {/* map and filter comments */}
                         {comments.filter((c) => c.task_id === taskData.id).map((c) => (
-                          <div className="flex gap-4 items-start" key={c.id}>
+                          <div className="flex gap-4 items-start mt-2" key={c.id}>
+                            {/* User profile */}
                             <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white flex-none">
                               {currentUser ? currentUser.username.slice(0, 2).toUpperCase() : "Loading..."}
                             </div>
@@ -668,17 +673,22 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                               ) : (
                                 <p className="text-gray-700">{c.comment}</p>
                               )}
-                              <div className="text-sm space-x-4 text-gray-600">
+                              <div className="text-sm space-x-3 text-gray-600 flex items-center">
                                 {editingCommentId === c.id ? (
                                   <>
-                                    <span className="underline cursor-pointer" onClick={() => saveEdit(c.id)}>Save</span>
-                                    <span className="underline cursor-pointer" onClick={cancelEdit}>Cancel</span>
+                                    <span className="text-xs cursor-pointer opacity-70" onClick={() => saveEdit(c.id)}>Save</span>
+                                    <span className="text-xs cursor-pointer opacity-70" onClick={cancelEdit}>Cancel</span>
                                   </>
                                 ) : (
                                   <>
-                                    <span className="underline cursor-pointer" onClick={() => startEdit(c.id, c.comment)}>Edit</span>
+                                    <span className="text-xs cursor-pointer opacity-70" onClick={() => startEdit(c.id, c.comment)}>Edit</span>
+                                    {/* <AiOutlineEdit className="cursor-pointer text-[#283b91] opacity-70 text-sm"
+                                      onClick={() => startEdit(c.id, c.comment)}
+                                      title="Edit Comment" /> */}
+                                    {/* <MdDeleteForever className="cursor-pointer text-red-400 opacity-70 text-sm"
+                                      onClick={() => deleteComment(c.id)} title="Delete Comment" /> */}
                                     <span
-                                      className="underline cursor-pointer"
+                                      className="text-xs cursor-pointer opacity-70"
                                       onClick={() => deleteComment(c.id)}
                                     >
                                       Delete

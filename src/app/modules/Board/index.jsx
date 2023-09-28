@@ -12,7 +12,7 @@ import TaskView from "./TaskView";
 import { toast, ToastContainer } from "react-toastify";
 import "./index.css";
 import axios from "axios";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const Board = ({ userProfile, baseUrl, token }) => {
   const [status, setStatus] = useState("");
@@ -126,7 +126,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setUsers(response.data.results);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const [isTaskViewOpen, setIsTakViewOpen] = useState(
@@ -193,10 +193,10 @@ const Board = ({ userProfile, baseUrl, token }) => {
       destinationColumn === "todo"
         ? "To Do"
         : destinationColumn === "inProgress"
-        ? "In Progress"
-        : destinationColumn === "completed"
-        ? "Completed"
-        : "";
+          ? "In Progress"
+          : destinationColumn === "completed"
+            ? "Completed"
+            : "";
     let task = tasks[sourceColumn][result.source.index];
     const { sourceIndex, destinationIndex } = result;
     // Update Board Staticly
