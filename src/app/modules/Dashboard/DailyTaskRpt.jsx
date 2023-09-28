@@ -80,11 +80,11 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
 
         try {
             const response = await axios.post(`${baseUrl}/dtr/`, data, { headers });
-            console.log('API Response:', response.data);
-
-            toast.success('DTR submitted successfully!', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
+            if (response.status === 201){
+                toast.success('DTR submitted successfully!', {
+                    position: toast.POSITION.TOP_RIGHT,
+                });
+            }
 
             setEditorHtml("");
             closeModal();

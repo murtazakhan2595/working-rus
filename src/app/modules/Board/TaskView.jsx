@@ -51,7 +51,6 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
 
   // Comment post api
   const createComment = async (id) => {
-    console.log(id)
     try {
       const response = await axios.post(
         `${baseUrl}/comments/`,
@@ -87,7 +86,6 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
         const response = await axios.get(`${baseUrl}/comments`, { headers });
         const commentsData = response.data;
         setComments(commentsData);
-        console.log(commentsData);
       } catch (error) {
         console.error("Error fetching todos:", error);
       }

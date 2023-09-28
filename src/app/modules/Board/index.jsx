@@ -130,22 +130,56 @@ const Board = ({ userProfile, baseUrl, token }) => {
     } catch (error) {}
   };
 
-  const [isTaskViewOpen, setIsTakViewOpen] = useState(
-    Array(tasks.length).fill(false)
+  const [isTodoViewOpen, setIsTodoViewOpen] = useState(
+    Array(tasks.todo.length).fill(false)
+  );
+  const [isProgressViewOpen, setIsProgressViewOpen] = useState(
+    Array(tasks.inProgress.length).fill(false)
+  );
+  const [isCompletedViewOpen, setIsCompletedViewOpen] = useState(
+    Array(tasks.completed.length).fill(false)
   );
 
-  const openTaskView = (index) => {
-    const updatedModals = [...isTaskViewOpen];
+  const openTodoView = (index) => {
+    const updatedModals = [...isTodoViewOpen];
     updatedModals[index] = true;
-    setIsTakViewOpen(updatedModals);
+    setIsTodoViewOpen(updatedModals);
   };
 
-  const closeTask = (index) => {
+  const closeTodo = (index) => {
     setBoardHidden(false)
     setReload(!reload);
-    const updatedModals = [...isTaskViewOpen];
+    const updatedModals = [...isTodoViewOpen];
     updatedModals[index] = false;
-    setIsTakViewOpen(updatedModals);
+    setIsTodoViewOpen(updatedModals);
+  };
+
+  const openInProgressView = (index) => {
+    const updatedModals = [...isProgressViewOpen];
+    updatedModals[index] = true;
+    setIsProgressViewOpen(updatedModals);
+  };
+
+  const closeProgess = (index) => {
+    setBoardHidden(false)
+    setReload(!reload);
+    const updatedModals = [...isProgressViewOpen];
+    updatedModals[index] = false;
+    setIsProgressViewOpen(updatedModals);
+  };
+
+  const openCompletedView = (index) => {
+    const updatedModals = [...isCompletedViewOpen];
+    updatedModals[index] = true;
+    setIsCompletedViewOpen(updatedModals);
+  };
+
+  const closeCompleted = (index) => {
+    setBoardHidden(false)
+    setReload(!reload);
+    const updatedModals = [...isCompletedViewOpen];
+    updatedModals[index] = false;
+    setIsCompletedViewOpen(updatedModals);
   };
 
   const getRandomColor = () => {
@@ -303,7 +337,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
                                 >
                                   <div
-                                    onClick={() => {openTaskView(index); setBoardHidden(true)}}
+                                    onClick={() => {openTodoView(index); setBoardHidden(true)}}
                                     className="opacity-70"
                                   >
                                     {t.name}
@@ -340,9 +374,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   </div>
                                 </div>
 
-                                {isTaskViewOpen[index] && (
+                                {isTodoViewOpen[index] && (
                                   <TaskView
-                                    onClose={() => closeTask(index)}
+                                    onClose={() => closeTodo(index)}
                                     taskData={{
                                       id: t.id,
                                       name: t.name,
@@ -411,7 +445,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
                                 >
                                   <div
-                                    onClick={() => {openTaskView(index); setBoardHidden(true)}}
+                                    onClick={() => {openInProgressView(index); setBoardHidden(true)}}
                                     className="opacity-70"
                                   >
                                     {t.name}
@@ -446,9 +480,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   </div>
                                 </div>
 
-                                {isTaskViewOpen[index] && (
+                                {isProgressViewOpen[index] && (
                                   <TaskView
-                                    onClose={() => closeTask(index)}
+                                    onClose={() => closeProgess(index)}
                                     taskData={{
                                       id: t.id,
                                       name: t.name,
@@ -519,7 +553,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
                                 >
                                   <div
-                                    onClick={() => {openTaskView(index); setBoardHidden(true)}}
+                                    onClick={() => {openCompletedView(index); setBoardHidden(true)}}
                                     className="opacity-70"
                                   >
                                     {t.name}
@@ -553,9 +587,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     </div>{" "}
                                   </div>
                                 </div>
-                                {isTaskViewOpen[index] && (
+                                {isCompletedViewOpen[index] && (
                                   <TaskView
-                                    onClose={() => closeTask(index)}
+                                    onClose={() => closeCompleted(index)}
                                     taskData={{
                                       id: t.id,
                                       name: t.name,
