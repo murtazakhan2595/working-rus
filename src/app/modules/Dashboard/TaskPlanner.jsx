@@ -78,6 +78,8 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
     } catch (error) {}
   };
 
+  const getLenght =(task)=>{let tName = String(task.name) ; return tName.length > 25 && "..."}
+
   useEffect(() => {
     do {
       nextPage ? getBoards(nextPage) : getBoards();
@@ -123,7 +125,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
                   key={index}
                   className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
                 >
-                  <div className="w-44">{task.name.substring(0, 25)} ...</div>
+                  <div className="w-44">{task.name.substring(0, 25)} {getLenght(task)}</div>
                   <div className="w-28">{task.userName}</div>
                   <div className="w-28">{task.end_date}</div>
                   <div className="w-28">{task.status}</div>
