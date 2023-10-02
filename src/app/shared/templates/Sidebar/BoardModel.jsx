@@ -130,6 +130,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
   };
 
 
+
   return (
     <>
       <div className="fixed inset-0 z-50 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
@@ -310,12 +311,14 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                             className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-pink-500 border-2"
                           >
                             <span className="text-white text-sm flex justify-center items-center plus-icon w-9 h-9">
-                              {users[selectedUserId]?.username
+                              {users[selectedUserId - 1]?.username
                                 ?.toUpperCase()
                                 .slice(0, 2)}
                             </span>
                           </div>
                         ))}
+
+
                         <div className="relative">
                           {membersOpen && (
                             <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
@@ -342,21 +345,16 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                                         }));
                                         handleMemberSelection(user.id);
                                       }}
-                                      className={`flex gap-3 px-2 py-1 relative items-center group cursor-pointer ${selectedMembers.includes(
-                                        user.id
-                                      )
+                                      className={`flex gap-3 px-2 py-1 relative items-center group cursor-pointer ${selectedMembers.includes(user.id)
                                         ? "bg-blue-100 text-white"
-                                        : ""}`}
+                                        : ""
+                                        }`}
                                       key={user.id}
                                     >
                                       <div className="rounded-full text-sm bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center ">
-                                        {user.username
-                                          ?.toUpperCase()
-                                          .slice(0, 2)}
+                                        {user.username?.toUpperCase().slice(0, 2)}
                                       </div>
-                                      <p className="gap-3 text-sm">
-                                        {user.username}
-                                      </p>
+                                      <p className="gap-3 text-sm">{user.username}</p>
                                     </div>
                                   ))}
                                 </ul>
