@@ -179,7 +179,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       }));
                       setName(e.target.value);
                     }}
-                    className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-4"
+                    className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider "
                     placeholder="TecBrix Dashboard Design"
                   />
                   {validationErrors.name && (

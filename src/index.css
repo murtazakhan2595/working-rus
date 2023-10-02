@@ -117,7 +117,7 @@ body {
   position: sticky !important;
   top: 0 !important;
   background-color: #e8e8e8 !important;
-  z-index: 5 !important;
+  z-index: 0 !important;
   padding: 2px 0px !important;
 }
 

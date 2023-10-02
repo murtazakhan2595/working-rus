@@ -139,7 +139,7 @@ const WorkTime = () => {
 
       {/* ********************************** Working Time ******************************* */}
       <div
-        className="w-56 h-56 drop-shadow-lg shadow-black  z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
+        className="w-56 h-56 drop-shadow-lg shadow-black  z-0 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
         style={{
           background: `conic-gradient(from 0deg at 50% 50%, #25a8e0 ${getProgress()}deg, #fff 0 ${getProgress()}deg, #fff)`,
         }}
@@ -174,9 +174,8 @@ const WorkTime = () => {
             {worldTime.map((time, index) => (
               <div key={index} className="z-0">
                 <div
-                  className={`flex items-center justify-end ${
-                    index === 1 ? "" : "pr-4"
-                  } rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}
+                  className={`flex items-center justify-end ${index === 1 ? "" : "pr-4"
+                    } rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}
                 >
                   <img
                     src={`https://flagcdn.com/w320/${time.img}.png`}
@@ -202,15 +201,13 @@ const WorkTime = () => {
             ))}
             <div
               style={{ justifyContent: "right" }}
-              className={`${
-                worldTime.length >= 1 ? "w-[70%]" : "w-[180%]"
-              } flex items-center`}
+              className={`${worldTime.length >= 1 ? "w-[70%]" : "w-[180%]"
+                } flex items-center`}
             >
               <div
                 style={{ justifyContent: "right" }}
-                className={`p-1 flex  ${
-                  worldTime.length >= 1 ? "w-[21%]" : "w-[51%]"
-                } rounded-md justify-center items-end`}
+                className={`p-1 flex  ${worldTime.length >= 1 ? "w-[21%]" : "w-[51%]"
+                  } rounded-md justify-center items-end`}
               >
                 <FaPlus
                   onClick={() => {
