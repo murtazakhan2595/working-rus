@@ -240,13 +240,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
     getBoard();
   }, [location]);
 
-  const deleteBoardById = async (boardId, token) => {
+  const deleteBoardById = async (boardId) => {
     try {
-      await axios.delete(`/api/board/${boardId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.delete(`/api/boards/${boardId}`);
       setBoard((prevBoards) => prevBoards.filter((board) => board.id !== boardId));
       toast.success('Board deleted successfully');
     } catch (error) {
@@ -254,7 +250,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
       toast.error('Error deleting board. Please try again.');
     }
   };
-
 
 
   return (
@@ -306,15 +301,11 @@ const Board = ({ userProfile, baseUrl, token }) => {
               <FiFilter />
             </div>
           </div>
-          <div
-            className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg"
-            onClick={() => deleteBoardById(board.id)}
-          >
-            <div className="px-1 text-gray-400">
+          <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg">
+            <div className=" px-1 text-gray-400">
               <BsTrash3 />
             </div>
           </div>
-
         </div>
       </div>
 
