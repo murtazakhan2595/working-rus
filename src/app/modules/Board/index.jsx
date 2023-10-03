@@ -240,6 +240,23 @@ const Board = ({ userProfile, baseUrl, token }) => {
     getBoard();
   }, [location]);
 
+  const deleteBoardById = async (boardId, token) => {
+    try {
+      await axios.delete(`/api/board/${boardId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setBoard((prevBoards) => prevBoards.filter((board) => board.id !== boardId));
+      toast.success('Board deleted successfully');
+    } catch (error) {
+      console.error('Error deleting board:', error);
+      toast.error('Error deleting board. Please try again.');
+    }
+  };
+
+
+
   return (
     <div className={`w-full h-screen bg-[#F9F9F9] ${boardHidden ? '' : ''}`}>
       {/* ***************************************************** Header ***************************************************** */}
@@ -289,11 +306,15 @@ const Board = ({ userProfile, baseUrl, token }) => {
               <FiFilter />
             </div>
           </div>
-          <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg">
-            <div className=" px-1 text-gray-400">
+          <div
+            className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg"
+            onClick={() => deleteBoardById(board.id)}
+          >
+            <div className="px-1 text-gray-400">
               <BsTrash3 />
             </div>
           </div>
+
         </div>
       </div>
 
@@ -322,7 +343,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                       {tasks["todo"].map((t, index) => (
                         <>
                           <Draggable
-                          isDragDisabled={boardHidden}
+                            isDragDisabled={boardHidden}
                             key={t.id}
                             draggableId={t.id.toString()}
                             index={index}
@@ -337,7 +358,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
                                 >
                                   <div
-                                    onClick={() => {openTodoView(index); setBoardHidden(true)}}
+                                    onClick={() => { openTodoView(index); setBoardHidden(true) }}
                                     className="opacity-70"
                                   >
                                     {t.name}
@@ -430,7 +451,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                       {tasks["inProgress"].map((t, index) => (
                         <>
                           <Draggable
-                          isDragDisabled={boardHidden}
+                            isDragDisabled={boardHidden}
                             key={t.id}
                             draggableId={t.id.toString()}
                             index={index}
@@ -445,7 +466,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
                                 >
                                   <div
-                                    onClick={() => {openInProgressView(index); setBoardHidden(true)}}
+                                    onClick={() => { openInProgressView(index); setBoardHidden(true) }}
                                     className="opacity-70"
                                   >
                                     {t.name}
@@ -538,7 +559,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                       {tasks["completed"].map((t, index) => (
                         <>
                           <Draggable
-                          isDragDisabled={boardHidden} 
+                            isDragDisabled={boardHidden}
                             key={t.id}
                             draggableId={t.id.toString()}
                             index={index}
@@ -553,7 +574,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
                                 >
                                   <div
-                                    onClick={() => {openCompletedView(index); setBoardHidden(true)}}
+                                    onClick={() => { openCompletedView(index); setBoardHidden(true) }}
                                     className="opacity-70"
                                   >
                                     {t.name}
