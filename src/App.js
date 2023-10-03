@@ -5,6 +5,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
+import Err404 from "./app/modules/Error/Err404.jsx";
 
 import axios from "axios";
 import Cookies from "universal-cookie";
@@ -56,14 +57,18 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
 
     <Routes>
       {isLogin ?
+      <>
         <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>}>
           <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen} />}/>  
           <Route path="/board/:id" element={<Board />} />
         </Route>
+          <Route path="*" element={<Err404 />} />
+      </>
           : ""}
       {!isLogin && (
         <>
           <Route path="/" element={<Login />} />
+          <Route path="*" element={<Err404 />} />
         </>
         )}
       </Routes>

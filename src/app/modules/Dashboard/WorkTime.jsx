@@ -139,7 +139,7 @@ const WorkTime = () => {
 
       {/* ********************************** Working Time ******************************* */}
       <div
-        className="w-56 h-56 drop-shadow-lg shadow-black  z-0 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
+        className="w-56 h-56 drop-shadow-lg shadow-black  z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
         style={{
           background: `conic-gradient(from 0deg at 50% 50%, #25a8e0 ${getProgress()}deg, #fff 0 ${getProgress()}deg, #fff)`,
         }}
