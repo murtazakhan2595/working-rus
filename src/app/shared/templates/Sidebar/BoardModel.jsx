@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Joi from "joi";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
@@ -290,7 +290,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
 
                   <div className="flex gap-4">
                     {/* ************************** MEMBERS ************************** */}
-                    <div className="flex w-1/2 flex-col">
+                    <div className="flex flex-col">
                       <div className="flex justify-start bg-white rounded-md mt-2">
                         {/* <h3 className=" pl-4">Members</h3> */}
                       </div>
