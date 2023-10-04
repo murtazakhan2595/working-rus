@@ -38,6 +38,36 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    const formData = {
+      name: projectName,
+      project_id: 1,
+      // description,
+      // startDate,
+      // dueDate,
+      // selectedMembers,
+    };
+
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      };
+
+      const response = await axios.post(`${baseUrl}/board/`, formData, { headers });
+      console.log('Response:', response);
+      if (response.status === 201) {
+        toast.success("Board Added!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error(error.response.data.detail, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+
     const dataToValidate = {
       projectName,
       description,
@@ -56,44 +86,9 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
       });
       setValidationErrors(newErrors);
       return;
+
     }
 
-    try {
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      };
-
-      axios
-        .post(
-          `${baseUrl}/board/`,
-          {
-            name: title,
-            project_id: 1,
-          },
-          { headers }
-        )
-        .then((response) => {
-          if (response.status === 201) {
-            toast.success("Board Added!", {
-              position: toast.POSITION.TOP_RIGHT,
-            });
-            setTimeout(() => {
-              onClose();
-            }, 2000);
-            return;
-          }
-        })
-        .catch((error) => {
-          toast.error(error.response.data.detail, {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        });
-    } catch (error) {
-      toast.error(error.response.data.detail, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
   };
 
 

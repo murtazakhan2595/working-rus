@@ -32,6 +32,10 @@ const Board = ({ userProfile, baseUrl, token }) => {
     completed: [],
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isEditBoardOpen, setIsEditBoardOpen] = useState(false);
+  const [newBoardName, setNewBoardName] = useState('');
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+
 
   const { id } = useParams();
 
@@ -39,6 +43,30 @@ const Board = ({ userProfile, baseUrl, token }) => {
     setIsAddTaskOpen(false);
   };
 
+  // edit board pop up
+
+  const openEditBoardPopup = () => {
+    setNewBoardName(board.name);
+    setIsEditBoardOpen(true);
+  };
+
+  const handleEditBoardNameChange = (event) => {
+    setNewBoardName(event.target.value);
+  };
+
+
+  // delete board pop up
+
+  const openDeleteConfirmation = () => {
+    setIsDeleteConfirmationOpen(true);
+  };
+
+  // Step 3: Close the delete confirmation pop-up
+  const closeDeleteConfirmation = () => {
+    setIsDeleteConfirmationOpen(false);
+  };
+
+  // logout drop down
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -150,18 +178,18 @@ const Board = ({ userProfile, baseUrl, token }) => {
     } catch (error) { }
   };
 
- 
 
-/*   const deleteBoard = async (boardId) => {
-    try {
-      const updatedBoards = board.filter(b => b.id !== boardId);
-      setBoard(updatedBoards);
 
-      await axios.delete(`${baseUrl}/board/${id}`, { headers });
-    } catch (error) {
-      console.error('Error deleting todo', error);
-    }
-  }; */
+  /*   const deleteBoard = async (boardId) => {
+      try {
+        const updatedBoards = board.filter(b => b.id !== boardId);
+        setBoard(updatedBoards);
+  
+        await axios.delete(`${baseUrl}/board/${id}`, { headers });
+      } catch (error) {
+        console.error('Error deleting todo', error);
+      }
+    }; */
 
   const [isTodoViewOpen, setIsTodoViewOpen] = useState(
     Array(tasks.todo.length).fill(false)
@@ -274,21 +302,45 @@ const Board = ({ userProfile, baseUrl, token }) => {
   }, [location]);
 
 
-    const deleteBoard = async (boardId) => {
-     try {
-       const response = await axios.delete(`${baseUrl}/board/${boardId}`, {
-         headers,
-       });
-       if (response.status === 204) {
-         console.log("Board deleted successfully!");
-        //  setBoard((prevBoard) => prevBoard.filter((board) => board.id !== boardId));
-       } else {
-         console.error("Unexpected response status:", response.status);
-       }
-     } catch (error) {
-       console.error("Error deleting board:", error);
-     }
-   };
+  const handleDeleteBoard = async () => {
+    try {
+      const response = await axios.delete(`${baseUrl}/board/${board.id}`, {
+        headers,
+      });
+      if (response.status === 204) {
+        console.log("Board deleted successfully!");
+        navigate('/')
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error deleting board:", error);
+    }
+
+    // Close the delete confirmation pop-up after deletion
+    closeDeleteConfirmation();
+  };
+
+  const EditBoardName = async () => {
+    try {
+      const response = await axios.patch(`${baseUrl}/board/${board.id}`, { name: newBoardName }, { headers });
+      if (response.status === 200) {
+        setBoard({ ...board, name: newBoardName });
+        setIsEditBoardOpen(false);
+        toast.success("Board name updated!", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+        });
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error updating board name:", error);
+    }
+  };
+
 
 
   return (
@@ -346,7 +398,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
           <div className="flex bg-white px-2 py-1 gap-3 items-center rounded-lg">
             <div className=" px-4 text-[#283b91]">Share</div>
           </div>
-          <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+          <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg"
+            onClick={openEditBoardPopup}
+          >
             <div className=" px-1 text-gray-400">
               <BsPencil />
             </div>
@@ -357,9 +411,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             </div>
           </div>
           <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg"
-            onClick={() => {
-              deleteBoard(board.id);
-            }}
+            onClick={openDeleteConfirmation}
           >
             <div className=" px-1 text-gray-400">
               <BsTrash3 />
@@ -702,6 +754,68 @@ const Board = ({ userProfile, baseUrl, token }) => {
         <TaskModal onClose={closeModal} currentStatus={status} id={id} />
       )}
       <ToastContainer />
+
+      {/* edit board name modal */}
+      <div
+        className={`fixed inset-0 flex items-center justify-center z-50 ${isEditBoardOpen ? '' : 'hidden'
+          }`}
+      >
+        <div className="modal-overlay absolute w-full h-full backdrop-blur-sm"></div>
+        <div className="modal-container bg-white w-1/5 mx-auto rounded shadow-lg z-50">
+          <div className="modal-content py-4 px-6">
+            <h2 className="text-xl font-semibold mb-4">Edit Board Name</h2>
+            <input
+              type="text"
+              className="w-full border rounded p-2 mb-2 outline-none"
+              value={newBoardName}
+              onChange={handleEditBoardNameChange}
+              placeholder="Enter new board name"
+            />
+            <div className="flex justify-end">
+              <button
+                className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
+                onClick={() => setIsEditBoardOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
+                onClick={EditBoardName}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete confirmatin pop up */}
+
+      {isDeleteConfirmationOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="modal-overlay absolute w-full h-full backdrop-blur-sm"></div>
+          <div className="modal-container bg-white w-1.5/5 mx-auto rounded shadow-lg z-50">
+            <div className="modal-content py-4 px-6">
+              <h2 className="text-xl font-semibold mb-2">Confirm Deletion</h2>
+              <p className="mb-2">Are you sure you want to delete this board?</p>
+              <div className="flex justify-end">
+                <button
+                  className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
+                  onClick={closeDeleteConfirmation} // Step 3: Close the delete confirmation pop-up
+                >
+                  Cancel
+                </button>
+                <button
+                  className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
+                  onClick={handleDeleteBoard} // Step 4: Delete the board
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
