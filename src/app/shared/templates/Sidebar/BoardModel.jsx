@@ -21,10 +21,10 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
   const [dueDate, setDueDate] = useState(defaultDate);
   const [priority, setPriority] = useState(3);
   const [membersOpen, setMembersOpen] = useState(false);
-  const [members, setMembers] = useState({});
   const [users, setUsers] = useState({});
-  const [filterUsers, setFilterUsers] = useState({});
+  const [filterUsers, setFilterUsers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("")
 
   const boardSchema = Joi.object({
     projectName: Joi.string().min(1).max(100).required(),
@@ -96,6 +96,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
     }
   };
 
+
   const getMembers = async () => {
     try {
       const response = await axios.get(`${baseUrl}/emp/`, {
@@ -130,6 +131,12 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
   };
 
 
+  const handleSearchChange = e => {
+    setSearchQuery(e.target.value);
+  }
+
+  const filteredUsers = filterUsers.filter((user) =>
+    user.username.toLowerCase().includes(searchQuery.toLowerCase()))
 
   return (
     <>
@@ -223,7 +230,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                   </div>
 
                   {/* ************************ Dates , Priority ***************************** */}
-                  <div className="flex justify-between items-center mb-4">
+                  <div className="flex gap-x-10 items-center mb-4">
                     <div className="flex flex-col">
                       <label
                         htmlFor="startDate"
@@ -258,7 +265,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                       />
                     </div>
 
-                    <div className="flex flex-col">
+                    {/* <div className="flex flex-col">
                       <label
                         htmlFor="priority"
                         className="py-1 font-sfpro text-lg font-semibold"
@@ -277,7 +284,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                         <option value={2}>🟡 Medium</option>
                         <option value={1}>🔴 High</option>
                       </select>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* ************************ Members Label ***************************** */}
@@ -332,11 +339,13 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                               <input
                                 type="search"
                                 placeholder="Search"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
                                 className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
                               />
                               <div className="overflow-y-auto max-h-24 roundScrollsm">
                                 <ul className="text-black">
-                                  {filterUsers.map((user) => (
+                                  {filteredUsers.map((user) => (
                                     <div
                                       onClick={() => {
                                         setValidationErrors((prevErrors) => ({

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
 import { RiArrowDownSFill } from "react-icons/ri";
 import { BsPencil, BsTrash3 } from "react-icons/bs";
@@ -13,8 +13,12 @@ import { toast, ToastContainer } from "react-toastify";
 import "./index.css";
 import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import Cookies from "universal-cookie";
+import { setUserLogout } from "../../../state/actions/UserAction";
 
 const Board = ({ userProfile, baseUrl, token }) => {
+  const navigate = useNavigate();
+  const cookies = new Cookies();
   const [status, setStatus] = useState("");
   const [board, setBoard] = useState([]);
   const [reload, setReload] = useState(false);
@@ -27,10 +31,26 @@ const Board = ({ userProfile, baseUrl, token }) => {
     inProgress: [],
     completed: [],
   });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const { id } = useParams();
 
   const closeModal = () => {
     setIsAddTaskOpen(false);
+  };
+
+  const handleDropdownClick = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleLogout = () => {
+    cookies.set("token", "", { path: "*" });
+    setUserLogout();
+    navigate("/");
+  }
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
   };
 
   const getBoard = async () => {
@@ -129,6 +149,19 @@ const Board = ({ userProfile, baseUrl, token }) => {
         });
     } catch (error) { }
   };
+
+ 
+
+/*   const deleteBoard = async (boardId) => {
+    try {
+      const updatedBoards = board.filter(b => b.id !== boardId);
+      setBoard(updatedBoards);
+
+      await axios.delete(`${baseUrl}/board/${id}`, { headers });
+    } catch (error) {
+      console.error('Error deleting todo', error);
+    }
+  }; */
 
   const [isTodoViewOpen, setIsTodoViewOpen] = useState(
     Array(tasks.todo.length).fill(false)
@@ -240,16 +273,22 @@ const Board = ({ userProfile, baseUrl, token }) => {
     getBoard();
   }, [location]);
 
-  const deleteBoardById = async (boardId) => {
-    try {
-      await axios.delete(`/api/boards/${boardId}`);
-      setBoard((prevBoards) => prevBoards.filter((board) => board.id !== boardId));
-      toast.success('Board deleted successfully');
-    } catch (error) {
-      console.error('Error deleting board:', error);
-      toast.error('Error deleting board. Please try again.');
-    }
-  };
+
+    const deleteBoard = async (boardId) => {
+     try {
+       const response = await axios.delete(`${baseUrl}/board/${boardId}`, {
+         headers,
+       });
+       if (response.status === 204) {
+         console.log("Board deleted successfully!");
+        //  setBoard((prevBoard) => prevBoard.filter((board) => board.id !== boardId));
+       } else {
+         console.error("Unexpected response status:", response.status);
+       }
+     } catch (error) {
+       console.error("Error deleting board:", error);
+     }
+   };
 
 
   return (
@@ -269,12 +308,28 @@ const Board = ({ userProfile, baseUrl, token }) => {
             />
           </div>
         </div>
-        <div className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200">
-          <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>{" "}
-          <div className=" text-[#283b91]">{userProfile.username}</div>
-          <div className=" text-[#283b91]">
-            <RiArrowDownSFill />
+        <div className="relative">
+          <div
+            className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
+            onClick={handleDropdownClick}
+          >
+            <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
+            <div className="text-[#283b91]">{userProfile.username}</div>
+            <div className="text-[#283b91]">
+              <RiArrowDownSFill />
+            </div>
           </div>
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-1 w-48 bg-[#283b91] border rounded-lg shadow-lg">
+              <button
+                className="block w-full py-2 px-4 text-left hover:bg-gray-100 hover:text-[#283b91]
+                 text-white"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
       {/* ***************************************************** Board Header ***************************************************** */}
@@ -301,7 +356,11 @@ const Board = ({ userProfile, baseUrl, token }) => {
               <FiFilter />
             </div>
           </div>
-          <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg">
+          <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg"
+            onClick={() => {
+              deleteBoard(board.id);
+            }}
+          >
             <div className=" px-1 text-gray-400">
               <BsTrash3 />
             </div>
