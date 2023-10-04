@@ -15,6 +15,7 @@ import {
   setUserProfile,
   setToken,
 } from "./state/actions/UserAction";
+import BoardList from "./app/modules/BoardList";
 
 function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
   let width = window.screen.width;
@@ -61,6 +62,7 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
         <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>}>
           <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen} />}/>  
           <Route path="/board/:id" element={<Board />} />
+          <Route path="/project/:id" element={<BoardList />} />
         </Route>
           <Route path="*" element={<Err404 />} />
       </>
