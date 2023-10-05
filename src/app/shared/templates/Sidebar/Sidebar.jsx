@@ -10,7 +10,7 @@ import {
 } from "react-icons/ai";
 import { BiTimeFive } from "react-icons/bi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { BsClipboardCheck } from "react-icons/bs";
+import { GoProjectSymlink } from "react-icons/go";
 import { PiShootingStarBold } from "react-icons/pi";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
@@ -21,29 +21,29 @@ import {
 import logo from "../../../../assets/images/logo.png";
 import { setUserLogout } from "../../../../state/actions/UserAction";
 import { connect } from "react-redux";
-import BoardModel from "./BoardModel";
+import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
   const navigate = useNavigate();
   const cookies = new Cookies();
-  const [isBoardOpen, setisBoardOpen] = useState(false);
+  const [isProjectOpen, setisProjectOpen] = useState(false);
   const [isModelOpen, setisModelOpen] = useState(false);
-  const [boards, setBoards] = useState({});
+  const [projects, setProjects] = useState({});
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
-  const [boardCount, setBoardsCount] = useState(0);
+  const [projectsCount, setProjectCount] = useState(0);
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const closeBoardModal = () => {
+  const closeProjectModal = () => {
     setisModelOpen(false);
   };
 
-  const getBoards = async (url = `${baseUrl}/board/`) => {
+  const getProjects = async (url = `${baseUrl}/project/`) => {
     try {
       await axios
         .get(url, {
@@ -53,8 +53,8 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
         })
         .then((response) => {
           if (response.status === 200) {
-            setBoards(response.data.results);
-            setBoardsCount(response.data.count);
+            setProjects(response.data.results);
+            setProjectCount(response.data.count);
             setNextPage(response.data.next);
             setPreviousPage(response.data.previous);
           }
@@ -63,7 +63,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
   };
 
   useEffect(() => {
-    getBoards();
+    getProjects();
   }, [isModelOpen]);
 
   return (
@@ -120,13 +120,13 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
             <hr className="opacity-40" />
 
             <li   onClick={() => {
-                    setisBoardOpen(!isBoardOpen);
+                    setisProjectOpen(!isProjectOpen);
                   }} className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1">
                 <div className="flex gap-1">
-                  <BsClipboardCheck className="text-white text-xl" />{" "}
-                  <p className="text-white">Board</p>
+                  <GoProjectSymlink className="text-white text-xl" />{" "}
+                  <p className="text-white">Projects</p>
                 </div>
-              {isBoardOpen ? (
+              {isProjectOpen ? (
                 <AiOutlineCaretUp
                   className="text-white text-xs"
                 />
@@ -136,22 +136,22 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                 />
               )}
             </li>
-            {isBoardOpen && (
+            {isProjectOpen && (
               <>
                 <div className="flex flex-col rounded-xl mb-4 p-2 bg-[#202F72]">
                   <div className="flex justify-between mb-1 items-center">
                     <div className="flex gap-1">
-                      {boardCount > 10 && (
+                      {projectsCount > 10 && (
                         <>
                           <FaChevronLeft
                             onClick={() => {
-                              getBoards(previousPage);
+                              getProjects(previousPage);
                             }}
                             className="text-white text-[0.65rem] text-xs opacity-60"
                           />
                           <FaChevronRight
                             onClick={() => {
-                              getBoards(nextPage);
+                              getProjects(nextPage);
                             }}
                             className="text-white text-[0.65rem] opacity-60"
                           />
@@ -159,7 +159,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                       )}
                     </div>
                     <div className="flex items-center opacity-60 gap-1 text-white">
-                      <div className="text-xs">{boardCount}</div>
+                      <div className="text-xs">{projectsCount}</div>
                       <AiOutlinePlus
                         onClick={() => {
                           setisModelOpen(true);
@@ -169,11 +169,11 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                     </div>
                   </div>
                   <div className="max-h-[20vh] overflow-y-auto hideScroll">
-                    {boards.map((board, index) => (
+                    {projects.map((project, index) => (
                       <div key={index} className="flex flex-col gap-2">
-                        <div onClick={()=>{navigate(`/board/${board.id}`)}} className="flex gap-3 mb-1 cursor-pointer">
+                        <div onClick={()=>{navigate(`/project/${project.id}`)}} className="flex gap-3 mb-1 cursor-pointer">
                           <div className="bg-blue-950 rounded-md p-3"></div>
-                          <div className="text-white">{board.name}</div>
+                          <div className="text-white">{project.name}</div>
                         </div>
                       </div>
                     ))}
@@ -214,7 +214,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
         <Outlet isSidebarOpen={isSidebarOpen} />
       </div>
 
-      {isModelOpen && <BoardModel onClose={closeBoardModal} />}
+      {isModelOpen && <ProjectModel onClose={closeProjectModal} />}
     </>
   );
 };
