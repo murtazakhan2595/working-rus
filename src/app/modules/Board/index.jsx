@@ -801,13 +801,13 @@ const Board = ({ userProfile, baseUrl, token }) => {
               <div className="flex justify-end">
                 <button
                   className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
-                  onClick={closeDeleteConfirmation} // Step 3: Close the delete confirmation pop-up
+                  onClick={closeDeleteConfirmation}
                 >
                   Cancel
                 </button>
                 <button
                   className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
-                  onClick={handleDeleteBoard} // Step 4: Delete the board
+                  onClick={handleDeleteBoard} 
                 >
                   Confirm
                 </button>
