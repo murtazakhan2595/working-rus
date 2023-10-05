@@ -4,8 +4,8 @@ const initialState = {
   token: "",
   baseUrl:
     window.location.href.indexOf("https") === -1
-      ? "http://hrms-1886226759.eu-west-1.elb.amazonaws.com/api"
-      : "http://hrms-1886226759.eu-west-1.elb.amazonaws.com/api",
+      ? "http://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api"
+      : "http://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api",
 };
 
 const userReducer = (state = initialState, action) => {
