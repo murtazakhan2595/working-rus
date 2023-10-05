@@ -36,7 +36,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
   const [newBoardName, setNewBoardName] = useState('');
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
 
-
   const { id } = useParams();
 
   const closeModal = () => {
@@ -53,7 +52,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
   const handleEditBoardNameChange = (event) => {
     setNewBoardName(event.target.value);
   };
-
 
   // delete board pop up
 
@@ -179,7 +177,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
   };
 
 
-
   /*   const deleteBoard = async (boardId) => {
       try {
         const updatedBoards = board.filter(b => b.id !== boardId);
@@ -301,7 +298,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
     getBoard();
   }, [location]);
 
-
   const handleDeleteBoard = async () => {
     try {
       const response = await axios.delete(`${baseUrl}/board/${board.id}`, {
@@ -340,7 +336,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
       console.error("Error updating board name:", error);
     }
   };
-
 
 
   return (
@@ -801,13 +796,13 @@ const Board = ({ userProfile, baseUrl, token }) => {
               <div className="flex justify-end">
                 <button
                   className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
-                  onClick={closeDeleteConfirmation}
+                  onClick={closeDeleteConfirmation} // Step 3: Close the delete confirmation pop-up
                 >
                   Cancel
                 </button>
                 <button
                   className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
-                  onClick={handleDeleteBoard} 
+                  onClick={handleDeleteBoard} // Step 4: Delete the board
                 >
                   Confirm
                 </button>
@@ -830,3 +825,4 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(Board);
+

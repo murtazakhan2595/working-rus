@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Joi from "joi";
 import { toast, ToastContainer } from "react-toastify";
@@ -38,7 +39,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
-
     const formData = {
       name: projectName,
       project_id: 1,
@@ -125,7 +125,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
     }));
   };
 
-
   const handleSearchChange = e => {
     setSearchQuery(e.target.value);
   }
@@ -185,12 +184,12 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                   <div className="flex flex-col">
                     <label
                       htmlFor="description"
-                      className="font-sfpro text-lg font-semibold mt-2"
+                      className="font-sfpro text-lg font-semibold"
                     >
                       Description
                     </label>
                     {/* Text area */}
-                    <div className="h-48 my-1 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white mb-1">
+                    <div className="h-48 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white mb-1">
                       <ReactQuill
                         name="description"
                         id="description"
@@ -293,9 +292,10 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                   <div className="flex gap-4">
                     {/* ************************** MEMBERS ************************** */}
                     <div className="flex flex-col">
-                      <div className="flex justify-start bg-white rounded-md mt-0">
+                      <div className="flex justify-start bg-white rounded-md mt-2">
+                        {/* <h3 className=" pl-4">Members</h3> */}
                       </div>
-                      <div className="flex mt-1 gap-2">
+                      <div className="flex mt-2 gap-2">
                         <div
                           onClick={() => {
                             setMembersOpen(!membersOpen);
@@ -318,7 +318,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                             </span>
                           </div>
                         ))}
-
 
                         <div className="relative">
                           {membersOpen && (
