@@ -19,6 +19,7 @@ const Dashboard = ({ token, baseUrl }) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showAllItems, setShowAllItems] = useState(false);
   const [validationError, setValidationError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const todoSchema = Joi.object({
     text: Joi.string().trim().required().label('Todo')
@@ -39,8 +40,10 @@ const Dashboard = ({ token, baseUrl }) => {
         const response = await axios.get(`${baseUrl}/todotask`, { headers });
         const todosData = response.data;
         setTodos(todosData);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching todos:', error);
+        setLoading(false);
       }
     };
     fetchTodos();
@@ -212,58 +215,61 @@ const Dashboard = ({ token, baseUrl }) => {
             <p className="text-red-500 text-sm">{validationError}</p>
           )}
         </div>
-        <div className={`overflow-y-auto max-h-[160px] roundScroll`}>
-          {todos.slice(0, showAllItems ? todos.length : 4).map(todo => (
-            <div key={todo.id} className="flex gap-3 w-full px-2 border-b border-gray-500">
-              <div className="flex justify-between w-full py-1.5 px-0">
-                {editTexts[todo.id] !== undefined ? (
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      className="focus:outline-none"
-                      value={editTexts[todo.id]}
-                      onChange={(e) => handleInputChange(e, todo.id)}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="checkbox"
-                      className="accent-[#283b91]"
-                      id={`checkbox-${todo.id}`}
-                      checked={todo.is_completed}
-                      onChange={() => handleCheckboxChange(todo.id, todo.is_completed)}
-                    />
-                    <label
-                      htmlFor={`checkbox-${todo.id}`}
-                      className={`text-gray-400 text-sm ${todo.is_completed ? "line-through" : ""}`}
-                    >
-                      {todo.description}
-                    </label>
-                  </div>
-                )}
-
-                <div className="flex gap-1 justify-end cursor-pointer">
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : (
+          <div className={`overflow-y-auto max-h-[160px] roundScroll`}>
+            {todos.slice(0, showAllItems ? todos.length : 4).map(todo => (
+              <div key={todo.id} className="flex gap-3 w-full px-2 border-b border-gray-500">
+                <div className="flex justify-between w-full py-1.5 px-0">
                   {editTexts[todo.id] !== undefined ? (
-                    <MdCheck className="text-[#283b91] opacity-0.2" onClick={() => handleSave(todo.id)} />
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        className="focus:outline-none"
+                        value={editTexts[todo.id]}
+                        onChange={(e) => handleInputChange(e, todo.id)}
+                      />
+                    </div>
                   ) : (
-                    <div className="flex items-center gap-1">
-                      <AiOutlineEdit className="text-[#283b91] opacity-0.2 text-sm" onClick={() => handleEdit(todo.id)} />
-                      <MdDeleteForever className="text-red-400 opacity-0.2 text-sm" onClick={() => {
-                        setTodoToDelete(todo.id);
-                        setShowDeleteConfirmation(true);
-                      }} />
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="checkbox"
+                        className="accent-[#283b91]"
+                        id={`checkbox-${todo.id}`}
+                        checked={todo.is_completed}
+                        onChange={() => handleCheckboxChange(todo.id, todo.is_completed)}
+                      />
+                      <label
+                        htmlFor={`checkbox-${todo.id}`}
+                        className={`text-gray-400 text-sm ${todo.is_completed ? "line-through" : ""}`}
+                      >
+                        {todo.description}
+                      </label>
                     </div>
                   )}
+
+                  <div className="flex gap-1 justify-end cursor-pointer">
+                    {editTexts[todo.id] !== undefined ? (
+                      <MdCheck className="text-[#283b91] opacity-0.2" onClick={() => handleSave(todo.id)} />
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <AiOutlineEdit className="text-[#283b91] opacity-0.2 text-sm" onClick={() => handleEdit(todo.id)} />
+                        <MdDeleteForever className="text-red-400 opacity-0.2 text-sm" onClick={() => {
+                          setTodoToDelete(todo.id);
+                          setShowDeleteConfirmation(true);
+                        }} />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-          {todos.length <= 0 &&
-            <p className="text-lg text-gray-400 text-center">No data</p>
-          }
-        </div>
-
+            ))}
+            {todos.length <= 0 &&
+              <p className="text-lg text-gray-400 text-center">No data</p>
+            }
+          </div>
+        )}
         {showDeleteConfirmation && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
             <div className="bg-white p-3 rounded-lg shadow-lg">
