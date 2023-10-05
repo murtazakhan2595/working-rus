@@ -7,10 +7,13 @@ import { RxCross2, RxPlus } from "react-icons/rx";
 import ReactQuill from "react-quill";
 import Datepicker from "../../../modules/Dashboard/Datepicker";
 import moment from "moment";
+import { useNavigate, useParams } from "react-router-dom";
 
 const BoardModal = ({ baseUrl, token, onClose }) => {
   let newDate = new Date();
   let defaultDate = `${newDate.getFullYear()}-${newDate.getMonth()}-${newDate.getDate()}`;
+
+  const navigate = useNavigate()
 
   const [projectName, setProjectName] = useState("");
   const [title, setTitle] = useState("");
@@ -21,10 +24,10 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
   const [dueDate, setDueDate] = useState(defaultDate);
   const [priority, setPriority] = useState(3);
   const [membersOpen, setMembersOpen] = useState(false);
-  const [members, setMembers] = useState({});
   const [users, setUsers] = useState({});
-  const [filterUsers, setFilterUsers] = useState({});
+  const [filterUsers, setFilterUsers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("")
 
   const boardSchema = Joi.object({
     projectName: Joi.string().min(1).max(100).required(),
@@ -38,6 +41,37 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    const formData = {
+      name: projectName,
+      description,
+      start_date: startDate,
+      end_date: dueDate,
+      priority,
+      project_members: selectedMembers,
+    };
+
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      };
+
+      const response = await axios.post(`${baseUrl}/project/`, formData, { headers });
+      console.log('Response:', response);
+      if (response.status === 201) {
+        toast.success("Project Added!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        onClose();
+        navigate(`/project/${response.data.id}`)
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error(error.response.data.detail, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+
     const dataToValidate = {
       projectName,
       description,
@@ -56,44 +90,9 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
       });
       setValidationErrors(newErrors);
       return;
+
     }
 
-    try {
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      };
-
-      axios
-        .post(
-          `${baseUrl}/board/`,
-          {
-            name: title,
-            project_id: 1,
-          },
-          { headers }
-        )
-        .then((response) => {
-          if (response.status === 201) {
-            toast.success("Board Added!", {
-              position: toast.POSITION.TOP_RIGHT,
-            });
-            setTimeout(() => {
-              onClose();
-            }, 2000);
-            return;
-          }
-        })
-        .catch((error) => {
-          toast.error(error.response.data.detail, {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        });
-    } catch (error) {
-      toast.error(error.response.data.detail, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
   };
 
   const getMembers = async () => {
@@ -129,7 +128,12 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
     }));
   };
 
+  const handleSearchChange = e => {
+    setSearchQuery(e.target.value);
+  }
 
+  const filteredUsers = filterUsers.filter((user) =>
+    user.username.toLowerCase().includes(searchQuery.toLowerCase()))
 
   return (
     <>
@@ -223,7 +227,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                   </div>
 
                   {/* ************************ Dates , Priority ***************************** */}
-                  <div className="flex justify-between items-center mb-4">
+                  <div className="flex gap-x-10 items-center mb-4">
                     <div className="flex flex-col">
                       <label
                         htmlFor="startDate"
@@ -258,7 +262,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                       />
                     </div>
 
-                    <div className="flex flex-col">
+                    {/* <div className="flex flex-col">
                       <label
                         htmlFor="priority"
                         className="py-1 font-sfpro text-lg font-semibold"
@@ -277,7 +281,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                         <option value={2}>🟡 Medium</option>
                         <option value={1}>🔴 High</option>
                       </select>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* ************************ Members Label ***************************** */}
@@ -318,7 +322,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                           </div>
                         ))}
 
-
                         <div className="relative">
                           {membersOpen && (
                             <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
@@ -332,11 +335,13 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                               <input
                                 type="search"
                                 placeholder="Search"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
                                 className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
                               />
                               <div className="overflow-y-auto max-h-24 roundScrollsm">
                                 <ul className="text-black">
-                                  {filterUsers.map((user) => (
+                                  {filteredUsers.map((user) => (
                                     <div
                                       onClick={() => {
                                         setValidationErrors((prevErrors) => ({
@@ -396,3 +401,5 @@ const mapStateToProps = (state) => {
   };
 };
 export default connect(mapStateToProps)(BoardModal);
+
+
