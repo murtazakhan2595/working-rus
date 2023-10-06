@@ -343,11 +343,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
             />
           </div>
         </div>
-        <div className="relative sm:flex hidden">
-          <div
-            className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
-            onClick={handleDropdownClick}
-          >
+        <div className="relative">
+          <div className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer" onClick={handleDropdownClick}>
             <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
             <div className="text-[#283b91]">{userProfile.username}</div>
             <div className="text-[#283b91]">
@@ -357,8 +354,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
           {isDropdownOpen && (
             <div className="absolute right-0 mt-1 w-48 bg-[#283b91] border rounded-lg shadow-lg">
               <button
-                className="block w-full py-2 px-4 text-left hover:bg-gray-100 hover:text-[#283b91]
-                 text-white"
+                className="block w-full py-2 px-4 text-left hover:bg-gray-100 hover:text-[#283b91] text-white"
                 onClick={handleLogout}
               >
                 Logout
@@ -383,7 +379,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
           </div>
           <div className="sm:hidden flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
             <div className=" px-1 text-gray-400">
-              <FaRegShareSquare/>
+              <FaRegShareSquare />
             </div>
           </div>
           <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg"
@@ -463,9 +459,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     <div className="flex items-center gap-2">
                                       {t.priority === 1 ? (
                                         <div className="text-[0.50rem]">🔴</div>
-                                        ) : t.priority === 2 ? (
-                                          <div className="text-[0.50rem]">🟡</div>
-                                          ) : t.priority === 3 ? (
+                                      ) : t.priority === 2 ? (
+                                        <div className="text-[0.50rem]">🟡</div>
+                                      ) : t.priority === 3 ? (
                                         <div className="text-[0.50rem]">🟢</div>
                                       ) : (
                                         ""
@@ -569,9 +565,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     <div className="flex items-center gap-2">
                                       {t.priority === 1 ? (
                                         <div className="text-[0.50rem]">🔴</div>
-                                        ) : t.priority === 2 ? (
-                                          <div className="text-[0.50rem]">🟡</div>
-                                          ) : t.priority === 3 ? (
+                                      ) : t.priority === 2 ? (
+                                        <div className="text-[0.50rem]">🟡</div>
+                                      ) : t.priority === 3 ? (
                                         <div className="text-[0.50rem]">🟢</div>
                                       ) : (
                                         ""
@@ -677,9 +673,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     <div className="flex items-center gap-2">
                                       {t.priority === 1 ? (
                                         <div className="text-[0.50rem]">🔴</div>
-                                        ) : t.priority === 2 ? (
-                                          <div className="text-[0.50rem]">🟡</div>
-                                          ) : t.priority === 3 ? (
+                                      ) : t.priority === 2 ? (
+                                        <div className="text-[0.50rem]">🟡</div>
+                                      ) : t.priority === 3 ? (
                                         <div className="text-[0.50rem]">🟢</div>
                                       ) : (
                                         ""

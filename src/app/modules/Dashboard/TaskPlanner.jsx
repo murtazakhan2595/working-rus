@@ -43,7 +43,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
           setTasks(tasksWithBardName);
         }
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getUsers = async (url = `${baseUrl}/emp/`) => {
@@ -59,7 +59,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
             setUsers(response.data.results);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getBoards = async (url = `${baseUrl}/board/`) => {
@@ -76,7 +76,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
             setNextPage(response.data.next);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getLenght = (task) => {
@@ -137,67 +137,67 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
             <div className="h-[30vh] roundScroll overflow-auto mt-6">
               {isCompleteTab
                 ? tasks.map(
-                    (task, index) =>
-                      task.status === "Completed" && (
-                        <div
-                          onClick={() => {
-                            navigate(`/board/${task.board_id}`);
-                          }}
-                          key={index}
-                          className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
-                        >
-                          <div className="w-44">
-                            {task.name.substring(0, 25)} {getLenght(task)}
-                          </div>
-                          <div className="w-28">{task.userName}</div>
-                          <div className="w-28">{task.end_date}</div>
-                          <div className="w-28">{task.status}</div>
-                          <div className="w-28">{task.boardName}</div>
-                          <div className="w-28 text-center text-sm">
-                            {task.priority === 1 && (
-                              <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />
-                            )}
-                            {task.priority === 2 && (
-                              <TbAlertCircleFilled className="text-[#ffa500] text-center text-2xl mx-auto" />
-                            )}
-                            {task.priority === 3 && (
-                              <TbAlertCircleFilled className="text-green-600 text-center text-2xl mx-auto" />
-                            )}
-                          </div>
+                  (task, index) =>
+                    task.status === "Completed" && (
+                      <div
+                        onClick={() => {
+                          navigate(`/board/${task.board_id}`);
+                        }}
+                        key={index}
+                        className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
+                      >
+                        <div className="w-44">
+                          {task.name.substring(0, 25)} {getLenght(task)}
                         </div>
-                      )
-                  )
+                        <div className="w-28">{task.userName}</div>
+                        <div className="w-28">{task.end_date}</div>
+                        <div className="w-28">{task.status}</div>
+                        <div className="w-28">{task.boardName}</div>
+                        <div className="w-28 text-center text-sm">
+                          {task.priority === 1 && (
+                            <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />
+                          )}
+                          {task.priority === 2 && (
+                            <TbAlertCircleFilled className="text-[#ffa500] text-center text-2xl mx-auto" />
+                          )}
+                          {task.priority === 3 && (
+                            <TbAlertCircleFilled className="text-green-600 text-center text-2xl mx-auto" />
+                          )}
+                        </div>
+                      </div>
+                    )
+                )
                 : tasks.map(
-                    (task, index) =>
-                      task.status !== "Completed" && (
-                        <div
-                          onClick={() => {
-                            navigate(`/board/${task.board_id}`);
-                          }}
-                          key={index}
-                          className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
-                        >
-                          <div className="w-44">
-                            {task.name.substring(0, 25)} {getLenght(task)}
-                          </div>
-                          <div className="w-28">{task.userName}</div>
-                          <div className="w-28">{task.end_date}</div>
-                          <div className="w-28">{task.status}</div>
-                          <div className="w-28">{task.boardName}</div>
-                          <div className="w-28 text-center text-sm">
-                            {task.priority === 1 && (
-                              <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />
-                            )}
-                            {task.priority === 2 && (
-                              <TbAlertCircleFilled className="text-[#ffa500] text-center text-2xl mx-auto" />
-                            )}
-                            {task.priority === 3 && (
-                              <TbAlertCircleFilled className="text-green-600 text-center text-2xl mx-auto" />
-                            )}
-                          </div>
+                  (task, index) =>
+                    task.status !== "Completed" && (
+                      <div
+                        onClick={() => {
+                          navigate(`/board/${task.board_id}`);
+                        }}
+                        key={index}
+                        className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
+                      >
+                        <div className="w-44">
+                          {task.name.substring(0, 25)} {getLenght(task)}
                         </div>
-                      )
-                  )}
+                        <div className="w-28">{task.userName}</div>
+                        <div className="w-28">{task.end_date}</div>
+                        <div className="w-28">{task.status}</div>
+                        <div className="w-28">{task.boardName}</div>
+                        <div className="w-28 text-center text-sm">
+                          {task.priority === 1 && (
+                            <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />
+                          )}
+                          {task.priority === 2 && (
+                            <TbAlertCircleFilled className="text-[#ffa500] text-center text-2xl mx-auto" />
+                          )}
+                          {task.priority === 3 && (
+                            <TbAlertCircleFilled className="text-green-600 text-center text-2xl mx-auto" />
+                          )}
+                        </div>
+                      </div>
+                    )
+                )}
             </div>
           ) : (
             <div className="flex items-center justify-center h-[30vh]">

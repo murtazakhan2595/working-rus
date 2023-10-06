@@ -261,27 +261,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                         }}
                       />
                     </div>
-
-                    {/* <div className="flex flex-col">
-                      <label
-                        htmlFor="priority"
-                        className="py-1 font-sfpro text-lg font-semibold"
-                      >
-                        Priority
-                      </label>
-                      <select
-                        name="priority"
-                        value={priority}
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                        onChange={(e) => {
-                          setPriority(e.target.value);
-                        }}
-                      >
-                        <option value={3}>🟢 Low</option>
-                        <option value={2}>🟡 Medium</option>
-                        <option value={1}>🔴 High</option>
-                      </select>
-                    </div> */}
                   </div>
 
                   {/* ************************ Members Label ***************************** */}
@@ -296,7 +275,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                     {/* ************************** MEMBERS ************************** */}
                     <div className="flex flex-col">
                       <div className="flex justify-start bg-white rounded-md mt-2">
-                        {/* <h3 className=" pl-4">Members</h3> */}
                       </div>
                       <div className="flex mt-2 gap-2">
                         <div
@@ -351,7 +329,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                                         handleMemberSelection(user.id);
                                       }}
                                       className={`flex gap-3 px-2 py-1 relative items-center group cursor-pointer ${selectedMembers.includes(user.id)
-                                        ? "bg-blue-100 text-white"
+                                        ? "bg-gray-400 text-white"
                                         : ""
                                         }`}
                                       key={user.id}
