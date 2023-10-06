@@ -134,17 +134,17 @@ const WorkTime = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center ml-1 mr-3 md:pr-[25%] md:ml-10">
+    <div className="flex flex-col -mt-5 items-center justify-center ml-1 mr-3 md:pr-[25%] md:ml-10">
       <h1 className="font-semibold">Work Time</h1>
 
       {/* ********************************** Working Time ******************************* */}
       <div
-        className="w-56 h-56 drop-shadow-lg shadow-black  z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
+        className="w-52 h-52 drop-shadow-lg shadow-black  z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
         style={{
           background: `conic-gradient(from 0deg at 50% 50%, #25a8e0 ${getProgress()}deg, #fff 0 ${getProgress()}deg, #fff)`,
         }}
       >
-        <div className="w-[11.5rem] h-[11.5rem] rounded-full bg-[#e3e3e3] flex  flex-col items-center justify-center text-xl m-0">
+        <div className="w-[10.5rem] h-[10.5rem] rounded-full bg-[#e3e3e3] flex  flex-col items-center justify-center text-xl m-0">
           <div>
             <div className="text-xl font-semibold text-[#283b91]">
               {formatTime(time)}
@@ -168,14 +168,15 @@ const WorkTime = () => {
         <div
           className={`
         ${worldTime.length >= 1 ? "ml-12" : "w-1/2 ml-36"}
-          -mt-52  `}
+          mt-[-12.5rem]  `}
         >
           <div className="flex w-full  h-52 flex-col gap-6 md:mr-0 mr-16">
             {worldTime.map((time, index) => (
               <div key={index} className="z-0">
                 <div
-                  className={`flex items-center justify-end ${index === 1 ? "" : "pr-4"
-                    } rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}
+                  className={`flex items-center justify-end ${
+                    index === 1 ? "" : "pr-4"
+                  } rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}
                 >
                   <img
                     src={`https://flagcdn.com/w320/${time.img}.png`}
@@ -199,24 +200,30 @@ const WorkTime = () => {
                 </div>
               </div>
             ))}
-            <div
-              style={{ justifyContent: "right" }}
-              className={`${worldTime.length >= 1 ? "w-[70%]" : "w-[180%]"
-                } flex items-center`}
-            >
+            {worldTime.length >= 3 ? (
+              ""
+            ) : (
               <div
                 style={{ justifyContent: "right" }}
-                className={`p-1 flex  ${worldTime.length >= 1 ? "w-[21%]" : "w-[51%]"
-                  } rounded-md justify-center items-end`}
+                className={`${
+                  worldTime.length >= 1 ? "w-[70%]" : "w-[180%]"
+                } flex items-center`}
               >
-                <FaPlus
-                  onClick={() => {
-                    setModalOpen(true);
-                  }}
-                  className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
-                />
+                <div
+                  style={{ justifyContent: "right" }}
+                  className={`p-1 flex  ${
+                    worldTime.length >= 1 ? "w-[21%]" : "w-[51%]"
+                  } rounded-md justify-center items-end`}
+                >
+                  <FaPlus
+                    onClick={() => {
+                      setModalOpen(true);
+                    }}
+                    className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -249,16 +256,20 @@ const WorkTime = () => {
             </div>
           </div>
         ))}
-        <div className="flex justify-center items-center">
-          <div className="p-1 flex  w-full rounded-md justify-center items-end">
-            <FaPlus
-              onClick={() => {
-                setModalOpen(true);
-              }}
-              className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
-            />
+        {worldTime.length >= 3 ? (
+          ""
+        ) : (
+          <div className="flex justify-center items-center">
+            <div className="p-1 flex  w-full rounded-md justify-center items-end">
+              <FaPlus
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+                className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
       {/* ******************** Model **********************/}
       {modalOpen && (

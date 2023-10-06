@@ -72,7 +72,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`h-screen bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${
+          className={`h-screen overflow-y-auto hideScroll bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${
             isSidebarOpen ? "" : "hidden"
           }`}
         >
@@ -200,7 +200,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
         {/* Sidebar collapse button */}
         <button
           className={`bg-[#283b91] text-white p-1.5 absolute ${
-            isSidebarOpen ? "left-56" : "left-0"
+            isSidebarOpen ? "left-[13.5rem]" : "left-0"
           } rounded-e-lg top-3 mt-4 mr-4`}
           onClick={handleSidebarToggle}
         >

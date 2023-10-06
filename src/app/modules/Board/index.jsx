@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
 import { RiArrowDownSFill } from "react-icons/ri";
+import { FaRegShareSquare } from "react-icons/fa";
 import { BsPencil, BsTrash3 } from "react-icons/bs";
 import { AiTwotoneStar } from "react-icons/ai";
-import { FiFilter } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import TaskModal from "./TaskModal";
 import TaskView from "./TaskView";
@@ -176,18 +176,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
     } catch (error) { }
   };
 
-
-  /*   const deleteBoard = async (boardId) => {
-      try {
-        const updatedBoards = board.filter(b => b.id !== boardId);
-        setBoard(updatedBoards);
-  
-        await axios.delete(`${baseUrl}/board/${id}`, { headers });
-      } catch (error) {
-        console.error('Error deleting todo', error);
-      }
-    }; */
-
   const [isTodoViewOpen, setIsTodoViewOpen] = useState(
     Array(tasks.todo.length).fill(false)
   );
@@ -355,7 +343,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             />
           </div>
         </div>
-        <div className="relative">
+        <div className="relative sm:flex hidden">
           <div
             className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
             onClick={handleDropdownClick}
@@ -390,19 +378,19 @@ const Board = ({ userProfile, baseUrl, token }) => {
           </div>
         </div>
         <div className="flex gap-3">
-          <div className="flex bg-white px-2 py-1 gap-3 items-center rounded-lg">
+          <div className="sm:flex hidden bg-white px-2 py-1 gap-3 items-center rounded-lg">
             <div className=" px-4 text-[#283b91]">Share</div>
+          </div>
+          <div className="sm:hidden flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+            <div className=" px-1 text-gray-400">
+              <FaRegShareSquare/>
+            </div>
           </div>
           <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg"
             onClick={openEditBoardPopup}
           >
             <div className=" px-1 text-gray-400">
               <BsPencil />
-            </div>
-          </div>
-          <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
-            <div className=" px-1 text-gray-400">
-              <FiFilter />
             </div>
           </div>
           <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg"
@@ -418,7 +406,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
       {/* ***************************************************** Board Card ***************************************************** */}
       <DragDropContext onDragEnd={boardHidden ? '' : handleDragEnd}>
         <div className="flex w-full justify-start ">
-          <div className="flex xScroll  ml-10 pb-2 overflow-x-auto w-[82vw] justify-start">
+          <div className="flex xScroll  sm:ml-10 ml-5 pb-2 overflow-x-auto w-[90%] sm:w-[82vw] justify-start">
             <div id="boardList" className="flex">
               {/* Box 1 */}
               <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
@@ -474,11 +462,11 @@ const Board = ({ userProfile, baseUrl, token }) => {
 
                                     <div className="flex items-center gap-2">
                                       {t.priority === 1 ? (
-                                        <div className="text-[0.50rem]">🟢</div>
-                                      ) : t.priority === 2 ? (
-                                        <div className="text-[0.50rem]">🟡</div>
-                                      ) : t.priority === 3 ? (
                                         <div className="text-[0.50rem]">🔴</div>
+                                        ) : t.priority === 2 ? (
+                                          <div className="text-[0.50rem]">🟡</div>
+                                          ) : t.priority === 3 ? (
+                                        <div className="text-[0.50rem]">🟢</div>
                                       ) : (
                                         ""
                                       )}
@@ -580,11 +568,11 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     </div>
                                     <div className="flex items-center gap-2">
                                       {t.priority === 1 ? (
-                                        <div className="text-[0.50rem]">🟢</div>
-                                      ) : t.priority === 2 ? (
-                                        <div className="text-[0.50rem]">🟡</div>
-                                      ) : t.priority === 3 ? (
                                         <div className="text-[0.50rem]">🔴</div>
+                                        ) : t.priority === 2 ? (
+                                          <div className="text-[0.50rem]">🟡</div>
+                                          ) : t.priority === 3 ? (
+                                        <div className="text-[0.50rem]">🟢</div>
                                       ) : (
                                         ""
                                       )}
@@ -688,11 +676,11 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     </div>
                                     <div className="flex items-center gap-2">
                                       {t.priority === 1 ? (
-                                        <div className="text-[0.50rem]">🟢</div>
-                                      ) : t.priority === 2 ? (
-                                        <div className="text-[0.50rem]">🟡</div>
-                                      ) : t.priority === 3 ? (
                                         <div className="text-[0.50rem]">🔴</div>
+                                        ) : t.priority === 2 ? (
+                                          <div className="text-[0.50rem]">🟡</div>
+                                          ) : t.priority === 3 ? (
+                                        <div className="text-[0.50rem]">🟢</div>
                                       ) : (
                                         ""
                                       )}

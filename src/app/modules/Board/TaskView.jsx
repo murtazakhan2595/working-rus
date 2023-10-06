@@ -435,9 +435,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       setPriority(e.target.value);
                     }}
                   >
-                    <option value={1}>🟢 Low</option>
+                    <option value={1}>🔴 High</option>
                     <option value={2}>🟡 Medium</option>
-                    <option value={3}>🔴 High</option>
+                    <option value={3}>🟢 Low</option>
                   </select>
                 </div>
               </div>
