@@ -55,23 +55,35 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
 
   return (
     <>
-
-    <Routes>
-      {isLogin ?
-      <>
-        <Route element={<Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>}>
-          <Route exact path="/" element={<Dashboard isSidebarOpen={isSidebarOpen} />}/>  
-          <Route path="/board/:id" element={<Board />} />
-          <Route path="/project/:id" element={<BoardList />} />
-        </Route>
-          <Route path="*" element={<Err404 />} />
-      </>
-          : ""}
-      {!isLogin && (
-        <>
-          <Route path="/" element={<Login />} />
-          <Route path="*" element={<Err404 />} />
-        </>
+      <Routes>
+        {isLogin ? (
+          <>
+            <Route
+              element={
+                <Sidebar
+                  isSidebarOpen={isSidebarOpen}
+                  setIsSidebarOpen={setIsSidebarOpen}
+                />
+              }
+            >
+              <Route
+                exact
+                path="/"
+                element={<Dashboard isSidebarOpen={isSidebarOpen} />}
+              />
+              <Route path="/board/:id" element={<Board />} />
+              <Route path="/project/:id" element={<BoardList />} />
+            </Route>
+            <Route path="*" element={<Err404 />} />
+          </>
+        ) : (
+          ""
+        )}
+        {!isLogin && (
+          <>
+            <Route path="/" element={<Login />} />
+            <Route path="*" element={<Err404 />} />
+          </>
         )}
       </Routes>
 

@@ -163,7 +163,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                         onClick={() => {
                           setisModelOpen(true);
                         }}
-                        className="text-white text-sm"
+                        className="text-white text-sm hover:cursor-pointer"
                       />
                     </div>
                   </div>

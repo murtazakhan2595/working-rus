@@ -20,7 +20,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
   const [projectMembers, setProjectMembers] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [members, setMembers] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   // Get Board
@@ -37,6 +37,9 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
       }
     } catch (error) {
       console.error("Error while fetching boards:", error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -195,7 +198,9 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
           <div className="font-semibold">Board Name</div>
         </div>
         <div className="overflow-y-auto max-h-96 roundScroll">
-          {boardList.length !== 0 ? (
+          {loading ? (
+            <p className="text-center">Loading...</p>
+          ) : boardList.length !== 0 ? (
             boardList.map((board, index) => (
               <div className="flex gap-16 flex-row p-2 rounded bg-[#F2F2F2] mx-4 my-2" key={index}>
                 {/* <div className="text-blue-500">{index + 1}</div> */}
@@ -203,7 +208,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
               </div>
             ))
           ) : (
-            <div className="text-center">Project is Empty</div>
+            <div className="text-center">There's no board in the project</div>
           )}
         </div>
       </div>
