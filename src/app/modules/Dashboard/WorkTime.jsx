@@ -8,7 +8,7 @@ import Select from "react-select";
 const WorkTime = () => {
   // ******************** State Vars ************************ //
   const [timezones, setTimezones] = useState([]);
-  const [selectedTimezone, setSelectedTimezone] = useState("Africa/Abidjan");
+  const [selectedTimezone, setSelectedTimezone] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [worldTime, setWorldTime] = useState([{}]);
   const [msg, setMsg] = useState("");
@@ -301,6 +301,7 @@ const WorkTime = () => {
                     Select Timezone:
                   </label>
                   <Select
+                  required
                     className="basic-single"
                     classNamePrefix="select"
                     defaultValue={timezones[0]}
