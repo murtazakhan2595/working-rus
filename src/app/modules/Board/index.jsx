@@ -329,7 +329,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   return (
     <div className={`w-full h-screen bg-[#F9F9F9] ${boardHidden ? '' : ''}`}>
       {/* ***************************************************** Header ***************************************************** */}
-      <div className="py-5 pl-10 pr-2 flex gap-3 items-center justify-between">
+      <div className="py-5 sm:pl-10 pr-2 flex flex-col justify-center sm:flex-row gap-3 items-center sm:justify-between">
         <div className="flex items-center">
           <h1 className="text-3xl mr-2 leading-none font-semibold  opacity-80 tracking-widest">
             <Link to="/">My Boards</Link>
@@ -364,7 +364,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
         </div>
       </div>
       {/* ***************************************************** Board Header ***************************************************** */}
-      <div className="bg-[#ebebeb] mb-6 pr-1 pl-5 gap-3  justify-between py-2 flex">
+      <div className="bg-[#ebebeb] mb-6 pr-1 pl-1 sm:pl-5 gap-3  justify-between py-2 flex">
         <div className="flex gap-2">
           <div className="flex justify-center ml-4 items-center">
             <AiTwotoneStar className="text-3xl text-[#283b91]" />
@@ -402,7 +402,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
       {/* ***************************************************** Board Card ***************************************************** */}
       <DragDropContext onDragEnd={boardHidden ? '' : handleDragEnd}>
         <div className="flex w-full justify-start ">
-          <div className="flex xScroll  sm:ml-10 ml-5 pb-2 overflow-x-auto w-[90%] sm:w-[82vw] justify-start">
+          <div className="flex xScroll  sm:ml-10 ml-5 pb-2 overflow-x-auto w-[90%] lg:w-[82vw] justify-start">
             <div id="boardList" className="flex">
               {/* Box 1 */}
               <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
@@ -740,7 +740,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
           }`}
       >
         <div className="modal-overlay absolute w-full h-full backdrop-blur-sm"></div>
-        <div className="modal-container bg-white w-1/5 mx-auto rounded shadow-lg z-50">
+        <div className="modal-container bg-white md:w-[30%] w-[90%] mx-auto rounded shadow-lg z-50">
           <div className="modal-content py-4 px-6">
             <h2 className="text-xl font-semibold mb-4">Edit Board Name</h2>
             <input
