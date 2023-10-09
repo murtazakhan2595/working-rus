@@ -775,7 +775,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
           <div className="modal-overlay absolute w-full h-full backdrop-blur-sm"></div>
           <div className="modal-container bg-white w-1.5/5 mx-auto rounded shadow-lg z-50">
             <div className="modal-content py-4 px-6">
-              <h2 className="text-xl font-semibold mb-2">Confirm Deletion</h2>
+              <h2 className="text-xl font-semibold mb-2">Confirm Delete</h2>
               <p className="mb-2">Are you sure you want to delete this board?</p>
               <div className="flex justify-end">
                 <button
