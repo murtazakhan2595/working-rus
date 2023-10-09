@@ -293,7 +293,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
       });
       if (response.status === 204) {
         console.log("Board deleted successfully!");
-        navigate('/')
+        navigate(`/project/${id}`)
       } else {
         console.error("Unexpected response status:", response.status);
       }
