@@ -7,7 +7,7 @@ import { RxCross2, RxPlus } from "react-icons/rx";
 import ReactQuill from "react-quill";
 import Datepicker from "../../../modules/Dashboard/Datepicker";
 import moment from "moment";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const BoardModal = ({ baseUrl, token, onClose }) => {
   let newDate = new Date();
@@ -16,13 +16,13 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
   const navigate = useNavigate()
 
   const [projectName, setProjectName] = useState("");
-  const [title, setTitle] = useState("");
+  // const [title, setTitle] = useState("");
   const [errors, setErrors] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState(defaultDate);
   const [dueDate, setDueDate] = useState(defaultDate);
-  const [priority, setPriority] = useState(3);
+  // const [priority, setPriority] = useState(3);
   const [membersOpen, setMembersOpen] = useState(false);
   const [users, setUsers] = useState({});
   const [filterUsers, setFilterUsers] = useState([]);
@@ -46,7 +46,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
       description,
       start_date: startDate,
       end_date: dueDate,
-      priority,
+      // priority,
       project_members: selectedMembers,
     };
 
@@ -77,7 +77,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
       description,
       startDate,
       dueDate,
-      priority,
+      // priority,
       selectedMembers,
     };
 
@@ -139,8 +139,8 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
     <>
       <div className="fixed inset-0 z-50 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
         <div className="flex items-center justify-center z-50">
-          <div className="md:mx-auto pb-10 pt-28  max-w-3xl relative ">
-            <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-full max-w-6xl border border-gray-100 shadow-md relative">
+          <div className="md:mx-auto pb-10 pt-28  lg:max-w-3xl max-w-lg relative ">
+            <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-8 p-4 m-6 w-5/5 lg:w-full max-w-lg lg:max-w-6xl border border-gray-100 shadow-md relative">
               <div
                 className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
                 onClick={onClose}
@@ -187,16 +187,16 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                   <div className="flex flex-col">
                     <label
                       htmlFor="description"
-                      className="font-sfpro text-lg font-semibold"
+                      className="font-sfpro text-lg font-semibold mt-1"
                     >
                       Description
                     </label>
                     {/* Text area */}
-                    <div className="h-48 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white mb-1">
+                    <div className="lg:h-48 h-36 max-h-48 mt-1 roundScrollsm w-full resize-none overflow-y-auto outline-none rounded-xl border-none bg-white mb-1">
                       <ReactQuill
                         name="description"
                         id="description"
-                        className="text-center h-[85%]"
+                        className="text-center"
                         value={description}
                         onChange={(html) => {
                           setValidationErrors((prevErrors) => ({
@@ -219,6 +219,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                         }}
                       />
                     </div>
+
                     {validationErrors.description && (
                       <span className="text-red-500 text-sm">
                         {validationErrors.description}
@@ -261,27 +262,6 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                         }}
                       />
                     </div>
-
-                    {/* <div className="flex flex-col">
-                      <label
-                        htmlFor="priority"
-                        className="py-1 font-sfpro text-lg font-semibold"
-                      >
-                        Priority
-                      </label>
-                      <select
-                        name="priority"
-                        value={priority}
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                        onChange={(e) => {
-                          setPriority(e.target.value);
-                        }}
-                      >
-                        <option value={3}>🟢 Low</option>
-                        <option value={2}>🟡 Medium</option>
-                        <option value={1}>🔴 High</option>
-                      </select>
-                    </div> */}
                   </div>
 
                   {/* ************************ Members Label ***************************** */}
@@ -295,10 +275,9 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                   <div className="flex gap-4">
                     {/* ************************** MEMBERS ************************** */}
                     <div className="flex flex-col">
-                      <div className="flex justify-start bg-white rounded-md mt-2">
-                        {/* <h3 className=" pl-4">Members</h3> */}
+                      <div className="flex justify-start bg-white rounded-md mt-1">
                       </div>
-                      <div className="flex mt-2 gap-2">
+                      <div className="flex gap-2">
                         <div
                           onClick={() => {
                             setMembersOpen(!membersOpen);
@@ -351,7 +330,7 @@ const BoardModal = ({ baseUrl, token, onClose }) => {
                                         handleMemberSelection(user.id);
                                       }}
                                       className={`flex gap-3 px-2 py-1 relative items-center group cursor-pointer ${selectedMembers.includes(user.id)
-                                        ? "bg-blue-100 text-white"
+                                        ? "bg-gray-400 text-white"
                                         : ""
                                         }`}
                                       key={user.id}

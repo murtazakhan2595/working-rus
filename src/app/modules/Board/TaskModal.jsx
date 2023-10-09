@@ -144,7 +144,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
     <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
       <div className="flex items-center justify-center z-50">
         <div className="md:mx-auto pb-10 pt-28  max-w-3xl relative ">
-          <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-full max-w-6xl border border-gray-100 shadow-md relative">
+          <div className="space-y-3 bg-[#F8F8F8] mt-32  md:pt-8 lg:pb-4 py-6 rounded-3xl p-4 md:p-8 md:m-6 w-full max-w-xs md:max-w-6xl border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
               onClick={onClose}
@@ -235,8 +235,9 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
 
                 {/* ************************ Dates , Status , Piriorty ***************************** */}
 
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex flex-col">
+                <div className="flex gap-2 justify-between md:flex-row flex-col items-center mb-4">
+                <div className="flex gap-1 md:flex-row flex-col">
+                  <div className="flex md:flex-col flex-row gap-2 md:gap-0 my-2 md:my-0">
                     <label
                       htmlFor="dueDate"
                       className="py-1 font-sfpro text-lg font-semibold"
@@ -250,7 +251,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       }}
                     />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex md:flex-col flex-row gap-2 md:gap-0 my-2 md:my-0">
                     <label
                       htmlFor="dueDate"
                       className="py-1 font-sfpro text-lg font-semibold"
@@ -264,6 +265,10 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       }}
                     />
                   </div>
+
+                  </div>
+                  <div className="flex md:gap-2 gap-6">
+
                   <div className="flex flex-col">
                     <label
                       htmlFor="status"
@@ -284,7 +289,6 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       <option value="Completed">Completed</option>
                     </select>
                   </div>
-
                   <div className="flex flex-col">
                     <label
                       htmlFor="priority"
@@ -304,6 +308,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       <option value={2}>🟡 Medium</option>
                       <option value={1}>🔴 High</option>
                     </select>
+                  </div>
                   </div>
                 </div>
 

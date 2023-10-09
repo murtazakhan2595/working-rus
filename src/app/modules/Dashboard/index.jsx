@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { connect } from "react-redux";
 import WorkTime from "./WorkTime";
 import TodoList from "./Todolist";
 import { IoIosSearch } from "react-icons/io";
@@ -13,7 +14,7 @@ import { Link } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import DailyTaskRpt from "./DailyTaskRpt";
 
-const Dashboard = ({ isSidebarOpen }) => {
+const Dashboard = ({ isSidebarOpen , userProfile}) => {
   const [isBarOpen, seIsBarOpen] = useState(false);
   return (
     <>
@@ -101,7 +102,7 @@ const Dashboard = ({ isSidebarOpen }) => {
         {/***********************   ProFile Header   **********************************/}
         <div className="flex pt-3 pb-1 justify-end px-5 items-center gap-3">
           <div className="text-3xl w-10 h-10 rounded-full border bg-white"></div>{" "}
-          <div className=" text-[#283b91]">Jhone Simth</div>
+          <div className=" text-[#283b91]">{userProfile.username}</div>
         </div>
         <div className="flex pt-1 pb-2 justify-end px-5 items-center">
           <div className="p-2 rounded-bl-md rounded-tl-md flex  text-white bg-[#ebebeb]">
@@ -132,4 +133,10 @@ const Dashboard = ({ isSidebarOpen }) => {
   );
 };
 
-export default Dashboard;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+
+export default connect(mapStateToProps)(Dashboard);

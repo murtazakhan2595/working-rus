@@ -29,7 +29,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [comment, setComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
   const headers = {
@@ -95,29 +95,33 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
     fetchComments();
   }, []);
 
-  // editComment 
+  // editComment
   const startEdit = (commentId, commentText) => {
-    setEditingCommentId(commentId)
-    setEditedComment(commentText)
-  }
+    setEditingCommentId(commentId);
+    setEditedComment(commentText);
+  };
 
   const cancelEdit = () => {
     setEditingCommentId(null);
-    setEditedComment('')
-  }
+    setEditedComment("");
+  };
 
   const saveEdit = async (id) => {
     try {
-      await axios.put(`${baseUrl}/comments/${id}/`, { comment: editedComment }, { headers });
-      const updatedComments = comments.map(c => {
+      await axios.put(
+        `${baseUrl}/comments/${id}/`,
+        { comment: editedComment },
+        { headers }
+      );
+      const updatedComments = comments.map((c) => {
         if (c.id === id) {
-          return { ...c, comment: editedComment }
+          return { ...c, comment: editedComment };
         }
         return c;
-      })
-      setComments(updatedComments)
-      setEditingCommentId(null)
-      setEditedComment('')
+      });
+      setComments(updatedComments);
+      setEditingCommentId(null);
+      setEditedComment("");
       toast.success("Comment edited successsfully", {
         position: "top-right",
         autoClose: 1000,
@@ -126,9 +130,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
         pauseOnHover: true,
       });
     } catch (error) {
-      console.error('Error editing comment', error);
+      console.error("Error editing comment", error);
     }
-  }
+  };
 
   // deleteComment
   const deleteComment = async (id) => {
@@ -147,7 +151,6 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
       console.error("Error deleting comment", error);
     }
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -224,7 +227,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setFilterUsers(response.data.results);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getAssignee = async () => {
@@ -240,7 +243,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setAssignToUser(response.data);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
     try {
       await axios
         .get(`${baseUrl}/emp/${taskData.assigned_by}`, {
@@ -253,7 +256,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setAssignByUser(response.data);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -294,11 +297,10 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   };
 
   return (
-
     <div className="fixed inset-0 w-screen overflow-y-auto scroll z-50 h-screen flex justify-center items-center backdrop-blur-sm  ">
       <div className="flex items-center justify-center">
         <div className="md:mx-auto pb-10 pt-64 w-full max-w-3xl relative">
-          <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 w-full max-w-6xl border border-gray-100 shadow-md relative">
+          <div className="space-y-3 bg-[#F8F8F8] mt-32  md:pt-8 lg:pb-4 py-6 rounded-3xl p-4 md:p-8 md:m-6 w-full max-w-xs md:max-w-6xl border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
               onClick={onClose}
@@ -351,10 +353,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                           [{ list: "ordered" }, { list: "bullet" }],
                           [{ align: [] }],
                           ["link", "image"],
-                          [
-                            { header: "1" },
-                            { header: "2" },
-                          ],
+                          [{ header: "1" }, { header: "2" }],
                           [{ size: ["small", false, "large", "huge"] }],
                         ],
                       },
@@ -368,77 +367,80 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                 )}
               </div>
 
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="dueDate"
-                    className="py-1 font-sfpro text-lg font-semibold"
-                  >
-                    Start Date
-                  </label>
-                  <Datepicker
-                    date={startDate}
-                    onChange={(date) => {
-                      let d = moment(date).format("YYYY-MM-DD");
-                      setStartDate(d);
-                    }}
-                  />
+              <div className="flex gap-2 justify-between md:flex-row flex-col items-center mb-4">
+                <div className="flex gap-1 md:flex-row flex-col">
+                  <div className="flex md:flex-col flex-row gap-2 md:gap-0 my-2 md:my-0">
+                    <label
+                      htmlFor="dueDate"
+                      className="py-1 font-sfpro text-lg font-semibold"
+                    >
+                      Start Date
+                    </label>
+                    <Datepicker
+                      date={startDate}
+                      onChange={(date) => {
+                        let d = moment(date).format("YYYY-MM-DD");
+                        setStartDate(d);
+                      }}
+                    />
+                  </div>
+                  <div className="flex md:flex-col flex-row gap-2 md:gap-0 my-2 md:my-0">
+                    <label
+                      htmlFor="dueDate"
+                      className="py-1 font-sfpro text-lg font-semibold"
+                    >
+                      Due Date
+                    </label>
+                    <Datepicker
+                      date={dueDate}
+                      onChange={(date) => {
+                        let d = moment(date).format("YYYY-MM-DD");
+                        setDueDate(d);
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="dueDate"
-                    className="py-1 font-sfpro text-lg font-semibold"
-                  >
-                    Due Date
-                  </label>
-                  <Datepicker
-                    date={dueDate}
-                    onChange={(date) => {
-                      let d = moment(date).format("YYYY-MM-DD");
-                      setDueDate(d);
-                    }}
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="status"
-                    className="py-1 font-sfpro text-lg font-semibold"
-                  >
-                    Status
-                  </label>
-                  <select
-                    name="status"
-                    value={status}
-                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                    onChange={(e) => {
-                      setStatus(e.target.value);
-                    }}
-                  >
-                    <option value="To Do">Todo</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="priority"
-                    className="py-1 font-sfpro text-lg font-semibold"
-                  >
-                    Priority
-                  </label>
-                  <select
-                    name="priority"
-                    value={priority}
-                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                    onChange={(e) => {
-                      setPriority(e.target.value);
-                    }}
-                  >
-                    <option value={1}>🟢 Low</option>
-                    <option value={2}>🟡 Medium</option>
-                    <option value={3}>🔴 High</option>
-                  </select>
+                <div className="flex md:gap-2 gap-6">
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="status"
+                      className="py-1 font-sfpro text-lg font-semibold"
+                    >
+                      Status
+                    </label>
+                    <select
+                      name="status"
+                      value={status}
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
+                      onChange={(e) => {
+                        setStatus(e.target.value);
+                      }}
+                    >
+                      <option value="To Do">Todo</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Completed">Completed</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="priority"
+                      className="py-1 font-sfpro text-lg font-semibold"
+                    >
+                      Priority
+                    </label>
+                    <select
+                      name="priority"
+                      value={priority}
+                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
+                      onChange={(e) => {
+                        setPriority(e.target.value);
+                      }}
+                    >
+                      <option value={1}>🔴 High</option>
+                      <option value={2}>🟡 Medium</option>
+                      <option value={3}>🟢 Low</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <label
@@ -646,58 +648,97 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                   <p>Loading comments...</p>
                 ) : (
                   <div className="w-full">
-                    <p className="text-gray-400">Comments ({comments.filter(comment => comment.task_id === taskData.id).length})</p>
+                    <p className="text-gray-400">
+                      Comments (
+                      {
+                        comments.filter(
+                          (comment) => comment.task_id === taskData.id
+                        ).length
+                      }
+                      )
+                    </p>
                     {/* show comments are conditionally */}
-                    {comments.filter((c) => c.task_id === taskData.id).length > 0 && (
+                    {comments.filter((c) => c.task_id === taskData.id).length >
+                      0 && (
                       <div className="flex flex-col gap-2 max-h-36 overflow-y-auto roundScrollsm">
                         {/* map and filter comments */}
-                        {comments.filter((c) => c.task_id === taskData.id).map((c) => (
-                          <div className="flex gap-4 items-start mt-2" key={c.id}>
-                            {/* User profile */}
-                            <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white flex-none">
-                              {currentUser ? currentUser.username.slice(0, 2).toUpperCase() : "Loading..."}
-                            </div>
-                            <div className="w-full mr-2 flex-1">
-                              <h1 className="font-semibold font-sfpro">
-                                {currentUser ? currentUser.username : "Loading..."}
-                              </h1>
-                              {editingCommentId === c.id ? (
-                                <input
-                                  type="text"
-                                  value={editedComment}
-                                  onChange={(e) => setEditedComment(e.target.value)}
-                                  autoFocus
-                                  className="border-b border-gray-300 w-full py-2 focus:outline-none pl-2"
-                                />
-                              ) : (
-                                <p className="text-gray-700">{c.comment}</p>
-                              )}
-                              <div className="text-sm space-x-3 text-gray-600 flex items-center">
+                        {comments
+                          .filter((c) => c.task_id === taskData.id)
+                          .map((c) => (
+                            <div
+                              className="flex gap-4 items-start mt-2"
+                              key={c.id}
+                            >
+                              {/* User profile */}
+                              <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white flex-none">
+                                {currentUser
+                                  ? currentUser.username
+                                      .slice(0, 2)
+                                      .toUpperCase()
+                                  : "Loading..."}
+                              </div>
+                              <div className="w-full mr-2 flex-1">
+                                <h1 className="font-semibold font-sfpro">
+                                  {currentUser
+                                    ? currentUser.username
+                                    : "Loading..."}
+                                </h1>
                                 {editingCommentId === c.id ? (
-                                  <>
-                                    <span className="text-xs cursor-pointer opacity-70" onClick={() => saveEdit(c.id)}>Save</span>
-                                    <span className="text-xs cursor-pointer opacity-70" onClick={cancelEdit}>Cancel</span>
-                                  </>
+                                  <input
+                                    type="text"
+                                    value={editedComment}
+                                    onChange={(e) =>
+                                      setEditedComment(e.target.value)
+                                    }
+                                    autoFocus
+                                    className="border-b border-gray-300 w-full py-2 focus:outline-none pl-2"
+                                  />
                                 ) : (
-                                  <>
-                                    <span className="text-xs cursor-pointer opacity-70" onClick={() => startEdit(c.id, c.comment)}>Edit</span>
-                                    {/* <AiOutlineEdit className="cursor-pointer text-[#283b91] opacity-70 text-sm"
+                                  <p className="text-gray-700">{c.comment}</p>
+                                )}
+                                <div className="text-sm space-x-3 text-gray-600 flex items-center">
+                                  {editingCommentId === c.id ? (
+                                    <>
+                                      <span
+                                        className="text-xs cursor-pointer opacity-70"
+                                        onClick={() => saveEdit(c.id)}
+                                      >
+                                        Save
+                                      </span>
+                                      <span
+                                        className="text-xs cursor-pointer opacity-70"
+                                        onClick={cancelEdit}
+                                      >
+                                        Cancel
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span
+                                        className="text-xs cursor-pointer opacity-70"
+                                        onClick={() =>
+                                          startEdit(c.id, c.comment)
+                                        }
+                                      >
+                                        Edit
+                                      </span>
+                                      {/* <AiOutlineEdit className="cursor-pointer text-[#283b91] opacity-70 text-sm"
                                       onClick={() => startEdit(c.id, c.comment)}
                                       title="Edit Comment" /> */}
-                                    {/* <MdDeleteForever className="cursor-pointer text-red-400 opacity-70 text-sm"
+                                      {/* <MdDeleteForever className="cursor-pointer text-red-400 opacity-70 text-sm"
                                       onClick={() => deleteComment(c.id)} title="Delete Comment" /> */}
-                                    <span
-                                      className="text-xs cursor-pointer opacity-70"
-                                      onClick={() => deleteComment(c.id)}
-                                    >
-                                      Delete
-                                    </span>
-                                  </>
-                                )}
+                                      <span
+                                        className="text-xs cursor-pointer opacity-70"
+                                        onClick={() => deleteComment(c.id)}
+                                      >
+                                        Delete
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                       </div>
                     )}
                   </div>

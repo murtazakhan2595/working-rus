@@ -59,7 +59,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
             setPreviousPage(response.data.previous);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -72,9 +72,8 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`h-screen bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${
-            isSidebarOpen ? "" : "hidden"
-          }`}
+          className={`h-screen hideScroll bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${isSidebarOpen ? "" : "hidden"
+            }`}
         >
           <div className="text-xl bg-white py-3 px-7 flex flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 rounded-md">
             <img src={logo} className="inline-block w-12" alt="logo" />
@@ -119,13 +118,13 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
 
             <hr className="opacity-40" />
 
-            <li   onClick={() => {
-                    setisProjectOpen(!isProjectOpen);
-                  }} className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1">
-                <div className="flex gap-1">
-                  <GoProjectSymlink className="text-white text-xl" />{" "}
-                  <p className="text-white">Projects</p>
-                </div>
+            <li onClick={() => {
+              setisProjectOpen(!isProjectOpen);
+            }} className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1">
+              <div className="flex gap-1">
+                <GoProjectSymlink className="text-white text-xl" />{" "}
+                <p className="text-white">Projects</p>
+              </div>
               {isProjectOpen ? (
                 <AiOutlineCaretUp
                   className="text-white text-xs"
@@ -171,7 +170,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                   <div className="max-h-[20vh] overflow-y-auto hideScroll">
                     {projects.map((project, index) => (
                       <div key={index} className="flex flex-col gap-2">
-                        <div onClick={()=>{navigate(`/project/${project.id}`)}} className="flex gap-3 mb-1 cursor-pointer">
+                        <div onClick={() => { navigate(`/project/${project.id}`) }} className="flex gap-3 mb-1 cursor-pointer">
                           <div className="bg-blue-950 rounded-md p-3"></div>
                           <div className="text-white">{project.name}</div>
                         </div>
@@ -199,9 +198,8 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
 
         {/* Sidebar collapse button */}
         <button
-          className={`bg-[#283b91] text-white p-1.5 absolute ${
-            isSidebarOpen ? "left-56" : "left-0"
-          } rounded-e-lg top-3 mt-4 mr-4`}
+          className={`bg-[#283b91] text-white p-1.5 absolute ${isSidebarOpen ? "left-[13.5rem]" : "left-0"
+            } rounded-e-lg top-3 mt-4 mr-4`}
           onClick={handleSidebarToggle}
         >
           {isSidebarOpen ? (
