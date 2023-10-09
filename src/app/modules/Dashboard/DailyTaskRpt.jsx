@@ -80,7 +80,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
 
         try {
             const response = await axios.post(`${baseUrl}/dtr/`, data, { headers });
-            if (response.status === 201){
+            if (response.status === 201) {
                 toast.success('DTR submitted successfully!', {
                     position: toast.POSITION.TOP_RIGHT,
                 });
@@ -114,8 +114,8 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                 <div>
                     <h1 className='text-xl font-bold lg:pl-12 md:pl-8 py-2 lg:py-0'>Daily Task Report</h1>
                 </div>
-                <div className='flex items-center py-1 rounded-full'>
-                    <span className='-z-0 px-3 lg:px-6  text-sm'><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
+                <div className='flex flex-col md:flex-row items-center py-1 rounded-full'>
+                    <span className='-z-0 pl-20 lg:px-6  text-sm '><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
                     <button
                         className='border-2 border-[#283B91] bg-[#283B91] text-white rounded-full lg:rounded-3xl px-7 py-1 mr-1 lg:mr-2 hover:bg-white hover:text-[#283B91]'
                         onClick={handlePopupToggle}
@@ -129,7 +129,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"></div>
                     <div className="fixed inset-0 flex items-center justify-center z-50">
                         <div className="md:mx-auto w-full max-w-md relative">
-                            <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 max-w-800 border border-gray-100 shadow-md relative">
+                            <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-8 md:p-5 p-3 lg:m-6 m-4 max-w-800 border border-gray-100 shadow-md relative">
                                 <div
                                     className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
                                     onClick={closeModal}
@@ -138,7 +138,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                                 </div>
                                 <div className="flex justify-center px-4 py-0">
                                     <div className="flex items-center">
-                                        <span className="text-lg"><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
+                                        <span className="text-lg pl-16"><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
                                     </div>
                                 </div>
                                 <div className="h-72 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">

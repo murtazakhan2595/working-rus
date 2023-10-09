@@ -87,8 +87,8 @@ const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) =>
     <>
       <div className="fixed inset-0 z-50 w-screen overflow-y-auto scroll h-[100%] flex justify-center items-center backdrop-blur-sm  ">
         <div className="flex items-center justify-center z-50">
-          <div className="md:mx-auto pb-10 pt-28  max-w-3xl relative ">
-            <div className="space-y-3 bg-[#F8F8F8] w-96 lg:pt-8 lg:pb-4 py-6 rounded-3xl p-8 m-6 max-w-6xl border border-gray-100 shadow-md relative">
+          <div className="md:mx-auto pb-10 max-w-3xl relative ">
+            <div className="space-y-3 bg-[#F8F8F8] w-96 lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-8 p-3 lg:m-6 m-4 lg:max-w-6xl max-w-xs border border-gray-100 shadow-md relative">
               <div
                 className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
                 onClick={onClose}

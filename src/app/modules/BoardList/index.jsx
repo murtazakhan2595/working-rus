@@ -159,12 +159,12 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
       </div>
 
       {/* Board Header */}
-      <div className="bg-[#ebebeb] mb-6 pr-1 pl-5 gap-3 w-full justify-between py-2 flex">
+      <div className="bg-[#ebebeb] mb-6 pr-1 lg:pl-5 pl-1 gap-3 w-full justify-between py-2 flex">
         <div className="flex gap-2">
-          <div className="flex justify-center ml-4 items-center">
+          <div className="flex justify-center lg:ml-4 ml-1 items-center">
             <AiTwotoneStar className="text-3xl text-[#283b91]" />
           </div>
-          <div className="flex font-bold items-center ml-2 tracking-widest">
+          <div className="flex font-bold items-center lg:ml-2 ml-1 tracking-widest">
             {currentProjectName} {/* Display the current project name */}
           </div>
         </div>
@@ -180,7 +180,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
               <div className=" px-2 text-[#283b91]">Team Members</div>
             </div>
           </div>
-          <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+          <div className="hidden bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg ">
             <div className=" px-1 text-gray-400">
               <FiFilter />
             </div>
@@ -210,7 +210,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
 
       {/* Add Board Button */}
       <div
-        className="absolute bottom-10 right-10 w-10 h-10 flex justify-center items-center 
+        className="absolute bottom-10 right-5 w-10 h-10 flex justify-center items-center 
       bg-[#25A8E0] text-white font-bold border rounded-full text-xl cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
