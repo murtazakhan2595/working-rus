@@ -399,6 +399,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
         </div>
       </div>
 
+      <div className="lg:ml-12 mb-4"><Link to="/">Home</Link>{` > ${board.name}`}</div>
+
       {/* ***************************************************** Board Card ***************************************************** */}
       <DragDropContext onDragEnd={boardHidden ? '' : handleDragEnd}>
         <div className="flex w-full justify-start ">
@@ -450,7 +452,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                       {/* <BsBookmark className="text-xs text- opacity-50" /> */}
                                       <div
                                         title={t.userName}
-                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
+                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex 
+                                        p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
                                       >
                                         {t.userName.toUpperCase().slice(0, 2)}
                                       </div>
@@ -557,7 +560,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     <div className="flex items-center gap-2">
                                       <div
                                         title={t.userName}
-                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
+                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex
+                                         p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
                                       >
                                         {t.userName.toUpperCase().slice(0, 2)}
                                       </div>
@@ -665,7 +669,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     <div className="flex items-center gap-2">
                                       <div
                                         title={t.userName}
-                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
+                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6
+                                         opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
                                       >
                                         {t.userName.toUpperCase().slice(0, 2)}
                                       </div>
