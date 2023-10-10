@@ -8,6 +8,7 @@ import { AiTwotoneStar } from "react-icons/ai";
 import { FiFilter } from "react-icons/fi";
 import BoardModel from "./BoardModel";
 import Cookies from "universal-cookie";
+import { BsPencil, BsTrash3 } from "react-icons/bs";
 import { setUserLogout } from "../../../state/actions/UserAction";
 
 const BoardList = ({ userProfile, baseUrl, token }) => {
@@ -16,10 +17,11 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
   const [boardList, setBoardList] = useState([]);
   const [projects, setProjects] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentProjectName, setCurrentProjectName] = useState("");
+  const [currentProjectName, setCurrentProjectName] = useState({});
   const [projectMembers, setProjectMembers] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [members, setMembers] = useState([]);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -91,9 +93,30 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
   const fetchCurrentProjectName = () => {
     const project = projects.find((project) => project.id === parseInt(id));
     if (project) {
-      setCurrentProjectName(project.name);
+      setCurrentProjectName(project);
     }
   };
+
+  const handleDeleteProject = async () => {
+    try {
+      const response = await axios.delete(`${baseUrl}/project/${currentProjectName.id}`, {
+        headers:{
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status === 204) {
+        console.log("Project deleted successfully!");
+        navigate(`/`)
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error deleting board:", error);
+    }
+
+    setIsDeleteConfirmationOpen(false);
+  };
+
 
   useEffect(() => {
     getProjects();
@@ -168,7 +191,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
             <AiTwotoneStar className="text-3xl text-[#283b91]" />
           </div>
           <div className="flex font-bold items-center lg:ml-2 ml-1 tracking-widest">
-            {currentProjectName} {/* Display the current project name */}
+            {currentProjectName.name}
           </div>
         </div>
         <div className="flex gap-3 pr-2">
@@ -188,8 +211,21 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
               <FiFilter />
             </div>
           </div>
+          {/* <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+            <div className=" px-1 text-gray-400">
+              <BsPencil />
+            </div>
+          </div> */}
+          <div className="flex bg-[#f7f7f8] px-2 mr-5 cursor-pointer py-1 gap-3 items-center rounded-lg" onClick={()=>{setIsDeleteConfirmationOpen(true)}}>
+            <div className=" px-1 text-gray-400">
+              <BsTrash3 />
+            </div>
+          </div>
+
         </div>
       </div>
+
+
 
       {/* Board List */}
       <div className="mt-1 w-[95%] relative">
@@ -224,6 +260,31 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
 
       {/* Board Model */}
       {isModalOpen && <BoardModel onClose={() => setIsModalOpen(false)} projectId={id} refreshBoardList={refreshBoardList} />}
+      {/* Delete Modal */}
+      {isDeleteConfirmationOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="modal-overlay absolute w-full h-full backdrop-blur-sm"></div>
+          <div className="modal-container bg-white w-1.5/5 mx-auto rounded shadow-lg z-50">
+            <div className="modal-content py-4 px-6">
+              <h2 className="text-xl font-semibold mb-2">Confirm Delete</h2>
+              <p className="mb-2">Are you sure you want to delete this board?</p>
+              <div className="flex justify-end">
+                <button
+                  className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
+                  onClick={()=>{setIsDeleteConfirmationOpen(false)}}>
+                  Cancel
+                </button>
+                <button
+                  className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
+                  onClick={handleDeleteProject} // Step 4: Delete the board
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
