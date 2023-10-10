@@ -224,11 +224,10 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
 
         </div>
       </div>
-
-
-
       {/* Board List */}
       <div className="mt-1 w-[95%] relative">
+        <div className="mb-2"><Link to="/">Home</Link>{` > ${currentProjectName}`}</div>
+
         <div className="flex gap-10 flex-row border-b-2 mx-4">
           {/* <div className="font-semibold">SNO</div> */}
           <div className="font-semibold">Board Name</div>
