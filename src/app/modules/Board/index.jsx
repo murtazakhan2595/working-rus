@@ -407,8 +407,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
         </div>
       </div>
 
-      <div className="lg:ml-12 mb-4"><Link to="/">Home</Link>{` > ${board.name}`}</div>
-
       {/* ***************************************************** Board Card ***************************************************** */}
       <DragDropContext onDragEnd={boardHidden ? '' : handleDragEnd}>
         <div className="flex w-full justify-start ">
