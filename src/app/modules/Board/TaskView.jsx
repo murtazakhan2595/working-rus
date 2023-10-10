@@ -10,8 +10,6 @@ import moment from "moment";
 import ReactQuill from "react-quill";
 import { IoAttachOutline } from "react-icons/io5";
 import { VscMention } from "react-icons/vsc";
-import { AiOutlineEdit } from "react-icons/ai";
-import { MdDeleteForever } from "react-icons/md";
 
 const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [assignToOpen, setAssignToOpen] = useState(false);

@@ -5,37 +5,32 @@ import axios from "axios";
 import { connect } from "react-redux";
 import { RxCross2, RxPlus } from "react-icons/rx";
 import ReactQuill from "react-quill";
-import Datepicker from "../../../modules/Dashboard/Datepicker";
+import Datepicker from "../../modules/Dashboard/Datepicker";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
-const ProjectModal = ({ baseUrl, token, onClose }) => {
-  let newDate = new Date();
-  let defaultDate = `${newDate.getFullYear()}-${newDate.getMonth()}-${newDate.getDate()}`;
+const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
 
   const navigate = useNavigate()
-
-  const [projectName, setProjectName] = useState("");
-  // const [title, setTitle] = useState("");
+  const [projectName, setProjectName] = useState(data.name);
   const [errors, setErrors] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState(defaultDate);
-  const [dueDate, setDueDate] = useState(defaultDate);
-  // const [priority, setPriority] = useState(3);
+  const [description, setDescription] = useState(data.description);
+  const [startDate, setStartDate] = useState(data.start_date);
+  const [dueDate, setDueDate] = useState(data.end_date);
   const [membersOpen, setMembersOpen] = useState(false);
   const [users, setUsers] = useState({});
   const [filterUsers, setFilterUsers] = useState([]);
-  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [selectedMembers, setSelectedMembers] = useState(data.project_members);
   const [searchQuery, setSearchQuery] = useState("")
 
   const boardSchema = Joi.object({
     projectName: Joi.string().min(1).max(100).required(),
     description: Joi.string().min(1).max(5000).required(),
-    startDate: Joi.date().iso().required(), // Assuming dates are in ISO format (YYYY-MM-DD)
+    startDate: Joi.date().iso().required(), 
     dueDate: Joi.date().iso().required(),
-    priority: Joi.number().valid(1, 2, 3).required(), // Assuming priority values are 1, 2, or 3
-    selectedMembers: Joi.array().items(Joi.number()).min(1).required(), // Assuming member IDs are numbers
+    priority: Joi.number().valid(1, 2, 3).required(),
+    selectedMembers: Joi.array().items(Joi.number()).min(1).required()
   });
 
   const handleSubmit = async (e) => {
@@ -46,7 +41,6 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
       description,
       start_date: startDate,
       end_date: dueDate,
-      // priority,
       project_members: selectedMembers,
     };
 
@@ -56,14 +50,13 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
         "Content-Type": "application/json",
       };
 
-      const response = await axios.post(`${baseUrl}/project/`, formData, { headers });
+      const response = await axios.patch(`${baseUrl}/project/${data.id}`, formData, { headers });
       console.log('Response:', response);
-      if (response.status === 201) {
-        toast.success("Project Added!", {
+      if (response.status === 200) {
+        toast.success("Project Updated!", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        onClose();
-        navigate(`/project/${response.data.id}`)
+        onClose()
       }
     } catch (error) {
       console.error('Error:', error);
@@ -77,7 +70,6 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
       description,
       startDate,
       dueDate,
-      // priority,
       selectedMembers,
     };
 
@@ -148,20 +140,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                 <RxCross2 />
               </div>
               <form onSubmit={handleSubmit}>
-                <h2 className="text-2xl font-sfpro leading-3 font-bold mb-8">
-                  Create New Project
-                </h2>
-
-                <div>
-                  {/* ************************ Name ***************************** */}
-                  <div className="flex flex-col">
-                    <label
-                      htmlFor="name"
-                      className="font-sfpro text-lg font-semibold"
-                    >
-                      Project Name
-                    </label>
-                    <input
+                <input
                       type="text"
                       name="name"
                       id="name"
@@ -173,15 +152,15 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                         }));
                         setProjectName(e.target.value);
                       }}
-                      className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
-                      placeholder="TecBrix Dashboard Design"
+                      className="text-2xl w-full bg-transparent focus:outline-none font-sfpro leading-3 font-bold mb-8"
+                      placeholder="Enter a Project Name"
                     />
                     {validationErrors.projectName && (
                       <span className="text-red-500 text-sm">
                         {validationErrors.projectName}
                       </span>
                     )}
-                  </div>
+                <div>
 
                   {/* ************************ Description ***************************** */}
                   <div className="flex flex-col">
@@ -227,7 +206,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                     )}
                   </div>
 
-                  {/* ************************ Dates , Priority ***************************** */}
+                  {/* ************************ Dates ***************************** */}
                   <div className="flex gap-x-10 items-center mb-4">
                     <div className="flex flex-col">
                       <label
@@ -238,6 +217,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                       </label>
                       <Datepicker
                         className="z-50"
+                        date={startDate}
                         onChange={(date) => {
                           let d = moment(date)
                             .format("YYYY-MM-DD")
@@ -254,6 +234,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                         Due Date
                       </label>
                       <Datepicker
+                      date={dueDate}
                         onChange={(date) => {
                           let d = moment(date)
                             .format("YYYY-MM-DD")
@@ -361,7 +342,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                   type="submit"
                   className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white"
                 >
-                  Create
+                  Update
                 </button>
               </form>
             </div>
@@ -379,6 +360,6 @@ const mapStateToProps = (state) => {
     baseUrl: state.user.baseUrl,
   };
 };
-export default connect(mapStateToProps)(ProjectModal);
+export default connect(mapStateToProps)(ProjectEditModal);
 
 

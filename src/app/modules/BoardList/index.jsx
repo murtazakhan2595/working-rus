@@ -9,15 +9,17 @@ import { FiFilter } from "react-icons/fi";
 import BoardModel from "./BoardModel";
 import Cookies from "universal-cookie";
 import { BsPencil, BsTrash3 } from "react-icons/bs";
+import { GrNext } from "react-icons/gr";
 import { setUserLogout } from "../../../state/actions/UserAction";
+import ProjectEditModal from "./ProjectEditModal";
 
 const BoardList = ({ userProfile, baseUrl, token }) => {
   const { id } = useParams(); // Access the id parameter from the URL
   const cookies = new Cookies();
   const [boardList, setBoardList] = useState([]);
-  const [projects, setProjects] = useState([]);
+  const [project, setProject] = useState([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentProjectName, setCurrentProjectName] = useState({});
   const [projectMembers, setProjectMembers] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [members, setMembers] = useState([]);
@@ -46,22 +48,21 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
   };
 
   // Get Projects
-  const getProjects = async (url = `${baseUrl}/project/`) => {
+  const getProject = async () => {
     try {
-      const response = await axios.get(url, {
+      const response = await axios.get(`${baseUrl}/project/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.status === 200) {
-        setProjects(response.data.results);
+        setProject(response.data);
       }
     } catch (error) {
       console.error("Error while fetching projects:", error);
     }
   };
-
   // get members
   const getMembers = async () => {
     try {
@@ -73,39 +74,21 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
 
       if (response.status === 200) {
         setMembers(response.data.results);
-        // console.log(response.data.results)
       }
     } catch (error) {
       console.error("Error while fetching project members:", error);
     }
   };
 
-  // Fetch project members
-  const fetchProjectMembers = () => {
-    const project = projects.find((project) => project.id === parseInt(id));
-    if (project && project.project_members) {
-      setProjectMembers(project.project_members);
-    }
-  };
-
-
-  // Fetch the current project name
-  const fetchCurrentProjectName = () => {
-    const project = projects.find((project) => project.id === parseInt(id));
-    if (project) {
-      setCurrentProjectName(project);
-    }
-  };
 
   const handleDeleteProject = async () => {
     try {
-      const response = await axios.delete(`${baseUrl}/project/${currentProjectName.id}`, {
+      const response = await axios.delete(`${baseUrl}/project/${project.id}`, {
         headers:{
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.status === 204) {
-        console.log("Project deleted successfully!");
         navigate(`/`)
       } else {
         console.error("Unexpected response status:", response.status);
@@ -116,18 +99,19 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
 
     setIsDeleteConfirmationOpen(false);
   };
-
+const onClose = ()=>{
+  setIsEditModalOpen(false)
+  getProject()
+}
 
   useEffect(() => {
-    getProjects();
-    getMembers(); // Fetch project members
-    fetchProjectMembers()
+    getProject();
+    getMembers();
   }, [id]);
 
   useEffect(() => {
     getBoards();
-    fetchCurrentProjectName(); // Fetch and set the current project name
-  }, [id, projects]);
+  }, [id, project]);
 
   // logout dropdown
   const handleDropdownClick = () => {
@@ -191,15 +175,15 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
             <AiTwotoneStar className="text-3xl text-[#283b91]" />
           </div>
           <div className="flex font-bold items-center lg:ml-2 ml-1 tracking-widest">
-            {currentProjectName.name}
+          <Link className="text-blue-400 cursor-pointer" to="/">Home</Link><GrNext className="mx-1 opacity-40"/>{`${project.name}`}
           </div>
         </div>
         <div className="flex gap-3 pr-2">
-          <div className={`${projectMembers.length > 0 && 'bg-[#E1E1E1]'} rounded-md flex gap-x-1 justify-center items-center`}>
+          <div className={`rounded-md flex gap-x-1 justify-center items-center`}>
             <div className={`flex gap-x-1 pl-2`}>
-              {projectMembers.map((member, index) => (
-                <div className="flex justify-center items-center w-7 h-7 rounded-full border bg-blue-800
-                 text-white text-sm p-2" key={index}>{members[member - 1].username.slice(0, 2).toUpperCase()}</div>
+              {project?.project_members?.map((member, index) => (
+                <div className="flex justify-center items-center w-8 h-8 font-bold rounded-full border bg-blue-800
+                 text-white text-sm p-2" key={index}>{members[member - 1]?.username?.slice(0, 2).toUpperCase()}</div>
               ))}
             </div>
             <div className="flex bg-white px-2 py-1 gap-3 items-center rounded-lg">
@@ -211,11 +195,11 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
               <FiFilter />
             </div>
           </div>
-          {/* <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
+          <div className="flex bg-[#f7f7f8] px-2 py-1 cursor-pointer gap-3 items-center rounded-lg" onClick={()=>{setIsEditModalOpen(true);}}>
             <div className=" px-1 text-gray-400">
               <BsPencil />
             </div>
-          </div> */}
+          </div>
           <div className="flex bg-[#f7f7f8] px-2 mr-5 cursor-pointer py-1 gap-3 items-center rounded-lg" onClick={()=>{setIsDeleteConfirmationOpen(true)}}>
             <div className=" px-1 text-gray-400">
               <BsTrash3 />
@@ -226,20 +210,23 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
       </div>
       {/* Board List */}
       <div className="mt-1 w-[95%] relative">
-        <div className="mb-2"><Link to="/">Home</Link>{` > ${currentProjectName}`}</div>
-
         <div className="flex gap-10 flex-row border-b-2 mx-4">
           {/* <div className="font-semibold">SNO</div> */}
           <div className="font-semibold">Board Name</div>
         </div>
         <div className="overflow-y-auto max-h-96 roundScroll">
           {loading ? (
-            <p className="text-center">Loading...</p>
+           <div className="flex items-center justify-center h-[30vh]">
+           <div className="text-center">
+             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+             <p className="text-gray-600 mt-4">Loading...</p>
+           </div>
+         </div>
           ) : boardList.length !== 0 ? (
             boardList.map((board, index) => (
               <div className="flex gap-16 flex-row p-2 rounded bg-[#F2F2F2] mx-4 my-2" key={index}>
                 {/* <div className="text-blue-500">{index + 1}</div> */}
-                <div className="cursor-pointer text-blue-500 underline" onClick={() => { navigate(`/board/${board.id}`) }}>{board.name}</div>
+                <div className="cursor-pointer text-blue-500" onClick={() => { navigate(`/board/${board.id}?pId=${id}`) }}>{board.name}</div>
               </div>
             ))
           ) : (
@@ -284,6 +271,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
           </div>
         </div>
       )}
+    {isEditModalOpen && <ProjectEditModal onClose={onClose} data={project}/>}
     </div>
   );
 };

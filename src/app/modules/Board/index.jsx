@@ -9,6 +9,7 @@ import { AiTwotoneStar } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import TaskModal from "./TaskModal";
 import TaskView from "./TaskView";
+import { GrNext } from "react-icons/gr";
 import { toast, ToastContainer } from "react-toastify";
 import "./index.css";
 import axios from "axios";
@@ -22,6 +23,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   const [status, setStatus] = useState("");
   const [board, setBoard] = useState([]);
   const [reload, setReload] = useState(false);
+  const [project, setProject] = useState({});
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [boardHidden, setBoardHidden] = useState(false);
   const [users, setUsers] = useState([]);
@@ -35,7 +37,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
   const [isEditBoardOpen, setIsEditBoardOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState('');
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
-
+  const searchParams = new URLSearchParams(window.location.search);
+  const projectId = searchParams.get('pId')
   const { id } = useParams();
 
   const closeModal = () => {
@@ -78,6 +81,22 @@ const Board = ({ userProfile, baseUrl, token }) => {
         .then((response) => {
           if (response.status === 200) {
             setBoard(response.data);
+          }
+        });
+    } catch (error) { }
+  };
+
+  const getProject = async () => {
+    try {
+      await axios
+        .get(`${baseUrl}/project/${projectId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            setProject(response.data);
           }
         });
     } catch (error) { }
@@ -265,6 +284,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
 
   useEffect(() => {
     getUsers();
+    getProject()
   }, []);
   useEffect(() => {
     getTasks();
@@ -356,8 +376,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
           <div className="flex justify-center ml-4 items-center">
             <AiTwotoneStar className="text-3xl text-[#283b91]" />
           </div>
-          <div className="flex font-bold items-center ml-2 tracking-widest ">
-            {board.name}
+          <div className="flex font-bold items-center lg:ml-2 ml-1 tracking-widest">
+          <Link className="text-blue-400 cursor-pointer" to="/">Home</Link><GrNext className="mx-1 opacity-40"/><Link className="text-blue-400 cursor-pointer" to={`/project/${project.id}`}>{project.name}</Link>
+          <GrNext className="mx-1 opacity-40"/>{board.name}
           </div>
         </div>
         <div className="flex gap-3">
