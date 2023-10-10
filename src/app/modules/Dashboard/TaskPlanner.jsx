@@ -33,10 +33,12 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
         for (const task of tasksData) {
           let username = users.filter((u) => u.id === task.assigned_by);
           let boardname = boards.filter((b) => b.id === task.board_id);
+          let project_id = boardname[0].project_id
           const taskWithname = {
             ...task,
             boardName: boardname[0].name,
             userName: username[0].username,
+            project_id: project_id,
           };
           tasksWithBardName.push(taskWithname);
           setLoading(false);
@@ -172,7 +174,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
                     task.status !== "Completed" && (
                       <div
                         onClick={() => {
-                          navigate(`/board/${task.board_id}`);
+                          navigate(`/board/${task.board_id}?pId=${task.project_id}`);
                         }}
                         key={index}
                         className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
