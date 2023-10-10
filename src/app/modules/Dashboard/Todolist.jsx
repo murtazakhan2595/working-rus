@@ -216,7 +216,9 @@ const Dashboard = ({ token, baseUrl }) => {
           )}
         </div>
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <div className="block m-auto">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+          </div>
         ) : (
           <div className={`overflow-y-auto max-h-[160px] roundScroll`}>
             {todos.slice(0, showAllItems ? todos.length : 4).map(todo => (
