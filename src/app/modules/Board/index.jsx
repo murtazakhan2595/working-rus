@@ -53,18 +53,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
     setNewBoardName(event.target.value);
   };
 
-  // delete board pop up
-
-  const openDeleteConfirmation = () => {
-    setIsDeleteConfirmationOpen(true);
-  };
-
-  // Step 3: Close the delete confirmation pop-up
-  const closeDeleteConfirmation = () => {
-    setIsDeleteConfirmationOpen(false);
-  };
-
-  // logout drop down
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -301,8 +289,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
       console.error("Error deleting board:", error);
     }
 
-    // Close the delete confirmation pop-up after deletion
-    closeDeleteConfirmation();
+    setIsDeleteConfirmationOpen(false);
   };
 
   const EditBoardName = async () => {
@@ -390,7 +377,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             </div>
           </div>
           <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg"
-            onClick={openDeleteConfirmation}
+            onClick={()=>{setIsDeleteConfirmationOpen(true);}}
           >
             <div className=" px-1 text-gray-400">
               <BsTrash3 />
@@ -398,6 +385,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
           </div>
         </div>
       </div>
+
+      <div className="lg:ml-12 mb-4"><Link to="/">Home</Link>{` > ${board.name}`}</div>
 
       {/* ***************************************************** Board Card ***************************************************** */}
       <DragDropContext onDragEnd={boardHidden ? '' : handleDragEnd}>
@@ -450,7 +439,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                       {/* <BsBookmark className="text-xs text- opacity-50" /> */}
                                       <div
                                         title={t.userName}
-                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
+                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex 
+                                        p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
                                       >
                                         {t.userName.toUpperCase().slice(0, 2)}
                                       </div>
@@ -557,7 +547,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     <div className="flex items-center gap-2">
                                       <div
                                         title={t.userName}
-                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
+                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex
+                                         p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
                                       >
                                         {t.userName.toUpperCase().slice(0, 2)}
                                       </div>
@@ -665,7 +656,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                     <div className="flex items-center gap-2">
                                       <div
                                         title={t.userName}
-                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
+                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6
+                                         opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
                                       >
                                         {t.userName.toUpperCase().slice(0, 2)}
                                       </div>
@@ -780,13 +772,12 @@ const Board = ({ userProfile, baseUrl, token }) => {
               <div className="flex justify-end">
                 <button
                   className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
-                  onClick={closeDeleteConfirmation} // Step 3: Close the delete confirmation pop-up
-                >
+                  onClick={()=>{setIsDeleteConfirmationOpen(false)}}>
                   Cancel
                 </button>
                 <button
                   className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
-                  onClick={handleDeleteBoard} // Step 4: Delete the board
+                  onClick={handleDeleteBoard}
                 >
                   Confirm
                 </button>
