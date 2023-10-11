@@ -4,8 +4,8 @@ const initialState = {
   token: "",
   baseUrl:
     window.location.href.indexOf("https") === -1
-      ? "http://hrms.tecbrix.cloud:8080/api"
-      : "http://hrms.tecbrix.cloud:8080/api",
+      ? "https://hrms.tecbrix.cloud:8080/api"
+      : "https://hrms.tecbrix.cloud:8080/api",
 };
 
 const userReducer = (state = initialState, action) => {
