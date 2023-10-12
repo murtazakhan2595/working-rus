@@ -84,7 +84,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
   const handleDeleteProject = async () => {
     try {
       const response = await axios.delete(`${baseUrl}/project/${project.id}`, {
-        headers:{
+        headers: {
           Authorization: `Bearer ${token}`,
         },
       });
@@ -99,10 +99,10 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
 
     setIsDeleteConfirmationOpen(false);
   };
-const onClose = ()=>{
-  setIsEditModalOpen(false)
-  getProject()
-}
+  const onClose = () => {
+    setIsEditModalOpen(false)
+    getProject()
+  }
 
   useEffect(() => {
     getProject();
@@ -169,13 +169,13 @@ const onClose = ()=>{
       </div>
 
       {/* Board Header */}
-      <div className="bg-[#ebebeb] mb-6 pr-1 lg:pl-5 pl-1 gap-3 w-full justify-between py-2 flex">
+      <div className="bg-[#ebebeb] mb-6 pr-1 lg:pl-5 pl-1 gap-3 w-full justify-between py-2 flex flex-col md:flex-row lg:flex-row">
         <div className="flex gap-2">
           <div className="flex justify-center lg:ml-4 ml-1 items-center">
             <AiTwotoneStar className="text-3xl text-[#283b91]" />
           </div>
           <div className="flex font-bold items-center lg:ml-2 ml-1 tracking-widest">
-          <Link className="text-blue-400 cursor-pointer" to="/">Home</Link><GrNext className="mx-1 opacity-40"/>{`${project.name}`}
+            <Link className="text-blue-400 cursor-pointer" to="/">Home</Link><GrNext className="mx-1 opacity-40" /><div className="break-all">{`${project.name}`}</div>
           </div>
         </div>
         <div className="flex gap-3 pr-2">
@@ -195,12 +195,12 @@ const onClose = ()=>{
               <FiFilter />
             </div>
           </div>
-          <div className="flex bg-[#f7f7f8] px-2 py-1 cursor-pointer gap-3 items-center rounded-lg" onClick={()=>{setIsEditModalOpen(true);}}>
+          <div className="flex bg-[#f7f7f8] px-2 py-1 cursor-pointer gap-3 items-center rounded-lg" onClick={() => { setIsEditModalOpen(true); }}>
             <div className=" px-1 text-gray-400">
               <BsPencil />
             </div>
           </div>
-          <div className="flex bg-[#f7f7f8] px-2 mr-5 cursor-pointer py-1 gap-3 items-center rounded-lg" onClick={()=>{setIsDeleteConfirmationOpen(true)}}>
+          <div className="flex bg-[#f7f7f8] px-2 mr-5 cursor-pointer py-1 gap-3 items-center rounded-lg" onClick={() => { setIsDeleteConfirmationOpen(true) }}>
             <div className=" px-1 text-gray-400">
               <BsTrash3 />
             </div>
@@ -216,12 +216,12 @@ const onClose = ()=>{
         </div>
         <div className="overflow-y-auto max-h-96 roundScroll">
           {loading ? (
-           <div className="flex items-center justify-center h-[30vh]">
-           <div className="text-center">
-             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-             <p className="text-gray-600 mt-4">Loading...</p>
-           </div>
-         </div>
+            <div className="flex items-center justify-center h-[30vh]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+                <p className="text-gray-600 mt-4">Loading...</p>
+              </div>
+            </div>
           ) : boardList.length !== 0 ? (
             boardList.map((board, index) => (
               <div className="flex gap-16 flex-row p-2 rounded bg-[#F2F2F2] mx-4 my-2" key={index}>
@@ -257,7 +257,7 @@ const onClose = ()=>{
               <div className="flex justify-end">
                 <button
                   className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
-                  onClick={()=>{setIsDeleteConfirmationOpen(false)}}>
+                  onClick={() => { setIsDeleteConfirmationOpen(false) }}>
                   Cancel
                 </button>
                 <button
@@ -271,7 +271,7 @@ const onClose = ()=>{
           </div>
         </div>
       )}
-    {isEditModalOpen && <ProjectEditModal onClose={onClose} data={project}/>}
+      {isEditModalOpen && <ProjectEditModal onClose={onClose} data={project} />}
     </div>
   );
 };
