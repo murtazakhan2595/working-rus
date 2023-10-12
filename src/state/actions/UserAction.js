@@ -17,3 +17,10 @@ export const setUserLogout = () => {
     type: 'SET_USER_LOGOUT',
   };
 };  
+
+export const setSidebarRefresh = (val) => {
+  return {
+    type: 'SET_SIDEBAR_REFRESH',
+    payload : val
+  };
+};  

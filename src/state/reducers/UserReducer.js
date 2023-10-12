@@ -1,6 +1,7 @@
 const initialState = {
   userProfile: {},
   isLogin: null,
+  sidebarRefresh: false,
   token: "",
   baseUrl:
     window.location.href.indexOf("https") === -1
@@ -27,6 +28,11 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         token: action.payload,
+      };
+    case "SET_SIDEBAR_REFRESH":
+      return {
+        ...state,
+        sidebarRefresh: action.payload,
       };
     default:
       return state;
