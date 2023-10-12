@@ -8,8 +8,9 @@ import { connect } from "react-redux";
 import Joi from "joi";
 import moment from "moment";
 import ReactQuill from "react-quill";
-import { IoAttachOutline } from "react-icons/io5";
-import { VscMention } from "react-icons/vsc";
+import Select from 'react-select';
+import { priorityOptions, statusOptions } from "../../../data/Data";
+
 
 const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
   let newDate = new Date();
@@ -236,67 +237,78 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                 {/* ************************ Dates , Status , Piriorty ***************************** */}
 
                 <div className="flex gap-2 justify-between md:flex-row flex-col items-center mb-4">
-                <div className="flex gap-1 md:flex-row flex-col">
-                  <div className="flex md:flex-col flex-row gap-2 md:gap-0 my-2 md:my-0">
-                    <label
-                      htmlFor="dueDate"
-                      className="py-1 font-sfpro text-lg font-semibold"
-                    >
-                      Start Date
-                    </label>
-                    <Datepicker
-                      onChange={(date) => {
-                        let d = moment(date).format("YYYY-MM-DD").toLowerCase();
-                        setStartDate(d);
-                      }}
-                    />
-                  </div>
-                  <div className="flex md:flex-col flex-row gap-2 md:gap-0 my-2 md:my-0">
-                    <label
-                      htmlFor="dueDate"
-                      className="py-1 font-sfpro text-lg font-semibold"
-                    >
-                      Due Date
-                    </label>
-                    <Datepicker
-                      onChange={(date) => {
-                        let d = moment(date).format("YYYY-MM-DD").toLowerCase();
-                        setDueDate(d);
-                      }}
-                    />
-                  </div>
+                  <div className="flex gap-1 md:flex-row flex-col">
+                    <div className="flex md:flex-col flex-row gap-2 md:gap-0 my-2 md:my-0">
+                      <label
+                        htmlFor="dueDate"
+                        className="py-1 font-sfpro text-lg font-semibold"
+                      >
+                        Start Date
+                      </label>
+                      <Datepicker
+                        onChange={(date) => {
+                          let d = moment(date).format("YYYY-MM-DD").toLowerCase();
+                          setStartDate(d);
+                        }}
+                      />
+                    </div>
+                    <div className="flex md:flex-col flex-row gap-2 md:gap-0 my-2 md:my-0">
+                      <label
+                        htmlFor="dueDate"
+                        className="py-1 font-sfpro text-lg font-semibold"
+                      >
+                        Due Date
+                      </label>
+                      <Datepicker
+                        onChange={(date) => {
+                          let d = moment(date).format("YYYY-MM-DD").toLowerCase();
+                          setDueDate(d);
+                        }}
+                      />
+                    </div>
 
                   </div>
                   <div className="flex md:gap-2 gap-6">
 
-                  <div className="flex flex-col">
-                    <label
-                      htmlFor="status"
-                      className="py-1 font-sfpro text-lg font-semibold"
-                    >
-                      Status
-                    </label>
-                    <select
-                      name="status"
-                      value={status}
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                      onChange={(e) => {
-                        setStatus(e.target.value);
-                      }}
-                    >
-                      <option value="To Do">Todo</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Completed">Completed</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col">
-                    <label
-                      htmlFor="priority"
-                      className="py-1 font-sfpro text-lg font-semibold"
-                    >
-                      Priority
-                    </label>
-                    <select
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="status"
+                        className="py-1 font-sfpro text-lg font-semibold"
+                      >
+                        Status
+                      </label>
+                      {/* <select
+                        name="status"
+                        value={status}
+                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
+                        onChange={(e) => {
+                          setStatus(e.target.value);
+                        }}
+                      >
+                        <option value="To Do">Todo</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                      </select> */}
+
+                      <Select
+                        name="status"
+                        value={statusOptions.find((option) => option.value === status)}
+                        options={statusOptions}
+                        isSearchable={false}
+                        className="w-[140px]" // Add your custom styles here
+                        onChange={(selectedOption) => {
+                          setStatus(selectedOption.value);
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="priority"
+                        className="py-1 font-sfpro text-lg font-semibold"
+                      >
+                        Priority
+                      </label>
+                      {/* <select
                       name="priority"
                       value={priority}
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
@@ -307,8 +319,18 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       <option value={3}>🟢 Low</option>
                       <option value={2}>🟡 Medium</option>
                       <option value={1}>🔴 High</option>
-                    </select>
-                  </div>
+                    </select> */}
+                      <Select
+                        name="priority"
+                        value={priorityOptions.find((opt) => opt.value === priority)}
+                        options={priorityOptions}
+                        className="w-[140px]"
+                        isSearchable={false}
+                        onChange={(selectedOption) => {
+                          setPriority(selectedOption.value);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 

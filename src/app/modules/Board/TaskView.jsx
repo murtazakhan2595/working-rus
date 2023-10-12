@@ -10,6 +10,8 @@ import moment from "moment";
 import ReactQuill from "react-quill";
 import { IoAttachOutline } from "react-icons/io5";
 import { VscMention } from "react-icons/vsc";
+import { priorityOptions, statusOptions } from "../../../data/Data";
+import Select from 'react-select';
 
 const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [assignToOpen, setAssignToOpen] = useState(false);
@@ -225,7 +227,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setFilterUsers(response.data.results);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getAssignee = async () => {
@@ -241,7 +243,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setAssignToUser(response.data);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
     try {
       await axios
         .get(`${baseUrl}/emp/${taskData.assigned_by}`, {
@@ -254,7 +256,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setAssignByUser(response.data);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -406,7 +408,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     >
                       Status
                     </label>
-                    <select
+                    {/* <select
                       name="status"
                       value={status}
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
@@ -417,7 +419,17 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       <option value="To Do">Todo</option>
                       <option value="In Progress">In Progress</option>
                       <option value="Completed">Completed</option>
-                    </select>
+                    </select> */}
+                    <Select
+                      name="status"
+                      value={statusOptions.find((option) => option.value === status)}
+                      options={statusOptions}
+                      isSearchable={false}
+                      className="w-[140px]" // Add your custom styles here
+                      onChange={(selectedOption) => {
+                        setStatus(selectedOption.value);
+                      }}
+                    />
                   </div>
                   <div className="flex flex-col">
                     <label
@@ -426,7 +438,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     >
                       Priority
                     </label>
-                    <select
+                    {/* <select
                       name="priority"
                       value={priority}
                       className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
@@ -437,7 +449,17 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       <option value={1}>🔴 High</option>
                       <option value={2}>🟡 Medium</option>
                       <option value={3}>🟢 Low</option>
-                    </select>
+                    </select> */}
+                    <Select
+                      name="priority"
+                      value={priorityOptions.find((opt) => opt.value === priority)}
+                      options={priorityOptions}
+                      className="w-[140px]"
+                      isSearchable={false}
+                      onChange={(selectedOption) => {
+                        setPriority(selectedOption.value);
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -658,87 +680,87 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     {/* show comments are conditionally */}
                     {comments.filter((c) => c.task_id === taskData.id).length >
                       0 && (
-                      <div className="flex flex-col gap-2 max-h-36 overflow-y-auto roundScrollsm">
-                        {/* map and filter comments */}
-                        {comments
-                          .filter((c) => c.task_id === taskData.id)
-                          .map((c) => (
-                            <div
-                              className="flex gap-4 items-start mt-2"
-                              key={c.id}
-                            >
-                              {/* User profile */}
-                              <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white flex-none">
-                                {currentUser
-                                  ? currentUser.username
-                                      .slice(0, 2)
-                                      .toUpperCase()
-                                  : "Loading..."}
-                              </div>
-                              <div className="w-full mr-2 flex-1">
-                                <h1 className="font-semibold font-sfpro">
+                        <div className="flex flex-col gap-2 max-h-36 overflow-y-auto roundScrollsm">
+                          {/* map and filter comments */}
+                          {comments
+                            .filter((c) => c.task_id === taskData.id)
+                            .map((c) => (
+                              <div
+                                className="flex gap-4 items-start mt-2"
+                                key={c.id}
+                              >
+                                {/* User profile */}
+                                <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white flex-none">
                                   {currentUser
                                     ? currentUser.username
+                                      .slice(0, 2)
+                                      .toUpperCase()
                                     : "Loading..."}
-                                </h1>
-                                {editingCommentId === c.id ? (
-                                  <input
-                                    type="text"
-                                    value={editedComment}
-                                    onChange={(e) =>
-                                      setEditedComment(e.target.value)
-                                    }
-                                    autoFocus
-                                    className="border-b border-gray-300 w-full py-2 focus:outline-none pl-2"
-                                  />
-                                ) : (
-                                  <p className="text-gray-700">{c.comment}</p>
-                                )}
-                                <div className="text-sm space-x-3 text-gray-600 flex items-center">
+                                </div>
+                                <div className="w-full mr-2 flex-1">
+                                  <h1 className="font-semibold font-sfpro">
+                                    {currentUser
+                                      ? currentUser.username
+                                      : "Loading..."}
+                                  </h1>
                                   {editingCommentId === c.id ? (
-                                    <>
-                                      <span
-                                        className="text-xs cursor-pointer opacity-70"
-                                        onClick={() => saveEdit(c.id)}
-                                      >
-                                        Save
-                                      </span>
-                                      <span
-                                        className="text-xs cursor-pointer opacity-70"
-                                        onClick={cancelEdit}
-                                      >
-                                        Cancel
-                                      </span>
-                                    </>
+                                    <input
+                                      type="text"
+                                      value={editedComment}
+                                      onChange={(e) =>
+                                        setEditedComment(e.target.value)
+                                      }
+                                      autoFocus
+                                      className="border-b border-gray-300 w-full py-2 focus:outline-none pl-2"
+                                    />
                                   ) : (
-                                    <>
-                                      <span
-                                        className="text-xs cursor-pointer opacity-70"
-                                        onClick={() =>
-                                          startEdit(c.id, c.comment)
-                                        }
-                                      >
-                                        Edit
-                                      </span>
-                                      {/* <AiOutlineEdit className="cursor-pointer text-[#283b91] opacity-70 text-sm"
+                                    <p className="text-gray-700">{c.comment}</p>
+                                  )}
+                                  <div className="text-sm space-x-3 text-gray-600 flex items-center">
+                                    {editingCommentId === c.id ? (
+                                      <>
+                                        <span
+                                          className="text-xs cursor-pointer opacity-70"
+                                          onClick={() => saveEdit(c.id)}
+                                        >
+                                          Save
+                                        </span>
+                                        <span
+                                          className="text-xs cursor-pointer opacity-70"
+                                          onClick={cancelEdit}
+                                        >
+                                          Cancel
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <span
+                                          className="text-xs cursor-pointer opacity-70"
+                                          onClick={() =>
+                                            startEdit(c.id, c.comment)
+                                          }
+                                        >
+                                          Edit
+                                        </span>
+                                        {/* <AiOutlineEdit className="cursor-pointer text-[#283b91] opacity-70 text-sm"
                                       onClick={() => startEdit(c.id, c.comment)}
                                       title="Edit Comment" /> */}
-                                      {/* <MdDeleteForever className="cursor-pointer text-red-400 opacity-70 text-sm"
+                                        {/* <MdDeleteForever className="cursor-pointer text-red-400 opacity-70 text-sm"
                                       onClick={() => deleteComment(c.id)} title="Delete Comment" /> */}
-                                      <span
-                                        className="text-xs cursor-pointer opacity-70"
-                                        onClick={() => deleteComment(c.id)}
-                                      >
-                                        Delete
-                                      </span>
-                                    </>
-                                  )}
+                                        <span
+                                          className="text-xs cursor-pointer opacity-70"
+                                          onClick={() => deleteComment(c.id)}
+                                        >
+                                          Delete
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
-                      </div>
-                    )}
+                            ))}
+                        </div>
+                      )}
                   </div>
                 )}
               </div>
