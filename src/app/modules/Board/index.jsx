@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
