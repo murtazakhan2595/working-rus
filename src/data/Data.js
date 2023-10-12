@@ -12,4 +12,14 @@ export const tasksTitle = [
   { label: "Priority", width: "w-28" },
 ];
 
+export const priorityOptions = [
+  { value: 3, label: "🟢 Low" },
+  { value: 2, label: "🟡 Medium" },
+  { value: 1, label: "🔴 High" },
+];
 
+export const statusOptions = [
+  { value: "To Do", label: "Todo" },
+  { value: "In Progress", label: "In Progress" },
+  { value: "Completed", label: "Completed" },
+];
