@@ -120,6 +120,8 @@ body {
   background-color: #e8e8e8 !important;
   z-index: 0 !important;
   padding: 2px 0px !important;
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
 }
 
 .ql-container.ql-snow {

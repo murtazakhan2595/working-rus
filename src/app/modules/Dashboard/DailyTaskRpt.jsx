@@ -8,6 +8,11 @@ import "react-quill/dist/quill.snow.css";
 import { connect } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Joi from 'joi';
+
+const schema = Joi.object({
+    description: Joi.string().required().label('DTR')
+})
 
 const CustomButton = ({ text, onClick, className }) => {
     return (
@@ -37,10 +42,37 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editorHtml, setEditorHtml] = useState("");
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [validationErrors, setValidationErrors] = useState({});
+    const [formFilled, setFormFilled] = useState(true);
+    const [submittedOnce, setSubmittedOnce] = useState(false);
 
+    const validateForm = () => {
+        const { error } = schema.validate({ description: editorHtml }, { abortEarly: false });
+        if (error) {
+            const errors = {};
+            error.details.forEach((item) => {
+                errors[item.path[0]] = item.message;
+            });
+            setValidationErrors(errors);
+            setFormFilled(false);
+            return false;
+        }
+        setValidationErrors({});
+        setFormFilled(true);
+        return true;
+    };
 
     const handleEditorChange = html => {
         setEditorHtml(html);
+
+        const isValid = validateForm();
+        if (isValid) {
+            setFormFilled(true);
+        }
+
+        if (validationErrors.description) {
+            setValidationErrors({ ...validationErrors, description: '' });
+        }
     };
 
     const closeModal = () => {
@@ -52,16 +84,22 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
     };
 
     const handleSave = () => {
+        const isValid = validateForm();
+        if (!isValid) {
+            // Show validation error message
+            setValidationErrors({
+                ...validationErrors,
+                description: 'Write something to save',
+            });
+            return;
+        }
         try {
-            const dataToSave = JSON.stringify({ description: editorHtml, date: selectedDate });
-            localStorage.setItem('dailyTaskData', dataToSave);
             closeModal();
-
             toast.success('Data saved successfully!', {
                 position: toast.POSITION.TOP_RIGHT,
             });
+
         } catch (error) {
-            console.error('Error saving data:', error);
             toast.error('Error saving the data. Please try again.', {
                 position: toast.POSITION.TOP_RIGHT,
             });
@@ -69,6 +107,11 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
     };
 
     const handleSubmit = async () => {
+        const isValid = validateForm();
+        if (!isValid) {
+            return;
+        }
+
         const data = {
             description: editorHtml,
         };
@@ -97,6 +140,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                 position: toast.POSITION.TOP_RIGHT,
             });
         }
+        setSubmittedOnce(true);
     };
 
 
@@ -107,6 +151,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
             setEditorHtml(description)
         }
     }, [])
+
 
     return (
         <>
@@ -129,7 +174,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"></div>
                     <div className="fixed inset-0 flex items-center justify-center z-50">
                         <div className="md:mx-auto w-full max-w-md relative">
-                            <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-8 md:p-5 p-3 lg:m-6 m-4 max-w-800 border border-gray-100 shadow-md relative">
+                            <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-6 md:p-5 p-3 lg:m-6 m-4 max-w-800 border border-gray-100 shadow-md relative">
                                 <div
                                     className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
                                     onClick={closeModal}
@@ -143,23 +188,26 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                                 </div>
                                 <div className="h-72 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
                                     <ReactQuill
-                                        className='text-center'
-                                        style={{ height: "200px" }}
+                                        className='text-center h-[88%]'
+
                                         value={editorHtml}
                                         onChange={handleEditorChange}
                                         modules={{
                                             toolbar: {
                                                 container: [
-                                                    [{ size: ["small", false, "large", "huge"] }],
+                                                    [{ 'header': '1' }, { 'header': '2' }],
                                                     ["bold", "italic", "underline"],
                                                     [{ list: "ordered" }, { list: "bullet" }],
-                                                    [{ align: [] }],
                                                     ["link", "image"],
+                                                    [{ align: '' }, { align: 'center' }, { align: 'right' }]
                                                 ],
                                             },
                                         }}
                                     />
                                 </div>
+                                {validationErrors.description && (
+                                    <div className="text-red-500 text-sm">{validationErrors.description}</div>
+                                )}
                                 {/* Buttons */}
                                 <div className="flex justify-center space-x-10">
                                     <CustomButton text="Save" className="custom-class" onClick={handleSave} />

@@ -122,7 +122,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
             setIsCompleteTab(true);
           }}
         >
-          Compeleted
+          Completed
         </div>
       </div>
 

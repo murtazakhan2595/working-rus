@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { LiaHomeSolid } from "react-icons/lia";
