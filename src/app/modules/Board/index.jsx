@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
@@ -83,7 +84,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setBoard(response.data);
           }
         });
-    } catch (error) { }
+    } catch (error) { navigate("/404") }
   };
 
   const getProject = async () => {
@@ -99,7 +100,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setProject(response.data);
           }
         });
-    } catch (error) { }
+    } catch (error) { navigate("/404") }
   };
 
   const getTasks = async (

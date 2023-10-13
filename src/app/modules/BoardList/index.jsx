@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
@@ -12,15 +13,16 @@ import { BsPencil, BsTrash3 } from "react-icons/bs";
 import { GrNext } from "react-icons/gr";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import ProjectEditModal from "./ProjectEditModal";
+import { setSidebarRefresh } from "../../../state/actions/UserAction";
 
-const BoardList = ({ userProfile, baseUrl, token }) => {
+
+const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefresh}) => {
   const { id } = useParams(); // Access the id parameter from the URL
   const cookies = new Cookies();
   const [boardList, setBoardList] = useState([]);
   const [project, setProject] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [projectMembers, setProjectMembers] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [members, setMembers] = useState([]);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
@@ -60,6 +62,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
         setProject(response.data);
       }
     } catch (error) {
+      navigate("/404")
       console.error("Error while fetching projects:", error);
     }
   };
@@ -89,6 +92,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
         },
       });
       if (response.status === 204) {
+        setSidebarRefresh(!sidebarRefresh)
         navigate(`/`)
       } else {
         console.error("Unexpected response status:", response.status);
@@ -262,7 +266,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
                 </button>
                 <button
                   className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
-                  onClick={handleDeleteProject} // Step 4: Delete the board
+                  onClick={handleDeleteProject} 
                 >
                   Confirm
                 </button>
@@ -282,7 +286,8 @@ const mapStateToProps = (state) => {
     token: state.user.token,
     baseUrl: state.user.baseUrl,
     isLogin: state.user.isLogin,
+    sidebarRefresh: state.user.sidebarRefresh,
   };
 };
 
-export default connect(mapStateToProps)(BoardList);
+export default connect(mapStateToProps ,{ setSidebarRefresh })(BoardList);

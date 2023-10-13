@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { LiaHomeSolid } from "react-icons/lia";
@@ -25,7 +26,7 @@ import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token,sidebarRefresh }) => {
   const navigate = useNavigate();
   const cookies = new Cookies();
   const [isProjectOpen, setisProjectOpen] = useState(false);
@@ -46,13 +47,14 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
   const getProjects = async (url = `${baseUrl}/project/`) => {
     try {
       await axios
-        .get(url, {
+      .get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
         .then((response) => {
           if (response.status === 200) {
+            console.log('try')
             setProjects(response.data.results);
             setProjectCount(response.data.count);
             setNextPage(response.data.next);
@@ -64,8 +66,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
 
   useEffect(() => {
     getProjects();
-  }, [isModelOpen]);
+  }, [isModelOpen,sidebarRefresh]);
 
+  
   return (
     <>
       <div className="flex">
@@ -223,6 +226,7 @@ const mapStateToProps = (state) => {
     baseUrl: state.user.baseUrl,
     token: state.user.token,
     isLogin: state.user.isLogin,
+    sidebarRefresh: state.user.sidebarRefresh,
   };
 };
 export default connect(mapStateToProps, { setUserLogout })(Sidebar);
