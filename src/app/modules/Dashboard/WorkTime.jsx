@@ -174,9 +174,8 @@ const WorkTime = () => {
             {worldTime.map((time, index) => (
               <div key={index} className="z-0">
                 <div
-                  className={`flex items-center justify-end ${
-                    index === 1 ? "" : "pr-4"
-                  } rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}
+                  className={`flex items-center justify-end ${index === 1 ? "" : "pr-4"
+                    } rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}
                 >
                   <img
                     src={`https://flagcdn.com/w320/${time.img}.png`}
@@ -195,7 +194,7 @@ const WorkTime = () => {
                     onClick={() => {
                       deleteTime(time.name);
                     }}
-                    className="ml-2 mr-2 text-[#283b91] self-start text-sm"
+                    className="ml-2 mr-2 text-[#283b91] self-start text-sm hover:cursor-pointer"
                   />
                 </div>
               </div>
@@ -205,15 +204,13 @@ const WorkTime = () => {
             ) : (
               <div
                 style={{ justifyContent: "right" }}
-                className={`${
-                  worldTime.length >= 1 ? "w-[70%]" : "w-[180%]"
-                } flex items-center`}
+                className={`${worldTime.length >= 1 ? "w-[70%]" : "w-[180%]"
+                  } flex items-center`}
               >
                 <div
                   style={{ justifyContent: "right" }}
-                  className={`p-1 flex  ${
-                    worldTime.length >= 1 ? "w-[21%]" : "w-[51%]"
-                  } rounded-md justify-center items-end`}
+                  className={`p-1 flex  ${worldTime.length >= 1 ? "w-[21%]" : "w-[51%]"
+                    } rounded-md justify-center items-end`}
                 >
                   <FaPlus
                     onClick={() => {
@@ -301,7 +298,7 @@ const WorkTime = () => {
                     Select Timezone:
                   </label>
                   <Select
-                  required
+                    required
                     className="basic-single"
                     classNamePrefix="select"
                     defaultValue={timezones[0]}

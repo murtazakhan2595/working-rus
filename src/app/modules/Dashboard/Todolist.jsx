@@ -220,7 +220,7 @@ const Dashboard = ({ token, baseUrl }) => {
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
           </div>
         ) : (
-          <div className={`overflow-y-auto max-h-[160px] roundScroll`}>
+          <div className={`overflow-y-auto max-h-[160px] roundScrollsm`}>
             {todos.slice(0, showAllItems ? todos.length : 4).map(todo => (
               <div key={todo.id} className="flex gap-3 w-full px-2 border-b border-gray-500">
                 <div className="flex justify-between w-full py-1.5 px-0">

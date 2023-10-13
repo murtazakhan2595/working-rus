@@ -139,8 +139,8 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
     <>
       <div className="fixed inset-0 z-50 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
         <div className="flex items-center justify-center z-50">
-          <div className="md:mx-auto pb-10 pt-28  lg:max-w-3xl max-w-lg relative ">
-            <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-8 p-4 m-6 w-5/5 lg:w-full max-w-lg lg:max-w-6xl border border-gray-100 shadow-md relative">
+          <div className="md:mx-auto pb-10 pt-28  lg:max-w-lg max-w-sm relative ">
+            <div className="space-y-3 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-8 p-4 lg:m-6 m-1 w-5/5 lg:w-full max-w-lg lg:max-w-6xl border border-gray-100 shadow-md relative">
               <div
                 className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
                 onClick={onClose}
@@ -148,7 +148,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                 <RxCross2 />
               </div>
               <form onSubmit={handleSubmit}>
-                <h2 className="text-2xl font-sfpro leading-3 font-bold mb-8">
+                <h2 className="lg:text-2xl text-xl font-sfpro leading-3 font-bold mb-8">
                   Create New Project
                 </h2>
 
@@ -208,12 +208,11 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                         modules={{
                           toolbar: {
                             container: [
-                              ["bold", "italic", "underline", "strike"],
+                              [{ 'header': '1' }, { 'header': '2' }],
+                              ["bold", "italic", "underline"],
                               [{ list: "ordered" }, { list: "bullet" }],
-                              [{ align: [] }],
                               ["link", "image"],
-                              [{ header: "1" }, { header: "2" }],
-                              [{ size: ["small", false, "large", "huge"] }],
+                              [{ align: '' }, { align: 'center' }, { align: 'right' }]
                             ],
                           },
                         }}
@@ -228,7 +227,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                   </div>
 
                   {/* ************************ Dates , Priority ***************************** */}
-                  <div className="flex gap-x-10 items-center mb-4">
+                  <div className="flex lg:gap-x-10 flex-col md:flex-row lg:flex-row lg:items-center items-start mb-4">
                     <div className="flex flex-col">
                       <label
                         htmlFor="startDate"

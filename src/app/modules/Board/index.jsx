@@ -382,14 +382,14 @@ const Board = ({ userProfile, baseUrl, token }) => {
           </div>
         </div>
         <div className="flex gap-3 ml-2 md:ml-0 lg:ml-0">
-          <div className="sm:flex hidden bg-white px-2 py-1 gap-3 items-center rounded-lg">
+          {/* <div className="sm:flex hidden bg-white px-2 py-1 gap-3 items-center rounded-lg">
             <div className=" px-4 text-[#283b91]">Share</div>
           </div>
           <div className="sm:hidden flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
             <div className=" px-1 py-1 md:py-0 text-gray-400">
               <FaRegShareSquare />
             </div>
-          </div>
+          </div> */}
           <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg"
             onClick={openEditBoardPopup}
           >

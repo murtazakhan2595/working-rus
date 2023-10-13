@@ -237,7 +237,7 @@ const BoardList = ({ userProfile, baseUrl, token }) => {
 
       {/* Add Board Button */}
       <div
-        className="absolute bottom-10 right-5 w-10 h-10 flex justify-center items-center 
+        className="absolute bottom-10 right-5 lg:right-10 w-10 h-10 flex justify-center items-center 
       bg-[#25A8E0] text-white font-bold border rounded-full text-xl cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >

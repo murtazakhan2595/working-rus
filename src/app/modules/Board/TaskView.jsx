@@ -299,7 +299,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   return (
     <div className="fixed inset-0 w-screen overflow-y-auto scroll z-50 h-screen flex justify-center items-center backdrop-blur-sm  ">
       <div className="flex items-center justify-center">
-        <div className="md:mx-auto pb-10 pt-64 w-full max-w-3xl relative">
+        <div className="md:mx-auto pb-10 pt-64 w-full max-w-2xl relative">
           <div className="space-y-3 bg-[#F8F8F8] mt-32  md:pt-8 lg:pb-4 py-6 rounded-3xl p-4 md:p-8 md:m-6 w-full max-w-xs md:max-w-6xl border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
@@ -333,11 +333,11 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                 >
                   Description
                 </label>
-                <div className="h-60 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
+                {/* <div className="h-60 mt-4 w-full resize-none overflow-y- outline-none roundScrollsm rounded-2xl border-none bg-white">
                   <ReactQuill
                     name="description"
                     id="description"
-                    className="text-center"
+                    className="text-center h-[85%]"
                     value={description}
                     onChange={(html) => {
                       setValidationErrors((prevErrors) => ({
@@ -349,12 +349,37 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     modules={{
                       toolbar: {
                         container: [
-                          ["bold", "italic", "underline", "strike"],
+                          [{ 'header': '1' }, { 'header': '2' }],
+                          ["bold", "italic", "underline"],
                           [{ list: "ordered" }, { list: "bullet" }],
-                          [{ align: [] }],
                           ["link", "image"],
-                          [{ header: "1" }, { header: "2" }],
-                          [{ size: ["small", false, "large", "huge"] }],
+                          [{ align: '' }, { align: 'center' }, { align: 'right' }]
+                        ],
+                      },
+                    }}
+                  />
+                </div> */}
+                <div className="md:h-60 lg:h-60 h-56 mt-4 w-full resize-none outline-none roundScrollsm rounded-2xl border-none bg-white">
+                  <ReactQuill
+                    name="description"
+                    id="description"
+                    className="text-center lg:h-[85%] md:h-[85%] h-[75%]"
+                    value={description}
+                    onChange={(html) => {
+                      setValidationErrors((prevErrors) => ({
+                        ...prevErrors,
+                        description: null,
+                      }));
+                      setDescription(html);
+                    }}
+                    modules={{
+                      toolbar: {
+                        container: [
+                          [{ 'header': '1' }, { 'header': '2' }],
+                          ["bold", "italic", "underline"],
+                          [{ list: "ordered" }, { list: "bullet" }],
+                          ["link", "image"],
+                          [{ align: '' }, { align: 'center' }, { align: 'right' }]
                         ],
                       },
                     }}

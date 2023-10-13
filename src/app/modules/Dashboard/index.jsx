@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import DailyTaskRpt from "./DailyTaskRpt";
 
-const Dashboard = ({ isSidebarOpen , userProfile}) => {
+const Dashboard = ({ isSidebarOpen, userProfile }) => {
   const [isBarOpen, seIsBarOpen] = useState(false);
   return (
     <>
@@ -48,7 +48,7 @@ const Dashboard = ({ isSidebarOpen , userProfile}) => {
         >
           <div className="flex gap-[1.2rem] flex-wrap">
             <div className="flex bg-[#f7f7f8] w-44 md:w-auto px-2 py-1 gap-3 items-center rounded-lg">
-              <div>Total Eployees</div>
+              <div>Total Employees</div>
               <div className="text-2xl text-[#283b91]">368</div>
             </div>
 
@@ -58,7 +58,7 @@ const Dashboard = ({ isSidebarOpen , userProfile}) => {
             </div>
 
             <div className="flex bg-[#f7f7f8] w-44 md:w-auto px-2 py-1 gap-3 items-center rounded-lg">
-              <div>Attendence</div>
+              <div>Attendance</div>
               <div className="text-2xl text-[#283b91]">75%</div>
             </div>
 
