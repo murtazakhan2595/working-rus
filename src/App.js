@@ -17,6 +17,7 @@ import {
   setToken,
 } from "./state/actions/UserAction";
 import BoardList from "./app/modules/BoardList";
+import EmpForm from "./app/Employees/EmpForm";
 
 function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
   let width = window.screen.width;
@@ -71,6 +72,11 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
                 exact
                 path="/"
                 element={<Dashboard isSidebarOpen={isSidebarOpen} />}
+              />
+              <Route
+                exact
+                path="/employees-form"
+                element={<EmpForm isSidebarOpen={isSidebarOpen} />}
               />
               <Route path="/board/:id" element={<Board />} />
               <Route path="/project/:id" element={<BoardList />} />

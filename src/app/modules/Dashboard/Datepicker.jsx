@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const Datepicker = ({ onChange , date = null }) => {
+const Datepicker = ({ onChange, date = null }) => {
     const [startDate, setStartDate] = useState(new Date());
 
     const InputDay = React.forwardRef(({ onClick }, ref) => (
@@ -15,7 +15,7 @@ const Datepicker = ({ onChange , date = null }) => {
             }}
             ref={ref}
         >
-            {date === null ? startDate.getDate()  : date.substr(8,9)}
+            {date === null ? startDate.getDate() : date.substr(8, 9)}
         </button>
     ));
 
@@ -29,7 +29,7 @@ const Datepicker = ({ onChange , date = null }) => {
             }}
             ref={ref}
         >
-            {date === null ? startDate.getMonth()  : date.substr(5,2) }
+            {date === null ? startDate.getMonth() + 1 : date.substr(5, 2)}
 
         </button>
     ));
@@ -44,7 +44,7 @@ const Datepicker = ({ onChange , date = null }) => {
             }}
             ref={ref}
         >
-            {date === null ? startDate.getFullYear()  : date.substr(0,4)  }
+            {date === null ? startDate.getFullYear() : date.substr(0, 4)}
         </button>
     ));
 
