@@ -143,7 +143,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
                     task.status === "Completed" && (
                       <div
                         onClick={() => {
-                          navigate(`/board/${task.board_id}`);
+                          navigate(`/board/${task.board_id}?pId=${task.project_id}`);
                         }}
                         key={index}
                         className="flex justify-around py-3 my-5 rounded-md shadow-md bg-[#eeeff7] text-[#283b91] hover:bg-[#283b91] hover:text-white transition-all duration-300 group text-center text-sm"
