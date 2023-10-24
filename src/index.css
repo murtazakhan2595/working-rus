@@ -147,3 +147,13 @@ body {
 .ql-toolbar.ql-snow .ql-formats {
   margin-right: 0px !important;
 }
+
+/* date picker style overriding */
+.css-13cymwt-control {
+  border: none !important;
+}
+
+.css-13cymwt-control:focus {
+  border: 2px solid white !important;
+}
+
