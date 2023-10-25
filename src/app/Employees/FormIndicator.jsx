@@ -16,11 +16,10 @@ const FormIndicator = ({ currentStep, setCurrentStep }) => {
             {arr2.map((step, index) => (
                 <div
                     key={index}
-                    className={`cursor-pointer transition-all ${index + 1 <= currentStep
+                    className={`transition-all ${index + 1 <= currentStep
                         ? 'text-black font-bold'
                         : 'text-gray-400'
                         }`}
-                    onClick={() => setCurrentStep(index + 1)}
                 >
                     <div className="flex justify-center items-center">
                         <div
