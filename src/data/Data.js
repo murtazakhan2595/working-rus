@@ -23,3 +23,14 @@ export const statusOptions = [
   { value: "In Progress", label: "In Progress" },
   { value: "Completed", label: "Completed" },
 ];
+
+export const academicOptions = [
+  {
+    value: "Inter",
+    label: "Inter",
+    value: "Bachelors",
+    label: "Bachelors",
+    value: "Masters",
+    label: "Masters",
+  },
+];

@@ -26,7 +26,7 @@ import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token,sidebarRefresh }) => {
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token, sidebarRefresh }) => {
   const navigate = useNavigate();
   const cookies = new Cookies();
   const [isProjectOpen, setisProjectOpen] = useState(false);
@@ -47,7 +47,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token,sidebarRefres
   const getProjects = async (url = `${baseUrl}/project/`) => {
     try {
       await axios
-      .get(url, {
+        .get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -66,9 +66,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token,sidebarRefres
 
   useEffect(() => {
     getProjects();
-  }, [isModelOpen,sidebarRefresh]);
+  }, [isModelOpen, sidebarRefresh]);
 
-  
+
   return (
     <>
       <div className="flex">
@@ -99,10 +99,12 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token,sidebarRefres
                 <p className="text-white">Home</p>
               </li>
             </Link>
-            <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-              <MdOutlineGroups2 className="text-white text-xl" />{" "}
-              <p className="text-white">Team</p>
-            </li>
+            <Link to="/employees-form">
+              <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
+                <MdOutlineGroups2 className="text-white text-xl" />{" "}
+                <p className="text-white">Emp Form</p>
+              </li>
+            </Link>
 
             <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
               <BiTimeFive className="text-white text-xl" />{" "}

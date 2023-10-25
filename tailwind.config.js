@@ -11,6 +11,13 @@ module.exports = {
       boxShadow: {
         custom: "5px 10px 18px rgba(0, 0, 0, 0.45)",
       },
+      textColor: {
+        baseBlue: "#283B91",
+        input: "#555657",
+      },
+      backgroundColor: {
+        baseBlue: "#283B91",
+      },
     },
     screens: {
       xs: "300px",
