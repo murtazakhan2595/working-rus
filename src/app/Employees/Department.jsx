@@ -1,7 +1,42 @@
-import React from 'react'
+import Joi from 'joi';
+import Button from './Button';
 
-const Department = ({ formData, prevstep, handleChange, submitForm }) => {
+const departmentSchema = Joi.object({
+    department: Joi.string().required().label('Department Name'),
+    position: Joi.string().required().label('Position'),
+    directrpt: Joi.string().required().label('Direct Report'),
+    indirectrpt: Joi.string().required().label('Indirect Report'),
+    dptmanager: Joi.string().required().label('Department Manager'),
+});
+
+const Department = ({ formData, errors, setErrors, prevstep, handleChange, submitForm }) => {
     const { department, position, directrpt, indirectrpt, dptmanager } = formData;
+
+    const handleNextStep = () => {
+        // Validate the form data against the schema
+        const { error } = departmentSchema.validate(
+            {
+                department: department,
+                position: position,
+                directrpt: directrpt,
+                indirectrpt: indirectrpt,
+                dptmanager: dptmanager,
+            },
+            { abortEarly: false }
+        );
+
+        if (error) {
+            const validationErrors = {};
+            error.details.forEach((detail) => {
+                validationErrors[detail.path[0]] = detail.message;;
+            });
+            setErrors(validationErrors);
+            console.log(validationErrors)
+        } else {
+            // Proceed to the next step
+            submitForm();
+        }
+    };
     return (
         <>
             <div className='bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10'>
@@ -17,6 +52,8 @@ const Department = ({ formData, prevstep, handleChange, submitForm }) => {
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
+                                    {errors.department && <span className="text-red-500 text-sm ">{errors.department}</span>}
+
                                 </div>
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                     <label htmlFor="position" className='font-sfpro tracking-wide font-medium
@@ -25,6 +62,8 @@ const Department = ({ formData, prevstep, handleChange, submitForm }) => {
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
+                                    {errors.position && <span className="text-red-500 text-sm ">{errors.position}</span>}
+
                                 </div>
                             </div>
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
@@ -35,6 +74,8 @@ const Department = ({ formData, prevstep, handleChange, submitForm }) => {
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
+                                    {errors.directrpt && <span className="text-red-500 text-sm ">{errors.directrpt}</span>}
+
                                 </div>
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                     <label htmlFor="indirectrpt" className='font-sfpro tracking-wide font-medium
@@ -43,6 +84,7 @@ const Department = ({ formData, prevstep, handleChange, submitForm }) => {
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
+                                    {errors.indirectrpt && <span className="text-red-500 text-sm ">{errors.indirectrpt}</span>}
                                 </div>
 
                             </div>
@@ -55,17 +97,16 @@ const Department = ({ formData, prevstep, handleChange, submitForm }) => {
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
+                                    {errors.dptmanager && <span className="text-red-500 text-sm ">{errors.dptmanager}</span>}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex gap-x-20 mt-6 lg:mt-10">
-                    <button onClick={prevstep} className='bg-baseBlue rounded-lg text-white w-24 py-[3px]
-                     mt-5  md:mt-0 mb-40 lg:mb-4'>Previous</button>
-                    <button type='submit' className='bg-baseBlue rounded-lg text-white w-24 py-[3px] mt-5
-                     md:mt-0 mb-40 lg:mb-4' onClick={submitForm} >Submit</button>
+                <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40">
+                    <Button onClick={prevstep} text={'Previous'} />
+                    <Button onClick={handleNextStep} text={'Submit'} />
 
                 </div>
             </div >

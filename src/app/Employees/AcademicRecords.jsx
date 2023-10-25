@@ -2,6 +2,8 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import Datepicker from '../modules/Dashboard/Datepicker';
 import Select from 'react-select';
+import Joi from 'joi';
+import Button from './Button';
 
 const academicOptions = [
   { value: 'intermediate', label: 'Intermediate' },
@@ -9,7 +11,17 @@ const academicOptions = [
   { value: 'masters', label: 'Masters' },
 ];
 
-const AcademicRecords = ({ formData, prevstep, nextstep, handleChange, onFileChange }) => {
+const academicSchema = Joi.object({
+  academic: Joi.string().required().label('Education Level'),
+  program: Joi.string().required().label('Program'),
+  institute: Joi.string().required().label('Institute Name'),
+  acdstartdate: Joi.string().required().label('Start Date'),
+  acdenddate: Joi.string().required().label('End Date'),
+  certification: Joi.object().required().label('Certification'),
+});
+
+
+const AcademicRecords = ({ formData, errors, setErrors, prevstep, nextstep, handleChange, onFileChange }) => {
   const { program, institute, acdstartdate, acdenddate } = formData;
   const [academic, setAcademic] = useState(''); // State for education level
 
@@ -27,8 +39,37 @@ const AcademicRecords = ({ formData, prevstep, nextstep, handleChange, onFileCha
 
   const handleEndDate = (date) => {
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
-    handleChange('acdexenddate', formattedDate);
+    handleChange('acdenddate', formattedDate);
   };
+
+  const handleNextStep = () => {
+    const { error } = academicSchema.validate(
+      {
+        academic: formData.academic,
+        program: formData.program,
+        institute: formData.institute,
+        acdstartdate: formData.acdstartdate,
+        acdenddate: formData.acdenddate,
+        certification: formData.certification,
+      },
+      { abortEarly: false }
+    );
+
+    if (error) {
+      const validationErrors = {};
+      error.details.forEach((detail) => {
+        validationErrors[detail.path[0]] = detail.message;
+      });
+      setErrors(validationErrors);
+      console.log("Validation errors:", validationErrors);
+    } else {
+      nextstep();
+      console.log("Proceeding to the next step...");
+    }
+  };
+
+
+
 
   return (
     <>
@@ -51,6 +92,8 @@ const AcademicRecords = ({ formData, prevstep, nextstep, handleChange, onFileCha
                       handleChange('academic', selectedOption.value);
                     }}
                   />
+                  {errors.academic && <div className="text-red-500 text-sm">{errors.academic}</div>}
+
                 </div>
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                   <label htmlFor="program" className='font-sfpro tracking-wide font-medium
@@ -59,6 +102,8 @@ const AcademicRecords = ({ formData, prevstep, nextstep, handleChange, onFileCha
                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                   />
+                  {errors.program && <div className="text-red-500 text-sm">{errors.program}</div>}
+
                 </div>
               </div>
               <div className='flex flex-col mt-2 md:mt-5'>
@@ -68,6 +113,8 @@ const AcademicRecords = ({ formData, prevstep, nextstep, handleChange, onFileCha
                   className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />
+                {errors.institute && <div className="text-red-500 text-sm">{errors.institute}</div>}
+
               </div>
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
@@ -78,6 +125,8 @@ const AcademicRecords = ({ formData, prevstep, nextstep, handleChange, onFileCha
                     selected={moment(acdstartdate, "DD-MM-YYYY").toDate()}
                     onChange={handleStartDate}
                   />
+                  {errors.acdstartdate && <div className="text-red-500 text-sm">{errors.acdstartdate}</div>}
+
                 </div>
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                   <label htmlFor="enddate" className='font-sfpro tracking-wide font-medium
@@ -87,6 +136,8 @@ const AcademicRecords = ({ formData, prevstep, nextstep, handleChange, onFileCha
                     selected={moment(acdenddate, "DD-MM-YYYY").toDate()}
                     onChange={handleEndDate}
                   />
+                  {errors.acdenddate && <div className="text-red-500 text-sm">{errors.acdenddate}</div>}
+
                 </div>
               </div>
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
@@ -97,6 +148,7 @@ const AcademicRecords = ({ formData, prevstep, nextstep, handleChange, onFileCha
                     <input id="file-upload" type="file" name="file" accept=".jpg, .jpeg, .png, .pdf"
                       max-size="104857600" download="file" className='leading-5' onChange={handleFileChange} />
                   </label>
+                  {errors.certification && <div className="text-red-500 text-sm">{errors.certification}</div>}
                   <small className='text-gray-400'>Upload a jpeg, jpg, png, pdf no larger than 100 MB.</small>
                 </div>
               </div>
@@ -104,9 +156,9 @@ const AcademicRecords = ({ formData, prevstep, nextstep, handleChange, onFileCha
           </div>
         </div>
 
-        <div className="flex gap-x-20 mt-6 lg:mt-10">
-          <button onClick={prevstep} className='bg-baseBlue rounded-lg text-white w-24 py-[3px] mt-5  md:mt-0 mb-40 lg:mb-4'>Previous</button>
-          <button onClick={nextstep} className='bg-baseBlue rounded-lg text-white w-24 py-[3px] mt-5 md:mt-0 mb-40 lg:mb-4'>Next</button>
+        <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40 lg:mb-40">
+          <Button onClick={prevstep} text={'Previous'} />
+          <Button onClick={handleNextStep} text={'Next'} />
         </div>
       </div>
     </>

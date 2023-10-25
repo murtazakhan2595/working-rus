@@ -1,7 +1,46 @@
-import React from 'react'
+import Joi from 'joi';
+import Button from './Button';
 
-const BankDetails = ({ formData, prevstep, nextstep, handleChange }) => {
+const bankSchema = Joi.object({
+    bank: Joi.string().required().label('Bank Name'),
+    accTitle: Joi.string().required().label('Account Title'),
+    accNumber: Joi.string().required().label('Account Number'),
+    iban: Joi.string().required().label('IBAN'),
+    branchaddress: Joi.string().required().label('Branch Address'),
+    branchcode: Joi.string().required().label('Branch Code'),
+});
+
+
+const BankDetails = ({ formData, errors, setErrors, prevstep, nextstep, handleChange }) => {
     const { bank, accTitle, accNumber, iban, branchaddress, branchcode } = formData;
+
+    const handleNextStep = () => {
+        // Validate the form data against the schema
+        const { error } = bankSchema.validate(
+            {
+                bank: bank,
+                accTitle: accTitle,
+                accNumber: accNumber,
+                iban: iban,
+                branchaddress: branchaddress,
+                branchcode: branchcode,
+            },
+            { abortEarly: false }
+        );
+
+        if (error) {
+            const validationErrors = {};
+            error.details.forEach((detail) => {
+                validationErrors[detail.path[0]] = detail.message;;
+            });
+            setErrors(validationErrors);
+            console.log(validationErrors)
+        } else {
+            // Proceed to the next step
+            nextstep();
+        }
+    };
+
     return (
         <div>
             <div className='bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10'>
@@ -17,24 +56,28 @@ const BankDetails = ({ formData, prevstep, nextstep, handleChange }) => {
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
+                                    {errors.bank && <div className="text-red-500 text-sm">{errors.bank}</div>}
+
                                 </div>
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="acctitle" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="accTitle" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Account Title:</label>
-                                    <input type="text" value={accTitle} name="acctitle" id="" placeholder='Account Title Here'
+                                    <input type="text" value={accTitle} name="accTitle" id="" placeholder='Account Title Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
+                                    {errors.accTitle && <div className="text-red-500 text-sm">{errors.accTitle}</div>}
                                 </div>
                             </div>
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="accnumber" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="accNumber" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Account Number:</label>
-                                    <input type="tel" value={accNumber} name="accnumber" id="" placeholder='Account Number Here'
+                                    <input type="number" value={accNumber} name="accNumber" id="" placeholder='Account Number Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
+                                    {errors.accNumber && <div className="text-red-500 text-sm">{errors.accNumber}</div>}
                                 </div>
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                     <label htmlFor="iban" className='font-sfpro tracking-wide font-medium
@@ -43,6 +86,7 @@ const BankDetails = ({ formData, prevstep, nextstep, handleChange }) => {
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
+                                    {errors.iban && <div className="text-red-500 text-sm">{errors.iban}</div>}
                                 </div>
                             </div>
                             <div className='flex flex-col mt-2 md:mt-5'>
@@ -52,23 +96,24 @@ const BankDetails = ({ formData, prevstep, nextstep, handleChange }) => {
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.branchaddress && <div className="text-red-500 text-sm">{errors.branchaddress}</div>}
                             </div>
                             <div className='flex flex-col mt-2 md:mt-5 w-1/2 lg:w-1/3'>
                                 <label htmlFor="branchcode" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Branch Code:</label>
-                                <input type="text" value={branchcode} name="branchcode" id="" placeholder='Branch Code Here'
+                                <input type="number" value={branchcode} name="branchcode" id="" placeholder='Branch Code Here'
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.branchcode && <div className="text-red-500 text-sm">{errors.branchcode}</div>}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex gap-x-20 mt-6 lg:mt-10">
-                    <button onClick={prevstep} className='bg-baseBlue rounded-lg text-white w-24 py-[3px] mt-5  md:mt-0 mb-40 lg:mb-4'>Previous</button>
-                    <button onClick={nextstep} className='bg-baseBlue rounded-lg text-white w-24 py-[3px] mt-5 md:mt-0 mb-40 lg:mb-4'>Next</button>
-
+                <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40 lg:mb-40">
+                    <Button onClick={prevstep} text={'Previous'} />
+                    <Button onClick={handleNextStep} text={'Next'} />
                 </div>
             </div >
         </div>

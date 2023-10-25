@@ -305,7 +305,11 @@ const WorkTime = () => {
                     isClearable
                     isSearchable
                     onChange={(e) => {
-                      setSelectedTimezone(e.value);
+                      if (e) {
+                        setSelectedTimezone(e.value);
+                      } else {
+                        setSelectedTimezone(null); // Handle the case where the selection is cleared
+                      }
                     }}
                     options={timezones.map((timezone) => ({
                       value: timezone,

@@ -75,6 +75,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
     try {
       await axios
         .get(`${baseUrl}/board/${id}`, {
+          // navigate(`/board/${task.board_id}?pId=${task.project_id}`);
           headers: {
             Authorization: `Bearer ${token}`,
           },

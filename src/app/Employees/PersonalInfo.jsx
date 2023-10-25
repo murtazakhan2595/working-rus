@@ -1,8 +1,33 @@
 import React, { useState } from 'react'
 import moment from 'moment';
 import Datepicker from '../modules/Dashboard/Datepicker';
-import upload from '../../assets/images/upload.png'
-const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
+import upload from '../../assets/images/upload.png';
+import Joi from 'joi';
+import Button from './Button';
+
+const validationSchema = Joi.object({
+    firstname: Joi.string().required().label('First Name'),
+    lastname: Joi.string().required().label('Last Name'),
+    fathername: Joi.string().required().label('Father Name'),
+    mothername: Joi.string().required().label('Mother Name'),
+    phonenumber: Joi.string().required().label('Phone Number'),
+    dateofbirth: Joi.string().required().label("DOB"),
+    personalemail: Joi.string().email({ tlds: { allow: false } }).required().label('Personal Email'),
+    workemail: Joi.string().email({ tlds: { allow: false } }).required().label('Work Email'),
+    currentaddress: Joi.string().required().label('Current Address'),
+    permanentaddress: Joi.string().required().label('Permanent Address'),
+    nic: Joi.string().required().label('NIC'),
+    passportnumber: Joi.string().required().label('Passport Number'),
+    emergencyfname: Joi.string().required().label("First Name"),
+    emergencylname: Joi.string().required().label("Last Name"),
+    emergencypnumber: Joi.string().required().label("Phone Number"),
+    relation: Joi.string().required().label("Relation"),
+    image: Joi.object().required().label('Image'),
+
+});
+
+
+const PersonalInfo = ({ formData, nextstep, handleChange, errors, setErrors, onFileChange }) => {
     const { firstname,
         lastname,
         fathername,
@@ -20,6 +45,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
         emergencypnumber,
         relation } = formData;
     const [imagePreview, setImagePreview] = useState(null);
+    // const [errors, setErrors] = useState({});
 
     const handleImageUpload = (e) => {
         const selectedFile = e.target.files[0];
@@ -39,6 +65,40 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
         handleChange('dateofbirth', formattedDate);
     };
 
+    // const handleNextStep = () => {
+    //     const { error } = validationSchema.validate(formData, { abortEarly: false });
+    //     if (error) {
+    //         const validationErrors = {};
+    //         error.details.forEach((detail) => {
+    //             validationErrors[detail.path[0]] = detail.message;
+    //         });
+    //         setErrors(validationErrors);
+    //         console.log("Validation errors:", validationErrors);
+    //     } else {
+    //         nextstep();
+    //         console.log("Proceeding to the next step...");
+    //     }
+    // };
+
+    const handleNextStep = () => {
+        const { error } = validationSchema.validate(formData, { abortEarly: false });
+        if (error) {
+            const validationErrors = {};
+            error.details.forEach((detail) => {
+                validationErrors[detail.path[0]] = detail.message;
+            });
+            setErrors(validationErrors);
+            console.log("Validation errors:", validationErrors);
+        } else if (!imagePreview) {
+            const imageError = { image: 'Please upload an image.' };
+            setErrors(imageError);
+        } else {
+            nextstep();
+            console.log("Proceeding to the next step...");
+        }
+    };
+
+
     return (
         <>
             <div className='bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10'>
@@ -53,6 +113,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.firstname && <span className="text-red-500 text-sm ">{errors.firstname}</span>}
                             </div>
                             <div className='flex flex-col mt-2 md:w-1/2'>
                                 <label htmlFor="lastname" className='font-sfpro tracking-wide font-medium
@@ -61,6 +122,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.lastname && <span className="text-red-500 text-sm ">{errors.lastname}</span>}
                             </div>
                         </div>
                         <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
@@ -71,6 +133,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.fathername && <span className="text-red-500 text-sm ">{errors.fathername}</span>}
                             </div>
                             <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                 <label htmlFor="mothername" className='font-sfpro tracking-wide font-medium
@@ -79,6 +142,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.mothername && <span className="text-red-500 text-sm ">{errors.mothername}</span>}
                             </div>
                         </div>
                         <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
@@ -89,6 +153,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.phonenumber && <span className="text-red-500 text-sm ">{errors.phonenumber}</span>}
                             </div>
                             <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                 <label htmlFor="dateofbirth" className='font-sfpro tracking-wide font-medium
@@ -99,16 +164,19 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                     selected={moment(dateofbirth, "DD-MM-YYYY").toDate()}
                                     onChange={handleDateOfBirthChange}
                                 />
+                                {errors.dateofbirth && <span className="text-red-500 text-sm ">{errors.dateofbirth}</span>}
                             </div>
                         </div>
                         <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                             <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                 <label htmlFor="personalemail" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Personal Email:</label>
-                                <input type="email" value={personalemail} name="personalemail" id="" placeholder='Email Here'
+                                <input type="email" value={personalemail} name="personalemail" placeholder='Email Here'
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.personalemail && <span className="text-red-500 text-sm ">{errors.personalemail}</span>}
+
                             </div>
                             <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                 <label htmlFor="workemail" className='font-sfpro tracking-wide font-medium
@@ -117,6 +185,8 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.workemail && <span className="text-red-500 text-sm ">{errors.workemail}</span>}
+
                             </div>
                         </div>
                         <div className='flex flex-col mt-2 md:mt-5'>
@@ -126,6 +196,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                 className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                 onChange={(e) => handleChange(e.target.name, e.target.value)}
                             />
+                            {errors.currentaddress && <span className="text-red-500 text-sm ">{errors.currentaddress}</span>}
                         </div>
                         <div className='flex flex-col mt-2 md:mt-5'>
                             <label htmlFor="permanentaddress" className='font-sfpro tracking-wide font-medium
@@ -134,15 +205,17 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                 className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                 onChange={(e) => handleChange(e.target.name, e.target.value)}
                             />
+                            {errors.permanentaddress && <span className="text-red-500 text-sm ">{errors.permanentaddress}</span>}
                         </div>
                         <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                             <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                 <label htmlFor="nic" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>NIC:</label>
-                                <input type="text" value={nic} data-inputmask="'mask': '99999-9999999-9'" placeholder="XXXXX-XXXXXXX-X" name="nic" required=""
+                                <input type="number" value={nic} placeholder="NIC Here" name="nic" 
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.nic && <span className="text-red-500 text-sm ">{errors.nic}</span>}
                             </div>
                             <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                 <label htmlFor="passportnumber" className='font-sfpro tracking-wide font-medium
@@ -151,6 +224,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
+                                {errors.passportnumber && <span className="text-red-500 text-sm ">{errors.passportnumber}</span>}
                             </div>
                         </div>
 
@@ -184,8 +258,10 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                 />
 
                             </label>
+                            {errors.image && (
+                                <p className="text-red-500 text-sm">{errors.image}</p>
+                            )}
                         </div>
-
                     </div>
                 </div>
                 <h2 className='text-baseBlue tracking-wide mb-2 mt-2 lg:text-lg lg:mt-6'>Emergency Contact Information:</h2>
@@ -199,6 +275,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                 className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                 onChange={(e) => handleChange(e.target.name, e.target.value)}
                             />
+                            {errors.emergencyfname && <span className="text-red-500 text-sm ">{errors.emergencyfname}</span>}
                         </div>
                         <div className='flex flex-col mt-2 md:w-1/2 lg:gap-x-12'>
                             <label htmlFor="emergencylname" className='font-sfpro tracking-wide font-medium
@@ -207,6 +284,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                 className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                 onChange={(e) => handleChange(e.target.name, e.target.value)}
                             />
+                            {errors.emergencylname && <span className="text-red-500 text-sm ">{errors.emergencylname}</span>}
                         </div>
                     </div>
                     <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
@@ -217,6 +295,7 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                 className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                 onChange={(e) => handleChange(e.target.name, e.target.value)}
                             />
+                            {errors.emergencypnumber && <span className="text-red-500 text-sm ">{errors.emergencypnumber}</span>}
                         </div>
                         <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                             <label htmlFor="relation" className='font-sfpro tracking-wide font-medium
@@ -225,14 +304,20 @@ const PersonalInfo = ({ formData, nextstep, handleChange, onFileChange }) => {
                                 className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                 onChange={(e) => handleChange(e.target.name, e.target.value)}
                             />
+                            {errors.relation && <span className="text-red-500 text-sm ">{errors.relation}</span>}
                         </div>
                     </div>
                 </div>
-                <button onClick={nextstep} className='bg-baseBlue rounded-lg text-white 
-                mb-40 px-8 py-[3px] mt-5 md:mt-10'>Next</button>
+                {/* <button onClick={handleNextStep} className='bg-baseBlue rounded-lg text-white mb-40 px-8 py-[3px] mt-5 md:mt-10 cursor-not-allowed'>
+                    Next
+                </button> */}
+                <div className="mt-6 lg:mt-10 md:mt-0 mb-40">
+                    <Button onClick={handleNextStep} text={'Next'} />
+                </div>
             </div>
         </>
     )
 }
 
 export default PersonalInfo
+
