@@ -18,6 +18,8 @@ import {
 } from "./state/actions/UserAction";
 import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/Employees/EmpForm";
+import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
+import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 
 function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
   let width = window.screen.width;
@@ -77,6 +79,16 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
                 exact
                 path="/employees-form"
                 element={<EmpForm isSidebarOpen={isSidebarOpen} />}
+              />
+              <Route
+                exact
+                path="/emp-data"
+                element={<EmpDataSheet/>}
+              />
+              <Route
+                exact
+                path="/emp-dataform"
+                element={<EmpDataForm/>}
               />
               <Route path="/board/:id" element={<Board />} />
               <Route path="/project/:id" element={<BoardList />} />

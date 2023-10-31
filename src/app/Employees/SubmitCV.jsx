@@ -61,7 +61,7 @@ const SubmitCV = ({ formData, errors, setErrors, prevstep, nextstep, substep, ha
           </div>
         </div>
 
-        <div className="flex gap-x-20">
+        <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40">
           <Button onClick={prevstep} text={'Previous'} />
           <Button onClick={handleNextStep} text={'Next'} />
         </div>
