@@ -17,7 +17,7 @@ const validationSchema = Joi.object({
     currentaddress: Joi.string().required().label('Current Address'),
     permanentaddress: Joi.string().required().label('Permanent Address'),
     nic: Joi.string().required().label('NIC'),
-    passportnumber: Joi.string().required().label('Passport Number'),
+    passportnumber: Joi.string().label('Passport Number'),
     emergencyfname: Joi.string().required().label("First Name"),
     emergencylname: Joi.string().required().label("Last Name"),
     emergencypnumber: Joi.string().required().label("Phone Number"),

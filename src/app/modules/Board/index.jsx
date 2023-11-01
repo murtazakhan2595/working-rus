@@ -374,39 +374,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
       </div>
       {/* ***************************************************** Board Header ***************************************************** */}
       <div className="bg-[#ebebeb] mb-6 pr-1 pl-1 sm:pl-5 gap-3  justify-between py-2 flex flex-col md:flex-row lg:flex-row">
-        <div className="flex gap-2">
-          <div className="flex justify-center md:ml-4 ml-1 items-center">
-            <AiTwotoneStar className="text-3xl text-[#283b91]" />
-          </div>
-          <div className="flex font-bold items-center lg:ml-2 ml-1 tracking-widest">
-            <Link className="text-blue-400 cursor-pointer" to="/">Home</Link><GrNext className="mx-1 opacity-40" /><Link className="text-blue-400 cursor-pointer" to={`/project/${project.id}`}>{project.name}</Link>
-            <GrNext className="mx-1 opacity-40" /><div className="break-all">{board.name}</div>
-          </div>
-        </div>
-        <div className="flex gap-3 ml-2 md:ml-0 lg:ml-0">
-          {/* <div className="sm:flex hidden bg-white px-2 py-1 gap-3 items-center rounded-lg">
-            <div className=" px-4 text-[#283b91]">Share</div>
-          </div>
-          <div className="sm:hidden flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg">
-            <div className=" px-1 py-1 md:py-0 text-gray-400">
-              <FaRegShareSquare />
-            </div>
-          </div> */}
-          <div className="flex bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg"
-            onClick={openEditBoardPopup}
-          >
-            <div className="px-1 py-1 md:py-0 text-gray-400">
-              <BsPencil />
-            </div>
-          </div>
-          <div className="flex bg-[#f7f7f8] px-2 mr-5 py-1 gap-3 items-center rounded-lg"
-            onClick={() => { setIsDeleteConfirmationOpen(true); }}
-          >
-            <div className=" px-1 py-1 md:py-0 text-gray-400">
-              <BsTrash3 />
-            </div>
-          </div>
-        </div>
+        hello
       </div>
 
       {/* ***************************************************** Board Card ***************************************************** */}

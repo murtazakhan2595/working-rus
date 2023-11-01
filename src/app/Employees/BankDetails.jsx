@@ -5,7 +5,7 @@ const bankSchema = Joi.object({
     bank: Joi.string().required().label('Bank Name'),
     accTitle: Joi.string().required().label('Account Title'),
     accNumber: Joi.string().required().label('Account Number'),
-    iban: Joi.string().required().label('IBAN'),
+    // iban: Joi.string().required().label('IBAN'),
     branchaddress: Joi.string().required().label('Branch Address'),
     branchcode: Joi.string().required().label('Branch Code'),
 });
@@ -21,7 +21,7 @@ const BankDetails = ({ formData, errors, setErrors, prevstep, nextstep, handleCh
                 bank: bank,
                 accTitle: accTitle,
                 accNumber: accNumber,
-                iban: iban,
+                // iban: iban,
                 branchaddress: branchaddress,
                 branchcode: branchcode,
             },
