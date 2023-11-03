@@ -1,6 +1,42 @@
+import { useEffect, useState } from "react";
 import EmpDataHeader from "./EmpDataHeader";
+import axios from "axios";
+import { connect } from "react-redux";
 
-const EmpDataSheet = () => {
+const userRoles = [
+  { value: 1, label: "Super Admin" },
+  { value: 2, label: "HR" },
+  { value: 3, label: "Manager" },
+  { value: 4, label: "Employee" },
+];
+
+const EmpDataSheet = ({baseUrl, token}) => {
+
+    const [users, setUsers] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    console.log(users)
+
+
+      // Functions for calling api started
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/emp/`, { headers });
+        const usersData = response.data.results;
+        setUsers(usersData);
+      } catch (error) {
+        console.error('Error fetching todos:', error);
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9]">
@@ -10,106 +46,23 @@ const EmpDataSheet = () => {
         <table class="min-w-full ">
           <thead>
             <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-              <th class="px-6 py-3 text-left rounded-tl-lg">Photo</th>
-              <th class="px-6 py-3 text-left">Employee ID</th>
-              <th class="px-6 py-3 text-left">Name</th>
+              <th class="px-6 py-3 text-left  rounded-tl-lg">Employee ID</th>
+              <th class="px-6 py-3 text-left">User Name</th>
               <th class="px-6 py-3 text-left">Email</th>
               <th class="px-6 py-3 text-left">Role</th>
-              <th class="px-6 py-3 text-left">National Identity</th>
               <th class="px-6 py-3 text-left rounded-tr-lg">Action</th>
             </tr>
           </thead>
           <tbody className="bg-white text-gray-500 ">
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
+            {users.map((user, index) => (
+              <tr className="whitespace-nowrap border-b-2" key={user.id}>
+              <td class="px-6 py-3 text-left">TXB00{user.id}</td>
+              <td class="px-6 py-3 text-left">{user.username}</td>
+              <td class="px-6 py-3 text-left">{user.email}</td>
+              <td class="px-6 py-3 text-left">{user.user_role}</td>
               <td class="px-6 py-3 text-left">Action here</td>
             </tr>
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
-              <td class="px-6 py-3 text-left">Action here</td>
-            </tr>
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
-              <td class="px-6 py-3 text-left">Action here</td>
-            </tr>
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
-              <td class="px-6 py-3 text-left">Action here</td>
-            </tr>
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
-              <td class="px-6 py-3 text-left">Action here</td>
-            </tr>
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
-              <td class="px-6 py-3 text-left">Action here</td>
-            </tr>
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
-              <td class="px-6 py-3 text-left">Action here</td>
-            </tr>
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
-              <td class="px-6 py-3 text-left">Action here</td>
-            </tr>
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
-              <td class="px-6 py-3 text-left">Action here</td>
-            </tr>
-            <tr className="whitespace-nowrap border-b-2">
-              <td class="px-6 py-3 text-left">Photo</td>
-              <td class="px-6 py-3 text-left">876569</td>
-              <td class="px-6 py-3 text-left">Syed Umair</td>
-              <td class="px-6 py-3 text-left">hello@tecbrix.com</td>
-              <td class="px-6 py-3 text-left">Developer</td>
-              <td class="px-6 py-3 text-left">4250-876545-9</td>
-              <td class="px-6 py-3 text-left">Action here</td>
-            </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -117,4 +70,14 @@ const EmpDataSheet = () => {
   );
 };
 
-export default EmpDataSheet
+
+const mapStateToProps = (state) => {
+  return {
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
+
+export default connect(mapStateToProps)(EmpDataSheet);
+
+

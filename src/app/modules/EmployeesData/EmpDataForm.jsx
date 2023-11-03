@@ -3,15 +3,18 @@ import Button from "../../Employees/Button";
 import EmpDataHeader from "./EmpDataHeader";
 import Select from "react-select";
 import { RxCross2 } from "react-icons/rx";
+import { connect } from "react-redux";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const userRoles = [
-  { value: "superadmin", label: "Super Admin" },
-  { value: "hr", label: "HR" },
-  { value: "manager", label: "Manager" },
-  { value: "employee", label: "Employee" },
+  { value: 1, label: "Super Admin" },
+  { value: 2, label: "HR" },
+  // { value: 3, label: "Manager" },
+  // { value: 4, label: "Employee" },
 ];
 
-const EmpDataForm = () => {
+const EmpDataForm = ({ token, baseUrl }) => {
   const initData = {
     fullname: "",
     email: "",
@@ -29,25 +32,50 @@ const EmpDataForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData);
+  
+    const data = {
+      username: formData.fullname,
+      email: formData.email,
+      password: formData.password,
+      user_role: formData.userrole.value,
+    };
+  
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
 
-    setEmployeeID((prevEmployeeID) => prevEmployeeID + 1);
-    const updatedEmployeeID = employeeID + 1;
+    try {
+      const response = await axios.post(`${baseUrl}/emp/add`, data, {
+        headers,
+      });
+      if (response.status === 201) {
+        setShowSuccessModal(true);
+      }
+      
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        toast.error("A user with that username already exists.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } else {
+        console.error("API Error:", error);
+        toast.error("Error submitting the form. Please try again.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+    }
 
-    setFormData((prevData) => {
-      const updatedFormData = { ...prevData, employeeID: updatedEmployeeID };
-      console.log(updatedFormData);
-      return updatedFormData;
-    });
-
-    setShowSuccessModal(true);
     setFormData(initData);
   };
-
+  
   const closeModal = () => {
     setShowSuccessModal(false);
   };
+
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9]">
@@ -55,7 +83,7 @@ const EmpDataForm = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="px-2 py-3 md:px-4 md:py-5 lg:px-10 lg:py-8 flex flex-col gap-y-4">
-          <div className="flex items-center mt-2 md:w-1/2 lg:w-1/5">
+         {/*  <div className="flex items-center mt-2 md:w-1/2 lg:w-1/5">
             <label
               htmlFor="employeeID"
               className="w-28 font-sfpro tracking-wide whitespace-nowrap
@@ -71,7 +99,7 @@ const EmpDataForm = () => {
               className="pl-2 w-full bg-white text-gray-400 rounded h-8 text-sm placeholder-[#555657] 
       placeholder-opacity-50"
             />
-          </div>
+  </div> */}
 
           <div className="flex items-center mt-2 md:w-1/2 lg:w-2/5">
             <label
@@ -79,14 +107,14 @@ const EmpDataForm = () => {
               className="font-sfpro tracking-wide whitespace-nowrap
                             text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
             >
-              Full Name:
+              User Name:
             </label>
             <input
               type="text"
               name="fullname"
               value={formData.fullname}
               required
-              placeholder="Full Name here"
+              placeholder="contains special character and number"
               className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50"
               onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -178,4 +206,11 @@ const EmpDataForm = () => {
   );
 };
 
-export default EmpDataForm;
+const mapStateToProps = (state) => {
+  return {
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
+
+export default connect(mapStateToProps)(EmpDataForm);

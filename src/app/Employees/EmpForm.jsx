@@ -31,6 +31,7 @@ const initialData = {
     // relation: '',
     // experienceSections: null,
     // certification: null,
+    
 }
 const EmpForm = () => {
     const navigate = useNavigate();
@@ -67,6 +68,7 @@ const EmpForm = () => {
             setErrors({ ...errors, [name]: null });
         }
     };
+    
 
     const submitForm = async () => {
         try {
@@ -91,6 +93,7 @@ const EmpForm = () => {
 
     const nextStep = () => {
         if (currentStep === 2) {
+            console.log(currentStep)
             if (subStep < 2) {
                 setSubStep(subStep + 1);
             } else {
@@ -128,7 +131,9 @@ const EmpForm = () => {
                 </div>
 
                 {currentStep === 1 && (
-                    <PersonalInfo formData={formData} nextstep={nextStep} handleChange={handleFormChange} errors={errors} setErrors={setErrors} />
+                    <PersonalInfo formData={formData} nextstep={nextStep} handleChange={handleFormChange}
+                     errors={errors} setErrors={setErrors}
+                      />
                 )}
                 {currentStep === 2 && subStep === 1 && (
                     <SubmitCV formData={formData} errors={errors} setErrors={setErrors} substep={subStep} prevstep={prevStep} nextstep={nextStep} handleChange={handleFormChange} />

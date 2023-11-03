@@ -145,8 +145,8 @@ const ProfessionalExp = ({ formData, errors, setErrors, substep, prevstep, nexts
               </div>
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                 <div className="flex flex-col mt-2 md:mt-4">
-                  <h2 className="text-input tracking-wide text-base mt-3 mb-3 lg:mb-4 lg:text-base">Experience Letter:</h2>
-                  <label htmlFor="file-upload" className="cursor-pointer opacity-70 rounded-lg py-1 text-input">
+                  <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">Experience Letter:</h2>
+                  <label htmlFor="file-upload" className="cursor-pointer opacity-70 rounded-lg text-input">
                     <input
                       id="file-upload"
                       type="file"

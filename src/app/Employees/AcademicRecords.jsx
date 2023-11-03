@@ -17,7 +17,7 @@ const academicSchema = Joi.object({
   institute: Joi.string().required().label('Institute Name'),
   acdstartdate: Joi.string().required().label('Start Date'),
   acdenddate: Joi.string().required().label('End Date'),
-  certification: Joi.object().required().label('Certification'),
+  certification: Joi.object().required().label('Certification').meta({ type: 'file' }),
 });
 
 
@@ -156,7 +156,7 @@ const AcademicRecords = ({ formData, errors, setErrors, prevstep, nextstep, hand
           </div>
         </div>
 
-        <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40 lg:mb-40">
+        <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-10 mb-40">
           <Button onClick={prevstep} text={'Previous'} />
           <Button onClick={handleNextStep} text={'Next'} />
         </div>
