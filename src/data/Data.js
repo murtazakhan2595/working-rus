@@ -1,3 +1,9 @@
+import { LiaHomeSolid } from "react-icons/lia";
+import { MdOutlinePayment } from "react-icons/md";
+import { LiaWpforms } from "react-icons/lia";
+import { BiSpreadsheet } from "react-icons/bi";
+import { PiShootingStarBold } from "react-icons/pi";
+
 export const tasksTitle = [
   { label: "Task Name", width: "w-44" },
 
@@ -26,11 +32,19 @@ export const statusOptions = [
 
 export const academicOptions = [
   {
-    value: "Inter",
+    value: "inter",
     label: "Inter",
-    value: "Bachelors",
+    value: "bachelors",
     label: "Bachelors",
-    value: "Masters",
+    value: "masters",
     label: "Masters",
   },
+];
+
+export const links = [
+  { to: "/", text: "Home", icon: <LiaHomeSolid /> },
+  { to: "/employees-form", text: "Emp Form", icon: <LiaWpforms /> },
+  { to: "/emp-data", text: "Emp Sheet", icon: <BiSpreadsheet /> },
+  { to: "", text: "Pay", icon: <MdOutlinePayment /> },
+  { to: "", text: "Performance", icon: <PiShootingStarBold /> },
 ];
