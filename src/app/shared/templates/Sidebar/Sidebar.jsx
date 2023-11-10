@@ -99,13 +99,6 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token, sidebarRefre
                 <p className="text-white">Home</p>
               </li>
             </Link>
-            <Link to="/employees-form">
-              <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-                <MdOutlineGroups2 className="text-white text-xl" />{" "}
-                <p className="text-white">Emp Form</p>
-              </li>
-            </Link>
-
             <Link to="/emp-data">
             <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
               <BiTimeFive className="text-white text-xl" />{" "}

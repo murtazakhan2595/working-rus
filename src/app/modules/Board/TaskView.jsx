@@ -402,7 +402,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       Start Date
                     </label>
                     <Datepicker
-                      date={startDate}
+                      day={startDate.substr(8, 9)}
+                      month={startDate.substr(5, 2)}
+                      year={startDate.substr(0, 4)}
                       onChange={(date) => {
                         let d = moment(date).format("YYYY-MM-DD");
                         setStartDate(d);
@@ -417,7 +419,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       Due Date
                     </label>
                     <Datepicker
-                      date={dueDate}
+                        day={dueDate.substr(8, 9)}
+                        month={dueDate.substr(5, 2)}
+                        year={dueDate.substr(0, 4)}
                       onChange={(date) => {
                         let d = moment(date).format("YYYY-MM-DD");
                         setDueDate(d);

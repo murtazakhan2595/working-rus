@@ -1,40 +1,51 @@
-import Joi from 'joi';
 import SubStepsIndicator from './SubStepsIndicator';
 import Button from './Button';
-
-const cvSchema = Joi.object({
-  cv: Joi.object().required().label('CV').keys({
-    name: Joi.string().required(),
-    type: Joi.string().valid('application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document').required(),
-    size: Joi.number().max(104857600).required(),
-  }),
-});
+import { useState ,useEffect } from 'react';
 
 
-const SubmitCV = ({ formData, errors, setErrors, prevstep, nextstep, substep, handleChange, onFileChange }) => {
-  const handleFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-    const cvData = {
-      name: selectedFile.name,
-      type: selectedFile.type,
-      size: selectedFile.size,
-    };
+const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep }) => {
+  const getDataFromSessionStorage = (key) => {
+    const serializedData = sessionStorage.getItem(key);
+    const data = JSON.parse(serializedData);
+    return data;
+};
+  let getCV = getDataFromSessionStorage("cv") 
+  const [cv , setCv ] = useState(getCV)
+  const [cvName , setCvName ] = useState(getCV?.name ? getCV?.name : "No Chosen File")
+const setDataInSessionStorage = (key,data) => {
+    const serializedData = JSON.stringify(data);
+    sessionStorage.setItem(key, serializedData);
+};
 
-    // Add the "cv" object to your formData
-    const updatedFormData = {
-      ...formData,
-      cv: cvData,
-    };
-
-    handleChange('cv', cvData);
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  const cvData  = {
+    name: file.name,
+    type: file.type,
+    size: file.size,
   }
+  if (file) {
+    const reader = new FileReader();
+            reader.onload = (e) => {
+              setCv({"name" : cvData.name ,"file" :e.target.result})
+              setCvName(cvData.name)
+            }
+            reader.readAsDataURL(file);
+    setErrors({'cv':""});
+  } else {
+    const validationErrors = { cv: "Select Valid File" };
+    setErrors(validationErrors);
+  }
+}
 
-  const handleNextStep = () => {
-    // Validate only the fields for this step using cvSchema
-    const { error } = cvSchema.validate({ cv: formData.cv }, { abortEarly: false });
+useEffect(() => {
+  setDataInSessionStorage('cv',cv)
+}, [cv]) 
 
-    if (error) {
-      const validationErrors = { cv: error.details[0].message };
+const handleNextStep = () => {
+    if (!cvName) {
+      const validationErrors = { cv: "CV is required" };
+      console.log("first")
       setErrors(validationErrors);
     } else {
       nextstep();
@@ -51,8 +62,12 @@ const SubmitCV = ({ formData, errors, setErrors, prevstep, nextstep, substep, ha
             <h2 className='text-input opacity-70 tracking-wide text-base mt-3 mb-3 lg:mb-4 lg:text-base'>Attach Your CV:</h2>
             <label htmlFor="file-upload" className="cursor-pointer opacity-70 
             rounded-lg py-1 text-input">
-              <input id="file-upload" type="file" name="file" accept=".doc, .docx"
-                max-size="104857600" className='leading-5' onChange={handleFileChange} />
+              <div className='flex'>
+              <div className='bg-gray-200 border-gray-400 border py-1 px-3 rounded-l-md '>Upload CV</div> 
+              <div className='py-1 px-3 border-gray-200 border rounded-r-md'>{cvName}</div> 
+              </div>
+              <input id="file-upload" type="file" name="cv" accept=".doc, .docx"
+                max-size="104857600" className='hidden' onChange={handleFileChange} />
             </label>
 
             <br />

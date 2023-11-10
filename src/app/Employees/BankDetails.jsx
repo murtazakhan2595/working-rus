@@ -1,29 +1,58 @@
 import Joi from 'joi';
 import Button from './Button';
+import { useState ,useEffect } from 'react';
 
 const bankSchema = Joi.object({
-    bank: Joi.string().required().label('Bank Name'),
-    accTitle: Joi.string().required().label('Account Title'),
-    accNumber: Joi.string().required().label('Account Number'),
-    // iban: Joi.string().required().label('IBAN'),
-    branchaddress: Joi.string().required().label('Branch Address'),
-    branchcode: Joi.string().required().label('Branch Code'),
+    bank_name: Joi.string().min(5).max(50).required().label('Bank Name'),
+    account_title: Joi.string().min(5).required().label('Account Title'),
+    account_number: Joi.string().min(10).required().label('Account Number'),
+    branch_address: Joi.string().min(10).required().label('Branch Address'),
+    branch_code: Joi.string().min(3).required().label('Branch Code'),
+    swift_code: Joi.string().required().label('Swift Code'),
 });
 
 
-const BankDetails = ({ formData, errors, setErrors, prevstep, nextstep, handleChange }) => {
-    const { bank, accTitle, accNumber, iban, branchaddress, branchcode } = formData;
+const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
+    const getDataFromSessionStorage = (key) => {
+        const serializedData = sessionStorage.getItem(key);
+        const data = JSON.parse(serializedData);
+        return data;
+      };
+      let defaultBankInfo = getDataFromSessionStorage("bankInfo")
+    const intialBankInfo = { 
+        bank_name: defaultBankInfo?.bank_name ? defaultBankInfo.bank_name :  '',
+        account_title: defaultBankInfo?.account_title ? defaultBankInfo.account_title : '',
+        account_number: defaultBankInfo?.account_number ? defaultBankInfo.account_number : '',
+        account_iban: defaultBankInfo?.account_iban ? defaultBankInfo.account_iban : '',
+        branch_address: defaultBankInfo?.branch_address ? defaultBankInfo.branch_address : '',
+        branch_code: defaultBankInfo?.branch_code ? defaultBankInfo.branch_code : '',
+        swift_code: defaultBankInfo?.swift_code ? defaultBankInfo.swift_code : ''
+         };
+    const [bankInfo , setBankInfo] = useState(intialBankInfo)
+
+    const setDataInSessionStorage = (key, data) => {
+      const serializedData = JSON.stringify(data);
+      sessionStorage.setItem(key, serializedData);
+    };
+
+    const handleChange = (name, value) => {
+        setBankInfo({...bankInfo,[name]:value})
+            setErrors({ ...errors, [name]: null });
+    };
+
+    useEffect(() => {
+        setDataInSessionStorage('bankInfo',bankInfo)
+      }, [bankInfo])
 
     const handleNextStep = () => {
-        // Validate the form data against the schema
         const { error } = bankSchema.validate(
             {
-                bank: bank,
-                accTitle: accTitle,
-                accNumber: accNumber,
-                // iban: iban,
-                branchaddress: branchaddress,
-                branchcode: branchcode,
+                bank_name: bankInfo.bank_name,
+                account_title: bankInfo.account_title,
+                account_number: bankInfo.account_number,
+                branch_address: bankInfo.branch_address,
+                branch_code: bankInfo.branch_code,
+                swift_code: bankInfo.swift_code,
             },
             { abortEarly: false }
         );
@@ -33,10 +62,14 @@ const BankDetails = ({ formData, errors, setErrors, prevstep, nextstep, handleCh
             error.details.forEach((detail) => {
                 validationErrors[detail.path[0]] = detail.message;;
             });
+            if (bankInfo.account_iban) {
+                if (bankInfo.account_iban.length < 10)
+                validationErrors.account_iban = "IBAN number must be at least 10 characters";
+              }
             setErrors(validationErrors);
             console.log(validationErrors)
         } else {
-            // Proceed to the next step
+            
             nextstep();
         }
     };
@@ -52,60 +85,71 @@ const BankDetails = ({ formData, errors, setErrors, prevstep, nextstep, handleCh
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                     <label htmlFor="bank" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Bank Name:</label>
-                                    <input type="text" value={bank} name="bank" id="" placeholder='Bank Name Here'
+                                    <input type="text" value={bankInfo.bank_name} name="bank_name" id="" placeholder='Bank Name Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
-                                    {errors.bank && <div className="text-red-500 text-sm">{errors.bank}</div>}
+                                    {errors.bank_name && <div className="text-red-500 text-sm">{errors.bank_name}</div>}
 
                                 </div>
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="accTitle" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="account_title" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Account Title:</label>
-                                    <input type="text" value={accTitle} name="accTitle" id="" placeholder='Account Title Here'
+                                    <input type="text" value={bankInfo.account_title} name="account_title" id="" placeholder='Account Title Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
-                                    {errors.accTitle && <div className="text-red-500 text-sm">{errors.accTitle}</div>}
+                                    {errors.account_title && <div className="text-red-500 text-sm">{errors.account_title}</div>}
                                 </div>
                             </div>
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="accNumber" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="account_number" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Account Number:</label>
-                                    <input type="number" value={accNumber} name="accNumber" id="" placeholder='Account Number Here'
+                                    <input type="number" value={bankInfo.account_number} name="account_number" id="" placeholder='Account Number Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
-                                    {errors.accNumber && <div className="text-red-500 text-sm">{errors.accNumber}</div>}
+                                    {errors.account_number && <div className="text-red-500 text-sm">{errors.account_number}</div>}
                                 </div>
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="iban" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="account_iban" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>IBAN Number:</label>
-                                    <input type="text" value={iban} name="iban" id="" placeholder='IBAN Here'
+                                    <input type="text" value={bankInfo.account_iban} name="account_iban" id="" placeholder='IBAN Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
-                                    {errors.iban && <div className="text-red-500 text-sm">{errors.iban}</div>}
+                                    {errors.account_iban && <div className="text-red-500 text-sm">{errors.account_iban}</div>}
                                 </div>
                             </div>
                             <div className='flex flex-col mt-2 md:mt-5'>
-                                <label htmlFor="branchaddress" className='font-sfpro tracking-wide font-medium
+                                <label htmlFor="branch_address" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Branch Address:</label>
-                                <input type="text" value={branchaddress} name="branchaddress" id="" placeholder='Branch Address Here'
+                                <input type="text" value={bankInfo.branch_address} name="branch_address" id="" placeholder='Branch Address Here'
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
-                                {errors.branchaddress && <div className="text-red-500 text-sm">{errors.branchaddress}</div>}
+                                {errors.branch_address && <div className="text-red-500 text-sm">{errors.branch_address}</div>}
+                            </div>
+                            <div className='flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12'>
+                            <div className='flex flex-col  mt-2 md:mt-5 w-1/2 lg:w-1/3'>
+                                <label htmlFor="branch_code" className='font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1'>Branch Code:</label>
+                                <input type="number" value={bankInfo.branch_code} name="branch_code" id="" placeholder='Branch Code Here'
+                                    className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
+                                    onChange={(e) => handleChange(e.target.name, e.target.value)}
+                                />
+                                {errors.branch_code && <div className="text-red-500 text-sm">{errors.branch_code}</div>}
                             </div>
                             <div className='flex flex-col mt-2 md:mt-5 w-1/2 lg:w-1/3'>
-                                <label htmlFor="branchcode" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Branch Code:</label>
-                                <input type="number" value={branchcode} name="branchcode" id="" placeholder='Branch Code Here'
+                                <label htmlFor="swift_code" className='font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1'>Swift Code:</label>
+                                <input type="number" value={bankInfo.swift_code} name="swift_code" id="" placeholder='Swift Code Here'
                                     className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
                                 />
-                                {errors.branchcode && <div className="text-red-500 text-sm">{errors.branchcode}</div>}
+                                {errors.swift_code && <div className="text-red-500 text-sm">{errors.swift_code}</div>}
+                            </div>
                             </div>
                         </div>
                     </div>
