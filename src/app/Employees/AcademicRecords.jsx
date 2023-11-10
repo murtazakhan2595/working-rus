@@ -522,8 +522,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
             onClick={addCertificationSection}
             className="mt-4 mb-3 rounded-lg w-52 border border-[#25A8E0] cursor-pointer text-[#555657] py-1"
           >
-            <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add
-            Add New Certification
+            <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add New Certification
           </button>
         <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40 lg:mb-40">
           <Button onClick={prevstep} text={"Previous"} />
