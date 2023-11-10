@@ -21,7 +21,7 @@ import EmpForm from "./app/Employees/EmpForm";
 import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 
-function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
+function App({ setUserProfile, userProfile,baseUrl, isLogin, setToken, setUserLogout }) {
   let width = window.screen.width;
   let val = width <= 1280 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
@@ -31,7 +31,7 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
   const location = useLocation();
 
   const handleUpdateProfile = (data) => {
-    let updateProfile = { id: data.id, username: data.username };
+    let updateProfile = { id: data.id, username: data.username ,is_filled:data.is_filled};
     setUserProfile(updateProfile);
   };
 
@@ -62,6 +62,13 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
       <Routes>
         {isLogin ? (
           <>
+          {!userProfile.is_filled ?
+              <Route
+              exact
+              path="/"
+              element={<EmpForm isSidebarOpen={isSidebarOpen} />}
+            />
+         : 
             <Route
               element={
                 <Sidebar
@@ -77,11 +84,6 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
               />
               <Route
                 exact
-                path="/employees-form"
-                element={<EmpForm isSidebarOpen={isSidebarOpen} />}
-              />
-              <Route
-                exact
                 path="/emp-data"
                 element={<EmpDataSheet/>}
               />
@@ -93,6 +95,7 @@ function App({ setUserProfile, baseUrl, isLogin, setToken, setUserLogout }) {
               <Route path="/board/:id" element={<Board />} />
               <Route path="/project/:id" element={<BoardList />} />
             </Route>
+}
             <Route path="*" element={<Err404 />} />
           </>
         ) : (

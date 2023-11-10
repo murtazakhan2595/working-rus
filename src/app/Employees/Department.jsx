@@ -1,26 +1,45 @@
 import Joi from 'joi';
 import Button from './Button';
+import {useState , useEffect} from 'react'
 
 const departmentSchema = Joi.object({
-    department: Joi.string().required().label('Department Name'),
-    position: Joi.string().required().label('Position'),
-    directrpt: Joi.string().required().label('Direct Report'),
-    indirectrpt: Joi.string().required().label('Indirect Report'),
-    dptmanager: Joi.string().required().label('Department Manager'),
+    department_name: Joi.string().required().label('Department Name'),
+    department_position: Joi.string().required().label('Position'),
+    direct_report: Joi.string().required().label('Direct Report'),
+    indirect_report: Joi.string().required().label('Indirect Report'),
+    department_manager: Joi.string().required().label('Department Manager'),
 });
 
-const Department = ({ formData, errors, setErrors, prevstep, handleChange, submitForm }) => {
-    const { department, position, directrpt, indirectrpt, dptmanager } = formData;
+const Department = ({ errors, setErrors, prevstep, submitForm }) => {
+
+    const getDataFromSessionStorage = (key) => {
+        const serializedData = sessionStorage.getItem(key);
+        const data = JSON.parse(serializedData);
+        return data;
+      };
+      const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo")
+      const intialDepartmentInfo = { 
+        department_name : defaultDeparmentInfo?.department_name ? defaultDeparmentInfo.department_name : '' ,
+        department_position : defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
+        direct_report : defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
+        indirect_report : defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
+        department_manager : defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager :''
+         };
+      const [departmentInfo , setDepartmentInfo] = useState(intialDepartmentInfo)
+
+
+      useEffect(() => {
+        setDataInSessionStorage('departmentInfo',departmentInfo)
+      }, [departmentInfo])
 
     const handleNextStep = () => {
-        // Validate the form data against the schema
         const { error } = departmentSchema.validate(
             {
-                department: department,
-                position: position,
-                directrpt: directrpt,
-                indirectrpt: indirectrpt,
-                dptmanager: dptmanager,
+                department_name: departmentInfo.department_name,
+                department_position: departmentInfo.department_position,
+                direct_report: departmentInfo.direct_report,
+                indirect_report: departmentInfo.indirect_report,
+                department_manager: departmentInfo.department_manager,
             },
             { abortEarly: false }
         );
@@ -37,6 +56,15 @@ const Department = ({ formData, errors, setErrors, prevstep, handleChange, submi
             submitForm();
         }
     };
+    const setDataInSessionStorage = (key, data) => {
+        const serializedData = JSON.stringify(data);
+        sessionStorage.setItem(key, serializedData);
+      };
+    const handleChange = (name, value) => {
+        setDepartmentInfo({...departmentInfo,[name]:value})
+        setErrors({ ...errors, [name]: null });
+       
+    };
     return (
         <>
             <div className='bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10'>
@@ -46,58 +74,58 @@ const Department = ({ formData, errors, setErrors, prevstep, handleChange, submi
                         <div className="flex flex-col">
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="department" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="department_name" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Department Name:</label>
-                                    <input type="text" value={department} name="department" id="" placeholder='Department Name Here'
+                                    <input type="text" value={departmentInfo.department_name} name="department_name" id="" placeholder='Department Name Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
-                                    {errors.department && <span className="text-red-500 text-sm ">{errors.department}</span>}
+                                    {errors.department_name && <span className="text-red-500 text-sm ">{errors.department_name}</span>}
 
                                 </div>
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="position" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="department_position" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Position:</label>
-                                    <input type="text" value={position} name="position" id="" placeholder='Position Here'
+                                    <input type="text" value={departmentInfo.department_position} name="department_position" id="" placeholder='Position Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
-                                    {errors.position && <span className="text-red-500 text-sm ">{errors.position}</span>}
+                                    {errors.department_position && <span className="text-red-500 text-sm ">{errors.department_position}</span>}
 
                                 </div>
                             </div>
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="directrpt" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Direct Report:</label>
-                                    <input type="text" value={directrpt} name="directrpt" id="" placeholder='Direct Report Here'
+                                    <input type="text" value={departmentInfo.direct_report} name="direct_report" id="" placeholder='Direct Report Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
-                                    {errors.directrpt && <span className="text-red-500 text-sm ">{errors.directrpt}</span>}
+                                    {errors.direct_report && <span className="text-red-500 text-sm ">{errors.direct_report}</span>}
 
                                 </div>
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="indirectrpt" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Indirect Report:</label>
-                                    <input type="text" value={indirectrpt} name="indirectrpt" id="" placeholder='Indirect Report Here'
+                                    <input type="text" value={departmentInfo.indirect_report} name="indirect_report" id="" placeholder='Indirect Report Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
-                                    {errors.indirectrpt && <span className="text-red-500 text-sm ">{errors.indirectrpt}</span>}
+                                    {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
                                 </div>
 
                             </div>
 
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2 lg:w-[45.5%]'>
-                                    <label htmlFor="dptmanager" className='font-sfpro tracking-wide font-medium
+                                    <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Department Manager:</label>
-                                    <input type="text" value={dptmanager} name="dptmanager" id="" placeholder='Department Manager Here'
+                                    <input type="text" value={departmentInfo.department_manager} name="department_manager" id="" placeholder='Department Manager Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
-                                    {errors.dptmanager && <span className="text-red-500 text-sm ">{errors.dptmanager}</span>}
+                                    {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
                                 </div>
                             </div>
                         </div>
