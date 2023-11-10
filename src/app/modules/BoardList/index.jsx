@@ -15,8 +15,13 @@ import { setUserLogout } from "../../../state/actions/UserAction";
 import ProjectEditModal from "./ProjectEditModal";
 import { setSidebarRefresh } from "../../../state/actions/UserAction";
 
-
-const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefresh}) => {
+const BoardList = ({
+  userProfile,
+  baseUrl,
+  sidebarRefresh,
+  token,
+  setSidebarRefresh,
+}) => {
   const { id } = useParams(); // Access the id parameter from the URL
   const cookies = new Cookies();
   const [boardList, setBoardList] = useState([]);
@@ -25,12 +30,15 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [members, setMembers] = useState([]);
-  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+    useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   // Get Board
-  const getBoards = async (url = `${baseUrl}/board/?search={"project_id":[${id}]}`) => {
+  const getBoards = async (
+    url = `${baseUrl}/board/?search={"project_id":[${id}]}`
+  ) => {
     try {
       const response = await axios.get(url, {
         headers: {
@@ -43,8 +51,7 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
       }
     } catch (error) {
       console.error("Error while fetching boards:", error);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -62,7 +69,7 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
         setProject(response.data);
       }
     } catch (error) {
-      navigate("/404")
+      navigate("/404");
       console.error("Error while fetching projects:", error);
     }
   };
@@ -83,7 +90,6 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
     }
   };
 
-
   const handleDeleteProject = async () => {
     try {
       const response = await axios.delete(`${baseUrl}/project/${project.id}`, {
@@ -92,8 +98,8 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
         },
       });
       if (response.status === 204) {
-        setSidebarRefresh(!sidebarRefresh)
-        navigate(`/`)
+        setSidebarRefresh(!sidebarRefresh);
+        navigate(`/`);
       } else {
         console.error("Unexpected response status:", response.status);
       }
@@ -104,9 +110,9 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
     setIsDeleteConfirmationOpen(false);
   };
   const onClose = () => {
-    setIsEditModalOpen(false)
-    getProject()
-  }
+    setIsEditModalOpen(false);
+    getProject();
+  };
 
   useEffect(() => {
     getProject();
@@ -152,7 +158,10 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
           </div>
         </div>
         <div className="relative">
-          <div className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer" onClick={handleDropdownClick}>
+          <div
+            className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
+            onClick={handleDropdownClick}
+          >
             <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
             <div className="text-[#283b91]">{userProfile.username}</div>
             <div className="text-[#283b91]">
@@ -179,17 +188,31 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
             <AiTwotoneStar className="text-3xl text-[#283b91]" />
           </div>
           <div className="flex font-bold items-center lg:ml-2 ml-1 tracking-widest">
-            <Link className="text-blue-400 cursor-pointer" to="/">Home</Link><GrNext className="mx-1 opacity-40" /><div className="break-all">{`${project.name}`}</div>
+            <Link className="text-blue-400 cursor-pointer" to="/">
+              Home
+            </Link>
+            <GrNext className="mx-1 opacity-40" />
+            <div className="break-all">{`${project.name}`}</div>
           </div>
         </div>
         <div className="flex gap-3 pr-2">
-          <div className={`rounded-md flex gap-x-1 justify-center items-center`}>
+          <div
+            className={`rounded-md flex gap-x-1 justify-center items-center`}
+          >
             <div className={`flex gap-x-1 pl-2`}>
-              {project?.project_members?.map((member, index) => (
-                <div className="flex justify-center items-center w-8 h-8 font-bold rounded-full border bg-blue-800
-                 text-white text-sm p-2" key={index}>{members[member - 1]?.username?.slice(0, 2).toUpperCase()}</div>
+              {project?.project_members?.map((memberId, index) => (
+                <div
+                  className="flex justify-center items-center w-8 h-8 font-bold rounded-full border bg-blue-800 text-white text-sm p-2"
+                  key={index}
+                >
+                  {members
+                    .find((member) => member.id === memberId)
+                    ?.username?.slice(0, 2)
+                    .toUpperCase()}
+                </div>
               ))}
             </div>
+
             <div className="flex bg-white px-2 py-1 gap-3 items-center rounded-lg">
               <div className=" px-2 text-[#283b91]">Team Members</div>
             </div>
@@ -199,17 +222,26 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
               <FiFilter />
             </div>
           </div>
-          <div className="flex bg-[#f7f7f8] px-2 py-1 cursor-pointer gap-3 items-center rounded-lg" onClick={() => { setIsEditModalOpen(true); }}>
+          <div
+            className="flex bg-[#f7f7f8] px-2 py-1 cursor-pointer gap-3 items-center rounded-lg"
+            onClick={() => {
+              setIsEditModalOpen(true);
+            }}
+          >
             <div className=" px-1 text-gray-400">
               <BsPencil />
             </div>
           </div>
-          <div className="flex bg-[#f7f7f8] px-2 mr-5 cursor-pointer py-1 gap-3 items-center rounded-lg" onClick={() => { setIsDeleteConfirmationOpen(true) }}>
+          <div
+            className="flex bg-[#f7f7f8] px-2 mr-5 cursor-pointer py-1 gap-3 items-center rounded-lg"
+            onClick={() => {
+              setIsDeleteConfirmationOpen(true);
+            }}
+          >
             <div className=" px-1 text-gray-400">
               <BsTrash3 />
             </div>
           </div>
-
         </div>
       </div>
       {/* Board List */}
@@ -228,9 +260,19 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
             </div>
           ) : boardList.length !== 0 ? (
             boardList.map((board, index) => (
-              <div className="flex gap-16 flex-row p-2 rounded bg-[#F2F2F2] mx-4 my-2" key={index}>
+              <div
+                className="flex gap-16 flex-row p-2 rounded bg-[#F2F2F2] mx-4 my-2"
+                key={index}
+              >
                 {/* <div className="text-blue-500">{index + 1}</div> */}
-                <div className="cursor-pointer text-blue-500" onClick={() => { navigate(`/board/${board.id}?pId=${id}`) }}>{board.name}</div>
+                <div
+                  className="cursor-pointer text-blue-500"
+                  onClick={() => {
+                    navigate(`/board/${board.id}?pId=${id}`);
+                  }}
+                >
+                  {board.name}
+                </div>
               </div>
             ))
           ) : (
@@ -249,7 +291,13 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
       </div>
 
       {/* Board Model */}
-      {isModalOpen && <BoardModel onClose={() => setIsModalOpen(false)} projectId={id} refreshBoardList={refreshBoardList} />}
+      {isModalOpen && (
+        <BoardModel
+          onClose={() => setIsModalOpen(false)}
+          projectId={id}
+          refreshBoardList={refreshBoardList}
+        />
+      )}
       {/* Delete Modal */}
       {isDeleteConfirmationOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -257,16 +305,21 @@ const BoardList = ({ userProfile, baseUrl, sidebarRefresh,token ,setSidebarRefre
           <div className="modal-container bg-white w-1.5/5 mx-auto rounded shadow-lg z-50">
             <div className="modal-content py-4 px-6">
               <h2 className="text-xl font-semibold mb-2">Confirm Delete</h2>
-              <p className="mb-2">Are you sure you want to delete this board?</p>
+              <p className="mb-2">
+                Are you sure you want to delete this board?
+              </p>
               <div className="flex justify-end">
                 <button
                   className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
-                  onClick={() => { setIsDeleteConfirmationOpen(false) }}>
+                  onClick={() => {
+                    setIsDeleteConfirmationOpen(false);
+                  }}
+                >
                   Cancel
                 </button>
                 <button
                   className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
-                  onClick={handleDeleteProject} 
+                  onClick={handleDeleteProject}
                 >
                   Confirm
                 </button>
@@ -290,4 +343,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps ,{ setSidebarRefresh })(BoardList);
+export default connect(mapStateToProps, { setSidebarRefresh })(BoardList);

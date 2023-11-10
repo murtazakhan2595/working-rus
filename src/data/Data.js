@@ -19,8 +19,8 @@ export const tasksTitle = [
 ];
 
 export const priorityOptions = [
-  { value: 3, label: "🟢 Low" },
-  { value: 2, label: "🟡 Medium" },
+  { value: 3, label: "🔵 Low" },
+  { value: 2, label: "🌕 Medium" },
   { value: 1, label: "🔴 High" },
 ];
 

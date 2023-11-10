@@ -4,13 +4,10 @@ import { connect } from "react-redux";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
 import { RiArrowDownSFill } from "react-icons/ri";
-import { FaRegShareSquare } from "react-icons/fa";
-import { BsPencil, BsTrash3 } from "react-icons/bs";
-import { AiTwotoneStar } from "react-icons/ai";
+import { BsTrash3 } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import TaskModal from "./TaskModal";
 import TaskView from "./TaskView";
-import { GrNext } from "react-icons/gr";
 import { toast, ToastContainer } from "react-toastify";
 import "./index.css";
 import axios from "axios";
@@ -374,8 +371,13 @@ const Board = ({ userProfile, baseUrl, token }) => {
       </div>
       {/* ***************************************************** Board Header ***************************************************** */}
       <div className="bg-[#ebebeb] mb-6 pr-1 pl-1 sm:pl-5 gap-3  justify-between py-2 flex flex-col md:flex-row lg:flex-row">
-        hello
-      </div>
+  {board && (
+    <>
+      <h2 className="text-xl font-semibold">{board.name}</h2>
+    </>
+  )}
+</div>
+
 
       {/* ***************************************************** Board Card ***************************************************** */}
       <DragDropContext onDragEnd={boardHidden ? '' : handleDragEnd}>
