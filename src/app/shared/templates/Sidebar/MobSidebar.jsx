@@ -13,7 +13,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { GoProjectSymlink } from "react-icons/go";
 import { PiShootingStarBold } from "react-icons/pi";
 import logo from "../../../../assets/images/logo.png";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
 import {
   TbLayoutSidebarRightCollapse,
@@ -25,8 +25,10 @@ import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
+import { links } from "../../../../data/Data";
 
 const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
+  const location = useLocation();
   const navigate = useNavigate();
   const cookies = new Cookies();
   const [isProjectOpen, setisProjectOpen] = useState(false);
@@ -44,7 +46,6 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
     setisModelOpen(false);
   };
 
-
   const getProjects = async (url = `${baseUrl}/project/`) => {
     try {
       await axios
@@ -61,7 +62,7 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
             setPreviousPage(response.data.previous);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -74,8 +75,9 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`fixed inset-y-0 left-0 z-50 w-56 bg-[#283b91] text-white p-4 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+          className={`fixed inset-y-0 left-0 z-50 w-56 bg-[#283b91] text-white p-4 transform transition-transform duration-300 ease-in-out ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         >
           <div className="text-xl bg-white py-3 px-7 flex flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 rounded-md">
             <img src={logo} className="inline-block w-10" alt="logo" />
@@ -92,13 +94,17 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                 />
               </div>
             </li>
-            <Link to="/">
-              <li className="flex mb-3 mt-5 bg-blue-900 rounded-md py-2 px-4 items-center gap-1">
-                <LiaHomeSolid className="text-white text-xl" />{" "}
-                <p className="text-white">Home</p>
+            {links.map((link, index) => (
+              <li key={index} className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 ${location.pathname === link.to ? 'bg-[#259ed8]' : ''}`}>
+                <Link to={link.to} className="flex gap-x-1 items-center focus:bg-[#259ed8] focus:outline-none">
+                  <span className="text-white text-xl">{link.icon}</span>
+                  <p className="text-white">{link.text}</p>
+                </Link>
               </li>
-            </Link>
-            <Link to="/employees-form">
+            ))}
+            
+
+            {/* <Link to="/employees-form">
               <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
                 <MdOutlineGroups2 className="text-white text-xl" />{" "}
                 <p className="text-white">Emp Form</p>
@@ -119,26 +125,24 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
             <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
               <PiShootingStarBold className="text-white text-xl" />{" "}
               <p className="text-white">Perfomance</p>
-            </li>
-
+            </li> */}
 
             <hr className="opacity-40" />
 
-            <li onClick={() => {
-              setisProjectOpen(!isProjectOpen);
-            }} className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1">
+            <li
+              onClick={() => {
+                setisProjectOpen(!isProjectOpen);
+              }}
+              className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1"
+            >
               <div className="flex gap-1">
                 <GoProjectSymlink className="text-white text-xl" />{" "}
                 <p className="text-white">Projects</p>
               </div>
               {isProjectOpen ? (
-                <AiOutlineCaretUp
-                  className="text-white text-xs"
-                />
+                <AiOutlineCaretUp className="text-white text-xs" />
               ) : (
-                <AiOutlineCaretDown
-                  className="text-white text-xs"
-                />
+                <AiOutlineCaretDown className="text-white text-xs" />
               )}
             </li>
             {isProjectOpen && (
@@ -176,7 +180,12 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                   <div className="max-h-[20vh] overflow-y-auto hideScroll">
                     {projects.map((project, index) => (
                       <div key={index} className="flex flex-col gap-2">
-                        <div onClick={() => { navigate(`/project/${project.id}`) }} className="flex gap-3 mb-1 cursor-pointer">
+                        <div
+                          onClick={() => {
+                            navigate(`/project/${project.id}`);
+                          }}
+                          className="flex gap-3 mb-1 cursor-pointer"
+                        >
                           <div className="bg-blue-950 rounded-md p-3"></div>
                           <div className="text-white">{project.name}</div>
                         </div>
@@ -187,7 +196,6 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
               </>
             )}
             <hr className="opacity-40" />
-
 
             <li
               onClick={() => {
@@ -203,8 +211,9 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
           </ul>
           {/* Sidebar collapse button */}
           <button
-            className={`bg-[#283b91] text-white z-10 p-2 absolute ${isSidebarOpen ? "left-56" : "left-0"
-              } rounded-e-lg top-0 mt-4 mr-4`}
+            className={`bg-[#283b91] text-white z-10 p-2 absolute ${
+              isSidebarOpen ? "left-56" : "left-0"
+            } rounded-e-lg top-0 mt-4 mr-4`}
             onClick={handleSidebarToggle}
           >
             {isSidebarOpen ? (
@@ -216,8 +225,9 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
         </div>
 
         <button
-          className={`bg-[#283b91] text-white z-10 p-2 absolute ${isSidebarOpen ? "hidden" : "left-0"
-            } rounded-e-lg top-3 mt-4 mr-4`}
+          className={`bg-[#283b91] text-white z-10 p-2 absolute ${
+            isSidebarOpen ? "hidden" : "left-0"
+          } rounded-e-lg top-3 mt-4 mr-4`}
           onClick={handleSidebarToggle}
         >
           {isSidebarOpen ? (

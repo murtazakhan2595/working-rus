@@ -62,7 +62,7 @@ function App({ setUserProfile, userProfile,baseUrl, isLogin, setToken, setUserLo
       <Routes>
         {isLogin ? (
           <>
-          {userProfile.is_filled ?
+          {!userProfile.is_filled ?
               <Route
               exact
               path="/"

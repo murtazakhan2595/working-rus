@@ -69,13 +69,12 @@ const handleNextStep = () => {
               <input id="file-upload" type="file" name="cv" accept=".doc, .docx"
                 max-size="104857600" className='hidden' onChange={handleFileChange} />
             </label>
-
             <br />
-            <div>{errors.cv && <span className="text-red-500 text-sm ">{errors.cv}</span>}</div>
+            {errors.cv && <small className='text-red-500'>{errors.cv}</small>}
+            <br />
             <small className='text-gray-400'>Upload a doc or docx file and no larger than 100 MB.</small>
           </div>
         </div>
-
         <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40">
           <Button onClick={prevstep} text={'Previous'} />
           <Button onClick={handleNextStep} text={'Next'} />
@@ -85,4 +84,4 @@ const handleNextStep = () => {
   )
 }
 
-export default SubmitCV
+export default SubmitCV;

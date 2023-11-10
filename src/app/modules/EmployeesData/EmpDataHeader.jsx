@@ -3,13 +3,15 @@ import { RiArrowDownSFill } from "react-icons/ri";
 import { connect } from "react-redux";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
 import { BsPersonPlus, BsTable } from "react-icons/bs";
 import { FiFilter } from "react-icons/fi";
 
 const EmpDataHeader = ({ userProfile, title }) => {
+  const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   const navigate = useNavigate();
 
@@ -26,10 +28,15 @@ const EmpDataHeader = ({ userProfile, title }) => {
     navigate("/");
   };
 
+  // show search bar
+  const handleSearchClick = () => {
+    setIsSearchVisible(!isSearchVisible);
+  };
+
   return (
     <>
       {/* Header */}
-      <div className="py-5 pl-10 pr-2 flex gap-3 items-center justify-between w-full">
+      <div className="py-5 pl-10 pr-2 flex gap-3 flex-col-reverse items-center md:flex-row lg:flex-row justify-between w-full">
         <div className="flex items-center">
           <h1 className="text-xl lg:text-3xl mr-2 items-center leading-none font-semibold opacity-80 tracking-widest">
             Employee Data
@@ -71,23 +78,51 @@ const EmpDataHeader = ({ userProfile, title }) => {
         <h2 className="text-lg leading-none font-semibold opacity-80 tracking-wider">
           {title}
         </h2>
-        <div className="flex gap-x-5">
-          <Link
-            to="/emp-data"
-            className={`p-2 rounded-md  ${window.location.pathname === '/emp-data' ? 'bg-[#25A8E0] text-white' : 'bg-white text-gray-400'}`}
-          >
-            <BsTable title="Employee Data Table" />
-          </Link>
-          <Link
-            to="/emp-dataform"
-            className={`p-2 rounded-md  ${window.location.pathname === '/emp-dataform' ? 'bg-[#25A8E0] text-white' : 'bg-white text-gray-400'}`}
-
-          >
-            <BsPersonPlus title="Add Employee" />
-          </Link>
-          <Link className="p-2 rounded-md bg-white text-gray-400">
-            <FiFilter />
-          </Link>
+        <div className="flex flex-col md:flex-row lg:flex-row gap-y-2 gap-x-3">
+          <div className="flex gap-x-4 justify-end">
+            <Link
+              to="/emp-data"
+              className={`p-2 rounded-md  ${
+                location.pathname === "/emp-data"
+                  ? "bg-[#25A8E0] text-white"
+                  : "bg-white text-gray-400"
+              }`}
+            >
+              <BsTable title="Employee Data Table" />
+            </Link>
+            <Link
+              to="/emp-dataform"
+              className={`p-2 rounded-md  ${
+                location.pathname === "/emp-dataform"
+                  ? "bg-[#25A8E0] text-white"
+                  : "bg-white text-gray-400"
+              }`}
+            >
+              <BsPersonPlus title="Add Employee" />
+            </Link>
+            {location.pathname === "/emp-data" && (
+              <button
+                className={`p-2 rounded-md ${
+                  isSearchVisible
+                    ? "bg-[#25A8E0] text-white"
+                    : "bg-white text-gray-400"
+                }`}
+                onClick={handleSearchClick}
+              >
+                <FiFilter />
+              </button>
+            )}
+          </div>
+          {isSearchVisible && (
+            <div>
+              <input
+                type="search"
+                placeholder="Search"
+                className="focus:outline-none focus:border-non
+                bg-[#D7D7D7] py-1 pl-2 md:pl-4 lg:pl-4 pr-4 text-white placeholder-white border-none md:flex lg:w-56 xs:w-[10rem] rounded-md"
+              />
+            </div>
+          )}
         </div>
       </div>
     </>

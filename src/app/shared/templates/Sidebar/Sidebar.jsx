@@ -1,19 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
-import { LiaHomeSolid } from "react-icons/lia";
-import { MdOutlineGroups2, MdOutlinePayment } from "react-icons/md";
 import { MdLock } from "react-icons/md";
 import {
   AiOutlineCaretDown,
   AiOutlineCaretUp,
   AiOutlinePlus,
 } from "react-icons/ai";
-import { BiTimeFive } from "react-icons/bi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { GoProjectSymlink } from "react-icons/go";
-import { PiShootingStarBold } from "react-icons/pi";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
 import {
   TbLayoutSidebarRightCollapse,
@@ -25,8 +21,16 @@ import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
+import { links } from "../../../../data/Data";
 
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token, sidebarRefresh }) => {
+const Sidebar = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+  baseUrl,
+  token,
+  sidebarRefresh,
+}) => {
+  const location = useLocation();
   const navigate = useNavigate();
   const cookies = new Cookies();
   const [isProjectOpen, setisProjectOpen] = useState(false);
@@ -54,14 +58,14 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token, sidebarRefre
         })
         .then((response) => {
           if (response.status === 200) {
-            console.log('try')
+            console.log("try");
             setProjects(response.data.results);
             setProjectCount(response.data.count);
             setNextPage(response.data.next);
             setPreviousPage(response.data.previous);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -75,8 +79,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token, sidebarRefre
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`h-screen hideScroll bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${isSidebarOpen ? "" : "hidden"
-            }`}
+          className={`h-screen hideScroll bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${
+            isSidebarOpen ? "" : "hidden"
+          }`}
         >
           <div className="text-xl bg-white py-3 px-7 flex flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 rounded-md">
             <img src={logo} className="inline-block w-12" alt="logo" />
@@ -93,46 +98,37 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token, sidebarRefre
                 />
               </div>
             </li>
-            <Link to="/">
-              <li className="flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1">
-                <LiaHomeSolid className="text-white text-xl" />{" "}
-                <p className="text-white">Home</p>
+
+            {links.map((link, index) => (
+              <li key={index}>
+                <Link to={link.to}>
+                  <div
+                    className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
+                      location.pathname === link.to ? "bg-[#259ED8]" : ""
+                    }`}
+                  >
+                  <div className="text-white text-xl">{link.icon}</div>
+                  <p className="text-white">{link.text}</p>
+                  </div>
+                </Link>
               </li>
-            </Link>
-            <Link to="/emp-data">
-            <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-              <BiTimeFive className="text-white text-xl" />{" "}
-              <p className="text-white">Emp Data</p>
-            </li>
-            </Link>
-
-            <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-              <MdOutlinePayment className="text-white text-xl" />{" "}
-              <p className="text-white">Pay</p>
-            </li>
-
-            <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-              <PiShootingStarBold className="text-white text-xl" />{" "}
-              <p className="text-white">Perfomance</p>
-            </li>
-
+            ))}
             <hr className="opacity-40" />
 
-            <li onClick={() => {
-              setisProjectOpen(!isProjectOpen);
-            }} className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1">
+            <li
+              onClick={() => {
+                setisProjectOpen(!isProjectOpen);
+              }}
+              className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1"
+            >
               <div className="flex gap-1">
                 <GoProjectSymlink className="text-white text-xl" />{" "}
                 <p className="text-white">Projects</p>
               </div>
               {isProjectOpen ? (
-                <AiOutlineCaretUp
-                  className="text-white text-xs"
-                />
+                <AiOutlineCaretUp className="text-white text-xs" />
               ) : (
-                <AiOutlineCaretDown
-                  className="text-white text-xs"
-                />
+                <AiOutlineCaretDown className="text-white text-xs" />
               )}
             </li>
             {isProjectOpen && (
@@ -170,7 +166,12 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token, sidebarRefre
                   <div className="max-h-[20vh] overflow-y-auto hideScroll">
                     {projects.map((project, index) => (
                       <div key={index} className="flex flex-col gap-2">
-                        <div onClick={() => { navigate(`/project/${project.id}`) }} className="flex gap-3 mb-1 cursor-pointer">
+                        <div
+                          onClick={() => {
+                            navigate(`/project/${project.id}`);
+                          }}
+                          className="flex gap-3 mb-1 cursor-pointer"
+                        >
                           <div className="bg-blue-950 rounded-md p-3"></div>
                           <div className="text-white">{project.name}</div>
                         </div>
@@ -198,8 +199,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token, sidebarRefre
 
         {/* Sidebar collapse button */}
         <button
-          className={`bg-[#283b91] text-white p-1.5 absolute ${isSidebarOpen ? "left-[13.5rem]" : "left-0"
-            } rounded-e-lg top-3 mt-4 mr-4`}
+          className={`bg-[#283b91] text-white p-1.5 absolute ${
+            isSidebarOpen ? "left-[13.5rem]" : "left-0"
+          } rounded-e-lg top-3 mt-4 mr-4`}
           onClick={handleSidebarToggle}
         >
           {isSidebarOpen ? (
