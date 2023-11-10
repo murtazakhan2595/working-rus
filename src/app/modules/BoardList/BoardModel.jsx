@@ -1,23 +1,16 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Joi from "joi";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { connect } from "react-redux";
-import { RxCross2, RxPlus } from "react-icons/rx";
-import ReactQuill from "react-quill";
-import Datepicker from "../Dashboard/Datepicker";
-import moment from "moment";
+import { RxCross2 } from "react-icons/rx";
 
 const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) => {
-  let newDate = new Date();
-  let defaultDate = `${newDate.getFullYear()}-${newDate.getMonth()}-${newDate.getDate()}`;
 
   const [projectName, setProjectName] = useState("");
   const [errors, setErrors] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
-  const [users, setUsers] = useState({});
-  const [selectedMembers, setSelectedMembers] = useState([]);
 
   const boardSchema = Joi.object({
     projectName: Joi.string().min(1).max(100).required(),
@@ -34,10 +27,6 @@ const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) =>
     const formData = {
       name: projectName,
       project_id: projectId,
-      // description,
-      // startDate,
-      // dueDate,
-      // selectedMembers,
     };
 
     try {

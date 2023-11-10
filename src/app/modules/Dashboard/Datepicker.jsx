@@ -1,88 +1,95 @@
-import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-const Datepicker = ({ onChange, date = null }) => {
-    const [startDate, setStartDate] = useState(new Date());
+const Datepicker = ({ onChange, day = null, month = null, year = null }) => {
+  const [startDate, setStartDate] = useState(new Date());
 
-    const InputDay = React.forwardRef(({ onClick }, ref) => (
-        <button
-            type="button"
-            className="bg-white py-1.5 px-3 rounded-md"
-            onClick={(e) => {
-                e.stopPropagation();
-                onClick(e);
-            }}
-            ref={ref}
-        >
-            {date === null ? startDate.getDate() : date.substr(8, 9)}
-        </button>
-    ));
+  const InputDay = React.forwardRef(({ onClick }, ref) => (
+    <button
+      type="button"
+      className="bg-white py-1.5 px-3 rounded-md"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(e);
+      }}
+      ref={ref}
+    >
+      {day === null ? startDate.getDate() : day}
+    </button>
+  ));
 
-    const InputMonth = React.forwardRef(({ onClick }, ref) => (
-        <button
-            type="button"
-            className="bg-white py-1.5 px-3 rounded-md"
-            onClick={(e) => {
-                e.stopPropagation();
-                onClick(e);
-            }}
-            ref={ref}
-        >
-            {date === null ? startDate.getMonth() + 1 : date.substr(5, 2)}
+  const InputMonth = React.forwardRef(({ onClick }, ref) => (
+    <button
+      type="button"
+      className="bg-white py-1.5 px-3 rounded-md"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(e);
+      }}
+      ref={ref}
+    >
+      {month === null ? startDate.getMonth() + 1 : month}
+    </button>
+  ));
 
-        </button>
-    ));
+  const InputYear = React.forwardRef(({ onClick }, ref) => (
+    <button
+      type="button"
+      className="bg-white py-1.5 px-3 rounded-md"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(e);
+      }}
+      ref={ref}
+    >
+      {year === null ? startDate.getFullYear() : year}
+    </button>
+  ));
 
-    const InputYear = React.forwardRef(({ onClick }, ref) => (
-        <button
-            type="button"
-            className="bg-white py-1.5 px-3 rounded-md"
-            onClick={(e) => {
-                e.stopPropagation();
-                onClick(e);
-            }}
-            ref={ref}
-        >
-            {date === null ? startDate.getFullYear() : date.substr(0, 4)}
-        </button>
-    ));
+  const handleDateChange = (date) => {
+    setStartDate(date);
+    if (onChange) {
+      onChange(date);
+    }
+  };
 
-    const handleDateChange = (date) => {
-        setStartDate(date);
-        if (onChange) {
-            onChange(date);
-        }
-    };
+  const handleDatepickerClick = (event) => {
+    event.preventDefault();
+  };
 
-    const handleDatepickerClick = (event) => {
-        event.preventDefault();
-    };
-
-    return (
-        <div className='flex items-center'>
-            <DatePicker
-                selected={startDate}
-                onChange={handleDateChange}
-                customInput={<InputDay />}
-                onClick={handleDatepickerClick}
-            />
-            -
-            <DatePicker
-                selected={startDate}
-                onChange={handleDateChange}
-                customInput={<InputMonth />}
-                onClick={handleDatepickerClick}
-            />
-            -
-            <DatePicker
-                selected={startDate}
-                onChange={handleDateChange}
-                customInput={<InputYear />}
-                onClick={handleDatepickerClick}
-            />
-        </div>
-    );
+  return (
+    <div className="flex items-center">
+      <DatePicker
+        selected={startDate}
+        onChange={handleDateChange}
+        customInput={<InputDay />}
+        showMonthDropdown
+        showYearDropdown
+        dropdownMode="select"
+        onClick={handleDatepickerClick}
+      />
+      -
+      <DatePicker
+        selected={startDate}
+        onChange={handleDateChange}
+        customInput={<InputMonth />}
+        peekNextMonth
+        showMonthDropdown
+        dropdownMode="select"
+        onClick={handleDatepickerClick}
+      />
+      -
+      <DatePicker
+        selected={startDate}
+        onChange={handleDateChange}
+        customInput={<InputYear />}
+        dropdownMode="select"
+        showYearDropdown
+        onClick={handleDatepickerClick}
+      />
+    </div>
+  );
 };
 
 export default React.memo(Datepicker);

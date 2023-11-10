@@ -217,7 +217,9 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                       </label>
                       <Datepicker
                         className="z-50"
-                        date={startDate}
+                        day={startDate.substr(8, 9)}
+                      month={startDate.substr(5, 2)}
+                      year={startDate.substr(0, 4)}
                         onChange={(date) => {
                           let d = moment(date)
                             .format("YYYY-MM-DD")
@@ -234,7 +236,9 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                         Due Date
                       </label>
                       <Datepicker
-                      date={dueDate}
+                      day={dueDate.substr(8, 9)}
+                      month={dueDate.substr(5, 2)}
+                      year={dueDate.substr(0, 4)}
                         onChange={(date) => {
                           let d = moment(date)
                             .format("YYYY-MM-DD")
