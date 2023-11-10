@@ -13,7 +13,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
   let newDate = new Date();
   let defaultDate = `${newDate.getFullYear()}-${newDate.getMonth()}-${newDate.getDate()}`;
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [projectName, setProjectName] = useState("");
   // const [title, setTitle] = useState("");
@@ -27,16 +27,20 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
   const [users, setUsers] = useState({});
   const [filterUsers, setFilterUsers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
 
+  const customMessages = {
+    'array.min': '"Selected Members" must contain at least 1 member',
+  };
+  
   const boardSchema = Joi.object({
-    projectName: Joi.string().min(1).max(100).required(),
-    description: Joi.string().min(1).max(5000).required(),
-    startDate: Joi.date().iso().required(), // Assuming dates are in ISO format (YYYY-MM-DD)
+    projectName: Joi.string().min(1).max(100).required().label('Project Name'),
+    description: Joi.string().min(1).max(5000).required().label('Description'),
+    startDate: Joi.date().iso().required(),
     dueDate: Joi.date().iso().required(),
-    priority: Joi.number().valid(1, 2, 3).required(), // Assuming priority values are 1, 2, or 3
-    selectedMembers: Joi.array().items(Joi.number()).min(1).required(), // Assuming member IDs are numbers
-  });
+    priority: Joi.number().valid(1, 2, 3).required().label('Priority'),
+    selectedMembers: Joi.array().items(Joi.number()).min(1).required().label('Selected Members'),
+  }).messages(customMessages);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,17 +60,19 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
         "Content-Type": "application/json",
       };
 
-      const response = await axios.post(`${baseUrl}/project/`, formData, { headers });
-      console.log('Response:', response);
+      const response = await axios.post(`${baseUrl}/project/`, formData, {
+        headers,
+      });
+      console.log("Response:", response);
       if (response.status === 201) {
         toast.success("Project Added!", {
           position: toast.POSITION.TOP_RIGHT,
         });
         onClose();
-        navigate(`/project/${response.data.id}`)
+        navigate(`/project/${response.data.id}`);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       toast.error(error.response.data.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -81,7 +87,9 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
       selectedMembers,
     };
 
-    const { error } = boardSchema.validate(dataToValidate, { abortEarly: false });
+    const { error } = boardSchema.validate(dataToValidate, {
+      abortEarly: false,
+    });
 
     if (error) {
       const newErrors = {};
@@ -90,9 +98,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
       });
       setValidationErrors(newErrors);
       return;
-
     }
-
   };
 
   const getMembers = async () => {
@@ -128,12 +134,13 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
     }));
   };
 
-  const handleSearchChange = e => {
+  const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-  }
+  };
 
   const filteredUsers = filterUsers.filter((user) =>
-    user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+    user.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <>
@@ -208,11 +215,15 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                         modules={{
                           toolbar: {
                             container: [
-                              [{ 'header': '1' }, { 'header': '2' }],
+                              [{ header: "1" }, { header: "2" }],
                               ["bold", "italic", "underline"],
                               [{ list: "ordered" }, { list: "bullet" }],
                               ["link", "image"],
-                              [{ align: '' }, { align: 'center' }, { align: 'right' }]
+                              [
+                                { align: "" },
+                                { align: "center" },
+                                { align: "right" },
+                              ],
                             ],
                           },
                         }}
@@ -274,8 +285,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                   <div className="flex gap-4">
                     {/* ************************** MEMBERS ************************** */}
                     <div className="flex flex-col">
-                      <div className="flex justify-start bg-white rounded-md mt-1">
-                      </div>
+                      <div className="flex justify-start bg-white rounded-md mt-1"></div>
                       <div className="flex gap-2">
                         <div
                           onClick={() => {
@@ -293,13 +303,13 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                             className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-pink-500 border-2"
                           >
                             <span className="text-white text-sm flex justify-center items-center plus-icon w-9 h-9">
-                              {users[selectedUserId - 1]?.username
-                                ?.toUpperCase()
+                              {filteredUsers
+                                .find((user) => user.id === selectedUserId)
+                                ?.username?.toUpperCase()
                                 .slice(0, 2)}
                             </span>
                           </div>
                         ))}
-
                         <div className="relative">
                           {membersOpen && (
                             <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
@@ -328,16 +338,21 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                                         }));
                                         handleMemberSelection(user.id);
                                       }}
-                                      className={`flex gap-3 px-2 py-1 relative items-center group cursor-pointer ${selectedMembers.includes(user.id)
-                                        ? "bg-gray-400 text-white"
-                                        : ""
-                                        }`}
+                                      className={`flex gap-3 px-2 py-1 relative items-center group cursor-pointer ${
+                                        selectedMembers.includes(user.id)
+                                          ? "bg-gray-400 text-white"
+                                          : ""
+                                      }`}
                                       key={user.id}
                                     >
                                       <div className="rounded-full text-sm bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center ">
-                                        {user.username?.toUpperCase().slice(0, 2)}
+                                        {user.username
+                                          ?.toUpperCase()
+                                          .slice(0, 2)}
                                       </div>
-                                      <p className="gap-3 text-sm">{user.username}</p>
+                                      <p className="gap-3 text-sm">
+                                        {user.username}
+                                      </p>
                                     </div>
                                   ))}
                                 </ul>
@@ -379,5 +394,3 @@ const mapStateToProps = (state) => {
   };
 };
 export default connect(mapStateToProps)(ProjectModal);
-
-

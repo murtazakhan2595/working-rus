@@ -276,19 +276,6 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       >
                         Status
                       </label>
-                      {/* <select
-                        name="status"
-                        value={status}
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                        onChange={(e) => {
-                          setStatus(e.target.value);
-                        }}
-                      >
-                        <option value="To Do">Todo</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                      </select> */}
-
                       <Select
                         name="status"
                         value={statusOptions.find((option) => option.value === status)}
@@ -307,18 +294,6 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       >
                         Priority
                       </label>
-                      {/* <select
-                      name="priority"
-                      value={priority}
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                      onChange={(e) => {
-                        setPriority(e.target.value);
-                      }}
-                    >
-                      <option value={3}>🟢 Low</option>
-                      <option value={2}>🟡 Medium</option>
-                      <option value={1}>🔴 High</option>
-                    </select> */}
                       <Select
                         name="priority"
                         value={priorityOptions.find((opt) => opt.value === priority)}
