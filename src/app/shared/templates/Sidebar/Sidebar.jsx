@@ -28,6 +28,7 @@ const Sidebar = ({
   setIsSidebarOpen,
   baseUrl,
   token,
+  userProfile,
   sidebarRefresh,
 }) => {
   const location = useLocation();
@@ -39,6 +40,7 @@ const Sidebar = ({
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
   const [projectsCount, setProjectCount] = useState(0);
+  const validateLinks = links.filter(link => link.text !== "Emp Sheet");
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -72,7 +74,6 @@ const Sidebar = ({
     getProjects();
   }, [isModelOpen, sidebarRefresh]);
 
-
   return (
     <>
       <div className="flex">
@@ -99,20 +100,42 @@ const Sidebar = ({
               </div>
             </li>
 
-            {links.map((link, index) => (
-              <li key={index}>
-                <Link to={link.to}>
-                  <div
-                    className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                      location.pathname === link.to ? "bg-[#259ED8]" : ""
-                    }`}
-                  >
-                  <div className="text-white text-xl">{link.icon}</div>
-                  <p className="text-white">{link.text}</p>
-                  </div>
-                </Link>
-              </li>
-            ))}
+{userProfile.role === 1 ?
+
+            links.map(
+              (link, index) =>
+                  <li key={index}>
+                    <Link to={link.to}>
+                      <div
+                        className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
+                          location.pathname === link.to ? "bg-[#259ED8]" : ""
+                        }`}
+                      >
+                        <div className="text-white text-xl">{link.icon}</div>
+                        <p className="text-white">{link.text}</p>
+                      </div>
+                    </Link>
+                  </li>
+            ):
+            validateLinks.map(
+              (link, index) =>
+                  <li key={index}>
+                    <Link to={link.to}>
+                      <div
+                        className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
+                          location.pathname === link.to ? "bg-[#259ED8]" : ""
+                        }`}
+                      >
+                        <div className="text-white text-xl">{link.icon}</div>
+                        <p className="text-white">{link.text}</p>
+                      </div>
+                    </Link>
+                  </li>
+            )
+
+
+
+            }
             <hr className="opacity-40" />
 
             <li
@@ -155,12 +178,14 @@ const Sidebar = ({
                     </div>
                     <div className="flex items-center opacity-60 gap-1 text-white">
                       <div className="text-xs">{projectsCount}</div>
-                      <AiOutlinePlus
-                        onClick={() => {
-                          setisModelOpen(true);
-                        }}
-                        className="text-white text-sm hover:cursor-pointer"
-                      />
+                      {userProfile.role !== 4 && (
+                        <AiOutlinePlus
+                          onClick={() => {
+                            setisModelOpen(true);
+                          }}
+                          className="text-white text-sm hover:cursor-pointer"
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="max-h-[20vh] overflow-y-auto hideScroll">
