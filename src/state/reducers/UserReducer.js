@@ -1,5 +1,10 @@
 const initialState = {
-  userProfile: {},
+  userProfile: {
+    id: 0,
+    username: null,
+    is_filled: null,
+    role: null,
+  },
   isLogin: null,
   sidebarRefresh: false,
   token: "",
@@ -22,7 +27,10 @@ const userReducer = (state = initialState, action) => {
         ...state,
         isLogin: false,
         token: "",
-        userProfile: {},
+        userProfile: {  id: 0,
+          username: null,
+          is_filled: null,
+          role: null},
       };
     case "SET_TOKEN":
       return {

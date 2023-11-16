@@ -27,7 +27,7 @@ import Cookies from "universal-cookie";
 import axios from "axios";
 import { links } from "../../../../data/Data";
 
-const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
+const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen,userProfile, baseUrl, token }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -169,12 +169,13 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                     </div>
                     <div className="flex items-center opacity-60 gap-1 text-white">
                       <div className="text-xs">{projectCount}</div>
+                      {userProfile.role !== 4 &&
                       <AiOutlinePlus
                         onClick={() => {
                           setisModelOpen(true);
                         }}
                         className="text-white text-sm"
-                      />
+                      />}
                     </div>
                   </div>
                   <div className="max-h-[20vh] overflow-y-auto hideScroll">

@@ -2,7 +2,7 @@ import React, { useState , useEffect } from "react";
 import Datepicker from "../modules/Dashboard/Datepicker";
 import moment from "moment";
 import SubStepsIndicator from "./SubStepsIndicator";
-import { IoIosClose } from "react-icons/io";
+import { AiOutlineCloseCircle } from "react-icons/ai";
 import { WiCloudRefresh } from "react-icons/wi";
 import Button from "./Button";
 
@@ -83,8 +83,8 @@ const ProfessionalExp = ({
             <div key={index}>
               <div className="flex items-center">
                 {index !== 0 && (
-                  <IoIosClose
-                  className="text-red-500 text-xl mb-2 lg:mb-4 mt-2"
+                  <AiOutlineCloseCircle
+                  className="text-red-500 mr-1 text-xl mb-2 lg:mb-4 mt-2"
                     onClick={() => {
                       let copySections = [...experienceSections];
                       copySections.splice(index, 1);
@@ -275,7 +275,7 @@ const ProfessionalExp = ({
                       </div>
                     )}
                     <small className="text-gray-400">
-                      Upload a jpeg, jpg, png, pdf no larger than 100 MB.
+                      Upload a pdf no larger than 100 MB.
                     </small>
                   </div>
                 </div>

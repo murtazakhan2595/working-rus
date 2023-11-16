@@ -28,7 +28,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
 
       if (response.status === 200) {
         const tasksData = response.data;
-
+        if (tasksData.length < 1){setLoading(false)}
         const tasksWithBardName = [];
         for (const task of tasksData) {
           let username = users.filter((u) => u.id === task.assigned_by);
@@ -139,6 +139,8 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
               </div>
             ))}
           </div>
+          {/* {tasks.length < 1 && <div>not Found</div>} */}
+
           {!loading ? (
             <div className="h-[30vh] roundScroll overflow-auto mt-6">
               {isCompleteTab

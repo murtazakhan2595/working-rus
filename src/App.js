@@ -7,6 +7,7 @@ import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
 import Err404 from "./app/modules/Error/Err404.jsx";
+import Err401 from "./app/modules/Error/Err401.jsx";
 
 import axios from "axios";
 import Cookies from "universal-cookie";
@@ -25,7 +26,14 @@ import ApplicantsDataTable from "./app/modules/Recruitment Data/ApplicantsDataTa
 import JobsDataTable from "./app/modules/Recruitment Data/JobsDataTable.jsx";
 import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
 
-function App({ setUserProfile, userProfile,baseUrl, isLogin, setToken, setUserLogout }) {
+function App({
+  setUserProfile,
+  userProfile,
+  baseUrl,
+  isLogin,
+  setToken,
+  setUserLogout,
+}) {
   let width = window.screen.width;
   let val = width <= 1280 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
@@ -35,7 +43,12 @@ function App({ setUserProfile, userProfile,baseUrl, isLogin, setToken, setUserLo
   const location = useLocation();
 
   const handleUpdateProfile = (data) => {
-    let updateProfile = { id: data.id, username: data.username ,is_filled:data.is_filled};
+    let updateProfile = {
+      id: data.id,
+      username: data.username,
+      is_filled: data.is_filled,
+      role: data.user_role,
+    };
     setUserProfile(updateProfile);
   };
 
@@ -63,28 +76,46 @@ function App({ setUserProfile, userProfile,baseUrl, isLogin, setToken, setUserLo
 
   return (
     <>
+    {(isLogin === null || userProfile.is_filled === undefined) && (
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
+            <p className="text-gray-600 mt-4">Loading...</p>
+          </div>
+        </div>
+      )}
+
       <Routes>
-        {isLogin ? (
+        {isLogin && (
           <>
-          {!userProfile.is_filled ?
+            {userProfile.is_filled === true ? (
+              <>
               <Route
-              exact
-              path="/"
-              element={<EmpForm isSidebarOpen={isSidebarOpen} />}
-            />
-         : 
-            <Route
-              element={
-                <Sidebar
-                  isSidebarOpen={isSidebarOpen}
-                  setIsSidebarOpen={setIsSidebarOpen}
+                element={
+                  <Sidebar
+                    isSidebarOpen={isSidebarOpen}
+                    setIsSidebarOpen={setIsSidebarOpen}
+                  />
+                }
+              >
+                <Route
+                  exact
+                  path="/"
+                  element={<Dashboard isSidebarOpen={isSidebarOpen} />}
                 />
-              }
-            >
+                {userProfile.role === 1 && <Route exact path="/emp-data" element={<EmpDataSheet />} />}
+                {userProfile.role === 1 && <Route exact path="/emp-dataform" element={<EmpDataForm />} /> }
+                <Route path="/board/:id" element={<Board />} />
+                <Route path="/project/:id" element={<BoardList />} />
+              </Route>
+                {userProfile.role !== 1 && <Route exact path="/emp-dataform" element={<Err401 />} /> }
+                {userProfile.role !== 1 && <Route exact path="/emp-data" element={<Err401 />} /> }
+              </>
+            ) : (
               <Route
                 exact
                 path="/"
-                element={<Dashboard isSidebarOpen={isSidebarOpen} />}
+                element={<EmpForm isSidebarOpen={isSidebarOpen} />}
               />
               <Route
                 exact
@@ -124,10 +155,11 @@ function App({ setUserProfile, userProfile,baseUrl, isLogin, setToken, setUserLo
               <Route path="/project/:id" element={<BoardList />} />
             </Route>
 }
+=======
+            )}
+>>>>>>> 686bb139fdb9d807afd14a5d82331a52c76c7c60
             <Route path="*" element={<Err404 />} />
           </>
-        ) : (
-          ""
         )}
         {!isLogin && (
           <>
@@ -137,14 +169,7 @@ function App({ setUserProfile, userProfile,baseUrl, isLogin, setToken, setUserLo
         )}
       </Routes>
 
-      {isLogin === null && (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
-            <p className="text-gray-600 mt-4">Loading...</p>
-          </div>
-        </div>
-      )}
+      
     </>
   );
 }

@@ -4,14 +4,14 @@ import React, { useState } from "react";
 import Datepicker from "../modules/Dashboard/Datepicker";
 import Select from "react-select";
 import Joi from "joi";
-import { IoIosClose } from "react-icons/io";
+import { AiOutlineCloseCircle } from "react-icons/ai";
 import Button from "./Button";
 import { WiCloudRefresh } from "react-icons/wi";
 
 const academicOptions = [
   { value: "Intermediate", label: "Intermediate" },
-  { value: "Bachelors", label: "Bachelors" },
-  { value: "Masters", label: "Masters" },
+  { value: "Bachelor", label: "Bachelor" },
+  { value: "Master", label: "Master" },
 ];
 
 const academicSchema = Joi.object({
@@ -342,8 +342,8 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
         {certificationSections.map((experience, index) => (
             <div key={index}>
               <div className="flex items-center">
-                  <IoIosClose
-                  className="text-red-500 text-xl mb-2 lg:mb-4 mt-2"
+                  <AiOutlineCloseCircle
+                  className="text-red-500 mr-1 text-lg mb-2 lg:mb-4 mt-2"
                     onClick={() => {
                       let copySections = [...certificationSections];
                       copySections.splice(index, 1);
@@ -384,7 +384,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
                     )}
                   </div>
                 </div>
-                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12 md:w-[55%]">
                   <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                     <label
                       htmlFor="exp_start_date"
@@ -522,8 +522,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
             onClick={addCertificationSection}
             className="mt-4 mb-3 rounded-lg w-52 border border-[#25A8E0] cursor-pointer text-[#555657] py-1"
           >
-            <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add
-            Add New Certification
+            <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add New Certification
           </button>
         <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40 lg:mb-40">
           <Button onClick={prevstep} text={"Previous"} />
