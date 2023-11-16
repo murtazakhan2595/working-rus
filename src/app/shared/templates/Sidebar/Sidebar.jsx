@@ -40,7 +40,8 @@ const Sidebar = ({
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
   const [projectsCount, setProjectCount] = useState(0);
-  const validateLinks = links.filter(link => link.text !== "Emp Sheet");
+  const empLinks = links.filter(link => link.text !== "Emp Sheet");
+  const validateLinks = empLinks.filter(link => link.text !== "Recruitment Form");
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -100,7 +101,7 @@ const Sidebar = ({
               </div>
             </li>
 
-{userProfile.role === 1 ?
+{userProfile.role === 1 || userProfile.role === 2 ?
 
             links.map(
               (link, index) =>

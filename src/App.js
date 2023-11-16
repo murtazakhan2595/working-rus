@@ -6,6 +6,10 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
+import RecruitmentForm from './app/modules/Recruitment Data/RecruitmentForm.jsx'
+import ApplicantsDataTable from "./app/modules/Recruitment Data/ApplicantsDataTable.jsx";
+import JobsDataTable from "./app/modules/Recruitment Data/JobsDataTable.jsx";
+import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
 
@@ -21,10 +25,6 @@ import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/Employees/EmpForm";
 import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
-import RecruitmentForm from './app/modules/Recruitment Data/RecruitmentForm.jsx'
-import ApplicantsDataTable from "./app/modules/Recruitment Data/ApplicantsDataTable.jsx";
-import JobsDataTable from "./app/modules/Recruitment Data/JobsDataTable.jsx";
-import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
 
 function App({
   setUserProfile,
@@ -103,61 +103,32 @@ function App({
                   path="/"
                   element={<Dashboard isSidebarOpen={isSidebarOpen} />}
                 />
-                {userProfile.role === 1 && <Route exact path="/emp-data" element={<EmpDataSheet />} />}
-                {userProfile.role === 1 && <Route exact path="/emp-dataform" element={<EmpDataForm />} /> }
+                {(userProfile.role === 1 || userProfile.role === 2) &&
+                <>
+                <Route exact path="/emp-data" element={<EmpDataSheet />} />
+                <Route exact path="/emp-dataform" element={<EmpDataForm />} /> 
+                <Route path="/recruitment-form" element={<RecruitmentForm />}/>
+                <Route path="/applicants-datatable" element={<ApplicantsDataTable />}/>
+                <Route path="/jobs-datatable" element={<JobsDataTable />}/>
+                <Route path="/user/:id" element={<ViewEmployee />}/>
+                </>}
                 <Route path="/board/:id" element={<Board />} />
                 <Route path="/project/:id" element={<BoardList />} />
               </Route>
-                {userProfile.role !== 1 && <Route exact path="/emp-dataform" element={<Err401 />} /> }
-                {userProfile.role !== 1 && <Route exact path="/emp-data" element={<Err401 />} /> }
+              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/recruitment-form" element={<Err401 />}/>}
+              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/applicants-datatable" element={<Err401 />}/>}
+              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/jobs-datatable" element={<Err401 />}/>}
+              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/user/:id" element={<Err401 />}/>}
+              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route exact path="/emp-dataform" element={<Err401 />} /> }
+              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route exact path="/emp-data" element={<Err401 />} /> }
               </>
             ) : (
               <Route
                 exact
                 path="/"
-                element={<EmpForm isSidebarOpen={isSidebarOpen} />}
+                element={<EmpForm/>}
               />
-              <Route
-                exact
-                path="/emp-data"
-                element={<EmpDataSheet/>}
-              />
-              <Route
-                exact
-                path="/emp-dataform"
-                element={<EmpDataForm/>}
-              />
-              <Route
-                exact
-                path="/recruitment-form"
-                element={<RecruitmentForm />}
-              />
-
-              <Route
-                exact
-                path="/applicants-datatable"
-                element={<ApplicantsDataTable />}
-              />
-
-              <Route
-                exact
-                path="/jobs-datatable"
-                element={<JobsDataTable />}
-              />
-
-              <Route
-                exact
-                path="/user/:id"
-                element={<ViewEmployee />}
-              />
-             
-              <Route path="/board/:id" element={<Board />} />
-              <Route path="/project/:id" element={<BoardList />} />
-            </Route>
-}
-=======
             )}
->>>>>>> 686bb139fdb9d807afd14a5d82331a52c76c7c60
             <Route path="*" element={<Err404 />} />
           </>
         )}
