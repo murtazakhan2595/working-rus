@@ -28,7 +28,9 @@ const EmpDataForm = ({ token, baseUrl }) => {
   const [validationError, setValidationError] = useState("");
   const [isUserNameInputFocused, setIsUserNameInputFocused] = useState(false);
   const [empId, setempId] = useState(0);
+  const [enteredUsername, setEnteredUsername] = useState("");
   const [refreshComponent, setRefreshComponent] = useState(false);
+
 
   const handleChange = (name, value) => {
     setFormData({
@@ -38,6 +40,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
 
     if (name === "username") {
       validateInput(value);
+      setEnteredUsername(value); 
     }
   };
 
@@ -131,8 +134,6 @@ const EmpDataForm = ({ token, baseUrl }) => {
 
         // Step 4: Get the last item from the last page
         const lastItem = lastPageData[lastPageData.length - 1];
-
-        console.log("Last Item from Last Page:", lastItem.id + 1);
         setempId(lastItem.id + 1);
       } catch (error) {
         console.error(
@@ -150,7 +151,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9]">
-      <EmpDataHeader title="Add New User" />
+      <EmpDataHeader title="Add New User" mainTitle="Employee Data" path="emp-dataform" />
 
       <form onSubmit={handleSubmit}>
         <div className="px-2 py-3 md:px-3 md:py-4 lg:px-10 lg:py-6 overflow-y-auto xScroll max-h-[76vh] md:h-[100vh]">
@@ -314,8 +315,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
            justify-center items-center absolute md:w-[40%] lg:w-[26%] lg:h-[24%]"
           >
             <p className="text-base text-center text-gray-400">
-              User has been successfully registered and has been sent to
-              @Username
+            User has been successfully registered and has been sent to @{enteredUsername}
             </p>
             <div
               className="absolute top-4 right-4 text-white bg-[#ECECEC] rounded-full p-[2px] cursor-pointer"

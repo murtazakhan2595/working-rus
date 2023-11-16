@@ -20,6 +20,10 @@ import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/Employees/EmpForm";
 import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
+import RecruitmentForm from './app/modules/Recruitment Data/RecruitmentForm.jsx'
+import ApplicantsDataTable from "./app/modules/Recruitment Data/ApplicantsDataTable.jsx";
+import JobsDataTable from "./app/modules/Recruitment Data/JobsDataTable.jsx";
+import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
 
 function App({ setUserProfile, userProfile,baseUrl, isLogin, setToken, setUserLogout }) {
   let width = window.screen.width;
@@ -92,6 +96,30 @@ function App({ setUserProfile, userProfile,baseUrl, isLogin, setToken, setUserLo
                 path="/emp-dataform"
                 element={<EmpDataForm/>}
               />
+              <Route
+                exact
+                path="/recruitment-form"
+                element={<RecruitmentForm />}
+              />
+
+              <Route
+                exact
+                path="/applicants-datatable"
+                element={<ApplicantsDataTable />}
+              />
+
+              <Route
+                exact
+                path="/jobs-datatable"
+                element={<JobsDataTable />}
+              />
+
+              <Route
+                exact
+                path="/user/:id"
+                element={<ViewEmployee />}
+              />
+             
               <Route path="/board/:id" element={<Board />} />
               <Route path="/project/:id" element={<BoardList />} />
             </Route>

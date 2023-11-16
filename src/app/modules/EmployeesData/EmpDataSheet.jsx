@@ -3,6 +3,7 @@ import EmpDataHeader from "./EmpDataHeader";
 import axios from "axios";
 import { connect } from "react-redux";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 const userRoles = [
   { value: 2, label: "HR" },
@@ -15,8 +16,12 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
- 
-const itemsPerPage = 5;
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // handle search
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
 
   // Functions for calling the API
   const headers = {
@@ -29,9 +34,12 @@ const itemsPerPage = 5;
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/emp/?page=${page}&page_size=${itemsPerPage}`, {
-          headers,
-        });
+        const response = await axios.get(
+          `${baseUrl}/emp/?search=${searchTerm}&page=${page}`,
+          {
+            headers,
+          }
+        );
         const usersData = response.data.results;
         setUsers(usersData);
         setLoading(false);
@@ -40,11 +48,11 @@ const itemsPerPage = 5;
       }
     };
     fetchUsers();
-  }, [page, baseUrl, token]);
+  }, [page, searchTerm, baseUrl, token]);
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9] h-[100vh]">
-      <EmpDataHeader title="Employee Data Sheet" />
+      <EmpDataHeader title="Employee Data Sheet" onSearch={handleSearch} />
 
       {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
@@ -68,7 +76,10 @@ const itemsPerPage = 5;
             </thead>
             <tbody className="bg-white text-gray-500">
               {users.map((user, index) => (
-                <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100 hover:cursor-pointer" key={user.id}>
+                <tr
+                  className="whitespace-nowrap border-b-2 hover:bg-gray-100"
+                  key={user.id}
+                >
                   <td className="px-6 py-2 text-left">
                     TXB-{user.id.toString().padStart(4, "0")}
                   </td>
@@ -85,9 +96,12 @@ const itemsPerPage = 5;
                       : ""}
                   </td>
                   <td className="px-6 py-2 text-left">
-                    <button className="bg-baseBlue text-white px-4 py-[2px] rounded-lg">
+                    <Link
+                      to={`/user/${user.id}`}
+                      className="bg-baseBlue text-white px-2 py-[3px] rounded"
+                    >
                       View
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))}

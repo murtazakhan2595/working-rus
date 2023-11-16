@@ -44,6 +44,22 @@ export const academicOptions = [
 export const links = [
   { to: "/", text: "Home", icon: <LiaHomeSolid /> },
   { to: "/emp-data", text: "Emp Sheet", icon: <BiSpreadsheet /> },
-  { to: "", text: "Pay", icon: <MdOutlinePayment /> },
+  { to: "/recruitment-form", text: "Recruitment Form", icon: <MdOutlinePayment /> },
   { to: "", text: "Performance", icon: <PiShootingStarBold /> },
+];
+
+
+export const jobTypeOptions = [
+  { value: "Internship", label: "Internship" },
+  { value: "Contract_Based", label: "Contract Based" },
+  { value: "Part_Time", label: "Part Time" },
+  { value: "Full_Time", label: "Full Time" },
+];
+
+export const employeeTypeOptions = [
+  { value: "Intern", label: "Intern" },
+  { value: "Fresher", label: "Fresher" },
+  { value: "Experienced", label: "Experienced" },
+  { value: "Mid_Senior", label: "Mid Senior" },
+  { value: "Senior", label: "Senior" },
 ];

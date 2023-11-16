@@ -46,6 +46,7 @@ const Dashboard = ({ token, baseUrl }) => {
         setLoading(false);
       }
     };
+  
     fetchTodos();
   }, []);
 
