@@ -1,7 +1,7 @@
 import {useEffect} from "react"
 import moment from "moment";
 import React, { useState } from "react";
-import Datepicker from "../modules/Dashboard/Datepicker";
+import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 import Joi from "joi";
 import { AiOutlineCloseCircle } from "react-icons/ai";

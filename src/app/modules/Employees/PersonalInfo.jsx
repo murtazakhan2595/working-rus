@@ -1,7 +1,7 @@
 import React, { useState , useEffect } from 'react'
 import moment from 'moment';
-import Datepicker from '../modules/Dashboard/Datepicker';
-import upload from '../../assets/images/upload.png';
+import Datepicker from '../Dashboard/Datepicker';
+import upload from '../../../assets/images/upload.png';
 import Joi from 'joi';
 import Button from './Button';
 

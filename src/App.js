@@ -6,10 +6,11 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
-import RecruitmentForm from './app/modules/Recruitment Data/RecruitmentForm.jsx'
-import ApplicantsDataTable from "./app/modules/Recruitment Data/ApplicantsDataTable.jsx";
-import JobsDataTable from "./app/modules/Recruitment Data/JobsDataTable.jsx";
+import RecruitmentForm from './app/modules/RecruitmentData/RecruitmentForm.jsx'
+import ApplicantsDataTable from "./app/modules/RecruitmentData/ApplicantsDataTable.jsx";
+import JobsDataTable from "./app/modules/RecruitmentData/JobsDataTable.jsx";
 import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
+import Profile from "./app/modules/Profile";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
 
@@ -22,7 +23,7 @@ import {
   setToken,
 } from "./state/actions/UserAction";
 import BoardList from "./app/modules/BoardList";
-import EmpForm from "./app/Employees/EmpForm";
+import EmpForm from "./app/modules/Employees/EmpForm";
 import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 
@@ -103,6 +104,13 @@ function App({
                   path="/"
                   element={<Dashboard isSidebarOpen={isSidebarOpen} />}
                 />
+                <Route path="/board/:id" element={<Board />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/project/:id" element={<BoardList />} />
+                <Route
+                  path="/a"
+                  element={<EmpForm/>}
+                />
                 {(userProfile.role === 1 || userProfile.role === 2) &&
                 <>
                 <Route exact path="/emp-data" element={<EmpDataSheet />} />
@@ -112,8 +120,6 @@ function App({
                 <Route path="/jobs-datatable" element={<JobsDataTable />}/>
                 <Route path="/user/:id" element={<ViewEmployee />}/>
                 </>}
-                <Route path="/board/:id" element={<Board />} />
-                <Route path="/project/:id" element={<BoardList />} />
               </Route>
               {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/recruitment-form" element={<Err401 />}/>}
               {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/applicants-datatable" element={<Err401 />}/>}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Button from "../../Employees/Button";
+import Button from "../Employees/Button";
 import EmpDataHeader from "./EmpDataHeader";
 import Select from "react-select";
 import { RxCross2 } from "react-icons/rx";

@@ -1,5 +1,5 @@
 import React, { useState , useEffect } from "react";
-import Datepicker from "../modules/Dashboard/Datepicker";
+import Datepicker from "../Dashboard/Datepicker";
 import moment from "moment";
 import SubStepsIndicator from "./SubStepsIndicator";
 import { AiOutlineCloseCircle } from "react-icons/ai";
