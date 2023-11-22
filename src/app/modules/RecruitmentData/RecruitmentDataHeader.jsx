@@ -5,13 +5,16 @@ import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
-import { BsPersonPlus, BsTable } from "react-icons/bs";
-import { FiSearch } from "react-icons/fi";
+import { BsTable } from "react-icons/bs";
+import { FiFilter } from "react-icons/fi";
+import { FaRegPlusSquare } from "react-icons/fa";
+import { FaBriefcase } from "react-icons/fa6";
 
-const EmpDataHeader = ({ userProfile, title, onSearch }) => {
+const RecruitmentDataHeader = ({ userProfile, title, }) => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   const cookies = new Cookies();
@@ -31,7 +34,13 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
   const handleSearchClick = () => {
     setIsSearchVisible(!isSearchVisible);
     if (!isSearchVisible) {
+      setSearchTerm("");
     }
+  };
+
+  // handle search functionality
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   return (
@@ -40,7 +49,7 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
       <div className="py-5 pl-10 pr-2 flex gap-3 flex-col-reverse items-center md:flex-row lg:flex-row justify-between w-full">
         <div className="flex items-center">
           <h1 className="text-xl lg:text-3xl mr-2 items-center leading-none font-semibold opacity-80 tracking-widest">
-            Employee Data
+            Recruitment Data
           </h1>
           <div className="relative">
             <IoIosSearch className="absolute top-2 left-3 text-white" />
@@ -48,6 +57,8 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
               type="search"
               placeholder="Search"
               className="focus:outline-none focus:border-non bg-[#D7D7D7] py-1 pl-8 pr-4 text-white placeholder-white border-none md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
+              value={searchTerm}
+              onChange={handleSearchChange}
             />
           </div>
         </div>
@@ -82,24 +93,34 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
         <div className="flex flex-col md:flex-row lg:flex-row gap-y-2 gap-x-3">
           <div className="flex gap-x-4 justify-end">
             <Link
-              to="/emp-data"
+              to="/jobs-datatable"
               className={`p-2 rounded-md  ${
-                location.pathname === "/emp-data"
+                location.pathname === "/jobs-datatable"
                   ? "bg-[#25A8E0] text-white"
                   : "bg-white text-gray-400"
               }`}
             >
-              <BsTable title="Employee Data Table" />
+              <BsTable title="Jobs Data Table" />
             </Link>
             <Link
-              to="/emp-dataform"
+              to="/applicants-datatable"
               className={`p-2 rounded-md  ${
-                location.pathname === "/emp-dataform"
+                location.pathname === "/applicants-datatable"
                   ? "bg-[#25A8E0] text-white"
                   : "bg-white text-gray-400"
               }`}
             >
-              <BsPersonPlus title="Add Employee" />
+              <FaBriefcase title="Employee Data Table" />
+            </Link>
+            <Link
+              to="/recruitment-form"
+              className={`p-2 rounded-md  ${
+                location.pathname === "/recruitment-form"
+                  ? "bg-[#25A8E0] text-white"
+                  : "bg-white text-gray-400"
+              }`}
+            >
+              <FaRegPlusSquare title="Add New Post" />
             </Link>
             {location.pathname === "/emp-data" && (
               <button
@@ -110,7 +131,7 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
                 }`}
                 onClick={handleSearchClick}
               >
-                <FiSearch />
+                <FiFilter />
               </button>
             )}
           </div>
@@ -118,10 +139,9 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
             <div>
               <input
                 type="search"
-                placeholder="by ID, username or name"
+                placeholder="Search"
                 className="focus:outline-none focus:border-non
                 bg-[#D7D7D7] py-1 pl-2 md:pl-4 lg:pl-4 pr-4 text-white placeholder-white border-none md:flex lg:w-56 xs:w-[10rem] rounded-md"
-                onChange={(e) => onSearch(e.target.value)}
               />
             </div>
           )}
@@ -137,4 +157,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(EmpDataHeader);
+export default connect(mapStateToProps)(RecruitmentDataHeader);

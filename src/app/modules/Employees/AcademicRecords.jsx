@@ -1,17 +1,17 @@
 import {useEffect} from "react"
 import moment from "moment";
 import React, { useState } from "react";
-import Datepicker from "../modules/Dashboard/Datepicker";
+import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 import Joi from "joi";
-import { IoIosClose } from "react-icons/io";
+import { AiOutlineCloseCircle } from "react-icons/ai";
 import Button from "./Button";
 import { WiCloudRefresh } from "react-icons/wi";
 
 const academicOptions = [
   { value: "Intermediate", label: "Intermediate" },
-  { value: "Bachelors", label: "Bachelors" },
-  { value: "Masters", label: "Masters" },
+  { value: "Bachelor", label: "Bachelor" },
+  { value: "Master", label: "Master" },
 ];
 
 const academicSchema = Joi.object({
@@ -342,8 +342,8 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
         {certificationSections.map((experience, index) => (
             <div key={index}>
               <div className="flex items-center">
-                  <IoIosClose
-                  className="text-red-500 text-xl mb-2 lg:mb-4 mt-2"
+                  <AiOutlineCloseCircle
+                  className="text-red-500 mr-1 text-lg mb-2 lg:mb-4 mt-2"
                     onClick={() => {
                       let copySections = [...certificationSections];
                       copySections.splice(index, 1);
@@ -384,7 +384,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
                     )}
                   </div>
                 </div>
-                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12 md:w-[55%]">
                   <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                     <label
                       htmlFor="exp_start_date"

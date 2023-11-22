@@ -27,7 +27,13 @@ import Cookies from "universal-cookie";
 import axios from "axios";
 import { links } from "../../../../data/Data";
 
-const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
+const MobSidebar = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+  userProfile,
+  baseUrl,
+  token,
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -37,6 +43,10 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
   const [projectCount, setProjectCount] = useState(0);
+  const empLinks = links.filter((link) => link.text !== "Emp Sheet");
+  const validateLinks = empLinks.filter(
+    (link) => link.text !== "Recruitment Form"
+  );
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -94,38 +104,36 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                 />
               </div>
             </li>
-            {links.map((link, index) => (
-              <li key={index} className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 ${location.pathname === link.to ? 'bg-[#259ed8]' : ''}`}>
-                <Link to={link.to} className="flex gap-x-1 items-center focus:bg-[#259ed8] focus:outline-none">
-                  <span className="text-white text-xl">{link.icon}</span>
-                  <p className="text-white">{link.text}</p>
-                </Link>
-              </li>
-            ))}
-            
 
-            {/* <Link to="/employees-form">
-              <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-                <MdOutlineGroups2 className="text-white text-xl" />{" "}
-                <p className="text-white">Emp Form</p>
-              </li>
-            </Link>
-            <Link to="/emp-data">
-            <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-              <BiTimeFive className="text-white text-xl" />{" "}
-              <p className="text-white">Emp Data</p>
-            </li>
-            </Link>
-
-            <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-              <MdOutlinePayment className="text-white text-xl" />{" "}
-              <p className="text-white">Pay</p>
-            </li>
-
-            <li className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1">
-              <PiShootingStarBold className="text-white text-xl" />{" "}
-              <p className="text-white">Perfomance</p>
-            </li> */}
+            {userProfile.role === 1 || userProfile.role === 2
+              ? links.map((link, index) => (
+                  <li key={index}>
+                    <Link to={link.to}>
+                      <div
+                        className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
+                          location.pathname === link.to ? "bg-[#259ED8]" : ""
+                        }`}
+                      >
+                        <div className="text-white text-xl">{link.icon}</div>
+                        <p className="text-white">{link.text}</p>
+                      </div>
+                    </Link>
+                  </li>
+                ))
+              : validateLinks.map((link, index) => (
+                  <li key={index}>
+                    <Link to={link.to}>
+                      <div
+                        className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
+                          location.pathname === link.to ? "bg-[#259ED8]" : ""
+                        }`}
+                      >
+                        <div className="text-white text-xl">{link.icon}</div>
+                        <p className="text-white">{link.text}</p>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
 
             <hr className="opacity-40" />
 
@@ -169,12 +177,14 @@ const MobSidebar = ({ isSidebarOpen, setIsSidebarOpen, baseUrl, token }) => {
                     </div>
                     <div className="flex items-center opacity-60 gap-1 text-white">
                       <div className="text-xs">{projectCount}</div>
-                      <AiOutlinePlus
-                        onClick={() => {
-                          setisModelOpen(true);
-                        }}
-                        className="text-white text-sm"
-                      />
+                      {userProfile.role !== 4 && (
+                        <AiOutlinePlus
+                          onClick={() => {
+                            setisModelOpen(true);
+                          }}
+                          className="text-white text-sm"
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="max-h-[20vh] overflow-y-auto hideScroll">

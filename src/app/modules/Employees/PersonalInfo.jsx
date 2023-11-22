@@ -1,7 +1,7 @@
 import React, { useState , useEffect } from 'react'
 import moment from 'moment';
-import Datepicker from '../modules/Dashboard/Datepicker';
-import upload from '../../assets/images/upload.png';
+import Datepicker from '../Dashboard/Datepicker';
+import upload from '../../../assets/images/upload.png';
 import Joi from 'joi';
 import Button from './Button';
 
@@ -167,7 +167,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                             <div className='flex flex-col mt-2 md:mt-5 md:w-1/2 '>
                                 <label htmlFor="mobile_no" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Phone Number:</label>
-                            <div>
+                            <div className='flex gap-1'>
                                 <input type="tel" value={personalInfo.country_code} name="country_code" maxLength={4} id="" placeholder='+1'
                                     className='pl-1 bg-white rounded-l h-8 w-[12%] text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -320,7 +320,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                         <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                             <label htmlFor="emergency_phone_no" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Phone Number:</label>
-                            <div>
+                            <div className='flex gap-1'>
                              <input type="tel" value={personalInfo.emergency_country_code} name="emergency_country_code" maxLength={4} id="" placeholder='+1'
                                     className='pl-1 bg-white rounded-l h-8 w-[12%] text-sm placeholder-[#555657] placeholder-opacity-50'
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}

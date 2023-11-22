@@ -1,12 +1,17 @@
 const initialState = {
-  userProfile: {},
+  userProfile: {
+    id: 0,
+    username: null,
+    is_filled: null,
+    role: null,
+  },
   isLogin: null,
   sidebarRefresh: false,
   token: "",
   baseUrl:
     window.location.href.indexOf("https") === -1
-      ? "https://hrms.tecbrix.cloud:8080/api"
-      : "https://hrms.tecbrix.cloud:8080/api",
+      ? "https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api"
+      : "https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api",
 };
 
 const userReducer = (state = initialState, action) => {
@@ -22,7 +27,10 @@ const userReducer = (state = initialState, action) => {
         ...state,
         isLogin: false,
         token: "",
-        userProfile: {},
+        userProfile: {  id: 0,
+          username: null,
+          is_filled: null,
+          role: null},
       };
     case "SET_TOKEN":
       return {

@@ -217,31 +217,36 @@ const BoardList = ({
               <div className=" px-2 text-[#283b91]">Team Members</div>
             </div>
           </div>
-          <div className="hidden bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg ">
-            <div className=" px-1 text-gray-400">
-              <FiFilter />
-            </div>
-          </div>
-          <div
-            className="flex bg-[#f7f7f8] px-2 py-1 cursor-pointer gap-3 items-center rounded-lg"
-            onClick={() => {
-              setIsEditModalOpen(true);
-            }}
-          >
-            <div className=" px-1 text-gray-400">
-              <BsPencil />
-            </div>
-          </div>
-          <div
-            className="flex bg-[#f7f7f8] px-2 mr-5 cursor-pointer py-1 gap-3 items-center rounded-lg"
-            onClick={() => {
-              setIsDeleteConfirmationOpen(true);
-            }}
-          >
-            <div className=" px-1 text-gray-400">
-              <BsTrash3 />
-            </div>
-          </div>
+
+          {userProfile.role !== 4 &&
+            <>
+              <div className="hidden bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg ">
+                <div className=" px-1 text-gray-400">
+                  <FiFilter />
+                </div>
+              </div>
+              <div
+                className="flex bg-[#f7f7f8] px-2 py-1 cursor-pointer gap-3 items-center rounded-lg"
+                onClick={() => {
+                  setIsEditModalOpen(true);
+                }}
+              >
+                <div className=" px-1 text-gray-400">
+                  <BsPencil />
+                </div>
+              </div>
+              <div
+                className="flex bg-[#f7f7f8] px-2 mr-5 cursor-pointer py-1 gap-3 items-center rounded-lg"
+                onClick={() => {
+                  setIsDeleteConfirmationOpen(true);
+                }}
+              >
+                <div className=" px-1 text-gray-400">
+                  <BsTrash3 />
+                </div>
+              </div>
+            </>
+          }
         </div>
       </div>
       {/* Board List */}
@@ -282,6 +287,7 @@ const BoardList = ({
       </div>
 
       {/* Add Board Button */}
+      {userProfile.role !== 4 &&
       <div
         className="absolute bottom-10 right-5 lg:right-10 w-10 h-10 flex justify-center items-center 
       bg-[#25A8E0] text-white font-bold border rounded-full text-xl cursor-pointer"
@@ -289,7 +295,7 @@ const BoardList = ({
       >
         +
       </div>
-
+}
       {/* Board Model */}
       {isModalOpen && (
         <BoardModel
