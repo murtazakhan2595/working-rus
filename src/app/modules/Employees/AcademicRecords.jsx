@@ -515,7 +515,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
                       </div>
                     )}
                     <small className="text-gray-400">
-                      Upload a jpeg, jpg, png, pdf no larger than 100 MB.
+                      Upload a pdf no larger than 100 MB.
                     </small>
                   </div>
                 </div>
