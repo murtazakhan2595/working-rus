@@ -41,6 +41,8 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
   const [academicInfo, setAcademicInfo] = useState(intialAcadmicRecords);
   const [certificationSections, setCertificationSections] = useState(
     defaultCertifications? defaultCertifications : [{}]);
+    const [cerErrors, setCerErrors] = useState({});
+
 
   const addCertificationSection = () => {
     setCertificationSections([...certificationSections, {}]);
@@ -89,16 +91,19 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
     for (let i = 0; i < certificationSections.length; i++) {
       const certification = certificationSections[i];
       if (!certification.certification_name) {
-        fieldErrors[`certification_name_${i}`] = "Certification Name is required.";
+        fieldErrors[`certification_name_${i}`] =
+          "Certification Name is required.";
       }
       if (!certification.completion_date) {
-        fieldErrors[`completion_date_${i}`] = "Completion Date Designation is required.";
+        fieldErrors[`completion_date_${i}`] =
+          "Completion Date Designation is required.";
       }
       if (!certification.expiry_date) {
         fieldErrors[`expiry_date_${i}`] = "Expiry Date is required.";
       }
       if (!certification.certification_body?.hasOwnProperty("name")) {
-        fieldErrors[`certification_body_${i}`] = "Certification Body is required.";
+        fieldErrors[`certification_body_${i}`] =
+          "Certification Body is required.";
       }
     }
     const { error } = academicSchema.validate(
@@ -113,24 +118,28 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
     );
 
     const validationErrors = {};
-    if (error) {
-      error.details.forEach((detail) => {
-        validationErrors[detail.path[0]] = detail.message;
-      });
-      if (!academicInfo.certificate?.hasOwnProperty("name")) {
-        validationErrors.certificate = "Certification is required";
+    if (Object.keys(fieldErrors).length > 0 || error || !academicInfo.certificate?.hasOwnProperty("name")) {
+      if(!academicInfo.certificate?.hasOwnProperty("name")){
+          setErrors({...errors , certificate : "Certification is required"});
+        }
+      if (error) {
+        error.details.forEach((detail) => {
+          validationErrors[detail.path[0]] = detail.message;
+        });
+        if (!academicInfo.certificate?.hasOwnProperty("name")) {
+          validationErrors.certificate = "Certification is required";
+        }
+        setErrors(validationErrors);
       }
-      setErrors(validationErrors);
+      if (Object.keys(fieldErrors).length > 0) {
+        console.log("3rd");
+        let newErrors = { ...fieldErrors };
+        setCerErrors(newErrors);
+      }
+      return;
     }
-    if(!error && !academicInfo.certificate?.hasOwnProperty("name")){
-      setErrors({certificate : "Certification is required"});
-    } 
-
-    if(Object.keys(fieldErrors).length > 0) {
-      let newErrors = {...fieldErrors , ...validationErrors}
-      setErrors(newErrors);
-    } 
     else {
+      console.log("fifth");
       nextstep();
     }
   };
@@ -139,14 +148,13 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
     setAcademicInfo({ ...academicInfo, [name]: value });
     setErrors({ ...errors, [name]: null });
   };
-  const clearError = (fieldName) => {
-    if (errors[fieldName]) {
-      const updatedErrors = { ...errors };
+  const clearCerError = (fieldName) => {
+    if (cerErrors[fieldName]) {
+      const updatedErrors = { ...cerErrors };
       delete updatedErrors[fieldName];
-      setErrors(updatedErrors);
+      setCerErrors(updatedErrors);
     }
   };
-
   useEffect(() => {
     setDataInSessionStorage('certifications',certificationSections)
   }, [certificationSections])
@@ -373,13 +381,13 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
                         const updatedSections = [...certificationSections];
                         updatedSections[index].certification_name = e.target.value;
                         setCertificationSections(updatedSections);
-                        clearError(`certification_name_${index}`);
+                        clearCerError(`certification_name_${index}`);
                       }}
                       className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                     />
-                    {errors[`certification_name_${index}`] && (
+                    {cerErrors[`certification_name_${index}`] && (
                       <div className="text-red-500 text-sm">
-                        {errors[`certification_name_${index}`]}
+                        {cerErrors[`certification_name_${index}`]}
                       </div>
                     )}
                   </div>
@@ -408,12 +416,12 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
                         const updatedSections = [...certificationSections];
                         updatedSections[index].completion_date = formattedDate;
                         setCertificationSections(updatedSections);
-                        clearError(`completion_date_${index}`);
+                        clearCerError(`completion_date_${index}`);
                       }}
                     />
-                    {errors[`completion_date_${index}`] && (
+                    {cerErrors[`completion_date_${index}`] && (
                       <div className="text-red-500 text-sm">
-                        {errors[`completion_date_${index}`]}
+                        {cerErrors[`completion_date_${index}`]}
                       </div>
                     )}
                   </div>
@@ -440,12 +448,12 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
                         const updatedSections = [...certificationSections];
                         updatedSections[index].expiry_date = formattedDate;
                         setCertificationSections(updatedSections);
-                        clearError(`expiry_date_${index}`);
+                        clearCerError(`expiry_date_${index}`);
                       }}
                     />
-                    {errors[`expiry_date_${index}`] && (
+                    {cerErrors[`expiry_date_${index}`] && (
                       <div className="text-red-500 text-sm">
-                        {errors[`expiry_date_${index}`]}
+                        {cerErrors[`expiry_date_${index}`]}
                       </div>
                     )}
                   </div>
@@ -501,13 +509,13 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
                       </label>
                     )}
                     <br />
-                    {errors[`certification_body_${index}`] && (
+                    {cerErrors[`certification_body_${index}`] && (
                       <div className="text-red-500 text-sm">
-                        {errors[`certification_body_${index}`]}
+                        {cerErrors[`certification_body_${index}`]}
                       </div>
                     )}
                     <small className="text-gray-400">
-                      Upload a jpeg, jpg, png, pdf no larger than 100 MB.
+                      Upload a pdf no larger than 100 MB.
                     </small>
                   </div>
                 </div>
