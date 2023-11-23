@@ -19,12 +19,12 @@ const setDataInSessionStorage = (key,data) => {
 
 const handleFileChange = (e) => {
   const file = e.target.files[0];
-  const cvData  = {
-    name: file.name,
-    type: file.type,
-    size: file.size,
-  }
   if (file) {
+    const cvData  = {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+    }
     const reader = new FileReader();
             reader.onload = (e) => {
               setCv({"name" : cvData.name ,"file" :e.target.result})
@@ -32,7 +32,7 @@ const handleFileChange = (e) => {
             }
             reader.readAsDataURL(file);
     setErrors({'cv':""});
-  } else {
+  } if(!cv) {
     const validationErrors = { cv: "Select Valid File" };
     setErrors(validationErrors);
   }
