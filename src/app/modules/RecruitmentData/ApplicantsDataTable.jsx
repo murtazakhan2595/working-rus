@@ -122,7 +122,7 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
                 >
                   <span className="mr-2">{applicant.applicationStatus}</span>
                   <span className="text-gray-500">&#9662;</span>
-                  {isDropdownVisible && (
+                  {/* {isDropdownVisible && (
                     <div className="absolute left-28 bg-white border border-gray-300 pt-2 pb-2 rounded-xl shadow-md">
                       {dropdownOptions.map((option) => (
                         <div
@@ -136,7 +136,7 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
                         </div>
                       ))}
                     </div>
-                  )}
+                  )} */}
                 </td>
               </tr>
             ))}
