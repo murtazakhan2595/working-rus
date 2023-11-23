@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const Datepicker = ({ onChange, day = null, month = null, year = null }) => {
+const Datepicker = ({ onChange, day = null, month = null, year = null , disabled = false }) => {
   const [startDate, setStartDate] = useState(new Date());
 
   const InputDay = React.forwardRef(({ onClick }, ref) => (
     <button
       type="button"
-      className="bg-white py-1.5 px-3 rounded-md"
+      className={`${disabled ? "text-gray-500 cursor-default" :"text-black"} bg-white py-1.5 px-3 rounded-md`}
       onClick={(e) => {
         e.stopPropagation();
         onClick(e);
@@ -22,7 +22,7 @@ const Datepicker = ({ onChange, day = null, month = null, year = null }) => {
   const InputMonth = React.forwardRef(({ onClick }, ref) => (
     <button
       type="button"
-      className="bg-white py-1.5 px-3 rounded-md"
+      className={`${disabled ? "text-gray-500 cursor-default" :"text-black"} bg-white py-1.5 px-3 rounded-md`}
       onClick={(e) => {
         e.stopPropagation();
         onClick(e);
@@ -36,7 +36,7 @@ const Datepicker = ({ onChange, day = null, month = null, year = null }) => {
   const InputYear = React.forwardRef(({ onClick }, ref) => (
     <button
       type="button"
-      className="bg-white py-1.5 px-3 rounded-md"
+      className={`${disabled ? "text-gray-500 cursor-default" :"text-black"} bg-white py-1.5 px-3 rounded-md`}
       onClick={(e) => {
         e.stopPropagation();
         onClick(e);
@@ -65,25 +65,28 @@ const Datepicker = ({ onChange, day = null, month = null, year = null }) => {
         onChange={handleDateChange}
         customInput={<InputDay />}
         showMonthDropdown
+        disabled={disabled}
         showYearDropdown
         dropdownMode="select"
         onClick={handleDatepickerClick}
-      />
+        />
       -
       <DatePicker
         selected={startDate}
         onChange={handleDateChange}
         customInput={<InputMonth />}
+        disabled={disabled}
         peekNextMonth
         showMonthDropdown
         dropdownMode="select"
         onClick={handleDatepickerClick}
-      />
+        />
       -
       <DatePicker
         selected={startDate}
         onChange={handleDateChange}
         customInput={<InputYear />}
+        disabled={disabled}
         dropdownMode="select"
         showYearDropdown
         onClick={handleDatepickerClick}
