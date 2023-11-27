@@ -258,7 +258,6 @@ const AcademicRecords = ({
         document: academicInfo.certificate.document
       }
       if (academicInfo.certificate?.hasOwnProperty("id")){
-        console.log("first")
         let res = await axios.patch(`${baseUrl}/attachment/${academicInfo.certificate.id}`, acadmicDoc, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -267,8 +266,6 @@ const AcademicRecords = ({
         });
       }
       else{
-        console.log(academicInfo.certificate)
-        console.log("sec")
                 let res = await axios.post(`${baseUrl}/attachment/`, acadmicDoc, {
                   headers: {
                     Authorization: `Bearer ${token}`,

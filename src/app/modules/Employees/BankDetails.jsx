@@ -8,7 +8,6 @@ const bankSchema = Joi.object({
     account_number: Joi.string().min(10).required().label('Account Number'),
     branch_address: Joi.string().min(10).required().label('Branch Address'),
     branch_code: Joi.string().min(3).required().label('Branch Code'),
-    swift_code: Joi.string().required().label('Swift Code'),
 });
 
 
@@ -52,7 +51,6 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
                 account_number: bankInfo.account_number,
                 branch_address: bankInfo.branch_address,
                 branch_code: bankInfo.branch_code,
-                swift_code: bankInfo.swift_code,
             },
             { abortEarly: false }
         );
@@ -67,9 +65,7 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
                 validationErrors.account_iban = "IBAN number must be at least 10 characters";
               }
             setErrors(validationErrors);
-            console.log(validationErrors)
         } else {
-            
             nextstep();
         }
     };

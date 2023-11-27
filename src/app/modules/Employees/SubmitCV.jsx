@@ -32,7 +32,7 @@ const handleFileChange = (e) => {
             }
             reader.readAsDataURL(file);
     setErrors({'cv':""});
-  } if(!cv) {
+  } if(!file) {
     const validationErrors = { cv: "Select Valid File" };
     setErrors(validationErrors);
   }
