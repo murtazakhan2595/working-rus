@@ -120,14 +120,15 @@ const BankDetails = ({
               position: "top-right",
               autoClose: 3000,
             });
+            sessionStorage.clear()
+            nextstep();
         }
 
-
-      nextstep();
     }
   };
 
   const handleNextStep = () => {
+      sessionStorage.clear()
       nextstep();
   };
 
