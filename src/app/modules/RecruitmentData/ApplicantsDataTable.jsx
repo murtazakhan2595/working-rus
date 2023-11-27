@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import RecruitmentDataHeader from "./RecruitmentDataHeader";
 
@@ -12,7 +12,9 @@ const dropdownOptions = [
   "Rejected",
 ];
 
-const data = [
+const ApplicantsDataTable = ({ baseUrl, token }) => {
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [data, setData] = useState([
     {
       id: 1,
       name: "Moattar Ali",
@@ -69,24 +71,40 @@ const data = [
       fileName: "Resume_Grace.pdf",
       applicationStatus: "Application status",
     },
-    {
+    /* {
       id: 8,
       name: "Samuel Wilson",
       email: "samuel@example.com",
       contact: "6667778888",
       fileName: "Resume_Samuel.pdf",
       applicationStatus: "Application status",
-    },
-  ];
-  
-const ApplicantsDataTable = ({ baseUrl, token }) => {
-  const [isDropdownVisible, setDropdownVisible] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
+    }, */
+  ]);
+
+  // Function to handle row selection
+  const handleRowClick = (id) => {
+    setSelectedRow(selectedRow === id ? null : id);
+  };
 
   // Function to handle dropdown option selection
   const handleOptionSelect = (option) => {
-    setSelectedOption(option);
-    setDropdownVisible(false);
+    // Find the selected row in the data array
+    const selectedApplicant = data.find((applicant) => applicant.id === selectedRow);
+
+    // Update the applicationStatus for the selected row
+    if (selectedApplicant) {
+      selectedApplicant.applicationStatus = option;
+
+      // Update the data state with the modified row
+      setData((prevData) => {
+        return prevData.map((applicant) =>
+          applicant.id === selectedRow ? selectedApplicant : applicant
+        );
+      });
+    }
+
+    // Close the dropdown
+    setSelectedRow(null);
   };
 
   return (
@@ -98,7 +116,7 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
         <table className="min-w-full">
           <thead>
             <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-              <th className="px-6 py-3 text-left  rounded-tl-lg">
+              <th className="px-6 py-3 text-left rounded-tl-lg">
                 Candidate Name
               </th>
               <th className="px-6 py-3 text-left">Email</th>
@@ -111,26 +129,27 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
           </thead>
           <tbody className="bg-white text-gray-500">
             {data.map((applicant) => (
-                <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100" key={applicant.id}>
+              <tr
+                className={`whitespace-nowrap border-b-2 hover:bg-gray-100 ${
+                  selectedRow === applicant.id ? "bg-gray-200" : ""
+                }`}
+                key={applicant.id}
+                onClick={() => handleRowClick(applicant.id)}
+              >
                 <td className="px-6 py-3 text-left">{applicant.name}</td>
                 <td className="px-6 py-3 text-left">{applicant.email}</td>
                 <td className="px-6 py-3 text-left">{applicant.contact}</td>
                 <td className="px-6 py-3 text-left">{applicant.fileName}</td>
-                <td
-                  className="px-6 py-3 text-left relative cursor-pointer"
-                  onClick={() => setDropdownVisible(!isDropdownVisible)}
-                >
+                <td className="px-6 py-3 text-left relative cursor-pointer">
                   <span className="mr-2">{applicant.applicationStatus}</span>
                   <span className="text-gray-500">&#9662;</span>
-                  {isDropdownVisible && (
-                    <div className="absolute left-28 bg-white border border-gray-300 pt-2 pb-2 rounded-xl shadow-md">
+                  {selectedRow === applicant.id && (
+                    <div className="absolute left-28 bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
                       {dropdownOptions.map((option) => (
                         <div
                           key={option}
                           onClick={() => handleOptionSelect(option)}
-                          className={`cursor-pointer border-b-2 pl-2 w-[125px] hover:bg-blue-100 ${
-                            selectedOption === option ? "font-bold" : ""
-                          }`}
+                          className={`cursor-pointer border-b-2 pl-2 w-[125px] hover:bg-blue-100`}
                         >
                           {option}
                         </div>
@@ -140,7 +159,6 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
                 </td>
               </tr>
             ))}
-            
           </tbody>
         </table>
       </div>

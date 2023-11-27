@@ -118,7 +118,7 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
             <div>
               <input
                 type="search"
-                placeholder="by ID, username or name"
+                placeholder="ID, Username or Name"
                 className="focus:outline-none focus:border-non
                 bg-[#D7D7D7] py-1 pl-2 md:pl-4 lg:pl-4 pr-4 text-white placeholder-white border-none md:flex lg:w-56 xs:w-[10rem] rounded-md"
                 onChange={(e) => onSearch(e.target.value)}

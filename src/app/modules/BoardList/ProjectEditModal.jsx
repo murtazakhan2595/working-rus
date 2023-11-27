@@ -279,13 +279,13 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                             className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-pink-500 border-2"
                           >
                             <span className="text-white text-sm flex justify-center items-center plus-icon w-9 h-9">
-                              {users[selectedUserId - 1]?.username
-                                ?.toUpperCase()
+                              {filteredUsers
+                                .find((user) => user.id === selectedUserId)
+                                ?.username?.toUpperCase()
                                 .slice(0, 2)}
                             </span>
                           </div>
                         ))}
-
                         <div className="relative">
                           {membersOpen && (
                             <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">

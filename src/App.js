@@ -10,9 +10,9 @@ import RecruitmentForm from './app/modules/RecruitmentData/RecruitmentForm.jsx'
 import ApplicantsDataTable from "./app/modules/RecruitmentData/ApplicantsDataTable.jsx";
 import JobsDataTable from "./app/modules/RecruitmentData/JobsDataTable.jsx";
 import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
-import Profile from "./app/modules/Profile";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
+import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
 
 import axios from "axios";
 import Cookies from "universal-cookie";
@@ -105,12 +105,8 @@ function App({
                   element={<Dashboard isSidebarOpen={isSidebarOpen} />}
                 />
                 <Route path="/board/:id" element={<Board />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile" element={<UpdateEmpForm />} />
                 <Route path="/project/:id" element={<BoardList />} />
-                <Route
-                  path="/a"
-                  element={<EmpForm/>}
-                />
                 {(userProfile.role === 1 || userProfile.role === 2) &&
                 <>
                 <Route exact path="/emp-data" element={<EmpDataSheet />} />
