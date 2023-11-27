@@ -258,7 +258,6 @@ const AcademicRecords = ({
         document: academicInfo.certificate.document
       }
       if (academicInfo.certificate?.hasOwnProperty("id")){
-        console.log("first")
         let res = await axios.patch(`${baseUrl}/attachment/${academicInfo.certificate.id}`, acadmicDoc, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -267,8 +266,6 @@ const AcademicRecords = ({
         });
       }
       else{
-        console.log(academicInfo.certificate)
-        console.log("sec")
                 let res = await axios.post(`${baseUrl}/attachment/`, acadmicDoc, {
                   headers: {
                     Authorization: `Bearer ${token}`,
@@ -348,6 +345,7 @@ const AcademicRecords = ({
 
 
   const handleNextStep = () => {
+    sessionStorage.clear()
       nextstep();
   };
 
@@ -591,7 +589,7 @@ const AcademicRecords = ({
           Certifications:
         </h2>
 
-        {certificationSections.map((experience, index) => (
+        {certificationSections.map((certification, index) => (
           <div key={index}>
             <div className="flex items-center">
               {isEdit &&
@@ -600,8 +598,8 @@ const AcademicRecords = ({
                 onClick={() => {
                   let copySections = [...certificationSections];
                   copySections.splice(index, 1);
-                  if (experience.hasOwnProperty("id")) {
-                    setDeleteExp([...deleteExp, experience.id]);
+                  if (certification.hasOwnProperty("id")) {
+                    setDeleteExp([...deleteExp, certification.id]);
                   }
                   setCertificationSections(copySections);
                 }}
@@ -626,7 +624,7 @@ const AcademicRecords = ({
                     type="text"
                     name="certification_name"
                     placeholder="Certification Name"
-                    value={experience.certification_name}
+                    value={certification.certification_name}
                     onChange={(e) => {
                       const updatedSections = [...certificationSections];
                       updatedSections[index].certification_name =
@@ -656,23 +654,23 @@ const AcademicRecords = ({
                   <Datepicker
                   disabled={isEdit ? false : true}
                     day={
-                      experience?.completion_date
-                        ? experience?.completion_date.substr(0, 2)
+                      certification?.completion_date
+                        ? certification?.completion_date.substr(0, 2)
                         : null
                     }
                     month={
-                      experience?.completion_date
-                        ? experience?.completion_date.substr(3, 2)
+                      certification?.completion_date
+                        ? certification?.completion_date.substr(3, 2)
                         : null
                     }
                     year={
-                      experience?.completion_date
-                        ? experience?.completion_date.substr(6, 4)
+                      certification?.completion_date
+                        ? certification?.completion_date.substr(6, 4)
                         : null
                     }
                     name="completion_date"
                     selected={moment(
-                      experience.completion_date,
+                      certification.completion_date,
                       "DD-MM-YYYY"
                     ).toDate()}
                     onChange={(date) => {
@@ -702,22 +700,22 @@ const AcademicRecords = ({
                   disabled={isEdit ? false : true}
                     name="expiry_date"
                     day={
-                      experience?.expiry_date
-                        ? experience?.expiry_date.substr(0, 2)
+                      certification?.expiry_date
+                        ? certification?.expiry_date.substr(0, 2)
                         : null
                     }
                     month={
-                      experience?.expiry_date
-                        ? experience?.expiry_date.substr(3, 2)
+                      certification?.expiry_date
+                        ? certification?.expiry_date.substr(3, 2)
                         : null
                     }
                     year={
-                      experience?.expiry_date
-                        ? experience?.expiry_date.substr(6, 4)
+                      certification?.expiry_date
+                        ? certification?.expiry_date.substr(6, 4)
                         : null
                     }
                     selected={moment(
-                      experience.expiry_date,
+                      certification.expiry_date,
                       "DD-MM-YYYY"
                     ).toDate()}
                     onChange={(date) => {
@@ -742,10 +740,10 @@ const AcademicRecords = ({
                   <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
                     Certification Body:
                   </h2>
-                  {experience.certification_body ? (
+                  {certification.certification_body ? (
                     <div className="flex gap-1  items-center">
                       <div className="opacity-50">
-                        {experience.certification_body.name}
+                        {certification.certification_body.name}
                       </div>
                       <WiCloudRefresh
                         onClick={() => {

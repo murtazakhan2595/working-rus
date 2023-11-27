@@ -74,7 +74,10 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
         if (selectedFile) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                setImagePreview(e.target.result)
+                setImagePreview({
+                    name: selectedFile.name,
+                    file: e.target.result,
+                  })
             }
             reader.readAsDataURL(selectedFile);
             const imageError = { image: '' };
@@ -267,8 +270,8 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                                 className="flex bg-[#EFEFEF] cursor-pointer text-center overflow-hidden font-bold w-[240px] h-[260px] rounded-3xl my-3"
                             >
                                 <div className="w-full h-full flex justify-center items-center border-solid bg-[#EFEFEF] rounded-3xl">
-                                    {imagePreview ? (
-                                        <img src={imagePreview} alt='Preview' className='w-full h-full' />
+                                    {imagePreview?.file ? (
+                                        <img src={imagePreview?.file} alt='Preview' className='w-full h-full' />
                                     ) : (
                                         <>   <span className="text-lg">
                                             <img src={upload} alt='icon here' className='w-20 h-20 block m-auto' />

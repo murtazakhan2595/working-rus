@@ -176,11 +176,13 @@ const PersonalInfo = ({
             position: "top-right",
             autoClose: 3000,
           });
+        sessionStorage.clear()
         nextstep();
       }
     }
   };
   const handleNextStep = () => {
+    sessionStorage.clear()
     nextstep();
   };
 
