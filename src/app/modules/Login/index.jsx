@@ -106,7 +106,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
 
   const loginSchema = Joi.object({
     username: Joi.string()
-      .required("User Name Required")
+      .required("Username Required")
       .label("UserName")
       .messages({
         "string.empty": `Enter Your Username`,
@@ -136,17 +136,14 @@ function Login({ setUserProfile, baseUrl, setToken }) {
         <div className="flex justify-center items-center min-h-full">
           <div className="md:mx-auto md:w-fit w-full max-w-md">
             <form
-              className="space-y-3 bg-white my-2 lg:py-12 py-6 rounded-3xl p-8 m-6 max-w-800 border border-gray-100 shadow-md"
+              className="space-y-3 bg-white my-2 lg:py-10 py-6 rounded-3xl px-8 m-6 max-w-800 border border-gray-100 shadow-md"
               onSubmit={handleSubmit}
               method="POST"
             >
-              <div>
-                <h2 className="text-[#1176BC] text-center text-2xl lg:text-3xl font-montserrat font-[700] leading-9 tracking-tight py-4 mb-2">
+              <div className="w-80">
+                <h2 className="text-[#1176BC] text-center text-2xl lg:text-3xl font-montserrat font-[700] leading-9 pb-4 tracking-tight">
                   Login Account
                 </h2>
-                <p className="text-center text-[#353535] lg:text-base text-sm font-montserrat pb-3 lg:pb-6">
-                  Please Login to start your day and be productive at the best.
-                </p>
               </div>
               <div>
                 <div className="mt-2">
@@ -155,8 +152,8 @@ function Login({ setUserProfile, baseUrl, setToken }) {
                     name="username"
                     type="text"
                     autoComplete="username"
-                    title="Enter Your User Name"
-                    placeholder="User Name"
+                    title="Enter Your Username"
+                    placeholder="Username"
                     value={values.username}
                     onChange={handleChange}
                     className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
