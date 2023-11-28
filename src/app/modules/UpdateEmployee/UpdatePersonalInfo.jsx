@@ -98,7 +98,7 @@ const PersonalInfo = ({
       });
       const employeeData = employeeResponse.data;
       setDefaultData(employeeData);
-      setImagePreview(employeeData.profile_picture.file)
+      setImagePreview(employeeData.profile_picture)
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -121,7 +121,9 @@ const PersonalInfo = ({
   useEffect(() => {
     setDataInSessionStorage("UpdatedPersonalInfo", defaultData);
   }, [defaultData]);
-
+  useEffect(() => {
+    setDataInSessionStorage("UpdatedDP",imagePreview)
+}, [imagePreview])
   const handleSave = async () => {
     let checkData = getDataFromSessionStorage("UpdatedPersonalInfo");
     const copyCheckData = {
