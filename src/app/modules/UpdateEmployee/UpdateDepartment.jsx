@@ -5,6 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -28,7 +29,8 @@ const Department = ({ errors, setErrors, prevstep ,  token,
       };
       let [isEdit, setIsEdit] = useState(false);
       let [cancelBox, setCancelBox] = useState(false);
-        let [defaultData, setDefaultData] = useState({});
+      let [defaultData, setDefaultData] = useState({});
+      const navigate = useNavigate()
     
 
       const id = userProfile.id;
@@ -210,14 +212,19 @@ const Department = ({ errors, setErrors, prevstep ,  token,
               Edit
             </button>
           )}
-          {isEdit && (
+          {isEdit ? (
             <button
               onClick={handleSave}
               className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
             >
               Save
             </button>
-          )}
+          ): <button
+          onClick={()=>{navigate("/")}}
+          className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
+        >
+          Back To Home
+        </button>}
           </div>
             </div >
             {cancelBox && (
