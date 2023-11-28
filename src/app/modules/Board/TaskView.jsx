@@ -668,20 +668,20 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                   type="text"
                   name=""
                   id=""
-                  className="h-14 rounded-lg bg-white w-full mt-4 font-sfpro pl-3 focus:outline-none"
+                  className="h-11 rounded-lg bg-white w-full mt-4 font-sfpro pl-3 focus:outline-none"
                   placeholder="Write a comment"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />
-                <div className="flex justify-between mt-2">
-                  <div className="flex gap-x-1 text-xl text-gray-400">
+                <div className="flex justify-end mt-2">
+                  {/* <div className="flex gap-x-1 text-xl text-gray-400">
                     <span>
                       <IoAttachOutline />
                     </span>
                     <span>
                       <VscMention />
                     </span>
-                  </div>
+                  </div> */}
                   <div>
                     <button
                       type="button"

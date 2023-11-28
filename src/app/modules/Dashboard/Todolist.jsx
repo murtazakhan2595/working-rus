@@ -35,20 +35,26 @@ const Dashboard = ({ token, baseUrl }) => {
 
   //  1. Fetch Todos
   useEffect(() => {
+    console.log('Component is rendering.'); // Log when the component renders
     const fetchTodos = async () => {
       try {
+        setLoading(true);
+        console.log('API call is being made.'); // Log when the API call is initiated
         const response = await axios.get(`${baseUrl}/todotask`, { headers });
         const todosData = response.data;
         setTodos(todosData);
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching todos:', error);
+      } finally {
         setLoading(false);
+        console.log('API call completed.'); // Log when the API call is completed
       }
     };
   
     fetchTodos();
   }, []);
+  
+  
 
   // 2. Create a todo
   const createTodo = async () => {
@@ -98,9 +104,8 @@ const Dashboard = ({ token, baseUrl }) => {
       console.error('Error deleting todo', error);
     }
   };
+  
   // Functions for calling api ended
-
-
   const handleEdit = (id) => {
     const todoToEdit = todos.find((todo) => todo.id === id);
     setEditTexts((prevEditTexts) => ({
