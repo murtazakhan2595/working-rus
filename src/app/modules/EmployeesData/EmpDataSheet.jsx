@@ -17,11 +17,14 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [hasNextPage, setHasNextPage] = useState(true);
 
   // handle search
   const handleSearch = (term) => {
     setSearchTerm(term);
+    setPage(1); 
   };
+  
 
   // Functions for calling the API
   const headers = {
@@ -29,13 +32,14 @@ const EmpDataSheet = ({ baseUrl, token }) => {
     "Content-Type": "application/json",
   };
 
-  // Fetching users
-
-  useEffect(() => {
+   // Fetching users
+   useEffect(() => {
+    console.log("Fetching data with searchTerm:", searchTerm, "and page:", page);
+  
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/emp/?search=${searchTerm}&page=${page}`,
+          `${baseUrl}/emp/?ordering=id&search=${searchTerm}&page=${page}`,
           {
             headers,
           }
@@ -43,12 +47,15 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         const usersData = response.data.results;
         setUsers(usersData);
         setLoading(false);
+        setHasNextPage(!!response.data.next);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
+  
     fetchUsers();
   }, [page, searchTerm, baseUrl, token]);
+  
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9] h-[100vh]">
@@ -114,13 +121,16 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         <button
           onClick={() => setPage(page - 1)}
           disabled={page === 1}
-          className="mr-4 w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue"
+          className={`mr-4 w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue 
+          ${page === 1 ? "bg-blue-300": ""}`}
         >
           <BsArrowLeftShort className="text-xl text-white" title="Previous" />
         </button>
         <button
           onClick={() => setPage(page + 1)}
-          className="w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue"
+          disabled={!hasNextPage}
+          className={`w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue 
+          ${!hasNextPage ? "bg-blue-300": ""}`}
         >
           <BsArrowRightShort className="text-xl text-white" title="Next" />
         </button>
