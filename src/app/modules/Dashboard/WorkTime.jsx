@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaPause, FaStop, FaPlus, FaMinus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import moment from "moment-timezone";
-import { getCountryForTimezone } from "countries-and-timezones";
+import { getAllCountries } from "countries-and-timezones";
 import Select from "react-select";
 
 const WorkTime = () => {
@@ -57,23 +57,38 @@ const WorkTime = () => {
     return progress * 360; // Convert to degrees (0 to 360)
   };
 
-  // *************************** Getting Other Cities Lang Code For Flag **************************** //
-
-  const getCountryCodeFromTimezone = (timezone) => {
-    const country = getCountryForTimezone(timezone);
-    let countryCode = country.id;
-    return country ? countryCode.toLocaleLowerCase() : null;
-  };
-
   // *************************** Getting Other Cities and Time **************************** //
 
   const fetchTimezones = async () => {
-    var aryIannaTimeZones = Intl.supportedValuesOf("timeZone");
+    var getCountries = getAllCountries();
 
     let zones = [];
-    aryIannaTimeZones.forEach((timeZone) => {
-      zones.push(timeZone);
-    });
+    for (const countryId in getCountries) {
+      if (getCountries.hasOwnProperty(countryId)) {
+        let country = getCountries[countryId];
+        if (country.timezones.length === 1) {
+          zones.push({
+            id: country.id,
+            name: `${country.name}`,
+            abbreviation: '',
+            timezones: country.timezones,
+          });
+        } else {
+          country.timezones.forEach((timezone) => {
+            // const timezoneAbbr = moment().tz(timezone).format('z')
+            // const timezoneAbbr = moment.tz(timezone).zoneAbbr();
+            let abbreviation = timezone.split('/')
+            zones.push({
+              id: country.id,
+              name: country.name,
+              abbreviation: abbreviation[2] ? abbreviation[2] : abbreviation[1],
+              // abbreviation: timezoneAbbr,
+              timezones: [timezone],
+            });
+          });
+        }
+      }
+    }
     setTimezones(zones);
   };
 
@@ -82,11 +97,10 @@ const WorkTime = () => {
     return targetDate;
   };
 
-  const deleteTime = (name) => {
+  const deleteTime = (timezone) => {
     const storedData = localStorage.getItem("myTimeZones");
     const data = storedData ? JSON.parse(storedData) : [];
-    const indexToRemove = data.filter((item) => item !== name);
-
+    const indexToRemove = data.filter(item => item.name !== timezone.name);
     localStorage.setItem("myTimeZones", JSON.stringify(indexToRemove));
     setMsg("");
   };
@@ -95,19 +109,28 @@ const WorkTime = () => {
     e.preventDefault();
     const storedData = localStorage.getItem("myTimeZones");
     const data = storedData ? JSON.parse(storedData) : [];
-    const existsInArray = data.includes(selectedTimezone);
-    if (data.length < clockLimit) {
-      if (existsInArray) {
-        setBottomMsg("Time Zone Already Exist Choose Another One.");
+    if (selectedTimezone.timeZone.length === 1) {
+      const existsInArray = data.some(item => item.name === `${selectedTimezone.name}${selectedTimezone.abbreviation && ` - ${selectedTimezone.abbreviation}`}`);
+      if (data.length < clockLimit) {
+        if (existsInArray) {
+          setBottomMsg("Time Zone Already Exist Choose Another One.");
+        } else {
+          data.push({
+            id: selectedTimezone.id,
+            name: `${selectedTimezone.name}${selectedTimezone.abbreviation && ` - ${selectedTimezone.abbreviation}`}` ,
+            timeZone: selectedTimezone.timeZone,
+          });
+          localStorage.setItem("myTimeZones", JSON.stringify(data));
+          setModalOpen(false);
+          setMsg("");
+          setBottomMsg("");
+        }
       } else {
-        data.push(selectedTimezone);
-        localStorage.setItem("myTimeZones", JSON.stringify(data));
-        setModalOpen(false);
-        setMsg("");
-        setBottomMsg("");
+        setMsg("You Can Add Only 3 Clocks.");
       }
     } else {
-      setMsg("You Can Add Only 3 Clocks.");
+      console.log(selectedTimezone)
+      setBottomMsg("Could not added the timezone please try again later.");
     }
   };
 
@@ -118,12 +141,13 @@ const WorkTime = () => {
       const storedData = localStorage.getItem("myTimeZones");
       const data = storedData ? JSON.parse(storedData) : [];
       let myZones = [];
-      data.map((d) =>
+      data.map((d) =>{
         myZones.push({
-          name: d,
-          time: getTargetTime(d),
-          img: getCountryCodeFromTimezone(d),
+          name: d.name,
+          time: getTargetTime(d.timeZone[0]),
+          img: d.id?.toLowerCase(),
         })
+      }
       );
       setWorldTime(myZones);
     }, 1000);
@@ -132,6 +156,16 @@ const WorkTime = () => {
   useEffect(() => {
     fetchTimezones();
   }, []);
+
+
+  const customFilter = (option, searchText) => {
+    if (option.data.name.toLowerCase().includes(searchText.toLowerCase()) ||
+    option.data.abbreviation.toLowerCase().includes(searchText.toLowerCase()) ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   return (
     <div className="flex flex-col -mt-5 items-center justify-center ml-1 mr-3 md:pr-[25%] md:ml-10">
@@ -174,8 +208,9 @@ const WorkTime = () => {
             {worldTime.map((time, index) => (
               <div key={index} className="z-0">
                 <div
-                  className={`flex items-center justify-end ${index === 1 ? "" : "pr-4"
-                    } rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}
+                  className={`flex items-center justify-end ${
+                    index === 1 ? "" : "pr-4"
+                  } rounded-md bg-[#e3e3e3] w-64 py-[0.20rem]`}
                 >
                   <img
                     src={`https://flagcdn.com/w320/${time.img}.png`}
@@ -187,12 +222,12 @@ const WorkTime = () => {
                       {time.time}
                     </div>
                     <div className="text-xs mt-0 text-center text-[#283b91]">{`${time.name?.substring(
-                      time.name.indexOf("/") + 1
+                      time.name.indexOf("-") + 1
                     )}`}</div>
                   </div>
                   <FaMinus
                     onClick={() => {
-                      deleteTime(time.name);
+                      deleteTime(time);
                     }}
                     className="ml-2 mr-2 text-[#283b91] self-start text-sm hover:cursor-pointer"
                   />
@@ -204,13 +239,15 @@ const WorkTime = () => {
             ) : (
               <div
                 style={{ justifyContent: "right" }}
-                className={`${worldTime.length >= 1 ? "w-[70%]" : "w-[180%]"
-                  } flex items-center`}
+                className={`${
+                  worldTime.length >= 1 ? "w-[70%]" : "w-[180%]"
+                } flex items-center`}
               >
                 <div
                   style={{ justifyContent: "right" }}
-                  className={`p-1 flex  ${worldTime.length >= 1 ? "w-[21%]" : "w-[51%]"
-                    } rounded-md justify-center items-end`}
+                  className={`p-1 flex  ${
+                    worldTime.length >= 1 ? "w-[21%]" : "w-[51%]"
+                  } rounded-md justify-center items-end`}
                 >
                   <FaPlus
                     onClick={() => {
@@ -241,12 +278,12 @@ const WorkTime = () => {
                   {time.time}
                 </div>
                 <div className="text-xs mt-0 text-center text-[#283b91]">{`${time.name?.substring(
-                  time.name.indexOf("/") + 1
+                  time.name.indexOf("-") + 1
                 )}`}</div>
               </div>
               <FaMinus
                 onClick={() => {
-                  deleteTime(time.name);
+                  deleteTime(time);
                 }}
                 className="ml-2  text-[#283b91] self-start text-sm"
               />
@@ -301,20 +338,27 @@ const WorkTime = () => {
                     required
                     className="basic-single"
                     classNamePrefix="select"
-                    defaultValue={timezones[0]}
+                    filterOption={customFilter}
                     isClearable
                     isSearchable
                     onChange={(e) => {
+                      console.log(e)
                       if (e) {
-                        setSelectedTimezone(e.value);
+                        setSelectedTimezone({
+                          id: e.id,
+                          abbreviation: e.abbreviation,
+                          name: e.name ,
+                          timeZone: e.timezones,
+                        });
                       } else {
-                        setSelectedTimezone(null); // Handle the case where the selection is cleared
+                        setSelectedTimezone(null);
                       }
                     }}
-                    options={timezones.map((timezone) => ({
-                      value: timezone,
-                      label: timezone,
-                    }))}
+                    getOptionLabel={option =>
+                      <div className="flex gap-2 items-start">{option.name} <div className="text-sm opacity-60">{option.abbreviation}</div> </div>
+                    }
+                    getOptionValue={option => option.timezones}
+                    options={timezones}
                   />
                 </div>
                 <button
