@@ -13,7 +13,7 @@ const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) =>
   const [validationErrors, setValidationErrors] = useState({});
 
   const boardSchema = Joi.object({
-    projectName: Joi.string().min(1).max(100).required(),
+    projectName: Joi.string().min(1).max(100).required().label('Board Name'),
     description: Joi.string().min(1).max(5000).required(),
     startDate: Joi.date().iso().required(), // Assuming dates are in ISO format (YYYY-MM-DD)
     dueDate: Joi.date().iso().required(),

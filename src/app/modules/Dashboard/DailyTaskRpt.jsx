@@ -12,7 +12,7 @@ import Joi from 'joi';
 
 const schema = Joi.object({
     description: Joi.string().required().label('DTR')
-})
+});
 
 const CustomButton = ({ text, onClick, className }) => {
     return (
@@ -62,7 +62,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
         return true;
     };
 
-    const handleEditorChange = html => {
+    const handleEditorChange = (html) => {
         setEditorHtml(html);
 
         const isValid = validateForm();
@@ -89,13 +89,13 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
             // Show validation error message
             setValidationErrors({
                 ...validationErrors,
-                description: 'Write something to save',
+                description: 'Please write something to save.',
             });
             return;
         }
         try {
             closeModal();
-            toast.success('Data saved successfully!', {
+            toast.success('DTR saved successfully!', {
                 position: toast.POSITION.TOP_RIGHT,
             });
 
@@ -143,14 +143,13 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
         setSubmittedOnce(true);
     };
 
-
     useEffect(() => {
         const savedData = localStorage.getItem('dailyTaskData');
         if (savedData) {
             const { description } = JSON.parse(savedData);
-            setEditorHtml(description)
+            setEditorHtml(description);
         }
-    }, [])
+    }, []);
 
 
     return (
