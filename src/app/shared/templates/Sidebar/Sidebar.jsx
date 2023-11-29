@@ -218,7 +218,7 @@ const Sidebar = ({
               className="flex mb-1 mt-1  rounded-md py-2 px-4 items-center gap-1"
             >
               <MdLock className="text-white text-xl" />{" "}
-              <p className="text-white">Logout</p>
+              <p className="text-white cursor-pointer">Logout</p>
             </li>
           </ul>
         </div>
