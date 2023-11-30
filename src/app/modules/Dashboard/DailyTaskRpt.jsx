@@ -45,9 +45,11 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
     const [validationErrors, setValidationErrors] = useState({});
     const [formFilled, setFormFilled] = useState(true);
     const [submittedOnce, setSubmittedOnce] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const validateForm = () => {
         const { error } = schema.validate({ description: editorHtml }, { abortEarly: false });
+        
         if (error) {
             const errors = {};
             error.details.forEach((item) => {
@@ -57,23 +59,34 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
             setFormFilled(false);
             return false;
         }
+    
+        if (editorHtml.trim() === '') {
+            setValidationErrors({ description: 'Please write something to save.' });
+            setFormFilled(false);
+            return false;
+        }
+    
         setValidationErrors({});
         setFormFilled(true);
         return true;
     };
+    
 
-    const handleEditorChange = (html) => {
-        setEditorHtml(html);
-
+    const handleEditorChange = (content, delta, source, editor) => {
+        const htmlContent = editor.getHTML();
+    
+        setEditorHtml(htmlContent);
+    
         const isValid = validateForm();
         if (isValid) {
             setFormFilled(true);
         }
-
+    
         if (validationErrors.description) {
             setValidationErrors({ ...validationErrors, description: '' });
         }
     };
+    
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -85,42 +98,52 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
 
     const handleSave = () => {
         const isValid = validateForm();
-        if (!isValid) {
-            // Show validation error message
+        const isEmpty = !editorHtml.trim(); 
+    
+        if (!isValid || isEmpty) {
             setValidationErrors({
                 ...validationErrors,
                 description: 'Please write something to save.',
             });
             return;
         }
+    
         try {
             closeModal();
             toast.success('DTR saved successfully!', {
                 position: toast.POSITION.TOP_RIGHT,
             });
-
+    
         } catch (error) {
             toast.error('Error saving the data. Please try again.', {
                 position: toast.POSITION.TOP_RIGHT,
             });
         }
     };
+    
 
-    const handleSubmit = async () => {
-        const isValid = validateForm();
-        if (!isValid) {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (isLoading) {
             return;
         }
-
+    
+        setIsLoading(true);
+        const isValid = validateForm();
+        if (!isValid) {
+            setIsLoading(false); 
+            return;
+        }
+    
         const data = {
             description: editorHtml,
         };
-
+    
         const headers = {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
         };
-
+    
         try {
             const response = await axios.post(`${baseUrl}/dtr/`, data, { headers });
             if (response.status === 201) {
@@ -128,21 +151,23 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                     position: toast.POSITION.TOP_RIGHT,
                 });
             }
-
+    
             setEditorHtml("");
             closeModal();
             localStorage.removeItem('dailyTaskData');
         } catch (error) {
             console.error('API Error:', error);
-
+    
             // Show an error notification
             toast.error('Error submitting the form. Please try again.', {
                 position: toast.POSITION.TOP_RIGHT,
             });
+        } finally {
+            setIsLoading(false); // Reset isLoading after API call completion
         }
         setSubmittedOnce(true);
     };
-
+    
     useEffect(() => {
         const savedData = localStorage.getItem('dailyTaskData');
         if (savedData) {
@@ -210,7 +235,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                                 {/* Buttons */}
                                 <div className="flex justify-center space-x-10">
                                     <CustomButton text="Save" className="custom-class" onClick={handleSave} />
-                                    <CustomButton text="Submit" className="custom-class" onClick={handleSubmit} />
+                                    <CustomButton text="Submit" className="custom-class"   disabled={isLoading} onClick={handleSubmit} />
                                 </div>
                             </div>
                         </div>

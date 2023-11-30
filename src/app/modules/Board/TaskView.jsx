@@ -31,6 +31,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [editedComment, setEditedComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -154,6 +155,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     const validateData = {
       name: name,
@@ -206,6 +208,8 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
           pauseOnHover: true,
           draggable: true,
         });
+      } finally {
+        setIsLoading(false);
       }
     } else {
       // Display validation errors
@@ -557,8 +561,8 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
                                   key={user.id}
                                 >
-                                  <div className="rounded-full bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center border-gray-500">
-                                    {user.username.slice(0, 2)}
+                                  <div className="rounded-full text-base bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center border-gray-500">
+                                    {user.username.slice(0, 2).toUpperCase()}
                                   </div>
                                   <p className="gap-3 text-sm">
                                     {user.username}
@@ -638,7 +642,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                                   className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
                                   key={user.id}
                                 >
-                                  <div className="rounded-full text-sm bg-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center border-gray-500">
+                                  <div className="rounded-full text-sm bg-blue-500 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center border-gray-500">
                                     {user.username.toUpperCase().slice(0, 2)}
                                   </div>
                                   <p className="gap-3 text-sm">
@@ -797,6 +801,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
               <button
                 type="submit"
                 className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white"
+                disabled={isLoading}
               >
                 Update
               </button>

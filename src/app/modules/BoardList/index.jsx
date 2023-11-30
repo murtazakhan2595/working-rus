@@ -76,6 +76,7 @@ const BoardList = ({
   // get members
   const getMembers = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${baseUrl}/emp/`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -87,6 +88,8 @@ const BoardList = ({
       }
     } catch (error) {
       console.error("Error while fetching project members:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -192,33 +195,41 @@ const BoardList = ({
               Home
             </Link>
             <GrNext className="mx-1 opacity-40" />
-            <div className="break-all">{`${project.name}`}</div>
+            {loading ? (
+              <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500"></div>
+            ) : (
+              <div className="break-all">{`${project.name}`}</div>
+            )}
           </div>
         </div>
         <div className="flex gap-3 pr-2">
           <div
             className={`rounded-md flex gap-x-1 justify-center items-center`}
           >
-            <div className={`flex gap-x-1 pl-2`}>
-              {project?.project_members?.map((memberId, index) => (
-                <div
-                  className="flex justify-center items-center w-8 h-8 font-bold rounded-full border bg-blue-800 text-white text-sm p-2"
-                  key={index}
-                >
-                  {members
-                    .find((member) => member.id === memberId)
-                    ?.username?.slice(0, 2)
-                    .toUpperCase()}
-                </div>
-              ))}
-            </div>
+            {loading ? (
+              <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500"></div>
+            ) : (
+              <div className={`flex gap-x-1 pl-2`}>
+                {project?.project_members?.map((memberId, index) => (
+                  <div
+                    className="flex justify-center items-center w-8 h-8 font-bold rounded-full border bg-blue-800 text-white text-sm p-2"
+                    key={index}
+                  >
+                    {members
+                      .find((member) => member.id === memberId)
+                      ?.username?.slice(0, 2)
+                      .toUpperCase()}
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="flex bg-white px-2 py-1 gap-3 items-center rounded-lg">
               <div className=" px-2 text-[#283b91]">Team Members</div>
             </div>
           </div>
 
-          {userProfile.role !== 4 &&
+          {userProfile.role !== 4 && (
             <>
               <div className="hidden bg-[#f7f7f8] px-2 py-1 gap-3 items-center rounded-lg ">
                 <div className=" px-1 text-gray-400">
@@ -246,7 +257,7 @@ const BoardList = ({
                 </div>
               </div>
             </>
-          }
+          )}
         </div>
       </div>
       {/* Board List */}
@@ -287,15 +298,15 @@ const BoardList = ({
       </div>
 
       {/* Add Board Button */}
-      {userProfile.role !== 4 &&
-      <div
-        className="absolute bottom-10 right-5 lg:right-10 w-10 h-10 flex justify-center items-center 
+      {userProfile.role !== 4 && (
+        <div
+          className="absolute bottom-10 right-5 lg:right-10 w-10 h-10 flex justify-center items-center 
       bg-[#25A8E0] text-white font-bold border rounded-full text-xl cursor-pointer"
-        onClick={() => setIsModalOpen(true)}
-      >
-        +
-      </div>
-}
+          onClick={() => setIsModalOpen(true)}
+        >
+          +
+        </div>
+      )}
       {/* Board Model */}
       {isModalOpen && (
         <BoardModel

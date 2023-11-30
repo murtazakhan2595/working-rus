@@ -22,7 +22,8 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
   const [users, setUsers] = useState({});
   const [filterUsers, setFilterUsers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState(data.project_members);
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const boardSchema = Joi.object({
     projectName: Joi.string().min(1).max(100).required(),
@@ -35,6 +36,8 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     setErrors({});
     const formData = {
       name: projectName,
@@ -62,6 +65,8 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
       toast.error(error.response.data.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
+    } finally {
+      setIsLoading(false);
     }
 
     const dataToValidate = {
@@ -344,6 +349,7 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                 <button
                   type="submit"
                   className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white"
+                  disabled={isLoading}
                 >
                   Update
                 </button>
