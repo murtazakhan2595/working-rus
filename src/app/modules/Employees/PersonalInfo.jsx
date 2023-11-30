@@ -115,7 +115,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
         } else {
             setErrors({});
             nextstep();
-            console.log("Proceeding to the next step...");
         }
     };
 

@@ -56,8 +56,6 @@ const RecruitmentForm = ({ token, baseUrl }) => {
       Deadline: formData.deadline,
     };
 
-    console.log(data);
-
     try {
       const response = await axios.post(
         `https://hrms.tecbrix.cloud:8080/api/recruitment/`,
@@ -66,13 +64,11 @@ const RecruitmentForm = ({ token, baseUrl }) => {
           headers,
         }
       );
-      console.log(response);
       toast.success("Job Posted Successfully", {
         position: toast.POSITION.TOP_RIGHT,
       });
       setFormData(initialData,);
     } catch (error) {
-      console.log(error);
       toast.error("Error submitting the form. Please try again.", {
         position: toast.POSITION.TOP_RIGHT,
       });

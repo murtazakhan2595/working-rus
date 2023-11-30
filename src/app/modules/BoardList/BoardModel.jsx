@@ -36,7 +36,6 @@ const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) =>
       };
 
       const response = await axios.post(`${baseUrl}/board/`, formData, { headers });
-      console.log('Response:', response);
       if (response.status === 201) {
         toast.success("Board Added!", {
           position: toast.POSITION.TOP_RIGHT,

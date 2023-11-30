@@ -63,7 +63,6 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
       const response = await axios.post(`${baseUrl}/project/`, formData, {
         headers,
       });
-      console.log("Response:", response);
       if (response.status === 201) {
         toast.success("Project Added!", {
           position: toast.POSITION.TOP_RIGHT,

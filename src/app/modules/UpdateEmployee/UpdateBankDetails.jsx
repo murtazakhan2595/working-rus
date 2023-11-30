@@ -104,7 +104,6 @@ const BankDetails = ({
             "IBAN number must be at least 10 characters";
       }
       setErrors(validationErrors);
-      console.log(validationErrors);
     } else {
         setErrors({});
         let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");

@@ -247,7 +247,6 @@ const ProfessionalExp = ({
                           accept=".pdf"
                           max-size="104857600"
                           onChange={(e) => {
-                            console.log(index);
                             let file = e.target.files[0];
                             const updatedSections = [...experienceSections];
                             const fileData = { name: file.name };

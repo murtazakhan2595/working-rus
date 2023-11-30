@@ -86,7 +86,6 @@ const Department = ({ errors, setErrors, prevstep ,  token,
                 validationErrors[detail.path[0]] = detail.message;;
             });
             setErrors(validationErrors);
-            console.log(validationErrors)
         } else {
             setErrors({})
             let UpdatedDepartmentInfo = getDataFromSessionStorage("UpdatedDepartmentInfo");

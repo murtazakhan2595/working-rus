@@ -44,7 +44,6 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
       assigned_by: assignByUser.id,
     };
     const errors = validateForm(validateData);
-    console.log(errors);
     if (Object.keys(errors).length === 0) {
       try {
         const postData = {

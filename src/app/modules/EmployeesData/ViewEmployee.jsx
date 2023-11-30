@@ -49,8 +49,6 @@ const ViewEmployee = ({ token, baseUrl }) => {
 //     fetchEmployeeData();
 //   }, [id]);
 
-  console.log(data);
-  console.log(education);
 
   return (
     <div className="px-4 lg:px-10 py-4 w-full overflow-x-auto overflow-y-auto max-h-[100vh] xScroll">

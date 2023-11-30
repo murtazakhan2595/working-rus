@@ -132,14 +132,12 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
         setErrors(validationErrors);
       }
       if (Object.keys(fieldErrors).length > 0) {
-        console.log("3rd");
         let newErrors = { ...fieldErrors };
         setCerErrors(newErrors);
       }
       return;
     }
     else {
-      console.log("fifth");
       nextstep();
     }
   };
@@ -487,7 +485,6 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
                           accept=".pdf"
                           max-size="104857600"
                           onChange={(e) => {
-                            console.log(index);
                             let file = e.target.files[0];
                             const updatedSections = [...certificationSections];
                             const fileData = { name: file.name };

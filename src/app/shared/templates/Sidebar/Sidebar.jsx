@@ -61,7 +61,6 @@ const Sidebar = ({
         })
         .then((response) => {
           if (response.status === 200) {
-            console.log("try");
             setProjects(response.data.results);
             setProjectCount(response.data.count);
             setNextPage(response.data.next);

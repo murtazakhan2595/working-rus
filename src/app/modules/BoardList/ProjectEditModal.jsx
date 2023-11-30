@@ -51,7 +51,6 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
       };
 
       const response = await axios.patch(`${baseUrl}/project/${data.id}`, formData, { headers });
-      console.log('Response:', response);
       if (response.status === 200) {
         toast.success("Project Updated!", {
           position: toast.POSITION.TOP_RIGHT,

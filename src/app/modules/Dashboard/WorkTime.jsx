@@ -129,7 +129,6 @@ const WorkTime = () => {
         setMsg("You Can Add Only 3 Clocks.");
       }
     } else {
-      console.log(selectedTimezone)
       setBottomMsg("Could not added the timezone please try again later.");
     }
   };
@@ -342,7 +341,6 @@ const WorkTime = () => {
                     isClearable
                     isSearchable
                     onChange={(e) => {
-                      console.log(e)
                       if (e) {
                         setSelectedTimezone({
                           id: e.id,
