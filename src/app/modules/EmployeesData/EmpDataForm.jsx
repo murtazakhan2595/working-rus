@@ -88,7 +88,6 @@ const EmpDataForm = ({ token, baseUrl }) => {
         setRefreshComponent(!refreshComponent);
       }
     } catch (error) {
-      console.log(error);
       if (
         error.response &&
         error.response.data.username[0] ===

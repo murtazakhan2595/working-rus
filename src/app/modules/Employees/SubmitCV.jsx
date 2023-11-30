@@ -45,7 +45,6 @@ useEffect(() => {
 const handleNextStep = () => {
     if (!cvName) {
       const validationErrors = { cv: "CV is required" };
-      console.log("first")
       setErrors(validationErrors);
     } else {
       nextstep();

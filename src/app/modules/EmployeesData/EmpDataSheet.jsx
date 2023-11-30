@@ -34,7 +34,6 @@ const EmpDataSheet = ({ baseUrl, token }) => {
 
    // Fetching users
    useEffect(() => {
-    console.log("Fetching data with searchTerm:", searchTerm, "and page:", page);
   
     const fetchUsers = async () => {
       try {

@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom'
 
 const BreadCrums = () => {
     const location = useLocation()
-    console.log(location)
 
     let currentLink = '';
 

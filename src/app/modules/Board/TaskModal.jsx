@@ -8,9 +8,8 @@ import { connect } from "react-redux";
 import Joi from "joi";
 import moment from "moment";
 import ReactQuill from "react-quill";
-import Select from 'react-select';
+import Select from "react-select";
 import { priorityOptions, statusOptions } from "../../../data/Data";
-
 
 const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
   let newDate = new Date();
@@ -29,14 +28,28 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [users, setUsers] = useState({});
   const [filterUsers, setFilterUsers] = useState({});
-
+  const [isLoading, setIsLoading] = useState(false);
 
   const headers = {
     Authorization: `Bearer ${token}`,
   };
 
+  const resetFormState = () => {
+    setName("");
+    setDescription("");
+    setDueDate(defaultDate);
+    setStartDate(defaultDate);
+    setStatus(currentStatus);
+    setPriority(3);
+    setAssignToUser({});
+    setAssignByUser({});
+    setValidationErrors({});
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     const validateData = {
       name: name,
       description: description,
@@ -44,7 +57,6 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
       assigned_by: assignByUser.id,
     };
     const errors = validateForm(validateData);
-    console.log(errors);
     if (Object.keys(errors).length === 0) {
       try {
         const postData = {
@@ -72,6 +84,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
             pauseOnHover: true,
           });
           onClose();
+          resetFormState();
         }
       } catch (error) {
         console.error("Error:", error);
@@ -85,6 +98,8 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
           pauseOnHover: true,
           draggable: true,
         });
+      } finally {
+        setIsLoading(false);
       }
     } else {
       // Display validation errors
@@ -106,7 +121,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
             setUsers(response.data.results);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -216,11 +231,15 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       modules={{
                         toolbar: {
                           container: [
-                            [{ 'header': '1' }, { 'header': '2' }],
+                            [{ header: "1" }, { header: "2" }],
                             ["bold", "italic", "underline"],
                             [{ list: "ordered" }, { list: "bullet" }],
                             ["link", "image"],
-                            [{ align: '' }, { align: 'center' }, { align: 'right' }]
+                            [
+                              { align: "" },
+                              { align: "center" },
+                              { align: "right" },
+                            ],
                           ],
                         },
                       }}
@@ -246,7 +265,9 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       </label>
                       <Datepicker
                         onChange={(date) => {
-                          let d = moment(date).format("YYYY-MM-DD").toLowerCase();
+                          let d = moment(date)
+                            .format("YYYY-MM-DD")
+                            .toLowerCase();
                           setStartDate(d);
                         }}
                       />
@@ -260,15 +281,15 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       </label>
                       <Datepicker
                         onChange={(date) => {
-                          let d = moment(date).format("YYYY-MM-DD").toLowerCase();
+                          let d = moment(date)
+                            .format("YYYY-MM-DD")
+                            .toLowerCase();
                           setDueDate(d);
                         }}
                       />
                     </div>
-
                   </div>
                   <div className="flex md:gap-2 gap-6">
-
                     <div className="flex flex-col">
                       <label
                         htmlFor="status"
@@ -278,7 +299,9 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       </label>
                       <Select
                         name="status"
-                        value={statusOptions.find((option) => option.value === status)}
+                        value={statusOptions.find(
+                          (option) => option.value === status
+                        )}
                         options={statusOptions}
                         isSearchable={false}
                         className="w-[140px]" // Add your custom styles here
@@ -296,7 +319,9 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                       </label>
                       <Select
                         name="priority"
-                        value={priorityOptions.find((opt) => opt.value === priority)}
+                        value={priorityOptions.find(
+                          (opt) => opt.value === priority
+                        )}
                         options={priorityOptions}
                         className="w-[140px]"
                         isSearchable={false}
@@ -583,6 +608,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
               <button
                 type="submit"
                 className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white"
+                disabled={isLoading}
               >
                 Done
               </button>

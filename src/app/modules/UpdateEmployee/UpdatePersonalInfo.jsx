@@ -315,7 +315,9 @@ const PersonalInfo = ({
                 </label>
                 <div className="flex gap-1">
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[+0-9]" 
                     disabled={isEdit ? false : true}
                     value={defaultData.mobile_no}
                     name="mobile_no"
@@ -645,7 +647,8 @@ const PersonalInfo = ({
               </label>
               <div className="flex gap-1">
                 <input
-                  type="number"
+                  type="text"
+                  pattern="[+0-9]" 
                   disabled={isEdit ? false : true}
                   value={defaultData.emergency_phone_no}
                   name="emergency_phone_no"

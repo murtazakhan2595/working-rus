@@ -28,6 +28,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
   const [filterUsers, setFilterUsers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const customMessages = {
     'array.min': '"Selected Members" must contain at least 1 member',
@@ -44,6 +45,8 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     setErrors({});
     const formData = {
       name: projectName,
@@ -63,7 +66,6 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
       const response = await axios.post(`${baseUrl}/project/`, formData, {
         headers,
       });
-      console.log("Response:", response);
       if (response.status === 201) {
         toast.success("Project Added!", {
           position: toast.POSITION.TOP_RIGHT,
@@ -76,6 +78,8 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
       toast.error(error.response.data.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
+    } finally {
+      setIsLoading(false);
     }
 
     const dataToValidate = {
@@ -374,6 +378,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                 <button
                   type="submit"
                   className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white"
+                  disabled={isLoading}
                 >
                   Create
                 </button>

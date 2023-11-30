@@ -226,7 +226,6 @@ const AcademicRecords = ({
         setErrors(validationErrors);
       }
       if (Object.keys(fieldErrors).length > 0) {
-        console.log("3rd");
         let newErrors = { ...fieldErrors };
         setCerErrors(newErrors);
       }
@@ -769,7 +768,6 @@ const AcademicRecords = ({
                         accept=".pdf"
                         max-size="104857600"
                         onChange={(e) => {
-                          console.log(index);
                           let file = e.target.files[0];
                           const updatedSections = [...certificationSections];
                           const fileData = { name: file.name };

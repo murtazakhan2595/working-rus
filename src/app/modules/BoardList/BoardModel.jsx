@@ -11,6 +11,7 @@ const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) =>
   const [projectName, setProjectName] = useState("");
   const [errors, setErrors] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const boardSchema = Joi.object({
     projectName: Joi.string().min(1).max(100).required().label('Board Name'),
@@ -23,6 +24,8 @@ const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) =>
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     setErrors({});
     const formData = {
       name: projectName,
@@ -36,7 +39,6 @@ const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) =>
       };
 
       const response = await axios.post(`${baseUrl}/board/`, formData, { headers });
-      console.log('Response:', response);
       if (response.status === 201) {
         toast.success("Board Added!", {
           position: toast.POSITION.TOP_RIGHT,
@@ -49,6 +51,9 @@ const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) =>
       toast.error(error.response.data.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
+    } finally {
+      // Re-enable the "Done" button after API call, whether successful or not
+      setIsLoading(false);
     }
 
     const dataToValidate = {
@@ -123,6 +128,7 @@ const BoardModal = ({ baseUrl, token, onClose, projectId, refreshBoardList }) =>
                 <button
                   type="submit"
                   className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white"
+                  disabled={isLoading}
                 >
                   Create
                 </button>

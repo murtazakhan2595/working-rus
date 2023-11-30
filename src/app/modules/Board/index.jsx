@@ -11,7 +11,7 @@ import TaskView from "./TaskView";
 import { toast, ToastContainer } from "react-toastify";
 import "./index.css";
 import axios from "axios";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
 
@@ -33,10 +33,12 @@ const Board = ({ userProfile, baseUrl, token }) => {
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditBoardOpen, setIsEditBoardOpen] = useState(false);
-  const [newBoardName, setNewBoardName] = useState('');
-  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [newBoardName, setNewBoardName] = useState("");
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+    useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const searchParams = new URLSearchParams(window.location.search);
-  const projectId = searchParams.get('pId')
+  const projectId = searchParams.get("pId");
   const { id } = useParams();
 
   const closeModal = () => {
@@ -62,7 +64,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
     cookies.set("token", "", { path: "*" });
     setUserLogout();
     navigate("/");
-  }
+  };
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -82,7 +84,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setBoard(response.data);
           }
         });
-    } catch (error) { navigate("/404") }
+    } catch (error) {
+      navigate("/404");
+    }
   };
 
   const getProject = async () => {
@@ -98,13 +102,16 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setProject(response.data);
           }
         });
-    } catch (error) { navigate("/404") }
+    } catch (error) {
+      navigate("/404");
+    }
   };
 
   const getTasks = async (
     url = `${baseUrl}/task/?search={"board_id":[${id}]}&ordering=id`
   ) => {
     try {
+      setIsLoading(true);
       await axios
         .get(url, {
           headers: {
@@ -141,7 +148,10 @@ const Board = ({ userProfile, baseUrl, token }) => {
             });
           }
         });
-    } catch (error) { }
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const deleteTasks = async (taskId) => {
@@ -163,7 +173,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setReload(!reload);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getUsers = async (url = `${baseUrl}/emp/`) => {
@@ -179,7 +189,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setUsers(response.data.results);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const [isTodoViewOpen, setIsTodoViewOpen] = useState(
@@ -199,7 +209,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   };
 
   const closeTodo = (index) => {
-    setBoardHidden(false)
+    setBoardHidden(false);
     setReload(!reload);
     const updatedModals = [...isTodoViewOpen];
     updatedModals[index] = false;
@@ -213,7 +223,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   };
 
   const closeProgess = (index) => {
-    setBoardHidden(false)
+    setBoardHidden(false);
     setReload(!reload);
     const updatedModals = [...isProgressViewOpen];
     updatedModals[index] = false;
@@ -227,7 +237,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   };
 
   const closeCompleted = (index) => {
-    setBoardHidden(false)
+    setBoardHidden(false);
     setReload(!reload);
     const updatedModals = [...isCompletedViewOpen];
     updatedModals[index] = false;
@@ -256,10 +266,10 @@ const Board = ({ userProfile, baseUrl, token }) => {
       destinationColumn === "todo"
         ? "To Do"
         : destinationColumn === "inProgress"
-          ? "In Progress"
-          : destinationColumn === "completed"
-            ? "Completed"
-            : "";
+        ? "In Progress"
+        : destinationColumn === "completed"
+        ? "Completed"
+        : "";
     let task = tasks[sourceColumn][result.source.index];
     const { sourceIndex, destinationIndex } = result;
     // Update Board Staticly
@@ -283,7 +293,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
 
   useEffect(() => {
     getUsers();
-    getProject()
+    getProject();
   }, []);
   useEffect(() => {
     getTasks();
@@ -299,7 +309,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
         headers,
       });
       if (response.status === 204) {
-        console.log("Board deleted successfully!");
         navigate(`/project/${id}`)
       } else {
         console.error("Unexpected response status:", response.status);
@@ -313,7 +322,11 @@ const Board = ({ userProfile, baseUrl, token }) => {
 
   const EditBoardName = async () => {
     try {
-      const response = await axios.patch(`${baseUrl}/board/${board.id}`, { name: newBoardName }, { headers });
+      const response = await axios.patch(
+        `${baseUrl}/board/${board.id}`,
+        { name: newBoardName },
+        { headers }
+      );
       if (response.status === 200) {
         setBoard({ ...board, name: newBoardName });
         setIsEditBoardOpen(false);
@@ -331,9 +344,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
     }
   };
 
-
   return (
-    <div className={`w-full h-screen bg-[#F9F9F9] ${boardHidden ? '' : ''}`}>
+    <div className={`w-full h-screen bg-[#F9F9F9] ${boardHidden ? "" : ""}`}>
       {/* ***************************************************** Header ***************************************************** */}
       <div className="py-5 sm:pl-10 pr-2 flex flex-col justify-center sm:flex-row gap-3 items-center sm:justify-between">
         <div className="flex items-center">
@@ -350,7 +362,10 @@ const Board = ({ userProfile, baseUrl, token }) => {
           </div>
         </div>
         <div className="relative">
-          <div className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer" onClick={handleDropdownClick}>
+          <div
+            className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
+            onClick={handleDropdownClick}
+          >
             <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
             <div className="text-[#283b91]">{userProfile.username}</div>
             <div className="text-[#283b91]">
@@ -371,16 +386,15 @@ const Board = ({ userProfile, baseUrl, token }) => {
       </div>
       {/* ***************************************************** Board Header ***************************************************** */}
       <div className="bg-[#ebebeb] mb-6 pr-1 pl-1 sm:pl-5 gap-3  justify-between py-2 flex flex-col md:flex-row lg:flex-row">
-  {board && (
-    <>
-      <h2 className="text-xl font-semibold">{board.name}</h2>
-    </>
-  )}
-</div>
-
+        {board && (
+          <>
+            <h2 className="text-xl font-semibold">{board.name}</h2>
+          </>
+        )}
+      </div>
 
       {/* ***************************************************** Board Card ***************************************************** */}
-      <DragDropContext onDragEnd={boardHidden ? '' : handleDragEnd}>
+      <DragDropContext onDragEnd={boardHidden ? "" : handleDragEnd}>
         <div className="flex w-full justify-start ">
           <div className="flex xScroll  sm:ml-10 ml-5 pb-2 overflow-x-auto w-[90%] lg:w-[82vw] justify-start">
             <div id="boardList" className="flex">
@@ -394,103 +408,120 @@ const Board = ({ userProfile, baseUrl, token }) => {
                     </div>
                   </div>
                 </div>
-                <Droppable droppableId="todo">
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className="boardScroll overflow-y-auto overflow-x-hidden max-h-[63vh] mb-2"
-                    >
-                      {tasks["todo"].map((t, index) => (
-                        <>
-                          <Draggable
-                            isDragDisabled={boardHidden}
-                            key={t.id}
-                            draggableId={t.id.toString()}
-                            index={index}
-                          >
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
+                {isLoading ? (
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                ) : (
+                  <>
+                    <Droppable droppableId="todo">
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="boardScroll overflow-y-auto overflow-x-hidden max-h-[63vh] mb-2"
+                        >
+                          {tasks["todo"].map((t, index) => (
+                            <>
+                              <Draggable
+                                isDragDisabled={boardHidden}
+                                key={t.id}
+                                draggableId={t.id.toString()}
+                                index={index}
                               >
-                                <div
-                                  className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
-                                >
+                                {(provided) => (
                                   <div
-                                    onClick={() => { openTodoView(index); setBoardHidden(true) }}
-                                    className="opacity-70"
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
                                   >
-                                    {t.name}
-                                  </div>
-                                  <hr className=" bg-white h-[2px] my-2" />
-                                  <div className="flex justify-between">
-                                    <div className="flex items-center gap-2">
-                                      {/* <BsBookmark className="text-xs text- opacity-50" /> */}
+                                    <div
+                                      className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
+                                    >
                                       <div
-                                        title={t.userName}
-                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex 
-                                        p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
+                                        onClick={() => {
+                                          openTodoView(index);
+                                          setBoardHidden(true);
+                                        }}
+                                        className="opacity-70"
                                       >
-                                        {t.userName.toUpperCase().slice(0, 2)}
+                                        {t.name}
+                                      </div>
+                                      <hr className=" bg-white h-[2px] my-2" />
+                                      <div className="flex justify-between">
+                                        <div className="flex items-center gap-2">
+                                          {/* <BsBookmark className="text-xs text- opacity-50" /> */}
+                                          <div
+                                            title={t.userName}
+                                            className={`rounded-full cursor-pointer text-[.60rem] text-white flex 
+                                        p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
+                                          >
+                                            {t.userName
+                                              .toUpperCase()
+                                              .slice(0, 2)}
+                                          </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                          {t.priority === 1 ? (
+                                            <div className="text-[0.60rem]">
+                                              🔴
+                                            </div>
+                                          ) : t.priority === 2 ? (
+                                            <div className="text-[0.60rem]">
+                                              🟡
+                                            </div>
+                                          ) : t.priority === 3 ? (
+                                            <div className="text-[0.60rem]">
+                                              🟢
+                                            </div>
+                                          ) : (
+                                            ""
+                                          )}
+                                          <BsTrash3
+                                            className="text-sm opacity-50 cursor-pointer"
+                                            onClick={() => {
+                                              deleteTasks(t.id);
+                                            }}
+                                          />
+                                        </div>
                                       </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                      {t.priority === 1 ? (
-                                        <div className="text-[0.50rem]">🔴</div>
-                                      ) : t.priority === 2 ? (
-                                        <div className="text-[0.50rem]">🟡</div>
-                                      ) : t.priority === 3 ? (
-                                        <div className="text-[0.50rem]">🟢</div>
-                                      ) : (
-                                        ""
-                                      )}
-                                      <BsTrash3
-                                        className="text-xs opacity-50 "
-                                        onClick={() => {
-                                          deleteTasks(t.id);
+                                    {isTodoViewOpen[index] && (
+                                      <TaskView
+                                        onClose={() => closeTodo(index)}
+                                        taskData={{
+                                          id: t.id,
+                                          name: t.name,
+                                          description: t.description,
+                                          dueDate: t.end_date,
+                                          startDate: t.start_date,
+                                          priority: t.priority,
+                                          status: t.status,
+                                          assigned_to: t.assigned_to,
+                                          assigned_by: t.assigned_by,
                                         }}
                                       />
-                                    </div>
+                                    )}
                                   </div>
-                                </div>
-
-                                {isTodoViewOpen[index] && (
-                                  <TaskView
-                                    onClose={() => closeTodo(index)}
-                                    taskData={{
-                                      id: t.id,
-                                      name: t.name,
-                                      description: t.description,
-                                      dueDate: t.end_date,
-                                      startDate: t.start_date,
-                                      priority: t.priority,
-                                      status: t.status,
-                                      assigned_to: t.assigned_to,
-                                      assigned_by: t.assigned_by,
-                                    }}
-                                  />
                                 )}
-                              </div>
-                            )}
-                          </Draggable>
-                        </>
-                      ))}
-                      {provided.placeholder}
+                              </Draggable>
+                            </>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                    <div
+                      onClick={() => {
+                        setIsAddTaskOpen(true);
+                        setStatus("To Do");
+                      }}
+                      className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+                    >
+                      Add a Card
                     </div>
-                  )}
-                </Droppable>
-                <div
-                  onClick={() => {
-                    setIsAddTaskOpen(true);
-                    setStatus("To Do");
-                  }}
-                  className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-                >
-                  Add a Card
-                </div>
+                  </>
+                )}
               </div>
 
               {/* Box 2 */}
@@ -503,103 +534,119 @@ const Board = ({ userProfile, baseUrl, token }) => {
                     </div>
                   </div>
                 </div>
-                <Droppable droppableId="inProgress">
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className="boardScroll overflow-y-auto overflow-x-hidden  max-h-[63vh] mb-2"
-                    >
-                      {tasks["inProgress"].map((t, index) => (
-                        <>
-                          <Draggable
-                            isDragDisabled={boardHidden}
-                            key={t.id}
-                            draggableId={t.id.toString()}
-                            index={index}
-                          >
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
+                {isLoading ? (
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                ) : (
+                  <>
+                    <Droppable droppableId="inProgress">
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="boardScroll overflow-y-auto overflow-x-hidden  max-h-[63vh] mb-2"
+                        >
+                          {tasks["inProgress"].map((t, index) => (
+                            <>
+                              <Draggable
+                                isDragDisabled={boardHidden}
+                                key={t.id}
+                                draggableId={t.id.toString()}
+                                index={index}
                               >
-                                <div
-                                  className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
-                                >
+                                {(provided) => (
                                   <div
-                                    onClick={() => { openInProgressView(index); setBoardHidden(true) }}
-                                    className="opacity-70"
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
                                   >
-                                    {t.name}
-                                  </div>
-                                  <hr className=" bg-white h-[2px] my-2" />
-                                  <div className="flex justify-between">
-                                    <div className="flex items-center gap-2">
+                                    <div
+                                      className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
+                                    >
                                       <div
-                                        title={t.userName}
-                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex
-                                         p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
+                                        onClick={() => {
+                                          openInProgressView(index);
+                                          setBoardHidden(true);
+                                        }}
+                                        className="opacity-70"
                                       >
-                                        {t.userName.toUpperCase().slice(0, 2)}
+                                        {t.name}
+                                      </div>
+                                      <hr className=" bg-white h-[2px] my-2" />
+                                      <div className="flex justify-between">
+                                        <div className="flex items-center gap-2">
+                                          <div
+                                            title={t.userName}
+                                            className={`rounded-full cursor-pointer text-[.60rem] text-white flex
+                                         p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
+                                          >
+                                            {t.userName
+                                              .toUpperCase()
+                                              .slice(0, 2)}
+                                          </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          {t.priority === 1 ? (
+                                            <div className="text-[0.60rem]">
+                                              🔴
+                                            </div>
+                                          ) : t.priority === 2 ? (
+                                            <div className="text-[0.60rem]">
+                                              🟡
+                                            </div>
+                                          ) : t.priority === 3 ? (
+                                            <div className="text-[0.60rem]">
+                                              🟢
+                                            </div>
+                                          ) : (
+                                            ""
+                                          )}
+                                          <BsTrash3
+                                            className="text-sm opacity-50 cursor-pointer"
+                                            onClick={() => {
+                                              deleteTasks(t.id);
+                                            }}
+                                          />
+                                        </div>{" "}
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                      {t.priority === 1 ? (
-                                        <div className="text-[0.50rem]">🔴</div>
-                                      ) : t.priority === 2 ? (
-                                        <div className="text-[0.50rem]">🟡</div>
-                                      ) : t.priority === 3 ? (
-                                        <div className="text-[0.50rem]">🟢</div>
-                                      ) : (
-                                        ""
-                                      )}
-                                      <BsTrash3
-                                        className="text-xs opacity-50 "
-                                        onClick={() => {
-                                          deleteTasks(t.id);
+
+                                    {isProgressViewOpen[index] && (
+                                      <TaskView
+                                        onClose={() => closeProgess(index)}
+                                        taskData={{
+                                          id: t.id,
+                                          name: t.name,
+                                          description: t.description,
+                                          dueDate: t.end_date,
+                                          startDate: t.start_date,
+                                          priority: t.priority,
+                                          status: t.status,
+                                          assigned_to: t.assigned_to,
+                                          assigned_by: t.assigned_by,
                                         }}
                                       />
-                                    </div>{" "}
+                                    )}
                                   </div>
-                                </div>
-
-                                {isProgressViewOpen[index] && (
-                                  <TaskView
-                                    onClose={() => closeProgess(index)}
-                                    taskData={{
-                                      id: t.id,
-                                      name: t.name,
-                                      description: t.description,
-                                      dueDate: t.end_date,
-                                      startDate: t.start_date,
-                                      priority: t.priority,
-                                      status: t.status,
-                                      assigned_to: t.assigned_to,
-                                      assigned_by: t.assigned_by,
-                                    }}
-                                  />
                                 )}
-                              </div>
-                            )}
-                          </Draggable>
-                        </>
-                      ))}
+                              </Draggable>
+                            </>
+                          ))}
 
-                      {provided.placeholder}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                    <div
+                      onClick={() => {
+                        setIsAddTaskOpen(true);
+                        setStatus("In Progress");
+                      }}
+                      className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+                    >
+                      Add a Card
                     </div>
-                  )}
-                </Droppable>
-
-                <div
-                  onClick={() => {
-                    setIsAddTaskOpen(true);
-                    setStatus("In Progress");
-                  }}
-                  className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-                >
-                  Add a Card
-                </div>
+                  </>
+                )}
               </div>
 
               {/* Box 3 */}
@@ -612,100 +659,117 @@ const Board = ({ userProfile, baseUrl, token }) => {
                     </div>
                   </div>
                 </div>
-                <Droppable droppableId="completed">
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className="boardScroll overflow-y-auto overflow-x-hidden max-h-[63vh] mb-2"
-                    >
-                      {tasks["completed"].map((t, index) => (
-                        <>
-                          <Draggable
-                            isDragDisabled={boardHidden}
-                            key={t.id}
-                            draggableId={t.id.toString()}
-                            index={index}
-                          >
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
+                {isLoading ? (
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                ) : (
+                  <>
+                    <Droppable droppableId="completed">
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="boardScroll overflow-y-auto overflow-x-hidden max-h-[63vh] mb-2"
+                        >
+                          {tasks["completed"].map((t, index) => (
+                            <>
+                              <Draggable
+                                isDragDisabled={boardHidden}
+                                key={t.id}
+                                draggableId={t.id.toString()}
+                                index={index}
                               >
-                                <div
-                                  className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
-                                >
+                                {(provided) => (
                                   <div
-                                    onClick={() => { openCompletedView(index); setBoardHidden(true) }}
-                                    className="opacity-70"
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
                                   >
-                                    {t.name}
-                                  </div>
-                                  <hr className=" bg-white h-[2px] my-2" />
-                                  <div className="flex justify-between">
-                                    <div className="flex items-center gap-2">
+                                    <div
+                                      className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
+                                    >
                                       <div
-                                        title={t.userName}
-                                        className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6
-                                         opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
+                                        onClick={() => {
+                                          openCompletedView(index);
+                                          setBoardHidden(true);
+                                        }}
+                                        className="opacity-70"
                                       >
-                                        {t.userName.toUpperCase().slice(0, 2)}
+                                        {t.name}
+                                      </div>
+                                      <hr className=" bg-white h-[2px] my-2" />
+                                      <div className="flex justify-between">
+                                        <div className="flex items-center gap-2">
+                                          <div
+                                            title={t.userName}
+                                            className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6
+                                         opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
+                                          >
+                                            {t.userName
+                                              .toUpperCase()
+                                              .slice(0, 2)}
+                                          </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          {t.priority === 1 ? (
+                                            <div className="text-[0.60rem]">
+                                              🔴
+                                            </div>
+                                          ) : t.priority === 2 ? (
+                                            <div className="text-[0.60rem]">
+                                              🟡
+                                            </div>
+                                          ) : t.priority === 3 ? (
+                                            <div className="text-[0.60rem]">
+                                              🟢
+                                            </div>
+                                          ) : (
+                                            ""
+                                          )}
+                                          <BsTrash3
+                                            className="text-sm opacity-50 cursor-pointer"
+                                            onClick={() => {
+                                              deleteTasks(t.id);
+                                            }}
+                                          />
+                                        </div>{" "}
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                      {t.priority === 1 ? (
-                                        <div className="text-[0.50rem]">🔴</div>
-                                      ) : t.priority === 2 ? (
-                                        <div className="text-[0.50rem]">🟡</div>
-                                      ) : t.priority === 3 ? (
-                                        <div className="text-[0.50rem]">🟢</div>
-                                      ) : (
-                                        ""
-                                      )}
-                                      <BsTrash3
-                                        className="text-xs opacity-50 "
-                                        onClick={() => {
-                                          deleteTasks(t.id);
+                                    {isCompletedViewOpen[index] && (
+                                      <TaskView
+                                        onClose={() => closeCompleted(index)}
+                                        taskData={{
+                                          id: t.id,
+                                          name: t.name,
+                                          description: t.description,
+                                          dueDate: t.end_date,
+                                          startDate: t.start_date,
+                                          priority: t.priority,
+                                          status: t.status,
+                                          assigned_to: t.assigned_to,
+                                          assigned_by: t.assigned_by,
                                         }}
                                       />
-                                    </div>{" "}
+                                    )}
                                   </div>
-                                </div>
-                                {isCompletedViewOpen[index] && (
-                                  <TaskView
-                                    onClose={() => closeCompleted(index)}
-                                    taskData={{
-                                      id: t.id,
-                                      name: t.name,
-                                      description: t.description,
-                                      dueDate: t.end_date,
-                                      startDate: t.start_date,
-                                      priority: t.priority,
-                                      status: t.status,
-                                      assigned_to: t.assigned_to,
-                                      assigned_by: t.assigned_by,
-                                    }}
-                                  />
                                 )}
-                              </div>
-                            )}
-                          </Draggable>
-                        </>
-                      ))}
-                      {provided.placeholder}
+                              </Draggable>
+                            </>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                    <div
+                      onClick={() => {
+                        setIsAddTaskOpen(true);
+                        setStatus("Completed");
+                      }}
+                      className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+                    >
+                      Add a Card
                     </div>
-                  )}
-                </Droppable>
-                <div
-                  onClick={() => {
-                    setIsAddTaskOpen(true);
-                    setStatus("Completed");
-                  }}
-                  className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-                >
-                  Add a Card
-                </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -719,8 +783,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
 
       {/* edit board name modal */}
       <div
-        className={`fixed inset-0 flex items-center justify-center z-50 ${isEditBoardOpen ? '' : 'hidden'
-          }`}
+        className={`fixed inset-0 flex items-center justify-center z-50 ${
+          isEditBoardOpen ? "" : "hidden"
+        }`}
       >
         <div className="modal-overlay absolute w-full h-full backdrop-blur-sm"></div>
         <div className="modal-container bg-white md:w-[30%] w-[90%] mx-auto rounded shadow-lg z-50">
@@ -759,11 +824,16 @@ const Board = ({ userProfile, baseUrl, token }) => {
           <div className="modal-container bg-white w-1.5/5 mx-auto rounded shadow-lg z-50">
             <div className="modal-content py-4 px-6">
               <h2 className="text-xl font-semibold mb-2">Confirm Delete</h2>
-              <p className="mb-2">Are you sure you want to delete this board?</p>
+              <p className="mb-2">
+                Are you sure you want to delete this board?
+              </p>
               <div className="flex justify-end">
                 <button
                   className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
-                  onClick={() => { setIsDeleteConfirmationOpen(false) }}>
+                  onClick={() => {
+                    setIsDeleteConfirmationOpen(false);
+                  }}
+                >
                   Cancel
                 </button>
                 <button
@@ -791,5 +861,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(Board);
-
-
