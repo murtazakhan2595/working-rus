@@ -220,9 +220,7 @@ const WorkTime = () => {
                     <div className="rounded-md font-semibold px-1 w-16 text-center text-xs text-[#283b91] bg-[#f8f8f8]">
                       {time.time}
                     </div>
-                    <div className="text-xs mt-0 text-center text-[#283b91]">{`${time.name?.substring(
-                      time.name.indexOf("-") + 1
-                    )}`}</div>
+                    <div className="text-xs mt-0 w-[5.2rem] text-center text-[#283b91]">{`${time.name}`}</div>
                   </div>
                   <FaMinus
                     onClick={() => {
