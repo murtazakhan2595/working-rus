@@ -8,7 +8,6 @@ import { BsBell } from "react-icons/bs";
 import TaskPlanner from "./TaskPlanner";
 import NotificationBox from "./NotificationBox";
 import Calendar from "./Calender";
-import UpcomingProjects from "./UpcomingProjects";
 import "./index.css";
 import { Link } from "react-router-dom";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
@@ -116,9 +115,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
         <NotificationBox />
         {/***********************   Calender   **********************************/}
         <Calendar />
-        {/***********************   Upcoming Projects   **********************************/}
 
-        <UpcomingProjects />
       </div>
       <button
         className={`absolute bg-[#283b91] z-0 text-white px1 md:pr-1 py-3 right-0 3xl:right-[21.8%] xl:right-[22.3%] rounded-s-lg top-[3rem] mt-4 ml-4  ${isBarOpen ? "hidden" : ""

@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import PersonalInfo from "./UpdatePersonalInfo";
 import SubmitCV from "./UpdateCV";
+import "react-toastify/dist/ReactToastify.css";
 import ProfessionalExp from "./UpdateProExp";
 import AcademicRecords from "./UpdateAcademicInfo";
 import BankDetails from "./UpdateBankDetails";
 import Department from "./UpdateDepartment";
 import FormIndicator from "./UpdateFormIndicator";
+import { ToastContainer } from "react-toastify";
+
 
 const EmpForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -104,6 +107,7 @@ const EmpForm = () => {
           />
         )}
       </div>
+      <ToastContainer/> 
     </>
   );
 };
