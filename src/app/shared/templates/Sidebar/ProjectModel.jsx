@@ -114,8 +114,8 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
       });
 
       if (response.status === 200) {
-        setFilterUsers(response.data.results);
-        setUsers(response.data.results);
+        setFilterUsers(response.data);
+        setUsers(response.data);
       }
     } catch (error) {
       console.error("Error while fetching data:", error);
@@ -128,7 +128,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
 
   const handleMemberSelection = (userId) => {
     if (selectedMembers.includes(userId)) {
-      setSelectedMembers(selectedMembers.filter((id) => id !== userId));
+      setSelectedMembers(selectedMembers?.filter((id) => id !== userId));
     } else {
       setSelectedMembers([...selectedMembers, userId]);
     }
@@ -142,7 +142,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredUsers = filterUsers.filter((user) =>
+  const filteredUsers = filterUsers?.filter((user) =>
     user.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

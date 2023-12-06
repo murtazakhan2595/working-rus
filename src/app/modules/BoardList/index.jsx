@@ -84,7 +84,7 @@ const BoardList = ({
       });
 
       if (response.status === 200) {
-        setMembers(response.data.results);
+        setMembers(response.data);
       }
     } catch (error) {
       console.error("Error while fetching project members:", error);
