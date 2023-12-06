@@ -186,7 +186,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
         })
         .then((response) => {
           if (response.status === 200) {
-            setUsers(response.data.results);
+            setUsers(response.data);
           }
         });
     } catch (error) {}
@@ -435,12 +435,13 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   >
                                     <div
                                       className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
+                                      onClick={() => {
+                                        openTodoView(index);
+                                        setBoardHidden(true);
+                                      }}
                                     >
                                       <div
-                                        onClick={() => {
-                                          openTodoView(index);
-                                          setBoardHidden(true);
-                                        }}
+                                       
                                         className="opacity-70"
                                       >
                                         {t.name}
@@ -561,12 +562,12 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   >
                                     <div
                                       className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
+                                      onClick={() => {
+                                        openInProgressView(index);
+                                        setBoardHidden(true);
+                                      }}
                                     >
                                       <div
-                                        onClick={() => {
-                                          openInProgressView(index);
-                                          setBoardHidden(true);
-                                        }}
                                         className="opacity-70"
                                       >
                                         {t.name}
@@ -686,12 +687,12 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                   >
                                     <div
                                       className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
+                                      onClick={() => {
+                                        openCompletedView(index);
+                                        setBoardHidden(true);
+                                      }}
                                     >
                                       <div
-                                        onClick={() => {
-                                          openCompletedView(index);
-                                          setBoardHidden(true);
-                                        }}
                                         className="opacity-70"
                                       >
                                         {t.name}

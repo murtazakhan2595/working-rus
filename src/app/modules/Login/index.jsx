@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
 import loginBg from "../.././../assets/images/login-bg.png";
@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { connect } from "react-redux";
 import { setUserProfile, setToken } from "../../../state/actions/UserAction";
+import OfflinePopUp from "./OfflinePopUp";
 
 function Login({ setUserProfile, baseUrl, setToken }) {
   const navigate = useNavigate();
@@ -24,6 +25,8 @@ function Login({ setUserProfile, baseUrl, setToken }) {
   const [isChecked, setIsChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isPopupVisible, setPopupVisible] = useState(!navigator.onLine);
+
 
   const handleUpdateProfile = (data) => {
     let updateProfile = { id: data.id, username: data.username };
@@ -38,8 +41,19 @@ function Login({ setUserProfile, baseUrl, setToken }) {
     setShowPassword(!showPassword);
   };
 
+  const handleClosePopup = () => {
+    setPopupVisible(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Check for internet connection
+    if (!navigator.onLine) {
+      // Show the custom pop-up with a message
+      setPopupVisible(true);
+      return;
+    }
+    
     // Clear any existing validation errors
     setErrors({});
     const { error } = loginSchema.validate(values, { abortEarly: false });
@@ -115,6 +129,24 @@ function Login({ setUserProfile, baseUrl, setToken }) {
       "string.empty": `Enter Your Password`,
     }),
   });
+
+  // checking connection
+  useEffect(() => {
+    // Event listener for online/offline changes
+    const handleConnectionChange = () => {
+      setPopupVisible(!navigator.onLine);
+    };
+
+    // Attach event listener
+    window.addEventListener('online', handleConnectionChange);
+    window.addEventListener('offline', handleConnectionChange);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('online', handleConnectionChange);
+      window.removeEventListener('offline', handleConnectionChange);
+    };
+  }, []);
 
   return (
     <div
@@ -255,6 +287,9 @@ function Login({ setUserProfile, baseUrl, setToken }) {
           </div>
         </div>
       </div>
+      {isPopupVisible && (
+        <OfflinePopUp onClose={handleClosePopup} />
+      )}
       <ToastContainer />
     </div>
   );

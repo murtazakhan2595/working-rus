@@ -29,6 +29,8 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
   const [users, setUsers] = useState({});
   const [filterUsers, setFilterUsers] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [assignToSearchQuery, setAssignToSearchQuery] = useState("");
+  const [assignBySearchQuery, setAssignBySearchQuery] = useState("");
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -117,8 +119,8 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
         })
         .then((response) => {
           if (response.status === 200) {
-            setFilterUsers(response.data.results);
-            setUsers(response.data.results);
+            setFilterUsers(response.data);
+            setUsers(response.data);
           }
         });
     } catch (error) {}
@@ -155,6 +157,20 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
 
     return errors;
   };
+
+  // const filteredMembers = users.filter((user) =>
+  //   user.username.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
+
+  // setFilterUsers(filteredMembers);
+
+  const filteredAssignToUsers = Object.values(users).filter((user) =>
+  user.username.toLowerCase().includes(assignToSearchQuery.toLowerCase())
+);
+
+const filteredAssignByUsers = Object.values(users).filter((user) =>
+  user.username.toLowerCase().includes(assignBySearchQuery.toLowerCase())
+);
 
   return (
     <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
@@ -383,10 +399,12 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                               type="search"
                               placeholder="Search"
                               className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
+                              onChange={(e) => setAssignToSearchQuery(e.target.value)}
                             />
+
                             <div className="overflow-y-auto max-h-24 roundScrollsm">
                               <ul className="text-black">
-                                {filterUsers.map((user) => (
+                                {filteredAssignToUsers.map((user) => (
                                   <div
                                     onClick={() => {
                                       setValidationErrors((prevErrors) => ({
@@ -471,10 +489,11 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
                               type="search"
                               placeholder="Search"
                               className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
+                              onChange={(e) => setAssignBySearchQuery(e.target.value)}
                             />
                             <div className="overflow-y-auto max-h-24 roundScrollsm">
                               <ul className="text-black">
-                                {filterUsers.map((user) => (
+                                {filteredAssignByUsers.map((user) => (
                                   <div
                                     onClick={() => {
                                       setValidationErrors((prevErrors) => ({

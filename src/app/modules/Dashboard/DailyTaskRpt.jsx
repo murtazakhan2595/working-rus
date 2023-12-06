@@ -213,7 +213,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                                 <div className="h-72 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
                                     <ReactQuill
                                         className='text-center h-[88%]'
-
+                                        required
                                         value={editorHtml}
                                         onChange={handleEditorChange}
                                         modules={{

@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useNavigate } from "react-router-dom";
 import "./index.css";
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
@@ -6,7 +7,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
-import RecruitmentForm from './app/modules/RecruitmentData/RecruitmentForm.jsx'
+import RecruitmentForm from "./app/modules/RecruitmentData/RecruitmentForm.jsx";
 import ApplicantsDataTable from "./app/modules/RecruitmentData/ApplicantsDataTable.jsx";
 import JobsDataTable from "./app/modules/RecruitmentData/JobsDataTable.jsx";
 import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
@@ -38,6 +39,7 @@ function App({
   let width = window.screen.width;
   let val = width <= 1280 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
+  const navigate = useNavigate();
 
   const cookies = new Cookies();
   let token = cookies.get("token");
@@ -68,6 +70,7 @@ function App({
       }
     } catch (error) {
       setUserLogout();
+      navigate("/");
     }
   };
 
@@ -77,7 +80,7 @@ function App({
 
   return (
     <>
-    {(isLogin === null || userProfile.is_filled === undefined) && (
+      {(isLogin === null || userProfile.is_filled === undefined) && (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
           <div className="text-center">
             <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
@@ -91,45 +94,71 @@ function App({
           <>
             {userProfile.is_filled === true ? (
               <>
-              <Route
-                element={
-                  <Sidebar
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                  />
-                }
-              >
                 <Route
-                  exact
-                  path="/"
-                  element={<Dashboard isSidebarOpen={isSidebarOpen} />}
-                />
-                <Route path="/board/:id" element={<Board />} />
-                <Route path="/profile" element={<UpdateEmpForm />} />
-                <Route path="/project/:id" element={<BoardList />} />
-                {(userProfile.role === 1 || userProfile.role === 2) &&
-                <>
-                <Route exact path="/emp-data" element={<EmpDataSheet />} />
-                <Route exact path="/emp-dataform" element={<EmpDataForm />} /> 
-                <Route path="/recruitment-form" element={<RecruitmentForm />}/>
-                <Route path="/applicants-datatable" element={<ApplicantsDataTable />}/>
-                <Route path="/jobs-datatable" element={<JobsDataTable />}/>
-                <Route path="/user/:id" element={<ViewEmployee />}/>
-                </>}
-              </Route>
-              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/recruitment-form" element={<Err401 />}/>}
-              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/applicants-datatable" element={<Err401 />}/>}
-              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/jobs-datatable" element={<Err401 />}/>}
-              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route path="/user/:id" element={<Err401 />}/>}
-              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route exact path="/emp-dataform" element={<Err401 />} /> }
-              {(userProfile.role !== 1 || userProfile.role !== 2) && <Route exact path="/emp-data" element={<Err401 />} /> }
+                  element={
+                    <Sidebar
+                      isSidebarOpen={isSidebarOpen}
+                      setIsSidebarOpen={setIsSidebarOpen}
+                    />
+                  }
+                >
+                  <Route
+                    exact
+                    path="/"
+                    element={<Dashboard isSidebarOpen={isSidebarOpen} />}
+                  />
+                  <Route path="/board/:id" element={<Board />} />
+                  <Route path="/profile" element={<UpdateEmpForm />} />
+                  <Route path="/project/:id" element={<BoardList />} />
+                  {(userProfile.role === 1 || userProfile.role === 2) && (
+                    <>
+                      <Route
+                        exact
+                        path="/emp-data"
+                        element={<EmpDataSheet />}
+                      />
+                      <Route
+                        exact
+                        path="/emp-dataform"
+                        element={<EmpDataForm />}
+                      />
+                      <Route
+                        path="/recruitment-form"
+                        element={<RecruitmentForm />}
+                      />
+                      <Route
+                        path="/applicants-datatable"
+                        element={<ApplicantsDataTable />}
+                      />
+                      <Route
+                        path="/jobs-datatable"
+                        element={<JobsDataTable />}
+                      />
+                      <Route path="/user/:id" element={<ViewEmployee />} />
+                    </>
+                  )}
+                </Route>
+                {(userProfile.role !== 1 || userProfile.role !== 2) && (
+                  <Route path="/recruitment-form" element={<Err401 />} />
+                )}
+                {(userProfile.role !== 1 || userProfile.role !== 2) && (
+                  <Route path="/applicants-datatable" element={<Err401 />} />
+                )}
+                {(userProfile.role !== 1 || userProfile.role !== 2) && (
+                  <Route path="/jobs-datatable" element={<Err401 />} />
+                )}
+                {(userProfile.role !== 1 || userProfile.role !== 2) && (
+                  <Route path="/user/:id" element={<Err401 />} />
+                )}
+                {(userProfile.role !== 1 || userProfile.role !== 2) && (
+                  <Route exact path="/emp-dataform" element={<Err401 />} />
+                )}
+                {(userProfile.role !== 1 || userProfile.role !== 2) && (
+                  <Route exact path="/emp-data" element={<Err401 />} />
+                )}
               </>
             ) : (
-              <Route
-                exact
-                path="/"
-                element={<EmpForm/>}
-              />
+              <Route exact path="/" element={<EmpForm />} />
             )}
             <Route path="*" element={<Err404 />} />
           </>
@@ -141,8 +170,6 @@ function App({
           </>
         )}
       </Routes>
-
-      
     </>
   );
 }

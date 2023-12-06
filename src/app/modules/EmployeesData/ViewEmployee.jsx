@@ -197,12 +197,12 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </tr>
           <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
             <td className="px-6 py-2 text-left font-bold text-black">
-              Institue
+              Institute
             </td>
             <td className="px-6 py-2 text-left">{education.institute_name}</td>
           </tr>
           <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="px-6 py-2 text-left font-bold text-black">Education start Date</td>
+            <td className="px-6 py-2 text-left font-bold text-black">Education Start Date</td>
             <td className="px-6 py-2 text-left">{education.edu_start_date}</td>
           </tr>
           <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">

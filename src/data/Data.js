@@ -44,7 +44,7 @@ export const academicOptions = [
 export const links = [
   { to: "/", text: "Home", icon: <LiaHomeSolid /> },
   { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
-  { to: "/emp-data", text: "Emp Sheet", icon: <BiSpreadsheet /> },
+  { to: "/emp-data", text: "Employee Sheet", icon: <BiSpreadsheet /> },
   { to: "/recruitment-form", text: "Recruitment Form", icon: <MdOutlinePayment /> },
   { to: "", text: "Performance", icon: <PiShootingStarBold /> },
 ];

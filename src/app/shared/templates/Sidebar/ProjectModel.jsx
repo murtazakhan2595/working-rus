@@ -31,16 +31,20 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const customMessages = {
-    'array.min': '"Selected Members" must contain at least 1 member',
+    "array.min": '"Selected Members" must contain at least 1 member',
   };
-  
+
   const boardSchema = Joi.object({
-    projectName: Joi.string().min(1).max(100).required().label('Project Name'),
-    description: Joi.string().min(1).max(5000).required().label('Description'),
+    projectName: Joi.string().min(1).max(100).required().label("Project Name"),
+    description: Joi.string().min(1).max(5000).required().label("Description"),
     startDate: Joi.date().iso().required(),
     dueDate: Joi.date().iso().required(),
-    priority: Joi.number().valid(1, 2, 3).required().label('Priority'),
-    selectedMembers: Joi.array().items(Joi.number()).min(1).required().label('Selected Members'),
+    priority: Joi.number().valid(1, 2, 3).required().label("Priority"),
+    selectedMembers: Joi.array()
+      .items(Joi.number())
+      .min(1)
+      .required()
+      .label("Selected Members"),
   }).messages(customMessages);
 
   const handleSubmit = async (e) => {
@@ -113,9 +117,10 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
         },
       });
 
+      console.log(response.data);
       if (response.status === 200) {
-        setFilterUsers(response.data.results);
-        setUsers(response.data.results);
+        setFilterUsers(response.data);
+        setUsers(response.data);
       }
     } catch (error) {
       console.error("Error while fetching data:", error);
@@ -139,12 +144,17 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
   };
 
   const handleSearchChange = (e) => {
+    console.log("Search query:", e.target.value);
     setSearchQuery(e.target.value);
   };
 
-  const filteredUsers = filterUsers.filter((user) =>
-    user.username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredUsers =
+    filterUsers &&
+    filterUsers.filter((user) =>
+      user.username.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+  console.log("Filtered Users:", filteredUsers);
 
   return (
     <>
@@ -203,7 +213,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                       Description
                     </label>
                     {/* Text area */}
-                    <div className="lg:h-48 h-36 max-h-48 mt-1 roundScrollsm w-full resize-none overflow-y-auto outline-none rounded-xl border-none bg-white mb-1">
+                    {/* <div className="lg:h-48 h-36 max-h-48 mt-1 roundScrollsm w-full resize-none overflow-y-auto outline-none rounded-xl border-none bg-white mb-1">
                       <ReactQuill
                         name="description"
                         id="description"
@@ -232,8 +242,36 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                           },
                         }}
                       />
+                    </div> */}
+                    <div className="h-48 mt-4 w-full resize-none outline-none roundScrollsm rounded-2xl border-none bg-white">
+                      <ReactQuill
+                        className="text-center h-[88%]"
+                        required
+                        value={description}
+                        onChange={(html) => {
+                          setValidationErrors((prevErrors) => ({
+                            ...prevErrors,
+                            description: null,
+                          }));
+                          setDescription(html);
+                        }}
+                        modules={{
+                          toolbar: {
+                            container: [
+                              [{ header: "1" }, { header: "2" }],
+                              ["bold", "italic", "underline"],
+                              [{ list: "ordered" }, { list: "bullet" }],
+                              ["link", "image"],
+                              [
+                                { align: "" },
+                                { align: "center" },
+                                { align: "right" },
+                              ],
+                            ],
+                          },
+                        }}
+                      />
                     </div>
-
                     {validationErrors.description && (
                       <span className="text-red-500 text-sm">
                         {validationErrors.description}
@@ -316,7 +354,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                         ))}
                         <div className="relative">
                           {membersOpen && (
-                            <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
+                            <div className="absolute w-40 bg-white rounded-md border border-gray-300 shadow-md z-50">
                               <div className="flex justify-end pt-[5px] px-[5px]">
                                 <RxCross2
                                   onClick={() => {
@@ -335,6 +373,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                                 <ul className="text-black">
                                   {filteredUsers.map((user) => (
                                     <div
+                                      key={user.id}
                                       onClick={() => {
                                         setValidationErrors((prevErrors) => ({
                                           ...prevErrors,
@@ -347,9 +386,8 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                                           ? "bg-gray-400 text-white"
                                           : ""
                                       }`}
-                                      key={user.id}
                                     >
-                                      <div className="rounded-full text-sm bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center ">
+                                      <div className="rounded-full text-sm bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center">
                                         {user.username
                                           ?.toUpperCase()
                                           .slice(0, 2)}

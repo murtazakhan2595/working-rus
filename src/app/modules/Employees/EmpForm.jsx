@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
+import { IoMdLogOut } from "react-icons/io";
 
 const EmpForm = ({ baseUrl, token, userProfile }) => {
   const cookies = new Cookies();
@@ -263,21 +264,23 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
   return (
     <>
       <div className="py-6 bg-[#F9F9F9] lg:w-full">
-        <div className="flex justify-between items-center px-4">
+        <div className="flex justify-between items-center px-2 md:px-4 lg:px-4">
+          <div></div>
           <h1 className="text-center font-bold font-sfpro text-lg tracking-wide lg:text-2xl md:mb-6">
             Employment Information
           </h1>
 
-          <button
+          <div
+            className="flex justify-center items-center lg:mb-6 gap-x-3 border border-red-600 bg-red-600 text-white border-b px-3 md:px-4 lg:px-4 py-1 rounded-md cursor-pointer"
             onClick={() => {
               cookies.set("token", "", { path: "*" });
               setUserLogout();
               navigate("/");
             }}
-            className="md:mb-6"
           >
-            Logout
-          </button>
+            <button className="md:mb">Logout</button>
+            <IoMdLogOut className="md:mb" />
+          </div>
         </div>
 
         <FormIndicator
