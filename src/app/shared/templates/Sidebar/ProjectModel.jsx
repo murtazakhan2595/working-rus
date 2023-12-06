@@ -133,7 +133,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
 
   const handleMemberSelection = (userId) => {
     if (selectedMembers.includes(userId)) {
-      setSelectedMembers(selectedMembers.filter((id) => id !== userId));
+      setSelectedMembers(selectedMembers?.filter((id) => id !== userId));
     } else {
       setSelectedMembers([...selectedMembers, userId]);
     }
@@ -148,11 +148,9 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredUsers =
-    filterUsers &&
-    filterUsers.filter((user) =>
-      user.username.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const filteredUsers = filterUsers.filter((user) =>
+    user.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   console.log("Filtered Users:", filteredUsers);
 

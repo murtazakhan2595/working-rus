@@ -56,7 +56,7 @@ const MobSidebar = ({
     setisModelOpen(false);
   };
 
-  const getProjects = async (url = `${baseUrl}/project/`) => {
+  const getProjects = async (url = `${baseUrl}/project/${(userProfile.role === 1 || userProfile.role === 2) ? "" : `?search={"project_members":[${userProfile.id}]}`}`) => {
     try {
       await axios
         .get(url, {
