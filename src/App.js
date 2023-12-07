@@ -75,7 +75,9 @@ function App({
   };
 
   useEffect(() => {
-    getProfile();
+    if (isLogin){
+      getProfile();
+    }
   }, [location]);
 
   return (
