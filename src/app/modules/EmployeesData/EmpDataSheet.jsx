@@ -43,7 +43,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
             headers,
           }
         );
-        const usersData = response.data.results;
+        const usersData = response.data;
         setUsers(usersData);
         setLoading(false);
         setHasNextPage(!!response.data.next);

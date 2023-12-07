@@ -20,6 +20,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
     deadline: null,
   };
   const [formData, setFormData] = useState(initialData);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (name, value) => {
     setFormData({
@@ -35,45 +36,55 @@ const RecruitmentForm = ({ token, baseUrl }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
+  
     // Validation for salaries
-  if (formData.max_salary <= formData.min_salary) {
-    toast.error("Maximum salary must be greater than minimum salary", {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-    return; 
-  }
-
+    const minSalary = Number(formData.min_salary);
+    const maxSalary = Number(formData.max_salary);
+    
+    if (maxSalary <= minSalary) {
+      toast.error("Maximum salary must be greater than minimum salary", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return;
+    }
+    
+  
     const data = {
       Job_Title: formData.job_title,
       Job_Description: formData.job_description,
       Job_Type: formData.Job_Type ? formData.Job_Type.value : null,
-      Employee_Type: formData.Employee_Type
-        ? formData.Employee_Type.value
-        : null,
+      Employee_Type: formData.Employee_Type ? formData.Employee_Type.value : null,
       min_salary: formData.min_salary,
       max_salary: formData.max_salary,
       Deadline: formData.deadline,
     };
-
+  
     try {
       const response = await axios.post(
-        `https://hrms.tecbrix.cloud:8080/api/recruitment/`,
+        `${baseUrl}/recruitment/`,
         data,
         {
           headers,
         }
       );
-      toast.success("Job Posted Successfully", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setFormData(initialData,);
+    
+      if (response.status === 201) {
+        toast.success("Job Posted Successfully", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setFormData(initialData);
+      } 
     } catch (error) {
       toast.error("Error submitting the form. Please try again.", {
         position: toast.POSITION.TOP_RIGHT,
       });
+    }  finally {
+      setIsLoading(false);
     }
+    
   };
+  
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9]">
@@ -127,28 +138,6 @@ const RecruitmentForm = ({ token, baseUrl }) => {
               ></textarea>
             </div>
             <div className="w-full flex flex-col md:flex-row lg:flex-row">
-              <div className="w-[30%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
-                <label
-                  htmlFor="job_type"
-                  className="font-sfpro tracking-wide font-semibold
-                            text-input text-base"
-                >
-                  Job Type:
-                </label>
-              </div>
-              <Select
-                className="w-full md:w-[45%] lg:w-[40%]"
-                name="Job_Type"
-                options={jobTypeOptions}
-                value={formData.Job_Type}
-                onChange={(selectedOption) =>
-                  handleChange("Job_Type", selectedOption)
-                }
-                required
-              />
-            </div>
-
-            <div className="w-full flex flex-col md:flex-row lg:flex-row">
               <div className="w-[50%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
                 <label
                   htmlFor="employee_type"
@@ -169,6 +158,27 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                 required
               />
             </div>
+            <div className="w-full flex flex-col md:flex-row lg:flex-row">
+              <div className="w-[30%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
+                <label
+                  htmlFor="job_type"
+                  className="font-sfpro tracking-wide font-semibold
+                            text-input text-base"
+                >
+                  Job Type:
+                </label>
+              </div>
+              <Select
+                className="w-full md:w-[45%] lg:w-[40%]"
+                name="Job_Type"
+                options={jobTypeOptions}
+                value={formData.Job_Type}
+                onChange={(selectedOption) =>
+                  handleChange("Job_Type", selectedOption)
+                }
+                required
+              />
+            </div>          
 
             <div className="w-full flex">
               <div className="w-[40%] md:w-[20%] lg:w-[15%]">
@@ -235,6 +245,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                 <button
                   type="submit"
                   className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
+                   disabled={isLoading}
                 >
                   Post
                 </button>

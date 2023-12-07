@@ -9,9 +9,8 @@ import Datepicker from "../../modules/Dashboard/Datepicker";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
-const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
-
-  const navigate = useNavigate()
+const ProjectEditModal = ({ baseUrl, token, onClose, data }) => {
+  const navigate = useNavigate();
   const [projectName, setProjectName] = useState(data.name);
   const [errors, setErrors] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
@@ -28,10 +27,10 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
   const boardSchema = Joi.object({
     projectName: Joi.string().min(1).max(100).required(),
     description: Joi.string().min(1).max(5000).required(),
-    startDate: Joi.date().iso().required(), 
+    startDate: Joi.date().iso().required(),
     dueDate: Joi.date().iso().required(),
     priority: Joi.number().valid(1, 2, 3).required(),
-    selectedMembers: Joi.array().items(Joi.number()).min(1).required()
+    selectedMembers: Joi.array().items(Joi.number()).min(1).required(),
   });
 
   const handleSubmit = async (e) => {
@@ -53,15 +52,19 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
         "Content-Type": "application/json",
       };
 
-      const response = await axios.patch(`${baseUrl}/project/${data.id}`, formData, { headers });
+      const response = await axios.patch(
+        `${baseUrl}/project/${data.id}`,
+        formData,
+        { headers }
+      );
       if (response.status === 200) {
         toast.success("Project Updated!", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        onClose()
+        onClose();
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       toast.error(error.response.data.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -77,7 +80,9 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
       selectedMembers,
     };
 
-    const { error } = boardSchema.validate(dataToValidate, { abortEarly: false });
+    const { error } = boardSchema.validate(dataToValidate, {
+      abortEarly: false,
+    });
 
     if (error) {
       const newErrors = {};
@@ -86,9 +91,7 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
       });
       setValidationErrors(newErrors);
       return;
-
     }
-
   };
 
   const getMembers = async () => {
@@ -100,8 +103,8 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
       });
 
       if (response.status === 200) {
-        setFilterUsers(response.data.results);
-        setUsers(response.data.results);
+        setFilterUsers(response.data);
+        setUsers(response.data);
       }
     } catch (error) {
       console.error("Error while fetching data:", error);
@@ -124,12 +127,13 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
     }));
   };
 
-  const handleSearchChange = e => {
+  const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-  }
+  };
 
   const filteredUsers = filterUsers.filter((user) =>
-    user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+    user.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <>
@@ -145,27 +149,26 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
               </div>
               <form onSubmit={handleSubmit}>
                 <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      value={projectName}
-                      onChange={(e) => {
-                        setValidationErrors((prevErrors) => ({
-                          ...prevErrors,
-                          projectName: null,
-                        }));
-                        setProjectName(e.target.value);
-                      }}
-                      className="text-2xl w-full bg-transparent focus:outline-none font-sfpro leading-3 font-bold mb-8"
-                      placeholder="Enter a Project Name"
-                    />
-                    {validationErrors.projectName && (
-                      <span className="text-red-500 text-sm">
-                        {validationErrors.projectName}
-                      </span>
-                    )}
+                  type="text"
+                  name="name"
+                  id="name"
+                  value={projectName}
+                  onChange={(e) => {
+                    setValidationErrors((prevErrors) => ({
+                      ...prevErrors,
+                      projectName: null,
+                    }));
+                    setProjectName(e.target.value);
+                  }}
+                  className="text-2xl w-full bg-transparent focus:outline-none font-sfpro leading-3 font-bold mb-8"
+                  placeholder="Enter a Project Name"
+                />
+                {validationErrors.projectName && (
+                  <span className="text-red-500 text-sm">
+                    {validationErrors.projectName}
+                  </span>
+                )}
                 <div>
-
                   {/* ************************ Description ***************************** */}
                   <div className="flex flex-col">
                     <label
@@ -175,7 +178,7 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                       Description
                     </label>
                     {/* Text area */}
-                    <div className="lg:h-48 h-36 max-h-48 mt-1 roundScrollsm w-full resize-none overflow-y-auto outline-none rounded-xl border-none bg-white mb-1">
+                    {/* <div className="lg:h-48 h-36 max-h-48 mt-1 roundScrollsm w-full resize-none overflow-y-auto outline-none rounded-xl border-none bg-white mb-1">
                       <ReactQuill
                         name="description"
                         id="description"
@@ -201,6 +204,36 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                           },
                         }}
                       />
+                    </div> */}
+
+                    <div className="h-52 mt-4 w-full resize-none outline-none roundScrollsm rounded-2xl border-none bg-white">
+                      <ReactQuill
+                        className="text-center h-[88%]"
+                        required
+                        value={description}
+                        onChange={(html) => {
+                          setValidationErrors((prevErrors) => ({
+                            ...prevErrors,
+                            description: null,
+                          }));
+                          setDescription(html);
+                        }}
+                        modules={{
+                          toolbar: {
+                            container: [
+                              [{ header: "1" }, { header: "2" }],
+                              ["bold", "italic", "underline"],
+                              [{ list: "ordered" }, { list: "bullet" }],
+                              ["link", "image"],
+                              [
+                                { align: "" },
+                                { align: "center" },
+                                { align: "right" },
+                              ],
+                            ],
+                          },
+                        }}
+                      />
                     </div>
 
                     {validationErrors.description && (
@@ -222,8 +255,8 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                       <Datepicker
                         className="z-50"
                         day={startDate.substr(8, 9)}
-                      month={startDate.substr(5, 2)}
-                      year={startDate.substr(0, 4)}
+                        month={startDate.substr(5, 2)}
+                        year={startDate.substr(0, 4)}
                         onChange={(date) => {
                           let d = moment(date)
                             .format("YYYY-MM-DD")
@@ -240,9 +273,9 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                         Due Date
                       </label>
                       <Datepicker
-                      day={dueDate.substr(8, 9)}
-                      month={dueDate.substr(5, 2)}
-                      year={dueDate.substr(0, 4)}
+                        day={dueDate.substr(8, 9)}
+                        month={dueDate.substr(5, 2)}
+                        year={dueDate.substr(0, 4)}
                         onChange={(date) => {
                           let d = moment(date)
                             .format("YYYY-MM-DD")
@@ -264,8 +297,7 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                   <div className="flex gap-4">
                     {/* ************************** MEMBERS ************************** */}
                     <div className="flex flex-col">
-                      <div className="flex justify-start bg-white rounded-md mt-1">
-                      </div>
+                      <div className="flex justify-start bg-white rounded-md mt-1"></div>
                       <div className="flex gap-2">
                         <div
                           onClick={() => {
@@ -318,16 +350,21 @@ const ProjectEditModal = ({ baseUrl, token, onClose ,data}) => {
                                         }));
                                         handleMemberSelection(user.id);
                                       }}
-                                      className={`flex gap-3 px-2 py-1 relative items-center group cursor-pointer ${selectedMembers.includes(user.id)
-                                        ? "bg-gray-400 text-white"
-                                        : ""
-                                        }`}
+                                      className={`flex gap-3 px-2 py-1 relative items-center group cursor-pointer ${
+                                        selectedMembers.includes(user.id)
+                                          ? "bg-gray-400 text-white"
+                                          : ""
+                                      }`}
                                       key={user.id}
                                     >
                                       <div className="rounded-full text-sm bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center ">
-                                        {user.username?.toUpperCase().slice(0, 2)}
+                                        {user.username
+                                          ?.toUpperCase()
+                                          .slice(0, 2)}
                                       </div>
-                                      <p className="gap-3 text-sm">{user.username}</p>
+                                      <p className="gap-3 text-sm">
+                                        {user.username}
+                                      </p>
                                     </div>
                                   ))}
                                 </ul>
@@ -370,5 +407,3 @@ const mapStateToProps = (state) => {
   };
 };
 export default connect(mapStateToProps)(ProjectEditModal);
-
-

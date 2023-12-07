@@ -11,7 +11,7 @@ import ReactQuill from "react-quill";
 import { IoAttachOutline } from "react-icons/io5";
 import { VscMention } from "react-icons/vsc";
 import { priorityOptions, statusOptions } from "../../../data/Data";
-import Select from 'react-select';
+import Select from "react-select";
 
 const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [assignToOpen, setAssignToOpen] = useState(false);
@@ -31,6 +31,8 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
   const [editedComment, setEditedComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [assignToSearchQuery, setAssignToSearchQuery] = useState("");
+  const [assignBySearchQuery, setAssignBySearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const headers = {
@@ -54,6 +56,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
 
   // Comment post api
   const createComment = async (id) => {
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `${baseUrl}/comments/`,
@@ -78,6 +81,8 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
       });
     } catch (error) {
       console.error("Error creating comment", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -227,11 +232,11 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
         })
         .then((response) => {
           if (response.status === 200) {
-            setUsers(response.data.results);
-            setFilterUsers(response.data.results);
+            setUsers(response.data);
+            setFilterUsers(response.data);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getAssignee = async () => {
@@ -247,7 +252,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setAssignToUser(response.data);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
     try {
       await axios
         .get(`${baseUrl}/emp/${taskData.assigned_by}`, {
@@ -260,7 +265,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
             setAssignByUser(response.data);
           }
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -299,6 +304,14 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
 
     return errors;
   };
+
+  const filteredAssignToUsers = Object.values(users).filter((user) =>
+    user.username.toLowerCase().includes(assignToSearchQuery.toLowerCase())
+  );
+
+  const filteredAssignByUsers = Object.values(users).filter((user) =>
+    user.username.toLowerCase().includes(assignBySearchQuery.toLowerCase())
+  );
 
   return (
     <div className="fixed inset-0 w-screen overflow-y-auto scroll z-50 h-screen flex justify-center items-center backdrop-blur-sm  ">
@@ -379,11 +392,15 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     modules={{
                       toolbar: {
                         container: [
-                          [{ 'header': '1' }, { 'header': '2' }],
+                          [{ header: "1" }, { header: "2" }],
                           ["bold", "italic", "underline"],
                           [{ list: "ordered" }, { list: "bullet" }],
                           ["link", "image"],
-                          [{ align: '' }, { align: 'center' }, { align: 'right' }]
+                          [
+                            { align: "" },
+                            { align: "center" },
+                            { align: "right" },
+                          ],
                         ],
                       },
                     }}
@@ -423,9 +440,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       Due Date
                     </label>
                     <Datepicker
-                        day={dueDate.substr(8, 9)}
-                        month={dueDate.substr(5, 2)}
-                        year={dueDate.substr(0, 4)}
+                      day={dueDate.substr(8, 9)}
+                      month={dueDate.substr(5, 2)}
+                      year={dueDate.substr(0, 4)}
                       onChange={(date) => {
                         let d = moment(date).format("YYYY-MM-DD");
                         setDueDate(d);
@@ -455,7 +472,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     </select> */}
                     <Select
                       name="status"
-                      value={statusOptions.find((option) => option.value === status)}
+                      value={statusOptions.find(
+                        (option) => option.value === status
+                      )}
                       options={statusOptions}
                       isSearchable={false}
                       className="w-[140px]" // Add your custom styles here
@@ -485,7 +504,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     </select> */}
                     <Select
                       name="priority"
-                      value={priorityOptions.find((opt) => opt.value === priority)}
+                      value={priorityOptions.find(
+                        (opt) => opt.value === priority
+                      )}
                       options={priorityOptions}
                       className="w-[140px]"
                       isSearchable={false}
@@ -542,10 +563,13 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                             type="search"
                             placeholder="Search"
                             className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
+                            onChange={(e) =>
+                              setAssignToSearchQuery(e.target.value)
+                            }
                           />
                           <div className="overflow-y-auto max-h-28 roundScrollsm">
                             <ul className="text-black">
-                              {filterUsers.map((user) => (
+                              {filteredAssignToUsers.map((user) => (
                                 <div
                                   onClick={() => {
                                     setAssignToUser({
@@ -623,10 +647,13 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                             type="search"
                             placeholder="Search"
                             className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
+                            onChange={(e) =>
+                              setAssignBySearchQuery(e.target.value)
+                            }
                           />
                           <div className="overflow-y-auto max-h-28 roundScrollsm">
                             <ul className="text-black">
-                              {filterUsers.map((user) => (
+                              {filteredAssignByUsers.map((user) => (
                                 <div
                                   onClick={() => {
                                     setAssignByUser({
@@ -691,6 +718,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       type="button"
                       className="bg-[#25A8E0] text-white rounded-lg px-6 py-1"
                       onClick={() => createComment(taskData.id)}
+                      disabled={isLoading}
                     >
                       Send
                     </button>
@@ -713,87 +741,87 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     {/* show comments are conditionally */}
                     {comments.filter((c) => c.task_id === taskData.id).length >
                       0 && (
-                        <div className="flex flex-col gap-2 max-h-36 overflow-y-auto roundScrollsm">
-                          {/* map and filter comments */}
-                          {comments
-                            .filter((c) => c.task_id === taskData.id)
-                            .map((c) => (
-                              <div
-                                className="flex gap-4 items-start mt-2"
-                                key={c.id}
-                              >
-                                {/* User profile */}
-                                <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white flex-none">
-                                  {currentUser
-                                    ? currentUser.username
+                      <div className="flex flex-col gap-2 max-h-36 overflow-y-auto roundScrollsm">
+                        {/* map and filter comments */}
+                        {comments
+                          .filter((c) => c.task_id === taskData.id)
+                          .map((c) => (
+                            <div
+                              className="flex gap-4 items-start mt-2"
+                              key={c.id}
+                            >
+                              {/* User profile */}
+                              <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white flex-none">
+                                {currentUser
+                                  ? currentUser.username
                                       .slice(0, 2)
                                       .toUpperCase()
+                                  : "Loading..."}
+                              </div>
+                              <div className="w-full mr-2 flex-1">
+                                <h1 className="font-semibold font-sfpro">
+                                  {currentUser
+                                    ? currentUser.username
                                     : "Loading..."}
-                                </div>
-                                <div className="w-full mr-2 flex-1">
-                                  <h1 className="font-semibold font-sfpro">
-                                    {currentUser
-                                      ? currentUser.username
-                                      : "Loading..."}
-                                  </h1>
+                                </h1>
+                                {editingCommentId === c.id ? (
+                                  <input
+                                    type="text"
+                                    value={editedComment}
+                                    onChange={(e) =>
+                                      setEditedComment(e.target.value)
+                                    }
+                                    autoFocus
+                                    className="border-b border-gray-300 w-full py-2 focus:outline-none pl-2"
+                                  />
+                                ) : (
+                                  <p className="text-gray-700">{c.comment}</p>
+                                )}
+                                <div className="text-sm space-x-3 text-gray-600 flex items-center">
                                   {editingCommentId === c.id ? (
-                                    <input
-                                      type="text"
-                                      value={editedComment}
-                                      onChange={(e) =>
-                                        setEditedComment(e.target.value)
-                                      }
-                                      autoFocus
-                                      className="border-b border-gray-300 w-full py-2 focus:outline-none pl-2"
-                                    />
+                                    <>
+                                      <span
+                                        className="text-xs cursor-pointer opacity-70"
+                                        onClick={() => saveEdit(c.id)}
+                                      >
+                                        Save
+                                      </span>
+                                      <span
+                                        className="text-xs cursor-pointer opacity-70"
+                                        onClick={cancelEdit}
+                                      >
+                                        Cancel
+                                      </span>
+                                    </>
                                   ) : (
-                                    <p className="text-gray-700">{c.comment}</p>
-                                  )}
-                                  <div className="text-sm space-x-3 text-gray-600 flex items-center">
-                                    {editingCommentId === c.id ? (
-                                      <>
-                                        <span
-                                          className="text-xs cursor-pointer opacity-70"
-                                          onClick={() => saveEdit(c.id)}
-                                        >
-                                          Save
-                                        </span>
-                                        <span
-                                          className="text-xs cursor-pointer opacity-70"
-                                          onClick={cancelEdit}
-                                        >
-                                          Cancel
-                                        </span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <span
-                                          className="text-xs cursor-pointer opacity-70"
-                                          onClick={() =>
-                                            startEdit(c.id, c.comment)
-                                          }
-                                        >
-                                          Edit
-                                        </span>
-                                        {/* <AiOutlineEdit className="cursor-pointer text-[#283b91] opacity-70 text-sm"
+                                    <>
+                                      <span
+                                        className="text-xs cursor-pointer opacity-70"
+                                        onClick={() =>
+                                          startEdit(c.id, c.comment)
+                                        }
+                                      >
+                                        Edit
+                                      </span>
+                                      {/* <AiOutlineEdit className="cursor-pointer text-[#283b91] opacity-70 text-sm"
                                       onClick={() => startEdit(c.id, c.comment)}
                                       title="Edit Comment" /> */}
-                                        {/* <MdDeleteForever className="cursor-pointer text-red-400 opacity-70 text-sm"
+                                      {/* <MdDeleteForever className="cursor-pointer text-red-400 opacity-70 text-sm"
                                       onClick={() => deleteComment(c.id)} title="Delete Comment" /> */}
-                                        <span
-                                          className="text-xs cursor-pointer opacity-70"
-                                          onClick={() => deleteComment(c.id)}
-                                        >
-                                          Delete
-                                        </span>
-                                      </>
-                                    )}
-                                  </div>
+                                      <span
+                                        className="text-xs cursor-pointer opacity-70"
+                                        onClick={() => deleteComment(c.id)}
+                                      >
+                                        Delete
+                                      </span>
+                                    </>
+                                  )}
                                 </div>
                               </div>
-                            ))}
-                        </div>
-                      )}
+                            </div>
+                          ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

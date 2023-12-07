@@ -115,7 +115,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
           headers,
         });
         const totalItems = initialResponse.data.count;
-        const itemsPerPage = initialResponse.data.results.length;
+        const itemsPerPage = initialResponse.data.length;
         const totalPages = Math.ceil(totalItems / itemsPerPage);
 
         // Step 2: Determine the last page number
@@ -123,13 +123,13 @@ const EmpDataForm = ({ token, baseUrl }) => {
 
         // Step 3: Make a request to the last page
         const lastPageResponse = await axios.get(
-          `${baseUrl}/emp/?page=${lastPage}`,
+          `${baseUrl}/emp/?ordering=id&page=${lastPage}`,
           {
             headers,
           }
         );
 
-        const lastPageData = lastPageResponse.data.results;
+        const lastPageData = lastPageResponse.data;
 
         // Step 4: Get the last item from the last page
         const lastItem = lastPageData[lastPageData.length - 1];

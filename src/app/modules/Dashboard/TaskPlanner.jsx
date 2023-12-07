@@ -10,6 +10,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState("");
   const [isCompleteTab, setIsCompleteTab] = useState(false);
   const [boards, setBoards] = useState([]);
   const [nextPage, setNextPage] = useState("");
@@ -28,7 +29,10 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
 
       if (response.status === 200) {
         const tasksData = response.data;
-        if (tasksData.length < 1){setLoading(false)}
+        if (tasksData?.length === 0){
+          setMsg("You have no task")
+          return
+        }
         const tasksWithBardName = [];
         for (const task of tasksData) {
           let username = users.filter((u) => u.id === task.assigned_by);
@@ -43,9 +47,14 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
           tasksWithBardName.push(taskWithname);
         }
         setTasks(tasksWithBardName);
-        setLoading(false);
+      }
+      else{
+        setMsg("Cloud not get tasks")
       }
     } catch (error) {}
+    finally{
+      setLoading(false);
+    }
   };
 
   const getUsers = async (url = `${baseUrl}/emp/`) => {
@@ -58,7 +67,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
         })
         .then((response) => {
           if (response.status === 200) {
-            setUsers(response.data.results);
+            setUsers(response.data);
           }
         });
     } catch (error) {}
@@ -219,6 +228,9 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
               </div>
             </div>
           )}
+          {msg && <div className="flex justify-center items-center opacity-50 text-sm">
+              {msg}
+            </div>}
         </div>
       </div>
     </div>
