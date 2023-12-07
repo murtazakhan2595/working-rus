@@ -91,9 +91,10 @@ const Calendar = ({ baseUrl, token }) => {
 
   return (
     <>
-      <LocalizationProvider dateAdapter={AdapterDayjs} locale="en">
+      <LocalizationProvider  dateAdapter={AdapterDayjs} locale="en">
         <div className="h-[21rem]">
           <DateCalendar
+          sx={{width:"18rem"}}
             slots={{
               day: ServerDay,
             }}
