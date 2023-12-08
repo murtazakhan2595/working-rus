@@ -576,7 +576,7 @@ const AcademicRecords = ({
                     </div>
                   )}
                   <small className="text-gray-400">
-                    Upload a pdf no larger than5 MB.
+                    Upload a pdf no larger than 5 MB.
                   </small>
                 </div>
               </div>
@@ -794,7 +794,7 @@ const AcademicRecords = ({
                     </div>
                   )}
                   <small className="text-gray-400 inline-block my-4">
-                    Upload a jpeg, jpg, png, pdf no larger than 5 MB.
+                    Upload a pdf and no larger than 5 MB.
                   </small>
                 </div>
               </div>

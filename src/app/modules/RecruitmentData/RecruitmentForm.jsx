@@ -20,8 +20,8 @@ const RecruitmentForm = ({ token, baseUrl }) => {
     deadline: null,
   };
   const [formData, setFormData] = useState(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+ 
   const handleChange = (name, value) => {
     setFormData({
       ...formData,
@@ -36,20 +36,20 @@ const RecruitmentForm = ({ token, baseUrl }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-  
+    setIsButtonDisabled(true); // Disable the button
+
     // Validation for salaries
     const minSalary = Number(formData.min_salary);
     const maxSalary = Number(formData.max_salary);
-    
+
     if (maxSalary <= minSalary) {
       toast.error("Maximum salary must be greater than minimum salary", {
         position: toast.POSITION.TOP_RIGHT,
       });
+      setIsButtonDisabled(false); // Re-enable the button
       return;
     }
-    
-  
+
     const data = {
       Job_Title: formData.job_title,
       Job_Description: formData.job_description,
@@ -59,30 +59,25 @@ const RecruitmentForm = ({ token, baseUrl }) => {
       max_salary: formData.max_salary,
       Deadline: formData.deadline,
     };
-  
+
     try {
-      const response = await axios.post(
-        `${baseUrl}/recruitment/`,
-        data,
-        {
-          headers,
-        }
-      );
-    
+      const response = await axios.post(`${baseUrl}/recruitment/`, data, {
+        headers,
+      });
+
       if (response.status === 201) {
         toast.success("Job Posted Successfully", {
           position: toast.POSITION.TOP_RIGHT,
         });
         setFormData(initialData);
-      } 
+      }
     } catch (error) {
       toast.error("Error submitting the form. Please try again.", {
         position: toast.POSITION.TOP_RIGHT,
       });
-    }  finally {
-      setIsLoading(false);
+    } finally {
+      setIsButtonDisabled(false); // Re-enable the button
     }
-    
   };
   
 
@@ -242,10 +237,10 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                 ></label>
               </div>
               <div className="flex justify-between items-center mb-16 md:mb-0 lg:mb-0 w-full md:w-[45%] lg:w-[40%]">
-                <button
+              <button
                   type="submit"
                   className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-                   disabled={isLoading}
+                  disabled={isButtonDisabled}
                 >
                   Post
                 </button>
