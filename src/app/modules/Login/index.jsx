@@ -47,13 +47,14 @@ function Login({ setUserProfile, baseUrl, setToken }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     // Check for internet connection
     if (!navigator.onLine) {
       // Show the custom pop-up with a message
       setPopupVisible(true);
       return;
     }
-    
+  
     // Clear any existing validation errors
     setErrors({});
     const { error } = loginSchema.validate(values, { abortEarly: false });
@@ -65,38 +66,63 @@ function Login({ setUserProfile, baseUrl, setToken }) {
       setErrors(newErrors);
       return;
     }
-
+  
     try {
-      let response = await axios.post(`${baseUrl}/token/`, {
+      const response = await axios.post(`${baseUrl}/token/`, {
         username: values.username,
         password: values.password,
       });
-
-
+  
       if (response.status === 200) {
-        cookies.set("token", response.data.access, { path: "*" });
-        let token = cookies.get("token");
-        let res = await axios.get(`${baseUrl}/user/`, {
+        const token = response.data.access;
+  
+        // Save the token in cookies
+        cookies.set("token", token, { path: "*" });
+  
+        // Fetch user profile with the obtained token
+        const userProfileResponse = await axios.get(`${baseUrl}/user/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        if (res.status === 200) {
-          handleUpdateProfile(res.data);
+  
+        if (userProfileResponse.status === 200) {
+          const userProfile = {
+            id: userProfileResponse.data.id,
+            username: userProfileResponse.data.username,
+          };
+  
+          // Update the user profile in the Redux store
+          handleUpdateProfile(userProfile);
+  
+          // Update the token in the Redux store
           setToken(token);
-          setValues({});
-          cookies.set("uname", values.username, { path: "*" });
-          cookies.set("pwd", values.password, { path: "*" });
+  
+          // Clear form values
+          setValues({
+            username: "",
+            password: "",
+          });
+  
+          // Save username and password in cookies if "Keep me Signed In" is checked
+          if (isChecked) {
+            cookies.set("uname", values.username, { path: "*" });
+            cookies.set("pwd", values.password, { path: "*" });
+          }
+  
+          // Display success message
           toast.success("Login successful!", {
             position: toast.POSITION.TOP_RIGHT,
           });
+  
+          // Navigate to the desired location after a delay (e.g., 2 seconds)
           setTimeout(() => {
             navigate("/");
           }, 2000);
           return;
         }
       }
-
+  
       // Simulating a response delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
@@ -104,7 +130,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
-  };
+  }; 
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -63,7 +63,7 @@ const handleFileChange = (e) => {
     type: file.type,
     size: file.size,
   }
-  const maxSizeInBytes = 1024 * 1024;
+  const maxSizeInBytes = 100 * 1024 * 1024; 
   if (file) {
     const reader = new FileReader();
             reader.onload = (e) => {
@@ -74,7 +74,7 @@ const handleFileChange = (e) => {
     setErrors({'cv':""});
 
   if (file.size > maxSizeInBytes){
-    const validationErrors = { cv: "Upload a PDF no larger than 1 MB" };
+    const validationErrors = { cv: "Upload a PDF no larger than 100 MB" };
     setErrors(validationErrors);
   }
   } else {
