@@ -1,4 +1,5 @@
-import { useState } from "react";
+// EmpDataHeader.js
+import React, { useState } from "react";
 import { RiArrowDownSFill } from "react-icons/ri";
 import { connect } from "react-redux";
 import Cookies from "universal-cookie";
@@ -12,9 +13,11 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+
   const navigate = useNavigate();
 
   const cookies = new Cookies();
+
   // logout dropdown
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -34,6 +37,12 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
     }
   };
 
+  // handle search input change
+  const handleSearchChange = (event) => {
+    const term = event.target.value;
+    onSearch(term);
+  };
+
   return (
     <>
       {/* Header */}
@@ -48,6 +57,7 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
               type="search"
               placeholder="Search"
               className="focus:outline-none focus:border-non bg-[#D7D7D7] py-1 pl-8 pr-4 text-white placeholder-white border-none md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
+              onChange={handleSearchChange}
             />
           </div>
         </div>
@@ -118,10 +128,10 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
             <div>
               <input
                 type="search"
-                placeholder="ID, Username or Name"
+                placeholder="ID, Username, or Name"
                 className="focus:outline-none focus:border-non
                 bg-[#D7D7D7] py-1 pl-2 md:pl-4 lg:pl-4 pr-4 text-white placeholder-white border-none md:flex lg:w-56 xs:w-[10rem] rounded-md"
-                onChange={(e) => onSearch(e.target.value)}
+                onChange={handleSearchChange}
               />
             </div>
           )}
