@@ -30,7 +30,8 @@ const EmpDataForm = ({ token, baseUrl }) => {
   const [empId, setempId] = useState(0);
   const [enteredUsername, setEnteredUsername] = useState("");
   const [refreshComponent, setRefreshComponent] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [isApiCallInProgress, setIsApiCallInProgress] = useState(false);
 
   const handleChange = (name, value) => {
     setFormData({
@@ -40,7 +41,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
 
     if (name === "username") {
       validateInput(value);
-      setEnteredUsername(value); 
+      setEnteredUsername(value);
     }
   };
 
@@ -71,6 +72,15 @@ const EmpDataForm = ({ token, baseUrl }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if an API call is already in progress
+    if (isApiCallInProgress) {
+      return;
+    }
+
+    setIsApiCallInProgress(true);
+    setIsLoading(true);
+
     const data = {
       username: formData.username,
       first_name: formData.firstname,
@@ -79,10 +89,12 @@ const EmpDataForm = ({ token, baseUrl }) => {
       password: formData.password,
       user_role: formData.userrole.value,
     };
+
     try {
       const response = await axios.post(`${baseUrl}/emp/add`, data, {
         headers,
       });
+
       if (response.status === 201) {
         setShowSuccessModal(true);
         setRefreshComponent(!refreshComponent);
@@ -102,6 +114,9 @@ const EmpDataForm = ({ token, baseUrl }) => {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
+    } finally {
+      setIsApiCallInProgress(false);
+      setIsLoading(false);
     }
 
     setFormData(initData);
@@ -150,7 +165,11 @@ const EmpDataForm = ({ token, baseUrl }) => {
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9]">
-      <EmpDataHeader title="Add New User" mainTitle="Employee Data" path="emp-dataform" />
+      <EmpDataHeader
+        title="Add New User"
+        mainTitle="Employee Data"
+        path="emp-dataform"
+      />
 
       <form onSubmit={handleSubmit}>
         <div className="px-2 py-3 md:px-3 md:py-4 lg:px-10 lg:py-6 overflow-y-auto xScroll max-h-[76vh] md:h-[100vh]">
@@ -248,7 +267,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
                             text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
                 >
                   Email:
-                  <span className="text-[#F9F9F9]">Add</span> 
+                  <span className="text-[#F9F9F9]">Add</span>
                 </label>
                 <input
                   type="email"
@@ -300,7 +319,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
                 />
               </div>
               <div className="mt-4 md:mt-3 mb-40 flex justify-end">
-                <Button text={"Create"} />
+                <Button disabled={isLoading} text={"Create"} />
               </div>
             </div>
           </div>
@@ -314,7 +333,8 @@ const EmpDataForm = ({ token, baseUrl }) => {
            justify-center items-center absolute md:w-[40%] lg:w-[26%] lg:h-[24%]"
           >
             <p className="text-base text-center text-gray-400">
-            User has been successfully registered and has been sent to {enteredUsername}
+              User has been successfully registered and has been sent to{" "}
+              {enteredUsername}
             </p>
             <div
               className="absolute top-4 right-4 text-white bg-[#ECECEC] rounded-full p-[2px] cursor-pointer"

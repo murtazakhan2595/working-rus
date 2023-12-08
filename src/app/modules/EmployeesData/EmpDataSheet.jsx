@@ -1,9 +1,10 @@
+// EmpDataSheet.js
 import React, { useEffect, useState } from "react";
-import EmpDataHeader from "./EmpDataHeader";
 import axios from "axios";
 import { connect } from "react-redux";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import EmpDataHeader from "./EmpDataHeader";
 
 const userRoles = [
   { value: 2, label: "HR" },
@@ -16,15 +17,8 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
   const [hasNextPage, setHasNextPage] = useState(true);
-
-  // handle search
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-    setPage(1); 
-  };
-  
+  const [filter, setFilter] = useState("");
 
   // Functions for calling the API
   const headers = {
@@ -32,33 +26,41 @@ const EmpDataSheet = ({ baseUrl, token }) => {
     "Content-Type": "application/json",
   };
 
-   // Fetching users
-   useEffect(() => {
-  
+  // Fetching users
+  useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/emp/?ordering=id&search=${searchTerm}&page=${page}`,
+          `${baseUrl}/emp/?ordering=id&page=${page}`,
           {
             headers,
           }
         );
         const usersData = response.data;
-        setUsers(usersData);
+        // Apply frontend filtering based on ID, username, or fullname
+        const filteredUsers = usersData.filter(
+          (user) =>
+            user.id.toString().includes(filter) ||
+            user.username.includes(filter) ||
+            `${user.first_name} ${user.last_name}`.includes(filter)
+        );
+        setUsers(filteredUsers);
         setLoading(false);
         setHasNextPage(!!response.data.next);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
-  
+
     fetchUsers();
-  }, [page, searchTerm, baseUrl, token]);
-  
+  }, [page, baseUrl, token, filter]);
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9] h-[100vh]">
-      <EmpDataHeader title="Employee Data Sheet" onSearch={handleSearch} />
+      <EmpDataHeader
+        title="Employee Data Sheet"
+        onSearch={(term) => setFilter(term)}
+      />
 
       {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
@@ -70,7 +72,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
           <table className="min-w-full">
             <thead>
               <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-                <th className="px-6 py-3 text-left  rounded-tl-lg">
+                <th className="px-6 py-3 text-left rounded-tl-lg">
                   Employee ID
                 </th>
                 <th className="px-6 py-3 text-left">User Name</th>
@@ -121,7 +123,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
           onClick={() => setPage(page - 1)}
           disabled={page === 1}
           className={`mr-4 w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue 
-          ${page === 1 ? "bg-blue-300": ""}`}
+          ${page === 1 ? "bg-blue-300" : ""}`}
         >
           <BsArrowLeftShort className="text-xl text-white" title="Previous" />
         </button>
@@ -129,7 +131,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
           onClick={() => setPage(page + 1)}
           disabled={!hasNextPage}
           className={`w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue 
-          ${!hasNextPage ? "bg-blue-300": ""}`}
+          ${!hasNextPage ? "bg-blue-300" : ""}`}
         >
           <BsArrowRightShort className="text-xl text-white" title="Next" />
         </button>
