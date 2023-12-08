@@ -69,11 +69,16 @@ function App({
         return;
       }
     } catch (error) {
-      setUserLogout();
-      navigate("/");
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        // Token expired or invalid
+        setUserLogout();
+        navigate("/");
+      } else {
+        console.error("Error fetching data:", error);
+      }
     }
   };
-
+  
   useEffect(() => {
     if (isLogin || isLogin === null){
       getProfile();
