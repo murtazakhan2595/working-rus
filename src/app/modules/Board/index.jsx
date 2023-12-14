@@ -309,7 +309,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
         headers,
       });
       if (response.status === 204) {
-        navigate(`/project/${id}`)
+        navigate(`/project/${id}`);
       } else {
         console.error("Unexpected response status:", response.status);
       }
@@ -409,7 +409,20 @@ const Board = ({ userProfile, baseUrl, token }) => {
                   </div>
                 </div>
                 {isLoading ? (
-                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                  // <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                  <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
+                    <div className="opacity-70 h-5 w-3/4 mb-2"></div>
+                    <hr className="bg-white h-2 my-2" />
+                    <div className="flex justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-[0.60rem]"></div>
+                        <div className="text-sm opacity-50 cursor-pointer"></div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <>
                     <Droppable droppableId="todo">
@@ -440,12 +453,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                         setBoardHidden(true);
                                       }}
                                     >
-                                      <div
-                                       
-                                        className="opacity-70"
-                                      >
-                                        {t.name}
-                                      </div>
+                                      <div className="opacity-70">{t.name}</div>
                                       <hr className=" bg-white h-[2px] my-2" />
                                       <div className="flex justify-between">
                                         <div className="flex items-center gap-2">
@@ -536,7 +544,20 @@ const Board = ({ userProfile, baseUrl, token }) => {
                   </div>
                 </div>
                 {isLoading ? (
-                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                  // <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                  <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
+                    <div className="opacity-70 h-5 w-3/4 mb-2"></div>
+                    <hr className="bg-white h-2 my-2" />
+                    <div className="flex justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-[0.60rem]"></div>
+                        <div className="text-sm opacity-50 cursor-pointer"></div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <>
                     <Droppable droppableId="inProgress">
@@ -567,11 +588,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                         setBoardHidden(true);
                                       }}
                                     >
-                                      <div
-                                        className="opacity-70"
-                                      >
-                                        {t.name}
-                                      </div>
+                                      <div className="opacity-70">{t.name}</div>
                                       <hr className=" bg-white h-[2px] my-2" />
                                       <div className="flex justify-between">
                                         <div className="flex items-center gap-2">
@@ -661,7 +678,20 @@ const Board = ({ userProfile, baseUrl, token }) => {
                   </div>
                 </div>
                 {isLoading ? (
-                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                  // <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                  <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
+                    <div className="opacity-70 h-5 w-3/4 mb-2"></div>
+                    <hr className="bg-white h-2 my-2" />
+                    <div className="flex justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-[0.60rem]"></div>
+                        <div className="text-sm opacity-50 cursor-pointer"></div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <>
                     <Droppable droppableId="completed">
@@ -692,11 +722,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                                         setBoardHidden(true);
                                       }}
                                     >
-                                      <div
-                                        className="opacity-70"
-                                      >
-                                        {t.name}
-                                      </div>
+                                      <div className="opacity-70">{t.name}</div>
                                       <hr className=" bg-white h-[2px] my-2" />
                                       <div className="flex justify-between">
                                         <div className="flex items-center gap-2">

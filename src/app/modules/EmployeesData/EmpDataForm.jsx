@@ -30,7 +30,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
   const [empId, setempId] = useState(0);
   const [enteredUsername, setEnteredUsername] = useState("");
   const [refreshComponent, setRefreshComponent] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isApiCallInProgress, setIsApiCallInProgress] = useState(false);
 
   const handleChange = (name, value) => {
@@ -163,6 +163,17 @@ const EmpDataForm = ({ token, baseUrl }) => {
     setShowSuccessModal(false);
   };
 
+  // skeleton loader
+
+  useEffect(() => {
+    // Simulate a delay and then stop the loading animation
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9]">
       <EmpDataHeader
@@ -184,14 +195,18 @@ const EmpDataForm = ({ token, baseUrl }) => {
                   EmpolyeeID:
                 </label>
                 <div className="flex flex-col w-full">
-                  <input
-                    type="text"
-                    name="username"
-                    readOnly
-                    disabled
-                    value={"TXB" + empId.toString().padStart(4, "0")}
-                    className="pl-2 w-full bg-white rounded h-8 text-sm text-gray-600"
-                  />
+                  {isLoading ? (
+                    <div className="bg-gray-300 h-8 w-full animate-pulse rounded"></div>
+                  ) : (
+                    <input
+                      type="text"
+                      name="username"
+                      readOnly
+                      disabled
+                      value={"TXB" + empId.toString().padStart(4, "0")}
+                      className="pl-2 w-full bg-white rounded h-8 text-sm text-gray-600"
+                    />
+                  )}
                 </div>
               </div>
               <div className="flex items-center mt-2">

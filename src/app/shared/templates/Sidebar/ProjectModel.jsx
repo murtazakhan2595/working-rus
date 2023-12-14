@@ -24,8 +24,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
   const [dueDate, setDueDate] = useState(defaultDate);
   // const [priority, setPriority] = useState(3);
   const [membersOpen, setMembersOpen] = useState(false);
-  const [users, setUsers] = useState({});
-  const [filterUsers, setFilterUsers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -119,7 +118,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
 
       console.log(response.data);
       if (response.status === 200) {
-        setFilterUsers(response.data);
+        // setFilterUsers(response.data);
         setUsers(response.data);
       }
     } catch (error) {
@@ -141,6 +140,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
       ...prevErrors,
       selectedMembers: null,
     }));
+    setSearchQuery('');
   };
 
   const handleSearchChange = (e) => {
@@ -148,7 +148,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredUsers = filterUsers.filter((user) =>
+  const filteredUsers = users.filter((user) =>
     user.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -357,6 +357,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                                 <RxCross2
                                   onClick={() => {
                                     setMembersOpen(!membersOpen);
+                                    setSearchQuery('')
                                   }}
                                 />
                               </div>
@@ -365,6 +366,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
                                 placeholder="Search"
                                 value={searchQuery}
                                 onChange={handleSearchChange}
+
                                 className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
                               />
                               <div className="overflow-y-auto max-h-24 roundScrollsm">

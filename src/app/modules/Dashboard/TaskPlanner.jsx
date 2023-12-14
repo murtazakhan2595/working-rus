@@ -221,11 +221,9 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
                   )}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[30vh]">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-                <p className="text-gray-600 mt-4">Loading...</p>
-              </div>
+            <div className="mt-2">
+              <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
+              <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
             </div>
           )}
           {msg && <div className="flex justify-center items-center opacity-50 text-sm">

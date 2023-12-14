@@ -41,8 +41,10 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         const filteredUsers = usersData.filter(
           (user) =>
             user.id.toString().includes(filter) ||
-            user.username.includes(filter) ||
-            `${user.first_name} ${user.last_name}`.includes(filter)
+            user.username.toLowerCase().includes(filter) ||
+            `${user.first_name} ${user.last_name}`.includes(
+              filter.toLowerCase()
+            )
         );
         setUsers(filteredUsers);
         setLoading(false);
@@ -65,9 +67,55 @@ const EmpDataSheet = ({ baseUrl, token }) => {
       {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
         {loading ? (
-          <div className="flex justify-center items-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-          </div>
+          // <div className="flex justify-center items-center">
+          //   <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+          // </div>
+          <table className="min-w-full">
+            <thead>
+              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
+                <th className="px-6 py-3 text-left rounded-tl-lg">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left">
+                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left">
+                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left">
+                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left rounded-tr-lg">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white text-gray-500">
+              <tr className="whitespace-nowrap border-b-2">
+                <td className="px-6 py-2">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         ) : (
           <table className="min-w-full">
             <thead>
