@@ -93,6 +93,7 @@ const BoardList = ({
     }
   };
 
+
   const handleDeleteProject = async () => {
     try {
       const response = await axios.delete(`${baseUrl}/project/${project.id}`, {
@@ -125,6 +126,7 @@ const BoardList = ({
   useEffect(() => {
     getBoards();
   }, [id, project]);
+
 
   // logout dropdown
   const handleDropdownClick = () => {

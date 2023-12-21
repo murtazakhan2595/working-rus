@@ -27,6 +27,8 @@ import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/modules/Employees/EmpForm";
 import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
+import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
+import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
 
 function App({
   setUserProfile,
@@ -69,7 +71,10 @@ function App({
         return;
       }
     } catch (error) {
-      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
         // Token expired or invalid
         setUserLogout();
         navigate("/");
@@ -78,9 +83,9 @@ function App({
       }
     }
   };
-  
+
   useEffect(() => {
-    if (isLogin || isLogin === null){
+    if (isLogin || isLogin === null) {
       getProfile();
     }
   }, [location]);
@@ -176,6 +181,8 @@ function App({
             <Route path="*" element={<Err404 />} />
           </>
         )}
+        <Route path="/job-description" element={<JobDescription />} />
+        <Route path="/apply" element={<JobApplicationForm />} />
       </Routes>
     </>
   );

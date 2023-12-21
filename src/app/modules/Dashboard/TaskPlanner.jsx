@@ -90,11 +90,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
     } catch (error) {}
   };
 
-  const getLenght = (task) => {
-    let tName = String(task.name);
-    return tName.length > 25 && "...";
-  };
-
+  
   useEffect(() => {
     do {
       nextPage ? getBoards(nextPage) : getBoards();
@@ -105,6 +101,11 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
     getTasks();
   }, [users]);
 
+  const getLenght = (task) => {
+    let tName = String(task.name);
+    return tName.length > 25 && "...";
+  };
+  
   return (
     <div className="md:px-10 w-full md:mb-1 pb-3 px-5">
       <div className="flex justify-between items-center">

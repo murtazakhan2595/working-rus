@@ -237,9 +237,26 @@ const Dashboard = ({ token, baseUrl }) => {
           )}
         </div>
         {loading ? (
-          <div className="block m-auto">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-          </div>
+          <>
+            <div className="flex gap-2 items-center animate-pulse">
+              <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+              <div className="w-48 h-4 bg-gray-300 rounded"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+            </div>
+            <div className="flex gap-2 items-center animate-pulse">
+              <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+              <div className="w-48 h-4 bg-gray-300 rounded"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+            </div>
+            <div className="flex gap-2 items-center animate-pulse">
+              <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+              <div className="w-48 h-4 bg-gray-300 rounded"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+            </div>
+          </>
         ) : (
           <div className={`overflow-y-auto max-h-[160px] roundScrollsm`}>
             {todos.slice(0, showAllItems ? todos.length : 4).map((todo) => (
