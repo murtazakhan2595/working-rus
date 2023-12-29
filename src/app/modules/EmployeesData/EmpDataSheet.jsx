@@ -166,7 +166,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         )}
       </div>
       {/* Pagination Controls */}
-      <div className="flex justify-end items-center mt-2 px-1 lg:px-8">
+     {/*  <div className="flex justify-end items-center mt-2 px-1 lg:px-8">
         <button
           onClick={() => setPage(page - 1)}
           disabled={page === 1}
@@ -183,7 +183,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         >
           <BsArrowRightShort className="text-xl text-white" title="Next" />
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

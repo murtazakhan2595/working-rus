@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import RecruitmentDataHeader from "./RecruitmentDataHeader";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const dropdownOptions = [
   "Selected",
@@ -14,6 +16,8 @@ const dropdownOptions = [
 
 const ApplicantsDataTable = ({ baseUrl, token }) => {
   const [selectedRow, setSelectedRow] = useState(null);
+  const [applicants, setApplicants] = useState(null);
+  const { id } = useParams();
   const [data, setData] = useState([
     {
       id: 1,
@@ -81,6 +85,36 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
     }, */
   ]);
 
+  console.log(id + 'id here')
+
+  // fetch applicants
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+
+  // Fetching users
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get(
+          // `${baseUrl}/candidateall/?search=${id}`,
+          `${baseUrl}/candidateall/?search=${id}&job_id=${id}`, // Replace yourJobId with the actual job_id value
+        
+          {
+            headers,
+          }
+        );
+        setApplicants(response.data.results);
+        console.log(response.data.results);
+        console.log("response==>", response.data.results);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchPosts();
+  }, []);
+
   // Function to handle row selection
   const handleRowClick = (id) => {
     setSelectedRow(selectedRow === id ? null : id);
@@ -89,7 +123,9 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
   // Function to handle dropdown option selection
   const handleOptionSelect = (option) => {
     // Find the selected row in the data array
-    const selectedApplicant = data.find((applicant) => applicant.id === selectedRow);
+    const selectedApplicant = data.find(
+      (applicant) => applicant.id === selectedRow
+    );
 
     // Update the applicationStatus for the selected row
     if (selectedApplicant) {

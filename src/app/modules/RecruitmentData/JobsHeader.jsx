@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 
-const JobDescription = ({ token, baseUrl }) => {
+const JobsHeader = ({ token, baseUrl }) => {
   const [jobDetails, setJobDetails] = useState(null);
 
   const { id } = useParams();
@@ -37,7 +37,7 @@ const JobDescription = ({ token, baseUrl }) => {
   }, []);
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
     return formattedDate;
   };
@@ -168,4 +168,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(JobDescription);
+export default connect(mapStateToProps)(JobsHeader);

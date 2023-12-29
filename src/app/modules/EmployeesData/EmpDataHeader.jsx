@@ -92,9 +92,9 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
         <div className="flex flex-col md:flex-row lg:flex-row gap-y-2 gap-x-3">
           <div className="flex gap-x-4 justify-end">
             <Link
-              to="/emp-data"
+              to="/employees"
               className={`p-2 rounded-md  ${
-                location.pathname === "/emp-data"
+                location.pathname === "/employees"
                   ? "bg-[#25A8E0] text-white"
                   : "bg-white text-gray-400"
               }`}
@@ -102,16 +102,16 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
               <BsTable title="Employee Data Table" />
             </Link>
             <Link
-              to="/emp-dataform"
+              to="/add-employee"
               className={`p-2 rounded-md  ${
-                location.pathname === "/emp-dataform"
+                location.pathname === "/add-employee"
                   ? "bg-[#25A8E0] text-white"
                   : "bg-white text-gray-400"
               }`}
             >
               <BsPersonPlus title="Add Employee" />
             </Link>
-            {location.pathname === "/emp-data" && (
+            {location.pathname === "/employees" && (
               <button
                 className={`p-2 rounded-md ${
                   isSearchVisible

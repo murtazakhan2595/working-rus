@@ -126,24 +126,24 @@ function App({
                     <>
                       <Route
                         exact
-                        path="/emp-data"
+                        path="/employees"
                         element={<EmpDataSheet />}
                       />
                       <Route
                         exact
-                        path="/emp-dataform"
+                        path="/add-employee"
                         element={<EmpDataForm />}
                       />
                       <Route
-                        path="/recruitment-form"
+                        path="/job-post"
                         element={<RecruitmentForm />}
                       />
                       <Route
-                        path="/applicants-datatable"
+                        path="/applicants/:id"
                         element={<ApplicantsDataTable />}
                       />
                       <Route
-                        path="/jobs-datatable"
+                        path="/jobs"
                         element={<JobsDataTable />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
@@ -151,13 +151,13 @@ function App({
                   )}
                 </Route>
                 {(userProfile.role !== 1 || userProfile.role !== 2) && (
-                  <Route path="/recruitment-form" element={<Err401 />} />
+                  <Route path="/recruitment" element={<Err401 />} />
                 )}
                 {(userProfile.role !== 1 || userProfile.role !== 2) && (
-                  <Route path="/applicants-datatable" element={<Err401 />} />
+                  <Route path="/applicants/:id" element={<Err401 />} />
                 )}
                 {(userProfile.role !== 1 || userProfile.role !== 2) && (
-                  <Route path="/jobs-datatable" element={<Err401 />} />
+                  <Route path="/jobs" element={<Err401 />} />
                 )}
                 {(userProfile.role !== 1 || userProfile.role !== 2) && (
                   <Route path="/user/:id" element={<Err401 />} />
@@ -166,7 +166,7 @@ function App({
                   <Route exact path="/emp-dataform" element={<Err401 />} />
                 )}
                 {(userProfile.role !== 1 || userProfile.role !== 2) && (
-                  <Route exact path="/emp-data" element={<Err401 />} />
+                  <Route exact path="/employees" element={<Err401 />} />
                 )}
               </>
             ) : (
@@ -181,8 +181,9 @@ function App({
             <Route path="*" element={<Err404 />} />
           </>
         )}
-        <Route path="/job-description" element={<JobDescription />} />
-        <Route path="/apply" element={<JobApplicationForm />} />
+        {/* <Route path="/job-description" element={<JobDescription />} /> */}
+        <Route path="/apply/:id" element={<JobApplicationForm />} />
+        <Route path="/job-description/:id" element={<JobDescription />} />
       </Routes>
     </>
   );
