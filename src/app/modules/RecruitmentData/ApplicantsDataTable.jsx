@@ -3,89 +3,18 @@ import { connect } from "react-redux";
 import RecruitmentDataHeader from "./RecruitmentDataHeader";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { HiDownload } from "react-icons/hi";
+import { dropdownOptions } from "../../../data/Data";
 
-const dropdownOptions = [
-  "Selected",
-  "Shortlisted",
-  "Offer-made",
-  "Onboard",
-  "Declined",
-  "Contacted",
-  "Rejected",
-];
 
 const ApplicantsDataTable = ({ baseUrl, token }) => {
   const [selectedRow, setSelectedRow] = useState(null);
-  const [applicants, setApplicants] = useState(null);
+  const [applicants, setApplicants] = useState([]);
+  const [post, setPost] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState("");
   const { id } = useParams();
-  const [data, setData] = useState([
-    {
-      id: 1,
-      name: "Moattar Ali",
-      email: "moattar@example.com",
-      contact: "1234567890",
-      fileName: "Resume_Moattar.pdf",
-      applicationStatus: "Application status",
-    },
-    {
-      id: 2,
-      name: "John Doe",
-      email: "john@example.com",
-      contact: "9876543210",
-      fileName: "Resume_John.pdf",
-      applicationStatus: "Application status",
-    },
-    {
-      id: 3,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      contact: "5551234567",
-      fileName: "Resume_Alice.pdf",
-      applicationStatus: "Application status",
-    },
-    {
-      id: 4,
-      name: "Bob Smith",
-      email: "bob@example.com",
-      contact: "7778889999",
-      fileName: "Resume_Bob.pdf",
-      applicationStatus: "Application status",
-    },
-    {
-      id: 5,
-      name: "Eva Davis",
-      email: "eva@example.com",
-      contact: "4445556666",
-      fileName: "Resume_Eva.pdf",
-      applicationStatus: "Application status",
-    },
-    {
-      id: 6,
-      name: "Charlie Brown",
-      email: "charlie@example.com",
-      contact: "1112223333",
-      fileName: "Resume_Charlie.pdf",
-      applicationStatus: "Application status",
-    },
-    {
-      id: 7,
-      name: "Grace Lee",
-      email: "grace@example.com",
-      contact: "9990001111",
-      fileName: "Resume_Grace.pdf",
-      applicationStatus: "Application status",
-    },
-    /* {
-      id: 8,
-      name: "Samuel Wilson",
-      email: "samuel@example.com",
-      contact: "6667778888",
-      fileName: "Resume_Samuel.pdf",
-      applicationStatus: "Application status",
-    }, */
-  ]);
-
-  console.log(id + 'id here')
 
   // fetch applicants
   const headers = {
@@ -93,110 +22,253 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
     "Content-Type": "application/json",
   };
 
+  // Fetching posts by id
+  const fetchJob = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
+        headers,
+      });
+      setPost(response.data.Job_Title);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
   // Fetching users
+  const fetchApplicants = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/candidateall/?search=${encodeURIComponent(
+          `{"application_status": "${applicationStatus}", "job_id": ${id}}`
+        )}`,
+        {
+          headers,
+        }
+      );
+      setApplicants(response.data.results);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(
-          // `${baseUrl}/candidateall/?search=${id}`,
-          `${baseUrl}/candidateall/?search=${id}&job_id=${id}`, // Replace yourJobId with the actual job_id value
-        
-          {
-            headers,
-          }
-        );
-        setApplicants(response.data.results);
-        console.log(response.data.results);
-        console.log("response==>", response.data.results);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-    fetchPosts();
+    fetchJob();
   }, []);
+
+  useEffect(() => {
+    fetchApplicants();
+  }, [id, applicationStatus]);
+
+  // update status
+
+  // truncate cv link
+  const truncateCVLink = (cvLink, maxLength) => {
+    return cvLink.length > maxLength
+      ? cvLink.substring(0, maxLength) + "..."
+      : cvLink;
+  };
 
   // Function to handle row selection
   const handleRowClick = (id) => {
     setSelectedRow(selectedRow === id ? null : id);
   };
 
-  // Function to handle dropdown option selection
-  const handleOptionSelect = (option) => {
-    // Find the selected row in the data array
-    const selectedApplicant = data.find(
-      (applicant) => applicant.id === selectedRow
-    );
+  const handleOptionSelect = async (option) => {
+    setApplicationStatus(option);
+    try {
+      // Find the selected row in the data array
+      const selectedApplicant = applicants.find(
+        (applicant) => applicant.id === selectedRow
+      );
 
-    // Update the applicationStatus for the selected row
-    if (selectedApplicant) {
-      selectedApplicant.applicationStatus = option;
-
-      // Update the data state with the modified row
-      setData((prevData) => {
-        return prevData.map((applicant) =>
-          applicant.id === selectedRow ? selectedApplicant : applicant
+      if (selectedApplicant) {
+        console.log(selectedApplicant);
+        const response = await axios.patch(
+          `${baseUrl}/candidate/${selectedApplicant.id}`,
+          {
+            application_status: option,
+            first_name: selectedApplicant.first_name,
+            last_name: selectedApplicant.last_name,
+            phone_number: selectedApplicant.phone_number,
+            email: selectedApplicant.email,
+            cv: selectedApplicant.cv,
+            job_id: selectedApplicant.job_id,
+          },
+          {
+            headers,
+          }
         );
-      });
-    }
 
-    // Close the dropdown
-    setSelectedRow(null);
+        // Check if the request was successful
+        if (response.status === 200) {
+          // Update the applicationStatus for the selected row in the local state
+          selectedApplicant.applicationStatus = option;
+
+          // Update the data state with the modified row
+          setApplicants((prevData) =>
+            prevData.map((applicant) =>
+              applicant.id === selectedRow ? selectedApplicant : applicant
+            )
+          );
+
+          fetchApplicants();
+        } else {
+          console.error("Failed to update application status");
+        }
+      }
+
+      // Close the dropdown
+      setSelectedRow(null);
+    } catch (error) {
+      console.error("Error updating application status:", error);
+    }
+  };
+
+  // show filter
+
+  const handleShowFilter = () => {
+    setShowFilter(!showFilter);
   };
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9] h-[100vh]">
-      <RecruitmentDataHeader title="Senior Project Manager" />
+      <RecruitmentDataHeader post={post} />
 
       {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 h-[100%] overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
-        <table className="min-w-full">
-          <thead>
-            <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-              <th className="px-6 py-3 text-left rounded-tl-lg">
-                Candidate Name
-              </th>
-              <th className="px-6 py-3 text-left">Email</th>
-              <th className="px-6 py-3 text-left">Contact No</th>
-              <th className="px-6 py-3 text-left">Resume</th>
-              <th className="px-6 py-3 text-left rounded-tr-lg">
-                Application Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white text-gray-500">
-            {data.map((applicant) => (
-              <tr
-                className={`whitespace-nowrap border-b-2 hover:bg-gray-100 ${
-                  selectedRow === applicant.id ? "bg-gray-200" : ""
-                }`}
-                key={applicant.id}
-                onClick={() => handleRowClick(applicant.id)}
-              >
-                <td className="px-6 py-3 text-left">{applicant.name}</td>
-                <td className="px-6 py-3 text-left">{applicant.email}</td>
-                <td className="px-6 py-3 text-left">{applicant.contact}</td>
-                <td className="px-6 py-3 text-left">{applicant.fileName}</td>
-                <td className="px-6 py-3 text-left relative cursor-pointer">
-                  <span className="mr-2">{applicant.applicationStatus}</span>
-                  <span className="text-gray-500">&#9662;</span>
-                  {selectedRow === applicant.id && (
-                    <div className="absolute left-28 bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
+        {loading ? (
+          <table className="min-w-full">
+            <thead>
+              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
+                <th className="px-6 py-3 text-left rounded-tl-lg">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left">
+                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left">
+                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left">
+                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+                <th className="px-6 py-3 text-left rounded-tr-lg">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white text-gray-500">
+              <tr className="whitespace-nowrap border-b-2">
+                <td className="px-6 py-2">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+                <td className="px-6 py-2">
+                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        ) : (
+          <table className="min-w-full">
+            <thead>
+              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
+                <th className="px-6 py-3 text-left rounded-tl-lg">ID</th>
+                <th className="px-6 py-3 text-left rounded-tl-lg">
+                  Candidate Name
+                </th>
+                <th className="px-6 py-3 text-left">Email</th>
+                <th className="px-6 py-3 text-left">Contact No</th>
+                <th className="px-6 py-3 text-left">Resume</th>
+                <th
+                  className="px-6 py-3 text-left rounded-tr-lg flex gap-x-2"
+                  onClick={handleShowFilter}
+                >
+                  Application Status
+                  <span className="text-baseBlue text-xl">&#9662;</span>
+                  {showFilter && (
+                    <div className="absolute right-6 top-[5px] bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
                       {dropdownOptions.map((option) => (
                         <div
                           key={option}
                           onClick={() => handleOptionSelect(option)}
-                          className={`cursor-pointer border-b-2 pl-2 w-[125px] hover:bg-blue-100`}
+                          className="cursor-pointer border-b-2 pl-2 w-[100px] hover:bg-blue-100"
                         >
                           {option}
                         </div>
                       ))}
                     </div>
                   )}
-                </td>
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white text-gray-500">
+              {applicants?.map((applicant) => (
+                <tr
+                  className={`whitespace-nowrap border-b-2 hover:bg-gray-100 ${
+                    selectedRow === applicant.id ? "bg-gray-200" : ""
+                  }`}
+                  key={applicant?.id}
+                >
+                  <td className="px-6 py-3 text-left">{applicant?.id}</td>
+                  <td className="px-6 py-3 text-left">
+                    {applicant?.first_name}
+                  </td>
+                  <td className="px-6 py-3 text-left">{applicant?.email}</td>
+                  <td className="px-6 py-3 text-left">
+                    {applicant?.phone_number}
+                  </td>
+                  <td className="px-6 py-3 text-left">
+                    <div className="flex items-center">
+                      <span title={applicant?.cv}>
+                        {truncateCVLink(applicant?.cv, 10)}
+                      </span>
+                      <a href={applicant?.cv} download>
+                        <HiDownload />
+                      </a>
+                    </div>
+                  </td>
+                  <td
+                    className="px-6 py-3 text-left relative cursor-pointer"
+                    onClick={() => handleRowClick(applicant?.id)}
+                  >
+                    <span className="mr-2">
+                      {applicant?.application_status}
+                    </span>
+                    <span className="text-gray-500">&#9662;</span>
+                    {selectedRow === applicant.id && (
+                      <div className="absolute left-28 bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
+                        {dropdownOptions.map((option) => (
+                          <div
+                            key={option}
+                            onClick={() => handleOptionSelect(option)}
+                            className={`cursor-pointer border-b-2 pl-2 w-[125px] hover:bg-blue-100`}
+                          >
+                            {option}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

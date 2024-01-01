@@ -85,3 +85,13 @@ export const locationTypeOptions = [
   { value: "india", label: "India" },
   { value: "uae", label: "UAE" },
 ];
+
+export const dropdownOptions = [
+  "selected",
+  "shortlisted",
+  "offer_made",
+  "on_board",
+  "declined",
+  "contacted",
+  "rejected",
+];

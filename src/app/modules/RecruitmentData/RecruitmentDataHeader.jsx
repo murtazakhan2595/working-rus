@@ -10,7 +10,7 @@ import { FiFilter } from "react-icons/fi";
 import { FaRegPlusSquare } from "react-icons/fa";
 import { FaBriefcase } from "react-icons/fa6";
 
-const RecruitmentDataHeader = ({ userProfile, title, }) => {
+const RecruitmentDataHeader = ({ userProfile, post,}) => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -99,7 +99,7 @@ const dropdownOptions = [
       {/* Emp Header */}
       <div className="flex justify-between items-center px-2 md:px-6 lg:px-10 bg-[#F2F2F2] py-3">
         <h2 className="text-lg leading-none font-semibold opacity-80 tracking-wider">
-          {title}
+          {post}
         </h2>
         <div className="flex flex-col md:flex-row lg:flex-row gap-y-2 gap-x-3">
           <div className="flex gap-x-4 justify-end">
