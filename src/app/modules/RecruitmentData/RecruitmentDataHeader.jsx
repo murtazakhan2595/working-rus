@@ -10,7 +10,7 @@ import { FiFilter } from "react-icons/fi";
 import { FaRegPlusSquare } from "react-icons/fa";
 import { FaBriefcase } from "react-icons/fa6";
 
-const RecruitmentDataHeader = ({ userProfile, title, }) => {
+const RecruitmentDataHeader = ({ userProfile, post,}) => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -42,6 +42,17 @@ const RecruitmentDataHeader = ({ userProfile, title, }) => {
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
+  
+  
+const dropdownOptions = [
+  "Selected",
+  "Shortlisted",
+  "Offer-made",
+  "Onboard",
+  "Declined",
+  "Contacted",
+  "Rejected",
+];
 
   return (
     <>
@@ -88,14 +99,14 @@ const RecruitmentDataHeader = ({ userProfile, title, }) => {
       {/* Emp Header */}
       <div className="flex justify-between items-center px-2 md:px-6 lg:px-10 bg-[#F2F2F2] py-3">
         <h2 className="text-lg leading-none font-semibold opacity-80 tracking-wider">
-          {title}
+          {post}
         </h2>
         <div className="flex flex-col md:flex-row lg:flex-row gap-y-2 gap-x-3">
           <div className="flex gap-x-4 justify-end">
             <Link
-              to="/jobs-datatable"
+              to="/jobs"
               className={`p-2 rounded-md  ${
-                location.pathname === "/jobs-datatable"
+                location.pathname === "/jobs"
                   ? "bg-[#25A8E0] text-white"
                   : "bg-white text-gray-400"
               }`}
@@ -103,26 +114,16 @@ const RecruitmentDataHeader = ({ userProfile, title, }) => {
               <BsTable title="Jobs Data Table" />
             </Link>
             <Link
-              to="/applicants-datatable"
+              to="/applicants"
               className={`p-2 rounded-md  ${
-                location.pathname === "/applicants-datatable"
+                location.pathname === "/applicants"
                   ? "bg-[#25A8E0] text-white"
                   : "bg-white text-gray-400"
               }`}
             >
               <FaBriefcase title="Employee Data Table" />
             </Link>
-            <Link
-              to="/recruitment-form"
-              className={`p-2 rounded-md  ${
-                location.pathname === "/recruitment-form"
-                  ? "bg-[#25A8E0] text-white"
-                  : "bg-white text-gray-400"
-              }`}
-            >
-              <FaRegPlusSquare title="Add New Post" />
-            </Link>
-            {location.pathname === "/emp-data" && (
+            {location.pathname === "/applicants" && (
               <button
                 className={`p-2 rounded-md ${
                   isSearchVisible
@@ -134,17 +135,35 @@ const RecruitmentDataHeader = ({ userProfile, title, }) => {
                 <FiFilter />
               </button>
             )}
-          </div>
-          {isSearchVisible && (
-            <div>
-              <input
-                type="search"
-                placeholder="Search"
-                className="focus:outline-none focus:border-non
-                bg-[#D7D7D7] py-1 pl-2 md:pl-4 lg:pl-4 pr-4 text-white placeholder-white border-none md:flex lg:w-56 xs:w-[10rem] rounded-md"
-              />
-            </div>
+            <Link
+              to="/job-post"
+              className={`p-2 rounded-md  ${
+                location.pathname === "/job-post"
+                  ? "bg-[#25A8E0] text-white"
+                  : "bg-white text-gray-400"
+              }`}
+            >
+              <FaRegPlusSquare title="Add New Post" />
+            </Link>
+            
+            {isSearchVisible && (
+           <>
+            {
+                    <div className="absolute right-6 top-36 bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
+                      {dropdownOptions.map((option) => (
+                        <div
+                          key={option}
+                          className='cursor-pointer border-b-2 pl-2 w-[85px] hover:bg-blue-100 text-sm'
+                        >
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                  }
+           </>
           )}
+          </div>
+          
         </div>
       </div>
     </>

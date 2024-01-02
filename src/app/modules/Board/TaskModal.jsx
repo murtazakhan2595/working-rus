@@ -165,12 +165,12 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
   // setFilterUsers(filteredMembers);
 
   const filteredAssignToUsers = Object.values(users).filter((user) =>
-  user.username.toLowerCase().includes(assignToSearchQuery.toLowerCase())
-);
+    user.username.toLowerCase().includes(assignToSearchQuery.toLowerCase())
+  );
 
-const filteredAssignByUsers = Object.values(users).filter((user) =>
-  user.username.toLowerCase().includes(assignBySearchQuery.toLowerCase())
-);
+  const filteredAssignByUsers = Object.values(users).filter((user) =>
+    user.username.toLowerCase().includes(assignBySearchQuery.toLowerCase())
+  );
 
   return (
     <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
@@ -399,7 +399,9 @@ const filteredAssignByUsers = Object.values(users).filter((user) =>
                               type="search"
                               placeholder="Search"
                               className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
-                              onChange={(e) => setAssignToSearchQuery(e.target.value)}
+                              onChange={(e) =>
+                                setAssignToSearchQuery(e.target.value)
+                              }
                             />
 
                             <div className="overflow-y-auto max-h-24 roundScrollsm">
@@ -482,6 +484,7 @@ const filteredAssignByUsers = Object.values(users).filter((user) =>
                               <RxCross2
                                 onClick={() => {
                                   setAssignByOpen(!assignByOpen);
+                                  setAssignBySearchQuery("");
                                 }}
                               />
                             </div>
@@ -489,7 +492,9 @@ const filteredAssignByUsers = Object.values(users).filter((user) =>
                               type="search"
                               placeholder="Search"
                               className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
-                              onChange={(e) => setAssignBySearchQuery(e.target.value)}
+                              onChange={(e) =>
+                                setAssignBySearchQuery(e.target.value)
+                              }
                             />
                             <div className="overflow-y-auto max-h-24 roundScrollsm">
                               <ul className="text-black">

@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TbCircleChevronsDown, TbCircleChevronsUp } from "react-icons/tb";
 import todoImg from "../../../assets/images/todolist.png";
-import { MdCheck, MdDeleteForever } from 'react-icons/md';
-import { AiOutlineEdit } from 'react-icons/ai';
-import { BiSolidPlusCircle } from 'react-icons/bi';
-import { MdOutlineAddTask } from 'react-icons/md';
-import { RxCross2 } from 'react-icons/rx';
+import { MdCheck, MdDeleteForever } from "react-icons/md";
+import { AiOutlineEdit } from "react-icons/ai";
+import { BiSolidPlusCircle } from "react-icons/bi";
+import { MdOutlineAddTask } from "react-icons/md";
+import { RxCross2 } from "react-icons/rx";
 import Joi from "joi";
 import axios from "axios";
 import { connect } from "react-redux";
@@ -22,7 +22,7 @@ const Dashboard = ({ token, baseUrl }) => {
   const [loading, setLoading] = useState(true);
 
   const todoSchema = Joi.object({
-    text: Joi.string().trim().required().label('Todo')
+    text: Joi.string().trim().required().label("Todo"),
   });
 
   const addInputRef = useRef(null);
@@ -30,7 +30,7 @@ const Dashboard = ({ token, baseUrl }) => {
   // Functions for calling api started
   const headers = {
     Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 
   //  1. Fetch Todos
@@ -42,41 +42,42 @@ const Dashboard = ({ token, baseUrl }) => {
         const todosData = response.data;
         setTodos(todosData);
       } catch (error) {
-        console.error('Error fetching todos:', error);
+        console.error("Error fetching todos:", error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchTodos();
   }, []);
-  
-  
 
   // 2. Create a todo
   const createTodo = async () => {
     try {
-      const response = await axios.post(`${baseUrl}/todotask/`, {
-        description: newTodoText,
-      }, { headers });
+      const response = await axios.post(
+        `${baseUrl}/todotask/`,
+        {
+          description: newTodoText,
+        },
+        { headers }
+      );
 
       const createdTodo = response.data;
       const updatedTodos = [...todos, createdTodo];
       setTodos(updatedTodos);
 
       setShowAddInput(false);
-      setNewTodoText('');
+      setNewTodoText("");
       setValidationError(null);
     } catch (error) {
-      console.error('Error creating todo', error);
+      console.error("Error creating todo", error);
     }
   };
-
 
   // 3. Update Todo
   const updateTodo = async (id, newText) => {
     try {
-      const updatedTodos = todos.map(todo => {
+      const updatedTodos = todos.map((todo) => {
         if (todo.id === id) {
           return { ...todo, description: newText };
         }
@@ -84,24 +85,28 @@ const Dashboard = ({ token, baseUrl }) => {
       });
       setTodos(updatedTodos);
 
-      await axios.put(`${baseUrl}/todotask/${id}`, { description: newText }, { headers });
+      await axios.put(
+        `${baseUrl}/todotask/${id}`,
+        { description: newText },
+        { headers }
+      );
     } catch (error) {
-      console.error('Error updating todo:', error);
+      console.error("Error updating todo:", error);
     }
   };
 
   // 4. Function delete todo
   const deleteTodo = async (id) => {
     try {
-      const updatedTodos = todos.filter(todo => todo.id !== id);
+      const updatedTodos = todos.filter((todo) => todo.id !== id);
       setTodos(updatedTodos);
 
       await axios.delete(`${baseUrl}/todotask/${id}`, { headers });
     } catch (error) {
-      console.error('Error deleting todo', error);
+      console.error("Error deleting todo", error);
     }
   };
-  
+
   // Functions for calling api ended
   const handleEdit = (id) => {
     const todoToEdit = todos.find((todo) => todo.id === id);
@@ -118,17 +123,17 @@ const Dashboard = ({ token, baseUrl }) => {
   };
 
   const handleSave = (id) => {
-    const updatedTodos = todos.map(todo => {
+    const updatedTodos = todos.map((todo) => {
       if (todo.id === id) return { ...todo, description: editTexts[id] };
       return todo;
     });
     setTodos(updatedTodos);
     setEditTexts((prevEditTexts) => ({
       ...prevEditTexts,
-      [id]: undefined
+      [id]: undefined,
     }));
 
-    const updatedTodo = updatedTodos.find(todo => todo.id === id);
+    const updatedTodo = updatedTodos.find((todo) => todo.id === id);
     updateTodo(updatedTodo.id, updatedTodo.description); // Call the updateTodo function here
   };
 
@@ -154,12 +159,14 @@ const Dashboard = ({ token, baseUrl }) => {
 
   const handleCheckboxChange = async (id, isCompleted) => {
     try {
-      const updatedTodos = todos.map(todo => {
+      const updatedTodos = todos.map((todo) => {
         if (todo.id === id) return { ...todo, is_completed: !isCompleted };
         return todo;
       });
 
-      updatedTodos.sort((a, b) => (a.is_completed === b.is_completed ? 0 : a.is_completed ? 1 : -1));
+      updatedTodos.sort((a, b) =>
+        a.is_completed === b.is_completed ? 0 : a.is_completed ? 1 : -1
+      );
 
       setTodos(updatedTodos);
       await axios.patch(
@@ -168,11 +175,9 @@ const Dashboard = ({ token, baseUrl }) => {
         { headers }
       );
     } catch (error) {
-      console.error('Error updating todo:', error);
+      console.error("Error updating todo:", error);
     }
   };
-
-
 
   useEffect(() => {
     const handleDocumentClick = (e) => {
@@ -198,7 +203,11 @@ const Dashboard = ({ token, baseUrl }) => {
         alt=""
       />
       <div className="mb-5 mt-2 pb-3 pl-3 pr-8 pt-3 rounded w-full 2xl:mx-0  bg-white  flex flex-col justify-start gap-3">
-        <div className={`${showAddInput ? 'block' : 'flex'} justify-between items-center mb-3`}>
+        <div
+          className={`${
+            showAddInput ? "block" : "flex"
+          } justify-between items-center mb-3`}
+        >
           <h1 className="text-xl font-bold ">To-Do List</h1>
           {showAddInput ? (
             <div className="flex items-end space-x-3 mt-4" ref={addInputRef}>
@@ -206,26 +215,55 @@ const Dashboard = ({ token, baseUrl }) => {
                 type="text"
                 className="border-b focus:outline-none py-1 w-full"
                 value={newTodoText}
-                onChange={(e) => { setNewTodoText(e.target.value); setValidationError(null) }}
+                onChange={(e) => {
+                  setNewTodoText(e.target.value);
+                  setValidationError(null);
+                }}
                 placeholder="Enter new item"
               />
-              <MdOutlineAddTask onClick={handleAdd} className="text-[#283b91] text-2xl font-bold" />
+              <MdOutlineAddTask
+                onClick={handleAdd}
+                className="text-[#283b91] text-2xl font-bold"
+              />
             </div>
           ) : (
-            <BiSolidPlusCircle className="text-[#283b91] text-2xl" onClick={() => setShowAddInput(true)} />
+            <BiSolidPlusCircle
+              className="text-[#283b91] text-2xl"
+              onClick={() => setShowAddInput(true)}
+            />
           )}
           {validationError && (
             <p className="text-red-500 text-sm">{validationError}</p>
           )}
         </div>
         {loading ? (
-          <div className="block m-auto">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-          </div>
+          <>
+            <div className="flex gap-2 items-center animate-pulse">
+              <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+              <div className="w-48 h-4 bg-gray-300 rounded"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+            </div>
+            <div className="flex gap-2 items-center animate-pulse">
+              <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+              <div className="w-48 h-4 bg-gray-300 rounded"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+            </div>
+            <div className="flex gap-2 items-center animate-pulse">
+              <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+              <div className="w-48 h-4 bg-gray-300 rounded"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+              <div className="w-4 h-4 bg-gray-300 rounded-md"></div>
+            </div>
+          </>
         ) : (
           <div className={`overflow-y-auto max-h-[160px] roundScrollsm`}>
-            {todos.slice(0, showAllItems ? todos.length : 4).map(todo => (
-              <div key={todo.id} className="flex gap-3 w-full px-2 border-b border-gray-500">
+            {todos.slice(0, showAllItems ? todos.length : 4).map((todo) => (
+              <div
+                key={todo.id}
+                className="flex gap-3 w-full px-2 border-b border-gray-500"
+              >
                 <div className="flex justify-between w-full py-1.5 px-0">
                   {editTexts[todo.id] !== undefined ? (
                     <div className="flex gap-2">
@@ -243,11 +281,15 @@ const Dashboard = ({ token, baseUrl }) => {
                         className="accent-[#283b91]"
                         id={`checkbox-${todo.id}`}
                         checked={todo.is_completed}
-                        onChange={() => handleCheckboxChange(todo.id, todo.is_completed)}
+                        onChange={() =>
+                          handleCheckboxChange(todo.id, todo.is_completed)
+                        }
                       />
                       <label
                         htmlFor={`checkbox-${todo.id}`}
-                        className={`text-gray-400 text-sm ${todo.is_completed ? "line-through" : ""}`}
+                        className={`text-gray-400 text-sm ${
+                          todo.is_completed ? "line-through" : ""
+                        }`}
                       >
                         {todo.description}
                       </label>
@@ -256,23 +298,32 @@ const Dashboard = ({ token, baseUrl }) => {
 
                   <div className="flex gap-1 justify-end cursor-pointer">
                     {editTexts[todo.id] !== undefined ? (
-                      <MdCheck className="text-[#283b91] opacity-0.2" onClick={() => handleSave(todo.id)} />
+                      <MdCheck
+                        className="text-[#283b91] opacity-0.2"
+                        onClick={() => handleSave(todo.id)}
+                      />
                     ) : (
                       <div className="flex items-center gap-1">
-                        <AiOutlineEdit className="text-[#283b91] opacity-0.2 text-sm" onClick={() => handleEdit(todo.id)} />
-                        <MdDeleteForever className="text-red-400 opacity-0.2 text-sm" onClick={() => {
-                          setTodoToDelete(todo.id);
-                          setShowDeleteConfirmation(true);
-                        }} />
+                        <AiOutlineEdit
+                          className="text-[#283b91] opacity-0.2 text-sm"
+                          onClick={() => handleEdit(todo.id)}
+                        />
+                        <MdDeleteForever
+                          className="text-red-400 opacity-0.2 text-sm"
+                          onClick={() => {
+                            setTodoToDelete(todo.id);
+                            setShowDeleteConfirmation(true);
+                          }}
+                        />
                       </div>
                     )}
                   </div>
                 </div>
               </div>
             ))}
-            {todos.length <= 0 &&
+            {todos.length <= 0 && (
               <p className="text-lg text-gray-400 text-center">No data</p>
-            }
+            )}
           </div>
         )}
         {showDeleteConfirmation && (
@@ -284,7 +335,9 @@ const Dashboard = ({ token, baseUrl }) => {
                   <RxCross2 onClick={() => setShowDeleteConfirmation(false)} />
                 </div>
               </div>
-              <p className="text-gray-700 mt-2">Are you sure you want to delete this item?</p>
+              <p className="text-gray-700 mt-2">
+                Are you sure you want to delete this item?
+              </p>
               <div className="mt-4 flex justify-end">
                 <button
                   className="px-4 py-1 mr-2 text-white bg-red-500 rounded"
@@ -301,8 +354,8 @@ const Dashboard = ({ token, baseUrl }) => {
         )}
 
         <div className="flex w-full justify-center items-center">
-          {todos.length > 4 && (
-            showAllItems ? (
+          {todos.length > 4 &&
+            (showAllItems ? (
               <TbCircleChevronsUp
                 className="text-gray-400 text-xl drop-shadow-lg text-center cursor-pointer"
                 onClick={() => setShowAllItems(!showAllItems)} // Toggle state
@@ -312,8 +365,7 @@ const Dashboard = ({ token, baseUrl }) => {
                 className="text-gray-400 text-xl drop-shadow-lg text-center cursor-pointer"
                 onClick={() => setShowAllItems(!showAllItems)} // Toggle state
               />
-            )
-          )}
+            ))}
         </div>
       </div>
     </div>

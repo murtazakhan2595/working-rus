@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
-import { LiaHomeSolid } from "react-icons/lia";
-import { MdOutlineGroups2, MdOutlinePayment } from "react-icons/md";
 import { MdLock } from "react-icons/md";
 import {
   AiOutlineCaretDown,

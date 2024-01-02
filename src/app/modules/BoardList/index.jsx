@@ -93,6 +93,7 @@ const BoardList = ({
     }
   };
 
+
   const handleDeleteProject = async () => {
     try {
       const response = await axios.delete(`${baseUrl}/project/${project.id}`, {
@@ -125,6 +126,7 @@ const BoardList = ({
   useEffect(() => {
     getBoards();
   }, [id, project]);
+
 
   // logout dropdown
   const handleDropdownClick = () => {
@@ -196,7 +198,10 @@ const BoardList = ({
             </Link>
             <GrNext className="mx-1 opacity-40" />
             {loading ? (
-              <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500"></div>
+              // <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500"></div>
+              <div className="flex items-center space-x-2">
+                <div className="w-36 rounded-md h-6 bg-gray-300 animate-pulse"></div>
+              </div>
             ) : (
               <div className="break-all">{`${project.name}`}</div>
             )}
@@ -207,7 +212,12 @@ const BoardList = ({
             className={`rounded-md flex gap-x-1 justify-center items-center`}
           >
             {loading ? (
-              <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500"></div>
+              // <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500"></div>
+              <div className="flex gap-x-1 pl-2">
+                <div className="w-8 h-8 bg-gray-300 rounded-full animate-pulse"></div>
+                <div className="w-8 h-8 bg-gray-300 rounded-full animate-pulse"></div>
+                <div className="w-8 h-8 bg-gray-300 rounded-full animate-pulse"></div>
+              </div>
             ) : (
               <div className={`flex gap-x-1 pl-2`}>
                 {project?.project_members?.map((memberId, index) => (
@@ -268,11 +278,11 @@ const BoardList = ({
         </div>
         <div className="overflow-y-auto max-h-96 roundScroll">
           {loading ? (
-            <div className="flex items-center justify-center h-[30vh]">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-                <p className="text-gray-600 mt-4">Loading...</p>
-              </div>
+            <div className="mt-2">
+              <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
+              <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
+              <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
+              <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
             </div>
           ) : boardList.length !== 0 ? (
             boardList.map((board, index) => (

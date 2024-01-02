@@ -44,23 +44,54 @@ export const academicOptions = [
 export const links = [
   { to: "/", text: "Home", icon: <LiaHomeSolid /> },
   { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
-  { to: "/emp-data", text: "Employee Sheet", icon: <BiSpreadsheet /> },
-  { to: "/recruitment-form", text: "Recruitment Form", icon: <MdOutlinePayment /> },
+  { to: "/employees", text: "Employee Sheet", icon: <BiSpreadsheet /> },
+  { to: "/jobs", text: "Recruitment", icon: <MdOutlinePayment /> },
   { to: "", text: "Performance", icon: <PiShootingStarBold /> },
 ];
 
 
 export const jobTypeOptions = [
-  { value: "Internship", label: "Internship" },
-  { value: "Contract_Based", label: "Contract Based" },
-  { value: "Part_Time", label: "Part Time" },
-  { value: "Full_Time", label: "Full Time" },
+  { value: "Remote", label: "Remote" },
+  { value: "Onsite", label: "Onsite" },
+  { value: "Hybrid", label: "Hybrid" },
+
+];
+ 
+export const workTypeOptions = [
+  { value: "Internees", label: "Internees" },
+  { value: "Junior_Level", label: "Junior Level" },
+  { value: "Mid_Level", label: "Mid Level" },
+  { value: "Mid_Senior", label: "Mid Senior Level" },
+  { value: "Senior_Level", label: "Senior Level" },
 ];
 
+ 
 export const employeeTypeOptions = [
-  { value: "Intern", label: "Intern" },
-  { value: "Fresher", label: "Fresher" },
-  { value: "Experienced", label: "Experienced" },
-  { value: "Mid_Senior", label: "Mid Senior" },
-  { value: "Senior", label: "Senior" },
+  { value: "Internees", label: "Intern" },
+  { value: "Part_Tiime", label: "Part Time" },
+  { value: "Full_Time", label: "Full Time" },
+  { value: "Contract", label: "Contract" },
+  { value: "Freelancer", label: "Freelancer" },
+];
+ 
+export const educationTypeOptions = [
+  { value: "Bachelor", label: "Bachelor" },
+  { value: "Master", label: "Master" },
+  { value: "Intermediate", label: "Intermediate" },
+];
+
+export const locationTypeOptions = [
+  { value: "pakistan", label: "Pakistan" },
+  { value: "india", label: "India" },
+  { value: "uae", label: "UAE" },
+];
+
+export const dropdownOptions = [
+  "selected",
+  "shortlisted",
+  "offer_made",
+  "on_board",
+  "declined",
+  "contacted",
+  "rejected",
 ];

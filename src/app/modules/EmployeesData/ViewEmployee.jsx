@@ -1,337 +1,736 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { connect } from "react-redux";
+import { IoIosAttach } from "react-icons/io";
+import { RxCrossCircled } from "react-icons/rx";
 
-const ViewEmployee = ({ token , baseUrl }) => {
+const ViewEmployee = ({ token, baseUrl }) => {
   const [data, setData] = useState("");
   const [educations, setEducations] = useState([{}]);
   const [certifications, setCertifications] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);
-  const {id} = useParams()
+  const { id } = useParams();
 
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 
-
   const fetchData = async () => {
     try {
       // Fetch employee data
-      const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, { headers });
+      const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
+        headers,
+      });
       const employeeData = employeeResponse.data;
       setData(employeeData);
-  
+
       // Fetch education data
-      const educationResponse = await axios.get(`${baseUrl}/education/?search={"employee_id":${id}}`, { headers });
+      const educationResponse = await axios.get(
+        `${baseUrl}/education/?search={"employee_id":${id}}`,
+        { headers }
+      );
       const educationData = educationResponse.data.results;
       setEducations(educationData);
-  
+
       // Fetch experiences data
-      const experiencesResponse = await axios.get(`${baseUrl}/experience/?search={"employee_id":${id}}`, { headers });
+      const experiencesResponse = await axios.get(
+        `${baseUrl}/experience/?search={"employee_id":${id}}`,
+        { headers }
+      );
       const experiencesData = experiencesResponse.data.results;
       setExperiences(experiencesData);
-  
+
       // Fetch certification data
-      const certificationResponse = await axios.get(`${baseUrl}/certification/?search={"employee_id":${id}}`, { headers });
+      const certificationResponse = await axios.get(
+        `${baseUrl}/certification/?search={"employee_id":${id}}`,
+        { headers }
+      );
       const certificationData = certificationResponse.data.results;
       setCertifications(certificationData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  
-useEffect(() => {
+
+  useEffect(() => {
     fetchData();
   }, []);
 
   return (
-    <div className="px-4 lg:px-10 py-4 w-full overflow-x-auto overflow-y-auto max-h-[100vh] xScroll">
+    <div className="w-full overflow-x-auto overflow-y-auto max-h-[100vh] xScroll md:px-4 xl:px-8">
       {/* image */}
-      <div className="flex items-center gap-x-8">
+      <div className="flex items-center gap-x-8 bg-[#f9f9f9] px-4 lg:px-10 py-4 border border-gray-400 relative">
         <div
-          className="w-20 h-20 rounded-full bg-blue-900 text-white text-3xl font-semibold flex 
+          className="w-24 h-24 rounded-full bg-white text-[#555657] text-3xl font-semibold flex 
         justify-center items-center"
         >
           {data.first_name?.toUpperCase().slice(0, 1)}
           {data.last_name?.toUpperCase().slice(0, 1)}
         </div>
-        <div className="flex flex-col gap-y-2">
-          <div className="bg-blue-100 py-1 px-4 rounded text-xl font-bold">{`${data.first_name} ${data.last_name}`}</div>
-          <div className="bg-blue-100 py-1 px-4 rounded text-lg font-bold">
-            {data.department_position}
+        <Link to="/employees">
+          <div className="absolute top-2 right-3 bg-gray-200 rounded-full text-gray-400 cursor-pointer">
+            <RxCrossCircled />
           </div>
+        </Link>
+        <div className="flex flex-col">
+          <div className="text-gray-400 text-sm">
+            <span>Employee ID:</span> TXB-{id.toString().padStart(4, "0")}
+          </div>
+          <div className="text-2xl font-black">{`${data.first_name} ${data.last_name}`}</div>
+          <div className="text-2xl font-bold">{data.department_position}</div>
         </div>
       </div>
       {/* Personal Information */}
-      <div className="bg-blue-900 py-2 px-4 text-white rounded my-4">
-        1. Personal Information
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-gray-400">
+        Personal Information
       </div>
-      <table className="min-w-full">
-        <tbody className="bg-white text-gray-500">
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              First Name
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.first_name}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Last Name
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.last_name}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Date of Birth
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.date_of_birth ? data.date_of_birth : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Permanent Address
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.residential_address ? data.residential_address : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Mobile Number
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.mobile_no ? data.mobile_no : "Undefined" }</td>
-          </tr>
-          {/* <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Nationality
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.place_of_birth ? data.place_of_birth : "Undefined" }</td>
-          </tr> */}
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Email ID
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.email ? data.email : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Emergency Contact
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.emergency_phone_no ? data.emergency_phone_no : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Relation
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.emergency_relation ? data.emergency_relation : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">Name</td>
-            <td className="w-[50%] px-6 py-2 text-left">{`${data.emergency_first_name ? data.emergency_first_name : "Undefined" } ${data.emergency_last_name}`}</td>
-          </tr>
-        </tbody>
-      </table>
+      {/* data */}
+      <div className="">
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            First Name
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.first_name}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Last Name
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.last_name}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Date of Birth
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.date_of_birth ? data.date_of_birth : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Permanent Address
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {data.residential_address ? data.residential_address : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Current Address
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {data.current_address ? data.current_address : ""}
+            {data.current_country ? data.current_country : ""}
+          </div>
+        </div>
+        <div className="flex lg:hidden">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            National
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {data.place_of_birth ? data.place_of_birth : ""}
+          </div>
+        </div>
+        <div className="flex lg:hidden">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Marital Status
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {data.marital_status ? data.marital_status : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Mobile Number
+          </div>
+          <div className="w-[60%] xl:w-[76%] text-left border text-gray-500 flex">
+            {" "}
+            <div className="xl:border xl:border-r-[#707070] px-4 py-2 lg:w-[350px]">
+              {" "}
+              {data.mobile_no ? data.mobile_no : ""}
+            </div>
+            <div className="lg:block hidden">
+              {" "}
+              {
+                <div className="flex">
+                  <div className="px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657] lg:w-32">
+                    Nationality
+                  </div>
+                  <div className="px-4 py-2 text-lef">
+                    {" "}
+                    {data.place_of_birth ? data.place_of_birth : ""}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Email
+          </div>
+          <div className="w-[60%] xl:w-[76%] text-left border text-gray-500 flex">
+            {" "}
+            <div className="xl:border xl:border-r-[#707070] px-4 py-2 lg:w-[350px]">
+              {" "}
+              {data.email ? data.email : ""}
+            </div>
+            <div className="hidden lg:block">
+              {" "}
+              {
+                <div className="flex">
+                  <div className="px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657] lg:w-32">
+                    Marital Status
+                  </div>
+                  <div className="px-4 py-2 text-left">
+                    {" "}
+                    {data.marital_status ? data.marital_status : ""}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Emergency Contact
+          </div>
+          <div className="w-[60%] xl:w-[76%] text-left border text-gray-500 flex">
+            {" "}
+            <div className="xl:border xl:border-r-[#707070] px-4 py-2 lg:w-[350px]">
+              {" "}
+              {data.emergency_phone_no ? data.emergency_phone_no : ""}
+            </div>
+            <div className="hidden lg:block">
+              {" "}
+              {
+                <div className="flex">
+                  <div className="px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657] lg:w-32">
+                    Relation
+                  </div>
+                  <div className="px-4 py-2 text-left">
+                    {" "}
+                    {data.emergency_relation ? data.emergency_relation : ""}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Emergency Contact Name
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {`${data.emergency_first_name ? data.emergency_first_name : ""} ${
+              data.emergency_last_name
+            }`}
+          </div>
+        </div>
+        <div className="flex lg:hidden">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Relation
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {data.emergency_relation ? data.emergency_relation : ""}
+          </div>
+        </div>
+      </div>
 
       {/* Banking Information */}
-      <div className="bg-blue-900 py-2 px-2 text-white rounded my-6">
-        2. Banking Information
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-gray-400">
+        Banking Information
       </div>
-      <table className="min-w-full">
-        <tbody className="bg-white text-gray-500">
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Bank Name
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.bank_name ? data.bank_name : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Account Title
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.account_title ? data.account_title : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Account Number
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.account_number ? data.account_number : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">IBAN</td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.account_iban ? data.account_iban : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">Branch Address</td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.branch_address ? data.branch_address : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">Branch Code</td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.branch_code ? data.branch_code : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">Swift Code</td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.swift_code ? data.swift_code : "Undefined" }</td>
-          </tr>
-        </tbody>
-      </table>
-
-       {/* Department */}
-       <div className="bg-blue-900 py-2 px-4 text-white rounded my-4">
-        3. Department
+      {/* data */}
+      <div className="">
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Bank Name
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.bank_name ? data.bank_name : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Account Title
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.account_title ? data.account_title : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Account Number
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.account_number ? data.account_number : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            IBAN
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.account_iban ? data.account_iban : ""}
+          </div>
+        </div>
+        <div className="flex lg:hidden">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Branch Code
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.branch_code ? data.branch_code : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Branch Address
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.branch_address ? data.branch_address : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Swift Code
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.swift_code ? data.swift_code : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Branch Address
+          </div>
+          <div className="w-[60%] xl:w-[76%] text-left border text-gray-500 flex">
+            {" "}
+            <div className="lg:border lg:border-r-[#707070] px-4 py-2 w-[400px]">
+              {" "}
+              {data.branch_address ? data.branch_address : ""}
+            </div>
+            <div className="hidden lg:block">
+              {" "}
+              {
+                <div className="flex">
+                  <div className="px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                    Branch Code
+                  </div>
+                  <div className="px-4 py-2 text-left">
+                    {" "}
+                    {data.branch_code ? data.branch_code : ""}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
       </div>
-      <table className="min-w-full">
-        <tbody className="bg-white text-gray-500">
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Department Name
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.department_name ? data.department_name : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Position
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.department_position ? data.department_position : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Direct Reports to
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.direct_report ? data.direct_report : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Indirect Reports to
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.indirect_report ? data.indirect_report : "Undefined" }</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">Manager</td>
-            <td className="w-[50%] px-6 py-2 text-left">{data.department_manager ? data.department_manager : "Undefined" }</td>
-          </tr>
-    
-        </tbody>
-      </table>
 
       {/* Education */}
-      <div className="bg-blue-900 py-2 px-4 text-white rounded my-4">
-        4. Academic Information
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-gray-400">
+        Academic Information
       </div>
-      <table className="min-w-full">
-            {educations.length !== 0 ? educations.map((education , index)=>(
-        <tbody key={index} className="bg-white text-gray-500">
-         {index !== 0 &&    
-        <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-center"> ============</td>
-            <td className="w-[50%] px-6 py-2 text-center"> ============</td>
-          </tr>
-}
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Education Level
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{education.education_level}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Program
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{education.program}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-              Institue
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{education.institute_name}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">Start Date</td>
-            <td className="w-[50%] px-6 py-2 text-left">{education.edu_start_date}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">End Date</td>
-            <td className="w-[50%] px-6 py-2 text-left">{education.edu_end_date}</td>
-          </tr>
-        </tbody>
-          )):<div className="text-center opacity-50 text-sm">No Academic Information Added.</div>}
-      </table>
+      {/* Data */}
+      <div className="lg:hidden">
+        {educations.length ? (
+          educations.map((education, index) => (
+            <div key={index} className="py-2">
+              <div className="flex">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                  Education Level
+                </div>
+                <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
+                  {education.education_level}
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                  Program
+                </div>
+                <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
+                  {education.program}
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                  Institute
+                </div>
+                <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
+                  {education.institute_name}
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                  Start Date
+                </div>
+                <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
+                  {education.edu_start_date}
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                  End Date
+                </div>
+                <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
+                  {education.edu_end_date}
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center opacity-50 text-sm">
+            No Academic Information Added.
+          </div>
+        )}
+      </div>
 
-      {/* Experiences */}
-      <div className="bg-blue-900 py-2 px-4 text-white rounded my-4">
-        6. Experiences
+      {/* tablet and desktop */}
+      <div className="hidden lg:block">
+        <div className="w-full flex items-center">
+          <div className="w-[20%] px-4 py-7 font-bold border text-[#555657]">
+            Name of Degree
+          </div>
+          <div className="w-[30%] border flex flex-col">
+            <div className="px-4 py-2 text-center border border-b-gray-300 font-bold text-[#555657]">
+              Duration
+            </div>
+            <div className="flex justify-between w-full">
+              <div className="border-r border-gray-200 w-[50%] px-4 py-2 font-bold text-[#555657]">
+                From
+              </div>
+              <div className="w-[50%] font-bold px-4 py-2 text-[#555657]">
+                To
+              </div>
+            </div>
+          </div>
+          <div className="w-[20%] px-4 py-7 border border-gray-200 font-bold text-[#555657]">
+            Name of Institution
+          </div>
+          <div className="w-[15%] px-4 py-7 border border-gray-200 font-bold text-[#555657]">
+            Education Level
+          </div>
+          <div className="w-[15%] px-4 py-7 border border-gray-200 font-bold text-[#555657]">
+            Attachments
+          </div>
+        </div>
+        {educations.length ? (
+          educations.map((education, index) => (
+            <div className="w-full flex text-[#555657]">
+              <div className="w-[20%] px-4 py-2 border">
+                {education.program}
+              </div>
+              <div className="w-[30%] border flex flex-col">
+                {/* <div className="px-4 py-2 text-center border border-b-gray-300 font-bold">
+                Duration
+              </div> */}
+                <div className="flex justify-between w-full">
+                  <div className="border-r border-gray-200 w-[50%] px-4 py-2">
+                    {education.edu_start_date}
+                  </div>
+                  <div className="w-[50%] px-4 py-2">
+                    {" "}
+                    {education.edu_end_date}
+                  </div>
+                </div>
+              </div>
+              <div className="w-[20%] px-4 py-2 border border-gray-200">
+                {education.institute_name}
+              </div>
+              <div className="w-[15%] px-4 py-2 border border-gray-200">
+                {education.education_level}
+              </div>
+              <div className="w-[15%] px-4 py-2 border border-gray-200">
+                <IoIosAttach />
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center opacity-50 text-sm">
+            No Professional Experience Added.
+          </div>
+        )}
       </div>
-      <table className="min-w-full">
-            {experiences.length !== 0 ? experiences.map((experience , index)=>(
-        <tbody key={index} className="bg-white text-gray-500">
-         {index !== 0 &&    
-        <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-center"> ============</td>
-            <td className="w-[50%] px-6 py-2 text-center"> ============</td>
-          </tr>
-}
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-            Organization
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{experience.exp_organization}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
+      {/* Experiences */}
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-gray-400">
+        Experiences
+      </div>
+      {/* tablet and desktop */}
+      <div className="hidden lg:block">
+        <div className="w-full flex items-center">
+          <div className="w-[20%] px-4 py-7 font-bold border text-[#555657]">
+            Name of Organization
+          </div>
+          <div className="w-[30%] border flex flex-col">
+            <div className="px-4 py-2 text-center border border-b-gray-300 font-bold text-[#555657]">
+              Period of Work
+            </div>
+            <div className="flex justify-between w-full">
+              <div className="border-r border-gray-200 w-[50%] px-4 py-2 font-bold text-[#555657]">
+                From
+              </div>
+              <div className="w-[50%] font-bold px-4 py-2 text-[#555657]">
+                To
+              </div>
+            </div>
+          </div>
+          <div className="w-[20%] px-4 py-7 border border-gray-200 font-bold text-[#555657]">
             Designation
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{experience.exp_designation}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-            Start Date
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{experience.exp_start_date}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-            End Date
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{experience.exp_end_date}</td>
-          </tr>
-        </tbody>
-          )):<div className="text-center opacity-50 text-sm">No Professional Experience Added.</div>}
+          </div>
+          <div className="w-[15%] px-4 py-7 border border-gray-200 font-bold text-[#555657]">
+            Responsibilites
+          </div>
+          <div className="w-[15%] px-4 py-7 border border-gray-200 font-bold text-[#555657]">
+            Experience Letter
+          </div>
+        </div>
+        {experiences.length ? (
+          experiences.map((experience, index) => (
+            <div className="w-full flex text-[#555657]">
+              <div className="w-[20%] px-4 py-2 border">
+                {experience.exp_organization}
+              </div>
+              <div className="w-[30%] border flex flex-col">
+                {/* <div className="px-4 py-2 text-center border border-b-gray-300 font-bold">
+                Duration
+              </div> */}
+                <div className="flex justify-between w-full">
+                  <div className="border-r border-gray-200 w-[50%] px-4 py-2">
+                    {experience.exp_start_date}
+                  </div>
+                  <div className="w-[50%] px-4 py-2">
+                    {" "}
+                    {experience.exp_end_date}
+                  </div>
+                </div>
+              </div>
+              <div className="w-[20%] px-4 py-2 border border-gray-200">
+                {experience.exp_designation}
+              </div>
+              <div className="w-[15%] px-4 py-2 border border-gray-200">
+                {/* {education.education_level} */}
+              </div>
+              <div className="w-[15%] px-4 py-2 border border-gray-200">
+                <IoIosAttach />
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center opacity-50 text-sm">
+            No Experience Added.
+          </div>
+        )}
+      </div>
+      {/* Experiences */}
+      <table className="min-w-full lg:hidden">
+        {experiences.length !== 0 ? (
+          experiences.map((experience, index) => (
+            <tbody key={index} className="bg-white text-gray-500">
+              {index !== 0 && (
+                <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                  <td className="w-[50%] px-6 py-2 text-center">
+                    {" "}
+                    ============
+                  </td>
+                  <td className="w-[50%] px-6 py-2 text-center">
+                    {" "}
+                    ============
+                  </td>
+                </tr>
+              )}
+              <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                <td className="w-[50%] px-6 py-2 border border-gray-200 text-left font-bold text-[#555657]">
+                  Organization
+                </td>
+                <td className="w-[50%] px-6 py-2 text-left border border-gray-200">
+                  {experience.exp_organization}
+                </td>
+              </tr>
+              <tr className="whitespace-nowrap border-b-2  hover:bg-gray-100">
+                <td className="w-[50%] px-6 py-2 text-left border border-gray-200 font-bold text-[#555657]">
+                  Designation
+                </td>
+                <td className="w-[50%] px-6 py-2 text-left border border-gray-200">
+                  {experience.exp_designation}
+                </td>
+              </tr>
+              <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                <td className="w-[50%] px-6 py-2 text-left border border-gray-200 font-bold text-[#555657]">
+                  Start Date
+                </td>
+                <td className="w-[50%] px-6 py-2 text-left border border-gray-200">
+                  {experience.exp_start_date}
+                </td>
+              </tr>
+              <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                <td className="w-[50%] px-6 py-2 text-left border border-gray-200 font-bold text-[#555657]">
+                  End Date
+                </td>
+                <td className="w-[50%] px-6 py-2 text-left border border-gray-200">
+                  {experience.exp_end_date}
+                </td>
+              </tr>
+            </tbody>
+          ))
+        ) : (
+          <div className="text-center opacity-50 text-sm">
+            No Professional Experience Added.
+          </div>
+        )}
       </table>
 
       {/* Certification */}
-      <div className="bg-blue-900 py-2 px-4 text-white rounded my-4">
-        6. Certifications
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-gray-400">
+        Certifications
       </div>
-      <table className="min-w-full">
-            {certifications.length !== 0 ? certifications.map((certification , index)=>(
-        <tbody key={index} className="bg-white text-gray-500">
-         {index !== 0 &&    
-        <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-center"> ============</td>
-            <td className="w-[50%] px-6 py-2 text-center"> ============</td>
-          </tr>
-}
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-            Certification Name
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{certification.certification_name}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-            Completion Date
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{certification.completion_date}</td>
-          </tr>
-          <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-            <td className="w-[50%] px-6 py-2 text-left font-bold text-black">
-            Expiry Date
-            </td>
-            <td className="w-[50%] px-6 py-2 text-left">{certification.expiry_date}</td>
-          </tr>
-        </tbody>
-          )):<div className="text-center opacity-50 text-sm">No Certifications Added.</div>}
+      <table className="min-w-full block md:hidden">
+        {certifications.length !== 0 ? (
+          certifications.map((certification, index) => (
+            <tbody key={index} className="bg-white text-gray-500">
+              {index !== 0 && (
+                <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                  <td className="w-[50%] px-6 py-2 text-center">
+                    {" "}
+                    ============
+                  </td>
+                  <td className="w-[50%] px-6 py-2 text-center">
+                    {" "}
+                    ============
+                  </td>
+                </tr>
+              )}
+              <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                <td className="w-[50%] px-6 py-2 text-left font-bold text-[#555657]">
+                  Certification Name
+                </td>
+                <td className="w-[50%] px-6 py-2 text-left">
+                  {certification.certification_name}
+                </td>
+              </tr>
+              <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                <td className="w-[50%] px-6 py-2 text-left font-bold text-[#555657]">
+                  Completion Date
+                </td>
+                <td className="w-[50%] px-6 py-2 text-left">
+                  {certification.completion_date}
+                </td>
+              </tr>
+              <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                <td className="w-[50%] px-6 py-2 text-left font-bold text-[#555657]">
+                  Expiry Date
+                </td>
+                <td className="w-[50%] px-6 py-2 text-left">
+                  {certification.expiry_date}
+                </td>
+              </tr>
+            </tbody>
+          ))
+        ) : (
+          <div className="text-center opacity-50 text-sm">
+            No Certifications Added.
+          </div>
+        )}
       </table>
 
-     
+      {/* tablet and desktop */}
+      <div className="hidden md:block">
+        <div className="w-full flex items-center">
+          <div className="w-[27%] px-4 py-7 font-bold border text-[#555657]">
+            Professional Cerificate
+          </div>
+          <div className="w-[27%] px-4 py-7 border border-gray-200 font-bold text-[#555657]">
+            Completion Date
+          </div>
+          <div className="w-[27%] px-4 py-7 border border-gray-200 font-bold text-[#555657]">
+            Expiry Date
+          </div>
+          <div className="w-[19%] px-4 py-7 border border-gray-200 font-bold text-[#555657]">
+            Attachements
+          </div>
+        </div>
+        {certifications.length ? (
+          certifications.map((certificate, index) => (
+            <div className="w-full flex" key={index}>
+              <div className="w-[27%] px-4 py-2 border">
+                {certificate.certification_name}
+              </div>
+              <div className="w-[27%] px-4 py-2 border border-gray-200">
+                {certificate.completion_date}
+              </div>
+              <div className="w-[27%] px-4 py-2 border border-gray-200">
+                {certificate.expiry_date}
+              </div>
+              <div className="w-[19%] px-4 py-2 border border-gray-200">
+                <IoIosAttach />
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center opacity-50 text-sm">
+            No Certifications Added.
+          </div>
+        )}
+      </div>
+
+      {/* Department */}
+
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-gray-400">
+        Department
+      </div>
+      <div className="">
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Department Name
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.department_name ? data.department_name : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%]  xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Department Position
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.department_position ? data.department_position : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Direct Reports to
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.direct_report ? data.direct_report : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Indirect Reports to
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.indirect_report ? data.indirect_report : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+            Department Manager
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.department_manager ? data.department_manager : ""}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

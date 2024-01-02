@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { educationTypeOptions, employeeTypeOptions, jobTypeOptions, locationTypeOptions, workTypeOptions } from "../../../data/Data";
+import { useState } from "react";
 import Select from "react-select";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
@@ -6,18 +7,21 @@ import axios from "axios";
 import Datepicker from "../Dashboard/Datepicker";
 import moment from "moment";
 import RecruitmentDataHeader from "./RecruitmentDataHeader";
-import { employeeTypeOptions, jobTypeOptions } from "../../../data/Data";
-
-
+ 
+ 
 const RecruitmentForm = ({ token, baseUrl }) => {
   const initialData = {
-    job_title: "",
-    job_description: "",
+    Job_Title: "",
+    Job_Description: "",
+    // job_requirement: "",
+    Work_type: null,
     Job_Type: null,
+    Education: null,
+    location: null,
     Employee_Type: null,
     min_salary: "",
     max_salary: "",
-    deadline: null,
+    Deadline: null,
   };
   const [formData, setFormData] = useState(initialData);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -28,20 +32,20 @@ const RecruitmentForm = ({ token, baseUrl }) => {
       [name]: value,
     });
   };
-
+ 
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsButtonDisabled(true); // Disable the button
-
+ 
     // Validation for salaries
     const minSalary = Number(formData.min_salary);
     const maxSalary = Number(formData.max_salary);
-
+ 
     if (maxSalary <= minSalary) {
       toast.error("Maximum salary must be greater than minimum salary", {
         position: toast.POSITION.TOP_RIGHT,
@@ -49,22 +53,28 @@ const RecruitmentForm = ({ token, baseUrl }) => {
       setIsButtonDisabled(false); // Re-enable the button
       return;
     }
-
+ 
     const data = {
-      Job_Title: formData.job_title,
-      Job_Description: formData.job_description,
+      Job_Title: formData.Job_Title,
+      Job_Description: formData.Job_Description,
+      // Job_Requirement: formData.job_requirement,
+      Work_type: formData.Work_type ? formData.Work_type.value : null,
       Job_Type: formData.Job_Type ? formData.Job_Type.value : null,
+      Education: formData.Education ? formData.Education.value : null,
+      location: formData.location ? formData.location.value : null,
       Employee_Type: formData.Employee_Type ? formData.Employee_Type.value : null,
       min_salary: formData.min_salary,
       max_salary: formData.max_salary,
-      Deadline: formData.deadline,
+      Deadline: formData.Deadline,
     };
 
+    console.log(data);
+ 
     try {
       const response = await axios.post(`${baseUrl}/recruitment/`, data, {
         headers,
       });
-
+ 
       if (response.status === 201) {
         toast.success("Job Posted Successfully", {
           position: toast.POSITION.TOP_RIGHT,
@@ -79,19 +89,31 @@ const RecruitmentForm = ({ token, baseUrl }) => {
       setIsButtonDisabled(false); // Re-enable the button
     }
   };
-  
-
+ 
+ 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9]">
       <RecruitmentDataHeader title="Add New Post" />
-
+ 
       <form onSubmit={handleSubmit}>
         <div className="px-2 py-3 md:px-3 md:py-4 lg:px-10 lg:py-8 overflow-y-auto xScroll max-h-[76vh] md:h-[100vh]">
           <div className="flex flex-col gap-y-6">
             <div className="w-full flex flex-col md:flex-row lg:flex-row">
               <div className="w-[30%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
                 <label
-                  htmlFor="job_title"
+                  htmlFor="tracking_id"
+                  className="font-sfpro tracking-wide font-semibold
+                            text-input text-base"
+                >
+                  Tracking ID:
+                </label>
+              </div>
+              <span className="text-[#63676c]">12345</span>
+            </div>
+            <div className="w-full flex flex-col md:flex-row lg:flex-row">
+              <div className="w-[30%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
+                <label
+                  htmlFor="Job_Title"
                   className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
                 >
@@ -101,18 +123,18 @@ const RecruitmentForm = ({ token, baseUrl }) => {
               <input
                 type="text"
                 placeholder="Job Title Here"
-                name="job_title"
+                name="Job_Title"
                 className="w-full md:w-[45%] lg:w-[40%] pl-2 bg-white rounded h-8 text-sm
                  placeholder-[#555657] placeholder-opacity-50"
                 required
-                value={formData.job_title}
+                value={formData.Job_Title}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               />
             </div>
             <div className="w-full flex flex-col md:flex-row lg:flex-row">
               <div className="w-[50%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
                 <label
-                  htmlFor="job_description"
+                  htmlFor="Job_Description"
                   className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
                 >
@@ -120,7 +142,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                 </label>
               </div>
               <textarea
-                name="job_description"
+                name="Job_Description"
                 id=""
                 cols="38"
                 rows="4"
@@ -128,14 +150,125 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                 placeholder-[#555657] placeholder-opacity-50"
                 placeholder="Job Description Here"
                 required
-                value={formData.job_description}
+                value={formData.Job_Description}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               ></textarea>
             </div>
             <div className="w-full flex flex-col md:flex-row lg:flex-row">
               <div className="w-[50%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
                 <label
-                  htmlFor="employee_type"
+                  htmlFor="job_requirement"
+                  className="font-sfpro tracking-wide font-semibold
+                            text-input text-base"
+                >
+                  Job Requirement:
+                </label>
+              </div>
+              <textarea
+                name="job_requirement"
+                id=""
+                cols="38"
+                rows="4"
+                className="rounded md:w-[45%] lg:w-[40%] pl-2 bg-white text-sm
+                placeholder-[#555657] placeholder-opacity-50"
+                placeholder="Job Requirement Here"
+                required
+                value={formData.job_requirement}
+                onChange={(e) => handleChange(e.target.name, e.target.value)}
+              ></textarea>
+            </div>
+ 
+            <div className="w-full flex flex-col md:flex-row lg:flex-row">
+              <div className="w-[30%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
+                <label
+                  htmlFor="Work_type"
+                  className="font-sfpro tracking-wide font-semibold
+                            text-input text-base"
+                >
+                  Work Type:
+                </label>
+              </div>
+              <Select
+                className="w-full md:w-[45%] lg:w-[40%]"
+                name="Work_type"
+                options={workTypeOptions}
+                value={formData.Work_type}
+                onChange={(selectedOption) =>
+                  handleChange("Work_type", selectedOption)
+                }
+                required
+              />
+            </div>
+            <div className="w-full flex flex-col md:flex-row lg:flex-row">
+              <div className="w-[30%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
+                <label
+                  htmlFor="Job_Type"
+                  className="font-sfpro tracking-wide font-semibold
+                            text-input text-base"
+                >
+                  Job Type:
+                </label>
+              </div>
+              <Select
+                className="w-full md:w-[45%] lg:w-[40%]"
+                name="Job_Type"
+                options={jobTypeOptions}
+                value={formData.Job_Type}
+                onChange={(selectedOption) =>
+                  handleChange("Job_Type", selectedOption)
+                }
+                required
+              />
+            </div>
+ 
+            <div className="w-full flex flex-col md:flex-row lg:flex-row">
+              <div className="w-[50%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
+                <label
+                  htmlFor="Education"
+                  className="font-sfpro tracking-wide font-semibold
+                            text-input text-base"
+                >
+                  Education:
+                </label>
+              </div>
+              <Select
+                className="w-full md:w-[45%] lg:w-[40%]"
+                name="Education"
+                options={educationTypeOptions}
+                value={formData.Education}
+                onChange={(selectedOption) =>
+                  handleChange("Education", selectedOption)
+                }
+                required
+              />
+            </div>
+ 
+            <div className="w-full flex flex-col md:flex-row lg:flex-row">
+              <div className="w-[50%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
+                <label
+                  htmlFor="location"
+                  className="font-sfpro tracking-wide font-semibold
+                            text-input text-base"
+                >
+                  Location:
+                </label>
+              </div>
+              <Select
+                className="w-full md:w-[45%] lg:w-[40%]"
+                name="location"
+                options={locationTypeOptions}
+                value={formData.location}
+                onChange={(selectedOption) =>
+                  handleChange("location", selectedOption)
+                }
+                required
+              />
+            </div>
+ 
+            <div className="w-full flex flex-col md:flex-row lg:flex-row">
+              <div className="w-[50%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
+                <label
+                  htmlFor="Employee_Type"
                   className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
                 >
@@ -153,28 +286,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                 required
               />
             </div>
-            <div className="w-full flex flex-col md:flex-row lg:flex-row">
-              <div className="w-[30%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
-                <label
-                  htmlFor="job_type"
-                  className="font-sfpro tracking-wide font-semibold
-                            text-input text-base"
-                >
-                  Job Type:
-                </label>
-              </div>
-              <Select
-                className="w-full md:w-[45%] lg:w-[40%]"
-                name="Job_Type"
-                options={jobTypeOptions}
-                value={formData.Job_Type}
-                onChange={(selectedOption) =>
-                  handleChange("Job_Type", selectedOption)
-                }
-                required
-              />
-            </div>          
-
+ 
             <div className="w-full flex">
               <div className="w-[40%] md:w-[20%] lg:w-[15%]">
                 <label
@@ -220,11 +332,11 @@ const RecruitmentForm = ({ token, baseUrl }) => {
               </div>
               <Datepicker
                 className="z-50"
-                name="deadline"
+                name="Deadline"
                 required
                 onChange={(date) => {
                   let formattedDate = moment(date).format("YYYY-MM-DD");
-                  handleChange("deadline", formattedDate);
+                  handleChange("Deadline", formattedDate);
                 }}
               />
             </div>
@@ -237,12 +349,12 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                 ></label>
               </div>
               <div className="flex justify-between items-center mb-16 md:mb-0 lg:mb-0 w-full md:w-[45%] lg:w-[40%]">
-              <button
+                <button
                   type="submit"
                   className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
                   disabled={isButtonDisabled}
                 >
-                  Post
+                  Save
                 </button>
                 <button
                   type="button"
@@ -258,17 +370,18 @@ const RecruitmentForm = ({ token, baseUrl }) => {
           </div>
         </div>
       </form>
-
+ 
       <ToastContainer />
     </div>
   );
 };
-
+ 
 const mapStateToProps = (state) => {
   return {
     token: state.user.token,
     baseUrl: state.user.baseUrl,
   };
 };
-
+ 
 export default connect(mapStateToProps)(RecruitmentForm);
+ 

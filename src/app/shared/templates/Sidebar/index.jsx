@@ -1,12 +1,17 @@
 import MobSidebar from './MobSidebar'
 import Sidebar from './Sidebar'
 const index = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  let width = window.screen.width;
+  let val = width <= 1280 ? false : true;
+
   return (
     <>
-      <div className='xl:block hidden'><Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+    {val ?
+      <div><Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      </div>:
+      <div><MobSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
       </div>
-      <div className='xl:hidden block'><MobSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-      </div>
+    }
     </>
   )
 }
