@@ -113,7 +113,7 @@ const dropdownOptions = [
             >
               <BsTable title="Jobs Data Table" />
             </Link>
-            <Link
+            {/* <Link
               to="/applicants"
               className={`p-2 rounded-md  ${
                 location.pathname === "/applicants"
@@ -122,7 +122,7 @@ const dropdownOptions = [
               }`}
             >
               <FaBriefcase title="Employee Data Table" />
-            </Link>
+            </Link> */}
             {location.pathname === "/applicants" && (
               <button
                 className={`p-2 rounded-md ${

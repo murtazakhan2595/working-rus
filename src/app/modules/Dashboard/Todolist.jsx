@@ -327,7 +327,7 @@ const Dashboard = ({ token, baseUrl }) => {
           </div>
         )}
         {showDeleteConfirmation && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50">
             <div className="bg-white p-3 rounded-lg shadow-lg">
               <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold">Delete Item</h1>

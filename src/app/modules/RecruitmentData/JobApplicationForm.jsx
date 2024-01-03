@@ -1,10 +1,10 @@
-import { MdOutlineCalendarMonth } from "react-icons/md";
-import { IoMdClock } from "react-icons/io";
-import { IoLocationOutline } from "react-icons/io5";
-import { LiaMoneyBillWaveSolid } from "react-icons/lia";
-import { PiSuitcaseThin } from "react-icons/pi";
-import { FcGraduationCap } from "react-icons/fc";
-import { IoPersonCircleOutline } from "react-icons/io5";
+import calender from "../../../assets/images/calendar.png";
+import time from "../../../assets/images/time.png";
+import pin from "../../../assets/images/pin.png";
+import money from "../../../assets/images/money.png";
+import suitcase from "../../../assets/images/suitcase.png";
+import magistrate from "../../../assets/images/magistrate.png";
+import employee from "../../../assets/images/employee.png";
 import { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
@@ -18,6 +18,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
     last_name: "",
     phone_number: "",
     email: "",
+    Year_of_Experience: null,
     location: "",
     cv: null,
     application_status: "selected",
@@ -29,7 +30,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
 
   const [formFields, setFormFields] = useState(defaultFormFields);
 
-  const { first_name, last_name, phone_number, email, location, cv } =
+  const { first_name, last_name, phone_number, email, Year_of_Experience, location, cv } =
     formFields;
 
   const MAX_FILE_SIZE_MB = 5; // Set the maximum file size limit
@@ -65,17 +66,12 @@ const JobApplicationForm = ({ token, baseUrl }) => {
     }
   };
 
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
   const convertFileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
       reader.onload = () => {
-        resolve(reader.result.split(",")[1]);
+        resolve(reader.result);
       };
 
       reader.onerror = (error) => {
@@ -95,16 +91,17 @@ const JobApplicationForm = ({ token, baseUrl }) => {
       last_name: formFields.last_name,
       phone_number: formFields.phone_number,
       email: formFields.email,
+      Year_of_Experience: formFields.Year_of_Experience,
       location: formFields.location,
       cv: formFields.cv,
       application_status: defaultFormFields.application_status,
       job_id: defaultFormFields.job_id,
     };
 
+    console.log(data);
+
     try {
-      const response = await axios.post(`${baseUrl}/candidate/`, data, {
-        headers,
-      });
+      const response = await axios.post(`${baseUrl}/candidate/`, data);
 
       if (response.status === 201) {
         toast.success("Job Applied Successfully", {
@@ -128,9 +125,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
-          headers,
-        });
+        const response = await axios.get(`${baseUrl}/recruitment/${id}`);
         setJobDetails(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -167,7 +162,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               {/* <div className="flex flex-wrap gap-x-[33px] gap-y-2 xl:gap-x-8"> */}
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <MdOutlineCalendarMonth />
+                  <img src={calender} alt="calender" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -179,7 +174,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <IoMdClock />
+                <img src={time} alt="time" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -190,7 +185,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto ml-[50px] md:ml-0">
                 <div className="text-[28px]">
-                  <IoLocationOutline />
+                <img src={pin} alt="pin" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -201,7 +196,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <LiaMoneyBillWaveSolid />
+                <img src={money} alt="money" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -214,7 +209,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <PiSuitcaseThin />
+                <img src={suitcase} alt="suitcase" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -225,7 +220,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center  gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <FcGraduationCap />
+                <img src={magistrate} alt="magistrate" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -236,7 +231,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center  gap-x-2 md:w-[30%] xl:w-auto ml-[25px] md:ml-0">
                 <div className="text-[28px]">
-                  <IoPersonCircleOutline />
+                <img src={employee} alt="employee" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -250,10 +245,10 @@ const JobApplicationForm = ({ token, baseUrl }) => {
         </div>
         {/* job description */}
         {loading ? (
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
-            <p className="text-gray-600 mt-4">Loading...</p>
-          </div>
+           <div className="fixed top-0 left-0 w-full h-full backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
+           <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
+           <p className="text-gray-600 mt-4">Loading...</p>
+         </div>
         ) : (
           <div
             className={`bg-[#F9F9F9] xl:px-8 ${
@@ -331,6 +326,27 @@ const JobApplicationForm = ({ token, baseUrl }) => {
                           onChange={handleChange}
                         />
                       </div>
+                       <div className="w-full flex flex-col">
+                        <div className="py-1 md:py-2">
+                          <label
+                            htmlFor="email"
+                            className="font-sfpro tracking-wide font-semibold
+                            text-input text-base"
+                          >
+                            Experience (in years):
+                          </label>
+                        </div>
+                        <input
+                          type="number"
+                          placeholder="Experience"
+                          name="Year_of_Experience"
+                          className="w-full md:w-[100%] lg:w-[90%] pl-2  bg-white rounded h-9 text-sm
+                 placeholder-[#555657] placeholder-opacity-50"
+                          required
+                          value={Year_of_Experience}
+                          onChange={handleChange}
+                        />
+                      </div>
                     </div>
                     <div className="md:w-[100%]">
                       <div className="w-full flex flex-col">
@@ -354,6 +370,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
                           onChange={handleChange}
                         />
                       </div>
+                     
                       <div className="w-full flex flex-col">
                         <div className="py-1 md:py-2 lg:mt-2">
                           <label

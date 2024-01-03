@@ -27,15 +27,14 @@ function Login({ setUserProfile, baseUrl, setToken }) {
   const [errors, setErrors] = useState({});
   const [isPopupVisible, setPopupVisible] = useState(!navigator.onLine);
 
-
   const handleUpdateProfile = (data) => {
     let updateProfile = { id: data.id, username: data.username };
     setUserProfile(updateProfile);
-  }
+  };
 
   const handleCheckboxChange = (e) => {
     setIsChecked(e.target.checked);
-  }
+  };
 
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -47,14 +46,14 @@ function Login({ setUserProfile, baseUrl, setToken }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Check for internet connection
     if (!navigator.onLine) {
       // Show the custom pop-up with a message
       setPopupVisible(true);
       return;
     }
-  
+
     // Clear any existing validation errors
     setErrors({});
     const { error } = loginSchema.validate(values, { abortEarly: false });
@@ -66,55 +65,56 @@ function Login({ setUserProfile, baseUrl, setToken }) {
       setErrors(newErrors);
       return;
     }
-  
+
     try {
       const response = await axios.post(`${baseUrl}/token/`, {
         username: values.username,
         password: values.password,
       });
-  
+
       if (response.status === 200) {
         const token = response.data.access;
-  
+
         // Save the token in cookies
         cookies.set("token", token, { path: "*" });
-  
+
         // Fetch user profile with the obtained token
         const userProfileResponse = await axios.get(`${baseUrl}/user/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-  
+
         if (userProfileResponse.status === 200) {
           const userProfile = {
             id: userProfileResponse.data.id,
             username: userProfileResponse.data.username,
           };
-  
+
           // Update the user profile in the Redux store
           handleUpdateProfile(userProfile);
-  
+
           // Update the token in the Redux store
           setToken(token);
-  
+
           // Clear form values
           setValues({
             username: "",
             password: "",
           });
-  
+
           // Save username and password in cookies if "Keep me Signed In" is checked
           if (isChecked) {
             cookies.set("uname", values.username, { path: "*" });
             cookies.set("pwd", values.password, { path: "*" });
           }
-  
+
           // Display success message
           toast.success("Login successful!", {
             position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1000,
           });
-  
+
           // Navigate to the desired location after a delay (e.g., 2 seconds)
           setTimeout(() => {
             navigate("/");
@@ -122,7 +122,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
           return;
         }
       }
-  
+
       // Simulating a response delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
@@ -130,7 +130,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
-  }; 
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -164,13 +164,13 @@ function Login({ setUserProfile, baseUrl, setToken }) {
     };
 
     // Attach event listener
-    window.addEventListener('online', handleConnectionChange);
-    window.addEventListener('offline', handleConnectionChange);
+    window.addEventListener("online", handleConnectionChange);
+    window.addEventListener("offline", handleConnectionChange);
 
     // Clean up the event listener on component unmount
     return () => {
-      window.removeEventListener('online', handleConnectionChange);
-      window.removeEventListener('offline', handleConnectionChange);
+      window.removeEventListener("online", handleConnectionChange);
+      window.removeEventListener("offline", handleConnectionChange);
     };
   }, []);
 
@@ -238,8 +238,9 @@ function Login({ setUserProfile, baseUrl, setToken }) {
                   <button
                     type="button"
                     onClick={handlePasswordVisibility}
-                    className={`absolute top-0 right-2 translate-y-[70%] ${showPassword ? "text-gray-400" : ""
-                      }`}
+                    className={`absolute top-0 right-2 translate-y-[70%] ${
+                      showPassword ? "text-gray-400" : ""
+                    }`}
                   >
                     {showPassword ? (
                       <BiShow className="text-gray-400" />
@@ -284,8 +285,9 @@ function Login({ setUserProfile, baseUrl, setToken }) {
                   className=" justify-start font-medium text-sm text-gray text-[#1176BC] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
                 >
                   <span
-                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${isChecked ? "bg-[#25A8E0]" : "bg-[#EBEBEB]"
-                      } transition-all duration-300`}
+                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${
+                      isChecked ? "bg-[#25A8E0]" : "bg-[#EBEBEB]"
+                    } transition-all duration-300`}
                     style={{
                       border: "none",
                     }}
@@ -313,9 +315,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
           </div>
         </div>
       </div>
-      {isPopupVisible && (
-        <OfflinePopUp onClose={handleClosePopup} />
-      )}
+      {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}
       <ToastContainer />
     </div>
   );
