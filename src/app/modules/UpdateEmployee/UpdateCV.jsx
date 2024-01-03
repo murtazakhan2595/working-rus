@@ -120,7 +120,7 @@ const SubmitCV = ({
           }
         } else {
           const cvResponse = await axios.post(
-            `${baseUrl}/attachment`,
+            `${baseUrl}/attachment/`,
             {
               employee_id: id,
               name: "cv",
