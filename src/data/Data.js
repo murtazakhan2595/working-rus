@@ -2,7 +2,6 @@ import { LiaHomeSolid } from "react-icons/lia";
 import { MdOutlinePayment } from "react-icons/md";
 import { RiProfileLine } from "react-icons/ri";
 import { BiSpreadsheet } from "react-icons/bi";
-import { PiShootingStarBold } from "react-icons/pi";
 
 export const tasksTitle = [
   { label: "Task Name", width: "w-44" },
@@ -46,7 +45,6 @@ export const links = [
   { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
   { to: "/employees", text: "Employee Sheet", icon: <BiSpreadsheet /> },
   { to: "/jobs", text: "Recruitment", icon: <MdOutlinePayment /> },
-  { to: "", text: "Performance", icon: <PiShootingStarBold /> },
 ];
 
 

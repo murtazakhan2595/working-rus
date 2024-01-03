@@ -22,6 +22,8 @@ import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { links } from "../../../../data/Data";
+import { PiShootingStarBold } from "react-icons/pi";
+
 
 const Sidebar = ({
   isSidebarOpen,
@@ -40,8 +42,8 @@ const Sidebar = ({
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
   const [projectsCount, setProjectCount] = useState(0);
-  const empLinks = links.filter(link => link.text !== "Emp Sheet");
-  const validateLinks = empLinks.filter(link => link.text !== "Recruitment Form");
+  const empLinks = links.filter(link => link.text !== "Employee Sheet");
+  const validateLinks = empLinks.filter(link => link.text !== "Recruitment");
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -131,11 +133,24 @@ const Sidebar = ({
                       </div>
                     </Link>
                   </li>
-            )
+            )}
+{(userProfile.role === 3 || userProfile.role === 4 )&&
+ <li>
+ <Link to="#">
+   <div
+     className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900`}
+   >
+     <div className="text-white text-xl"><PiShootingStarBold/></div>
+     <p className="text-white">Performance</p>
+   </div>
+ </Link>
+</li>
 
+}
+            {userProfile.role !== 2  &&
 
-
-            }
+<>
+            
             <hr className="opacity-40" />
 
             <li
@@ -206,6 +221,9 @@ const Sidebar = ({
                 </div>
               </>
             )}
+            </>
+                        }
+
             <hr className="opacity-40" />
 
             <li

@@ -28,7 +28,6 @@ const JobDescription = ({ token, baseUrl }) => {
           headers,
         });
         setJobDetails(response.data);
-        console.log("Job details response by ID", response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
