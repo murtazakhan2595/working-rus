@@ -113,28 +113,7 @@ const dropdownOptions = [
             >
               <BsTable title="Jobs Data Table" />
             </Link>
-            {/* <Link
-              to="/applicants"
-              className={`p-2 rounded-md  ${
-                location.pathname === "/applicants"
-                  ? "bg-[#25A8E0] text-white"
-                  : "bg-white text-gray-400"
-              }`}
-            >
-              <FaBriefcase title="Employee Data Table" />
-            </Link> */}
-            {location.pathname === "/applicants" && (
-              <button
-                className={`p-2 rounded-md ${
-                  isSearchVisible
-                    ? "bg-[#25A8E0] text-white"
-                    : "bg-white text-gray-400"
-                }`}
-                onClick={handleSearchClick}
-              >
-                <FiFilter />
-              </button>
-            )}
+
             <Link
               to="/job-post"
               className={`p-2 rounded-md  ${

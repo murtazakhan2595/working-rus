@@ -117,7 +117,7 @@ function App({
                   <Route
                     exact
                     path="/"
-                    element={<Dashboard isSidebarOpen={isSidebarOpen} />}
+                    element={userProfile.role !== 2 ? <Dashboard isSidebarOpen={isSidebarOpen} /> :<JobsDataTable />}
                   />
                   <Route path="/board/:id" element={<Board />} />
                   <Route path="/profile" element={<UpdateEmpForm />} />
@@ -175,7 +175,6 @@ function App({
             <Route path="*" element={<Err404 />} />
           </>
         )}
-        {/* <Route path="/job-description" element={<JobDescription />} /> */}
         <Route path="/apply/:id" element={<JobApplicationForm />} />
         <Route path="/job-description/:id" element={<JobDescription />} />
       </Routes>

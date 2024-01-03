@@ -23,7 +23,6 @@ const JobDescription = ({ token, baseUrl }) => {
       try {
         const response = await axios.get(`${baseUrl}/recruitment/${id}`);
         setJobDetails(response.data);
-        console.log("Job details response by ID", response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
