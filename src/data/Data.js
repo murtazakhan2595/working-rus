@@ -93,6 +93,7 @@ export const dropdownOptions = [
   { label: "Interview R1 ", value: "interview r1" },
   { label: "Interview R2 ", value: "interview r2" },
   { label: "Interview R3 ", value: "interview r3" },
+  { label: "Assessment", value: "assessment" },
 ];
 
 export const filterDropdownOptions = [
@@ -107,5 +108,6 @@ export const filterDropdownOptions = [
   { label: "Interview R1 ", value: "interview r1" },
   { label: "Interview R2 ", value: "interview r2" },
   { label: "Interview R3 ", value: "interview r3" },
+  { label: "Assessment", value: "assessment" },
   { label: "All", value: "" },
 ];
