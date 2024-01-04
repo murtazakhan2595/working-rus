@@ -20,7 +20,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
       {/* ##########################   First Column   ########################## */}
 
       <div
-        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${isSidebarOpen ? "3xl:w-[67%] xl:w-[64%] w-[100%]" : "3xl:w-[79%] xl:w-[78%] w-[100%]"
+        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${isSidebarOpen ? "3xl:w-[67%] xl:w-[78%] w-[100%]" : "3xl:w-[79%] xl:w-[78%] w-[100%]"
           }`}
       >
         {/***********************   Dashboard Header   **********************************/}
