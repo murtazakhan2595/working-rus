@@ -29,6 +29,7 @@ import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
 import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
+import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
 
 function App({
   setUserProfile,
@@ -141,6 +142,7 @@ function App({
                       />
                       <Route path="/jobs" element={<JobsDataTable />} />
                       <Route path="/user/:id" element={<ViewEmployee />} />
+                      <Route path="/leave-application" element={<LeaveApplicationForm />} />
                     </>
                   )}
                 </Route>

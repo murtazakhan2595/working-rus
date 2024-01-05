@@ -1,5 +1,5 @@
 import { LiaHomeSolid } from "react-icons/lia";
-import { MdOutlinePayment } from "react-icons/md";
+import { MdOutlinePayment, MdOutlineTimeToLeave } from "react-icons/md";
 import { RiProfileLine } from "react-icons/ri";
 import { BiSpreadsheet } from "react-icons/bi";
 
@@ -45,6 +45,7 @@ export const links = [
   { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
   { to: "/employees", text: "Employee Sheet", icon: <BiSpreadsheet /> },
   { to: "/jobs", text: "Recruitment", icon: <MdOutlinePayment /> },
+  { to: "/leave-application", text: "Leave Application", icon: <MdOutlineTimeToLeave /> },
 ];
 
 export const jobTypeOptions = [
