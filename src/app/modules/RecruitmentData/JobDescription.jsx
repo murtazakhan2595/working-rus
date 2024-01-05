@@ -1,32 +1,27 @@
-import { MdOutlineCalendarMonth } from "react-icons/md";
-import { IoMdClock } from "react-icons/io";
-import { IoLocationOutline } from "react-icons/io5";
-import { LiaMoneyBillWaveSolid } from "react-icons/lia";
-import { PiSuitcaseThin } from "react-icons/pi";
-import { FcGraduationCap } from "react-icons/fc";
-import { IoPersonCircleOutline } from "react-icons/io5";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import calender from "../../../assets/images/calendar.png";
+import time from "../../../assets/images/time.png";
+import pin from "../../../assets/images/pin.png";
+import money from "../../../assets/images/money.png";
+import suitcase from "../../../assets/images/suitcase.png";
+import magistrate from "../../../assets/images/magistrate.png";
+import employee from "../../../assets/images/employee.png";
 
 const JobDescription = ({ token, baseUrl }) => {
   const [jobDetails, setJobDetails] = useState(null);
 
   const { id } = useParams();
   // Functions for calling the API
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
+
 
   // Fetching users
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
-          headers,
-        });
+        const response = await axios.get(`${baseUrl}/recruitment/${id}`);
         setJobDetails(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -36,8 +31,11 @@ const JobDescription = ({ token, baseUrl }) => {
   }, []);
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-    const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+    const options = { year: "numeric", month: "numeric", day: "numeric" };
+    const formattedDate = new Date(dateString).toLocaleDateString(
+      undefined,
+      options
+    );
     return formattedDate;
   };
 
@@ -60,9 +58,9 @@ const JobDescription = ({ token, baseUrl }) => {
               {/* <div className="flex flex-wrap gap-x-[33px] gap-y-2 xl:gap-x-8"> */}
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <MdOutlineCalendarMonth />
+                  <img src={calender} alt="calender" className="w-7" />
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
                   <div className="text-sm md:text-base">
                     {" "}
                     <p>Open: {formatDate(jobDetails?.created_at)}</p>
@@ -72,9 +70,9 @@ const JobDescription = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <IoMdClock />
+                  <img src={time} alt="clock" className="w-7" />
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
                   <div className="text-sm md:text-base">
                     {" "}
                     <p>{jobDetails?.Work_type}</p>
@@ -83,9 +81,9 @@ const JobDescription = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto ml-[50px] md:ml-0">
                 <div className="text-[28px]">
-                  <IoLocationOutline />
+                  <img src={pin} alt="location" className="w-7" />
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
                   <div className="text-sm md:text-base">
                     {" "}
                     <address>{jobDetails?.location}</address>
@@ -94,9 +92,9 @@ const JobDescription = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <LiaMoneyBillWaveSolid />
+                  <img src={money} alt="money" className="w-7" />
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
                   <div className="text-sm md:text-base">
                     {" "}
                     <p>
@@ -107,9 +105,9 @@ const JobDescription = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <PiSuitcaseThin />
+                  <img src={suitcase} alt="suitcase" className="w-7" />
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
                   <div className="text-sm md:text-base">
                     {" "}
                     <p>{jobDetails?.Job_Type}</p>
@@ -118,9 +116,9 @@ const JobDescription = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center  gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                  <FcGraduationCap />
+                  <img src={magistrate} alt="Graduate" className="w-7" />
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
                   <div className="text-sm md:text-base">
                     {" "}
                     <p>{jobDetails?.Education}</p>
@@ -129,9 +127,9 @@ const JobDescription = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center  gap-x-2 md:w-[30%] xl:w-auto ml-[25px] md:ml-0">
                 <div className="text-[28px]">
-                  <IoPersonCircleOutline />
+                <img src={employee} alt="employee" className="w-7" />
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
                   <div className="text-sm md:text-base">
                     {" "}
                     <p>{jobDetails?.Employee_Type}</p>
@@ -139,13 +137,13 @@ const JobDescription = ({ token, baseUrl }) => {
                 </div>
               </div>
             </div>
-              <Link to={`/apply/${jobDetails?.id}`}>
-            <div className="flex justify-center md:flex-end">
-              <button className="md:w-[25%] mt-2 md:-mt-8 xl:mt-0 xl:w-full bg-baseBlue text-white px-5 py-1 rounded-md font-sfpro">
-                Apply Now
-              </button>
-            </div>
-              </Link>
+            <Link to={`/apply/${jobDetails?.id}`}>
+              <div className="flex justify-center md:flex-end">
+                <button className="md:w-[25%] mt-2 md:-mt-8 xl:mt-0 xl:w-full bg-baseBlue text-white px-5 py-1 rounded-md font-sfpro">
+                  Apply Now
+                </button>
+              </div>
+            </Link>
           </div>
         </div>
         {/* job description */}

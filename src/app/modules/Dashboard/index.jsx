@@ -14,13 +14,13 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import DailyTaskRpt from "./DailyTaskRpt";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
-  const [isBarOpen, seIsBarOpen] = useState(false);
+  // const [isBarOpen, seIsBarOpen] = useState(false);
   return (
     <>
       {/* ##########################   First Column   ########################## */}
 
       <div
-        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${isSidebarOpen ? "3xl:w-[67%] xl:w-[64%] w-[100%]" : "3xl:w-[79%] xl:w-[78%] w-[100%]"
+        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${isSidebarOpen ? "3xl:w-[92%] xl:w-[86%] w-[100%]" : "3xl:w-[100%] xl:w-[100%] w-[100%]"
           }`}
       >
         {/***********************   Dashboard Header   **********************************/}
@@ -41,7 +41,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
         </div>
 
         {/* **********************   Bar   ********************************* */}
-        <div
+        {/* <div
           className={`bg-[#ebebeb] ml-10 rounded-s-lg mb-6 pr-1 pl-5 gap-3  justify-between py-2  ${isBarOpen ? "flex" : "hidden"
             }`}
         >
@@ -74,7 +74,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
               }}
             />
           </div>
-        </div>
+        </div> */}
 
         {/* **********************   Todos List & Working Time   ********************************* */}
         {/* <div className="flex 2xl:flex-row sm:flex-row flex-col-reverse justify-between sm:mr-14 xl:self-end xl:items-end"> */}
@@ -97,8 +97,8 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
 
       {/* ##########################   Second Column   ########################## */}
 
-      <div className="scroll relative flex-col xl:flex hidden h-screen overflow-y-auto 3xl:w-[22%] z-10 xl:w-[23%] bg-[#f2f2f2]">
-        {/***********************   ProFile Header   **********************************/}
+      {/* <div className="scroll relative flex-col xl:flex hidden h-screen overflow-y-auto 3xl:w-[25%] z-10 xl:w-[26%] bg-[#f2f2f2]">
+        **********************   ProFile Header   *********************************
         <div className="flex pt-3 pb-1 justify-end px-5 items-center gap-3">
           <div className="text-3xl w-10 h-10 rounded-full border bg-white"></div>{" "}
           <div className=" text-[#283b91]">{userProfile.username}</div>
@@ -111,9 +111,9 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
             <BsBell className="text-xs" />
           </div>
         </div>
-        {/***********************   Notification Box   **********************************/}
+        **********************   Notification Box   *********************************
         <NotificationBox />
-        {/***********************   Calender   **********************************/}
+        **********************   Calender   *********************************
         <Calendar />
 
       </div>
@@ -125,7 +125,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
         }}
       >
         {isBarOpen ? "" : <IoIosArrowBack className="text-3xl" />}
-      </button>
+      </button> */}
     </>
   );
 };

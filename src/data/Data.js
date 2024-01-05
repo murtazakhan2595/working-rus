@@ -47,14 +47,12 @@ export const links = [
   { to: "/jobs", text: "Recruitment", icon: <MdOutlinePayment /> },
 ];
 
-
 export const jobTypeOptions = [
   { value: "Remote", label: "Remote" },
   { value: "Onsite", label: "Onsite" },
   { value: "Hybrid", label: "Hybrid" },
-
 ];
- 
+
 export const workTypeOptions = [
   { value: "Internees", label: "Internees" },
   { value: "Junior_Level", label: "Junior Level" },
@@ -63,7 +61,6 @@ export const workTypeOptions = [
   { value: "Senior_Level", label: "Senior Level" },
 ];
 
- 
 export const employeeTypeOptions = [
   { value: "Internees", label: "Intern" },
   { value: "Part_Tiime", label: "Part Time" },
@@ -71,7 +68,7 @@ export const employeeTypeOptions = [
   { value: "Contract", label: "Contract" },
   { value: "Freelancer", label: "Freelancer" },
 ];
- 
+
 export const educationTypeOptions = [
   { value: "Bachelor", label: "Bachelor" },
   { value: "Master", label: "Master" },
@@ -85,11 +82,32 @@ export const locationTypeOptions = [
 ];
 
 export const dropdownOptions = [
-  "selected",
-  "shortlisted",
-  "offer_made",
-  "on_board",
-  "declined",
-  "contacted",
-  "rejected",
+  { label: "Pending", value: "pending" },
+  { label: "Selected", value: "selected" },
+  { label: "Shortlisted", value: "shortlisted" },
+  { label: "Offer Made", value: "offer_made" },
+  { label: "Onboard", value: "on_board" },
+  { label: "Declined", value: "declined" },
+  { label: "Contacted", value: "contacted" },
+  { label: "Rejected", value: "rejected" },
+  { label: "Interview R1 ", value: "interview r1" },
+  { label: "Interview R2 ", value: "interview r2" },
+  { label: "Interview R3 ", value: "interview r3" },
+  { label: "Assessment", value: "assessment" },
+];
+
+export const filterDropdownOptions = [
+  { label: "Pending", value: "pending" },
+  { label: "Selected", value: "selected" },
+  { label: "Shortlisted", value: "shortlisted" },
+  { label: "Offer Made", value: "offer_made" },
+  { label: "Onboard", value: "on_board" },
+  { label: "Declined", value: "declined" },
+  { label: "Contacted", value: "contacted" },
+  { label: "Rejected", value: "rejected" },
+  { label: "Interview R1 ", value: "interview r1" },
+  { label: "Interview R2 ", value: "interview r2" },
+  { label: "Interview R3 ", value: "interview r3" },
+  { label: "Assessment", value: "assessment" },
+  { label: "All", value: "" },
 ];

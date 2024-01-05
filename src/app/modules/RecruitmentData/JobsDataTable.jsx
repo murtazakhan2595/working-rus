@@ -8,10 +8,13 @@ import { IoEyeOutline } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Loader from "../../../common/Loader";
 
 const JobsDataTable = ({ baseUrl, token }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const url = window.location.origin;
 
   // Functions for calling the API
   const headers = {
@@ -59,55 +62,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
 
       {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 h-[100%] overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
-        {loading ? (
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-                <th className="px-6 py-3 text-left rounded-tl-lg">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left rounded-tr-lg">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white text-gray-500">
-              <tr className="whitespace-nowrap border-b-2">
-                <td className="px-6 py-2">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        ) : (
-          <table className="min-w-full">
+      <table className="min-w-full">
             <thead>
               <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
                 <th className="px-6 py-3 text-left  rounded-tl-lg">Job ID</th>
@@ -130,7 +85,10 @@ const JobsDataTable = ({ baseUrl, token }) => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white text-gray-500">
+            {loading ? (
+              <Loader />
+            ): (
+              <tbody className="bg-white text-gray-500">
               {posts.map((post) => (
                 <tr
                   className="whitespace-nowrap border-b-2 hover:bg-gray-100"
@@ -150,13 +108,14 @@ const JobsDataTable = ({ baseUrl, token }) => {
                         to={`/job-description/${post.id}`}
                         className="underline flex items-center gap-x-2 text-blue-600"
                       >
-                        <span>linked.com</span>
+                        <span>www.joblink.com/{post.id}</span>
+                        {/* <span>www.hrms-{post.Job_Title}.com/{post.id}</span> */}
                       </Link>
                       <MdContentCopy
                         className="cursor-pointer text-baseBlue"
                         onClick={() =>
                           copyToClipboard(
-                            `http://localhost:3000/job-description/${post.id}`
+                            `${url}/job-description/${post.id}`
                           )
                         }
                       />
@@ -171,8 +130,8 @@ const JobsDataTable = ({ baseUrl, token }) => {
                 </tr>
               ))}
             </tbody>
+            )}
           </table>
-        )}
       </div>
     </div>
   );

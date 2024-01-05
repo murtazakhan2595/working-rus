@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import EmpDataHeader from "./EmpDataHeader";
+import Loader from "../../../common/Loader";
 
 const userRoles = [
   { value: 2, label: "HR" },
@@ -55,7 +56,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
     };
 
     fetchUsers();
-  }, [page, baseUrl, token, filter]);
+  }, [page, filter]);
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9] h-[100vh]">
@@ -66,72 +67,22 @@ const EmpDataSheet = ({ baseUrl, token }) => {
 
       {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
-        {loading ? (
-          // <div className="flex justify-center items-center">
-          //   <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-          // </div>
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-                <th className="px-6 py-3 text-left rounded-tl-lg">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left rounded-tr-lg">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-              </tr>
-            </thead>
+        <table className="min-w-full">
+          <thead>
+            <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
+              <th className="px-6 py-3 text-left rounded-tl-lg">Employee ID</th>
+              <th className="px-6 py-3 text-left">User Name</th>
+              <th className="px-6 py-3 text-left">Full Name</th>
+              <th className="px-6 py-3 text-left">Email</th>
+              <th className="px-6 py-3 text-left">Role</th>
+              <th className="px-6 py-3 text-left rounded-tr-lg">Action</th>
+            </tr>
+          </thead>
+          {loading ? (
+            <Loader />
+          ) : (
             <tbody className="bg-white text-gray-500">
-              <tr className="whitespace-nowrap border-b-2">
-                <td className="px-6 py-2">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        ) : (
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-                <th className="px-6 py-3 text-left rounded-tl-lg">
-                  Employee ID
-                </th>
-                <th className="px-6 py-3 text-left">User Name</th>
-                <th className="px-6 py-3 text-left">Full Name</th>
-                <th className="px-6 py-3 text-left">Email</th>
-                <th className="px-6 py-3 text-left">Role</th>
-                <th className="px-6 py-3 text-left rounded-tr-lg">Action</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white text-gray-500">
-              {users.map((user, index) => (
+              {users.map((user) => (
                 <tr
                   className="whitespace-nowrap border-b-2 hover:bg-gray-100"
                   key={user.id}
@@ -162,11 +113,11 @@ const EmpDataSheet = ({ baseUrl, token }) => {
                 </tr>
               ))}
             </tbody>
-          </table>
-        )}
+          )}
+        </table>
       </div>
       {/* Pagination Controls */}
-     {/*  <div className="flex justify-end items-center mt-2 px-1 lg:px-8">
+      {/*  <div className="flex justify-end items-center mt-2 px-1 lg:px-8">
         <button
           onClick={() => setPage(page - 1)}
           disabled={page === 1}

@@ -4,8 +4,8 @@ import RecruitmentDataHeader from "./RecruitmentDataHeader";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { HiDownload } from "react-icons/hi";
-import { dropdownOptions } from "../../../data/Data";
-
+import { dropdownOptions, filterDropdownOptions } from "../../../data/Data";
+import Loader from "../../../common/Loader";
 
 const ApplicantsDataTable = ({ baseUrl, token }) => {
   const [selectedRow, setSelectedRow] = useState(null);
@@ -31,6 +31,37 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
       setPost(response.data.Job_Title);
     } catch (error) {
       console.error("Error fetching users:", error);
+    }
+  };
+
+  //download cv
+  const downloadCV = async (cv, name) => {
+    try {
+      const response = await axios.get(cv, {
+        responseType: "blob",
+      });
+      const blob = new Blob([response.data], { type: "application/pdf" });
+
+      const url = window.URL.createObjectURL(blob);
+      console.log("Content-Type:", response.headers["content-type"]);
+
+      // Create a temporary link element
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Set the download attribute to the desired file name
+      link.download = `${name}_cv.pdf`; // You can adjust the file name accordingly
+
+      // Append the link to the document
+      document.body.appendChild(link);
+
+      // Programmatically trigger a click on the link to initiate the download
+      link.click();
+
+      // Remove the link from the document
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error fetching CV:", error);
     }
   };
   // Fetching users
@@ -73,8 +104,11 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
     setSelectedRow(selectedRow === id ? null : id);
   };
 
-  const handleOptionSelect = async (option) => {
+  const handleStatusFilter = async (option) => {
     setApplicationStatus(option);
+  };
+
+  const handleOptionSelect = async (option) => {
     try {
       // Find the selected row in the data array
       const selectedApplicant = applicants.find(
@@ -136,86 +170,42 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
 
       {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 h-[100%] overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
-        {loading ? (
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-                <th className="px-6 py-3 text-left rounded-tl-lg">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-                <th className="px-6 py-3 text-left rounded-tr-lg">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white text-gray-500">
-              <tr className="whitespace-nowrap border-b-2">
-                <td className="px-6 py-2">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-                <td className="px-6 py-2">
-                  <div className="w-16 h-6 bg-gray-300 rounded-md animate-pulse"></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        ) : (
-          <table className="min-w-full">
-            <thead>
-              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-                <th className="px-6 py-3 text-left rounded-tl-lg">ID</th>
-                <th className="px-6 py-3 text-left rounded-tl-lg">
-                  Candidate Name
-                </th>
-                <th className="px-6 py-3 text-left">Email</th>
-                <th className="px-6 py-3 text-left">Contact No</th>
-                <th className="px-6 py-3 text-left">Resume</th>
-                <th
-                  className="px-6 py-3 text-left rounded-tr-lg flex gap-x-2"
-                  onClick={handleShowFilter}
-                >
-                  Application Status
-                  <span className="text-baseBlue text-xl">&#9662;</span>
-                  {showFilter && (
-                    <div className="absolute right-6 top-[5px] bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
-                      {dropdownOptions.map((option) => (
-                        <div
-                          key={option}
-                          onClick={() => handleOptionSelect(option)}
-                          className="cursor-pointer border-b-2 pl-2 w-[100px] hover:bg-blue-100"
-                        >
-                          {option}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </th>
-              </tr>
-            </thead>
+        <table className="min-w-full">
+          <thead>
+            <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
+              <th className="px-6 py-3 text-left rounded-tl-lg">ID</th>
+              <th className="px-6 py-3 text-left rounded-tl-lg">
+                Candidate Name
+              </th>
+              <th className="px-6 py-3 text-left">Email</th>
+              <th className="px-6 py-3 text-left">Experience</th>
+              <th className="px-6 py-3 text-left">Contact No</th>
+              <th className="px-6 py-3 text-left">Resume</th>
+              <th
+                className="px-6 py-3 text-left rounded-tr-lg flex items-center gap-x-2 relative"
+                onClick={handleShowFilter}
+              >
+                Application Status
+                <span className="text-baseBlue text-xl">&#9662;</span>
+                {showFilter && (
+                  <div className="absolute right-3 top-[34px] bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
+                    {filterDropdownOptions.map((option) => (
+                      <div
+                        key={option.label}
+                        onClick={() => handleStatusFilter(option.value)}
+                        className="cursor-pointer border-b-2 pl-2 w-[100px] hover:bg-blue-100"
+                      >
+                        {option.label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </th>
+            </tr>
+          </thead>
+          {loading ? (
+            <Loader />
+          ) : (
             <tbody className="bg-white text-gray-500">
               {applicants?.map((applicant) => (
                 <tr
@@ -230,6 +220,9 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
                   </td>
                   <td className="px-6 py-3 text-left">{applicant?.email}</td>
                   <td className="px-6 py-3 text-left">
+                    {applicant?.Year_of_Experience}
+                  </td>
+                  <td className="px-6 py-3 text-left">
                     {applicant?.phone_number}
                   </td>
                   <td className="px-6 py-3 text-left">
@@ -237,9 +230,9 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
                       <span title={applicant?.cv}>
                         {truncateCVLink(applicant?.cv, 10)}
                       </span>
-                      <a href={applicant?.cv} download>
+                      <button onClick={() => downloadCV(applicant?.cv, applicant?.first_name)}>
                         <HiDownload />
-                      </a>
+                      </button>
                     </div>
                   </td>
                   <td
@@ -254,11 +247,11 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
                       <div className="absolute left-28 bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
                         {dropdownOptions.map((option) => (
                           <div
-                            key={option}
-                            onClick={() => handleOptionSelect(option)}
+                            key={option.label}
+                            onClick={() => handleOptionSelect(option.value)}
                             className={`cursor-pointer border-b-2 pl-2 w-[125px] hover:bg-blue-100`}
                           >
-                            {option}
+                            {option.label}
                           </div>
                         ))}
                       </div>
@@ -267,8 +260,8 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
                 </tr>
               ))}
             </tbody>
-          </table>
-        )}
+          )}
+        </table>
       </div>
     </div>
   );
