@@ -20,7 +20,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
       {/* ##########################   First Column   ########################## */}
 
       <div
-        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${isSidebarOpen ? "3xl:w-[67%] xl:w-[78%] w-[100%]" : "3xl:w-[79%] xl:w-[78%] w-[100%]"
+        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${isSidebarOpen ? "3xl:w-[92%] xl:w-[86%] w-[100%]" : "3xl:w-[100%] xl:w-[100%] w-[100%]"
           }`}
       >
         {/***********************   Dashboard Header   **********************************/}
@@ -97,8 +97,8 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
 
       {/* ##########################   Second Column   ########################## */}
 
-      <div className="scroll relative flex-col xl:flex hidden h-screen overflow-y-auto 3xl:w-[22%] z-10 xl:w-[23%] bg-[#f2f2f2]">
-        {/***********************   ProFile Header   **********************************/}
+      {/* <div className="scroll relative flex-col xl:flex hidden h-screen overflow-y-auto 3xl:w-[25%] z-10 xl:w-[26%] bg-[#f2f2f2]">
+        **********************   ProFile Header   *********************************
         <div className="flex pt-3 pb-1 justify-end px-5 items-center gap-3">
           <div className="text-3xl w-10 h-10 rounded-full border bg-white"></div>{" "}
           <div className=" text-[#283b91]">{userProfile.username}</div>
@@ -111,13 +111,13 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
             <BsBell className="text-xs" />
           </div>
         </div>
-        {/***********************   Notification Box   **********************************/}
+        **********************   Notification Box   *********************************
         <NotificationBox />
-        {/***********************   Calender   **********************************/}
+        **********************   Calender   *********************************
         <Calendar />
 
       </div>
-      {/* <button
+      <button
         className={`absolute bg-[#283b91] z-0 text-white px1 md:pr-1 py-3 right-0 3xl:right-[21.8%] xl:right-[22.3%] rounded-s-lg top-[3rem] mt-4 ml-4  ${isBarOpen ? "hidden" : ""
           }`}
         onClick={() => {

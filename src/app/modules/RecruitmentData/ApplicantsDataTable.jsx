@@ -35,7 +35,7 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
   };
 
   //download cv
-  const downloadCV = async (cv) => {
+  const downloadCV = async (cv, name) => {
     try {
       const response = await axios.get(cv, {
         responseType: "blob",
@@ -50,7 +50,7 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
       link.href = url;
 
       // Set the download attribute to the desired file name
-      link.download = "applicant_cv.pdf"; // You can adjust the file name accordingly
+      link.download = `${name}_cv.pdf`; // You can adjust the file name accordingly
 
       // Append the link to the document
       document.body.appendChild(link);
@@ -230,7 +230,7 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
                       <span title={applicant?.cv}>
                         {truncateCVLink(applicant?.cv, 10)}
                       </span>
-                      <button onClick={() => downloadCV(applicant?.cv)}>
+                      <button onClick={() => downloadCV(applicant?.cv, applicant?.first_name)}>
                         <HiDownload />
                       </button>
                     </div>

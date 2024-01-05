@@ -56,7 +56,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
     };
 
     fetchUsers();
-  }, [page, baseUrl, token, filter]);
+  }, [page, filter]);
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9] h-[100vh]">

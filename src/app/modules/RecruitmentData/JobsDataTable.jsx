@@ -109,6 +109,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
                         className="underline flex items-center gap-x-2 text-blue-600"
                       >
                         <span>www.joblink.com/{post.id}</span>
+                        {/* <span>www.hrms-{post.Job_Title}.com/{post.id}</span> */}
                       </Link>
                       <MdContentCopy
                         className="cursor-pointer text-baseBlue"
