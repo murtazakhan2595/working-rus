@@ -45,7 +45,11 @@ export const links = [
   { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
   { to: "/employees", text: "Employee Sheet", icon: <BiSpreadsheet /> },
   { to: "/jobs", text: "Recruitment", icon: <MdOutlinePayment /> },
-  { to: "/leave-application", text: "Leave Application", icon: <MdOutlineTimeToLeave /> },
+  {
+    to: "/leave-application",
+    text: "Leave Application",
+    icon: <MdOutlineTimeToLeave />,
+  },
 ];
 
 export const jobTypeOptions = [
@@ -113,6 +117,11 @@ export const filterDropdownOptions = [
   { label: "All", value: "" },
 ];
 
+export const jobsStatusOptions = [
+  { label: "Show All", value: "" },
+  { label: "Live", value: "live" },
+  { label: "Expired", value: "expired" },
+];
 
 export const reportingManager = [
   { value: "manager1", label: "Manager 1" },

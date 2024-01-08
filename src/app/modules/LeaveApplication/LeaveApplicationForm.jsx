@@ -494,6 +494,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 onChange={(selectedOption) =>
                   handleChange("report_to", selectedOption.value)
                 }
+                menuPlacement="auto" 
               />
             </div>
             <button

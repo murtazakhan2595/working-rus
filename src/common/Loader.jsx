@@ -11,6 +11,9 @@ const Loader = () => {
           <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
         </td>
         <td className="px-6 py-2">
+          <div className="w-20 h-6 bg-gray-300 rounded-md animate-pulse"></div>
+        </td>
+        <td className="px-6 py-2">
           <div className="w-40 h-6 bg-gray-300 rounded-md animate-pulse"></div>
         </td>
         <td className="px-6 py-2">
