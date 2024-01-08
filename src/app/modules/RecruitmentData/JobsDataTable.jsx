@@ -39,7 +39,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
   }, []);
 
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
+    const options = { year: "numeric", month: "numeric", day: "numeric" };
     const formattedDate = new Date(dateString).toLocaleDateString(
       undefined,
       options
@@ -62,13 +62,13 @@ const JobsDataTable = ({ baseUrl, token }) => {
 
       {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 h-[100%] overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
-      <table className="min-w-full">
-            <thead>
-              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-                <th className="px-6 py-3 text-left  rounded-tl-lg">Job ID</th>
-                <th className="flex gap-x-2 items-center px-6 py-3 text-left  rounded-tl-lg">
-                  Job Title
-                  {/* <div className="relative">
+        <table className="min-w-full">
+          <thead>
+            <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
+              <th className="px-6 py-3 text-left  rounded-tl-lg">Job ID</th>
+              <th className="flex gap-x-2 items-center px-6 py-3 text-left  rounded-tl-lg">
+                Job Title
+                {/* <div className="relative">
                   <IoIosSearch className="absolute top-2 left-3 text-white" />
                   <input
                     type="search"
@@ -76,19 +76,20 @@ const JobsDataTable = ({ baseUrl, token }) => {
                     className="focus:outline-none focus:border-non bg-[#D7D7D7] py-1 pl-8 pr-4 text-white placeholder-white border-none rounded-md w-28"
                   />
                 </div> */}
-                </th>
-                <th className="px-6 py-3 text-left">Posted Date</th>
-                <th className="px-6 py-3 text-left">End Date</th>
-                <th className="px-6 py-3 text-left">Job Link</th>
-                <th className="px-6 py-3 text-center rounded-tr-lg">
-                  Total Applications
-                </th>
-              </tr>
-            </thead>
-            {loading ? (
-              <Loader />
-            ): (
-              <tbody className="bg-white text-gray-500">
+              </th>
+              <th className="px-6 py-3 text-left">Posted Date</th>
+              <th className="px-6 py-3 text-left">End Date</th>
+              <th className="px-6 py-3 text-left">Job Link</th>
+              <th className="px-6 py-3 text-left">Job Status</th>
+              <th className="px-6 py-3 text-center rounded-tr-lg">
+                Total Applications
+              </th>
+            </tr>
+          </thead>
+          {loading ? (
+            <Loader />
+          ) : (
+            <tbody className="bg-white text-gray-500">
               {posts.map((post) => (
                 <tr
                   className="whitespace-nowrap border-b-2 hover:bg-gray-100"
@@ -114,13 +115,13 @@ const JobsDataTable = ({ baseUrl, token }) => {
                       <MdContentCopy
                         className="cursor-pointer text-baseBlue"
                         onClick={() =>
-                          copyToClipboard(
-                            `${url}/job-description/${post.id}`
-                          )
+                          copyToClipboard(`${url}/job-description/${post.id}`)
                         }
                       />
                     </div>
                   </td>
+                  <td className="px-6 py-3 text-left">{post.status}</td>
+
                   <Link to={`/applicants/${post.id}`}>
                     <td className="px-6 py-3 text-center flex gap-x-2 items-center justify-center">
                       {post.total_applications}
@@ -130,8 +131,8 @@ const JobsDataTable = ({ baseUrl, token }) => {
                 </tr>
               ))}
             </tbody>
-            )}
-          </table>
+          )}
+        </table>
       </div>
     </div>
   );
