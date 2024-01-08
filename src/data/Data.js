@@ -112,3 +112,11 @@ export const filterDropdownOptions = [
   { label: "Assessment", value: "assessment" },
   { label: "All", value: "" },
 ];
+
+
+export const reportingManager = [
+  { value: "manager1", label: "Manager 1" },
+  { value: "manager2", label: "Manager 2" },
+  { value: "manager3", label: "Manager 3" },
+  { value: "manager4", label: "Manager 4" },
+];

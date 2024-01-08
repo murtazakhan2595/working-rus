@@ -27,7 +27,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
         <div className="py-8 px-10 flex gap-3  items-center justify-center md:justify-start">
           <h1 className="text-3xl leading-none font-semibold  opacity-80 tracking-widest">
             <Link to="/login">
-              DashBoard
+              Dashboard
             </Link>
           </h1>
           <div className="relative">
