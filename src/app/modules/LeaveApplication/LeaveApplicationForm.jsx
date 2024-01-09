@@ -296,7 +296,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               <div className="rounded-md ml-[-14px] w-[60%] py-2 bg-white flex items-center gap-1 flex-wrap justify-end text-xs md:justify-start md:text-sm md:gap-x-2 md:w-[75%] md:pl-5">
                 <div className="flex items-center gap-2.5">
                   <input
-                    required
                     type="checkbox"
                     name="EMERGENCY"
                     checked={formData.leave_type === "EMERGENCY"}
@@ -305,7 +304,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <label>Emergency</label>
 
                   <input
-                    required
                     type="checkbox"
                     name="ANNUAL"
                     checked={formData.leave_type === "ANNUAL"}
@@ -313,7 +311,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   />
                   <label>Annual</label>
                   <input
-                    required
                     type="checkbox"
                     name="SICK"
                     checked={formData.leave_type === "SICK"}
@@ -323,7 +320,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 </div>
                 <div className="flex items-center gap-2.5">
                   <input
-                    required
                     type="checkbox"
                     name="MATERNITY"
                     checked={formData.leave_type === "MATERNITY"}
@@ -333,13 +329,12 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     type="checkbox"
                     name="CASUAL"
-                    checked={formData.leave_type === "ANNUAL"}
-                    onChange={() => handleChange("leave_type", "ANNUAL")}
+                    checked={formData.leave_type === "CASUAL"}
+                    onChange={() => handleChange("leave_type", "CASUAL")}
                   />
                   <label>Casual</label>
 
                   <input
-                    required
                     type="checkbox"
                     name="UNPAID"
                     checked={formData.leave_type === "UNPAID"}
