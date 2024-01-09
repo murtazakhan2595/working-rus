@@ -3,13 +3,11 @@ import LeaveHeader from "./LeaveHeader";
 import Select from "react-select";
 import Datepicker from "../Dashboard/Datepicker";
 import moment from "moment";
-import { reportingManager } from "../../../data/Data";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { connect } from "react-redux";
 
 const EmployeeForm = ({ baseUrl, token, userProfile }) => {
-
   const initialData = {
     employee_id: userProfile.id,
     name: "",
@@ -32,6 +30,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
 
   const [formData, setFormData] = useState(initialData);
   const [managers, setManagers] = useState([]);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   // fetch managers
 
@@ -93,7 +92,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setIsButtonDisabled(true); // Disable the button
+    setIsButtonDisabled(true); // Disable the button
 
     const data = {
       employee_id: formData.employee_id,
@@ -126,6 +125,8 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
         toast.success("Leave application posted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
+
+        // Reset the form
         setFormData(initialData);
       }
     } catch (error) {
@@ -133,21 +134,21 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
-      // setIsButtonDisabled(false); // Re-enable the button
+      setIsButtonDisabled(false); // Re-enable the button
     }
   };
 
   return (
     <div className="bg-[#F9F9F9] w-full">
       <LeaveHeader post="Leave Application Form" />
-      <div className="px-2 lg:px-7 h-[74vh] lg:h-[80vh] overflow-y-scroll">
+      <div className="px-3 lg:px-7 h-[74vh] lg:h-[80vh] overflow-y-scroll">
         <h1 className="font-sfpro tracking-wide text-[#25A8E0] text-center md:text-left text-xs py-5">
           Note: Annual Leave Application Should be Submitted to HR Two Months
           Prior to Annual Leave Date.
         </h1>
         <form onSubmit={handleSubmit}>
           <div>
-            <div className="flex gap-x-7 items-center py-2">
+            <div className="flex justify-between items-center py-2 lg:justify-normal gap-6">
               <label
                 className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -155,10 +156,10 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 Employee ID:
               </label>
               <input
-                className="h-8 w-32 md:w-44 rounded-md lg:w-52"
+                className="h-8 pl-2 w-[60%] md:w-44 rounded-md lg:w-24"
                 type="text"
                 name="employee_id"
-                value={formData.employee_id}
+                value={`TXB-00${formData.employee_id}`}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               />
             </div>
@@ -172,7 +173,9 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     Name:
                   </label>
                   <input
-                    className="rounded-md h-8 lg:w-full"
+                    placeholder="Enter Name Here"
+                    required
+                    className="rounded-md h-8 pl-2 w-[60%] lg:w-full"
                     type="text"
                     name="name"
                     value={formData.name}
@@ -190,7 +193,9 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     Position:
                   </label>
                   <input
-                    className="rounded-md h-8 lg:w-full"
+                    placeholder="Enter Position Here"
+                    required
+                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full"
                     type="text"
                     name="position"
                     value={formData.position}
@@ -245,7 +250,9 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     Department:
                   </label>
                   <input
-                    className="rounded-md h-8 lg:w-full"
+                    placeholder="Enter Department Here"
+                    required
+                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full"
                     type="text"
                     name="department"
                     value={formData.department}
@@ -263,7 +270,9 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     Nationality:
                   </label>
                   <input
-                    className="rounded-md h-8 lg:w-full"
+                    placeholder="Enter Nationality Here"
+                    required
+                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full"
                     type="text"
                     name="nationality"
                     value={formData.nationality}
@@ -281,52 +290,60 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               >
                 Leave Type:
               </div>
-              <div className="rounded-md w-[180px] py-2 bg-white flex items-center gap-1 flex-wrap justify-end text-xs md:justify-start md:text-sm md:gap-x-2 md:w-[75%] md:pl-5">
-                <input
-                  type="checkbox"
-                  name="EMERGENCY"
-                  checked={formData.leave_type === "EMERGENCY"}
-                  onChange={() => handleChange("leave_type", "EMERGENCY")}
-                />
+              <div className="rounded-md w-[60%] py-2 bg-white flex items-center gap-1 flex-wrap justify-end text-xs md:justify-start md:text-sm md:gap-x-2 md:w-[75%] md:pl-5">
+                <div className="flex items-center gap-2.5">
+                  <input
+                    required
+                    type="checkbox"
+                    name="EMERGENCY"
+                    checked={formData.leave_type === "EMERGENCY"}
+                    onChange={() => handleChange("leave_type", "EMERGENCY")}
+                  />
+                  <label>Emergency</label>
 
-                <label>Emergency</label>
-                <input
-                  type="checkbox"
-                  name="ANNUAL"
-                  checked={formData.leave_type === "ANNUAL"}
-                  onChange={() => handleChange("leave_type", "ANNUAL")}
-                />
-                <label>Annual</label>
-                <input
-                  type="checkbox"
-                  name="SICK"
-                  checked={formData.leave_type === "SICK"}
-                  onChange={() => handleChange("leave_type", "SICK")}
-                />
-                <label>Sick</label>
+                  <input
+                    required
+                    type="checkbox"
+                    name="ANNUAL"
+                    checked={formData.leave_type === "ANNUAL"}
+                    onChange={() => handleChange("leave_type", "ANNUAL")}
+                  />
+                  <label>Annual</label>
+                  <input
+                    required
+                    type="checkbox"
+                    name="SICK"
+                    checked={formData.leave_type === "SICK"}
+                    onChange={() => handleChange("leave_type", "SICK")}
+                  />
+                  <label>Sick</label>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <input
+                    required
+                    type="checkbox"
+                    name="MATERNITY"
+                    checked={formData.leave_type === "MATERNITY"}
+                    onChange={() => handleChange("leave_type", "MATERNITY")}
+                  />
+                  <label>Maternity</label>
+                  <input
+                    type="checkbox"
+                    name="CASUAL"
+                    checked={formData.leave_type === "ANNUAL"}
+                    onChange={() => handleChange("leave_type", "ANNUAL")}
+                  />
+                  <label>Casual</label>
 
-                <input
-                  type="checkbox"
-                  name="MATERNITY"
-                  checked={formData.leave_type === "MATERNITY"}
-                  onChange={() => handleChange("leave_type", "MATERNITY")}
-                />
-                <label>Maternity</label>
-                <input
-                  type="checkbox"
-                  name="CASUAL"
-                  checked={formData.leave_type === "ANNUAL"}
-                  onChange={() => handleChange("leave_type", "ANNUAL")}
-                />
-                <label>Casual</label>
-
-                <input
-                  type="checkbox"
-                  name="UNPAID"
-                  checked={formData.leave_type === "UNPAID"}
-                  onChange={() => handleChange("leave_type", "UNPAID")}
-                />
-                <label>Unpaid</label>
+                  <input
+                    required
+                    type="checkbox"
+                    name="UNPAID"
+                    checked={formData.leave_type === "UNPAID"}
+                    onChange={() => handleChange("leave_type", "UNPAID")}
+                  />
+                  <label>Unpaid</label>
+                </div>
               </div>
             </div>
 
@@ -339,7 +356,9 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               </label>
 
               <textarea
-                className="w-[183px] rounded-md md:w-[77%]"
+                required
+                // className="rounded-md pl-2 w-[60%] md:w-[63%]"
+                className=" rounded-md pl-2 w-[60%] md:w-[77%]"
                 name="reason"
                 value={formData.reason}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -394,7 +413,9 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     Total Leaves:
                   </label>
                   <input
-                    className="rounded-md h-8 lg:w-[56%]"
+                  placeholder="Number of Days Here"
+                    required
+                    className="rounded-md pl-2 w-[60%] h-8 lg:w-[56%]"
                     type="text"
                     name="total_leave"
                     value={formData.total_leave}
@@ -450,7 +471,9 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     Contact Number:
                   </label>
                   <input
-                    className="rounded-md h-8 lg:w-[56%]"
+                  placeholder="Enter Contact Here"
+                    required
+                    className="rounded-md pl-2 w-[60%] h-8 lg:w-[56%]"
                     type="text"
                     name="contact_no"
                     value={formData.contact_no}
@@ -470,7 +493,8 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 Address During Leave:
               </label>
               <textarea
-                className="rounded-md md:w-[63%]"
+                required
+                className="rounded-md pl-2  md:w-[74%]"
                 name="address_during_leave"
                 value={formData.address_during_leave}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -484,6 +508,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 Reporting Manager:
               </label>
               <Select
+                menuPlacement="auto"
                 className="w-full md:w-[45%] lg:w-[20%]"
                 name="report_to"
                 options={managers?.map((manager) => ({
@@ -494,12 +519,12 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 onChange={(selectedOption) =>
                   handleChange("report_to", selectedOption.value)
                 }
-                menuPlacement="auto" 
               />
             </div>
             <button
+              disabled={isButtonDisabled}
               type="submit"
-              className="bg-baseBlue text-white block m-auto px-6 py-2 rounded-md font-semibold tracking-widest md:mt-4 lg:mb-6"
+              className="bg-[#283B91] text-white block mx-auto px-6 py-2 rounded-md font-semibold tracking-widest md:mt-4 lg:mb-6"
             >
               Submit Application
             </button>

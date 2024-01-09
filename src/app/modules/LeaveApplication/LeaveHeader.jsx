@@ -9,8 +9,7 @@ import { BsTable } from "react-icons/bs";
 import { FaRegPlusSquare } from "react-icons/fa";
 
 const LeaveHeader = ({ userProfile, post }) => {
-
-  console.log('leaveheader user profile',  userProfile)
+  console.log("leaveheader user profile", userProfile);
 
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -44,12 +43,10 @@ const LeaveHeader = ({ userProfile, post }) => {
     setSearchTerm(e.target.value);
   };
 
-
-
   return (
     <>
       {/* Header */}
-      <div className="py-5 pl-10 pr-2 flex gap-3 flex-col-reverse items-center md:flex-row lg:flex-row justify-between w-full">
+      <div className="py-5 pl-10 pr-0 lg:pr-2  flex gap-3  items-center md:flex-row lg:flex-row justify-between w-full">
         <div className="flex items-center">
           <h1 className="text-xl lg:text-3xl mr-2 items-center leading-none font-semibold opacity-80 tracking-widest">
             Leave Application and Data
@@ -65,13 +62,15 @@ const LeaveHeader = ({ userProfile, post }) => {
             />
           </div>
         </div>
-        <div className="relative">
+        <div className="relative ">
           <div
-            className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
+            className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg rounded-tl-full rounded-bl-full md:rounded-tl-md md:rounded-bl-md bg-gray-200 cursor-pointer"
             onClick={handleDropdownClick}
           >
             <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
-            <div className="text-[#283b91]">{userProfile.username}</div>
+            <div className="text-[#283b91] hidden md:block lg:block">
+              {userProfile.username}
+            </div>
             <div className="text-[#283b91]">
               <RiArrowDownSFill />
             </div>
