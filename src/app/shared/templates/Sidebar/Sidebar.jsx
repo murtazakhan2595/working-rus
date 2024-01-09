@@ -212,7 +212,7 @@ const Sidebar = ({
                           }}
                           className="flex gap-3 mb-1 cursor-pointer"
                         >
-                          <div className="bg-blue-950 rounded-md p-3"></div>
+                          <div className="bg-blue-950 rounded-md w-[25px] h-[25px]"></div>
                           <div className="text-white">{project.name}</div>
                         </div>
                       </div>

@@ -1,5 +1,5 @@
 import { LiaHomeSolid } from "react-icons/lia";
-import { MdOutlinePayment } from "react-icons/md";
+import { MdOutlinePayment, MdOutlineTimeToLeave } from "react-icons/md";
 import { RiProfileLine } from "react-icons/ri";
 import { BiSpreadsheet } from "react-icons/bi";
 
@@ -45,6 +45,11 @@ export const links = [
   { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
   { to: "/employees", text: "Employee Sheet", icon: <BiSpreadsheet /> },
   { to: "/jobs", text: "Recruitment", icon: <MdOutlinePayment /> },
+  {
+    to: "/leave-application",
+    text: "Leave Application",
+    icon: <MdOutlineTimeToLeave />,
+  },
 ];
 
 export const jobTypeOptions = [
@@ -110,4 +115,17 @@ export const filterDropdownOptions = [
   { label: "Interview R3 ", value: "interview r3" },
   { label: "Assessment", value: "assessment" },
   { label: "All", value: "" },
+];
+
+export const jobsStatusOptions = [
+  { label: "Show All", value: "" },
+  { label: "Live", value: "live" },
+  { label: "Expired", value: "expired" },
+];
+
+export const reportingManager = [
+  { value: "manager1", label: "Manager 1" },
+  { value: "manager2", label: "Manager 2" },
+  { value: "manager3", label: "Manager 3" },
+  { value: "manager4", label: "Manager 4" },
 ];

@@ -75,9 +75,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
       await axios
         .get(`${baseUrl}/board/${id}`, {
           // navigate(`/board/${task.board_id}?pId=${task.project_id}`);
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers
         })
         .then((response) => {
           if (response.status === 200) {
@@ -93,9 +91,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
     try {
       await axios
         .get(`${baseUrl}/project/${projectId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers
         })
         .then((response) => {
           if (response.status === 200) {
@@ -108,15 +104,13 @@ const Board = ({ userProfile, baseUrl, token }) => {
   };
 
   const getTasks = async (
-    url = `${baseUrl}/task/?search={"board_id":[${id}]}&ordering=id`
+    url = `${baseUrl}/task/?search={"board_status_id":[${id}]}&ordering=id`
   ) => {
     try {
       setIsLoading(true);
       await axios
         .get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers
         })
         .then((response) => {
           if (response.status === 200) {
@@ -158,9 +152,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
     try {
       await axios
         .delete(`${baseUrl}/task/${taskId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers
         })
         .then((response) => {
           if (response.status === 204) {

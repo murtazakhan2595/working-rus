@@ -61,7 +61,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
   return (
     <div className="w-full overflow-x-auto overflow-y-auto max-h-[100vh] xScroll md:px-4 xl:px-8">
       {/* image */}
-      <div className="flex items-center gap-x-8 bg-[#f9f9f9] px-4 lg:px-10 py-4 border border-gray-400 relative">
+      <div className="flex items-center gap-x-8 bg-[#f9f9f9] px-4 lg:px-10 py-4 border border-[#707070] relative">
         <div
           className="w-24 h-24 rounded-full bg-white text-[#555657] text-3xl font-semibold flex 
         justify-center items-center"
@@ -83,13 +83,13 @@ const ViewEmployee = ({ token, baseUrl }) => {
         </div>
       </div>
       {/* Personal Information */}
-      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-gray-400">
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-[#707070]">
         Personal Information
       </div>
       {/* data */}
       <div className="">
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             First Name
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -97,7 +97,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Last Name
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -105,7 +105,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Date of Birth
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -113,7 +113,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Permanent Address
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -122,7 +122,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Current Address
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -132,7 +132,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex lg:hidden">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             National
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -141,7 +141,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex lg:hidden">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Marital Status
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -150,12 +150,12 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Mobile Number
           </div>
           <div className="w-[60%] xl:w-[76%] text-left border text-gray-500 flex">
             {" "}
-            <div className="xl:border xl:border-r-[#707070] px-4 py-2 lg:w-[350px]">
+            <div className="xl:border xl:border-r-gray-400 px-4 py-2 lg:w-[350px]">
               {" "}
               {data.mobile_no ? data.mobile_no : ""}
             </div>
@@ -163,7 +163,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
               {" "}
               {
                 <div className="flex">
-                  <div className="px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657] lg:w-32">
+                  <div className="px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657] lg:w-32">
                     Nationality
                   </div>
                   <div className="px-4 py-2 text-lef">
@@ -176,12 +176,12 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Email
           </div>
           <div className="w-[60%] xl:w-[76%] text-left border text-gray-500 flex">
             {" "}
-            <div className="xl:border xl:border-r-[#707070] px-4 py-2 lg:w-[350px]">
+            <div className="xl:border xl:border-r-gray-400 px-4 py-2 lg:w-[350px]">
               {" "}
               {data.email ? data.email : ""}
             </div>
@@ -189,7 +189,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
               {" "}
               {
                 <div className="flex">
-                  <div className="px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657] lg:w-32">
+                  <div className="px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657] lg:w-32">
                     Marital Status
                   </div>
                   <div className="px-4 py-2 text-left">
@@ -202,12 +202,12 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Emergency Contact
           </div>
           <div className="w-[60%] xl:w-[76%] text-left border text-gray-500 flex">
             {" "}
-            <div className="xl:border xl:border-r-[#707070] px-4 py-2 lg:w-[350px]">
+            <div className="xl:border xl:border-r-gray-400 px-4 py-2 lg:w-[350px]">
               {" "}
               {data.emergency_phone_no ? data.emergency_phone_no : ""}
             </div>
@@ -215,7 +215,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
               {" "}
               {
                 <div className="flex">
-                  <div className="px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657] lg:w-32">
+                  <div className="px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657] lg:w-32">
                     Relation
                   </div>
                   <div className="px-4 py-2 text-left">
@@ -228,7 +228,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Emergency Contact Name
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -239,7 +239,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex lg:hidden">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Relation
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -250,13 +250,13 @@ const ViewEmployee = ({ token, baseUrl }) => {
       </div>
 
       {/* Banking Information */}
-      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-gray-400">
+      <div className="text-baseBlue text-xl font-extrabold  py-2 px-3 my-4 border border-gray-400">
         Banking Information
       </div>
       {/* data */}
       <div className="">
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Bank Name
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -264,7 +264,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Account Title
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -272,7 +272,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Account Number
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -280,7 +280,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             IBAN
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -288,7 +288,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex lg:hidden">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Branch Code
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -296,7 +296,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Branch Address
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -304,7 +304,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Swift Code
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -312,12 +312,12 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Branch Address
           </div>
           <div className="w-[60%] xl:w-[76%] text-left border text-gray-500 flex">
             {" "}
-            <div className="lg:border lg:border-r-[#707070] px-4 py-2 w-[400px]">
+            <div className="lg:border lg:border-r-gray-400 px-4 py-2 w-[400px]">
               {" "}
               {data.branch_address ? data.branch_address : ""}
             </div>
@@ -325,7 +325,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
               {" "}
               {
                 <div className="flex">
-                  <div className="px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                  <div className="px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
                     Branch Code
                   </div>
                   <div className="px-4 py-2 text-left">
@@ -349,7 +349,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           educations.map((education, index) => (
             <div key={index} className="py-2">
               <div className="flex">
-                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
                   Education Level
                 </div>
                 <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
@@ -357,7 +357,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                 </div>
               </div>
               <div className="flex">
-                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
                   Program
                 </div>
                 <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
@@ -365,7 +365,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                 </div>
               </div>
               <div className="flex">
-                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
                   Institute
                 </div>
                 <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
@@ -373,7 +373,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                 </div>
               </div>
               <div className="flex">
-                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
                   Start Date
                 </div>
                 <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
@@ -381,7 +381,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                 </div>
               </div>
               <div className="flex">
-                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
                   End Date
                 </div>
                 <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
@@ -691,7 +691,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
       </div>
       <div className="">
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Department Name
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -699,7 +699,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%]  xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%]  xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Department Position
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -707,7 +707,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Direct Reports to
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -715,7 +715,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Indirect Reports to
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
@@ -723,7 +723,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <div className="flex">
-          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-[#707070] text-[#555657]">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Department Manager
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">

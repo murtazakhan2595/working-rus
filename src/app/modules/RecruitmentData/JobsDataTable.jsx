@@ -9,10 +9,20 @@ import { MdContentCopy } from "react-icons/md";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../../common/Loader";
+import { CiEdit } from "react-icons/ci";
+import { jobsStatusOptions } from "../../../data/Data";
+import moment from "moment";
+import Datepicker from "../Dashboard/Datepicker";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 
 const JobsDataTable = ({ baseUrl, token }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
+  const [status, setStatus] = useState("");
+  const [editedDeadline, setEditedDeadline] = useState(null);
+  const [editedPostId, setEditedPostId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const url = window.location.origin;
 
@@ -23,23 +33,35 @@ const JobsDataTable = ({ baseUrl, token }) => {
   };
 
   // Fetching users
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/recruitment/`, {
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/recruitment/?search=${encodeURIComponent(
+          JSON.stringify({ status: status })
+        )}`,
+        {
           headers,
-        });
-        setPosts(response.data.results);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+        }
+      );
+
+      setPosts(response.data.results);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+  useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [status]);
+
+  // Filter handling
+
+  const handleStatusFilter = async (option) => {
+    setStatus(option);
+  };
 
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
+    const options = { year: "numeric", month: "numeric", day: "numeric" };
     const formattedDate = new Date(dateString).toLocaleDateString(
       undefined,
       options
@@ -56,19 +78,63 @@ const JobsDataTable = ({ baseUrl, token }) => {
     });
   };
 
+  // show Filters
+  const handleShowFilter = () => {
+    setShowFilter(!showFilter);
+  };
+
+  // edit deadline
+
+  const handleEditDeadline = async (postId) => {
+    if (!editedDeadline) {
+      toast.error("Please select a new deadline.", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
+      return;
+    }
+
+    const formattedDeadline = moment(editedDeadline).format("YYYY-MM-DD");
+    try {
+      const response = await axios.patch(
+        `${baseUrl}/recruitment/${postId}`,
+        {
+          min_salary: posts.min_salary,
+          max_salary: posts.max_salary,
+          Deadline: formattedDeadline,
+        },
+        { headers }
+      );
+
+      if (response.status === 200) {
+        toast.success("Deadline Updated Successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1000,
+        });
+        fetchPosts();
+        setEditedDeadline(null);
+        setIsEditing((prev) => ({ ...prev, [postId]: false })); // Reset editing mode for the specific post ID
+      }
+    } catch (error) {
+      toast.error("Error updating deadline. Please try again.", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  };
+
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9] h-[100vh]">
       <RecruitmentDataHeader post="Live Jobs" />
 
       {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 h-[100%] overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
-      <table className="min-w-full">
-            <thead>
-              <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-                <th className="px-6 py-3 text-left  rounded-tl-lg">Job ID</th>
-                <th className="flex gap-x-2 items-center px-6 py-3 text-left  rounded-tl-lg">
-                  Job Title
-                  {/* <div className="relative">
+        <table className="min-w-full">
+          <thead>
+            <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
+              <th className="px-6 py-3 text-left  rounded-tl-lg">Job ID</th>
+              <th className="flex gap-x-2 items-center px-6 py-3 text-left  rounded-tl-lg">
+                Job Title
+                {/* <div className="relative">
                   <IoIosSearch className="absolute top-2 left-3 text-white" />
                   <input
                     type="search"
@@ -76,22 +142,42 @@ const JobsDataTable = ({ baseUrl, token }) => {
                     className="focus:outline-none focus:border-non bg-[#D7D7D7] py-1 pl-8 pr-4 text-white placeholder-white border-none rounded-md w-28"
                   />
                 </div> */}
-                </th>
-                <th className="px-6 py-3 text-left">Posted Date</th>
-                <th className="px-6 py-3 text-left">End Date</th>
-                <th className="px-6 py-3 text-left">Job Link</th>
-                <th className="px-6 py-3 text-center rounded-tr-lg">
-                  Total Applications
-                </th>
-              </tr>
-            </thead>
-            {loading ? (
-              <Loader />
-            ): (
-              <tbody className="bg-white text-gray-500">
+              </th>
+              <th className="px-6 py-3 text-left">Posted Date</th>
+              <th className="px-6 py-3 text-left">End Date</th>
+              <th className="px-6 py-3 text-left">Job Link</th>
+              <th
+                className="px-6 py-3 text-left flex items-center gap-x-3 relative"
+                onClick={handleShowFilter}
+              >
+                Job Status
+                <span className="text-baseBlue text-xl">&#9662;</span>
+                {showFilter && (
+                  <div className="absolute right-3 top-[34px] bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
+                    {jobsStatusOptions.map((option) => (
+                      <div
+                        key={option.label}
+                        onClick={() => handleStatusFilter(option.value)}
+                        className="cursor-pointer border-b-2 pl-2 w-[100px] hover:bg-blue-100"
+                      >
+                        {option.label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </th>
+              <th className="px-6 py-3 text-center rounded-tr-lg">
+                Total Applications
+              </th>
+            </tr>
+          </thead>
+          {loading ? (
+            <Loader />
+          ) : (
+            <tbody className="bg-white text-gray-500">
               {posts.map((post) => (
                 <tr
-                  className="whitespace-nowrap border-b-2 hover:bg-gray-100"
+                  className={`whitespace-nowrap border-b-2 hover:bg-gray-100 ${post.status === "live" ? 'bg-green-200': 'bg-red-200'}`}
                   key={post.id}
                 >
                   <td className="px-6 py-3 text-left">JOB-{post.id}</td>
@@ -99,9 +185,40 @@ const JobsDataTable = ({ baseUrl, token }) => {
                   <td className="px-6 py-3 text-left">
                     {formatDate(post.created_at)}
                   </td>
-                  <td className="px-6 py-3 text-left">
-                    {formatDate(post.Deadline)}
+                  <td className="px-6 py-3 text-left flex gap-x-2 items-start">
+                    {isEditing[post.id] ? (
+                      <div className="flex gap-x-2 items-center">
+                        <IoMdCheckmarkCircleOutline
+                        title="Save Deadline"
+                          onClick={() => handleEditDeadline(post.id)}
+                          className="cursor-pointer text-baseBlue"
+                        />
+                        <Datepicker
+                          className="z-50"
+                          name={`editedDeadline-${post.id}`}
+                          selected={editedDeadline}
+                          onChange={(date) => setEditedDeadline(date)}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <span className="text-baseBlue">
+                          {formatDate(post.Deadline)}
+                        </span>
+                        <CiEdit
+                        title="Edit Deadline"
+                          onClick={() =>
+                            setIsEditing((prev) => ({
+                              ...prev,
+                              [post.id]: true,
+                            }))
+                          }
+                          className="cursor-pointer text-baseBlue"
+                        />
+                      </>
+                    )}
                   </td>
+
                   <td className="px-6 py-3 text-left">
                     <div className="flex items-center gap-x-2">
                       <Link
@@ -114,13 +231,13 @@ const JobsDataTable = ({ baseUrl, token }) => {
                       <MdContentCopy
                         className="cursor-pointer text-baseBlue"
                         onClick={() =>
-                          copyToClipboard(
-                            `${url}/job-description/${post.id}`
-                          )
+                          copyToClipboard(`${url}/job-description/${post.id}`)
                         }
                       />
                     </div>
                   </td>
+                  <td className="px-6 py-3 text-left">{post.status}</td>
+
                   <Link to={`/applicants/${post.id}`}>
                     <td className="px-6 py-3 text-center flex gap-x-2 items-center justify-center">
                       {post.total_applications}
@@ -130,8 +247,8 @@ const JobsDataTable = ({ baseUrl, token }) => {
                 </tr>
               ))}
             </tbody>
-            )}
-          </table>
+          )}
+        </table>
       </div>
     </div>
   );
