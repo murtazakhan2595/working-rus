@@ -156,7 +156,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 Employee ID:
               </label>
               <input
-                className="h-8 pl-2 w-[60%] md:w-44 rounded-md lg:w-24"
+                className="h-8 ml-[-5px] pl-2 md:mr-[66px] w-[60%] md:w-44 rounded-md lg:w-24"
                 type="text"
                 name="employee_id"
                 value={`TXB-00${formData.employee_id}`}
@@ -175,7 +175,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     placeholder="Enter Name Here"
                     required
-                    className="rounded-md h-8 pl-2 w-[60%] lg:w-full"
+                    className="rounded-md ml-[-8px] h-8 pl-2 w-[60%] lg:w-full"
                     type="text"
                     name="name"
                     value={formData.name}
@@ -195,7 +195,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     placeholder="Enter Position Here"
                     required
-                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full"
+                    className="rounded-md pl-2 ml-[-14px] w-[60%] h-8 lg:w-full"
                     type="text"
                     name="position"
                     value={formData.position}
@@ -211,16 +211,17 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Joining Date:
                   </label>
-
-                  <Datepicker
-                    className="z-50"
-                    name="joining_date"
-                    required
-                    onChange={(date) => {
-                      let formattedDate = moment(date).format("YYYY-MM-DD");
-                      handleChange("joining_date", formattedDate);
-                    }}
-                  />
+                  <div className="ml-[-14px]">
+                    <Datepicker
+                      className="z-50"
+                      name="joining_date"
+                      required
+                      onChange={(date) => {
+                        let formattedDate = moment(date).format("YYYY-MM-DD");
+                        handleChange("joining_date", formattedDate);
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col md:w-[41%]">
@@ -231,15 +232,17 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Date
                   </label>
-                  <Datepicker
-                    className="z-50"
-                    name="date"
-                    required
-                    onChange={(date) => {
-                      let formattedDate = moment(date).format("YYYY-MM-DD");
-                      handleChange("date", formattedDate);
-                    }}
-                  />
+                  <div className="ml-[-8px]">
+                    <Datepicker
+                      className="z-50"
+                      name="date"
+                      required
+                      onChange={(date) => {
+                        let formattedDate = moment(date).format("YYYY-MM-DD");
+                        handleChange("date", formattedDate);
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-16">
@@ -252,7 +255,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     placeholder="Enter Department Here"
                     required
-                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full"
+                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full ml-[-7px]"
                     type="text"
                     name="department"
                     value={formData.department}
@@ -290,7 +293,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               >
                 Leave Type:
               </div>
-              <div className="rounded-md w-[60%] py-2 bg-white flex items-center gap-1 flex-wrap justify-end text-xs md:justify-start md:text-sm md:gap-x-2 md:w-[75%] md:pl-5">
+              <div className="rounded-md ml-[-14px] w-[60%] py-2 bg-white flex items-center gap-1 flex-wrap justify-end text-xs md:justify-start md:text-sm md:gap-x-2 md:w-[75%] md:pl-5">
                 <div className="flex items-center gap-2.5">
                   <input
                     required
@@ -378,15 +381,17 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Start Date:
                   </label>
-                  <Datepicker
-                    className="z-50"
-                    name="start_date"
-                    required
-                    onChange={(date) => {
-                      let formattedDate = moment(date).format("YYYY-MM-DD");
-                      handleChange("start_date", formattedDate);
-                    }}
-                  />
+                  <div className="ml-[-39px]">
+                    <Datepicker
+                      className="z-50"
+                      name="start_date"
+                      required
+                      onChange={(date) => {
+                        let formattedDate = moment(date).format("YYYY-MM-DD");
+                        handleChange("start_date", formattedDate);
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-24">
                   <label
@@ -395,15 +400,17 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Last Work Day:
                   </label>
-                  <Datepicker
-                    className="z-50"
-                    name="last_work_day"
-                    required
-                    onChange={(date) => {
-                      let formattedDate = moment(date).format("YYYY-MM-DD");
-                      handleChange("last_work_day", formattedDate);
-                    }}
-                  />
+                  <div className="ml-[-48px]">
+                    <Datepicker
+                      className="z-50"
+                      name="last_work_day"
+                      required
+                      onChange={(date) => {
+                        let formattedDate = moment(date).format("YYYY-MM-DD");
+                        handleChange("last_work_day", formattedDate);
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-16">
                   <label
@@ -413,7 +420,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     Total Leaves:
                   </label>
                   <input
-                  placeholder="Number of Days Here"
+                    placeholder="Number of Days Here"
                     required
                     className="rounded-md pl-2 w-[60%] h-8 lg:w-[56%]"
                     type="text"
@@ -434,15 +441,17 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     End Date:
                   </label>
-                  <Datepicker
-                    className="z-50"
-                    name="end_date"
-                    required
-                    onChange={(date) => {
-                      let formattedDate = moment(date).format("YYYY-MM-DD");
-                      handleChange("end_date", formattedDate);
-                    }}
-                  />
+                  <div className="ml-[-6px]">
+                    <Datepicker
+                      className="z-50"
+                      name="end_date"
+                      required
+                      onChange={(date) => {
+                        let formattedDate = moment(date).format("YYYY-MM-DD");
+                        handleChange("end_date", formattedDate);
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-20">
@@ -452,15 +461,17 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Rejoining Date:
                   </label>
-                  <Datepicker
-                    className="z-50"
-                    name="rejoining_date"
-                    required
-                    onChange={(date) => {
-                      let formattedDate = moment(date).format("YYYY-MM-DD");
-                      handleChange("rejoining_date", formattedDate);
-                    }}
-                  />
+                  <div className="ml-[-5px]">
+                    <Datepicker
+                      className="z-50"
+                      name="rejoining_date"
+                      required
+                      onChange={(date) => {
+                        let formattedDate = moment(date).format("YYYY-MM-DD");
+                        handleChange("rejoining_date", formattedDate);
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-16">
@@ -471,7 +482,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     Contact Number:
                   </label>
                   <input
-                  placeholder="Enter Contact Here"
+                    placeholder="Enter Contact Here"
                     required
                     className="rounded-md pl-2 w-[60%] h-8 lg:w-[56%]"
                     type="text"
@@ -513,7 +524,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 name="report_to"
                 options={managers?.map((manager) => ({
                   value: manager.id,
-                  label: manager.first_name,
+                  label: manager.department_manager,
                 }))}
                 value={formData.report_to ? formData.report_to.value : null}
                 onChange={(selectedOption) =>

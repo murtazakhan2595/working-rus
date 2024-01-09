@@ -54,7 +54,13 @@ const MobSidebar = ({
     setisModelOpen(false);
   };
 
-  const getProjects = async (url = `${baseUrl}/project/${(userProfile.role === 1 || userProfile.role === 2) ? "" : `?search={"project_members":[${userProfile.id}]}`}`) => {
+  const getProjects = async (
+    url = `${baseUrl}/project/${
+      userProfile.role === 1 || userProfile.role === 2
+        ? ""
+        : `?search={"project_members":[${userProfile.id}]}`
+    }`
+  ) => {
     try {
       await axios
         .get(url, {
@@ -194,7 +200,7 @@ const MobSidebar = ({
                           }}
                           className="flex gap-3 mb-1 cursor-pointer"
                         >
-                          <div className="bg-blue-950 rounded-md p-3"></div>
+                          <div className="bg-blue-950 rounded-md w-[25px] h-[25px]"></div>
                           <div className="text-white">{project.name}</div>
                         </div>
                       </div>
