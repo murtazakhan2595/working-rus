@@ -5,7 +5,7 @@ import {
   locationTypeOptions,
   workTypeOptions,
 } from "../../../data/Data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
@@ -13,9 +13,10 @@ import axios from "axios";
 import Datepicker from "../Dashboard/Datepicker";
 import moment from "moment";
 import RecruitmentDataHeader from "./RecruitmentDataHeader";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const RecruitmentForm = ({ token, baseUrl }) => {
+  const { id } = useParams();
   const initialData = {
     Job_Title: "",
     Job_Description: "",
@@ -46,6 +47,49 @@ const RecruitmentForm = ({ token, baseUrl }) => {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
+
+  // get job data by id
+  useEffect(() => {
+    const fetchJobById = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
+          headers,
+        });
+        if (response.status === 200) {
+          const jobData = response.data;
+          setFormData({
+            Job_Title: jobData.Job_Title,
+            Job_Description: jobData.Job_Description,
+            job_requirement: jobData.Job_Requirement, // Corrected property name
+            Work_type: jobData.Work_type
+              ? { label: jobData.Work_type, value: jobData.Work_type }
+              : null,
+            Job_Type: jobData.Job_Type
+              ? { label: jobData.Job_Type, value: jobData.Job_Type }
+              : null,
+            Education: jobData.Education
+              ? { label: jobData.Education, value: jobData.Education }
+              : null,
+            location: jobData.location
+              ? { label: jobData.location, value: jobData.location }
+              : null,
+            Employee_Type: jobData.Employee_Type
+              ? { label: jobData.Employee_Type, value: jobData.Employee_Type }
+              : null,
+            min_salary: jobData.min_salary,
+            max_salary: jobData.max_salary,
+            Deadline: jobData.Deadline,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching job data:", error);
+      }
+    };
+
+    if (id) {
+      fetchJobById();
+    }
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -83,23 +127,48 @@ const RecruitmentForm = ({ token, baseUrl }) => {
     console.log(data);
 
     try {
-      const response = await axios.post(`${baseUrl}/recruitment/`, data, {
-        headers,
-      });
+      if (id) {
+        const response = await axios.patch(
+          `${baseUrl}/recruitment/${id}`,
+          data,
+          {
+            headers,
+          }
+        );
+        if (response.status === 200 || response.status === 201) {
+          toast.success("Job Updated Successfully", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1000,
+          });
+          setFormData(initialData);
+          navigate("/jobs");
+        }
+      } else {
+        try {
+          const response = await axios.post(`${baseUrl}/recruitment/`, data, {
+            headers,
+          });
 
-      if (response.status === 201) {
-        toast.success("Job Posted Successfully", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setFormData(initialData);
-        navigate("/jobs");
+          if (response.status === 200 || response.status === 201) {
+            toast.success("Job Posted Successfully", {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 1000,
+            });
+            setFormData(initialData);
+            navigate("/jobs");
+          }
+        } catch (error) {
+          toast.error("Error submitting the form. Please try again.", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        } finally {
+          setIsButtonDisabled(false); // Re-enable the button
+        }
       }
     } catch (error) {
       toast.error("Error submitting the form. Please try again.", {
         position: toast.POSITION.TOP_RIGHT,
       });
-    } finally {
-      setIsButtonDisabled(false); // Re-enable the button
     }
   };
 
@@ -189,29 +258,6 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               ></textarea>
             </div>
-            {/*
-           
-            <div className="w-full flex flex-col md:flex-row lg:flex-row">
-              <div className="w-[50%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
-                <label
-                  htmlFor="Year_of_Experience"
-                  className="font-sfpro tracking-wide font-semibold
-                            text-input text-base"
-                >
-                  Experience:
-                </label>
-              </div>
-              <input
-                name="Year_of_Experience"
-                className="w-full md:w-[45%] lg:w-[40%] pl-2 bg-white rounded h-8 text-sm
-                placeholder-[#555657] placeholder-opacity-50"
-                placeholder="In Years"
-                required
-                value={formData.Year_of_Experience}
-                onChange={(e) => handleChange(e.target.name, e.target.value)}
-              />
-            </div>
-           */}
             <div className="w-full flex flex-col md:flex-row lg:flex-row">
               <div className="w-[30%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
                 <label

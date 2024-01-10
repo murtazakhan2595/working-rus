@@ -136,6 +136,7 @@ function App({
                         element={<EmpDataForm />}
                       />
                       <Route path="/job-post" element={<RecruitmentForm />} />
+                      <Route path="/edit-post/:id" element={<RecruitmentForm />} />
                       <Route
                         path="/applicants/:id"
                         element={<ApplicantsDataTable />}
