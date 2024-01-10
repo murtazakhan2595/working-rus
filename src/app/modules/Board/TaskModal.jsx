@@ -11,7 +11,7 @@ import ReactQuill from "react-quill";
 import Select from "react-select";
 import { priorityOptions, statusOptions } from "../../../data/Data";
 
-const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
+const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }) => {
   let newDate = new Date();
   let defaultDate = `${newDate.getFullYear()}-${newDate.getMonth()}-${newDate.getDate()}`;
 
@@ -66,7 +66,8 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl }) => {
           description: description,
           assigned_to: assignToUser.id,
           assigned_by: assignByUser.id,
-          board_id: id,
+          // board_id: id,
+          board_status_id: boardStatusId,
           priority: priority,
           start_date: startDate,
           end_date: dueDate,

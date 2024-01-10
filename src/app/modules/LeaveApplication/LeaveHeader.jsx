@@ -9,8 +9,6 @@ import { BsTable } from "react-icons/bs";
 import { FaRegPlusSquare } from "react-icons/fa";
 
 const LeaveHeader = ({ userProfile, post }) => {
-  console.log("leaveheader user profile", userProfile);
-
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);

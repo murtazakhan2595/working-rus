@@ -14,8 +14,13 @@ import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
+import { RxCross2 } from "react-icons/rx";
 
 const Board = ({ userProfile, baseUrl, token }) => {
+  const initialData = {
+    name: "",
+    serial_number: null,
+  };
   const navigate = useNavigate();
   const cookies = new Cookies();
   const [status, setStatus] = useState("");
@@ -34,9 +39,14 @@ const Board = ({ userProfile, baseUrl, token }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditBoardOpen, setIsEditBoardOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [listName, setListName] = useState("");
+  const [formData, setFormData] = useState(initialData);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
     useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [cards, setCards] = useState([]);
+  const [boardStatusId, setBoardStatusId] = useState(null);
   const searchParams = new URLSearchParams(window.location.search);
   const projectId = searchParams.get("pId");
   const { id } = useParams();
@@ -75,7 +85,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
       await axios
         .get(`${baseUrl}/board/${id}`, {
           // navigate(`/board/${task.board_id}?pId=${task.project_id}`);
-          headers
+          headers,
         })
         .then((response) => {
           if (response.status === 200) {
@@ -91,7 +101,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
     try {
       await axios
         .get(`${baseUrl}/project/${projectId}`, {
-          headers
+          headers,
         })
         .then((response) => {
           if (response.status === 200) {
@@ -102,15 +112,17 @@ const Board = ({ userProfile, baseUrl, token }) => {
       navigate("/404");
     }
   };
-
+// `${baseUrl}/task/?search={"board_status_id":[${id}]}`
   const getTasks = async (
-    url = `${baseUrl}/task/?search={"board_status_id":[${id}]}&ordering=id`
+    url = `${baseUrl}/task/?search=${encodeURIComponent(
+      `{"board_status_id": [${boardStatusId}]},`
+    )}`
   ) => {
     try {
       setIsLoading(true);
       await axios
         .get(url, {
-          headers
+          headers,
         })
         .then((response) => {
           if (response.status === 200) {
@@ -152,7 +164,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
     try {
       await axios
         .delete(`${baseUrl}/task/${taskId}`, {
-          headers
+          headers,
         })
         .then((response) => {
           if (response.status === 204) {
@@ -336,6 +348,87 @@ const Board = ({ userProfile, baseUrl, token }) => {
     }
   };
 
+  // Open and closing modal
+
+  const openListModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeListModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // handling pop up
+  const handleChange = (name, value) => {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("List Name:", formData);
+
+    try {
+      const response = await axios.post(
+        `${baseUrl}/boardstatus/`,
+        {
+          name: formData.name,
+          board_id: id,
+          serial_number: formData.serial_number,
+        },
+        {
+          headers,
+        }
+      );
+
+      if (response.status === 201) {
+        toast.success("Card created successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setFormData(initialData);
+
+        // navigate("/jobs");
+      }
+    } catch (error) {
+      toast.error("Error submitting the form. Please try again.", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } finally {
+      // setIsButtonDisabled(false); // Re-enable the button
+    }
+  };
+
+  // getBoard status
+
+  const getBoardStatus = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/boardstatus/?search={"board_id": [${id}]}`, {
+        headers,
+      });
+
+      if (response.status === 200) {
+        setCards(response.data);
+        console.log("response from board", response);
+        response.data.forEach(card => {
+          console.log("Card ID:", card.id);
+          setBoardStatusId(card.id)
+        });
+      }
+    } catch (error) {
+      toast.error("Error submitting the form. Please try again.", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } finally {
+      // setIsButtonDisabled(false); // Re-enable the button
+    }
+  };
+
+  useEffect(() => {
+    getBoardStatus();
+  }, []);
+
+  // console.log(cards);
   return (
     <div className={`w-full h-screen bg-[#F9F9F9] ${boardHidden ? "" : ""}`}>
       {/* ***************************************************** Header ***************************************************** */}
@@ -390,413 +483,164 @@ const Board = ({ userProfile, baseUrl, token }) => {
         <div className="flex w-full justify-start ">
           <div className="flex xScroll  sm:ml-10 ml-5 pb-2 overflow-x-auto w-[90%] lg:w-[82vw] justify-start">
             <div id="boardList" className="flex">
-              {/* Box 1 */}
-              <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
-                <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-                  <div className="flex justify-center items-center">
-                    <div className="text-[#283b91]">Todo </div>
-                    <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                      {/* 3 */}
-                    </div>
-                  </div>
-                </div>
-                {isLoading ? (
-                  // <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
-                  <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
-                    <div className="opacity-70 h-5 w-3/4 mb-2"></div>
-                    <hr className="bg-white h-2 my-2" />
-                    <div className="flex justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-[0.60rem]"></div>
-                        <div className="text-sm opacity-50 cursor-pointer"></div>
+              {cards?.map((card) => (
+                <div
+                  className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72"
+                  key={card.id}
+                >
+                  <div className="flex justify-between items-center mb-3 mt-3 ml-2">
+                    <div className="flex justify-center items-center">
+                      <div className="text-[#283b91]">{card.name} </div>
+                      <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
+                        {/* 3 */}
                       </div>
                     </div>
                   </div>
-                ) : (
-                  <>
-                    <Droppable droppableId="todo">
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                          className="boardScroll overflow-y-auto overflow-x-hidden max-h-[63vh] mb-2"
-                        >
-                          {tasks["todo"].map((t, index) => (
-                            <>
-                              <Draggable
-                                isDragDisabled={boardHidden}
-                                key={t.id}
-                                draggableId={t.id.toString()}
-                                index={index}
-                              >
-                                {(provided) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                  >
+                  {isLoading ? (
+                    // <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
+                    <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
+                      <div className="opacity-70 h-5 w-3/4 mb-2"></div>
+                      <hr className="bg-white h-2 my-2" />
+                      <div className="flex justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-[0.60rem]"></div>
+                          <div className="text-sm opacity-50 cursor-pointer"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <Droppable droppableId="todo">
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className="boardScroll overflow-y-auto overflow-x-hidden max-h-[63vh] mb-2"
+                          >
+                            {tasks["todo"].map((t, index) => (
+                              <>
+                                <Draggable
+                                  isDragDisabled={boardHidden}
+                                  key={t.id}
+                                  draggableId={t.id.toString()}
+                                  index={index}
+                                >
+                                  {(provided) => (
                                     <div
-                                      className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
-                                      onClick={() => {
-                                        openTodoView(index);
-                                        setBoardHidden(true);
-                                      }}
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
                                     >
-                                      <div className="opacity-70">{t.name}</div>
-                                      <hr className=" bg-white h-[2px] my-2" />
-                                      <div className="flex justify-between">
-                                        <div className="flex items-center gap-2">
-                                          {/* <BsBookmark className="text-xs text- opacity-50" /> */}
-                                          <div
-                                            title={t.userName}
-                                            className={`rounded-full cursor-pointer text-[.60rem] text-white flex 
-                                        p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
-                                          >
-                                            {t.userName
-                                              .toUpperCase()
-                                              .slice(0, 2)}
+                                      <div
+                                        className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
+                                        onClick={() => {
+                                          openTodoView(index);
+                                          setBoardHidden(true);
+                                        }}
+                                      >
+                                        <div className="opacity-70">
+                                          {t.name}
+                                        </div>
+                                        <hr className=" bg-white h-[2px] my-2" />
+                                        <div className="flex justify-between">
+                                          <div className="flex items-center gap-2">
+                                            {/* <BsBookmark className="text-xs text- opacity-50" /> */}
+                                            <div
+                                              title={t.userName}
+                                              className={`rounded-full cursor-pointer text-[.60rem] text-white flex 
+                                           p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
+                                            >
+                                              {t.userName
+                                                .toUpperCase()
+                                                .slice(0, 2)}
+                                            </div>
+                                          </div>
+
+                                          <div className="flex items-center gap-2">
+                                            {t.priority === 1 ? (
+                                              <div className="text-[0.60rem]">
+                                                🔴
+                                              </div>
+                                            ) : t.priority === 2 ? (
+                                              <div className="text-[0.60rem]">
+                                                🟡
+                                              </div>
+                                            ) : t.priority === 3 ? (
+                                              <div className="text-[0.60rem]">
+                                                🟢
+                                              </div>
+                                            ) : (
+                                              ""
+                                            )}
+                                            <BsTrash3
+                                              className="text-sm opacity-50 cursor-pointer"
+                                              onClick={() => {
+                                                deleteTasks(t.id);
+                                              }}
+                                            />
                                           </div>
                                         </div>
-
-                                        <div className="flex items-center gap-2">
-                                          {t.priority === 1 ? (
-                                            <div className="text-[0.60rem]">
-                                              🔴
-                                            </div>
-                                          ) : t.priority === 2 ? (
-                                            <div className="text-[0.60rem]">
-                                              🟡
-                                            </div>
-                                          ) : t.priority === 3 ? (
-                                            <div className="text-[0.60rem]">
-                                              🟢
-                                            </div>
-                                          ) : (
-                                            ""
-                                          )}
-                                          <BsTrash3
-                                            className="text-sm opacity-50 cursor-pointer"
-                                            onClick={() => {
-                                              deleteTasks(t.id);
-                                            }}
-                                          />
-                                        </div>
                                       </div>
+
+                                      {isTodoViewOpen[index] && (
+                                        <TaskView
+                                          onClose={() => closeTodo(index)}
+                                          taskData={{
+                                            id: t.id,
+                                            name: t.name,
+                                            description: t.description,
+                                            dueDate: t.end_date,
+                                            startDate: t.start_date,
+                                            priority: t.priority,
+                                            status: t.status,
+                                            assigned_to: t.assigned_to,
+                                            assigned_by: t.assigned_by,
+                                          }}
+                                        />
+                                      )}
                                     </div>
-
-                                    {isTodoViewOpen[index] && (
-                                      <TaskView
-                                        onClose={() => closeTodo(index)}
-                                        taskData={{
-                                          id: t.id,
-                                          name: t.name,
-                                          description: t.description,
-                                          dueDate: t.end_date,
-                                          startDate: t.start_date,
-                                          priority: t.priority,
-                                          status: t.status,
-                                          assigned_to: t.assigned_to,
-                                          assigned_by: t.assigned_by,
-                                        }}
-                                      />
-                                    )}
-                                  </div>
-                                )}
-                              </Draggable>
-                            </>
-                          ))}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                    <div
-                      onClick={() => {
-                        setIsAddTaskOpen(true);
-                        setStatus("To Do");
-                      }}
-                      className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-                    >
-                      Add a Card
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Box 2 */}
-              <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
-                <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-                  <div className="flex justify-center items-center">
-                    <div className="text-[#283b91]">In Progress </div>
-                    <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                      {/* 3 */}
-                    </div>
-                  </div>
+                                  )}
+                                </Draggable>
+                              </>
+                            ))}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                      <div
+                        onClick={() => {
+                          setIsAddTaskOpen(true);
+                          setStatus("To Do");
+                        }}
+                        className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+                      >
+                        Add a Card
+                      </div>
+                    </>
+                  )}
                 </div>
-                {isLoading ? (
-                  // <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
-                  <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
-                    <div className="opacity-70 h-5 w-3/4 mb-2"></div>
-                    <hr className="bg-white h-2 my-2" />
-                    <div className="flex justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-[0.60rem]"></div>
-                        <div className="text-sm opacity-50 cursor-pointer"></div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <Droppable droppableId="inProgress">
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                          className="boardScroll overflow-y-auto overflow-x-hidden  max-h-[63vh] mb-2"
-                        >
-                          {tasks["inProgress"].map((t, index) => (
-                            <>
-                              <Draggable
-                                isDragDisabled={boardHidden}
-                                key={t.id}
-                                draggableId={t.id.toString()}
-                                index={index}
-                              >
-                                {(provided) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                  >
-                                    <div
-                                      className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
-                                      onClick={() => {
-                                        openInProgressView(index);
-                                        setBoardHidden(true);
-                                      }}
-                                    >
-                                      <div className="opacity-70">{t.name}</div>
-                                      <hr className=" bg-white h-[2px] my-2" />
-                                      <div className="flex justify-between">
-                                        <div className="flex items-center gap-2">
-                                          <div
-                                            title={t.userName}
-                                            className={`rounded-full cursor-pointer text-[.60rem] text-white flex
-                                         p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
-                                          >
-                                            {t.userName
-                                              .toUpperCase()
-                                              .slice(0, 2)}
-                                          </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          {t.priority === 1 ? (
-                                            <div className="text-[0.60rem]">
-                                              🔴
-                                            </div>
-                                          ) : t.priority === 2 ? (
-                                            <div className="text-[0.60rem]">
-                                              🟡
-                                            </div>
-                                          ) : t.priority === 3 ? (
-                                            <div className="text-[0.60rem]">
-                                              🟢
-                                            </div>
-                                          ) : (
-                                            ""
-                                          )}
-                                          <BsTrash3
-                                            className="text-sm opacity-50 cursor-pointer"
-                                            onClick={() => {
-                                              deleteTasks(t.id);
-                                            }}
-                                          />
-                                        </div>{" "}
-                                      </div>
-                                    </div>
-
-                                    {isProgressViewOpen[index] && (
-                                      <TaskView
-                                        onClose={() => closeProgess(index)}
-                                        taskData={{
-                                          id: t.id,
-                                          name: t.name,
-                                          description: t.description,
-                                          dueDate: t.end_date,
-                                          startDate: t.start_date,
-                                          priority: t.priority,
-                                          status: t.status,
-                                          assigned_to: t.assigned_to,
-                                          assigned_by: t.assigned_by,
-                                        }}
-                                      />
-                                    )}
-                                  </div>
-                                )}
-                              </Draggable>
-                            </>
-                          ))}
-
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                    <div
-                      onClick={() => {
-                        setIsAddTaskOpen(true);
-                        setStatus("In Progress");
-                      }}
-                      className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-                    >
-                      Add a Card
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Box 3 */}
-              <div className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72">
-                <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-                  <div className="flex justify-center items-center">
-                    <div className="text-[#283b91]">Completed </div>
-                    <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                      {/* 3 */}
-                    </div>
-                  </div>
-                </div>
-                {isLoading ? (
-                  // <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
-                  <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
-                    <div className="opacity-70 h-5 w-3/4 mb-2"></div>
-                    <hr className="bg-white h-2 my-2" />
-                    <div className="flex justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="text-[0.60rem]"></div>
-                        <div className="text-sm opacity-50 cursor-pointer"></div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <Droppable droppableId="completed">
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                          className="boardScroll overflow-y-auto overflow-x-hidden max-h-[63vh] mb-2"
-                        >
-                          {tasks["completed"].map((t, index) => (
-                            <>
-                              <Draggable
-                                isDragDisabled={boardHidden}
-                                key={t.id}
-                                draggableId={t.id.toString()}
-                                index={index}
-                              >
-                                {(provided) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                  >
-                                    <div
-                                      className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
-                                      onClick={() => {
-                                        openCompletedView(index);
-                                        setBoardHidden(true);
-                                      }}
-                                    >
-                                      <div className="opacity-70">{t.name}</div>
-                                      <hr className=" bg-white h-[2px] my-2" />
-                                      <div className="flex justify-between">
-                                        <div className="flex items-center gap-2">
-                                          <div
-                                            title={t.userName}
-                                            className={`rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6
-                                         opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
-                                          >
-                                            {t.userName
-                                              .toUpperCase()
-                                              .slice(0, 2)}
-                                          </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          {t.priority === 1 ? (
-                                            <div className="text-[0.60rem]">
-                                              🔴
-                                            </div>
-                                          ) : t.priority === 2 ? (
-                                            <div className="text-[0.60rem]">
-                                              🟡
-                                            </div>
-                                          ) : t.priority === 3 ? (
-                                            <div className="text-[0.60rem]">
-                                              🟢
-                                            </div>
-                                          ) : (
-                                            ""
-                                          )}
-                                          <BsTrash3
-                                            className="text-sm opacity-50 cursor-pointer"
-                                            onClick={() => {
-                                              deleteTasks(t.id);
-                                            }}
-                                          />
-                                        </div>{" "}
-                                      </div>
-                                    </div>
-                                    {isCompletedViewOpen[index] && (
-                                      <TaskView
-                                        onClose={() => closeCompleted(index)}
-                                        taskData={{
-                                          id: t.id,
-                                          name: t.name,
-                                          description: t.description,
-                                          dueDate: t.end_date,
-                                          startDate: t.start_date,
-                                          priority: t.priority,
-                                          status: t.status,
-                                          assigned_to: t.assigned_to,
-                                          assigned_by: t.assigned_by,
-                                        }}
-                                      />
-                                    )}
-                                  </div>
-                                )}
-                              </Draggable>
-                            </>
-                          ))}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                    <div
-                      onClick={() => {
-                        setIsAddTaskOpen(true);
-                        setStatus("Completed");
-                      }}
-                      className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
-                    >
-                      Add a Card
-                    </div>
-                  </>
-                )}
-              </div>
+              ))}
+              <button
+                className="bg-baseBlue text-white rounded-md px-6 py-2"
+                onClick={openListModal}
+              >
+                Add Another List
+              </button>
             </div>
           </div>
         </div>
       </DragDropContext>
 
       {isAddTaskOpen && (
-        <TaskModal onClose={closeModal} currentStatus={status} id={id} />
+        <TaskModal
+          onClose={closeModal}
+          currentStatus={status}
+          id={id}
+          boardStatusId={boardStatusId}
+        />
       )}
       <ToastContainer />
 
@@ -864,6 +708,63 @@ const Board = ({ userProfile, baseUrl, token }) => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Opening list modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 w-screen overflow-y-auto scroll h-[100%] flex justify-center items-center backdrop-blur-sm">
+          <div className="flex items-center justify-center z-50">
+            <div className="md:mx-auto pb-10 max-w-3xl relative ">
+              <div className="space-y-3 bg-[#F8F8F8] w-96 lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-8 p-3 lg:m-6 m-4 lg:max-w-6xl max-w-xs border border-gray-100 shadow-md relative">
+                <div
+                  className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
+                  onClick={closeListModal}
+                >
+                  <RxCross2 />
+                </div>
+                <form onSubmit={handleSubmit}>
+                  <h2 className="text-2xl font-sfpro leading-3 font-bold mb-8">
+                    Create New List
+                  </h2>
+
+                  <div>
+                    {/* ************************ Name ***************************** */}
+                    <div className="flex flex-col">
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={(e) =>
+                          handleChange(e.target.name, e.target.value)
+                        }
+                        className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
+                        placeholder="TecBrix Dashboard Design"
+                      />
+                      <input
+                        type="number"
+                        name="serial_number"
+                        value={formData.serial_number}
+                        onChange={(e) =>
+                          handleChange(e.target.name, e.target.value)
+                        }
+                        className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
+                        placeholder="Serial Number"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white"
+                    disabled={isLoading}
+                  >
+                    Create
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <ToastContainer />
         </div>
       )}
     </div>

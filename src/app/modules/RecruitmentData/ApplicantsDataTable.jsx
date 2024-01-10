@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { HiDownload } from "react-icons/hi";
 import { dropdownOptions, filterDropdownOptions } from "../../../data/Data";
 import Loader from "../../../common/Loader";
+import { IoFilter } from "react-icons/io5";
 
 const ApplicantsDataTable = ({ baseUrl, token }) => {
   const [selectedRow, setSelectedRow] = useState(null);
@@ -186,7 +187,7 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
                 onClick={handleShowFilter}
               >
                 Application Status
-                <span className="text-baseBlue text-xl">&#9662;</span>
+                <span className="text-baseBlue text-xl"><IoFilter /></span>
                 {showFilter && (
                   <div className="absolute right-3 top-[34px] bg-white border border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
                     {filterDropdownOptions.map((option) => (
