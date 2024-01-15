@@ -120,7 +120,7 @@ function App({
                     path="/"
                     element={userProfile.role !== 2 ? <Dashboard isSidebarOpen={isSidebarOpen} /> :<JobsDataTable />}
                   />
-                  <Route path="/board/:id" element={<Board />} />
+                  <Route path="/board/:id" element={<Board isSidebarOpen={isSidebarOpen} />} />
                   <Route path="/profile" element={<UpdateEmpForm />} />
                   <Route path="/project/:id" element={<BoardList />} />
                   {(userProfile.role === 1 || userProfile.role === 2) && (

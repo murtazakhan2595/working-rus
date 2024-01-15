@@ -8,12 +8,10 @@ import { connect } from "react-redux";
 import Joi from "joi";
 import moment from "moment";
 import ReactQuill from "react-quill";
-import { IoAttachOutline } from "react-icons/io5";
-import { VscMention } from "react-icons/vsc";
 import { priorityOptions, statusOptions } from "../../../data/Data";
 import Select from "react-select";
 
-const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
+const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks }) => {
   const [assignToOpen, setAssignToOpen] = useState(false);
   const [assignByOpen, setAssignByOpen] = useState(false);
   const [description, setDescription] = useState(taskData.description);
@@ -176,13 +174,13 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
           description: description,
           assigned_to: assignToUser.id,
           assigned_by: assignByUser.id,
-          board_id: id,
+          board_status_id: id,
           priority: priority,
           start_date: startDate,
           end_date: dueDate,
-          status: status,
+          // status: status,
         };
-        const response = await axios.put(
+        const response = await axios.patch(
           `${baseUrl}/task/${taskData.id}`,
           postData,
           {
@@ -193,13 +191,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
           toast.success("Card Updated !", {
             position: "top-right",
             autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
           });
-
           onClose();
+          getTasks()
         }
       } catch (error) {
         console.error("Error:", error);
@@ -207,11 +201,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
         // Show an error toast
         toast.error(error.response.data.name[0], {
           position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+          autoClose: 1000,
         });
       } finally {
         setIsLoading(false);
@@ -313,14 +303,30 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
     user.username.toLowerCase().includes(assignBySearchQuery.toLowerCase())
   );
 
+  const handleModalClick = (e) => {
+    // Prevent propagation to parent elements
+    e.stopPropagation();
+  };
+
+  const handleCloseButtonClick = (e) => {
+    // Prevent propagation to parent elements
+    e.stopPropagation();
+    onClose();
+  };
   return (
-    <div className="fixed inset-0 w-screen overflow-y-auto scroll z-50 h-screen flex justify-center items-center backdrop-blur-sm  ">
-      <div className="flex items-center justify-center">
+    <div
+      className="fixed inset-0 w-screen overflow-y-auto scroll z-50 h-screen flex justify-center items-center backdrop-blur-sm"
+      onClick={handleModalClick}
+    >
+      <div
+        className="flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="md:mx-auto pb-10 pt-64 w-full max-w-2xl relative">
           <div className="space-y-3 bg-[#F8F8F8] mt-32  md:pt-8 lg:pb-4 py-6 rounded-3xl p-4 md:p-8 md:m-6 w-full max-w-xs md:max-w-6xl border border-gray-100 shadow-md relative">
             <div
               className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
-              onClick={onClose}
+              onClick={handleCloseButtonClick}
             >
               <RxCross2 />
             </div>
@@ -350,32 +356,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                 >
                   Description
                 </label>
-                {/* <div className="h-60 mt-4 w-full resize-none overflow-y- outline-none roundScrollsm rounded-2xl border-none bg-white">
-                  <ReactQuill
-                    name="description"
-                    id="description"
-                    className="text-center h-[85%]"
-                    value={description}
-                    onChange={(html) => {
-                      setValidationErrors((prevErrors) => ({
-                        ...prevErrors,
-                        description: null,
-                      }));
-                      setDescription(html);
-                    }}
-                    modules={{
-                      toolbar: {
-                        container: [
-                          [{ 'header': '1' }, { 'header': '2' }],
-                          ["bold", "italic", "underline"],
-                          [{ list: "ordered" }, { list: "bullet" }],
-                          ["link", "image"],
-                          [{ align: '' }, { align: 'center' }, { align: 'right' }]
-                        ],
-                      },
-                    }}
-                  />
-                </div> */}
+
                 <div className="md:h-60 lg:h-60 h-56 mt-4 w-full resize-none outline-none roundScrollsm rounded-2xl border-none bg-white">
                   <ReactQuill
                     name="description"
@@ -451,25 +432,14 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                   </div>
                 </div>
                 <div className="flex md:gap-2 gap-6">
-                  <div className="flex flex-col">
+                  {/* <div className="flex flex-col">
                     <label
                       htmlFor="status"
                       className="py-1 font-sfpro text-lg font-semibold"
                     >
                       Status
                     </label>
-                    {/* <select
-                      name="status"
-                      value={status}
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                      onChange={(e) => {
-                        setStatus(e.target.value);
-                      }}
-                    >
-                      <option value="To Do">Todo</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Completed">Completed</option>
-                    </select> */}
+
                     <Select
                       name="status"
                       value={statusOptions.find(
@@ -477,12 +447,12 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                       )}
                       options={statusOptions}
                       isSearchable={false}
-                      className="w-[140px]" // Add your custom styles here
+                      className="w-[140px]"
                       onChange={(selectedOption) => {
                         setStatus(selectedOption.value);
                       }}
                     />
-                  </div>
+                  </div> */}
                   <div className="flex flex-col">
                     <label
                       htmlFor="priority"
@@ -490,18 +460,6 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                     >
                       Priority
                     </label>
-                    {/* <select
-                      name="priority"
-                      value={priority}
-                      className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 border-none focus:outline-none focus:ring-0"
-                      onChange={(e) => {
-                        setPriority(e.target.value);
-                      }}
-                    >
-                      <option value={1}>🔴 High</option>
-                      <option value={2}>🟡 Medium</option>
-                      <option value={3}>🟢 Low</option>
-                    </select> */}
                     <Select
                       name="priority"
                       value={priorityOptions.find(
@@ -705,14 +663,6 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                   onChange={(e) => setComment(e.target.value)}
                 />
                 <div className="flex justify-end mt-2">
-                  {/* <div className="flex gap-x-1 text-xl text-gray-400">
-                    <span>
-                      <IoAttachOutline />
-                    </span>
-                    <span>
-                      <VscMention />
-                    </span>
-                  </div> */}
                   <div>
                     <button
                       type="button"
@@ -803,11 +753,6 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl }) => {
                                       >
                                         Edit
                                       </span>
-                                      {/* <AiOutlineEdit className="cursor-pointer text-[#283b91] opacity-70 text-sm"
-                                      onClick={() => startEdit(c.id, c.comment)}
-                                      title="Edit Comment" /> */}
-                                      {/* <MdDeleteForever className="cursor-pointer text-red-400 opacity-70 text-sm"
-                                      onClick={() => deleteComment(c.id)} title="Delete Comment" /> */}
                                       <span
                                         className="text-xs cursor-pointer opacity-70"
                                         onClick={() => deleteComment(c.id)}

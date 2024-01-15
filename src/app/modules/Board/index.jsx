@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
@@ -11,12 +10,14 @@ import TaskView from "./TaskView";
 import { toast, ToastContainer } from "react-toastify";
 import "./index.css";
 import axios from "axios";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import { RxCross2 } from "react-icons/rx";
+import { MdCheck, MdDeleteForever } from "react-icons/md";
+import { AiOutlineEdit } from "react-icons/ai";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-const Board = ({ userProfile, baseUrl, token }) => {
+const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
   const initialData = {
     name: "",
     serial_number: null,
@@ -31,11 +32,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
   const [boardHidden, setBoardHidden] = useState(false);
   const [users, setUsers] = useState([]);
   const location = useLocation();
-  const [tasks, setTasks] = useState({
-    todo: [],
-    inProgress: [],
-    completed: [],
-  });
+  const [tasks, setTasks] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditBoardOpen, setIsEditBoardOpen] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
@@ -46,25 +43,99 @@ const Board = ({ userProfile, baseUrl, token }) => {
     useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [cards, setCards] = useState([]);
-  const [boardStatusId, setBoardStatusId] = useState(null);
+  // const [boardStatusId, setBoardStatusId] = useState(null);
   const searchParams = new URLSearchParams(window.location.search);
   const projectId = searchParams.get("pId");
+  const [selectedBoardStatusId, setSelectedBoardStatusId] = useState(null);
+  const [taskView, setTaskView] = useState({});
+  const [shouldFetchTasks, setShouldFetchTasks] = useState(false);
+  const [newSerialNumber, setNewSerialNumber] = useState("");
+  const [isDelete, setIsDeleted] = useState([]);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [editBoardId, setEditBoardId] = useState(null);
+  const [todoToDelete, setTodoToDelete] = useState(null);
+  const [editTexts, setEditTexts] = useState({});
+  const [openTaskId, setOpenTaskId] = useState(null);
   const { id } = useParams();
+
+  // Simplified function to open TaskView
+  const openTaskView = (taskId) => {
+    setOpenTaskId(taskId);
+  };
+
+  // Simplified function to close TaskView
+  const closeTaskView = () => {
+    setOpenTaskId(null);
+  };
+
+  const onDragEnd = async (result) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    const sourceBoardStatusId = source.droppableId;
+    const destinationBoardStatusId = destination.droppableId;
+
+    // Find the dragged task in the tasks array
+    const draggedTask = tasks.find((task) => task.id === parseInt(draggableId));
+
+    // Check if draggedTask is defined
+    if (!draggedTask) {
+      console.error(`Task with id ${draggableId} not found`);
+      return;
+    }
+
+    // Update the board_status_id of the dragged task
+    draggedTask.board_status_id = destinationBoardStatusId;
+
+    // Update the state with the new order of tasks
+    setTasks((prevTasks) => {
+      const updatedTasks = [...prevTasks];
+
+      // Find the index of the dragged task in the current state
+      const movedTaskIndex = updatedTasks.findIndex(
+        (task) => task.id === parseInt(draggableId)
+      );
+
+      // Check if the task is found before updating
+      if (movedTaskIndex !== -1) {
+        // Remove the task from the source board
+        updatedTasks.splice(movedTaskIndex, 1);
+
+        // Insert the task at the destination board
+        updatedTasks.splice(destination.index, 0, draggedTask);
+      } else {
+        console.error(`Task with id ${draggableId} not found in tasks array`);
+      }
+
+      return updatedTasks;
+    });
+
+    // Update the API with the new board_status_id
+    await axios.put(
+      `${baseUrl}/task/${draggableId}`,
+      {
+        board_status_id: destinationBoardStatusId,
+        name: draggedTask.name,
+        description: draggedTask.description,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    await getTasks();
+  };
 
   const closeModal = () => {
     setIsAddTaskOpen(false);
   };
 
   // edit board pop up
-
-  const openEditBoardPopup = () => {
-    setNewBoardName(board.name);
-    setIsEditBoardOpen(true);
-  };
-
-  const handleEditBoardNameChange = (event) => {
-    setNewBoardName(event.target.value);
-  };
 
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -112,11 +183,10 @@ const Board = ({ userProfile, baseUrl, token }) => {
       navigate("/404");
     }
   };
-// `${baseUrl}/task/?search={"board_status_id":[${id}]}`
+  // `${baseUrl}/task/?search={"board_status_id":[${id}]}`
   const getTasks = async (
-    url = `${baseUrl}/task/?search=${encodeURIComponent(
-      `{"board_status_id": [${boardStatusId}]},`
-    )}`
+    // url = `${baseUrl}/task/?search={"board_status_id":[${boardStatusId}]}`
+    url = `${baseUrl}/task/`
   ) => {
     try {
       setIsLoading(true);
@@ -127,31 +197,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
         .then((response) => {
           if (response.status === 200) {
             const tasksData = response.data;
-
-            const todoWithUserName = [];
-            const inProgressWithUserName = [];
-            const completedWithUserName = [];
-            for (const task of tasksData) {
-              let username = users.filter((u) => u.id === task.assigned_to);
-              const taskWithname = {
-                ...task,
-                userName: username[0].username,
-              };
-              if (taskWithname.status === "To Do") {
-                todoWithUserName.push(taskWithname);
-              }
-              if (taskWithname.status === "In Progress") {
-                inProgressWithUserName.push(taskWithname);
-              }
-              if (taskWithname.status === "Completed") {
-                completedWithUserName.push(taskWithname);
-              }
-            }
-            setTasks({
-              todo: todoWithUserName,
-              inProgress: inProgressWithUserName,
-              completed: completedWithUserName,
-            });
+            setTasks(tasksData);
           }
         });
     } catch (error) {
@@ -177,7 +223,9 @@ const Board = ({ userProfile, baseUrl, token }) => {
             setReload(!reload);
           }
         });
-    } catch (error) {}
+    } catch (error) {
+      toast.error();
+    }
   };
 
   const getUsers = async (url = `${baseUrl}/emp/`) => {
@@ -196,58 +244,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
     } catch (error) {}
   };
 
-  const [isTodoViewOpen, setIsTodoViewOpen] = useState(
-    Array(tasks.todo.length).fill(false)
-  );
-  const [isProgressViewOpen, setIsProgressViewOpen] = useState(
-    Array(tasks.inProgress.length).fill(false)
-  );
-  const [isCompletedViewOpen, setIsCompletedViewOpen] = useState(
-    Array(tasks.completed.length).fill(false)
-  );
-
-  const openTodoView = (index) => {
-    const updatedModals = [...isTodoViewOpen];
-    updatedModals[index] = true;
-    setIsTodoViewOpen(updatedModals);
-  };
-
-  const closeTodo = (index) => {
-    setBoardHidden(false);
-    setReload(!reload);
-    const updatedModals = [...isTodoViewOpen];
-    updatedModals[index] = false;
-    setIsTodoViewOpen(updatedModals);
-  };
-
-  const openInProgressView = (index) => {
-    const updatedModals = [...isProgressViewOpen];
-    updatedModals[index] = true;
-    setIsProgressViewOpen(updatedModals);
-  };
-
-  const closeProgess = (index) => {
-    setBoardHidden(false);
-    setReload(!reload);
-    const updatedModals = [...isProgressViewOpen];
-    updatedModals[index] = false;
-    setIsProgressViewOpen(updatedModals);
-  };
-
-  const openCompletedView = (index) => {
-    const updatedModals = [...isCompletedViewOpen];
-    updatedModals[index] = true;
-    setIsCompletedViewOpen(updatedModals);
-  };
-
-  const closeCompleted = (index) => {
-    setBoardHidden(false);
-    setReload(!reload);
-    const updatedModals = [...isCompletedViewOpen];
-    updatedModals[index] = false;
-    setIsCompletedViewOpen(updatedModals);
-  };
-
   const getRandomColor = () => {
     const colorClasses = [
       "bg-red-400",
@@ -258,41 +254,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
     ];
     const randomIndex = Math.floor(Math.random() * colorClasses.length);
     return colorClasses[randomIndex];
-  };
-
-  const handleDragEnd = async (result) => {
-    if (!result.destination) {
-      return;
-    }
-    const sourceColumn = result.source.droppableId;
-    const destinationColumn = result.destination.droppableId;
-    let destinationCol =
-      destinationColumn === "todo"
-        ? "To Do"
-        : destinationColumn === "inProgress"
-        ? "In Progress"
-        : destinationColumn === "completed"
-        ? "Completed"
-        : "";
-    let task = tasks[sourceColumn][result.source.index];
-    const { sourceIndex, destinationIndex } = result;
-    // Update Board Staticly
-    const updatedTasks = { ...tasks };
-    const [movedTask] = updatedTasks[sourceColumn].splice(sourceIndex, 1);
-    updatedTasks[destinationColumn].splice(destinationIndex, 0, movedTask);
-    setTasks(updatedTasks);
-
-    // Update Board Dynamictly
-    const response = await axios.patch(
-      `${baseUrl}/task/${task.id}`,
-      { status: destinationCol },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    if (response.status === 200) {
-      setReload(!reload);
-    }
   };
 
   useEffect(() => {
@@ -306,47 +267,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
   useEffect(() => {
     getBoard();
   }, [location]);
-
-  const handleDeleteBoard = async () => {
-    try {
-      const response = await axios.delete(`${baseUrl}/board/${board.id}`, {
-        headers,
-      });
-      if (response.status === 204) {
-        navigate(`/project/${id}`);
-      } else {
-        console.error("Unexpected response status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error deleting board:", error);
-    }
-
-    setIsDeleteConfirmationOpen(false);
-  };
-
-  const EditBoardName = async () => {
-    try {
-      const response = await axios.patch(
-        `${baseUrl}/board/${board.id}`,
-        { name: newBoardName },
-        { headers }
-      );
-      if (response.status === 200) {
-        setBoard({ ...board, name: newBoardName });
-        setIsEditBoardOpen(false);
-        toast.success("Board name updated!", {
-          position: "top-right",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-        });
-      } else {
-        console.error("Unexpected response status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error updating board name:", error);
-    }
-  };
 
   // Open and closing modal
 
@@ -367,7 +287,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("List Name:", formData);
 
     try {
       const response = await axios.post(
@@ -387,8 +306,8 @@ const Board = ({ userProfile, baseUrl, token }) => {
           position: toast.POSITION.TOP_RIGHT,
         });
         setFormData(initialData);
-
-        // navigate("/jobs");
+        closeListModal();
+        await getBoardStatus();
       }
     } catch (error) {
       toast.error("Error submitting the form. Please try again.", {
@@ -403,24 +322,100 @@ const Board = ({ userProfile, baseUrl, token }) => {
 
   const getBoardStatus = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/boardstatus/?search={"board_id": [${id}]}`, {
-        headers,
-      });
+      const response = await axios.get(
+        `${baseUrl}/boardstatus/?search={"board_id": [${id}]}&ordering=id`,
+        {
+          headers,
+        }
+      );
 
       if (response.status === 200) {
         setCards(response.data);
-        console.log("response from board", response);
-        response.data.forEach(card => {
-          console.log("Card ID:", card.id);
-          setBoardStatusId(card.id)
+      }
+    } catch (error) {
+      toast.error("Error fetching board status. Please try again.", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  };
+
+  // edit board Status
+  const handleBoardListEdit = (id) => {
+    setEditBoardId(id);
+    setIsEditBoardOpen(true);
+    const boardToEdit = cards.find((card) => card.id === id);
+    setNewBoardName(boardToEdit.name);
+    setNewSerialNumber(boardToEdit.serial_number);
+  };
+
+  const handleEditBoardSave = async () => {
+    try {
+      const updatedCards = cards.map((card) =>
+        card.id === editBoardId
+          ? { ...card, name: newBoardName, serial_number: newSerialNumber }
+          : card
+      );
+
+      setCards(updatedCards);
+      const response = await axios.put(
+        `${baseUrl}/boardstatus/${editBoardId}`,
+        {
+          name: newBoardName,
+          serial_number: newSerialNumber,
+        },
+        { headers }
+      );
+
+      if (response.status === 200) {
+        toast.success("Board List Updated!", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
         });
       }
     } catch (error) {
-      toast.error("Error submitting the form. Please try again.", {
-        position: toast.POSITION.TOP_RIGHT,
+      console.error("Error updating board list:", error);
+      toast.error("Error updating Board List", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
       });
     } finally {
-      // setIsButtonDisabled(false); // Re-enable the button
+      setIsEditBoardOpen(false);
+      setEditBoardId(null);
+    }
+  };
+  // delete BoardStatus
+  const deleteBoardList = async (id) => {
+    try {
+      const updatedTodos = isDelete.filter((delet) => delet.id !== id);
+      setIsDeleted(updatedTodos);
+      const response = await axios.delete(`${baseUrl}/boardstatus/${id}`, {
+        headers,
+      });
+
+      if (response.status === 204) {
+        toast.success("Board List Deleted!", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+        });
+        await getBoardStatus();
+      }
+      // Display a success toast
+    } catch (error) {
+      console.error("Error deleting Board list", error);
+
+      // Display an error toast
+      toast.error("Error deleting Board List", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+      });
     }
   };
 
@@ -428,7 +423,15 @@ const Board = ({ userProfile, baseUrl, token }) => {
     getBoardStatus();
   }, []);
 
-  // console.log(cards);
+  // assigned Users
+  const getAssignedUserName = (userId) => {
+    const assignedUser = users.find((user) => user.id === userId);
+    return assignedUser
+      ? assignedUser.username.toUpperCase().slice(0, 2)
+      : "Unassigned";
+    // console.log(assignedUser.username);
+  };
+
   return (
     <div className={`w-full h-screen bg-[#F9F9F9] ${boardHidden ? "" : ""}`}>
       {/* ***************************************************** Header ***************************************************** */}
@@ -437,14 +440,6 @@ const Board = ({ userProfile, baseUrl, token }) => {
           <h1 className="text-3xl mr-2 leading-none font-semibold  opacity-80 tracking-widest">
             <Link to="/">My Boards</Link>
           </h1>
-          <div className="relative">
-            <IoIosSearch className="absolute top-2 left-3 text-white" />
-            <input
-              type="search"
-              placeholder="Search"
-              className="focus:outline-none focus:border-non bg-gray-200 py-1 pl-8 pr-4 text-white placeholder-white border-none  md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
-            />
-          </div>
         </div>
         <div className="relative">
           <div
@@ -471,160 +466,199 @@ const Board = ({ userProfile, baseUrl, token }) => {
       </div>
       {/* ***************************************************** Board Header ***************************************************** */}
       <div className="bg-[#ebebeb] mb-6 pr-1 pl-1 sm:pl-5 gap-3  justify-between py-2 flex flex-col md:flex-row lg:flex-row">
-        {board && (
-          <>
-            <h2 className="text-xl font-semibold">{board.name}</h2>
-          </>
+        {isLoading ? (
+          <div className="flex items-center space-x-2">
+            <div className="w-36 rounded-md h-6 bg-gray-300 animate-pulse"></div>
+          </div>
+        ) : (
+          <h2 className="text-xl font-semibold">{board.name}</h2>
         )}
       </div>
 
-      {/* ***************************************************** Board Card ***************************************************** */}
-      <DragDropContext onDragEnd={boardHidden ? "" : handleDragEnd}>
-        <div className="flex w-full justify-start ">
-          <div className="flex xScroll  sm:ml-10 ml-5 pb-2 overflow-x-auto w-[90%] lg:w-[82vw] justify-start">
-            <div id="boardList" className="flex">
-              {cards?.map((card) => (
-                <div
-                  className="bg-white  mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72"
-                  key={card.id}
-                >
-                  <div className="flex justify-between items-center mb-3 mt-3 ml-2">
-                    <div className="flex justify-center items-center">
-                      <div className="text-[#283b91]">{card.name} </div>
-                      <div className="bg-gray-200 rounded-full px-1 text-sm ml-2 text-[#283b91]">
-                        {/* 3 */}
-                      </div>
-                    </div>
-                  </div>
-                  {isLoading ? (
-                    // <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 block m-auto"></div>
-                    <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
-                      <div className="opacity-70 h-5 w-3/4 mb-2"></div>
-                      <hr className="bg-white h-2 my-2" />
-                      <div className="flex justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="text-[0.60rem]"></div>
-                          <div className="text-sm opacity-50 cursor-pointer"></div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <Droppable droppableId="todo">
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className="boardScroll overflow-y-auto overflow-x-hidden max-h-[63vh] mb-2"
-                          >
-                            {tasks["todo"].map((t, index) => (
-                              <>
-                                <Draggable
-                                  isDragDisabled={boardHidden}
-                                  key={t.id}
-                                  draggableId={t.id.toString()}
-                                  index={index}
-                                >
-                                  {(provided) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                    >
-                                      <div
-                                        className={`bg-[#F2F2F2] rounded-md p-3 m-2`}
-                                        onClick={() => {
-                                          openTodoView(index);
-                                          setBoardHidden(true);
-                                        }}
-                                      >
-                                        <div className="opacity-70">
-                                          {t.name}
-                                        </div>
-                                        <hr className=" bg-white h-[2px] my-2" />
-                                        <div className="flex justify-between">
-                                          <div className="flex items-center gap-2">
-                                            {/* <BsBookmark className="text-xs text- opacity-50" /> */}
-                                            <div
-                                              title={t.userName}
-                                              className={`rounded-full cursor-pointer text-[.60rem] text-white flex 
-                                           p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
-                                            >
-                                              {t.userName
-                                                .toUpperCase()
-                                                .slice(0, 2)}
-                                            </div>
-                                          </div>
+      {/* ***************************************************** Board Status Card ***************************************************** */}
 
-                                          <div className="flex items-center gap-2">
-                                            {t.priority === 1 ? (
-                                              <div className="text-[0.60rem]">
-                                                🔴
-                                              </div>
-                                            ) : t.priority === 2 ? (
-                                              <div className="text-[0.60rem]">
-                                                🟡
-                                              </div>
-                                            ) : t.priority === 3 ? (
-                                              <div className="text-[0.60rem]">
-                                                🟢
-                                              </div>
-                                            ) : (
-                                              ""
-                                            )}
-                                            <BsTrash3
-                                              className="text-sm opacity-50 cursor-pointer"
-                                              onClick={() => {
-                                                deleteTasks(t.id);
-                                              }}
-                                            />
-                                          </div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex w-full justify-start overflow-x-auto xScroll lg:w-[100vw] lg:h-[75vh] px-6">
+          <div id="boardList" className="flex">
+            {cards?.map((card) => (
+              <div
+                className="bg-white mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72"
+                key={card.id}
+              >
+                <Droppable droppableId={card.id.toString()} key={card.id}>
+                  {(provided, snapshot) => (
+                    <div ref={provided.innerRef} {...provided.droppableProps}>
+                      {/* {isLoading ? (
+                        <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
+                          <div className="opacity-70 h-5 w-3/4 mb-2"></div>
+                          <hr className="bg-white h-2 my-2" />
+                          <div className="flex justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-[0.60rem]"></div>
+                              <div className="text-sm opacity-50 cursor-pointer"></div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        
+                      )} */}
+
+                      <div className="flex justify-between items-center mb-3 mt-3">
+                        <div className="flex items-center">
+                          <div className="text-[#283b91]">{card.name}</div>
+                          <div className="bg-gray-200 rounded-full px-1 text-sm ml-4 text-[#283b91]">
+                            {/* 3 */}
+                          </div>
+                        </div>
+                        {/* //////////////edit and delete */}
+                        <div className="flex gap-1 justify-end cursor-pointer">
+                          {editTexts[card.id] !== undefined ? (
+                            <MdCheck
+                              className="text-[#283b91] opacity-0.2"
+                              // onClick={() => handleSave(card.id)}
+                            />
+                          ) : (
+                            <div className="flex items-center gap-x-2">
+                              <AiOutlineEdit
+                                className="text-[#283b91] opacity-0.2 text-sm"
+                                onClick={() => handleBoardListEdit(card.id)}
+                              />
+                              <MdDeleteForever
+                                className="text-red-400 opacity-0.2 text-sm"
+                                onClick={() => {
+                                  // deleteBoardList(card.id);
+                                  setTodoToDelete(card.id);
+                                  setShowDeleteConfirmation(true);
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* {isLoading ? (
+                        <>
+                          <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
+                            <div className="opacity-70 h-5 w-3/4 mb-2"></div>
+                            <hr className="bg-white h-2 my-2" />
+                            <div className="flex justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="text-[0.60rem]"></div>
+                                <div className="text-sm opacity-50 cursor-pointer"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                       
+                      )} */}
+
+                      <div className="h-auto max-h-[55vh] overflow-y-auto xScroll">
+                        {tasks
+                          ?.filter((task) => task.board_status_id === card.id)
+                          ?.map((task, index) => (
+                            <Draggable
+                              key={task.id}
+                              draggableId={task.id.toString()}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="flex-shrink-0 p-2 pt-1 pb-3 max-w-[300px] rounded-md"
+                                  onClick={() => openTaskView(task.id)}
+                                >
+                                  <div className="max-w-[255px] bg-[#F2F2F2] rounded-md overflow-hidden">
+                                    <div className="px-6 py-4">
+                                      <div className="text-base mb-2">
+                                        {task.name}
+                                      </div>
+                                      <hr />
+                                      <div className="flex items-center justify-between mt-2 gap-2">
+                                        <div
+                                          title={task.assignedUser}
+                                          className={`rounded-full cursor-pointer text-[.60rem] text-white flex 
+                                        p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
+                                        >
+                                          {getAssignedUserName(
+                                            task.assigned_to
+                                          )}
+                                        </div>
+                                        <div className="flex items-center gap-x-2">
+                                          {task.priority === 1 ? (
+                                            <div className="text-[0.60rem]">
+                                              🔴
+                                            </div>
+                                          ) : task.priority === 2 ? (
+                                            <div className="text-[0.60rem]">
+                                              🟡
+                                            </div>
+                                          ) : task.priority === 3 ? (
+                                            <div className="text-[0.60rem]">
+                                              🟢
+                                            </div>
+                                          ) : (
+                                            ""
+                                          )}
+                                          <BsTrash3
+                                            className="text-sm opacity-50 cursor-pointer"
+                                            onClick={() => {
+                                              deleteTasks(task.id);
+                                            }}
+                                          />
                                         </div>
                                       </div>
-
-                                      {isTodoViewOpen[index] && (
-                                        <TaskView
-                                          onClose={() => closeTodo(index)}
-                                          taskData={{
-                                            id: t.id,
-                                            name: t.name,
-                                            description: t.description,
-                                            dueDate: t.end_date,
-                                            startDate: t.start_date,
-                                            priority: t.priority,
-                                            status: t.status,
-                                            assigned_to: t.assigned_to,
-                                            assigned_by: t.assigned_by,
-                                          }}
-                                        />
-                                      )}
                                     </div>
+                                  </div>
+                                  {openTaskId === task.id && (
+                                    <TaskView
+                                      onClose={() => closeTaskView(openTaskId)}
+                                      getTasks={getTasks}
+                                      taskData={{
+                                        id: task.id,
+                                        name: task.name,
+                                        description: task.description,
+                                        dueDate: task.end_date,
+                                        startDate: task.start_date,
+                                        priority: task.priority,
+                                        status: task.status,
+                                        assigned_to: task.assigned_to,
+                                        assigned_by: task.assigned_by,
+                                      }}
+                                    />
                                   )}
-                                </Draggable>
-                              </>
-                            ))}
-                            {provided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                      </div>
+
                       <div
                         onClick={() => {
                           setIsAddTaskOpen(true);
-                          setStatus("To Do");
+                          setSelectedBoardStatusId(card.id);
                         }}
-                        className="border  hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mx-2"
+                        className="border hover:bg-gray-200 hover:text-white border-gray-200 text-gray-400 py-1 rounded-md text-center mt-auto max-w-[253px] block mx-auto"
                       >
-                        Add a Card
+                        Add Task
                       </div>
-                    </>
+                      {provided.placeholder}
+                    </div>
                   )}
-                </div>
-              ))}
+                </Droppable>
+              </div>
+            ))}
+            <div className={`${isSidebarOpen ? "pr-56" : "pr-0"}`}>
               <button
-                className="bg-baseBlue text-white rounded-md px-6 py-2"
+                className="bg-baseBlue text-white rounded-md px-6 py-2 w-[240px]"
                 onClick={openListModal}
               >
                 Add Another List
@@ -633,85 +667,18 @@ const Board = ({ userProfile, baseUrl, token }) => {
           </div>
         </div>
       </DragDropContext>
-
       {isAddTaskOpen && (
         <TaskModal
           onClose={closeModal}
           currentStatus={status}
           id={id}
-          boardStatusId={boardStatusId}
+          boardStatusId={selectedBoardStatusId}
         />
       )}
+
       <ToastContainer />
 
-      {/* edit board name modal */}
-      <div
-        className={`fixed inset-0 flex items-center justify-center z-50 ${
-          isEditBoardOpen ? "" : "hidden"
-        }`}
-      >
-        <div className="modal-overlay absolute w-full h-full backdrop-blur-sm"></div>
-        <div className="modal-container bg-white md:w-[30%] w-[90%] mx-auto rounded shadow-lg z-50">
-          <div className="modal-content py-4 px-6">
-            <h2 className="text-xl font-semibold mb-4">Edit Board Name</h2>
-            <input
-              type="text"
-              className="w-full border rounded p-2 mb-2 outline-none"
-              value={newBoardName}
-              onChange={handleEditBoardNameChange}
-              placeholder="Enter new board name"
-            />
-            <div className="flex justify-end">
-              <button
-                className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
-                onClick={() => setIsEditBoardOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
-                onClick={EditBoardName}
-              >
-                Submit
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Delete confirmatin pop up */}
-
-      {isDeleteConfirmationOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="modal-overlay absolute w-full h-full backdrop-blur-sm"></div>
-          <div className="modal-container bg-white w-1.5/5 mx-auto rounded shadow-lg z-50">
-            <div className="modal-content py-4 px-6">
-              <h2 className="text-xl font-semibold mb-2">Confirm Delete</h2>
-              <p className="mb-2">
-                Are you sure you want to delete this board?
-              </p>
-              <div className="flex justify-end">
-                <button
-                  className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
-                  onClick={() => {
-                    setIsDeleteConfirmationOpen(false);
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
-                  onClick={handleDeleteBoard}
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Opening list modal */}
+      {/* Opening list modal for new list */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 w-screen overflow-y-auto scroll h-[100%] flex justify-center items-center backdrop-blur-sm">
           <div className="flex items-center justify-center z-50">
@@ -740,6 +707,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                         }
                         className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
                         placeholder="TecBrix Dashboard Design"
+                        required
                       />
                       <input
                         type="number"
@@ -750,6 +718,7 @@ const Board = ({ userProfile, baseUrl, token }) => {
                         }
                         className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
                         placeholder="Serial Number"
+                        required
                       />
                     </div>
                   </div>
@@ -767,6 +736,92 @@ const Board = ({ userProfile, baseUrl, token }) => {
           <ToastContainer />
         </div>
       )}
+
+      {/* Edit Board Modal */}
+      {isEditBoardOpen && (
+        <div className="fixed inset-0 z-50 w-screen overflow-y-auto scroll h-[100%] flex justify-center items-center backdrop-blur-sm">
+          <div className="flex items-center justify-center z-50">
+            <div className="md:mx-auto pb-10 max-w-3xl relative">
+              <div className="space-y-3 bg-[#F8F8F8] w-96 lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-8 p-3 lg:m-6 m-4 lg:max-w-6xl max-w-xs border border-gray-100 shadow-md relative">
+                <div
+                  className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
+                  onClick={() => setIsEditBoardOpen(false)}
+                >
+                  <RxCross2 />
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-2xl font-sfpro leading-3 font-bold mb-8">
+                    Edit Board List
+                  </h2>
+                  <div>
+                    <input
+                      type="text"
+                      value={newBoardName}
+                      onChange={(e) => setNewBoardName(e.target.value)}
+                      className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
+                      placeholder="Board Name"
+                    />
+                    <input
+                      type="number"
+                      value={newSerialNumber}
+                      onChange={(e) => setNewSerialNumber(e.target.value)}
+                      className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
+                      placeholder="Serial Number"
+                    />
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white"
+                      onClick={handleEditBoardSave}
+                    >
+                      Save
+                    </button>
+                    {/* <button
+                      className="px-4 py-1 mr-2 text-white bg-blue-500 rounded"
+                      onClick={handleEditBoardSave}
+                    >
+                      Save
+                    </button> */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ToastContainer />
+        </div>
+      )}
+
+      {/* delete list modal from list */}
+      {showDeleteConfirmation &&
+        cards?.map((card) => (
+          <div
+            key={card.id}
+            className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50"
+          >
+            <div className="bg-white p-3 rounded-lg shadow-lg">
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Delete Item</h1>
+                <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer">
+                  <RxCross2 onClick={() => setShowDeleteConfirmation(false)} />
+                </div>
+              </div>
+              <p className="text-gray-700 mt-2">
+                Are you sure you want to delete this board Status?
+              </p>
+              <div className="mt-4 flex justify-end">
+                <button
+                  className="px-4 py-1 mr-2 text-white bg-red-500 rounded"
+                  onClick={() => {
+                    deleteBoardList(todoToDelete);
+                    setShowDeleteConfirmation(false);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
     </div>
   );
 };

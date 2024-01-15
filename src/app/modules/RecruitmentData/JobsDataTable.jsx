@@ -264,6 +264,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
                     <td className="px-6 py-3 text-left">
                       <div className="flex items-center gap-x-2">
                         <Link
+                          target="_blank"
                           to={`/job-description/${post.id}`}
                           className="underline flex items-center gap-x-2 text-blue-600"
                         >

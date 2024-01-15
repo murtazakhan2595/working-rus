@@ -8,20 +8,22 @@ import axios from "axios";
 import { connect } from "react-redux";
 
 const EmployeeForm = ({ baseUrl, token, userProfile }) => {
+  const newDate = new Date();
+  const defaultDate = moment(newDate).format("YYYY-MM-DD");  
   const initialData = {
     employee_id: userProfile.id,
     name: "",
-    date: null,
+    date: defaultDate,
     position: "",
     department: "",
-    joining_date: null,
+    joining_date: defaultDate,
     nationality: "",
     leave_type: "",
     reason: "",
-    start_date: null,
-    end_date: null,
-    last_work_day: null,
-    rejoining_date: null,
+    start_date: defaultDate,
+    end_date: defaultDate,
+    last_work_day: defaultDate,
+    rejoining_date: defaultDate,
     total_leave: "",
     contact_no: "",
     address_during_leave: "",
@@ -141,14 +143,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   return (
     <div className="bg-[#F9F9F9] w-full">
       <LeaveHeader post="Leave Application Form" />
-      <div className="px-3 lg:px-7 h-[74vh] lg:h-[80vh] overflow-y-scroll">
+      <div className="px-3 lg:px-7 h-[74vh] lg:h-[80vh] overflow-y-scroll scroll">
         <h1 className="font-sfpro tracking-wide text-[#25A8E0] text-center md:text-left text-xs py-5">
           Note: Annual Leave Application Should be Submitted to HR Two Months
           Prior to Annual Leave Date.
         </h1>
         <form onSubmit={handleSubmit}>
           <div>
-            <div className="flex justify-between items-center py-2 lg:justify-normal gap-6">
+            <div className="flex justify-between items-center py-2 md:justify-normal gap-6 lg:gap-12">
               <label
                 className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -165,7 +167,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
             </div>
             <div className="flex flex-col md:flex-row justify-between md:justify-normal  gap-x-20">
               <div className="flex flex-col md:w-[41%]">
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-20">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-[6.5rem]">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -185,7 +187,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   />
                 </div>
 
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-16">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-[5.5rem]">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -204,14 +206,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     }
                   />
                 </div>
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-8">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-10">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
                   >
                     Joining Date:
                   </label>
-                  <div className="ml-[-14px]">
+                  <div>
                     <Datepicker
                       className="z-50"
                       name="joining_date"
@@ -232,7 +234,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Date
                   </label>
-                  <div className="ml-[-8px]">
+                  <div>
                     <Datepicker
                       className="z-50"
                       name="date"
@@ -255,7 +257,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     placeholder="Enter Department Here"
                     required
-                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full ml-[-7px]"
+                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full"
                     type="text"
                     name="department"
                     value={formData.department}
@@ -265,7 +267,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   />
                 </div>
 
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-16">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-[4.5rem]">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -286,15 +288,15 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 </div>
               </div>
             </div>
-            <div className="py-2 flex justify-between md:justify-normal md:gap-x-10">
+            <div className="py-2 flex justify-between md:justify-normal md:gap-x-10 lg:gap-x-12">
               <div
                 className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
               >
                 Leave Type:
               </div>
-              <div className="rounded-md ml-[-14px] w-[60%] py-2 bg-white flex items-center gap-1 flex-wrap justify-end text-xs md:justify-start md:text-sm md:gap-x-2 md:w-[75%] md:pl-5">
-                <div className="flex items-center gap-2.5">
+              <div className="rounded-md w-[60%] py-2 bg-white flex items-center gap-1 flex-wrap justify-end text-xs md:justify-start md:text-sm md:gap-x-2 md:w-[75%] lg:w-[76%] md:pl-5">
+                <div className="flex items-center md:gap-2.5 gap-[4px]">
                   <input
                     type="checkbox"
                     name="EMERGENCY"
@@ -318,7 +320,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   />
                   <label>Sick</label>
                 </div>
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center md:gap-2.5 gap-[4px]">
                   <input
                     type="checkbox"
                     name="MATERNITY"
@@ -345,7 +347,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               </div>
             </div>
 
-            <div className="py-2 flex justify-between md:justify-normal gap-x-14">
+            <div className="py-2 flex justify-between md:justify-normal gap-x-14 lg:gap-x-[4.5rem]">
               <label
                 className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -369,14 +371,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
 
             <div className="flex flex-col md:flex-row md:gap-x-20">
               <div className="flex flex-col md:w-[41%]">
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-32">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-14">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
                   >
                     Start Date:
                   </label>
-                  <div className="ml-[-39px]">
+                  <div >
                     <Datepicker
                       className="z-50"
                       name="start_date"
@@ -388,14 +390,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     />
                   </div>
                 </div>
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-24">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-5">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
                   >
                     Last Work Day:
                   </label>
-                  <div className="ml-[-48px]">
+                  <div>
                     <Datepicker
                       className="z-50"
                       name="last_work_day"
@@ -407,7 +409,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     />
                   </div>
                 </div>
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-16">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-9">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -429,14 +431,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               </div>
 
               <div className="flex flex-col md:w-[44%]">
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-32">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-24">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
                   >
                     End Date:
                   </label>
-                  <div className="ml-[-6px]">
+                  <div>
                     <Datepicker
                       className="z-50"
                       name="end_date"
@@ -449,7 +451,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   </div>
                 </div>
 
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-20">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-14">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -469,7 +471,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   </div>
                 </div>
 
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-16">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-10">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -479,8 +481,8 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     placeholder="Enter Contact Here"
                     required
-                    className="rounded-md pl-2 w-[60%] h-8 lg:w-[56%]"
-                    type="text"
+                    className="rounded-md pl-2 w-[60%] h-8 lg:w-[51%]"
+                    type="number"
                     name="contact_no"
                     value={formData.contact_no}
                     onChange={(e) =>
@@ -491,7 +493,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               </div>
             </div>
 
-            <div className="py-2 flex justify-between md:justify-normal lg:justify-normal gap-x-16 lg:gap-x-10">
+            <div className="py-2 flex justify-between md:justify-normal lg:justify-normal lg:gap-x-4">
               <label
                 className="font-sfpro tracking-wide font-semibold
                             text-input text-base lg:w-32"

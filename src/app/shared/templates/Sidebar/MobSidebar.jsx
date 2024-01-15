@@ -97,9 +97,9 @@ const MobSidebar = ({
             <img src={logo} className="inline-block w-10" alt="logo" />
             <h1 className="inline-block">TECBRIX</h1>
           </div>
-          <ul>
+          <ul className="overflow-y-auto max-h-[calc(98vh-100px)] hideScroll">
             <li>
-              <div className="relative">
+              <div className="relative invisible">
                 <IoIosSearch className="absolute top-3 left-3 text-white" />
                 <input
                   type="search"
