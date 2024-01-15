@@ -24,7 +24,6 @@ import axios from "axios";
 import { links } from "../../../../data/Data";
 import { PiShootingStarBold } from "react-icons/pi";
 
-
 const Sidebar = ({
   isSidebarOpen,
   setIsSidebarOpen,
@@ -42,8 +41,8 @@ const Sidebar = ({
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
   const [projectsCount, setProjectCount] = useState(0);
-  const empLinks = links.filter(link => link.text !== "Employee Sheet");
-  const validateLinks = empLinks.filter(link => link.text !== "Recruitment");
+  const empLinks = links.filter((link) => link.text !== "Employee Sheet");
+  const validateLinks = empLinks.filter((link) => link.text !== "Recruitment");
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -53,7 +52,13 @@ const Sidebar = ({
     setisModelOpen(false);
   };
 
-  const getProjects = async (url = `${baseUrl}/project/${(userProfile.role === 1 || userProfile.role === 2) ? "" : `?search={"project_members":[${userProfile.id}]}`}`) => {
+  const getProjects = async (
+    url = `${baseUrl}/project/${
+      userProfile.role === 1 || userProfile.role === 2
+        ? ""
+        : `?search={"project_members":[${userProfile.id}]}`
+    }`
+  ) => {
     try {
       await axios
         .get(url, {
@@ -82,17 +87,17 @@ const Sidebar = ({
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`h-screen hideScroll bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${
+          className={`h-screen bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${
             isSidebarOpen ? "" : "hidden"
           }`}
         >
-          <div className="text-xl bg-white py-3 px-7 flex flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 rounded-md">
+          <div className="text-xl z-10 bg-white py-3 px-7 flex flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 rounded-md relative">
             <img src={logo} className="inline-block w-12" alt="logo" />
             <h1 className="inline-block">TECBRIX</h1>
           </div>
-          <ul>
+          <ul className="overflow-y-auto max-h-[calc(98vh-100px)] hideScroll -mt-10">
             <li>
-              <div className="relative">
+              <div className="relative invisible">
                 <IoIosSearch className="absolute top-3 left-3 text-white" />
                 <input
                   type="search"
@@ -102,10 +107,8 @@ const Sidebar = ({
               </div>
             </li>
 
-{userProfile.role === 1 || userProfile.role === 2 ?
-
-            links.map(
-              (link, index) =>
+            {userProfile.role === 1 || userProfile.role === 2
+              ? links.map((link, index) => (
                   <li key={index}>
                     <Link to={link.to}>
                       <div
@@ -118,9 +121,8 @@ const Sidebar = ({
                       </div>
                     </Link>
                   </li>
-            ):
-            validateLinks.map(
-              (link, index) =>
+                ))
+              : validateLinks.map((link, index) => (
                   <li key={index}>
                     <Link to={link.to}>
                       <div
@@ -133,96 +135,94 @@ const Sidebar = ({
                       </div>
                     </Link>
                   </li>
-            )}
-{(userProfile.role === 3 || userProfile.role === 4 )&&
- <li>
- <Link to="#">
-   <div
-     className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900`}
-   >
-     <div className="text-white text-xl"><PiShootingStarBold/></div>
-     <p className="text-white">Performance</p>
-   </div>
- </Link>
-</li>
-
-}
-            {userProfile.role !== 2  &&
-
-<>
-            
-            <hr className="opacity-40" />
-
-            <li
-              onClick={() => {
-                setisProjectOpen(!isProjectOpen);
-              }}
-              className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1"
-            >
-              <div className="flex gap-1">
-                <GoProjectSymlink className="text-white text-xl" />{" "}
-                <p className="text-white">Projects</p>
-              </div>
-              {isProjectOpen ? (
-                <AiOutlineCaretUp className="text-white text-xs" />
-              ) : (
-                <AiOutlineCaretDown className="text-white text-xs" />
-              )}
-            </li>
-            {isProjectOpen && (
-              <>
-                <div className="flex flex-col rounded-xl mb-4 p-2 bg-[#202F72]">
-                  <div className="flex justify-between mb-1 items-center">
-                    <div className="flex gap-1">
-                      {projectsCount > 10 && (
-                        <>
-                          <FaChevronLeft
-                            onClick={() => {
-                              getProjects(previousPage);
-                            }}
-                            className="text-white text-[0.65rem] text-xs opacity-60"
-                          />
-                          <FaChevronRight
-                            onClick={() => {
-                              getProjects(nextPage);
-                            }}
-                            className="text-white text-[0.65rem] opacity-60"
-                          />
-                        </>
-                      )}
-                    </div>
-                    <div className="flex items-center opacity-60 gap-1 text-white">
-                      <div className="text-xs">{projectsCount}</div>
-                      {userProfile.role !== 4 && (
-                        <AiOutlinePlus
-                          onClick={() => {
-                            setisModelOpen(true);
-                          }}
-                          className="text-white text-sm hover:cursor-pointer"
-                        />
-                      )}
+                ))}
+            {(userProfile.role === 3 || userProfile.role === 4) && (
+              <li>
+                <Link to="#">
+                  <div
+                    className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900`}
+                  >
+                    <div className="text-white text-xl">
+                      <PiShootingStarBold />
                     </div>
                   </div>
-                  <div className="max-h-[20vh] overflow-y-auto hideScroll">
-                    {projects.map((project, index) => (
-                      <div key={index} className="flex flex-col gap-2">
-                        <div
-                          onClick={() => {
-                            navigate(`/project/${project.id}`);
-                          }}
-                          className="flex gap-3 mb-1 cursor-pointer"
-                        >
-                          <div className="bg-blue-950 rounded-md w-[25px] h-[25px]"></div>
-                          <div className="text-white">{project.name}</div>
+                </Link>
+              </li>
+            )}
+            {userProfile.role !== 2 && (
+              <>
+                <hr className="opacity-40" />
+
+                <li
+                  onClick={() => {
+                    setisProjectOpen(!isProjectOpen);
+                  }}
+                  className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1"
+                >
+                  <div className="flex gap-1">
+                    <GoProjectSymlink className="text-white text-xl" />{" "}
+                    <p className="text-white">Projects</p>
+                  </div>
+                  {isProjectOpen ? (
+                    <AiOutlineCaretUp className="text-white text-xs" />
+                  ) : (
+                    <AiOutlineCaretDown className="text-white text-xs" />
+                  )}
+                </li>
+                {isProjectOpen && (
+                  <>
+                    <div className="flex flex-col rounded-xl mb-4 p-2 bg-[#202F72]">
+                      <div className="flex justify-between mb-1 items-center">
+                        <div className="flex gap-1">
+                          {projectsCount > 10 && (
+                            <>
+                              <FaChevronLeft
+                                onClick={() => {
+                                  getProjects(previousPage);
+                                }}
+                                className="text-white text-[0.65rem] text-xs opacity-60"
+                              />
+                              <FaChevronRight
+                                onClick={() => {
+                                  getProjects(nextPage);
+                                }}
+                                className="text-white text-[0.65rem] opacity-60"
+                              />
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center opacity-60 gap-1 text-white">
+                          <div className="text-xs">{projectsCount}</div>
+                          {userProfile.role !== 4 && (
+                            <AiOutlinePlus
+                              onClick={() => {
+                                setisModelOpen(true);
+                              }}
+                              className="text-white text-sm hover:cursor-pointer"
+                            />
+                          )}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                      <div className="max-h-[20vh] overflow-y-auto hideScroll">
+                        {projects.map((project, index) => (
+                          <div key={index} className="flex flex-col gap-2">
+                            <div
+                              onClick={() => {
+                                navigate(`/project/${project.id}`);
+                              }}
+                              className="flex gap-3 mb-1 cursor-pointer"
+                            >
+                              <div className="bg-blue-950 rounded-md w-[25px] h-[25px]"></div>
+                              <div className="text-white">{project.name}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </>
             )}
-            </>
-                        }
 
             <hr className="opacity-40" />
 

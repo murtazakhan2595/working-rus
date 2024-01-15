@@ -398,7 +398,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
       </div>
 
       {/* tablet and desktop */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block text-center">
         <div className="w-full flex items-center">
           <div className="w-[20%] px-4 py-7 font-bold border text-[#555657]">
             Name of Degree
@@ -468,7 +468,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
         Experiences
       </div>
       {/* tablet and desktop */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block text-center">
         <div className="w-full flex items-center">
           <div className="w-[20%] px-4 py-7 font-bold border text-[#555657]">
             Name of Organization
@@ -678,7 +678,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
             </div>
           ))
         ) : (
-          <div className="text-center opacity-50 text-sm">
+          <div className="text-center opacity-50 text-sm mt-3">
             No Certifications Added.
           </div>
         )}
@@ -689,7 +689,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
       <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-gray-400">
         Department
       </div>
-      <div className="">
+      <div className="mb-10">
         <div className="flex">
           <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
             Department Name

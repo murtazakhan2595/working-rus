@@ -62,7 +62,7 @@ const dropdownOptions = [
           <h1 className="text-xl lg:text-3xl mr-2 items-center leading-none font-semibold opacity-80 tracking-widest">
             Recruitment Data
           </h1>
-          <div className="relative">
+          {/* <div className="relative">
             <IoIosSearch className="absolute top-2 left-3 text-white" />
             <input
               type="search"
@@ -71,7 +71,7 @@ const dropdownOptions = [
               value={searchTerm}
               onChange={handleSearchChange}
             />
-          </div>
+          </div> */}
         </div>
         <div className="relative">
           <div

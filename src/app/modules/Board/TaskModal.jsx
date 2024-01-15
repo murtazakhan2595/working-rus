@@ -10,11 +10,12 @@ import moment from "moment";
 import ReactQuill from "react-quill";
 import Select from "react-select";
 import { priorityOptions, statusOptions } from "../../../data/Data";
-
+ 
 const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }) => {
-  let newDate = new Date();
-  let defaultDate = `${newDate.getFullYear()}-${newDate.getMonth()}-${newDate.getDate()}`;
-
+  console.log('task modal board_status_id', boardStatusId);
+  const newDate = new Date();
+  const defaultDate = moment(newDate).format("YYYY-MM-DD");  
+ 
   const [assignToOpen, setAssignToOpen] = useState(false);
   const [assignByOpen, setAssignByOpen] = useState(false);
   const [dueDate, setDueDate] = useState(defaultDate);
@@ -31,11 +32,11 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
   const [isLoading, setIsLoading] = useState(false);
   const [assignToSearchQuery, setAssignToSearchQuery] = useState("");
   const [assignBySearchQuery, setAssignBySearchQuery] = useState("");
-
+ 
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-
+ 
   const resetFormState = () => {
     setName("");
     setDescription("");
@@ -47,11 +48,11 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
     setAssignByUser({});
     setValidationErrors({});
   };
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
+ 
     const validateData = {
       name: name,
       description: description,
@@ -71,12 +72,13 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
           priority: priority,
           start_date: startDate,
           end_date: dueDate,
-          status: status,
+          // status: status,
+
         };
         const response = await axios.post(`${baseUrl}/task/`, postData, {
           headers,
         });
-
+ 
         if (response.status === 201) {
           // Show a success toast
           toast.success("Card added successfully", {
@@ -91,7 +93,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
         }
       } catch (error) {
         console.error("Error:", error);
-
+ 
         // Show an error toast
         toast.error("Something went wrong", {
           position: "top-right",
@@ -109,7 +111,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
       setValidationErrors(errors);
     }
   };
-
+ 
   const getUsers = async (url = `${baseUrl}/emp/`) => {
     try {
       await axios
@@ -126,18 +128,18 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
         });
     } catch (error) {}
   };
-
+ 
   useEffect(() => {
     getUsers();
   }, []);
-
+ 
   const schema = Joi.object({
     name: Joi.string().required().label("Name"),
     description: Joi.string().required().label("Description"),
     assigned_to: Joi.number().integer().min(1).required().label("Assigned To"),
     assigned_by: Joi.number().integer().min(1).required().label("Assigned By"),
   });
-
+ 
   const validateForm = (data) => {
     data.assigned_to = assignToUser.id;
     data.assigned_by = assignByUser.id;
@@ -148,31 +150,31 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
         errors[item.path[0]] = item.message;
       }
     }
-
+ 
     if (!assignToUser.id) {
       errors.assigned_to = "select a assignee";
     }
     if (!assignByUser.id) {
       errors.assigned_by = "select a reporter";
     }
-
+ 
     return errors;
   };
-
+ 
   // const filteredMembers = users.filter((user) =>
   //   user.username.toLowerCase().includes(searchQuery.toLowerCase())
   // );
-
+ 
   // setFilterUsers(filteredMembers);
-
+ 
   const filteredAssignToUsers = Object.values(users).filter((user) =>
     user.username.toLowerCase().includes(assignToSearchQuery.toLowerCase())
   );
-
+ 
   const filteredAssignByUsers = Object.values(users).filter((user) =>
     user.username.toLowerCase().includes(assignBySearchQuery.toLowerCase())
   );
-
+ 
   return (
     <div className="fixed inset-0 w-screen overflow-y-auto scroll h-screen flex justify-center items-center backdrop-blur-sm  ">
       <div className="flex items-center justify-center z-50">
@@ -188,11 +190,11 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
               <h2 className="text-2xl font-sfpro leading-3 font-bold mb-8">
                 Create New Task
               </h2>
-
+ 
               <div>
                 {/* // className="overflow-y-auto  hideScroll p-4" */}
                 {/* ************************ Name ***************************** */}
-
+ 
                 <div className="flex flex-col">
                   <label
                     htmlFor="name"
@@ -221,9 +223,9 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                     </span>
                   )}
                 </div>
-
+ 
                 {/* ************************ Description ***************************** */}
-
+ 
                 <div className="flex flex-col">
                   <label
                     htmlFor="description"
@@ -268,9 +270,9 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                     </span>
                   )}
                 </div>
-
+ 
                 {/* ************************ Dates , Status , Piriorty ***************************** */}
-
+ 
                 <div className="flex gap-2 justify-between md:flex-row flex-col items-center mb-4">
                   <div className="flex gap-1 md:flex-row flex-col">
                     <div className="flex md:flex-col flex-row gap-2 md:gap-0 my-2 md:my-0">
@@ -307,7 +309,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                     </div>
                   </div>
                   <div className="flex md:gap-2 gap-6">
-                    <div className="flex flex-col">
+                    {/* <div className="flex flex-col">
                       <label
                         htmlFor="status"
                         className="py-1 font-sfpro text-lg font-semibold"
@@ -326,7 +328,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                           setStatus(selectedOption.value);
                         }}
                       />
-                    </div>
+                    </div> */}
                     <div className="flex flex-col">
                       <label
                         htmlFor="priority"
@@ -349,21 +351,21 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                     </div>
                   </div>
                 </div>
-
+ 
                 {/* ************************ Assignee Lable ***************************** */}
-
+ 
                 <label
                   htmlFor="assign"
                   className="py-1 font-sfpro text-lg font-semibold"
                 >
                   Assigned
                 </label>
-
+ 
                 {/* ************************ Assign To , Assign By ***************************** */}
-
+ 
                 <div className="flex gap-4">
                   {/* ************************** ASSIGN TO ************************** */}
-
+ 
                   <div className="flex w-1/2 flex-col">
                     <div className="flex  justify-start bg-white rounded-md mt-2">
                       <h3 className=" pl-4">Assigned to</h3>
@@ -404,7 +406,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                                 setAssignToSearchQuery(e.target.value)
                               }
                             />
-
+ 
                             <div className="overflow-y-auto max-h-24 roundScrollsm">
                               <ul className="text-black">
                                 {filteredAssignToUsers.map((user) => (
@@ -418,7 +420,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                                         id: user.id,
                                         username: user.username,
                                       });
-
+ 
                                       setFilterUsers(users);
                                       setFilterUsers((prevUsers) =>
                                         prevUsers.filter(
@@ -452,9 +454,9 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                       )}
                     </div>
                   </div>
-
+ 
                   {/* ************************** ASSIGN BY ************************** */}
-
+ 
                   <div className="flex w-1/2 flex-col">
                     <div className="flex  justify-start bg-white rounded-md mt-2">
                       <h3 className=" pl-4">Assigned By</h3>
@@ -477,7 +479,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                           </span>
                         </div>
                       )}
-
+ 
                       <div className="relative">
                         {assignByOpen && (
                           <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
@@ -574,7 +576,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                       </button>
                     </div>
                   </div>
-
+ 
                   {loading ? (
                     <p>Loading comments...</p>
                   ) : (
@@ -626,7 +628,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                         </div>
                       </div>
                     )
-
+ 
                   )}
                 </div> */}
               </div>
@@ -645,7 +647,7 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
     </div>
   );
 };
-
+ 
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
@@ -654,5 +656,6 @@ const mapStateToProps = (state) => {
     isLogin: state.user.isLogin,
   };
 };
-
+ 
 export default connect(mapStateToProps)(TaskModal);
+ 

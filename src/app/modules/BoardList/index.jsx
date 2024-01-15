@@ -151,16 +151,16 @@ const BoardList = ({
       <div className="py-5 pl-10 pr-2 flex gap-3 items-center justify-between w-full">
         <div className="flex items-center">
           <h1 className="text-3xl mr-2 leading-none font-semibold opacity-80 tracking-widest">
-            <Link to="/">Board List</Link>
+            <Link>Board List</Link>
           </h1>
-          <div className="relative">
+          {/* <div className="relative">
             <IoIosSearch className="absolute top-2 left-3 text-white" />
             <input
               type="search"
               placeholder="Search"
               className="focus:outline-none focus:border-non bg-gray-200 py-1 pl-8 pr-4 text-white placeholder-white border-none md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
             />
-          </div>
+          </div> */}
         </div>
         <div className="relative">
           <div
