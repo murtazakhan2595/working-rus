@@ -4,8 +4,10 @@ import { IoClose } from "react-icons/io5";
 import moment from "moment-timezone";
 import { getAllCountries } from "countries-and-timezones";
 import Select from "react-select";
+import axios from "axios";
+import { connect } from "react-redux";
 
-const WorkTime = () => {
+const WorkTime = ({baseUrl, token, userProfile}) => {
   // ******************** State Vars ************************ //
   const [timezones, setTimezones] = useState([]);
   const [selectedTimezone, setSelectedTimezone] = useState("");
@@ -20,9 +22,79 @@ const WorkTime = () => {
 
   // ******************** Stop Watch Start And Reset Functions ************************ //
 
-  const handleStartStop = () => {
+  // console.log(userProfile);
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  }
+
+  const handleStartStop = async () => {
     if (isRunning) {
       clearInterval(intervalRef.current);
+      console.log("Time passed:", formatTime(time));
+      console.log(userProfile);
+
+      const currentDate = new Date(); 
+      const formattedCurrentDate = moment(currentDate).format("YYYY-MM-DD"); 
+
+      const formattedTime = moment(currentDate).format("HH:mm:ss.SSS"); 
+
+      const combinedDateTime = `${formattedCurrentDate}T${formattedTime}Z`; 
+
+      console.log("Combined DateTime:", combinedDateTime);
+
+      try {
+        const response = await axios.post(
+          `${baseUrl}/timetracker/Timetracker/`,
+          {
+            start_time: combinedDateTime,
+            end_date: "",
+            status: "start",
+            total_worked_hours: 0,
+            employee: userProfile.id,
+          },
+          {
+            headers,
+          }
+        );
+
+        if (response.status === 201) {
+          // toast.success("Data sent to API successfully!", {
+          //   position: toast.POSITION.TOP_RIGHT,
+          // });
+        }
+      } catch (error) {
+        // toast.error("Error sending data to the API. Please try again.", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+      }
+
+      try {
+        const response = await axios.post(
+          `${baseUrl}/timetracker/Timetracker/${userProfile.id}/start_clock`,
+          {
+            start_time: combinedDateTime,
+            end_date: "",
+            status: "start",
+            total_worked_hours: 0,
+            employee: userProfile.id,
+          },
+          {
+            headers,
+          }
+        );
+
+        if (response.status === 201) {
+          // toast.success("Data sent to API successfully!", {
+          //   position: toast.POSITION.TOP_RIGHT,
+          // });
+        }
+      } catch (error) {
+        // toast.error("Error sending data to the API. Please try again.", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+      }
     } else {
       const startTime = Date.now() - time;
       intervalRef.current = setInterval(() => {
@@ -70,14 +142,14 @@ const WorkTime = () => {
           zones.push({
             id: country.id,
             name: `${country.name}`,
-            abbreviation: '',
+            abbreviation: "",
             timezones: country.timezones,
           });
         } else {
           country.timezones.forEach((timezone) => {
             // const timezoneAbbr = moment().tz(timezone).format('z')
             // const timezoneAbbr = moment.tz(timezone).zoneAbbr();
-            let abbreviation = timezone.split('/')
+            let abbreviation = timezone.split("/");
             zones.push({
               id: country.id,
               name: country.name,
@@ -100,7 +172,7 @@ const WorkTime = () => {
   const deleteTime = (timezone) => {
     const storedData = localStorage.getItem("myTimeZones");
     const data = storedData ? JSON.parse(storedData) : [];
-    const indexToRemove = data.filter(item => item.name !== timezone.name);
+    const indexToRemove = data.filter((item) => item.name !== timezone.name);
     localStorage.setItem("myTimeZones", JSON.stringify(indexToRemove));
     setMsg("");
   };
@@ -110,14 +182,24 @@ const WorkTime = () => {
     const storedData = localStorage.getItem("myTimeZones");
     const data = storedData ? JSON.parse(storedData) : [];
     if (selectedTimezone.timeZone.length === 1) {
-      const existsInArray = data.some(item => item.name === `${selectedTimezone.name}${selectedTimezone.abbreviation && ` - ${selectedTimezone.abbreviation}`}`);
+      const existsInArray = data.some(
+        (item) =>
+          item.name ===
+          `${selectedTimezone.name}${
+            selectedTimezone.abbreviation &&
+            ` - ${selectedTimezone.abbreviation}`
+          }`
+      );
       if (data.length < clockLimit) {
         if (existsInArray) {
           setBottomMsg("Time Zone Already Exist Choose Another One.");
         } else {
           data.push({
             id: selectedTimezone.id,
-            name: `${selectedTimezone.name}${selectedTimezone.abbreviation && ` - ${selectedTimezone.abbreviation}`}` ,
+            name: `${selectedTimezone.name}${
+              selectedTimezone.abbreviation &&
+              ` - ${selectedTimezone.abbreviation}`
+            }`,
             timeZone: selectedTimezone.timeZone,
           });
           localStorage.setItem("myTimeZones", JSON.stringify(data));
@@ -140,14 +222,13 @@ const WorkTime = () => {
       const storedData = localStorage.getItem("myTimeZones");
       const data = storedData ? JSON.parse(storedData) : [];
       let myZones = [];
-      data.map((d) =>{
+      data.map((d) => {
         myZones.push({
           name: d.name,
           time: getTargetTime(d.timeZone[0]),
           img: d.id?.toLowerCase(),
-        })
-      }
-      );
+        });
+      });
       setWorldTime(myZones);
     }, 1000);
     return () => clearInterval(interval);
@@ -156,15 +237,16 @@ const WorkTime = () => {
     fetchTimezones();
   }, []);
 
-
   const customFilter = (option, searchText) => {
-    if (option.data.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    option.data.abbreviation.toLowerCase().includes(searchText.toLowerCase()) ) {
+    if (
+      option.data.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      option.data.abbreviation.toLowerCase().includes(searchText.toLowerCase())
+    ) {
       return true;
     } else {
       return false;
     }
-  }
+  };
 
   return (
     <div className="flex flex-col -mt-5 items-center justify-center ml-1 mr-3 md:pr-[25%] md:ml-10">
@@ -196,6 +278,7 @@ const WorkTime = () => {
           </div>
         </div>
       </div>
+
       {/* ********************************** World Times ******************************* */}
       <div className="w-1/4 md:flex hidden">
         <div
@@ -345,17 +428,22 @@ const WorkTime = () => {
                         setSelectedTimezone({
                           id: e.id,
                           abbreviation: e.abbreviation,
-                          name: e.name ,
+                          name: e.name,
                           timeZone: e.timezones,
                         });
                       } else {
                         setSelectedTimezone(null);
                       }
                     }}
-                    getOptionLabel={option =>
-                      <div className="flex gap-2 items-start">{option.name} <div className="text-sm opacity-60">{option.abbreviation}</div> </div>
-                    }
-                    getOptionValue={option => option.timezones}
+                    getOptionLabel={(option) => (
+                      <div className="flex gap-2 items-start">
+                        {option.name}{" "}
+                        <div className="text-sm opacity-60">
+                          {option.abbreviation}
+                        </div>{" "}
+                      </div>
+                    )}
+                    getOptionValue={(option) => option.timezones}
                     options={timezones}
                   />
                 </div>
@@ -379,4 +467,11 @@ const WorkTime = () => {
   );
 };
 
-export default WorkTime;
+const mapStateToProps = (state) => {
+  return {
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
+
+export default connect(mapStateToProps)(WorkTime);

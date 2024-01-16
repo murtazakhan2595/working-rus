@@ -99,7 +99,7 @@ body {
 
 .xScroll::-webkit-scrollbar {
   width: 2px;
-  height: 5px;
+  height: 11px;
 }
 
 .xScroll::-webkit-scrollbar-track {

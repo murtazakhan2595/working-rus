@@ -4,9 +4,7 @@ import { connect } from "react-redux";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { IoIosSearch } from "react-icons/io";
-import { BsTable } from "react-icons/bs";
-import { FaRegPlusSquare } from "react-icons/fa";
+
 
 const LeaveHeader = ({ userProfile, post }) => {
   const location = useLocation();

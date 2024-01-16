@@ -10,9 +10,9 @@ export const tasksTitle = [
 
   { label: "Due Date", width: "w-28" },
 
-  { label: "Status", width: "w-28" },
+  // { label: "Status", width: "w-28" },
 
-  { label: "Board", width: "w-28" },
+  { label: "List", width: "w-28" },
 
   { label: "Priority", width: "w-28" },
 ];
