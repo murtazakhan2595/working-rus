@@ -22,7 +22,6 @@ import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { links } from "../../../../data/Data";
-import { PiShootingStarBold } from "react-icons/pi";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -138,7 +137,7 @@ const Sidebar = ({
                 ))}
             {(userProfile.role === 3 || userProfile.role === 4) && (
               <li>
-                <Link to="#">
+                {/* <Link to="#">
                   <div
                     className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900`}
                   >
@@ -146,7 +145,7 @@ const Sidebar = ({
                       <PiShootingStarBold />
                     </div>
                   </div>
-                </Link>
+                </Link> */}
               </li>
             )}
             {userProfile.role !== 2 && (

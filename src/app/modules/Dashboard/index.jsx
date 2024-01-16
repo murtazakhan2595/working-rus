@@ -1,16 +1,8 @@
-import { useState } from "react";
 import { connect } from "react-redux";
 import WorkTime from "./WorkTime";
 import TodoList from "./Todolist";
-import { IoIosSearch } from "react-icons/io";
-import { MdMail } from "react-icons/md";
-import { BsBell } from "react-icons/bs";
 import TaskPlanner from "./TaskPlanner";
-import NotificationBox from "./NotificationBox";
-import Calendar from "./Calender";
 import "./index.css";
-import { Link } from "react-router-dom";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import DailyTaskRpt from "./DailyTaskRpt";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
@@ -84,7 +76,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
             className={`flex flex-col w-full md:pr-8 self-start gap-2 items-center md:items-end ${isSidebarOpen ? "" : "3xl:ml-20"
               }`}
           >
-            <WorkTime />
+            <WorkTime userProfile={userProfile} />
           </div>
         </div>
         {/* ******************** Daily Task Report**************/}

@@ -12,8 +12,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
   const [isCompleteTab, setIsCompleteTab] = useState(false);
-  const [board, setBoard] = useState([]);
-  const [boardStatus, setBoardStatus] = useState([]);
+  const [boards, setBoards] = useState([]);
   const [nextPage, setNextPage] = useState("");
 
   const navigate = useNavigate();
@@ -35,8 +34,23 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
           setMsg("You have no task");
           return;
         }
+        const tasksWithBardName = [];
+        for (const task of tasksData) {
+          let username = users.filter((u) => u.id === task.assigned_by);
+          let boardname = boards.filter((b) => b.id === task.board_status_id);
+          let project_id = boardname[0].project_id;
+          const taskWithname = {
+            ...task,
+            boardName: boardname[0].name,
+            userName: username[0].username,
+            project_id: project_id,
+          };
+          tasksWithBardName.push(taskWithname);
+          console.log(tasksWithBardName, "task with ");
+        }
+        setTasks(tasksWithBardName);
       } else {
-        setMsg("Could not get tasks");
+        setMsg("Cloud not get tasks");
       }
     } catch (error) {
     } finally {
@@ -69,23 +83,9 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
           },
         })
         .then((response) => {
-          if (response.status === 200) {  
-            setBoard(response.data.results)
-          }
-        });
-    } catch (error) {}
-  };
-  const getBoardStatus = async (url = `${baseUrl}/boardstatus/`) => {
-    try {
-      await axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          if (response.status === 200) {  
-            setBoardStatus(response.data)
+          if (response.status === 200) {
+            setBoards((prevTasks) => [...prevTasks, ...response.data.results]);
+            setNextPage(response.data.next);
           }
         });
     } catch (error) {}
@@ -93,28 +93,17 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
 
   useEffect(() => {
     do {
-      nextPage ? getBoardStatus(nextPage) : getBoardStatus();
+      nextPage ? getBoards(nextPage) : getBoards();
     } while (nextPage);
     getUsers();
   }, []);
   useEffect(() => {
     getTasks();
-    getBoards();
   }, [users]);
 
   const getLenght = (task) => {
     let tName = String(task.name);
     return tName.length > 25 && "...";
-  };
-
-  const getAssignedUsername = (userId) => {
-    const user = users.find((user) => user.id === userId);
-    return user?.username;
-  };
-
-  const getBoardName = (boardId) => {
-    const board = boardStatus.find((board) => board.id === boardId);
-    return board?.name;
   };
 
   return (
@@ -138,6 +127,17 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
         >
           Ongoing
         </div>
+        {/* <div className="opacity-30">Overdue</div> */}
+        <div
+          className={` cursor-pointer ${
+            isCompleteTab ? "text-blue-600" : "opacity-30"
+          }`}
+          onClick={() => {
+            setIsCompleteTab(true);
+          }}
+        >
+          Completed
+        </div>
       </div>
 
       <div className="w-full overflow-x-auto  xScroll">
@@ -152,7 +152,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
           {/* {tasks.length < 1 && <div>not Found</div>} */}
 
           {!loading ? (
-            <div className="h-[30vh] roundScroll overflow-auto">
+            <div className="h-[30vh] roundScroll overflow-auto mt-6">
               {isCompleteTab
                 ? tasks.map(
                     (task, index) =>
@@ -160,7 +160,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
                         <div
                           onClick={() => {
                             navigate(
-                              // `/board/${board_id}?pId=${task.project_id}`
+                              `/board/${task.board_id}?pId=${task.project_id}`
                             );
                           }}
                           key={index}
@@ -171,7 +171,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
                           </div>
                           <div className="w-28">{task.userName}</div>
                           <div className="w-28">{task.end_date}</div>
-                          {/* <div className="w-28">{task.status}</div> */}
+                          <div className="w-28">{task.status}</div>
                           <div className="w-28">{task.boardName}</div>
                           <div className="w-28 text-center text-sm">
                             {task.priority === 1 && (
@@ -202,13 +202,10 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
                           <div className="w-44">
                             {task.name.substring(0, 25)} {getLenght(task)}
                           </div>
-                          <div className="w-28">
-                            {getAssignedUsername(task.assigned_by)}
-                          </div>
+                          <div className="w-28">{task.userName}</div>
                           <div className="w-28">{task.end_date}</div>
-                          <div className="w-28">
-                            {getBoardName(task.board_status_id)}
-                          </div>
+                          <div className="w-28">{task.status}</div>
+                          <div className="w-28">{task.boardName}</div>
                           <div className="w-28 text-center text-sm">
                             {task.priority === 1 && (
                               <TbAlertCircleFilled className="text-red-600 text-center text-2xl mx-auto" />

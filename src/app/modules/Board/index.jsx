@@ -29,7 +29,6 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
   const [reload, setReload] = useState(false);
   const [project, setProject] = useState({});
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
-  const [boardHidden, setBoardHidden] = useState(false);
   const [users, setUsers] = useState([]);
   const location = useLocation();
   const [tasks, setTasks] = useState([]);
@@ -294,7 +293,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
         {
           name: formData.name,
           board_id: id,
-          serial_number: formData.serial_number,
+          serial_number: "123",
         },
         {
           headers,
@@ -429,18 +428,22 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
     return assignedUser
       ? assignedUser.username.toUpperCase().slice(0, 2)
       : "Unassigned";
-    // console.log(assignedUser.username);
   };
 
   return (
-    <div className={`w-full h-screen bg-[#F9F9F9] ${boardHidden ? "" : ""}`}>
+    <div className={`w-full h-screen bg-[#F9F9F9]`}>
       {/* ***************************************************** Header ***************************************************** */}
-      <div className="py-5 sm:pl-10 pr-2 flex flex-col justify-center sm:flex-row gap-3 items-center sm:justify-between">
+      <div
+        className={`py-5 sm:pl-10 pr-2 flex flex-col justify-center sm:flex-row gap-3 items-center sm:justify-between ${
+          isSidebarOpen ? "w-[85vw]" : "w-[100vw]"
+        }`}
+      >
         <div className="flex items-center">
-          <h1 className="text-3xl mr-2 leading-none font-semibold  opacity-80 tracking-widest">
-            <Link to="/">My Boards</Link>
+          <h1 className="text-3xl mr-2 leading-none font-semibold opacity-80 tracking-widest">
+            My Boards
           </h1>
         </div>
+
         <div className="relative">
           <div
             className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
@@ -464,8 +467,9 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
           )}
         </div>
       </div>
+
       {/* ***************************************************** Board Header ***************************************************** */}
-      <div className="bg-[#ebebeb] mb-6 pr-1 pl-1 sm:pl-5 gap-3  justify-between py-2 flex flex-col md:flex-row lg:flex-row">
+      <div className="bg-[#ebebeb] mb-6 pr-1 pl-1 sm:pl-5 gap-3 justify-between py-2 flex flex-col md:flex-row lg:flex-row">
         {isLoading ? (
           <div className="flex items-center space-x-2">
             <div className="w-36 rounded-md h-6 bg-gray-300 animate-pulse"></div>
@@ -559,7 +563,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                        
                       )} */}
 
-                      <div className="h-auto max-h-[55vh] overflow-y-auto xScroll">
+                      <div className="h-auto max-h-[55vh] overflow-y-auto boardScroll">
                         {tasks
                           ?.filter((task) => task.board_status_id === card.id)
                           ?.map((task, index) => (
@@ -586,7 +590,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                                         <div
                                           title={task.assignedUser}
                                           className={`rounded-full cursor-pointer text-[.60rem] text-white flex 
-                                        p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold ${getRandomColor()}`}
+                                        p-1 w-6 h-6 opacity-60 border justify-center items-center ${getRandomColor()}`}
                                         >
                                           {getAssignedUserName(
                                             task.assigned_to
@@ -709,7 +713,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                         placeholder="TecBrix Dashboard Design"
                         required
                       />
-                      <input
+                      {/* <input
                         type="number"
                         name="serial_number"
                         value={formData.serial_number}
@@ -719,7 +723,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                         className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
                         placeholder="Serial Number"
                         required
-                      />
+                      /> */}
                     </div>
                   </div>
                   <button
@@ -798,15 +802,15 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
             key={card.id}
             className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50"
           >
-            <div className="bg-white p-3 rounded-lg shadow-lg">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
               <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Delete Item</h1>
+                <h1 className="text-2xl font-bold">Delete Confirmation</h1>
                 <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer">
                   <RxCross2 onClick={() => setShowDeleteConfirmation(false)} />
                 </div>
               </div>
               <p className="text-gray-700 mt-2">
-                Are you sure you want to delete this board Status?
+                Are you sure you want to delete this list?
               </p>
               <div className="mt-4 flex justify-end">
                 <button
