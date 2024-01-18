@@ -52,6 +52,33 @@ export const links = [
   },
 ];
 
+export const managerlinks = [
+  { to: "/", text: "Home", icon: <LiaHomeSolid /> },
+  { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
+  {
+    to: "/leave-application",
+    text: "Leave Application",
+    icon: <MdOutlineTimeToLeave />,
+  },
+];
+
+export const hrLinks = [
+  { to: "/", text: "Home", icon: <LiaHomeSolid /> },
+  { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
+  { to: "/employees", text: "Employee Sheet", icon: <BiSpreadsheet /> },
+  { to: "/jobs", text: "Recruitment", icon: <MdOutlinePayment /> },
+];
+
+export const employeeLinks = [
+  { to: "/", text: "Home", icon: <LiaHomeSolid /> },
+  { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
+  {
+    to: "/leave-application",
+    text: "Leave Application",
+    icon: <MdOutlineTimeToLeave />,
+  },
+];
+
 export const jobTypeOptions = [
   { value: "Remote", label: "Remote" },
   { value: "Onsite", label: "Onsite" },

@@ -73,36 +73,40 @@ const PersonalInfo = ({
 
   const [imagePreview, setImagePreview] = useState("");
 //   profile_picture
-  const handleImageUpload = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-    const fileData = { name: selectedFile.name };
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setDataInSessionStorage("UpdatedDP" ,{
-            name: fileData.name,
-            file: e.target.result,
-          } )
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(selectedFile);
-      const imageError = { image: "" };
-      setErrors(imageError);
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
-        headers,
+const handleImageUpload = (e) => {
+  const selectedFile = e.target.files[0];
+  if (selectedFile) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setDataInSessionStorage("UpdatedDP", {
+        name: selectedFile.name,
+        file: e.target.result,
       });
-      const employeeData = employeeResponse.data;
-      setDefaultData(employeeData);
-      setImagePreview(employeeData.profile_picture)
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(selectedFile);
+    const imageError = { image: "" };
+    setErrors(imageError);
+  }
+  console.log("Selected File:", selectedFile);
+  console.log("Image Data:", e.target.result);
+};
+
+const fetchData = async () => {
+  try {
+    const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
+      headers,
+    });
+    const employeeData = employeeResponse.data;
+    setDefaultData(employeeData);
+
+    // Check session storage first, then fallback to local state
+    const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
+    setImagePreview(updatedDP.file || employeeData.profile_picture);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
 
   useEffect(() => {
     fetchData();

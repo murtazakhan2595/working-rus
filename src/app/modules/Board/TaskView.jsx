@@ -11,7 +11,9 @@ import ReactQuill from "react-quill";
 import { priorityOptions, statusOptions } from "../../../data/Data";
 import Select from "react-select";
 
-const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks }) => {
+const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks, taskViewBoardStatusId }) => {
+  console.log('task view board status id', taskViewBoardStatusId);
+
   const [assignToOpen, setAssignToOpen] = useState(false);
   const [assignByOpen, setAssignByOpen] = useState(false);
   const [description, setDescription] = useState(taskData.description);
@@ -20,6 +22,8 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks }) => {
   const [startDate, setStartDate] = useState(taskData.startDate);
   const [status, setStatus] = useState(taskData.status);
   const [priority, setPriority] = useState(taskData.priority);
+  const [board_status_Id, setBoard_Status_Id] = useState(taskData.id);
+  const [projectId, setProjectId] = useState(taskData.project_id);
   const [validationErrors, setValidationErrors] = useState({});
   const [users, setUsers] = useState({});
   const [filterUsers, setFilterUsers] = useState({});
@@ -174,7 +178,9 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks }) => {
           description: description,
           assigned_to: assignToUser.id,
           assigned_by: assignByUser.id,
-          board_status_id: id,
+          board_status_id: taskViewBoardStatusId,
+          board_id: parseInt(taskData.board_id, 10),
+          project_id: parseInt(projectId, 10),
           priority: priority,
           start_date: startDate,
           end_date: dueDate,
@@ -193,7 +199,7 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks }) => {
             autoClose: 1000,
           });
           onClose();
-          getTasks()
+          getTasks();
         }
       } catch (error) {
         console.error("Error:", error);
@@ -312,7 +318,12 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks }) => {
     // Prevent propagation to parent elements
     e.stopPropagation();
     onClose();
+    // console.log(taskData.id, "task id");
+    // console.log(id, "id");
+    // // console.log(boardStatusId, "board status id");
   };
+
+  
   return (
     <div
       className="fixed inset-0 w-screen overflow-y-auto scroll z-50 h-screen flex justify-center items-center backdrop-blur-sm"
