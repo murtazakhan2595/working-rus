@@ -110,7 +110,9 @@ body {
 .xScroll::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: #202f75;
-  outline: 1px solid #1976d246;}
+  outline: 1px solid #1976d246;
+}
+  
 
 .ql-toolbar.ql-snow {
   border: none !important;

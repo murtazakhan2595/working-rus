@@ -10,8 +10,8 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
 const ProjectModal = ({ baseUrl, token, onClose }) => {
-  let newDate = new Date();
-  let defaultDate = `${newDate.getFullYear()}-${newDate.getMonth()}-${newDate.getDate()}`;
+  const newDate = new Date();
+  const defaultDate = moment(newDate).format("YYYY-MM-DD");  
 
   const navigate = useNavigate();
 
@@ -151,8 +151,6 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
   const filteredUsers = users.filter((user) =>
     user.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  console.log("Filtered Users:", filteredUsers);
 
   return (
     <>

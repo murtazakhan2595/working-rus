@@ -118,12 +118,21 @@ function App({
                   <Route
                     exact
                     path="/"
-                    element={userProfile.role !== 2 ? <Dashboard isSidebarOpen={isSidebarOpen} /> :<JobsDataTable />}
+                    element={
+                      userProfile.role === 2 ? (
+                        <Dashboard isSidebarOpen={isSidebarOpen} />
+                      ) : (
+                        <Dashboard isSidebarOpen={isSidebarOpen} />
+                      )
+                    }
                   />
-                  <Route path="/board/:id" element={<Board isSidebarOpen={isSidebarOpen} />} />
+                  <Route
+                    path="/board/:id"
+                    element={<Board isSidebarOpen={isSidebarOpen} />}
+                  />
                   <Route path="/profile" element={<UpdateEmpForm />} />
                   <Route path="/project/:id" element={<BoardList />} />
-                  {(userProfile.role === 1 || userProfile.role === 2) && (
+                  {userProfile.role === 1 && (
                     <>
                       <Route
                         exact
@@ -135,15 +144,61 @@ function App({
                         path="/add-employee"
                         element={<EmpDataForm />}
                       />
+                      <Route path="/user/:id" element={<ViewEmployee />} />
+
                       <Route path="/job-post" element={<RecruitmentForm />} />
-                      <Route path="/edit-post/:id" element={<RecruitmentForm />} />
+                      <Route
+                        path="/edit-post/:id"
+                        element={<RecruitmentForm />}
+                      />
                       <Route
                         path="/applicants/:id"
                         element={<ApplicantsDataTable />}
                       />
                       <Route path="/jobs" element={<JobsDataTable />} />
+
+                      <Route
+                        path="/leave-application"
+                        element={<LeaveApplicationForm />}
+                      />
+                    </>
+                  )}
+                  {(userProfile.role === 2 || userProfile.role === 4) && (
+                    <>
+                      <Route
+                        path="/leave-application"
+                        element={<LeaveApplicationForm />}
+                      />
+                    </>
+                  )}
+                  {userProfile.role === 3 && (
+                    <>
+                      <Route
+                        exact
+                        path="/employees"
+                        element={<EmpDataSheet />}
+                      />
+                      <Route
+                        exact
+                        path="/add-employee"
+                        element={<EmpDataForm />}
+                      />
                       <Route path="/user/:id" element={<ViewEmployee />} />
-                      <Route path="/leave-application" element={<LeaveApplicationForm />} />
+
+                      <Route path="/job-post" element={<RecruitmentForm />} />
+                      <Route
+                        path="/edit-post/:id"
+                        element={<RecruitmentForm />}
+                      />
+                      <Route
+                        path="/applicants/:id"
+                        element={<ApplicantsDataTable />}
+                      />
+                      <Route path="/jobs" element={<JobsDataTable />} />
+                      <Route
+                        path="/leave-application"
+                        element={<LeaveApplicationForm />}
+                      />
                     </>
                   )}
                 </Route>

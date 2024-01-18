@@ -20,7 +20,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
   const initialData = {
     name: "",
-    serial_number: null,
+    // serial_number: null,
   };
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -46,6 +46,8 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
   const searchParams = new URLSearchParams(window.location.search);
   const projectId = searchParams.get("pId");
   const [selectedBoardStatusId, setSelectedBoardStatusId] = useState(null);
+  const [selectedBoardStatusIdTaskView, setselectedBoardStatusIdTaskView] =
+    useState(null);
   const [taskView, setTaskView] = useState({});
   const [shouldFetchTasks, setShouldFetchTasks] = useState(false);
   const [newSerialNumber, setNewSerialNumber] = useState("");
@@ -116,7 +118,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
     await axios.put(
       `${baseUrl}/task/${draggableId}`,
       {
-        board_status_id: destinationBoardStatusId,
+        board_status_id: parseInt(destinationBoardStatusId),
         name: draggedTask.name,
         description: draggedTask.description,
       },
@@ -293,7 +295,6 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
         {
           name: formData.name,
           board_id: id,
-          serial_number: "123",
         },
         {
           headers,
@@ -344,15 +345,12 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
     setIsEditBoardOpen(true);
     const boardToEdit = cards.find((card) => card.id === id);
     setNewBoardName(boardToEdit.name);
-    setNewSerialNumber(boardToEdit.serial_number);
   };
 
   const handleEditBoardSave = async () => {
     try {
       const updatedCards = cards.map((card) =>
-        card.id === editBoardId
-          ? { ...card, name: newBoardName, serial_number: newSerialNumber }
-          : card
+        card.id === editBoardId ? { ...card, name: newBoardName } : card
       );
 
       setCards(updatedCards);
@@ -360,7 +358,6 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
         `${baseUrl}/boardstatus/${editBoardId}`,
         {
           name: newBoardName,
-          serial_number: newSerialNumber,
         },
         { headers }
       );
@@ -374,7 +371,6 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
         });
       }
     } catch (error) {
-      console.error("Error updating board list:", error);
       toast.error("Error updating Board List", {
         position: "top-right",
         autoClose: 3000,
@@ -482,8 +478,11 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
       {/* ***************************************************** Board Status Card ***************************************************** */}
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex w-full justify-start overflow-x-auto xScroll lg:w-[100vw] lg:h-[75vh] px-6">
-          <div id="boardList" className="flex">
+        <div
+          className={`flex justify-start overflow-x-auto xScroll w-full lg:h-[75vh] px-6`}
+          style={{ width: isSidebarOpen ? 'calc(100% - 225px)' : '100%' }}
+        >
+          <div id="boardList" className="flex w-[100vw]">
             {cards?.map((card) => (
               <div
                 className="bg-white mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72"
@@ -492,24 +491,6 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                 <Droppable droppableId={card.id.toString()} key={card.id}>
                   {(provided, snapshot) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {/* {isLoading ? (
-                        <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
-                          <div className="opacity-70 h-5 w-3/4 mb-2"></div>
-                          <hr className="bg-white h-2 my-2" />
-                          <div className="flex justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="text-[0.60rem]"></div>
-                              <div className="text-sm opacity-50 cursor-pointer"></div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        
-                      )} */}
-
                       <div className="flex justify-between items-center mb-3 mt-3">
                         <div className="flex items-center">
                           <div className="text-[#283b91]">{card.name}</div>
@@ -543,26 +524,6 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                         </div>
                       </div>
 
-                      {/* {isLoading ? (
-                        <>
-                          <div className="bg-gray-300 rounded-md p-3 m-2 animate-pulse">
-                            <div className="opacity-70 h-5 w-3/4 mb-2"></div>
-                            <hr className="bg-white h-2 my-2" />
-                            <div className="flex justify-between">
-                              <div className="flex items-center gap-2">
-                                <div className="rounded-full cursor-pointer text-[.60rem] text-white flex p-1 w-6 h-6 opacity-60 border justify-center items-center font-bold bg-gray-500"></div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="text-[0.60rem]"></div>
-                                <div className="text-sm opacity-50 cursor-pointer"></div>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                       
-                      )} */}
-
                       <div className="h-auto max-h-[55vh] overflow-y-auto boardScroll">
                         {tasks
                           ?.filter((task) => task.board_status_id === card.id)
@@ -578,7 +539,14 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                   className="flex-shrink-0 p-2 pt-1 pb-3 max-w-[300px] rounded-md"
-                                  onClick={() => openTaskView(task.id)}
+                                  onClick={() => {
+                                    openTaskView(task.id);
+                                    setselectedBoardStatusIdTaskView(
+                                      (prevState) => {
+                                        return task.board_status_id;
+                                      }
+                                    );
+                                  }}
                                 >
                                   <div className="max-w-[255px] bg-[#F2F2F2] rounded-md overflow-hidden">
                                     <div className="px-6 py-4">
@@ -621,24 +589,31 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                                         </div>
                                       </div>
                                     </div>
+                                    {openTaskId === task.id && (
+                                      <TaskView
+                                        onClose={() => {
+                                          closeTaskView(openTaskId);
+                                        }}
+                                        getTasks={getTasks}
+                                        taskViewBoardStatusId={
+                                          selectedBoardStatusIdTaskView
+                                        }
+                                        taskData={{
+                                          id: task.id,
+                                          board_id: id,
+                                          project_id: projectId,
+                                          name: task.name,
+                                          description: task.description,
+                                          dueDate: task.end_date,
+                                          startDate: task.start_date,
+                                          priority: task.priority,
+                                          status: task.status,
+                                          assigned_to: task.assigned_to,
+                                          assigned_by: task.assigned_by,
+                                        }}
+                                      />
+                                    )}
                                   </div>
-                                  {openTaskId === task.id && (
-                                    <TaskView
-                                      onClose={() => closeTaskView(openTaskId)}
-                                      getTasks={getTasks}
-                                      taskData={{
-                                        id: task.id,
-                                        name: task.name,
-                                        description: task.description,
-                                        dueDate: task.end_date,
-                                        startDate: task.start_date,
-                                        priority: task.priority,
-                                        status: task.status,
-                                        assigned_to: task.assigned_to,
-                                        assigned_by: task.assigned_by,
-                                      }}
-                                    />
-                                  )}
                                 </div>
                               )}
                             </Draggable>
@@ -660,7 +635,8 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                 </Droppable>
               </div>
             ))}
-            <div className={`${isSidebarOpen ? "pr-56" : "pr-0"}`}>
+            {/* <div className={`${isSidebarOpen ? "pr-56" : "pr-0"}`}> */}
+            <div>
               <button
                 className="bg-baseBlue text-white rounded-md px-6 py-2 w-[240px]"
                 onClick={openListModal}
@@ -713,17 +689,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                         placeholder="TecBrix Dashboard Design"
                         required
                       />
-                      {/* <input
-                        type="number"
-                        name="serial_number"
-                        value={formData.serial_number}
-                        onChange={(e) =>
-                          handleChange(e.target.name, e.target.value)
-                        }
-                        className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
-                        placeholder="Serial Number"
-                        required
-                      /> */}
+
                     </div>
                   </div>
                   <button
@@ -765,13 +731,6 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                       className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
                       placeholder="Board Name"
                     />
-                    <input
-                      type="number"
-                      value={newSerialNumber}
-                      onChange={(e) => setNewSerialNumber(e.target.value)}
-                      className="rounded-md bg-white text-black h-9 w-full py-2 pl-2 my-1 focus:outline-none font-sfpro tracking-wider mb-1"
-                      placeholder="Serial Number"
-                    />
                   </div>
                   <div className="mt-4 flex justify-end">
                     <button
@@ -780,12 +739,6 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                     >
                       Save
                     </button>
-                    {/* <button
-                      className="px-4 py-1 mr-2 text-white bg-blue-500 rounded"
-                      onClick={handleEditBoardSave}
-                    >
-                      Save
-                    </button> */}
                   </div>
                 </div>
               </div>
@@ -802,12 +755,12 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
             key={card.id}
             className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50"
           >
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="bg-white p-9 rounded-lg shadow-lg relative">
+              <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer absolute top-3 right-3">
+                <RxCross2 onClick={() => setShowDeleteConfirmation(false)} />
+              </div>
               <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold">Delete Confirmation</h1>
-                <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer">
-                  <RxCross2 onClick={() => setShowDeleteConfirmation(false)} />
-                </div>
               </div>
               <p className="text-gray-700 mt-2">
                 Are you sure you want to delete this list?

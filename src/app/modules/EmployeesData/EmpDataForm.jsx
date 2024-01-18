@@ -9,8 +9,8 @@ import axios from "axios";
 
 const userRoles = [
   { value: 1, label: "Super Admin" },
-  { value: 2, label: "HR" },
-  { value: 3, label: "Manager" },
+  { value: 2, label: "Manager" },
+  { value: 3, label: "HR" },
   { value: 4, label: "Employee" },
 ];
 

@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
-import { links } from "../../../../data/Data";
+import { hrLinks, links, managerlinks } from "../../../../data/Data";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -106,8 +106,8 @@ const Sidebar = ({
               </div>
             </li>
 
-            {userProfile.role === 1 || userProfile.role === 2
-              ? links.map((link, index) => (
+            {(userProfile.role === 2 || userProfile.role === 4)
+              && managerlinks.map((link, index) => (
                   <li key={index}>
                     <Link to={link.to}>
                       <div
@@ -121,34 +121,38 @@ const Sidebar = ({
                     </Link>
                   </li>
                 ))
-              : validateLinks.map((link, index) => (
-                  <li key={index}>
-                    <Link to={link.to}>
-                      <div
-                        className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                          location.pathname === link.to ? "bg-[#259ED8]" : ""
-                        }`}
-                      >
-                        <div className="text-white text-xl">{link.icon}</div>
-                        <p className="text-white">{link.text}</p>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-            {(userProfile.role === 3 || userProfile.role === 4) && (
-              <li>
-                {/* <Link to="#">
-                  <div
-                    className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900`}
-                  >
-                    <div className="text-white text-xl">
-                      <PiShootingStarBold />
+              }
+            {userProfile.role === 3 &&
+              hrLinks.map((link, index) => (
+                <li key={index}>
+                  <Link to={link.to}>
+                    <div
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
+                        location.pathname === link.to ? "bg-[#259ED8]" : ""
+                      }`}
+                    >
+                      <div className="text-white text-xl">{link.icon}</div>
+                      <p className="text-white">{link.text}</p>
                     </div>
-                  </div>
-                </Link> */}
-              </li>
-            )}
-            {userProfile.role !== 2 && (
+                  </Link>
+                </li>
+              ))}
+            {userProfile.role === 1 &&
+              links.map((link, index) => (
+                <li key={index}>
+                  <Link to={link.to}>
+                    <div
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
+                        location.pathname === link.to ? "bg-[#259ED8]" : ""
+                      }`}
+                    >
+                      <div className="text-white text-xl">{link.icon}</div>
+                      <p className="text-white">{link.text}</p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            {userProfile.role !== 3 && (
               <>
                 <hr className="opacity-40" />
 

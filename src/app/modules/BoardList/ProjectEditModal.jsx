@@ -177,35 +177,6 @@ const ProjectEditModal = ({ baseUrl, token, onClose, data }) => {
                     >
                       Description
                     </label>
-                    {/* Text area */}
-                    {/* <div className="lg:h-48 h-36 max-h-48 mt-1 roundScrollsm w-full resize-none overflow-y-auto outline-none rounded-xl border-none bg-white mb-1">
-                      <ReactQuill
-                        name="description"
-                        id="description"
-                        className="text-center"
-                        value={description}
-                        onChange={(html) => {
-                          setValidationErrors((prevErrors) => ({
-                            ...prevErrors,
-                            description: null,
-                          }));
-                          setDescription(html);
-                        }}
-                        modules={{
-                          toolbar: {
-                            container: [
-                              ["bold", "italic", "underline", "strike"],
-                              [{ list: "ordered" }, { list: "bullet" }],
-                              [{ align: [] }],
-                              ["link", "image"],
-                              [{ header: "1" }, { header: "2" }],
-                              [{ size: ["small", false, "large", "huge"] }],
-                            ],
-                          },
-                        }}
-                      />
-                    </div> */}
-
                     <div className="h-52 mt-4 w-full resize-none outline-none roundScrollsm rounded-2xl border-none bg-white">
                       <ReactQuill
                         className="text-center h-[88%]"
