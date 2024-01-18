@@ -756,16 +756,22 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
             className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50"
           >
             <div className="bg-white p-9 rounded-lg shadow-lg relative">
-              <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer absolute top-3 right-3">
-                <RxCross2 onClick={() => setShowDeleteConfirmation(false)} />
-              </div>
-              <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Delete Confirmation</h1>
-              </div>
+              {/* <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer absolute top-3 right-3">
+                <RxCross2 />
+              </div> */}
+              {/* <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Delete</h1>
+              </div> */}
               <p className="text-gray-700 mt-2">
                 Are you sure you want to delete this list?
               </p>
-              <div className="mt-4 flex justify-end">
+              <div className="mt-4 flex items-center gap-x-2 justify-end">
+                <button
+                  className="px-4 py-1 mr-2 text-white bg-blue-500 rounded"
+                  onClick={() => setShowDeleteConfirmation(false)}
+                >
+                  No
+                </button>
                 <button
                   className="px-4 py-1 mr-2 text-white bg-red-500 rounded"
                   onClick={() => {
@@ -773,7 +779,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                     setShowDeleteConfirmation(false);
                   }}
                 >
-                  Delete
+                  Yes
                 </button>
               </div>
             </div>
