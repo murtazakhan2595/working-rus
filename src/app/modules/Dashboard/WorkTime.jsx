@@ -4,6 +4,7 @@ import { RxResume } from "react-icons/rx";
 import { VscDebugStart } from "react-icons/vsc";
 import { CiPause1 } from "react-icons/ci";
 import { IoClose } from "react-icons/io5";
+import { LuTimerReset } from "react-icons/lu";
 import moment from "moment-timezone";
 import { getAllCountries } from "countries-and-timezones";
 import Select from "react-select";
@@ -192,6 +193,36 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       // });
     }
   };
+  const resetTimer = async () => {
+    try {
+      const response = await axios.post(
+        `${baseUrl}/timetracker/Timetracker/${id}/reset_clock/`,
+        {
+          id: id,
+          start_time: combinedDateTime,
+          end_date: "",
+          status: "start",
+          total_worked_hours: 0,
+          employee: userProfile.id,
+        },
+        {
+          headers,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        setClockData(response.data);
+        // toast.success("Data sent to API successfully!", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+      }
+    } catch (error) {
+      // toast.error("Error sending data to the API. Please try again.", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
+    }
+  };
 
   const fetchTimerData = async () => {
     try {
@@ -215,7 +246,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
     fetchTimerData();
     const intervalId = setInterval(() => {
       fetchTimerData();
-    }, 60000);
+    }, 55000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -408,6 +439,13 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
                   title="Resume"
                 >
                   <RxResume />
+                </button>
+                <button
+                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                  onClick={resetTimer}
+                  title="Reset"
+                >
+                  <LuTimerReset />
                 </button>
               </>
             )}
