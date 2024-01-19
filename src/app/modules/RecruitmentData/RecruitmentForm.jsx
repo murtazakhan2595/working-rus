@@ -440,6 +440,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                   type="button"
                   onClick={() => {
                     setFormData(initialData);
+                    navigate('/jobs')
                   }}
                   className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
                 >

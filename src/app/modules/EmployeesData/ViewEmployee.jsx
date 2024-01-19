@@ -31,7 +31,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
         `${baseUrl}/education/?search={"employee_id":${id}}`,
         { headers }
       );
-      const educationData = educationResponse.data.results;
+      const educationData = educationResponse.data;
       setEducations(educationData);
 
       // Fetch experiences data
@@ -39,7 +39,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
         `${baseUrl}/experience/?search={"employee_id":${id}}`,
         { headers }
       );
-      const experiencesData = experiencesResponse.data.results;
+      const experiencesData = experiencesResponse.data;
       setExperiences(experiencesData);
 
       // Fetch certification data
@@ -47,7 +47,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
         `${baseUrl}/certification/?search={"employee_id":${id}}`,
         { headers }
       );
-      const certificationData = certificationResponse.data.results;
+      const certificationData = certificationResponse.data;
       setCertifications(certificationData);
     } catch (error) {
       console.error("Error fetching data:", error);

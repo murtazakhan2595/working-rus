@@ -76,7 +76,7 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
           headers,
         }
       );
-      setApplicants(response.data.results);
+      setApplicants(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
