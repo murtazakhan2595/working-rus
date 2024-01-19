@@ -8,17 +8,17 @@ import EmpDataHeader from "./EmpDataHeader";
 import Loader from "../../../common/Loader";
 
 const userRoles = [
-  { value: 2, label: "HR" },
+  { value: 3, label: "HR" },
   { value: 1, label: "Super Admin" },
-  { value: 3, label: "Manager" },
+  { value: 2, label: "Manager" },
   { value: 4, label: "Employee" },
 ];
 
 const EmpDataSheet = ({ baseUrl, token }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(8); // Adjust as needed
   const [filter, setFilter] = useState("");
 
   // Functions for calling the API
@@ -27,18 +27,17 @@ const EmpDataSheet = ({ baseUrl, token }) => {
     "Content-Type": "application/json",
   };
 
-  // Fetching users
+  // Fetching users without pagination
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/emp/?ordering=id&page=${page}`,
+          `${baseUrl}/emp/?ordering=id`,
           {
             headers,
           }
         );
         const usersData = response.data;
-        // Apply frontend filtering based on ID, username, or fullname
         const filteredUsers = usersData.filter(
           (user) =>
             user.id.toString().includes(filter) ||
@@ -49,14 +48,31 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         );
         setUsers(filteredUsers);
         setLoading(false);
-        setHasNextPage(!!response.data.next);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
 
     fetchUsers();
-  }, [page, filter]);
+  }, [filter]);
+
+  // Calculate current page users
+  const indexOfLastUser = currentPage * itemsPerPage;
+  const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+  // Handle Next and Previous page
+  const handleNextPage = () => {
+    if (indexOfLastUser < users.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9] h-[100vh]">
@@ -66,7 +82,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
       />
 
       {/* Table */}
-      <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
+      <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] roundScroll">
         <table className="min-w-full">
           <thead>
             <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
@@ -82,7 +98,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
             <Loader />
           ) : (
             <tbody className="bg-white text-gray-500">
-              {users.map((user) => (
+              {currentUsers.map((user) => (
                 <tr
                   className="whitespace-nowrap border-b-2 hover:bg-gray-100"
                   key={user.id}
@@ -117,24 +133,25 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         </table>
       </div>
       {/* Pagination Controls */}
-      {/*  <div className="flex justify-end items-center mt-2 px-1 lg:px-8">
+      <div className="flex justify-between items-center p-3">
         <button
-          onClick={() => setPage(page - 1)}
-          disabled={page === 1}
-          className={`mr-4 w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue 
-          ${page === 1 ? "bg-blue-300" : ""}`}
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          className="text-base px-3 py-2 bg-gray-200 rounded flex items-center gap-x-2"
         >
-          <BsArrowLeftShort className="text-xl text-white" title="Previous" />
+          <BsArrowLeftShort className="text-baseBlue text-2xl" /> Previous
         </button>
+        <span className="text-sm">
+          Page {currentPage} of {Math.ceil(users.length / itemsPerPage)}
+        </span>
         <button
-          onClick={() => setPage(page + 1)}
-          disabled={!hasNextPage}
-          className={`w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue 
-          ${!hasNextPage ? "bg-blue-300" : ""}`}
+          onClick={handleNextPage}
+          disabled={indexOfLastUser >= users.length}
+          className="text-base px-3 py-2 bg-gray-200 rounded flex items-center gap-x-2"
         >
-          <BsArrowRightShort className="text-xl text-white" title="Next" />
+          Next <BsArrowRightShort className="text-baseBlue text-2xl" />
         </button>
-      </div> */}
+      </div>
     </div>
   );
 };

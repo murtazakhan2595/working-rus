@@ -16,6 +16,7 @@ import { RxCross2 } from "react-icons/rx";
 import { MdCheck, MdDeleteForever } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { TiWarningOutline } from "react-icons/ti";
 
 const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
   const initialData = {
@@ -480,9 +481,9 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
       <DragDropContext onDragEnd={onDragEnd}>
         <div
           className={`flex justify-start overflow-x-auto xScroll w-full lg:h-[75vh] px-6`}
-          style={{ width: isSidebarOpen ? 'calc(100% - 225px)' : '100%' }}
+          style={{ width: isSidebarOpen ? "84%" : "100%" }}
         >
-          <div id="boardList" className="flex w-[100vw]">
+          <div id="boardList" className="flex">
             {cards?.map((card) => (
               <div
                 className="bg-white mr-3 px-2 pt-1 pb-3 h-fit rounded-md w-72"
@@ -689,7 +690,6 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                         placeholder="TecBrix Dashboard Design"
                         required
                       />
-
                     </div>
                   </div>
                   <button
@@ -755,19 +755,29 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
             key={card.id}
             className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50"
           >
-            <div className="bg-white p-9 rounded-lg shadow-lg relative">
-              {/* <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer absolute top-3 right-3">
+            <div className="bg-white p-5 rounded-lg shadow-lg relative w-1/3">
+              <div
+                className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer absolute top-3 right-3"
+                onClick={() => setShowDeleteConfirmation(false)}
+              >
                 <RxCross2 />
-              </div> */}
-              {/* <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Delete</h1>
-              </div> */}
-              <p className="text-gray-700 mt-2">
-                Are you sure you want to delete this list?
-              </p>
-              <div className="mt-4 flex items-center gap-x-2 justify-end">
+              </div>
+              <div className="flex items-center gap-x-5">
+                <div>
+                  <TiWarningOutline className="text-6xl text-red-400" />
+                </div>
+                <div>
+                  <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-bold">Delete List</h1>
+                  </div>
+                  <p className="text-gray-700">
+                    Are you sure you want to delete this list?
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 flex items-center gap-x-3 justify-end">
                 <button
-                  className="px-4 py-1 mr-2 text-white bg-blue-500 rounded"
+                  className="px-4 py-1 text-white bg-blue-500 rounded"
                   onClick={() => setShowDeleteConfirmation(false)}
                 >
                   No

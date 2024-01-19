@@ -1,13 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaPause, FaStop, FaPlus, FaMinus } from "react-icons/fa";
+import { FaPlus, FaMinus } from "react-icons/fa";
+import { RxResume } from "react-icons/rx";
+import { VscDebugStart } from "react-icons/vsc";
+import { CiPause1 } from "react-icons/ci";
 import { IoClose } from "react-icons/io5";
+import { LuTimerReset } from "react-icons/lu";
 import moment from "moment-timezone";
 import { getAllCountries } from "countries-and-timezones";
 import Select from "react-select";
 import axios from "axios";
 import { connect } from "react-redux";
 
-const WorkTime = ({baseUrl, token, userProfile}) => {
+const WorkTime = ({ baseUrl, token, userProfile }) => {
   // ******************** State Vars ************************ //
   const [timezones, setTimezones] = useState([]);
   const [selectedTimezone, setSelectedTimezone] = useState("");
@@ -19,6 +23,13 @@ const WorkTime = ({baseUrl, token, userProfile}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const intervalRef = useRef(null);
   const clockLimit = 3;
+  const [clockData, setClockData] = useState({
+    id: "",
+    total_worked_hours_formatted: "00:00",
+    total_worked_hours: 0,
+  });
+
+  const { id, total_worked_hours_formatted } = clockData;
 
   // ******************** Stop Watch Start And Reset Functions ************************ //
 
@@ -27,82 +38,57 @@ const WorkTime = ({baseUrl, token, userProfile}) => {
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
-  }
-
-  const handleStartStop = async () => {
-    if (isRunning) {
-      clearInterval(intervalRef.current);
-      console.log("Time passed:", formatTime(time));
-      console.log(userProfile);
-
-      const currentDate = new Date(); 
-      const formattedCurrentDate = moment(currentDate).format("YYYY-MM-DD"); 
-
-      const formattedTime = moment(currentDate).format("HH:mm:ss.SSS"); 
-
-      const combinedDateTime = `${formattedCurrentDate}T${formattedTime}Z`; 
-
-      console.log("Combined DateTime:", combinedDateTime);
-
-      try {
-        const response = await axios.post(
-          `${baseUrl}/timetracker/Timetracker/`,
-          {
-            start_time: combinedDateTime,
-            end_date: "",
-            status: "start",
-            total_worked_hours: 0,
-            employee: userProfile.id,
-          },
-          {
-            headers,
-          }
-        );
-
-        if (response.status === 201) {
-          // toast.success("Data sent to API successfully!", {
-          //   position: toast.POSITION.TOP_RIGHT,
-          // });
-        }
-      } catch (error) {
-        // toast.error("Error sending data to the API. Please try again.", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-      }
-
-      try {
-        const response = await axios.post(
-          `${baseUrl}/timetracker/Timetracker/${userProfile.id}/start_clock`,
-          {
-            start_time: combinedDateTime,
-            end_date: "",
-            status: "start",
-            total_worked_hours: 0,
-            employee: userProfile.id,
-          },
-          {
-            headers,
-          }
-        );
-
-        if (response.status === 201) {
-          // toast.success("Data sent to API successfully!", {
-          //   position: toast.POSITION.TOP_RIGHT,
-          // });
-        }
-      } catch (error) {
-        // toast.error("Error sending data to the API. Please try again.", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-      }
-    } else {
-      const startTime = Date.now() - time;
-      intervalRef.current = setInterval(() => {
-        setTime(Date.now() - startTime);
-      }, 10);
-    }
-    setIsRunning(!isRunning);
   };
+
+  // const handleStartStop = async () => {
+  //   if (isRunning) {
+  //     clearInterval(intervalRef.current);
+  //     console.log("Time passed:", formatTime(time));
+  //     console.log(userProfile);
+
+  //     const currentDate = new Date();
+  //     const formattedCurrentDate = moment(currentDate).format("YYYY-MM-DD");
+
+  //     const formattedTime = moment(currentDate).format("HH:mm:ss.SSS");
+
+  //     const combinedDateTime = `${formattedCurrentDate}T${formattedTime}Z`;
+
+  //     console.log("Combined DateTime:", combinedDateTime);
+
+  //     try {
+  //       const response = await axios.post(
+  //         `${baseUrl}/timetracker/Timetracker/`,
+  //         {
+  //           start_time: combinedDateTime,
+  //           end_date: "",
+  //           status: "start",
+  //           total_worked_hours: 0,
+  //           employee: userProfile.id,
+  //         },
+  //         {
+  //           headers,
+  //         }
+  //       );
+
+  //       if (response.status === 201) {
+  //         // toast.success("Data sent to API successfully!", {
+  //         //   position: toast.POSITION.TOP_RIGHT,
+  //         // });
+  //       }
+  //     } catch (error) {
+  //       // toast.error("Error sending data to the API. Please try again.", {
+  //       //   position: toast.POSITION.TOP_RIGHT,
+  //       // });
+  //     }
+
+  //   } else {
+  //     const startTime = Date.now() - time;
+  //     intervalRef.current = setInterval(() => {
+  //       setTime(Date.now() - startTime);
+  //     }, 10);
+  //   }
+  //   setIsRunning(!isRunning);
+  // };
 
   // const handleReset = () => {
   //   clearInterval(intervalRef.current);
@@ -111,6 +97,159 @@ const WorkTime = ({baseUrl, token, userProfile}) => {
   // };
 
   // *************************** Stop Watch Time And Progress Functions **************************** //
+
+  const currentDate = new Date();
+  const formattedCurrentDate = moment(currentDate).format("YYYY-MM-DD");
+  const formattedTime = moment(currentDate).format("HH:mm:ss.SSS");
+  const combinedDateTime = `${formattedCurrentDate}T${formattedTime}Z`;
+
+  const startTimer = async () => {
+    try {
+      const response = await axios.post(
+        `${baseUrl}/timetracker/Timetracker/`,
+        {
+          start_time: combinedDateTime,
+          end_date: "",
+          status: "start",
+          total_worked_hours: 0,
+          employee: userProfile.id,
+        },
+        {
+          headers,
+        }
+      );
+
+      if (response.status === 201) {
+        console.log(response.data);
+        setClockData(response.data);
+        setIsRunning(true);
+        // toast.success("Data sent to API successfully!", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+      }
+    } catch (error) {
+      // toast.error("Error sending data to the API. Please try again.", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
+    }
+  };
+  const pauseTimer = async () => {
+    try {
+      const response = await axios.post(
+        `${baseUrl}/timetracker/Timetracker/${id}/pause_clock/`,
+        {
+          id: id,
+          start_time: combinedDateTime,
+          end_date: "",
+          status: "start",
+          total_worked_hours: 0,
+          employee: userProfile.id,
+        },
+        {
+          headers,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        setClockData(response.data);
+        // toast.success("Data sent to API successfully!", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+      }
+    } catch (error) {
+      // toast.error("Error sending data to the API. Please try again.", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
+    }
+  };
+  const resumeTimer = async () => {
+    try {
+      const response = await axios.post(
+        `${baseUrl}/timetracker/Timetracker/${id}/resume_clock/`,
+        {
+          id: id,
+          start_time: combinedDateTime,
+          end_date: "",
+          status: "start",
+          total_worked_hours: 0,
+          employee: userProfile.id,
+        },
+        {
+          headers,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        setClockData(response.data);
+        // toast.success("Data sent to API successfully!", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+      }
+    } catch (error) {
+      // toast.error("Error sending data to the API. Please try again.", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
+    }
+  };
+  const resetTimer = async () => {
+    try {
+      const response = await axios.post(
+        `${baseUrl}/timetracker/Timetracker/${id}/reset_clock/`,
+        {
+          id: id,
+          start_time: combinedDateTime,
+          end_date: "",
+          status: "start",
+          total_worked_hours: 0,
+          employee: userProfile.id,
+        },
+        {
+          headers,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        setClockData(response.data);
+        // toast.success("Data sent to API successfully!", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+      }
+    } catch (error) {
+      // toast.error("Error sending data to the API. Please try again.", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
+    }
+  };
+
+  const fetchTimerData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/timetracker/Timetracker/${id}/get_clock_status/`,
+        {
+          headers,
+        }
+      );
+
+      if (response.status === 200) {
+        setClockData(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching timer data:", error);
+    }
+  };
+
+  // useEffect to start the interval when the component mounts
+  useEffect(() => {
+    fetchTimerData();
+    const intervalId = setInterval(() => {
+      fetchTimerData();
+    }, 55000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const formatTime = (milliseconds) => {
     const hours = Math.floor(milliseconds / 3600000);
@@ -125,8 +264,15 @@ const WorkTime = ({baseUrl, token, userProfile}) => {
   };
 
   const getProgress = () => {
-    const progress = (time % 28800000) / 28800000; // Get progress for 8 hours (0 to 1)
-    return progress * 360; // Convert to degrees (0 to 360)
+    const progress = (clockData.total_worked_hours % 28800000) / 28800000; // Get progress for 8 hours (0 to 1)
+    const scaledProgress = progress * 1000; // Scale the progress
+
+    const degrees = scaledProgress * 360 * 1000; // Convert to degrees (0 to 360)
+
+    console.log("degress", degrees);
+
+    // Ensure the degrees value is within the expected range
+    return degrees >= 0 && degrees <= 360 ? degrees : 0;
   };
 
   // *************************** Getting Other Cities and Time **************************** //
@@ -254,27 +400,55 @@ const WorkTime = ({baseUrl, token, userProfile}) => {
 
       {/* ********************************** Working Time ******************************* */}
       <div
-        className="w-52 h-52 drop-shadow-lg shadow-black  z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
+        className="w-52 h-52 drop-shadow-lg shadow-black z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
         style={{
           background: `conic-gradient(from 0deg at 50% 50%, #25a8e0 ${getProgress()}deg, #fff 0 ${getProgress()}deg, #fff)`,
         }}
       >
-        <div className="w-[10.5rem] h-[10.5rem] rounded-full bg-[#e3e3e3] flex  flex-col items-center justify-center text-xl m-0">
+        <div className="w-[10.5rem] h-[10.5rem] rounded-full bg-[#e3e3e3] flex flex-col items-center justify-center text-xl m-0">
           <div>
             <div className="text-xl font-semibold text-[#283b91]">
-              {formatTime(time)}
+              {total_worked_hours_formatted}
             </div>
-            <div className="text-xl tracking-wider  font-semibold text-center mb-5 text-[#283b91]">
+            <div className="text-xl tracking-wider font-semibold text-center mb-5 text-[#283b91]">
               Hrs
             </div>
           </div>
           <div className="flex gap-3">
-            <button
-              className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
-              onClick={handleStartStop}
-            >
-              {isRunning ? <FaPause /> : <FaStop />}
-            </button>
+            {!isRunning && (
+              <button
+                className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                onClick={startTimer}
+                title="Start"
+              >
+                <VscDebugStart />
+              </button>
+            )}
+            {isRunning && (
+              <>
+                <button
+                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                  onClick={pauseTimer}
+                  title="Pause"
+                >
+                  <CiPause1 />
+                </button>
+                <button
+                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                  onClick={resumeTimer}
+                  title="Resume"
+                >
+                  <RxResume />
+                </button>
+                <button
+                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                  onClick={resetTimer}
+                  title="Reset"
+                >
+                  <LuTimerReset />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
