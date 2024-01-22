@@ -161,7 +161,7 @@ const ProfessionalExp = ({
         `${baseUrl}/experience/?search={"employee_id":${id}}`,
         { headers }
       );
-      const experiencesData = experiencesResponse.data.results;
+      const experiencesData = experiencesResponse.data;
 
       const formattedExperiencesData = experiencesData.map((experience) => ({
         ...experience,

@@ -31,12 +31,9 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(
-          `${baseUrl}/emp/?ordering=id`,
-          {
-            headers,
-          }
-        );
+        const response = await axios.get(`${baseUrl}/emp/?ordering=id`, {
+          headers,
+        });
         const usersData = response.data;
         const filteredUsers = usersData.filter(
           (user) =>
@@ -133,23 +130,36 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         </table>
       </div>
       {/* Pagination Controls */}
-      <div className="flex justify-between items-center p-3">
+      <div className="flex justify-end gap-x-3 items-center p-3">
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className="text-base px-3 py-2 bg-gray-200 rounded flex items-center gap-x-2"
+          className="text-base bg-gray-500 rounded-full flex items-center gap-x-2"
         >
-          <BsArrowLeftShort className="text-baseBlue text-2xl" /> Previous
+          <BsArrowLeftShort className="text-white text-2xl" />
         </button>
-        <span className="text-sm">
-          Page {currentPage} of {Math.ceil(users.length / itemsPerPage)}
+        <span className="text-base flex items-center gap-x-2 text-gray-500">
+          {Array.from(
+            { length: Math.min(2, Math.ceil(users.length / itemsPerPage)) },
+            (_, i) => (
+              <div key={i + 1} className="w-6 text-center rounded bg-white">
+                {i + 1}
+              </div>
+            )
+          )}
+          
+          ...
+          <div className="w-6 text-center rounded bg-white">
+             {Math.ceil(users.length / itemsPerPage)}
+          </div>
         </span>
+
         <button
           onClick={handleNextPage}
           disabled={indexOfLastUser >= users.length}
-          className="text-base px-3 py-2 bg-gray-200 rounded flex items-center gap-x-2"
+          className="text-base bg-gray-500 rounded-full flex items-center gap-x-2"
         >
-          Next <BsArrowRightShort className="text-baseBlue text-2xl" />
+          <BsArrowRightShort className="text-white text-2xl" />
         </button>
       </div>
     </div>

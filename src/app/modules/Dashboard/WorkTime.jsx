@@ -14,7 +14,7 @@ import { connect } from "react-redux";
 const WorkTime = ({ baseUrl, token, userProfile }) => {
   // ******************** State Vars ************************ //
   const [timezones, setTimezones] = useState([]);
-  const [selectedTimezone, setSelectedTimezone] = useState("");
+  const [selectedTimezone, setSelectedTimezone] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [worldTime, setWorldTime] = useState([{}]);
   const [msg, setMsg] = useState("");
@@ -153,9 +153,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       if (response.status === 200) {
         console.log(response.data);
         setClockData(response.data);
-        // toast.success("Data sent to API successfully!", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
+        setIsRunning(false);
       }
     } catch (error) {
       // toast.error("Error sending data to the API. Please try again.", {
@@ -183,9 +181,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       if (response.status === 200) {
         console.log(response.data);
         setClockData(response.data);
-        // toast.success("Data sent to API successfully!", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
+        setIsRunning(true);
       }
     } catch (error) {
       // toast.error("Error sending data to the API. Please try again.", {
@@ -213,9 +209,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       if (response.status === 200) {
         console.log(response.data);
         setClockData(response.data);
-        // toast.success("Data sent to API successfully!", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
+        setIsRunning(false);
       }
     } catch (error) {
       // toast.error("Error sending data to the API. Please try again.", {
@@ -244,12 +238,15 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
   // useEffect to start the interval when the component mounts
   useEffect(() => {
     fetchTimerData();
-    const intervalId = setInterval(() => {
-      fetchTimerData();
-    }, 55000);
 
-    return () => clearInterval(intervalId);
-  }, []);
+    if (isRunning) {
+      const intervalId = setInterval(() => {
+        fetchTimerData();
+      }, 60000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [isRunning]);
 
   const formatTime = (milliseconds) => {
     const hours = Math.floor(milliseconds / 3600000);

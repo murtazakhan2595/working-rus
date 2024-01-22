@@ -49,7 +49,7 @@ const SubmitCV = ({
           headers,
         }
       );
-      const cvRes = cvResponse.data.results[0];
+      const cvRes = cvResponse.data[0];
       if (cvRes) {
         setHaveCV(cvRes);
       }
