@@ -17,6 +17,14 @@ export const tasksTitle = [
   { label: "Priority", width: "w-28" },
 ];
 
+const userRoles = [
+  { value: 1, label: "Super Admin" },
+  { value: 2, label: "Manager" },
+  { value: 3, label: "HR" },
+  { value: 4, label: "Employee" },
+];
+
+
 export const priorityOptions = [
   { value: 3, label: "🟢 Low" },
   { value: 2, label: "🌕 Medium" },
@@ -114,8 +122,8 @@ export const locationTypeOptions = [
 ];
 
 export const dropdownOptions = [
-  { label: "Pending", value: "pending" },
   { label: "Selected", value: "selected" },
+  { label: "Pending", value: "pending" },
   { label: "Shortlisted", value: "shortlisted" },
   { label: "Offer Made", value: "offer_made" },
   { label: "Onboard", value: "on_board" },
