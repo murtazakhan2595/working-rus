@@ -134,7 +134,7 @@ const Dashboard = ({ token, baseUrl }) => {
     }));
 
     const updatedTodo = updatedTodos.find((todo) => todo.id === id);
-    updateTodo(updatedTodo.id, updatedTodo.description); // Call the updateTodo function here
+    updateTodo(updatedTodo.id, updatedTodo.description); 
   };
 
   const handleAdd = () => {

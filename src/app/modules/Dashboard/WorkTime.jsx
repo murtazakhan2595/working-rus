@@ -22,14 +22,11 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
   const [time, setTime] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const intervalRef = useRef(null);
+  const [clockId, setClockId] = useState(null);
+  const [totalWorkedHoursFormatted, setTotalWorkedHoursFormatted] = useState(null);
+  const [startTime, setStartTime] = useState(null);
+  const [status, setStatus] = useState('start');
   const clockLimit = 3;
-  const [clockData, setClockData] = useState({
-    id: "",
-    total_worked_hours_formatted: "00:00",
-    total_worked_hours: 0,
-  });
-
-  const { id, total_worked_hours_formatted } = clockData;
 
   // ******************** Stop Watch Start And Reset Functions ************************ //
 
@@ -104,13 +101,15 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
   const combinedDateTime = `${formattedCurrentDate}T${formattedTime}Z`;
 
   const startTimer = async () => {
+    const startDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+
     try {
       const response = await axios.post(
         `${baseUrl}/timetracker/Timetracker/`,
         {
-          start_time: combinedDateTime,
+          start_time: startDateTime,
           end_date: "",
-          status: "start",
+          status: status,
           total_worked_hours: 0,
           employee: userProfile.id,
         },
@@ -121,27 +120,27 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
 
       if (response.status === 201) {
         console.log(response.data);
-        setClockData(response.data);
+        setClockId(response.data.id);
+        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
+        setStartTime(response.data.start_time)
+        setStatus(response.data.start_time)
         setIsRunning(true);
-        // toast.success("Data sent to API successfully!", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
       }
     } catch (error) {
-      // toast.error("Error sending data to the API. Please try again.", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
+      console.error("Error starting the timer:", error);
     }
   };
+
   const pauseTimer = async () => {
+    const pauseDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+
     try {
       const response = await axios.post(
-        `${baseUrl}/timetracker/Timetracker/${id}/pause_clock/`,
+        `${baseUrl}/timetracker/Timetracker/${clockId}/pause_clock/`,
         {
-          id: id,
-          start_time: combinedDateTime,
+          start_time: startTime,
           end_date: "",
-          status: "start",
+          status: "pause",
           total_worked_hours: 0,
           employee: userProfile.id,
         },
@@ -152,24 +151,25 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
 
       if (response.status === 200) {
         console.log(response.data);
-        setClockData(response.data);
+        setClockId(response.data.id);
+        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
         setIsRunning(false);
       }
     } catch (error) {
-      // toast.error("Error sending data to the API. Please try again.", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
+      console.error("Error pausing the timer:", error);
     }
   };
+
   const resumeTimer = async () => {
+    const resumeDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+
     try {
       const response = await axios.post(
-        `${baseUrl}/timetracker/Timetracker/${id}/resume_clock/`,
+        `${baseUrl}/timetracker/Timetracker/${clockId}/resume_clock/`,
         {
-          id: id,
-          start_time: combinedDateTime,
+          start_time: startTime,
           end_date: "",
-          status: "start",
+          status: "resume",
           total_worked_hours: 0,
           employee: userProfile.id,
         },
@@ -180,24 +180,25 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
 
       if (response.status === 200) {
         console.log(response.data);
-        setClockData(response.data);
+        setClockId(response.data.id);
+        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
         setIsRunning(true);
       }
     } catch (error) {
-      // toast.error("Error sending data to the API. Please try again.", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
+      console.error("Error resuming the timer:", error);
     }
   };
+
   const resetTimer = async () => {
+    const resetDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+
     try {
       const response = await axios.post(
-        `${baseUrl}/timetracker/Timetracker/${id}/reset_clock/`,
+        `${baseUrl}/timetracker/Timetracker/${clockId}/reset_clock/`,
         {
-          id: id,
-          start_time: combinedDateTime,
+          start_time: startTime,
           end_date: "",
-          status: "start",
+          status: "",
           total_worked_hours: 0,
           employee: userProfile.id,
         },
@@ -208,45 +209,56 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
 
       if (response.status === 200) {
         console.log(response.data);
-        setClockData(response.data);
+        setClockId(response.data.id);
+        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
         setIsRunning(false);
       }
     } catch (error) {
-      // toast.error("Error sending data to the API. Please try again.", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
+      console.error("Error resetting the timer:", error);
     }
   };
 
   const fetchTimerData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/timetracker/Timetracker/${id}/get_clock_status/`,
+        `${baseUrl}/timetracker/Timetracker/get_clock_status/`,
         {
           headers,
         }
       );
-
+  
       if (response.status === 200) {
-        setClockData(response.data);
+        setClockId(response.data.id);
+        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
+        setStartTime(response.data.start_time);
+        setStatus(response.data.status);
       }
     } catch (error) {
       console.error("Error fetching timer data:", error);
     }
   };
+  
 
   // useEffect to start the interval when the component mounts
   useEffect(() => {
     fetchTimerData();
 
+    // Start the interval only if the timer is running
     if (isRunning) {
       const intervalId = setInterval(() => {
         fetchTimerData();
       }, 60000);
 
+      // Cleanup function to clear the interval when the component is unmounted
       return () => clearInterval(intervalId);
     }
   }, [isRunning]);
+
+  // Cleanup function to clear the interval when the component is unmounted
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
 
   const formatTime = (milliseconds) => {
     const hours = Math.floor(milliseconds / 3600000);
@@ -261,7 +273,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
   };
 
   const getProgress = () => {
-    const progress = (clockData.total_worked_hours % 28800000) / 28800000; // Get progress for 8 hours (0 to 1)
+    const progress = (totalWorkedHoursFormatted % 28800000) / 28800000; // Get progress for 8 hours (0 to 1)
     const scaledProgress = progress * 1000; // Scale the progress
 
     const degrees = scaledProgress * 360 * 1000; // Convert to degrees (0 to 360)
@@ -405,14 +417,14 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
         <div className="w-[10.5rem] h-[10.5rem] rounded-full bg-[#e3e3e3] flex flex-col items-center justify-center text-xl m-0">
           <div>
             <div className="text-xl font-semibold text-[#283b91]">
-              {total_worked_hours_formatted}
+              {totalWorkedHoursFormatted}
             </div>
             <div className="text-xl tracking-wider font-semibold text-center mb-5 text-[#283b91]">
               Hrs
             </div>
           </div>
           <div className="flex gap-3">
-            {!isRunning && (
+            {/* {!isRunning && ( */}
               <button
                 className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
                 onClick={startTimer}
@@ -420,9 +432,9 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
               >
                 <VscDebugStart />
               </button>
-            )}
-            {isRunning && (
-              <>
+            {/* )} */}
+            {/* {isRunning && ( */}
+              {/* <> */}
                 <button
                   className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
                   onClick={pauseTimer}
@@ -444,8 +456,8 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
                 >
                   <LuTimerReset />
                 </button>
-              </>
-            )}
+              {/* </> */}
+            {/* )} */}
           </div>
         </div>
       </div>

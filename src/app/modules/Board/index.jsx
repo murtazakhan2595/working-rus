@@ -311,7 +311,8 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
         await getBoardStatus();
       }
     } catch (error) {
-      toast.error("Error submitting the form. Please try again.", {
+      // console.log(error.response.data.detail)
+      toast.error(error.response.data.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
@@ -501,26 +502,30 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                         </div>
                         {/* //////////////edit and delete */}
                         <div className="flex gap-1 justify-end cursor-pointer">
-                          {editTexts[card.id] !== undefined ? (
-                            <MdCheck
-                              className="text-[#283b91] opacity-0.2"
-                              // onClick={() => handleSave(card.id)}
-                            />
-                          ) : (
-                            <div className="flex items-center gap-x-2">
-                              <AiOutlineEdit
-                                className="text-[#283b91] opacity-0.2 text-sm"
-                                onClick={() => handleBoardListEdit(card.id)}
-                              />
-                              <MdDeleteForever
-                                className="text-red-400 opacity-0.2 text-sm"
-                                onClick={() => {
-                                  // deleteBoardList(card.id);
-                                  setTodoToDelete(card.id);
-                                  setShowDeleteConfirmation(true);
-                                }}
-                              />
-                            </div>
+                          {userProfile.role === 4 ? null : (
+                            <>
+                              {editTexts[card.id] !== undefined ? (
+                                <MdCheck
+                                  className="text-[#283b91] opacity-0.2"
+                                  // onClick={() => handleSave(card.id)}
+                                />
+                              ) : (
+                                <div className="flex items-center gap-x-2">
+                                  <AiOutlineEdit
+                                    className="text-[#283b91] opacity-0.2 text-sm"
+                                    onClick={() => handleBoardListEdit(card.id)}
+                                  />
+                                  <MdDeleteForever
+                                    className="text-red-400 opacity-0.2 text-sm"
+                                    onClick={() => {
+                                      // deleteBoardList(card.id);
+                                      setTodoToDelete(card.id);
+                                      setShowDeleteConfirmation(true);
+                                    }}
+                                  />
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
@@ -638,12 +643,14 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
             ))}
             {/* <div className={`${isSidebarOpen ? "pr-56" : "pr-0"}`}> */}
             <div>
-              <button
-                className="bg-baseBlue text-white rounded-md px-6 py-2 w-[240px]"
-                onClick={openListModal}
-              >
-                Add Another List
-              </button>
+              {userProfile.role === 4 ? null : (
+                <button
+                  className="bg-baseBlue text-white rounded-md px-6 py-2 w-[240px]"
+                  onClick={openListModal}
+                >
+                  Add Another List
+                </button>
+              )}
             </div>
           </div>
         </div>
