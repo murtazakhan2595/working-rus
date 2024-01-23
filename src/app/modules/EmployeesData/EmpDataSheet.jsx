@@ -130,34 +130,19 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         </table>
       </div>
       {/* Pagination Controls */}
-      <div className="flex justify-end gap-x-3 items-center p-3">
+      <div className="flex justify-end gap-x-8 items-center pr-16">
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className="text-base bg-gray-500 rounded-full flex items-center gap-x-2"
+          className="text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md"
         >
           <BsArrowLeftShort className="text-white text-2xl" />
         </button>
-        <span className="text-base flex items-center gap-x-2 text-gray-500">
-          {Array.from(
-            { length: Math.min(2, Math.ceil(users.length / itemsPerPage)) },
-            (_, i) => (
-              <div key={i + 1} className="w-6 text-center rounded bg-white">
-                {i + 1}
-              </div>
-            )
-          )}
-          
-          ...
-          <div className="w-6 text-center rounded bg-white">
-             {Math.ceil(users.length / itemsPerPage)}
-          </div>
-        </span>
 
         <button
           onClick={handleNextPage}
           disabled={indexOfLastUser >= users.length}
-          className="text-base bg-gray-500 rounded-full flex items-center gap-x-2"
+          className="text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md"
         >
           <BsArrowRightShort className="text-white text-2xl" />
         </button>

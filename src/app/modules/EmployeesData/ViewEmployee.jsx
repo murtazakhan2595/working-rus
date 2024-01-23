@@ -2,9 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { connect } from "react-redux";
-import { IoIosAttach } from "react-icons/io";
 import { RxCrossCircled } from "react-icons/rx";
-import { IoCloudDownload } from "react-icons/io5";
+import { IoMdDownload } from "react-icons/io";
 
 const ViewEmployee = ({ token, baseUrl }) => {
   const [data, setData] = useState("");
@@ -479,7 +478,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       ) : (
                         education.acadamicDocument.document.name
                       )}
-                      <IoCloudDownload className="text-xl" />
+                      <IoMdDownload className="text-xl" />
                     </button>
                   ) : (
                     "N/A"
@@ -569,7 +568,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                     ) : (
                       education.acadamicDocument.document.name
                     )}
-                    <IoCloudDownload className="text-xl" />
+                    <IoMdDownload className="text-xl" />
                   </button>
                 ) : (
                   "N/A"
@@ -661,7 +660,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                     ) : (
                       experience.exp_letter.name
                     )}
-                    <IoCloudDownload className="text-xl" />
+                    <IoMdDownload className="text-xl" />
                   </button>
                 ) : (
                   "N/A"
@@ -746,7 +745,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       ) : (
                         experience.exp_letter.name
                       )}
-                      <IoCloudDownload className="text-xl" />
+                      <IoMdDownload className="text-xl" />
                     </button>
                   ) : (
                     "N/A"
@@ -828,7 +827,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       ) : (
                         certificate.certification_body.name
                       )}
-                      <IoCloudDownload className="text-xl" />
+                      <IoMdDownload className="text-xl" />
                     </button>
                   ) : (
                     "N/A"
@@ -891,7 +890,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                     ) : (
                       certificate.certification_body.name
                     )}
-                    <IoCloudDownload className="text-xl" />
+                    <IoMdDownload className="text-xl" />
                   </button>
                 ) : (
                   "N/A"

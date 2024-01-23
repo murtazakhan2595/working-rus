@@ -312,7 +312,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
       }
     } catch (error) {
       // console.log(error.response.data.detail)
-      toast.error(error.response.data.detail, {
+      toast.error("Error submitting the form. Please try again.", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
