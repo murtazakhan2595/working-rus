@@ -14,7 +14,7 @@ import { connect } from "react-redux";
 const WorkTime = ({ baseUrl, token, userProfile }) => {
   // ******************** State Vars ************************ //
   const [timezones, setTimezones] = useState([]);
-  const [selectedTimezone, setSelectedTimezone] = useState('');
+  const [selectedTimezone, setSelectedTimezone] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [worldTime, setWorldTime] = useState([{}]);
   const [msg, setMsg] = useState("");
@@ -23,9 +23,10 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const intervalRef = useRef(null);
   const [clockId, setClockId] = useState(null);
-  const [totalWorkedHoursFormatted, setTotalWorkedHoursFormatted] = useState(null);
+  const [totalWorkedHoursFormatted, setTotalWorkedHoursFormatted] =
+    useState("00: 00");
   const [startTime, setStartTime] = useState(null);
-  const [status, setStatus] = useState('start');
+  const [status, setStatus] = useState("start");
   const clockLimit = 3;
 
   // ******************** Stop Watch Start And Reset Functions ************************ //
@@ -36,64 +37,6 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-
-  // const handleStartStop = async () => {
-  //   if (isRunning) {
-  //     clearInterval(intervalRef.current);
-  //     console.log("Time passed:", formatTime(time));
-  //     console.log(userProfile);
-
-  //     const currentDate = new Date();
-  //     const formattedCurrentDate = moment(currentDate).format("YYYY-MM-DD");
-
-  //     const formattedTime = moment(currentDate).format("HH:mm:ss.SSS");
-
-  //     const combinedDateTime = `${formattedCurrentDate}T${formattedTime}Z`;
-
-  //     console.log("Combined DateTime:", combinedDateTime);
-
-  //     try {
-  //       const response = await axios.post(
-  //         `${baseUrl}/timetracker/Timetracker/`,
-  //         {
-  //           start_time: combinedDateTime,
-  //           end_date: "",
-  //           status: "start",
-  //           total_worked_hours: 0,
-  //           employee: userProfile.id,
-  //         },
-  //         {
-  //           headers,
-  //         }
-  //       );
-
-  //       if (response.status === 201) {
-  //         // toast.success("Data sent to API successfully!", {
-  //         //   position: toast.POSITION.TOP_RIGHT,
-  //         // });
-  //       }
-  //     } catch (error) {
-  //       // toast.error("Error sending data to the API. Please try again.", {
-  //       //   position: toast.POSITION.TOP_RIGHT,
-  //       // });
-  //     }
-
-  //   } else {
-  //     const startTime = Date.now() - time;
-  //     intervalRef.current = setInterval(() => {
-  //       setTime(Date.now() - startTime);
-  //     }, 10);
-  //   }
-  //   setIsRunning(!isRunning);
-  // };
-
-  // const handleReset = () => {
-  //   clearInterval(intervalRef.current);
-  //   setIsRunning(false);
-  //   setTime(0);
-  // };
-
-  // *************************** Stop Watch Time And Progress Functions **************************** //
 
   const currentDate = new Date();
   const formattedCurrentDate = moment(currentDate).format("YYYY-MM-DD");
@@ -121,9 +64,10 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       if (response.status === 201) {
         console.log(response.data);
         setClockId(response.data.id);
-        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
-        setStartTime(response.data.start_time)
-        setStatus(response.data.start_time)
+        setTotalWorkedHoursFormatted(
+          response.data.total_worked_hours_formatted
+        );
+        setStartTime(response.data.start_time);
         setIsRunning(true);
       }
     } catch (error) {
@@ -152,7 +96,9 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       if (response.status === 200) {
         console.log(response.data);
         setClockId(response.data.id);
-        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
+        setTotalWorkedHoursFormatted(
+          response.data.total_worked_hours_formatted
+        );
         setIsRunning(false);
       }
     } catch (error) {
@@ -181,7 +127,9 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       if (response.status === 200) {
         console.log(response.data);
         setClockId(response.data.id);
-        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
+        setTotalWorkedHoursFormatted(
+          response.data.total_worked_hours_formatted
+        );
         setIsRunning(true);
       }
     } catch (error) {
@@ -210,8 +158,10 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       if (response.status === 200) {
         console.log(response.data);
         setClockId(response.data.id);
-        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
-        setIsRunning(false);
+        setTotalWorkedHoursFormatted(
+          response.data.total_worked_hours_formatted
+        );
+        setIsRunning(true);
       }
     } catch (error) {
       console.error("Error resetting the timer:", error);
@@ -226,18 +176,20 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           headers,
         }
       );
-  
+
       if (response.status === 200) {
         setClockId(response.data.id);
-        setTotalWorkedHoursFormatted(response.data.total_worked_hours_formatted);
+        // setTotalWorkedHoursFormatted(
+        //   response.data.total_worked_hours_formatted
+        // );
         setStartTime(response.data.start_time);
         setStatus(response.data.status);
+        setTotalWorkedHoursFormatted("00:00")
       }
     } catch (error) {
       console.error("Error fetching timer data:", error);
     }
   };
-  
 
   // useEffect to start the interval when the component mounts
   useEffect(() => {
@@ -259,7 +211,6 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
     return () => clearInterval(intervalRef.current);
   }, []);
 
-
   const formatTime = (milliseconds) => {
     const hours = Math.floor(milliseconds / 3600000);
     const minutes = Math.floor((milliseconds % 3600000) / 60000);
@@ -273,15 +224,18 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
   };
 
   const getProgress = () => {
-    const progress = (totalWorkedHoursFormatted % 28800000) / 28800000; // Get progress for 8 hours (0 to 1)
-    const scaledProgress = progress * 1000; // Scale the progress
+    // Assuming totalWorkedHoursFormatted is in the format "HH:mm"
+    const [hours, minutes] = (totalWorkedHoursFormatted || "00:00")
+      .split(":")
+      .map(Number);
+    // Calculate total minutes worked
+    const totalMinutesWorked = hours * 60 + minutes;
 
-    const degrees = scaledProgress * 360 * 1000; // Convert to degrees (0 to 360)
+    // Get progress for 8 hours (0 to 1)
+    const progress = totalMinutesWorked / 480; // 8 hours = 480 minutes
 
-    console.log("degress", degrees);
-
-    // Ensure the degrees value is within the expected range
-    return degrees >= 0 && degrees <= 360 ? degrees : 0;
+    // Ensure the progress value is within the expected range
+    return progress >= 0 && progress <= 1 ? progress * 100 : 0;
   };
 
   // *************************** Getting Other Cities and Time **************************** //
@@ -423,41 +377,37 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
               Hrs
             </div>
           </div>
-          <div className="flex gap-3">
-            {/* {!isRunning && ( */}
+          <div className="flex flex-col gap-y-1">
+            <button
+              className="px-[0.3rem] py-[2px] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+              onClick={startTimer}
+              title="Start"
+            >
+              Start Timer
+            </button>
+            <div className="flex gap-x-1">
               <button
                 className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
-                onClick={startTimer}
-                title="Start"
+                onClick={pauseTimer}
+                title="Pause"
               >
-                <VscDebugStart />
+                <CiPause1 />
               </button>
-            {/* )} */}
-            {/* {isRunning && ( */}
-              {/* <> */}
-                <button
-                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
-                  onClick={pauseTimer}
-                  title="Pause"
-                >
-                  <CiPause1 />
-                </button>
-                <button
-                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
-                  onClick={resumeTimer}
-                  title="Resume"
-                >
-                  <RxResume />
-                </button>
-                <button
-                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
-                  onClick={resetTimer}
-                  title="Reset"
-                >
-                  <LuTimerReset />
-                </button>
-              {/* </> */}
-            {/* )} */}
+              <button
+                className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                onClick={resumeTimer}
+                title="Resume"
+              >
+                <RxResume />
+              </button>
+              <button
+                className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                onClick={resetTimer}
+                title="Reset"
+              >
+                <LuTimerReset />
+              </button>
+            </div>
           </div>
         </div>
       </div>
