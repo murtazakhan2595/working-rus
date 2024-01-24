@@ -2,8 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { connect } from "react-redux";
-import { IoIosAttach } from "react-icons/io";
 import { RxCrossCircled } from "react-icons/rx";
+import { IoMdDownload } from "react-icons/io";
 
 const ViewEmployee = ({ token, baseUrl }) => {
   const [data, setData] = useState("");
@@ -467,7 +467,18 @@ const ViewEmployee = ({ token, baseUrl }) => {
                         )
                       }
                     >
-                      {education.acadamicDocument.document.name}
+                      {education.acadamicDocument.document.name.length > 15 ? (
+                        <>
+                          {education.acadamicDocument.document.name.slice(
+                            0,
+                            12
+                          )}
+                          ...
+                        </>
+                      ) : (
+                        education.acadamicDocument.document.name
+                      )}
+                      <IoMdDownload className="text-xl" />
                     </button>
                   ) : (
                     "N/A"
@@ -541,6 +552,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
               <div className="w-[15%] px-4 py-2 border border-gray-200">
                 {education.acadamicDocument ? (
                   <button
+                    className="flex items-center gap-x-2"
                     onClick={() =>
                       downloadAttachment(
                         education.acadamicDocument.document.file,
@@ -548,7 +560,15 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       )
                     }
                   >
-                    {education.acadamicDocument.document.name}
+                    {education.acadamicDocument.document.name.length > 15 ? (
+                      <>
+                        {education.acadamicDocument.document.name.slice(0, 12)}
+                        ...
+                      </>
+                    ) : (
+                      education.acadamicDocument.document.name
+                    )}
+                    <IoMdDownload className="text-xl" />
                   </button>
                 ) : (
                   "N/A"
@@ -624,6 +644,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
               <div className="w-[15%] px-4 py-2 border border-gray-200">
                 {experience.exp_letter ? (
                   <button
+                    className="flex items-center gap-x-2"
                     onClick={() =>
                       downloadAttachment(
                         experience.exp_letter.file,
@@ -631,7 +652,15 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       )
                     }
                   >
-                    {experience.exp_letter.name}
+                    {experience.exp_letter.name.length > 15 ? (
+                      <>
+                        {experience.exp_letter.name.slice(0, 12)}
+                        ...
+                      </>
+                    ) : (
+                      experience.exp_letter.name
+                    )}
+                    <IoMdDownload className="text-xl" />
                   </button>
                 ) : (
                   "N/A"
@@ -708,7 +737,15 @@ const ViewEmployee = ({ token, baseUrl }) => {
                         )
                       }
                     >
-                      {experience.exp_letter.name}
+                      {experience.exp_letter.name.length > 15 ? (
+                        <>
+                          {experience.exp_letter.name.slice(0, 12)}
+                          ...
+                        </>
+                      ) : (
+                        experience.exp_letter.name
+                      )}
+                      <IoMdDownload className="text-xl" />
                     </button>
                   ) : (
                     "N/A"
@@ -782,7 +819,15 @@ const ViewEmployee = ({ token, baseUrl }) => {
                         )
                       }
                     >
-                      {certificate.certification_body.name}
+                      {certificate.certification_body.name.length > 15 ? (
+                        <>
+                          {certificate.certification_body.name.slice(0, 12)}
+                          ...
+                        </>
+                      ) : (
+                        certificate.certification_body.name
+                      )}
+                      <IoMdDownload className="text-xl" />
                     </button>
                   ) : (
                     "N/A"
@@ -829,6 +874,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
               <div className="w-[19%] px-4 py-2 border border-gray-200">
                 {certificate.certification_body ? (
                   <button
+                    className="flex items-center gap-x-2"
                     onClick={() =>
                       downloadAttachment(
                         certificate.certification_body.file,
@@ -836,7 +882,15 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       )
                     }
                   >
-                    {certificate.certification_body.name}
+                    {certificate.certification_body.name.length > 15 ? (
+                      <>
+                        {certificate.certification_body.name.slice(0, 12)}
+                        ...
+                      </>
+                    ) : (
+                      certificate.certification_body.name
+                    )}
+                    <IoMdDownload className="text-xl" />
                   </button>
                 ) : (
                   "N/A"
