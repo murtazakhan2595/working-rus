@@ -160,8 +160,9 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
         setClockId(response.data.id);
         setTotalWorkedHoursFormatted(
           response.data.total_worked_hours_formatted
+            ? response.data.total_worked_hours_formatted
+            : '00:00'
         );
-        setTotalWorkedHoursFormatted("00:00")
         setIsRunning(true);
       }
     } catch (error) {
@@ -180,9 +181,9 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
 
       if (response.status === 200) {
         setClockId(response.data.id);
-        // setTotalWorkedHoursFormatted(
-        //   response.data.total_worked_hours_formatted
-        // );
+        setTotalWorkedHoursFormatted(
+          response.data.total_worked_hours_formatted
+        );
         setStartTime(response.data.start_time);
         setStatus(response.data.status);
       }
@@ -229,7 +230,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       .split(":")
       .map(Number);
     // Calculate total minutes worked
-    const totalMinutesWorked = hours * 60 + minutes;
+    const totalMinutesWorked = (hours * 60 + minutes) * 3;
 
     // Get progress for 8 hours (0 to 1)
     const progress = totalMinutesWorked / 480; // 8 hours = 480 minutes
