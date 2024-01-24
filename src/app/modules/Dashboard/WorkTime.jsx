@@ -161,6 +161,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
         setTotalWorkedHoursFormatted(
           response.data.total_worked_hours_formatted
         );
+        setTotalWorkedHoursFormatted("00:00")
         setIsRunning(true);
       }
     } catch (error) {
@@ -184,7 +185,6 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
         // );
         setStartTime(response.data.start_time);
         setStatus(response.data.status);
-        setTotalWorkedHoursFormatted("00:00")
       }
     } catch (error) {
       console.error("Error fetching timer data:", error);
