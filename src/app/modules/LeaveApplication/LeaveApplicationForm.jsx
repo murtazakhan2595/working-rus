@@ -143,7 +143,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   return (
     <div className="bg-[#F9F9F9] w-full">
       <LeaveHeader post="Leave Application Form" />
-      <div className="px-3 lg:px-7 h-[74vh] lg:h-[80vh] overflow-y-scroll scroll">
+      <div className="px-3 lg:px-7 h-[76vh] h md:h-[83vh] lg:h-[80vh] overflow-y-scroll scroll">
         <h1 className="font-sfpro tracking-wide text-[#25A8E0] text-center md:text-left text-xs py-5">
           Note: Annual Leave Application Should be Submitted to HR Two Months
           Prior to Annual Leave Date.
@@ -177,7 +177,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     placeholder="Enter Name Here"
                     required
-                    className="rounded-md ml-[-8px] h-8 pl-2 w-[60%] lg:w-full"
+                    className="rounded-md ml-[-8px] h-8 pl-2 w-[60%]"
                     type="text"
                     name="name"
                     value={formData.name}
@@ -197,7 +197,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     placeholder="Enter Position Here"
                     required
-                    className="rounded-md pl-2 ml-[-14px] w-[60%] h-8 lg:w-full"
+                    className="rounded-md pl-2 ml-[-14px] w-[60%] h-8"
                     type="text"
                     name="position"
                     value={formData.position}
@@ -257,7 +257,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     placeholder="Enter Department Here"
                     required
-                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full"
+                    className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
                     type="text"
                     name="department"
                     value={formData.department}
@@ -277,7 +277,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   <input
                     placeholder="Enter Nationality Here"
                     required
-                    className="rounded-md pl-2 w-[60%] h-8 lg:w-full"
+                    className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
                     type="text"
                     name="nationality"
                     value={formData.nationality}
@@ -288,14 +288,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 </div>
               </div>
             </div>
-            <div className="py-2 flex justify-between md:justify-normal md:gap-x-10 lg:gap-x-12">
+            <div className="py-2 flex justify-between md:justify-normal md:gap-x-7 lg:gap-x-12">
               <div
                 className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
               >
                 Leave Type:
               </div>
-              <div className="rounded-md w-[60%] py-2 bg-white flex items-center gap-1 flex-wrap justify-end text-xs md:justify-start md:text-sm md:gap-x-2 md:w-[75%] lg:w-[76%] md:pl-5">
+              <div className="rounded-md w-[60%] py-2 bg-white flex items-center gap-1 flex-wrap justify-end text-xs md:justify-start md:text-sm md:gap-x-2 md:w-[76.5%] lg:w-[74%] md:pl-5">
                 <div className="flex items-center md:gap-2.5 gap-[4px]">
                   <input
                     type="checkbox"
@@ -347,7 +347,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               </div>
             </div>
 
-            <div className="py-2 flex justify-between md:justify-normal gap-x-14 lg:gap-x-[4.5rem]">
+            <div className="py-2 flex justify-between md:justify-normal gap-x-14 lg:gap-x-[4.8rem]">
               <label
                 className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -358,7 +358,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               <textarea
                 required
                 // className="rounded-md pl-2 w-[60%] md:w-[63%]"
-                className=" rounded-md pl-2 w-[60%] md:w-[77%]"
+                className=" rounded-md pl-2 w-[60%] md:w-[77%] lg:w-[74%]"
                 name="reason"
                 value={formData.reason}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -431,7 +431,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               </div>
 
               <div className="flex flex-col md:w-[44%]">
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-24">
+                <div className="py-2 flex justify-between md:gap-x-20 md:justify-normal lg:gap-x-[5.5rem]">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
@@ -451,14 +451,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   </div>
                 </div>
 
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-14">
+                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-12">
                   <label
                     className="font-sfpro tracking-wide font-semibold
                             text-input text-base"
                   >
                     Rejoining Date:
                   </label>
-                  <div className="ml-[-5px]">
+                  <div>
                     <Datepicker
                       className="z-50"
                       name="rejoining_date"
@@ -471,17 +471,17 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   </div>
                 </div>
 
-                <div className="py-2 flex justify-between lg:justify-normal lg:gap-x-10">
+                <div className="py-2 flex md:gap-x-6 lg:justify-normal lg:gap-x-7">
                   <label
                     className="font-sfpro tracking-wide font-semibold
-                            text-input text-base"
+                            text-input text-base md:w-28 lg:w-36"
                   >
                     Contact Number:
                   </label>
                   <input
                     placeholder="Enter Contact Here"
                     required
-                    className="rounded-md pl-2 w-[60%] h-8 lg:w-[51%]"
+                    className="rounded-md pl-2 w-[60%] md:w-[53%] h-8 lg:w-[53.5%]"
                     type="number"
                     name="contact_no"
                     value={formData.contact_no}
@@ -493,25 +493,25 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
               </div>
             </div>
 
-            <div className="py-2 flex justify-between md:justify-normal lg:justify-normal lg:gap-x-4">
+            <div className="py-2 flex justify-between md:justify-normal lg:justify-normal md:gap-x-2 lg:gap-x-[16px]">
               <label
                 className="font-sfpro tracking-wide font-semibold
-                            text-input text-base lg:w-32"
+                            text-input text-base md:w-28 lg:w-32"
               >
                 Address During Leave:
               </label>
               <textarea
                 required
-                className="rounded-md pl-2  md:w-[74%]"
+                className="rounded-md pl-2  md:w-[77.5%] lg:w-[75%]"
                 name="address_during_leave"
                 value={formData.address_during_leave}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               />
             </div>
-            <div className="py-2 flex justify-between md:justify-normal gap-x-10">
+            <div className="py-2 flex justify-between md:justify-normal lg:gap-x-[18px]">
               <label
                 className="font-sfpro tracking-wide font-semibold
-                            text-input text-base"
+                            text-input text-base md:w-[7.5rem] lg:w-32"
               >
                 Reporting Manager:
               </label>

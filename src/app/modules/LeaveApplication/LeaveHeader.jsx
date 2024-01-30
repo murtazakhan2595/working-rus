@@ -60,7 +60,7 @@ const LeaveHeader = ({ userProfile, post }) => {
         </div>
         <div className="relative ">
           <div
-            className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg rounded-tl-full rounded-bl-full md:rounded-tl-md md:rounded-bl-md bg-gray-200 cursor-pointer"
+            className="flex py-2 justify-end px-[.5rem] items-center gap-3 rounded-lg rounded-tl-full rounded-bl-full md:rounded-tl-md md:rounded-bl-md bg-gray-200 cursor-pointer"
             onClick={handleDropdownClick}
           >
             <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
