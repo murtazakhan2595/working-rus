@@ -10,7 +10,8 @@ import { getAllCountries } from "countries-and-timezones";
 import Select from "react-select";
 import axios from "axios";
 import { connect } from "react-redux";
-
+import { toast } from "react-toastify";
+ 
 const WorkTime = ({ baseUrl, token, userProfile }) => {
   // ******************** State Vars ************************ //
   const [timezones, setTimezones] = useState([]);
@@ -28,24 +29,24 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
   const [startTime, setStartTime] = useState(null);
   const [status, setStatus] = useState("start");
   const clockLimit = 3;
-
+ 
   // ******************** Stop Watch Start And Reset Functions ************************ //
-
+ 
   // console.log(userProfile);
-
+ 
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-
+ 
   const currentDate = new Date();
   const formattedCurrentDate = moment(currentDate).format("YYYY-MM-DD");
   const formattedTime = moment(currentDate).format("HH:mm:ss.SSS");
   const combinedDateTime = `${formattedCurrentDate}T${formattedTime}Z`;
-
+ 
   const startTimer = async () => {
     const startDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-
+ 
     try {
       const response = await axios.post(
         `${baseUrl}/timetracker/Timetracker/`,
@@ -60,24 +61,40 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           headers,
         }
       );
-
-      if (response.status === 201) {
+ 
+      if (response.status === 200) {
+        toast.success("Timer Starts", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
         console.log(response.data);
         setClockId(response.data.id);
         setTotalWorkedHoursFormatted(
           response.data.total_worked_hours_formatted
         );
         setStartTime(response.data.start_time);
-        setIsRunning(true);
+        // setIsRunning(true);
+        fetchTimerData();
       }
     } catch (error) {
       console.error("Error starting the timer:", error);
+      toast.error("Error starting the timer", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
-
+ 
   const pauseTimer = async () => {
     const pauseDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-
+ 
     try {
       const response = await axios.post(
         `${baseUrl}/timetracker/Timetracker/${clockId}/pause_clock/`,
@@ -92,8 +109,15 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           headers,
         }
       );
-
+ 
       if (response.status === 200) {
+        toast.success("Timer Pauses", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
         console.log(response.data);
         setClockId(response.data.id);
         setTotalWorkedHoursFormatted(
@@ -103,12 +127,20 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       }
     } catch (error) {
       console.error("Error pausing the timer:", error);
+      toast.error("Error pausing the timer", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
-
+ 
   const resumeTimer = async () => {
     const resumeDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-
+ 
     try {
       const response = await axios.post(
         `${baseUrl}/timetracker/Timetracker/${clockId}/resume_clock/`,
@@ -123,8 +155,15 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           headers,
         }
       );
-
+ 
       if (response.status === 200) {
+        toast.success("Timer Resumes", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
         console.log(response.data);
         setClockId(response.data.id);
         setTotalWorkedHoursFormatted(
@@ -134,12 +173,20 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       }
     } catch (error) {
       console.error("Error resuming the timer:", error);
+      toast.error("Start the Timer First", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
-
+ 
   const resetTimer = async () => {
     const resetDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-
+ 
     try {
       const response = await axios.post(
         `${baseUrl}/timetracker/Timetracker/${clockId}/reset_clock/`,
@@ -154,22 +201,38 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           headers,
         }
       );
-
+ 
       if (response.status === 200) {
+        toast.success("Timer Resets", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
         console.log(response.data);
         setClockId(response.data.id);
         setTotalWorkedHoursFormatted(
           response.data.total_worked_hours_formatted
-            ? response.data.total_worked_hours_formatted
-            : '00:00'
         );
-        setIsRunning(true);
+        // setTotalWorkedHoursFormatted("00:00");
+        // setIsRunning(true);
+        setIsRunning(false);
+        fetchTimerData();
       }
     } catch (error) {
       console.error("Error resetting the timer:", error);
+      toast.error("Timer is not Started Yet", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
-
+ 
   const fetchTimerData = async () => {
     try {
       const response = await axios.get(
@@ -178,52 +241,64 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           headers,
         }
       );
-
+ 
       if (response.status === 200) {
-        setClockId(response.data.id);
+        const responseData = response.data;
+        setClockId(responseData.id);
         setTotalWorkedHoursFormatted(
-          response.data.total_worked_hours_formatted
+          responseData.total_worked_hours_formatted
+            ? responseData.total_worked_hours_formatted
+            : "00:00"
         );
-        setStartTime(response.data.start_time);
-        setStatus(response.data.status);
+        setStartTime(responseData.start_time);
+        setStatus(responseData.status);
+ 
+        // Set isRunning based on the status received from the API response
+        // setIsRunning(responseData.status === "resume");
+        if (response.data.status === 'resume') {
+          setIsRunning(true); // Set isRunning to true if the status is 'resume'
+          console.log('is running status',response.data.status);
+        } else {
+          setIsRunning(false); // Set isRunning to false for any other status
+          console.log('isrunning status',response.data.status);
+        }
       }
     } catch (error) {
       console.error("Error fetching timer data:", error);
     }
   };
-
+ 
   // useEffect to start the interval when the component mounts
   useEffect(() => {
     fetchTimerData();
-
+ 
     // Start the interval only if the timer is running
     if (isRunning) {
       const intervalId = setInterval(() => {
         fetchTimerData();
       }, 60000);
-
+ 
       // Cleanup function to clear the interval when the component is unmounted
       return () => clearInterval(intervalId);
     }
   }, [isRunning]);
-
+ 
   // Cleanup function to clear the interval when the component is unmounted
   useEffect(() => {
     return () => clearInterval(intervalRef.current);
   }, []);
-
+ 
   const formatTime = (milliseconds) => {
     const hours = Math.floor(milliseconds / 3600000);
     const minutes = Math.floor((milliseconds % 3600000) / 60000);
     // const seconds = Math.floor((milliseconds % 60000) / 1000);
-
+ 
     return `${hours.toString().padStart(2, "0")} : ${minutes
       .toString()
-      .padStart(2, "0")} 
+      .padStart(2, "0")}
       `;
     // : ${seconds.toString().padStart(2, "0")}
   };
-
   const getProgress = () => {
     // Assuming totalWorkedHoursFormatted is in the format "HH:mm"
     const [hours, minutes] = (totalWorkedHoursFormatted || "00:00")
@@ -231,19 +306,18 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       .map(Number);
     // Calculate total minutes worked
     const totalMinutesWorked = (hours * 60 + minutes) * 3;
-
     // Get progress for 8 hours (0 to 1)
     const progress = totalMinutesWorked / 480; // 8 hours = 480 minutes
-
+ 
     // Ensure the progress value is within the expected range
     return progress >= 0 && progress <= 1 ? progress * 100 : 0;
   };
-
+ 
   // *************************** Getting Other Cities and Time **************************** //
-
+ 
   const fetchTimezones = async () => {
     var getCountries = getAllCountries();
-
+ 
     let zones = [];
     for (const countryId in getCountries) {
       if (getCountries.hasOwnProperty(countryId)) {
@@ -273,12 +347,12 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
     }
     setTimezones(zones);
   };
-
+ 
   const getTargetTime = (zone) => {
     const targetDate = moment().tz(zone).format("LT");
     return targetDate;
   };
-
+ 
   const deleteTime = (timezone) => {
     const storedData = localStorage.getItem("myTimeZones");
     const data = storedData ? JSON.parse(storedData) : [];
@@ -286,7 +360,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
     localStorage.setItem("myTimeZones", JSON.stringify(indexToRemove));
     setMsg("");
   };
-
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
     const storedData = localStorage.getItem("myTimeZones");
@@ -324,9 +398,9 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       setBottomMsg("Could not added the timezone please try again later.");
     }
   };
-
+ 
   // *************************** UseEffect **************************** //
-
+ 
   useEffect(() => {
     const interval = setInterval(() => {
       const storedData = localStorage.getItem("myTimeZones");
@@ -346,7 +420,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
   useEffect(() => {
     fetchTimezones();
   }, []);
-
+ 
   const customFilter = (option, searchText) => {
     if (
       option.data.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -357,11 +431,11 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
       return false;
     }
   };
-
+ 
   return (
     <div className="flex flex-col -mt-5 items-center justify-center ml-1 mr-3 md:pr-[25%] md:ml-10">
       <h1 className="font-semibold">Work Time</h1>
-
+ 
       {/* ********************************** Working Time ******************************* */}
       <div
         className="w-52 h-52 drop-shadow-lg shadow-black z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
@@ -387,20 +461,23 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
               Start Timer
             </button>
             <div className="flex gap-x-1">
-              <button
-                className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
-                onClick={pauseTimer}
-                title="Pause"
-              >
-                <CiPause1 />
-              </button>
-              <button
-                className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
-                onClick={resumeTimer}
-                title="Resume"
-              >
-                <RxResume />
-              </button>
+              {isRunning ? (
+                <button
+                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                  onClick={pauseTimer}
+                  title="Pause"
+                >
+                  <CiPause1 />
+                </button>
+              ) : (
+                <button
+                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                  onClick={resumeTimer}
+                  title="Resume"
+                >
+                  <RxResume />
+                </button>
+              )}
               <button
                 className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
                 onClick={resetTimer}
@@ -412,7 +489,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           </div>
         </div>
       </div>
-
+ 
       {/* ********************************** World Times ******************************* */}
       <div className="w-1/4 md:flex hidden">
         <div
@@ -600,12 +677,12 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
     </div>
   );
 };
-
+ 
 const mapStateToProps = (state) => {
   return {
     token: state.user.token,
     baseUrl: state.user.baseUrl,
   };
 };
-
+ 
 export default connect(mapStateToProps)(WorkTime);
