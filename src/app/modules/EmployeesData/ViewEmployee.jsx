@@ -410,7 +410,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
       </div>
       {/* Data */}
       <div className="lg:hidden">
-        {educations.length ? (
+        {educations?.length ? (
           educations.map((education, index) => (
             <div key={index} className="py-2">
               <div className="flex">
@@ -467,7 +467,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                         )
                       }
                     >
-                      {education.acadamicDocument.document.name.length > 15 ? (
+                      {education.acadamicDocument.document.name?.length > 15 ? (
                         <>
                           {education.acadamicDocument.document.name.slice(
                             0,
@@ -523,7 +523,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
             Attachments
           </div>
         </div>
-        {educations.length ? (
+        {educations?.length ? (
           educations.map((education, index) => (
             <div className="w-full flex text-[#555657]">
               <div className="w-[20%] px-4 py-2 border">
@@ -560,7 +560,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       )
                     }
                   >
-                    {education.acadamicDocument.document.name.length > 15 ? (
+                    {education.acadamicDocument.document.name?.length > 15 ? (
                       <>
                         {education.acadamicDocument.document.name.slice(0, 12)}
                         ...
@@ -615,7 +615,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
             Experience Letter
           </div>
         </div>
-        {experiences.length ? (
+        {experiences?.length ? (
           experiences.map((experience, index) => (
             <div className="w-full flex text-[#555657]">
               <div className="w-[20%] px-4 py-2 border">
@@ -652,7 +652,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       )
                     }
                   >
-                    {experience.exp_letter.name.length > 15 ? (
+                    {experience.exp_letter.name?.length > 15 ? (
                       <>
                         {experience.exp_letter.name.slice(0, 12)}
                         ...
@@ -676,7 +676,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
       </div>
       {/* Experiences */}
       <table className="min-w-full lg:hidden">
-        {experiences.length !== 0 ? (
+        {experiences?.length !== 0 ? (
           experiences.map((experience, index) => (
             <tbody key={index} className="bg-white text-gray-500">
               {index !== 0 && (
@@ -737,7 +737,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                         )
                       }
                     >
-                      {experience.exp_letter.name.length > 15 ? (
+                      {experience.exp_letter.name?.length > 15 ? (
                         <>
                           {experience.exp_letter.name.slice(0, 12)}
                           ...
@@ -766,7 +766,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
         Certifications
       </div>
       <table className="min-w-full block md:hidden">
-        {certifications.length !== 0 ? (
+        {certifications?.length !== 0 ? (
           certifications.map((certificate, index) => (
             <tbody key={index} className="bg-white text-gray-500">
               {index !== 0 && (
@@ -819,7 +819,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                         )
                       }
                     >
-                      {certificate.certification_body.name.length > 15 ? (
+                      {certificate.certification_body.name?.length > 15 ? (
                         <>
                           {certificate.certification_body.name.slice(0, 12)}
                           ...
@@ -859,7 +859,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
             Attachements
           </div>
         </div>
-        {certifications.length ? (
+        {certifications?.length ? (
           certifications.map((certificate, index) => (
             <div className="w-full flex text-[#555657]" key={index}>
               <div className="w-[27%] px-4 py-2 border">
@@ -882,7 +882,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       )
                     }
                   >
-                    {certificate.certification_body.name.length > 15 ? (
+                    {certificate.certification_body.name?.length > 15 ? (
                       <>
                         {certificate.certification_body.name.slice(0, 12)}
                         ...

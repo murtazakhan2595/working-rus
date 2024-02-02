@@ -9,7 +9,6 @@ import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
 
-
 const validationSchema = Joi.object({
   first_name: Joi.string().min(3).max(20).required().label("First Name"),
   last_name: Joi.string().min(3).max(20).required().label("Last Name"),
@@ -72,41 +71,41 @@ const PersonalInfo = ({
   };
 
   const [imagePreview, setImagePreview] = useState("");
-//   profile_picture
-const handleImageUpload = (e) => {
-  const selectedFile = e.target.files[0];
-  if (selectedFile) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setDataInSessionStorage("UpdatedDP", {
-        name: selectedFile.name,
-        file: e.target.result,
+  //   profile_picture
+  const handleImageUpload = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setDataInSessionStorage("UpdatedDP", {
+          name: selectedFile.name,
+          file: e.target.result,
+        });
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(selectedFile);
+      const imageError = { image: "" };
+      setErrors(imageError);
+    }
+    console.log("Selected File:", selectedFile);
+    console.log("Image Data:", e.target.result);
+  };
+
+  const fetchData = async () => {
+    try {
+      const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
+        headers,
       });
-      setImagePreview(e.target.result);
-    };
-    reader.readAsDataURL(selectedFile);
-    const imageError = { image: "" };
-    setErrors(imageError);
-  }
-  console.log("Selected File:", selectedFile);
-  console.log("Image Data:", e.target.result);
-};
+      const employeeData = employeeResponse.data;
+      setDefaultData(employeeData);
 
-const fetchData = async () => {
-  try {
-    const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
-      headers,
-    });
-    const employeeData = employeeResponse.data;
-    setDefaultData(employeeData);
-
-    // Check session storage first, then fallback to local state
-    const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
-    setImagePreview(updatedDP.file || employeeData.profile_picture);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-};
+      // Check session storage first, then fallback to local state
+      const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
+      setImagePreview(updatedDP.file || employeeData.profile_picture);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -126,8 +125,8 @@ const fetchData = async () => {
     setDataInSessionStorage("UpdatedPersonalInfo", defaultData);
   }, [defaultData]);
   useEffect(() => {
-    setDataInSessionStorage("UpdatedDP",imagePreview)
-}, [imagePreview])
+    setDataInSessionStorage("UpdatedDP", imagePreview);
+  }, [imagePreview]);
   const handleSave = async () => {
     let checkData = getDataFromSessionStorage("UpdatedPersonalInfo");
     const copyCheckData = {
@@ -157,19 +156,17 @@ const fetchData = async () => {
         validationErrors[detail.path[0]] = detail.message;
       });
       setErrors(validationErrors);
-    }
-    else if (!updatedDP) {
-        const imageError = { image: 'Please upload an image.' };
-        setErrors(imageError);
-    }
-    else {
+    } else if (!updatedDP) {
+      const imageError = { image: "Please upload an image." };
+      setErrors(imageError);
+    } else {
       setErrors({});
       let updatedData = getDataFromSessionStorage("UpdatedPersonalInfo");
       let updatedDP = getDataFromSessionStorage("UpdatedDP");
       if (updatedData.passport_number === "") {
         updatedData["passport_number"] = "000000000000000";
       }
-      updatedData["profile_picture"] = updatedDP
+      updatedData["profile_picture"] = updatedDP;
       let response = await axios.patch(
         `${baseUrl}/emp/${userProfile.id}`,
         updatedData,
@@ -179,16 +176,16 @@ const fetchData = async () => {
         setIsEdit(!isEdit);
         sessionStorage.clear();
         toast.success("Personal Information Updated!", {
-            position: "top-right",
-            autoClose: 3000,
-          });
-        sessionStorage.clear()
+          position: "top-right",
+          autoClose: 3000,
+        });
+        sessionStorage.clear();
         nextstep();
       }
     }
   };
   const handleNextStep = () => {
-    sessionStorage.clear()
+    sessionStorage.clear();
     nextstep();
   };
 
@@ -321,7 +318,7 @@ const fetchData = async () => {
                   <input
                     type="text"
                     inputMode="decimal"
-                    pattern="[+0-9]" 
+                    pattern="[+0-9]"
                     disabled={isEdit ? false : true}
                     value={defaultData.mobile_no}
                     name="mobile_no"
@@ -541,31 +538,30 @@ const fetchData = async () => {
           <div className="order-1 md:order-2 md:w-[35%]">
             {/*  */}
             {/* Image uploader */}
-            <div className="flex flex-col relative md:ml-6 md:mt-5 lg:mt-5 ">
+            <div className="flex flex-col relative md:ml-6 md:mt-5 lg:mt-5">
               <label
                 htmlFor="file-upload"
                 className="flex bg-[#EFEFEF] cursor-pointer text-center overflow-hidden font-bold w-[240px] h-[260px] rounded-3xl my-3"
               >
-                <div className="w-full h-full flex justify-center items-center border-solid bg-[#EFEFEF] rounded-3xl">
-                  {imagePreview ? (
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-full"
-                    />
-                  ) : (
-                    <>
-                      {" "}
-                      <span className="text-lg">
-                        <img
-                          src={upload}
-                          alt="icon here"
-                          className="w-20 h-20 block m-auto"
-                        />
-                        <span>Upload your photo</span>
-                      </span>
-                    </>
-                  )}
+                <div className="w-full h-full flex flex-col justify-center items-center border-solid bg-[#EFEFEF] rounded-3xl relative">
+                  <div className="relative w-32 h-32 border-2 border-gray-400 rounded-full overflow-hidden">
+                    {imagePreview ? (
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={upload}
+                        alt="Default"
+                        className="w-[100px] block mx-auto mt-2"
+                      />
+                    )}
+                  </div>
+                  <span className="text-base mt-3">
+                    {imagePreview ? "Change" : "Upload"} your photo
+                  </span>
                 </div>
                 <input
                   disabled={isEdit ? false : true}
@@ -652,7 +648,7 @@ const fetchData = async () => {
               <div className="flex gap-1">
                 <input
                   type="text"
-                  pattern="[+0-9]" 
+                  pattern="[+0-9]"
                   disabled={isEdit ? false : true}
                   value={defaultData.emergency_phone_no}
                   name="emergency_phone_no"
@@ -742,7 +738,8 @@ const fetchData = async () => {
               </div>
             </div>
             <p className="text-gray-700 mt-2">
-            If you have made changes, they will not be saved. Do you want to proceed?
+              If you have made changes, they will not be saved. Do you want to
+              proceed?
             </p>
             <div className="mt-4 flex justify-end">
               <button
@@ -766,7 +763,7 @@ const fetchData = async () => {
           </div>
         </div>
       )}
-    <ToastContainer />
+      <ToastContainer />
     </>
   );
 };
