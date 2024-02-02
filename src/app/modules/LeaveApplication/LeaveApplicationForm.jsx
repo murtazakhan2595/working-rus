@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 
 const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   const newDate = new Date();
-  const defaultDate = moment(newDate).format("YYYY-MM-DD");  
+  const defaultDate = moment(newDate).format("YYYY-MM-DD");
   const initialData = {
     employee_id: userProfile.id,
     name: "",
@@ -70,12 +70,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       if (name.includes("leave_type.")) {
         // Checkbox handling
         const leaveType = name.split(".")[1];
+        const updatedLeaveType = {
+          ...prevData.leave_type,
+          [leaveType]: !prevData.leave_type[leaveType],
+        };
+
         return {
           ...prevData,
-          leave_type: {
-            ...prevData.leave_type,
-            [leaveType]: !prevData.leave_type[leaveType],
-          },
+          leave_type: updatedLeaveType,
         };
       }
 
@@ -95,6 +97,18 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsButtonDisabled(true); // Disable the button
+
+    const isLeaveTypeSelected = Object.values(formData.leave_type).some(
+      (selected) => selected
+    );
+
+    if (!isLeaveTypeSelected) {
+      toast.error("Please select at least one leave type.", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setIsButtonDisabled(false); // Re-enable the button
+      return;
+    }
 
     const data = {
       employee_id: formData.employee_id,
@@ -378,7 +392,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Start Date:
                   </label>
-                  <div >
+                  <div>
                     <Datepicker
                       className="z-50"
                       name="start_date"

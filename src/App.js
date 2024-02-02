@@ -162,14 +162,22 @@ function App({
 
                       <Route
                         path="/leave-application"
-                        element={<LeaveApplicationForm isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveApplicationForm isSidebarOpen={isSidebarOpen} />
+                        }
+                      />
+                      <Route
+                        path="/leave-calender"
+                        element={<CalenderParent />}
                       />
                       <Route
                         path="/leave-list"
-                        element={<LeaveApplicationList isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveApplicationList isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
-                        path="/leave-request"
+                        path="/leave-request/:id"
                         element={<LeaveRequest isSidebarOpen={isSidebarOpen} />}
                       />
                     </>
@@ -213,6 +221,16 @@ function App({
                       <Route
                         path="/leave-calender"
                         element={<CalenderParent />}
+                      />
+                      <Route
+                        path="/leave-list"
+                        element={
+                          <LeaveApplicationList isSidebarOpen={isSidebarOpen} />
+                        }
+                      />
+                      <Route
+                        path="/leave-request/:id"
+                        element={<LeaveRequest isSidebarOpen={isSidebarOpen} />}
                       />
                     </>
                   )}
