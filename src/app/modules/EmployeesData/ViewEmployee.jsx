@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 import { RxCrossCircled } from "react-icons/rx";
 import { IoMdDownload } from "react-icons/io";
@@ -12,6 +12,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
   const [experiences, setExperiences] = useState([{}]);
   const [profileImage, setProfileImage] = useState(null);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -134,11 +135,10 @@ const ViewEmployee = ({ token, baseUrl }) => {
             </>
           )}
         </div>
-        <Link to="/employees">
-          <div className="absolute top-2 right-3 bg-gray-200 rounded-full text-gray-400 cursor-pointer">
+
+          <div className="absolute top-2 right-3 bg-gray-200 rounded-full text-gray-400 cursor-pointer" onClick={() => navigate("/employees")}>
             <RxCrossCircled />
           </div>
-        </Link>
         <div className="flex flex-col">
           <div className="text-gray-400 text-sm">
             <span>Employee ID:</span> TXB-{id.toString().padStart(4, "0")}
@@ -648,7 +648,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                     onClick={() =>
                       downloadAttachment(
                         experience.exp_letter.file,
-                        experience.name
+                        experience.exp_letter.name
                       )
                     }
                   >
@@ -733,7 +733,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                       onClick={() =>
                         downloadAttachment(
                           experience.exp_letter.file,
-                          experience.name
+                          experience.exp_letter.name
                         )
                       }
                     >
