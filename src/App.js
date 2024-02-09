@@ -30,9 +30,12 @@ import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
 import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
 import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
-import CalenderParent from "./app/modules/LeaveMgt/CalenderParent.jsx";
+
 import LeaveApplicationList from "./app/modules/LeaveApplication/LeaveApplicationList.jsx";
-import LeaveRequest from "./app/modules/LeaveApplication/LeaveRequest.jsx";
+import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
+import LeaveRequestHR from "./app/modules/LeaveApplication/LeaveRequestHR.jsx";
+import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestManager.jsx";
+import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
 
 function App({
   setUserProfile,
@@ -166,10 +169,7 @@ function App({
                           <LeaveApplicationForm isSidebarOpen={isSidebarOpen} />
                         }
                       />
-                      <Route
-                        path="/leave-calender"
-                        element={<CalenderParent />}
-                      />
+
                       <Route
                         path="/leave-list"
                         element={
@@ -178,7 +178,25 @@ function App({
                       />
                       <Route
                         path="/leave-request/:id"
-                        element={<LeaveRequest isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
+                        }
+                      />
+                      <Route
+                        path="/leave-balance"
+                        element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
+                        path="/leave-request-hr/:id"
+                        element={
+                          <LeaveRequestHR isSidebarOpen={isSidebarOpen} />
+                        }
+                      />
+                      <Route
+                        path="/leave-calender"
+                        element={
+                          <LeaveCalender isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                     </>
                   )}
@@ -218,10 +236,7 @@ function App({
                         path="/leave-application"
                         element={<LeaveApplicationForm />}
                       />
-                      <Route
-                        path="/leave-calender"
-                        element={<CalenderParent />}
-                      />
+
                       <Route
                         path="/leave-list"
                         element={
@@ -230,7 +245,19 @@ function App({
                       />
                       <Route
                         path="/leave-request/:id"
-                        element={<LeaveRequest isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
+                        }
+                      />
+                      <Route
+                        path="/leave-balance"
+                        element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
+                        path="/leave-request-hr/:id"
+                        element={
+                          <LeaveRequestHR isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                     </>
                   )}
