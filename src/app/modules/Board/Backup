@@ -1,5 +1,3 @@
-// index code
-
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
@@ -882,3 +880,24 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(Board);
+
+
+
+      {/*  <div className="flex justify-end items-center mt-2 px-1 lg:px-8">
+        <button
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
+          className={`mr-4 w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue 
+          ${page === 1 ? "bg-blue-300" : ""}`}
+        >
+          <BsArrowLeftShort className="text-xl text-white" title="Previous" />
+        </button>
+        <button
+          onClick={() => setPage(page + 1)}
+          disabled={!hasNextPage}
+          className={`w-7 h-7 rounded-2xl border flex justify-center items-center bg-baseBlue 
+          ${!hasNextPage ? "bg-blue-300" : ""}`}
+        >
+          <BsArrowRightShort className="text-xl text-white" title="Next" />
+        </button>
+      </div> */}

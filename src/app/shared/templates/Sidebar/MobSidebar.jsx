@@ -70,7 +70,7 @@ const MobSidebar = ({
         })
         .then((response) => {
           if (response.status === 200) {
-            setProjects(response.data.results);
+            setProjects(response.data);
             setProjectCount(response.data.count);
             setNextPage(response.data.next);
             setPreviousPage(response.data.previous);

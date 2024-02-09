@@ -12,7 +12,7 @@ import Select from "react-select";
 import { priorityOptions, statusOptions } from "../../../data/Data";
  
 const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }) => {
-  console.log('task modal board_status_id', boardStatusId);
+  console.log('task modal board status id', boardStatusId);
   const newDate = new Date();
   const defaultDate = moment(newDate).format("YYYY-MM-DD");  
  
@@ -309,26 +309,6 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                     </div>
                   </div>
                   <div className="flex md:gap-2 gap-6">
-                    {/* <div className="flex flex-col">
-                      <label
-                        htmlFor="status"
-                        className="py-1 font-sfpro text-lg font-semibold"
-                      >
-                        Status
-                      </label>
-                      <Select
-                        name="status"
-                        value={statusOptions.find(
-                          (option) => option.value === status
-                        )}
-                        options={statusOptions}
-                        isSearchable={false}
-                        className="w-[140px]" // Add your custom styles here
-                        onChange={(selectedOption) => {
-                          setStatus(selectedOption.value);
-                        }}
-                      />
-                    </div> */}
                     <div className="flex flex-col">
                       <label
                         htmlFor="priority"
@@ -546,96 +526,11 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                     </div>
                   </div>
                 </div>
-                {/* ******************* COMMENT ********************************** */}
-                {/* <div>
-                  <input
-                    type="text"
-                    name=""
-                    id=""
-                    className="h-14 rounded-lg bg-white w-full mt-4 font-sfpro pl-3 focus:outline-none"
-                    placeholder="Write a comment"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  />
-                  <div className="flex justify-between mt-2">
-                    <div className="flex gap-x-1 text-xl text-gray-400">
-                      <span>
-                        <IoAttachOutline />
-                      </span>
-                      <span>
-                        <VscMention />
-                      </span>
-                    </div>
-                    <div>
-                      <button
-                        type="button"
-                        className="bg-[#25A8E0] text-white rounded-lg px-6 py-1"
-                        onClick={createComment}
-                      >
-                        Send
-                      </button>
-                    </div>
-                  </div>
- 
-                  {loading ? (
-                    <p>Loading comments...</p>
-                  ) : (
-                    comments.length > 0 && (
-                      <div className="w-full">
-                        <p className="text-gray-400">Comments ({comments.length})</p>
-                        <div className="flex flex-col gap-2 h-36 overflow-y-scroll roundScrollsm mt-1">
-                          {comments.map((c) => (
-                            <div className="flex gap-4 items-start" key={c.id}>
-                              <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center flex-none text-white">
-                                {currentUser.username.slice(0, 2).toUpperCase()}
-                              </div>
-                              <div className="w-full mr-2 flex-1">
-                                <h1 className="font-semibold font-sfpro">
-                                  {currentUser ? currentUser.username : "Loading..."}
-                                </h1>
-                                {editingCommentId === c.id ? (
-                                  <input
-                                    type="text"
-                                    value={editedComment}
-                                    onChange={(e) => setEditedComment(e.target.value)}
-                                    autoFocus
-                                    className="border-b border-gray-300 w-full py-2 focus:outline-none pl-2"
-                                  />
-                                ) : (
-                                  <p className="text-gray-700">{c.comment}</p>
-                                )}
-                                <div className="text-sm space-x-4 text-gray-600">
-                                  {editingCommentId === c.id ? (
-                                    <>
-                                      <span className="underline cursor-pointer" onClick={() => saveEdit(c.id)}>Save</span>
-                                      <span className="underline cursor-pointer" onClick={cancelEdit}>Cancel</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <span className="underline cursor-pointer" onClick={() => startEdit(c.id, c.comment)}>Edit</span>
-                                      <span
-                                        className="underline cursor-pointer"
-                                        onClick={() => deleteComment(c.id)}
-                                      >
-                                        Delete
-                                      </span>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )
- 
-                  )}
-                </div> */}
               </div>
               <button
                 type="submit"
                 className="block m-auto py-1 px-16 mt-6 rounded-lg bg-[#283B91] text-white"
-                disabled={isLoading}
+                // disabled={isLoading}
               >
                 Done
               </button>

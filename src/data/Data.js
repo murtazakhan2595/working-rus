@@ -10,11 +10,18 @@ export const tasksTitle = [
 
   { label: "Due Date", width: "w-28" },
 
-  { label: "Status", width: "w-28" },
+  // { label: "Status", width: "w-28" },
 
-  { label: "Board", width: "w-28" },
+  { label: "List", width: "w-28" },
 
   { label: "Priority", width: "w-28" },
+];
+
+const userRoles = [
+  { value: 1, label: "Super Admin" },
+  { value: 2, label: "Manager" },
+  { value: 3, label: "HR" },
+  { value: 4, label: "Employee" },
 ];
 
 export const priorityOptions = [
@@ -48,6 +55,39 @@ export const links = [
     text: "Leave Application",
     icon: <MdOutlineTimeToLeave />,
   },
+];
+
+export const managerlinks = [
+  { to: "/", text: "Home", icon: <LiaHomeSolid /> },
+  { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
+  {
+    to: "/leave-application",
+    text: "Leave Application",
+    icon: <MdOutlineTimeToLeave />,
+  },
+];
+
+export const hrLinks = [
+  { to: "/", text: "Home", icon: <LiaHomeSolid /> },
+  { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
+  { to: "/employees", text: "Employee Sheet", icon: <BiSpreadsheet /> },
+  { to: "/jobs", text: "Recruitment", icon: <MdOutlinePayment /> },
+];
+
+export const employeeLinks = [
+  { to: "/", text: "Home", icon: <LiaHomeSolid /> },
+  { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
+  {
+    to: "/leave-application",
+    text: "Leave Application",
+    icon: <MdOutlineTimeToLeave />,
+  },
+];
+
+export const leaveLinks = [
+  { to: "/leave-list", text: "Leave Applications" },
+  { to: "/leave-calender", text: "Leave Calendar" },
+  { to: "/leave-balance", text: "Leave Balance" },
 ];
 
 export const jobTypeOptions = [
@@ -85,8 +125,8 @@ export const locationTypeOptions = [
 ];
 
 export const dropdownOptions = [
-  { label: "Pending", value: "pending" },
   { label: "Selected", value: "selected" },
+  { label: "Pending", value: "pending" },
   { label: "Shortlisted", value: "shortlisted" },
   { label: "Offer Made", value: "offer_made" },
   { label: "Onboard", value: "on_board" },

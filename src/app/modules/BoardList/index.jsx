@@ -47,7 +47,7 @@ const BoardList = ({
       });
 
       if (response.status === 200) {
-        setBoardList(response.data.results);
+        setBoardList(response.data);
       }
     } catch (error) {
       console.error("Error while fetching boards:", error);

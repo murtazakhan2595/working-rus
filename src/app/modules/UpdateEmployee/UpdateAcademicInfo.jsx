@@ -128,7 +128,8 @@ const AcademicRecords = ({
         `${baseUrl}/education/?search={"employee_id":${id}}`,
         { headers }
       );
-      const educationData = educationResponse.data.results[0];
+      console.log('education response');
+      const educationData = educationResponse.data[0];
       
       const formattedEducationData ={
         ...educationData,
@@ -139,7 +140,7 @@ const AcademicRecords = ({
       const docResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"acadmicDoc"}`, {
         headers,
       });
-      const docRes = docResponse.data.results[0];
+      const docRes = docResponse.data[0];
       let acadamicDocument = docRes 
       let docObj = {certificate: acadamicDocument}
       setAcademicInfo({...formattedEducationData,...docObj })
@@ -149,7 +150,7 @@ const AcademicRecords = ({
         `${baseUrl}/certification/?search={"employee_id":${id}}`,
         { headers }
       );
-      const certificationData = certificationResponse.data.results;
+      const certificationData = certificationResponse.data;
       
       const formattedCertificationData = certificationData.map((cer) => ({
         ...cer,

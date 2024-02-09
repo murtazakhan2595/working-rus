@@ -1,11 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaPause, FaStop, FaPlus, FaMinus } from "react-icons/fa";
+import { FaPlus, FaMinus } from "react-icons/fa";
+import { RxResume } from "react-icons/rx";
+import { VscDebugStart } from "react-icons/vsc";
+import { CiPause1 } from "react-icons/ci";
 import { IoClose } from "react-icons/io5";
+import { LuTimerReset } from "react-icons/lu";
 import moment from "moment-timezone";
 import { getAllCountries } from "countries-and-timezones";
 import Select from "react-select";
-
-const WorkTime = () => {
+import axios from "axios";
+import { connect } from "react-redux";
+import { toast } from "react-toastify";
+ 
+const WorkTime = ({ baseUrl, token, userProfile }) => {
   // ******************** State Vars ************************ //
   const [timezones, setTimezones] = useState([]);
   const [selectedTimezone, setSelectedTimezone] = useState("");
@@ -16,52 +23,301 @@ const WorkTime = () => {
   const [time, setTime] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const intervalRef = useRef(null);
+  const [clockId, setClockId] = useState(null);
+  const [totalWorkedHoursFormatted, setTotalWorkedHoursFormatted] =
+    useState("00: 00");
+  const [startTime, setStartTime] = useState(null);
+  const [status, setStatus] = useState("start");
   const clockLimit = 3;
-
+ 
   // ******************** Stop Watch Start And Reset Functions ************************ //
-
-  const handleStartStop = () => {
-    if (isRunning) {
-      clearInterval(intervalRef.current);
-    } else {
-      const startTime = Date.now() - time;
-      intervalRef.current = setInterval(() => {
-        setTime(Date.now() - startTime);
-      }, 10);
-    }
-    setIsRunning(!isRunning);
+ 
+  // console.log(userProfile);
+ 
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   };
-
-  // const handleReset = () => {
-  //   clearInterval(intervalRef.current);
-  //   setIsRunning(false);
-  //   setTime(0);
-  // };
-
-  // *************************** Stop Watch Time And Progress Functions **************************** //
-
+ 
+  const currentDate = new Date();
+  const formattedCurrentDate = moment(currentDate).format("YYYY-MM-DD");
+  const formattedTime = moment(currentDate).format("HH:mm:ss.SSS");
+  const combinedDateTime = `${formattedCurrentDate}T${formattedTime}Z`;
+ 
+  const startTimer = async () => {
+    const startDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+ 
+    try {
+      const response = await axios.post(
+        `${baseUrl}/timetracker/Timetracker/`,
+        {
+          start_time: startDateTime,
+          end_date: "",
+          status: status,
+          total_worked_hours: 0,
+          employee: userProfile.id,
+        },
+        {
+          headers,
+        }
+      );
+ 
+      if (response.status === 200) {
+        toast.success("Timer Starts", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
+        console.log(response.data);
+        setClockId(response.data.id);
+        setTotalWorkedHoursFormatted(
+          response.data.total_worked_hours_formatted
+        );
+        setStartTime(response.data.start_time);
+        // setIsRunning(true);
+        fetchTimerData();
+      }
+    } catch (error) {
+      console.error("Error starting the timer:", error);
+      toast.error("Error starting the timer", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+ 
+  const pauseTimer = async () => {
+    const pauseDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+ 
+    try {
+      const response = await axios.post(
+        `${baseUrl}/timetracker/Timetracker/${clockId}/pause_clock/`,
+        {
+          start_time: startTime,
+          end_date: "",
+          status: "pause",
+          total_worked_hours: 0,
+          employee: userProfile.id,
+        },
+        {
+          headers,
+        }
+      );
+ 
+      if (response.status === 200) {
+        toast.success("Timer Pauses", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
+        console.log(response.data);
+        setClockId(response.data.id);
+        setTotalWorkedHoursFormatted(
+          response.data.total_worked_hours_formatted
+        );
+        setIsRunning(false);
+      }
+    } catch (error) {
+      console.error("Error pausing the timer:", error);
+      toast.error("Error pausing the timer", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+ 
+  const resumeTimer = async () => {
+    const resumeDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+ 
+    try {
+      const response = await axios.post(
+        `${baseUrl}/timetracker/Timetracker/${clockId}/resume_clock/`,
+        {
+          start_time: startTime,
+          end_date: "",
+          status: "resume",
+          total_worked_hours: 0,
+          employee: userProfile.id,
+        },
+        {
+          headers,
+        }
+      );
+ 
+      if (response.status === 200) {
+        toast.success("Timer Resumes", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
+        console.log(response.data);
+        setClockId(response.data.id);
+        setTotalWorkedHoursFormatted(
+          response.data.total_worked_hours_formatted
+        );
+        setIsRunning(true);
+      }
+    } catch (error) {
+      console.error("Error resuming the timer:", error);
+      toast.error("Start the Timer First", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+ 
+  const resetTimer = async () => {
+    const resetDateTime = moment().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+ 
+    try {
+      const response = await axios.post(
+        `${baseUrl}/timetracker/Timetracker/${clockId}/reset_clock/`,
+        {
+          start_time: startTime,
+          end_date: "",
+          status: "",
+          total_worked_hours: 0,
+          employee: userProfile.id,
+        },
+        {
+          headers,
+        }
+      );
+ 
+      if (response.status === 200) {
+        toast.success("Timer Resets", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
+        console.log(response.data);
+        setClockId(response.data.id);
+        setTotalWorkedHoursFormatted(
+          response.data.total_worked_hours_formatted
+        );
+        // setTotalWorkedHoursFormatted("00:00");
+        // setIsRunning(true);
+        setIsRunning(false);
+        fetchTimerData();
+      }
+    } catch (error) {
+      console.error("Error resetting the timer:", error);
+      toast.error("Timer is not Started Yet", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+ 
+  const fetchTimerData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/timetracker/Timetracker/get_clock_status/`,
+        {
+          headers,
+        }
+      );
+ 
+      if (response.status === 200) {
+        const responseData = response.data;
+        setClockId(responseData.id);
+        setTotalWorkedHoursFormatted(
+          responseData.total_worked_hours_formatted
+            ? responseData.total_worked_hours_formatted
+            : "00:00"
+        );
+        setStartTime(responseData.start_time);
+        setStatus(responseData.status);
+ 
+        // Set isRunning based on the status received from the API response
+        // setIsRunning(responseData.status === "resume");
+        if (response.data.status === 'resume') {
+          setIsRunning(true); // Set isRunning to true if the status is 'resume'
+          console.log('is running status',response.data.status);
+        } else {
+          setIsRunning(false); // Set isRunning to false for any other status
+          console.log('isrunning status',response.data.status);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching timer data:", error);
+    }
+  };
+ 
+  // useEffect to start the interval when the component mounts
+  useEffect(() => {
+    fetchTimerData();
+ 
+    // Start the interval only if the timer is running
+    if (isRunning) {
+      const intervalId = setInterval(() => {
+        fetchTimerData();
+      }, 60000);
+ 
+      // Cleanup function to clear the interval when the component is unmounted
+      return () => clearInterval(intervalId);
+    }
+  }, [isRunning]);
+ 
+  // Cleanup function to clear the interval when the component is unmounted
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
+ 
   const formatTime = (milliseconds) => {
     const hours = Math.floor(milliseconds / 3600000);
     const minutes = Math.floor((milliseconds % 3600000) / 60000);
     // const seconds = Math.floor((milliseconds % 60000) / 1000);
-
+ 
     return `${hours.toString().padStart(2, "0")} : ${minutes
       .toString()
-      .padStart(2, "0")} 
+      .padStart(2, "0")}
       `;
     // : ${seconds.toString().padStart(2, "0")}
   };
-
   const getProgress = () => {
-    const progress = (time % 28800000) / 28800000; // Get progress for 8 hours (0 to 1)
-    return progress * 360; // Convert to degrees (0 to 360)
+    // Assuming totalWorkedHoursFormatted is in the format "HH:mm"
+    const [hours, minutes] = (totalWorkedHoursFormatted || "00:00")
+      .split(":")
+      .map(Number);
+    // Calculate total minutes worked
+    const totalMinutesWorked = (hours * 60 + minutes) * 3;
+    // Get progress for 8 hours (0 to 1)
+    const progress = totalMinutesWorked / 480; // 8 hours = 480 minutes
+ 
+    // Ensure the progress value is within the expected range
+    return progress >= 0 && progress <= 1 ? progress * 100 : 0;
   };
-
+ 
   // *************************** Getting Other Cities and Time **************************** //
-
+ 
   const fetchTimezones = async () => {
     var getCountries = getAllCountries();
-
+ 
     let zones = [];
     for (const countryId in getCountries) {
       if (getCountries.hasOwnProperty(countryId)) {
@@ -70,14 +326,14 @@ const WorkTime = () => {
           zones.push({
             id: country.id,
             name: `${country.name}`,
-            abbreviation: '',
+            abbreviation: "",
             timezones: country.timezones,
           });
         } else {
           country.timezones.forEach((timezone) => {
             // const timezoneAbbr = moment().tz(timezone).format('z')
             // const timezoneAbbr = moment.tz(timezone).zoneAbbr();
-            let abbreviation = timezone.split('/')
+            let abbreviation = timezone.split("/");
             zones.push({
               id: country.id,
               name: country.name,
@@ -91,33 +347,43 @@ const WorkTime = () => {
     }
     setTimezones(zones);
   };
-
+ 
   const getTargetTime = (zone) => {
     const targetDate = moment().tz(zone).format("LT");
     return targetDate;
   };
-
+ 
   const deleteTime = (timezone) => {
     const storedData = localStorage.getItem("myTimeZones");
     const data = storedData ? JSON.parse(storedData) : [];
-    const indexToRemove = data.filter(item => item.name !== timezone.name);
+    const indexToRemove = data.filter((item) => item.name !== timezone.name);
     localStorage.setItem("myTimeZones", JSON.stringify(indexToRemove));
     setMsg("");
   };
-
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
     const storedData = localStorage.getItem("myTimeZones");
     const data = storedData ? JSON.parse(storedData) : [];
     if (selectedTimezone.timeZone.length === 1) {
-      const existsInArray = data.some(item => item.name === `${selectedTimezone.name}${selectedTimezone.abbreviation && ` - ${selectedTimezone.abbreviation}`}`);
+      const existsInArray = data.some(
+        (item) =>
+          item.name ===
+          `${selectedTimezone.name}${
+            selectedTimezone.abbreviation &&
+            ` - ${selectedTimezone.abbreviation}`
+          }`
+      );
       if (data.length < clockLimit) {
         if (existsInArray) {
           setBottomMsg("Time Zone Already Exist Choose Another One.");
         } else {
           data.push({
             id: selectedTimezone.id,
-            name: `${selectedTimezone.name}${selectedTimezone.abbreviation && ` - ${selectedTimezone.abbreviation}`}` ,
+            name: `${selectedTimezone.name}${
+              selectedTimezone.abbreviation &&
+              ` - ${selectedTimezone.abbreviation}`
+            }`,
             timeZone: selectedTimezone.timeZone,
           });
           localStorage.setItem("myTimeZones", JSON.stringify(data));
@@ -132,22 +398,21 @@ const WorkTime = () => {
       setBottomMsg("Could not added the timezone please try again later.");
     }
   };
-
+ 
   // *************************** UseEffect **************************** //
-
+ 
   useEffect(() => {
     const interval = setInterval(() => {
       const storedData = localStorage.getItem("myTimeZones");
       const data = storedData ? JSON.parse(storedData) : [];
       let myZones = [];
-      data.map((d) =>{
+      data.map((d) => {
         myZones.push({
           name: d.name,
           time: getTargetTime(d.timeZone[0]),
           img: d.id?.toLowerCase(),
-        })
-      }
-      );
+        });
+      });
       setWorldTime(myZones);
     }, 1000);
     return () => clearInterval(interval);
@@ -155,47 +420,76 @@ const WorkTime = () => {
   useEffect(() => {
     fetchTimezones();
   }, []);
-
-
+ 
   const customFilter = (option, searchText) => {
-    if (option.data.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    option.data.abbreviation.toLowerCase().includes(searchText.toLowerCase()) ) {
+    if (
+      option.data.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      option.data.abbreviation.toLowerCase().includes(searchText.toLowerCase())
+    ) {
       return true;
     } else {
       return false;
     }
-  }
-
+  };
+ 
   return (
     <div className="flex flex-col -mt-5 items-center justify-center ml-1 mr-3 md:pr-[25%] md:ml-10">
       <h1 className="font-semibold">Work Time</h1>
-
+ 
       {/* ********************************** Working Time ******************************* */}
       <div
-        className="w-52 h-52 drop-shadow-lg shadow-black  z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
+        className="w-52 h-52 drop-shadow-lg shadow-black z-10 rounded-full border-[12px] border-[#e3e3e3] flex justify-center items-center"
         style={{
           background: `conic-gradient(from 0deg at 50% 50%, #25a8e0 ${getProgress()}deg, #fff 0 ${getProgress()}deg, #fff)`,
         }}
       >
-        <div className="w-[10.5rem] h-[10.5rem] rounded-full bg-[#e3e3e3] flex  flex-col items-center justify-center text-xl m-0">
+        <div className="w-[10.5rem] h-[10.5rem] rounded-full bg-[#e3e3e3] flex flex-col items-center justify-center text-xl m-0">
           <div>
             <div className="text-xl font-semibold text-[#283b91]">
-              {formatTime(time)}
+              {totalWorkedHoursFormatted}
             </div>
-            <div className="text-xl tracking-wider  font-semibold text-center mb-5 text-[#283b91]">
+            <div className="text-xl tracking-wider font-semibold text-center mb-5 text-[#283b91]">
               Hrs
             </div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-y-1">
             <button
-              className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
-              onClick={handleStartStop}
+              className="px-[0.3rem] py-[2px] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+              onClick={startTimer}
+              title="Start"
             >
-              {isRunning ? <FaPause /> : <FaStop />}
+              Start Timer
             </button>
+            <div className="flex gap-x-1">
+              {isRunning ? (
+                <button
+                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                  onClick={pauseTimer}
+                  title="Pause"
+                >
+                  <CiPause1 />
+                </button>
+              ) : (
+                <button
+                  className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                  onClick={resumeTimer}
+                  title="Resume"
+                >
+                  <RxResume />
+                </button>
+              )}
+              <button
+                className="px-[0.6rem] py-[0.3rem] bg-[#283b91] text-white rounded-md m-0 text-sm hover:bg-[#283bbf]"
+                onClick={resetTimer}
+                title="Reset"
+              >
+                <LuTimerReset />
+              </button>
+            </div>
           </div>
         </div>
       </div>
+ 
       {/* ********************************** World Times ******************************* */}
       <div className="w-1/4 md:flex hidden">
         <div
@@ -345,17 +639,22 @@ const WorkTime = () => {
                         setSelectedTimezone({
                           id: e.id,
                           abbreviation: e.abbreviation,
-                          name: e.name ,
+                          name: e.name,
                           timeZone: e.timezones,
                         });
                       } else {
                         setSelectedTimezone(null);
                       }
                     }}
-                    getOptionLabel={option =>
-                      <div className="flex gap-2 items-start">{option.name} <div className="text-sm opacity-60">{option.abbreviation}</div> </div>
-                    }
-                    getOptionValue={option => option.timezones}
+                    getOptionLabel={(option) => (
+                      <div className="flex gap-2 items-start">
+                        {option.name}{" "}
+                        <div className="text-sm opacity-60">
+                          {option.abbreviation}
+                        </div>{" "}
+                      </div>
+                    )}
+                    getOptionValue={(option) => option.timezones}
                     options={timezones}
                   />
                 </div>
@@ -378,5 +677,12 @@ const WorkTime = () => {
     </div>
   );
 };
-
-export default WorkTime;
+ 
+const mapStateToProps = (state) => {
+  return {
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
+ 
+export default connect(mapStateToProps)(WorkTime);

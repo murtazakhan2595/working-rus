@@ -48,7 +48,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
         }
       );
 
-      setPosts(response.data.results);
+      setPosts(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -217,7 +217,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
               <Loader />
             ) : (
               <tbody className="bg-white text-gray-500">
-                {posts.map((post) => (
+                {posts?.map((post) => (
                   <tr
                     className={`whitespace-nowrap border-b-2 hover:bg-gray-100`}
                     key={post.id}

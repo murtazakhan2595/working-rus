@@ -1,21 +1,25 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { connect } from "react-redux";
-import { IoIosAttach } from "react-icons/io";
 import { RxCrossCircled } from "react-icons/rx";
+import { IoMdDownload } from "react-icons/io";
 
 const ViewEmployee = ({ token, baseUrl }) => {
   const [data, setData] = useState("");
   const [educations, setEducations] = useState([{}]);
   const [certifications, setCertifications] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);
+  const [profileImage, setProfileImage] = useState(null);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
+
+  console.log(educations, "loged education");
 
   const fetchData = async () => {
     try {
@@ -25,21 +29,14 @@ const ViewEmployee = ({ token, baseUrl }) => {
       });
       const employeeData = employeeResponse.data;
       setData(employeeData);
-
-      // Fetch education data
-      const educationResponse = await axios.get(
-        `${baseUrl}/education/?search={"employee_id":${id}}`,
-        { headers }
-      );
-      const educationData = educationResponse.data.results;
-      setEducations(educationData);
+      setProfileImage(employeeData.profile_picture);
 
       // Fetch experiences data
       const experiencesResponse = await axios.get(
         `${baseUrl}/experience/?search={"employee_id":${id}}`,
         { headers }
       );
-      const experiencesData = experiencesResponse.data.results;
+      const experiencesData = experiencesResponse.data;
       setExperiences(experiencesData);
 
       // Fetch certification data
@@ -47,33 +44,101 @@ const ViewEmployee = ({ token, baseUrl }) => {
         `${baseUrl}/certification/?search={"employee_id":${id}}`,
         { headers }
       );
-      const certificationData = certificationResponse.data.results;
+      const certificationData = certificationResponse.data;
       setCertifications(certificationData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+
+    // Assuming both educationData and acadamicDocument are arrays
+
+    // Fetch education data
+    const educationResponse = await axios.get(
+      `${baseUrl}/education/?search={"employee_id":${id}}`,
+      { headers }
+    );
+    const educationData = educationResponse.data;
+    // setEducations(educationData);
+
+    // get education documents
+    const docResponse = await axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"acadmicDoc"}`,
+      {
+        headers,
+      }
+    );
+    const docRes = docResponse.data[0];
+    let acadamicDocument = docRes;
+
+    // Combine educationData with acadamicDocument
+    const educationAndAcadDocs = educationData.map((educationItem) => ({
+      ...educationItem,
+      acadamicDocument,
+    }));
+
+    // console.log(combinedData, "combine data");
+    setEducations(educationAndAcadDocs);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  const downloadAttachment = async (file, name) => {
+    try {
+      const response = await axios.get(file, {
+        responseType: "blob",
+      });
+      const blob = new Blob([response.data], { type: "application/pdf" });
+
+      const url = window.URL.createObjectURL(blob);
+      console.log("Content-Type:", response.headers["content-type"]);
+
+      // Create a temporary link element
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Set the download attribute to the desired file name
+      link.download = `${name}_cv.pdf`; // You can adjust the file name accordingly
+
+      // Append the link to the document
+      document.body.appendChild(link);
+
+      // Programmatically trigger a click on the link to initiate the download
+      link.click();
+
+      // Remove the link from the document
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error fetching CV:", error);
+    }
+  };
+
   return (
-    <div className="w-full overflow-x-auto overflow-y-auto max-h-[100vh] xScroll md:px-4 xl:px-8">
+    <div className="w-full overflow-x-auto overflow-y-auto max-h-[100vh] roundScroll md:px-4 xl:px-8">
       {/* image */}
       <div className="flex items-center gap-x-8 bg-[#f9f9f9] px-4 lg:px-10 py-4 border border-[#707070] relative">
         <div
           className="w-24 h-24 rounded-full bg-white text-[#555657] text-3xl font-semibold flex 
         justify-center items-center"
         >
-          {data.first_name?.toUpperCase().slice(0, 1)}
-          {data.last_name?.toUpperCase().slice(0, 1)}
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt={`${data.first_name} ${data.last_name}'s Profile Picture`}
+              style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+            />
+          ) : (
+            <>
+              {data.first_name?.toUpperCase().slice(0, 1)}
+              {data.last_name?.toUpperCase().slice(0, 1)}
+            </>
+          )}
         </div>
-        <Link to="/employees">
-          <div className="absolute top-2 right-3 bg-gray-200 rounded-full text-gray-400 cursor-pointer">
+
+          <div className="absolute top-2 right-3 bg-gray-200 rounded-full text-gray-400 cursor-pointer" onClick={() => navigate("/employees")}>
             <RxCrossCircled />
           </div>
-        </Link>
         <div className="flex flex-col">
           <div className="text-gray-400 text-sm">
             <span>Employee ID:</span> TXB-{id.toString().padStart(4, "0")}
@@ -345,7 +410,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
       </div>
       {/* Data */}
       <div className="lg:hidden">
-        {educations.length ? (
+        {educations?.length ? (
           educations.map((education, index) => (
             <div key={index} className="py-2">
               <div className="flex">
@@ -388,6 +453,38 @@ const ViewEmployee = ({ token, baseUrl }) => {
                   {education.edu_end_date}
                 </div>
               </div>
+              <div className="flex">
+                <div className="w-[40%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+                  File
+                </div>
+                <div className="w-[60%] px-4 py-2 text-left border text-gray-500">
+                  {education.acadamicDocument ? (
+                    <button
+                      onClick={() =>
+                        downloadAttachment(
+                          education.acadamicDocument.document.file,
+                          education.acadamicDocument.document.name
+                        )
+                      }
+                    >
+                      {education.acadamicDocument.document.name?.length > 15 ? (
+                        <>
+                          {education.acadamicDocument.document.name.slice(
+                            0,
+                            12
+                          )}
+                          ...
+                        </>
+                      ) : (
+                        education.acadamicDocument.document.name
+                      )}
+                      <IoMdDownload className="text-xl" />
+                    </button>
+                  ) : (
+                    "N/A"
+                  )}
+                </div>
+              </div>
             </div>
           ))
         ) : (
@@ -426,7 +523,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
             Attachments
           </div>
         </div>
-        {educations.length ? (
+        {educations?.length ? (
           educations.map((education, index) => (
             <div className="w-full flex text-[#555657]">
               <div className="w-[20%] px-4 py-2 border">
@@ -453,12 +550,34 @@ const ViewEmployee = ({ token, baseUrl }) => {
                 {education.education_level}
               </div>
               <div className="w-[15%] px-4 py-2 border border-gray-200">
-                <IoIosAttach />
+                {education.acadamicDocument ? (
+                  <button
+                    className="flex items-center gap-x-2"
+                    onClick={() =>
+                      downloadAttachment(
+                        education.acadamicDocument.document.file,
+                        education.acadamicDocument.document.name
+                      )
+                    }
+                  >
+                    {education.acadamicDocument.document.name?.length > 15 ? (
+                      <>
+                        {education.acadamicDocument.document.name.slice(0, 12)}
+                        ...
+                      </>
+                    ) : (
+                      education.acadamicDocument.document.name
+                    )}
+                    <IoMdDownload className="text-xl" />
+                  </button>
+                ) : (
+                  "N/A"
+                )}
               </div>
             </div>
           ))
         ) : (
-          <div className="text-center opacity-50 text-sm">
+          <div className="text-center opacity-50 text-sm mt-3">
             No Professional Experience Added.
           </div>
         )}
@@ -496,7 +615,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
             Experience Letter
           </div>
         </div>
-        {experiences.length ? (
+        {experiences?.length ? (
           experiences.map((experience, index) => (
             <div className="w-full flex text-[#555657]">
               <div className="w-[20%] px-4 py-2 border">
@@ -523,19 +642,41 @@ const ViewEmployee = ({ token, baseUrl }) => {
                 {/* {education.education_level} */}
               </div>
               <div className="w-[15%] px-4 py-2 border border-gray-200">
-                <IoIosAttach />
+                {experience.exp_letter ? (
+                  <button
+                    className="flex items-center gap-x-2"
+                    onClick={() =>
+                      downloadAttachment(
+                        experience.exp_letter.file,
+                        experience.exp_letter.name
+                      )
+                    }
+                  >
+                    {experience.exp_letter.name?.length > 15 ? (
+                      <>
+                        {experience.exp_letter.name.slice(0, 12)}
+                        ...
+                      </>
+                    ) : (
+                      experience.exp_letter.name
+                    )}
+                    <IoMdDownload className="text-xl" />
+                  </button>
+                ) : (
+                  "N/A"
+                )}
               </div>
             </div>
           ))
         ) : (
-          <div className="text-center opacity-50 text-sm">
+          <div className="text-center opacity-50 text-sm mt-3">
             No Experience Added.
           </div>
         )}
       </div>
       {/* Experiences */}
       <table className="min-w-full lg:hidden">
-        {experiences.length !== 0 ? (
+        {experiences?.length !== 0 ? (
           experiences.map((experience, index) => (
             <tbody key={index} className="bg-white text-gray-500">
               {index !== 0 && (
@@ -582,10 +723,39 @@ const ViewEmployee = ({ token, baseUrl }) => {
                   {experience.exp_end_date}
                 </td>
               </tr>
+              <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                <td className="w-[50%] px-6 py-2 text-left border border-gray-200 font-bold text-[#555657]">
+                  File
+                </td>
+                <td className="w-[50%] px-6 py-2 text-left border border-gray-200">
+                  {experience.exp_letter ? (
+                    <button
+                      onClick={() =>
+                        downloadAttachment(
+                          experience.exp_letter.file,
+                          experience.exp_letter.name
+                        )
+                      }
+                    >
+                      {experience.exp_letter.name?.length > 15 ? (
+                        <>
+                          {experience.exp_letter.name.slice(0, 12)}
+                          ...
+                        </>
+                      ) : (
+                        experience.exp_letter.name
+                      )}
+                      <IoMdDownload className="text-xl" />
+                    </button>
+                  ) : (
+                    "N/A"
+                  )}
+                </td>
+              </tr>
             </tbody>
           ))
         ) : (
-          <div className="text-center opacity-50 text-sm">
+          <div className="text-center opacity-50 text-sm mt-3">
             No Professional Experience Added.
           </div>
         )}
@@ -596,8 +766,8 @@ const ViewEmployee = ({ token, baseUrl }) => {
         Certifications
       </div>
       <table className="min-w-full block md:hidden">
-        {certifications.length !== 0 ? (
-          certifications.map((certification, index) => (
+        {certifications?.length !== 0 ? (
+          certifications.map((certificate, index) => (
             <tbody key={index} className="bg-white text-gray-500">
               {index !== 0 && (
                 <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
@@ -616,7 +786,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                   Certification Name
                 </td>
                 <td className="w-[50%] px-6 py-2 text-left">
-                  {certification.certification_name}
+                  {certificate.certification_name}
                 </td>
               </tr>
               <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
@@ -624,7 +794,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                   Completion Date
                 </td>
                 <td className="w-[50%] px-6 py-2 text-left">
-                  {certification.completion_date}
+                  {certificate.completion_date}
                 </td>
               </tr>
               <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
@@ -632,13 +802,42 @@ const ViewEmployee = ({ token, baseUrl }) => {
                   Expiry Date
                 </td>
                 <td className="w-[50%] px-6 py-2 text-left">
-                  {certification.expiry_date}
+                  {certificate.expiry_date}
+                </td>
+              </tr>
+              <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                <td className="w-[50%] px-6 py-2 text-left font-bold text-[#555657]">
+                  File
+                </td>
+                <td className="w-[50%] px-6 py-2 text-left">
+                  {certificate.certification_body ? (
+                    <button
+                      onClick={() =>
+                        downloadAttachment(
+                          certificate.certification_body.file,
+                          certificate.certification_body.name
+                        )
+                      }
+                    >
+                      {certificate.certification_body.name?.length > 15 ? (
+                        <>
+                          {certificate.certification_body.name.slice(0, 12)}
+                          ...
+                        </>
+                      ) : (
+                        certificate.certification_body.name
+                      )}
+                      <IoMdDownload className="text-xl" />
+                    </button>
+                  ) : (
+                    "N/A"
+                  )}
                 </td>
               </tr>
             </tbody>
           ))
         ) : (
-          <div className="text-center opacity-50 text-sm">
+          <div className="text-center opacity-50 text-sm mt-3">
             No Certifications Added.
           </div>
         )}
@@ -660,9 +859,9 @@ const ViewEmployee = ({ token, baseUrl }) => {
             Attachements
           </div>
         </div>
-        {certifications.length ? (
+        {certifications?.length ? (
           certifications.map((certificate, index) => (
-            <div className="w-full flex" key={index}>
+            <div className="w-full flex text-[#555657]" key={index}>
               <div className="w-[27%] px-4 py-2 border">
                 {certificate.certification_name}
               </div>
@@ -673,7 +872,29 @@ const ViewEmployee = ({ token, baseUrl }) => {
                 {certificate.expiry_date}
               </div>
               <div className="w-[19%] px-4 py-2 border border-gray-200">
-                <IoIosAttach />
+                {certificate.certification_body ? (
+                  <button
+                    className="flex items-center gap-x-2"
+                    onClick={() =>
+                      downloadAttachment(
+                        certificate.certification_body.file,
+                        certificate.certification_body.name
+                      )
+                    }
+                  >
+                    {certificate.certification_body.name?.length > 15 ? (
+                      <>
+                        {certificate.certification_body.name.slice(0, 12)}
+                        ...
+                      </>
+                    ) : (
+                      certificate.certification_body.name
+                    )}
+                    <IoMdDownload className="text-xl" />
+                  </button>
+                ) : (
+                  "N/A"
+                )}
               </div>
             </div>
           ))
