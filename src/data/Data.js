@@ -50,6 +50,8 @@ export const academicOptions = [
 export const links = [
   { to: "/", text: "Home", icon: <LiaHomeSolid /> },
   { to: "/profile", text: "Profile", icon: <RiProfileLine /> },
+  { to: "/employees", text: "Employee Sheet", icon: <BiSpreadsheet /> },
+  { to: "/jobs", text: "Recruitment", icon: <MdOutlinePayment /> },
   {
     to: "/leave-application",
     text: "Leave Application",
