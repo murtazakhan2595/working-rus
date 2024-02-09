@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import EmpDataHeader from "./EmpDataHeader";
-import Loader from "../../../common/Loader";
+import EmpSheetLoader from "../../../common/EmpSheetLoad";
 
 const userRoles = [
   { value: 2, label: "HR" },
@@ -79,7 +79,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
             </tr>
           </thead>
           {loading ? (
-            <Loader />
+            <EmpSheetLoader />
           ) : (
             <tbody className="bg-white text-gray-500">
               {users.map((user) => (
