@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
+  console.log(userProfile);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [leavesList, setLeavesList] = useState([]);
@@ -32,6 +33,16 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
     fetchLeaveList();
   }, []);
 
+  const handleClick = (employeeId) => {
+    if (userProfile.role === 2) {
+      navigate(`/leave-request/${employeeId}`);
+    } else if (userProfile.role === 3) {
+      navigate(`/leave-request-hr/${employeeId}`);
+    } else {
+      navigate(`/leave-request/${employeeId}`);
+    }
+  };
+
   return (
     <div className="bg-[#F9F9F9] w-full">
       <LeaveHeader post="Leave" />
@@ -51,9 +62,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
             >
               <div
                 className="cursor-pointer text-[#828282] font-semibold"
-                onClick={() => {
-                  navigate(`/leave-request/${employee.id}`);
-                }}
+                onClick={() => handleClick(employee.id)}
               >
                 {employee.name}
               </div>

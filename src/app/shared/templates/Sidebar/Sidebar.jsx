@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { MdLock } from "react-icons/md";
+import { PiSuitcaseRollingBold } from "react-icons/pi";
 import {
   AiOutlineCaretDown,
   AiOutlineCaretUp,
@@ -21,7 +22,12 @@ import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
-import { hrLinks, links, managerlinks } from "../../../../data/Data";
+import {
+  hrLinks,
+  leaveLinks,
+  links,
+  managerlinks,
+} from "../../../../data/Data";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -36,6 +42,7 @@ const Sidebar = ({
   const cookies = new Cookies();
   const [isProjectOpen, setisProjectOpen] = useState(false);
   const [isModelOpen, setisModelOpen] = useState(false);
+  const [isLinksOpen, setIsLinksOpen] = useState(false);
   const [projects, setProjects] = useState({});
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
@@ -106,8 +113,26 @@ const Sidebar = ({
               </div>
             </li>
 
-            {(userProfile.role === 2 || userProfile.role === 4)
-              && managerlinks.map((link, index) => (
+            {(userProfile.role === 2 || userProfile.role === 4) &&
+              managerlinks.map((link, index) => (
+                <li key={index}>
+                  <Link to={link.to}>
+                    <div
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
+                        location.pathname === link.to ? "bg-[#259ED8]" : ""
+                      }`}
+                    >
+                      <div className="text-white text-xl">{link.icon}</div>
+                      <p className="text-white">{link.text}</p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+       
+
+            {userProfile.role === 3 && (
+              <>
+                {hrLinks.map((link, index) => (
                   <li key={index}>
                     <Link to={link.to}>
                       <div
@@ -120,38 +145,82 @@ const Sidebar = ({
                       </div>
                     </Link>
                   </li>
-                ))
-              }
-            {userProfile.role === 3 &&
-              hrLinks.map((link, index) => (
-                <li key={index}>
-                  <Link to={link.to}>
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === link.to ? "bg-[#259ED8]" : ""
-                      }`}
-                    >
-                      <div className="text-white text-xl">{link.icon}</div>
-                      <p className="text-white">{link.text}</p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            {userProfile.role === 1 &&
-              links.map((link, index) => (
-                <li key={index}>
-                  <Link to={link.to}>
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === link.to ? "bg-[#259ED8]" : ""
-                      }`}
-                    >
-                      <div className="text-white text-xl">{link.icon}</div>
-                      <p className="text-white">{link.text}</p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
+                ))}
+                <div className="text-white bg-[#202F72] rounded-lg mb-2">
+                  <div
+                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    onClick={() => setIsLinksOpen(!isLinksOpen)}
+                  >
+                    <PiSuitcaseRollingBold className="text-4xl" />
+                    Leave Application and Data
+                  </div>
+                  {isLinksOpen && (
+                    <>
+                      {leaveLinks.map((leave) => (
+                        <Link to={leave.to}>
+                          <div
+                            className={`py-2 pl-10 ${
+                              location.pathname === leave.to
+                                ? "border-2 border-[#259ED8] rounded-lg my-1"
+                                : ""
+                            }`}
+                            key={leave.text}
+                          >
+                            {leave.text}
+                          </div>
+                        </Link>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+            {userProfile.role === 1 && (
+              <>
+                {links.map((link, index) => (
+                  <li key={index}>
+                    <Link to={link.to}>
+                      <div
+                        className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
+                          location.pathname === link.to ? "bg-[#259ED8]" : ""
+                        }`}
+                      >
+                        <div className="text-white text-xl">{link.icon}</div>
+                        <p className="text-white">{link.text}</p>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+                <div className="text-white bg-[#202F72] rounded-lg mb-2">
+                  <div
+                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    onClick={() => setIsLinksOpen(!isLinksOpen)}
+                  >
+                    <PiSuitcaseRollingBold className="text-4xl" />
+                    Leave Application and Data
+                  </div>
+                  {isLinksOpen && (
+                    <>
+                      {leaveLinks.map((leave) => (
+                        <Link to={leave.to}>
+                          <div
+                            className={`py-2 pl-10 ${
+                              location.pathname === leave.to
+                                ? "border-2 border-[#259ED8] rounded-lg my-1"
+                                : ""
+                            }`}
+                            key={leave.text}
+                          >
+                            {leave.text}
+                          </div>
+                        </Link>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+
             {userProfile.role !== 3 && (
               <>
                 <hr className="opacity-40" />

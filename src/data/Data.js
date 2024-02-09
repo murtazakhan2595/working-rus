@@ -24,7 +24,6 @@ const userRoles = [
   { value: 4, label: "Employee" },
 ];
 
-
 export const priorityOptions = [
   { value: 3, label: "🟢 Low" },
   { value: 2, label: "🌕 Medium" },
@@ -85,6 +84,12 @@ export const employeeLinks = [
     text: "Leave Application",
     icon: <MdOutlineTimeToLeave />,
   },
+];
+
+export const leaveLinks = [
+  { to: "/leave-list", text: "Leave Applications" },
+  { to: "/leave-calender", text: "Leave Calendar" },
+  { to: "/leave-balance", text: "Leave Balance" },
 ];
 
 export const jobTypeOptions = [
