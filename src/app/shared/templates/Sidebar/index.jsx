@@ -1,19 +1,28 @@
-import MobSidebar from './MobSidebar'
-import Sidebar from './Sidebar'
+import MobSidebar from "./MobSidebar";
+import Sidebar from "./Sidebar";
 const index = ({ isSidebarOpen, setIsSidebarOpen }) => {
   let width = window.screen.width;
   let val = width <= 1280 ? false : true;
 
   return (
     <>
-    {val ?
-      <div><Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-      </div>:
-      <div><MobSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-      </div>
-    }
+      {val ? (
+        <div>
+          <Sidebar
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        </div>
+      ) : (
+        <div>
+          <MobSidebar
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        </div>
+      )}
     </>
-  )
-}
+  );
+};
 
-export default index
+export default index;

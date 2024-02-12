@@ -139,7 +139,7 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
         <form className="w-full">
           <div className="flex flex-col md:flex-row items-center justify-between md:justify-normal md:gap-x-11 lg:gap-x-14">
             <h1 className="text-baseBlue text-base tracking-wider font-semibold md:my-6">
-              HR Comments
+              Comments
             </h1>
             <textarea
               className="rounded-md pl-2 w-full md:w-[77.5%] lg:w-[75%]"

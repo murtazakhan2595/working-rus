@@ -141,7 +141,7 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
     <div className="bg-[#F9F9F9] w-full">
       <LeaveHeader post="Leave Request" />
       <div className="px-3 lg:px-7 h-[76vh] md:h-[76vh] lg:h-[80vh] overflow-y-scroll scroll">
-        <LeaveRequestData application={application} />
+        <LeaveRequestData application={application} managers={managers} />
 
         {/* comments */}
         <form className="w-full">

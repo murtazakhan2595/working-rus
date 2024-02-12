@@ -206,6 +206,23 @@ function App({
                         path="/leave-application"
                         element={<LeaveApplicationForm />}
                       />
+
+                      <Route
+                        path="/leave-list"
+                        element={
+                          <LeaveApplicationList isSidebarOpen={isSidebarOpen} />
+                        }
+                      />
+                      <Route
+                        path="/leave-balance"
+                        element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
+                        path="/leave-request/:id"
+                        element={
+                          <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
+                        }
+                      />
                     </>
                   )}
                   {userProfile.role === 3 && (
@@ -244,14 +261,20 @@ function App({
                         }
                       />
                       <Route
+                        path="/leave-balance"
+                        element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
+                        path="/leave-calender"
+                        element={
+                          <LeaveCalender isSidebarOpen={isSidebarOpen} />
+                        }
+                      />
+                      <Route
                         path="/leave-request/:id"
                         element={
                           <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
                         }
-                      />
-                      <Route
-                        path="/leave-balance"
-                        element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
                       />
                       <Route
                         path="/leave-request-hr/:id"
