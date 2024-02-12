@@ -7,11 +7,50 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 
 const bankSchema = Joi.object({
-  bank_name: Joi.string().min(5).max(50).required().label("Bank Name"),
-  account_title: Joi.string().min(5).required().label("Account Title"),
-  account_number: Joi.string().min(10).required().label("Account Number"),
-  branch_address: Joi.string().min(10).required().label("Branch Address"),
-  branch_code: Joi.string().min(3).required().label("Branch Code"),
+  bank_name: Joi.string()
+    .regex(/^[a-zA-Z\s]+$/) // Only alphabets and spaces allowed
+    .required()
+    .label("Bank Name")
+    .messages({
+      "string.empty": `Bank Name is required`,
+      "string.pattern.base": `Bank Name must contain only letters and spaces`,
+    }),
+  account_title: Joi.string()
+    .regex(/^[a-zA-Z\s]+$/)
+    .required()
+    .label("Account Title")
+    .messages({
+      "string.empty": `Account Title is required`,
+      "string.pattern.base": `Account Title must contain only letters and spaces`,
+    }),
+  account_number: Joi.string()
+    .regex(/^\d+$/) // Only numbers allowed
+    .min(10) // Minimum length 10 digits
+    .required()
+    .label("Account Number")
+    .messages({
+      "string.empty": `Account Number is required`,
+      "string.pattern.base": `Account Number must contain only numbers`,
+      "string.min": `Account Number must be at least 10 digits long`,
+    }),
+  branch_address: Joi.string()
+    .min(10) // Minimum length 10 characters
+    .required()
+    .label("Branch Address")
+    .messages({
+      "string.empty": `Branch Address is required`,
+      "string.min": `Branch Address must be at least 10 characters long`,
+    }),
+  branch_code: Joi.string()
+    .regex(/^\d+$/) // Only numbers allowed
+    .min(3) // Minimum length 3 digits
+    .required()
+    .label("Branch Code")
+    .messages({
+      "string.empty": `Branch Code is required`,
+      "string.pattern.base": `Branch Code must contain only numbers`,
+      "string.min": `Branch Code must be at least 3 digits long`,
+    }),
 });
 
 const BankDetails = ({
@@ -30,8 +69,8 @@ const BankDetails = ({
   };
   let [isEdit, setIsEdit] = useState(false);
   let [cancelBox, setCancelBox] = useState(false);
-    let [defaultData, setDefaultData] = useState({});
-    
+  let [defaultData, setDefaultData] = useState({});
+
   const setDataInSessionStorage = (key, data) => {
     const serializedData = JSON.stringify(data);
     sessionStorage.setItem(key, serializedData);
@@ -50,18 +89,18 @@ const BankDetails = ({
         headers,
       });
       const employeeData = employeeResponse.data;
-      if (employeeData){
-          let bankObj ={
-              account_iban:employeeData.account_iban, 
-              account_number: employeeData.account_number,
-              account_title: employeeData.account_title,
-              bank_name: employeeData.bank_name,
-              branch_address: employeeData.branch_address,
-              branch_code: employeeData.branch_code,
-              swift_code: employeeData.swift_code
-            }
-            setDefaultData(bankObj);
-        }
+      if (employeeData) {
+        let bankObj = {
+          account_iban: employeeData.account_iban,
+          account_number: employeeData.account_number,
+          account_title: employeeData.account_title,
+          bank_name: employeeData.bank_name,
+          branch_address: employeeData.branch_address,
+          branch_code: employeeData.branch_code,
+          swift_code: employeeData.swift_code,
+        };
+        setDefaultData(bankObj);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -79,7 +118,6 @@ const BankDetails = ({
   useEffect(() => {
     setDataInSessionStorage("UpdatedBankInfo", defaultData);
   }, [defaultData]);
-
 
   const handleSave = async () => {
     const { error } = bankSchema.validate(
@@ -105,30 +143,29 @@ const BankDetails = ({
       }
       setErrors(validationErrors);
     } else {
-        setErrors({});
-        let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");
-        let response = await axios.patch(
-          `${baseUrl}/emp/${userProfile.id}`,
-          UpdatedBankInfo,
-          { headers }
-        );
-        if (response.status === 200) {
-          setIsEdit(!isEdit);
-          sessionStorage.clear();
-          toast.success("Bank Detials Updated!", {
-              position: "top-right",
-              autoClose: 3000,
-            });
-            sessionStorage.clear()
-            nextstep();
-        }
-
+      setErrors({});
+      let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");
+      let response = await axios.patch(
+        `${baseUrl}/emp/${userProfile.id}`,
+        UpdatedBankInfo,
+        { headers }
+      );
+      if (response.status === 200) {
+        setIsEdit(!isEdit);
+        sessionStorage.clear();
+        toast.success("Bank Detials Updated!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        sessionStorage.clear();
+        nextstep();
+      }
     }
   };
 
   const handleNextStep = () => {
-      sessionStorage.clear()
-      nextstep();
+    sessionStorage.clear();
+    nextstep();
   };
 
   return (
@@ -272,8 +309,8 @@ const BankDetails = ({
                     id=""
                     placeholder="Branch Address Here"
                     className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                   {errors.branch_address && (
@@ -342,37 +379,37 @@ const BankDetails = ({
             </div>
           </div>
 
-        <div className="flex gap-x-5 mb-40 mt-4 ">
-          {!isEdit && <Button onClick={prevstep} text={"Previous"} />}
-          {isEdit ? (
-            <button
-              onClick={() => {
-                setCancelBox(!cancelBox);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Cancel
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Edit
-            </button>
-          )}
-          {isEdit ? (
-            <button
-              onClick={handleSave}
-              className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
-            >
-              Save & Next
-            </button>
-          ) : (
-            <Button onClick={handleNextStep} text={"Next"} />
-          )}
+          <div className="flex gap-x-5 mb-40 mt-4 ">
+            {!isEdit && <Button onClick={prevstep} text={"Previous"} />}
+            {isEdit ? (
+              <button
+                onClick={() => {
+                  setCancelBox(!cancelBox);
+                }}
+                className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
+              >
+                Cancel
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsEdit(!isEdit);
+                }}
+                className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
+              >
+                Edit
+              </button>
+            )}
+            {isEdit ? (
+              <button
+                onClick={handleSave}
+                className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
+              >
+                Save & Next
+              </button>
+            ) : (
+              <Button onClick={handleNextStep} text={"Next"} />
+            )}
           </div>
         </div>
       </div>

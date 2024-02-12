@@ -3,12 +3,51 @@ import Button from './Button';
 import { useState ,useEffect } from 'react';
 
 const bankSchema = Joi.object({
-    bank_name: Joi.string().min(5).max(50).required().label('Bank Name'),
-    account_title: Joi.string().min(5).required().label('Account Title'),
-    account_number: Joi.string().min(10).required().label('Account Number'),
-    branch_address: Joi.string().min(10).required().label('Branch Address'),
-    branch_code: Joi.string().min(3).required().label('Branch Code'),
-});
+    bank_name: Joi.string()
+      .regex(/^[a-zA-Z\s]+$/) // Only alphabets and spaces allowed
+      .required()
+      .label("Bank Name")
+      .messages({
+        "string.empty": `Bank Name is required`,
+        "string.pattern.base": `Bank Name must contain only letters and spaces`,
+      }),
+    account_title: Joi.string()
+      .regex(/^[a-zA-Z\s]+$/)
+      .required()
+      .label("Account Title")
+      .messages({
+        "string.empty": `Account Title is required`,
+        "string.pattern.base": `Account Title must contain only letters and spaces`,
+      }),
+    account_number: Joi.string()
+      .regex(/^\d+$/) // Only numbers allowed
+      .min(10) // Minimum length 10 digits
+      .required()
+      .label("Account Number")
+      .messages({
+        "string.empty": `Account Number is required`,
+        "string.pattern.base": `Account Number must contain only numbers`,
+        "string.min": `Account Number must be at least 10 digits long`,
+      }),
+    branch_address: Joi.string()
+      .min(10) // Minimum length 10 characters
+      .required()
+      .label("Branch Address")
+      .messages({
+        "string.empty": `Branch Address is required`,
+        "string.min": `Branch Address must be at least 10 characters long`,
+      }),
+    branch_code: Joi.string()
+      .regex(/^\d+$/) // Only numbers allowed
+      .min(3) // Minimum length 3 digits
+      .required()
+      .label("Branch Code")
+      .messages({
+        "string.empty": `Branch Code is required`,
+        "string.pattern.base": `Branch Code must contain only numbers`,
+        "string.min": `Branch Code must be at least 3 digits long`,
+      }),
+  });
 
 
 const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {

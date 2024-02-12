@@ -14,7 +14,14 @@ const validationSchema = Joi.object({
   last_name: Joi.string().min(3).max(20).required().label("Last Name"),
   father_name: Joi.string().min(3).max(20).required().label("Father Name"),
   mother_name: Joi.string().min(3).max(20).required().label("Mother Name"),
-  mobile_no: Joi.string().required().label("Phone Number"),
+  mobile_no: Joi.string()
+        .pattern(/^[0-9]{10,15}$/)
+        .required()
+        .label("Phone Number")
+        .messages({
+            "string.empty": `Phone Number is required`,
+            "string.pattern.base": `Phone Number must be a valid mobile number`,
+        }),
   date_of_birth: Joi.string().required().label("DOB"),
   email: Joi.string()
     .email({ tlds: { allow: false } })
@@ -37,8 +44,23 @@ const validationSchema = Joi.object({
     .max(20)
     .required()
     .label("Last Name"),
-  emergency_phone_no: Joi.string().required().label("Phone Number"),
-  emergency_relation: Joi.string().required().label("emergency_relation"),
+    emergency_phone_no: Joi.string()
+    .pattern(/^\d{10,15}$/) // Assuming phone numbers are between 10 and 15 digits long
+    .required()
+    .label("Emergency Phone Number")
+    .messages({
+        "string.empty": `Emergency Phone Number is required`,
+        "string.pattern.base": `Emergency Phone Number must be a valid phone number`,
+    }),
+
+  emergency_relation: Joi.string()
+        .regex(/^[a-zA-Z\s]+$/)
+        .required()
+        .label('emergency_relation')
+        .messages({
+            "string.empty": `Emergency Relation is required`,
+            "string.pattern.base": `Emergency Relation must only contain letters and spaces`,
+        }),
 });
 
 const PersonalInfo = ({

@@ -35,8 +35,22 @@ const validationSchema = Joi.object({
     .required()
     .label("Last Name"),
   emergency_country_code: Joi.string().required().label("Country Code"),
-  emergency_phone_no: Joi.string().required().label("Phone Number"),
-  relation: Joi.string().required().label("Relation"),
+  emergency_phone_no: Joi.string()
+    .pattern(/^\d{10,15}$/) // Assuming phone numbers are between 10 and 15 digits long
+    .required()
+    .label("Emergency Phone Number")
+    .messages({
+      "string.empty": `Emergency Phone Number is required`,
+      "string.pattern.base": `Emergency Phone Number must be a valid phone number`,
+    }),
+  relation: Joi.string()
+    .regex(/^[a-zA-Z\s]+$/)
+    .required()
+    .label("Relation")
+    .messages({
+      "string.empty": `Emergency Relation is required`,
+      "string.pattern.base": `Emergency Relation must only contain letters and spaces`,
+    }),
 });
 
 const PersonalInfo = ({ nextstep, errors, setErrors }) => {
