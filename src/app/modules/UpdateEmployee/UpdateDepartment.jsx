@@ -10,12 +10,50 @@ import { useNavigate } from 'react-router-dom';
 
 
 const departmentSchema = Joi.object({
-    department_name: Joi.string().required().label('Department Name'),
-    department_position: Joi.string().required().label('Position'),
-    direct_report: Joi.string().required().label('Direct Report'),
-    indirect_report: Joi.string().required().label('Indirect Report'),
-    department_manager: Joi.string().required().label('Department Manager'),
+  department_name: Joi.string()
+      .regex(/^[a-zA-Z\s]+$/)
+      .required()
+      .label('Department Name')
+      .messages({
+          "string.empty": `Department Name is required`,
+          "string.pattern.base": `Department Name must only contain letters and spaces`,
+      }),
+  department_position: Joi.string()
+      .regex(/^[a-zA-Z\s]+$/)
+      .required()
+      .label('Position')
+      .messages({
+          "string.empty": `Position is required`,
+          "string.pattern.base": `Position must only contain letters and spaces`,
+      }),
+  direct_report: Joi.string()
+      .regex(/^[a-zA-Z\s]+$/)
+      .required()
+      .label('Direct Report')
+      .messages({
+          "string.empty": `Direct Report is required`,
+          "string.pattern.base": `Direct Report must only contain letters and spaces`,
+      }),
+  indirect_report: Joi.string()
+      .regex(/^[a-zA-Z\s]+$/)
+      .required()
+      .label('Indirect Report')
+      .messages({
+          "string.empty": `Indirect Report is required`,
+          "string.pattern.base": `Indirect Report must only contain letters and spaces`,
+      }),
+  department_manager: Joi.string()
+      .regex(/^[a-zA-Z\s]+$/)
+      .required()
+      .label('Department Manager')
+      .messages({
+          "string.empty": `Department Manager is required`,
+          "string.pattern.base": `Department Manager must only contain letters and spaces`,
+      }),
 });
+
+
+
 
 const Department = ({ errors, setErrors, prevstep ,  token,
     userProfile,
