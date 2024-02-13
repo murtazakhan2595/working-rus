@@ -172,6 +172,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 Employee ID:
               </label>
               <input
+                disabled
                 className="h-8 ml-[-5px] pl-2 md:mr-[66px] w-[60%] md:w-44 rounded-md lg:w-24"
                 type="text"
                 name="employee_id"
