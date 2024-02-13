@@ -125,7 +125,7 @@ const PersonalInfo = ({
 
       // Check session storage first, then fallback to local state
       const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
-      setImagePreview(updatedDP.file || employeeData.profile_picture);
+      setImagePreview(updatedDP.file || employeeData.profile_picture?.file || employeeData.profile_picture);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

@@ -213,6 +213,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           sessionStorage.clear();
           setTimeout(() => {
             navigate("/");
+            sessionStorage.clear();
           }, 3000);
         } else {
           toast.error("Form submission failed. Please try again.", {

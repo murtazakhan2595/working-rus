@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import Button from './Button';
-import {useState , useEffect} from 'react'
+import { useState, useEffect } from 'react';
+import CustomLoader from '../../../common/CustomLoader';
 
 const departmentSchema = Joi.object({
     department_name: Joi.string()
@@ -48,28 +49,31 @@ const departmentSchema = Joi.object({
 
 
 const Department = ({ errors, setErrors, prevstep, submitForm }) => {
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const getDataFromSessionStorage = (key) => {
         const serializedData = sessionStorage.getItem(key);
         const data = JSON.parse(serializedData);
         return data;
-      };
-      const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo")
-      const intialDepartmentInfo = { 
-        department_name : defaultDeparmentInfo?.department_name ? defaultDeparmentInfo.department_name : '' ,
-        department_position : defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
-        direct_report : defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
-        indirect_report : defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
-        department_manager : defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager :''
-         };
-      const [departmentInfo , setDepartmentInfo] = useState(intialDepartmentInfo)
+    };
+    const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo")
+    const intialDepartmentInfo = {
+        department_name: defaultDeparmentInfo?.department_name ? defaultDeparmentInfo.department_name : '',
+        department_position: defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
+        direct_report: defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
+        indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
+        department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : ''
+    };
+    const [departmentInfo, setDepartmentInfo] = useState(intialDepartmentInfo)
 
 
-      useEffect(() => {
-        setDataInSessionStorage('departmentInfo',departmentInfo)
-      }, [departmentInfo])
+    useEffect(() => {
+        setDataInSessionStorage('departmentInfo', departmentInfo)
+    }, [departmentInfo])
 
-    const handleNextStep = () => {
+    const handleNextStep = async () => {
+        setIsLoading(true);
         const { error } = departmentSchema.validate(
             {
                 department_name: departmentInfo.department_name,
@@ -88,18 +92,19 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
             });
             setErrors(validationErrors);
         } else {
-            // Proceed to the next step
-            submitForm();
+            setIsLoading(true); // Show loader
+            await submitForm(); // Submit the form
+            setIsLoading(false);
         }
     };
     const setDataInSessionStorage = (key, data) => {
         const serializedData = JSON.stringify(data);
         sessionStorage.setItem(key, serializedData);
-      };
+    };
     const handleChange = (name, value) => {
-        setDepartmentInfo({...departmentInfo,[name]:value})
+        setDepartmentInfo({ ...departmentInfo, [name]: value })
         setErrors({ ...errors, [name]: null });
-       
+
     };
     return (
         <>
@@ -170,7 +175,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
 
                 <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40">
                     <Button onClick={prevstep} text={'Previous'} />
-                    <Button onClick={handleNextStep} text={'Submit'} />
+                    <Button onClick={handleNextStep} text={isLoading ? <div className='flex items-center gap-x-2'><span>Submit </span><CustomLoader /></div> : 'Submit'} />
 
                 </div>
             </div >

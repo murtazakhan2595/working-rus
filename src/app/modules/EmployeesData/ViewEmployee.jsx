@@ -30,7 +30,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
       console.log('employee', employeeResponse)
       const employeeData = employeeResponse.data;
       setData(employeeData);
-      setProfileImage(employeeResponse.data?.profile_picture);
+      setProfileImage(employeeResponse.data?.profile_picture.file || employeeResponse.data?.profile_picture);
 
       // Fetch experiences data
       const experiencesResponse = await axios.get(
