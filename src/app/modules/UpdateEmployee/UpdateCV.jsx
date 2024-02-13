@@ -1,10 +1,11 @@
-import SubStepsIndicator from "./UpdateSubSteps";
-import Button from "./Button";
-import { connect } from "react-redux";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { connect } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
+import SubStepsIndicator from "./UpdateSubSteps";
+import Button from "./Button";
+import CustomLoader from "../../../common/CustomLoader";
 
 const SubmitCV = ({
   errors,
@@ -16,23 +17,12 @@ const SubmitCV = ({
   userProfile,
   baseUrl,
 }) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
-  let getCV = getDataFromSessionStorage("UpdatedCV");
-  const [cv, setCv] = useState(getCV);
-  const [cvName, setCvName] = useState(
-    getCV?.name ? getCV?.name : "No Chosen File"
-  );
+  const [cv, setCv] = useState(null);
+  const [cvName, setCvName] = useState("No Chosen File");
   const [isEdit, setIsEdit] = useState(false);
   const [haveCV, setHaveCV] = useState(false);
-  let [cancelBox, setCancelBox] = useState(false);
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
+  const [cancelBox, setCancelBox] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const id = userProfile.id;
 
@@ -75,7 +65,6 @@ const SubmitCV = ({
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        // setCv({"name" : cvData.name ,"file" :e.target.result})
         setCv({ name: file.name, file: e.target.result });
         setCvName(cvData.name);
       };
@@ -93,7 +82,7 @@ const SubmitCV = ({
   };
 
   useEffect(() => {
-    setDataInSessionStorage("UpdatedCV", cv);
+    sessionStorage.setItem("UpdatedCV", JSON.stringify(cv));
   }, [cv]);
 
   const handleSave = async () => {
@@ -101,6 +90,7 @@ const SubmitCV = ({
       const validationErrors = { cv: "CV is required" };
       setErrors(validationErrors);
     } else {
+      setIsLoading(true); // Set loading state to true before save operation
       try {
         if (haveCV) {
           const cvResponse = await axios.patch(
@@ -138,14 +128,14 @@ const SubmitCV = ({
             });
           }
         }
+        nextstep();
       } catch (error) {
         toast.error("Could not update the cv, Please try again later!", {
           position: "top-right",
           autoClose: 3000,
         });
       }
-      sessionStorage.clear();
-      nextstep();
+      setIsLoading(false); // Clear loading state after save operation
     }
   };
 
@@ -172,9 +162,8 @@ const SubmitCV = ({
             rounded-lg py-1 text-input"
             >
               <div
-                className={`${
-                  isEdit ? "text-gray-700" : "text-gray-500"
-                } flex mb-2`}
+                className={`${isEdit ? "text-gray-700" : "text-gray-500"
+                  } flex mb-2`}
               >
                 <div className="bg-gray-200 border-gray-400 border py-1 px-3 rounded-l-md ">
                   {isEdit ? "Upload CV" : "CV"}{" "}
@@ -228,7 +217,7 @@ const SubmitCV = ({
               onClick={handleSave}
               className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
             >
-              Save & Next
+              {isLoading ? <div className="flex items-center justify-center gap-x-2">Saving <CustomLoader /></div> : 'Save & Next'}
             </button>
           ) : (
             <Button onClick={handleNextStep} text={"Next"} />

@@ -5,6 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
+import CustomLoader from "../../../common/CustomLoader";
 
 const bankSchema = Joi.object({
   bank_name: Joi.string()
@@ -68,6 +69,7 @@ const BankDetails = ({
     return data;
   };
   let [isEdit, setIsEdit] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   let [cancelBox, setCancelBox] = useState(false);
   let [defaultData, setDefaultData] = useState({});
 
@@ -120,30 +122,8 @@ const BankDetails = ({
   }, [defaultData]);
 
   const handleSave = async () => {
-    const { error } = bankSchema.validate(
-      {
-        bank_name: defaultData.bank_name,
-        account_title: defaultData.account_title,
-        account_number: defaultData.account_number,
-        branch_address: defaultData.branch_address,
-        branch_code: defaultData.branch_code,
-      },
-      { abortEarly: false }
-    );
-
-    if (error) {
-      const validationErrors = {};
-      error.details.forEach((detail) => {
-        validationErrors[detail.path[0]] = detail.message;
-      });
-      if (defaultData.account_iban) {
-        if (defaultData.account_iban.length < 10)
-          validationErrors.account_iban =
-            "IBAN number must be at least 10 characters";
-      }
-      setErrors(validationErrors);
-    } else {
-      setErrors({});
+    setIsLoading(true);
+    try {
       let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");
       let response = await axios.patch(
         `${baseUrl}/emp/${userProfile.id}`,
@@ -151,17 +131,25 @@ const BankDetails = ({
         { headers }
       );
       if (response.status === 200) {
-        setIsEdit(!isEdit);
+        setIsLoading(false);
+        setDefaultData(UpdatedBankInfo);
         sessionStorage.clear();
-        toast.success("Bank Detials Updated!", {
+        toast.success("Bank Details Updated!", {
           position: "top-right",
           autoClose: 3000,
         });
-        sessionStorage.clear();
         nextstep();
       }
+    } catch (error) {
+      setIsLoading(false);
+      console.error("Error saving data:", error);
+      toast.error("Form submission failed. Please try again.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     }
   };
+
 
   const handleNextStep = () => {
     sessionStorage.clear();
@@ -194,9 +182,8 @@ const BankDetails = ({
                       name="bank_name"
                       id=""
                       placeholder="Bank Name Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -222,9 +209,8 @@ const BankDetails = ({
                       name="account_title"
                       id=""
                       placeholder="Account Title Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -251,9 +237,8 @@ const BankDetails = ({
                       name="account_number"
                       id=""
                       placeholder="Account Number Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -279,9 +264,8 @@ const BankDetails = ({
                       name="account_iban"
                       id=""
                       placeholder="IBAN Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      }  pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        }  pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -308,9 +292,8 @@ const BankDetails = ({
                     name="branch_address"
                     id=""
                     placeholder="Branch Address Here"
-                    className={`${
-                      isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                    className={`${isEdit ? "text-black" : "text-gray-500"
+                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                   {errors.branch_address && (
@@ -334,9 +317,8 @@ const BankDetails = ({
                       name="branch_code"
                       id=""
                       placeholder="Branch Code Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -361,9 +343,8 @@ const BankDetails = ({
                       name="swift_code"
                       id=""
                       placeholder="Swift Code Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -405,7 +386,7 @@ const BankDetails = ({
                 onClick={handleSave}
                 className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
               >
-                Save & Next
+                {isLoading ? <div className="flex items-center justify-center gap-x-2">Saving <CustomLoader /></div> : 'Save & Next'}
               </button>
             ) : (
               <Button onClick={handleNextStep} text={"Next"} />

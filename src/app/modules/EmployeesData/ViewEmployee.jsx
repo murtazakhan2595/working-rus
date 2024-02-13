@@ -27,9 +27,10 @@ const ViewEmployee = ({ token, baseUrl }) => {
       const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
         headers,
       });
+      console.log('employee', employeeResponse)
       const employeeData = employeeResponse.data;
       setData(employeeData);
-      setProfileImage(employeeData.profile_picture);
+      setProfileImage(employeeResponse.data?.profile_picture);
 
       // Fetch experiences data
       const experiencesResponse = await axios.get(
@@ -125,7 +126,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           {profileImage ? (
             <img
               src={profileImage}
-              alt={`${data.first_name} ${data.last_name}'s Profile Picture`}
+              alt={`${data.first_name} ${data.last_name}'s Picture`}
               style={{ width: "100px", height: "100px", borderRadius: "50%" }}
             />
           ) : (

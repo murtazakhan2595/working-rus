@@ -9,6 +9,7 @@ import Button from "./Button";
 import { RxCross2 } from "react-icons/rx";
 import { connect } from "react-redux";
 import axios from "axios";
+import CustomLoader from "../../../common/CustomLoader";
 
 const ProfessionalExp = ({
   errors,
@@ -36,6 +37,7 @@ const ProfessionalExp = ({
   const [deleteExp, setDeleteExp] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const addExperienceSection = () => {
     setExperienceSections([...experienceSections, {}]);
@@ -56,6 +58,8 @@ const ProfessionalExp = ({
   };
 
   const handleSave = async () => {
+    setLoading(true);
+
     const fieldErrors = {};
 
     // Validate the experienceSections and store specific errors
@@ -80,6 +84,7 @@ const ProfessionalExp = ({
 
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
+      setLoading(false);
     } else {
       setErrors({});
       let updatedData = getDataFromSessionStorage("UpdatedProExp");
@@ -89,7 +94,7 @@ const ProfessionalExp = ({
             employee_id: userProfile.id,
             exp_organization: exp.exp_organization,
             exp_designation: exp.exp_designation,
-            exp_letter : exp.exp_letter,
+            exp_letter: exp.exp_letter,
             exp_start_date: moment(exp.exp_start_date, "DD-MM-YYYY").format(
               "YYYY-MM-DD"
             ),
@@ -113,6 +118,7 @@ const ProfessionalExp = ({
                 position: "top-center",
                 autoClose: 3000,
               });
+              setLoading(false);
               return;
             }
           } else {
@@ -144,9 +150,12 @@ const ProfessionalExp = ({
           position: "top-center",
           autoClose: 3000,
         });
+      } finally {
+        setLoading(false);
       }
     }
   };
+
 
   const id = userProfile.id;
 
@@ -236,9 +245,8 @@ const ProfessionalExp = ({
                           setExperienceSections(updatedSections);
                           clearError(`exp_organization_${index}`);
                         }}
-                        className={`${
-                          isEdit ? "text-black" : "text-gray-500"
-                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                        className={`${isEdit ? "text-black" : "text-gray-500"
+                          } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                       />
                       {errors[`exp_organization_${index}`] && (
                         <div className="text-red-500 text-sm">
@@ -258,9 +266,8 @@ const ProfessionalExp = ({
                         disabled={isEdit ? false : true}
                         name="exp_designation"
                         placeholder="Designation"
-                        className={`${
-                          isEdit ? "text-black" : "text-gray-500"
-                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                        className={`${isEdit ? "text-black" : "text-gray-500"
+                          } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                         value={experience.exp_designation}
                         onChange={(e) => {
                           const updatedSections = [...experienceSections];
@@ -377,15 +384,14 @@ const ProfessionalExp = ({
                       {experience.exp_letter ? (
                         <div className="flex   items-center">
                           <div
-                            className={`${
-                              isEdit ? "opacity-50" : "text-gray-500"
-                            }`}
+                            className={`${isEdit ? "opacity-50" : "text-gray-500"
+                              }`}
                           >
                             {experience.exp_letter.name}
                           </div>
                           <WiCloudRefresh
                             onClick={() => {
-                              if(isEdit){
+                              if (isEdit) {
                                 const updatedSections = [...experienceSections];
                                 updatedSections[index].exp_letter = "";
                                 setExperienceSections(updatedSections);
@@ -477,7 +483,7 @@ const ProfessionalExp = ({
               onClick={handleSave}
               className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
             >
-              Save & Next
+              {loading ? <div className="flex items-center justify-center gap-x-2">Saving <CustomLoader /></div> : 'Save & Next'}
             </button>
           ) : (
             <Button onClick={handleNextStep} text={"Next"} />
@@ -494,7 +500,7 @@ const ProfessionalExp = ({
               </div>
             </div>
             <p className="text-gray-700 mt-2">
-            If you have made changes, they will not be saved. Do you want to proceed?
+              If you have made changes, they will not be saved. Do you want to proceed?
             </p>
             <div className="mt-4 flex justify-end">
               <button
