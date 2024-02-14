@@ -16,7 +16,7 @@ const validationSchema = Joi.object({
   father_name: Joi.string().min(3).max(20).required().label("Father Name"),
   mother_name: Joi.string().min(3).max(20).required().label("Mother Name"),
   mobile_no: Joi.string()
-    .pattern(/^[0-9]{10,15}$/)
+    .pattern(/^\+?\d{10,15}$/) // Allows for optional '+' sign at the beginning followed by 10 to 15 digits
     .required()
     .label("Phone Number")
     .messages({
@@ -46,7 +46,7 @@ const validationSchema = Joi.object({
     .required()
     .label("Last Name"),
   emergency_phone_no: Joi.string()
-    .pattern(/^\d{10,15}$/) // Assuming phone numbers are between 10 and 15 digits long
+    .pattern(/^\+?\d{10,15}$/) // Assuming phone numbers are between 10 and 15 digits long
     .required()
     .label("Emergency Phone Number")
     .messages({
@@ -57,7 +57,7 @@ const validationSchema = Joi.object({
   emergency_relation: Joi.string()
     .regex(/^[a-zA-Z\s]+$/)
     .required()
-    .label('emergency_relation')
+    .label("emergency_relation")
     .messages({
       "string.empty": `Emergency Relation is required`,
       "string.pattern.base": `Emergency Relation must only contain letters and spaces`,
@@ -125,7 +125,11 @@ const PersonalInfo = ({
 
       // Check session storage first, then fallback to local state
       const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
-      setImagePreview(updatedDP.file || employeeData.profile_picture?.file || employeeData.profile_picture);
+      setImagePreview(
+        updatedDP.file ||
+          employeeData.profile_picture?.file ||
+          employeeData.profile_picture
+      );
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -238,8 +242,9 @@ const PersonalInfo = ({
                   name="first_name"
                   id=""
                   placeholder="First Name here"
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.first_name && (
@@ -263,8 +268,9 @@ const PersonalInfo = ({
                   name="last_name"
                   id=""
                   placeholder="Last Name here"
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.last_name && (
@@ -290,8 +296,9 @@ const PersonalInfo = ({
                   name="father_name"
                   id=""
                   placeholder="Father Name here"
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.father_name && (
@@ -315,8 +322,9 @@ const PersonalInfo = ({
                   name="mother_name"
                   id=""
                   placeholder="Mother Name here"
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.mother_name && (
@@ -345,8 +353,9 @@ const PersonalInfo = ({
                     name="mobile_no"
                     id=""
                     placeholder="0000000000"
-                    className={`${isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#55657] placeholder-opacity-50`}
+                    className={`${
+                      isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#55657] placeholder-opacity-50`}
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                 </div>
@@ -414,8 +423,9 @@ const PersonalInfo = ({
                   value={defaultData.email}
                   name="email"
                   placeholder="Email Here"
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.email && (
@@ -437,8 +447,9 @@ const PersonalInfo = ({
                   name="work_email"
                   id=""
                   placeholder="Email Here"
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.work_email && (
@@ -463,8 +474,9 @@ const PersonalInfo = ({
                 name="current_address"
                 id=""
                 placeholder="Current Address here"
-                className={`${isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${
+                  isEdit ? "text-black" : "text-gray-500"
+                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.current_address && (
@@ -488,8 +500,9 @@ const PersonalInfo = ({
                 name="residential_address"
                 id=""
                 placeholder="Permanent Address here"
-                className={`${isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${
+                  isEdit ? "text-black" : "text-gray-500"
+                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.residential_address && (
@@ -513,8 +526,9 @@ const PersonalInfo = ({
                   value={defaultData.nic}
                   placeholder="NIC Here"
                   name="nic"
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.nic && (
@@ -537,8 +551,9 @@ const PersonalInfo = ({
                   placeholder="Passport Number Here (optional)"
                   name="passport_number"
                   required=""
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.passport_number && (
@@ -612,8 +627,9 @@ const PersonalInfo = ({
                 name="emergency_first_name"
                 id=""
                 placeholder="First Name Here"
-                className={`${isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${
+                  isEdit ? "text-black" : "text-gray-500"
+                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_first_name && (
@@ -637,8 +653,9 @@ const PersonalInfo = ({
                 name="emergency_last_name"
                 id=""
                 placeholder="Last Name Here"
-                className={`${isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${
+                  isEdit ? "text-black" : "text-gray-500"
+                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_last_name && (
@@ -666,8 +683,9 @@ const PersonalInfo = ({
                   name="emergency_phone_no"
                   id=""
                   placeholder="Phone Number here"
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
               </div>
@@ -694,8 +712,9 @@ const PersonalInfo = ({
                 name="emergency_relation"
                 id=""
                 placeholder="emergency_relation Here"
-                className={`${isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${
+                  isEdit ? "text-black" : "text-gray-500"
+                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_relation && (
@@ -732,8 +751,13 @@ const PersonalInfo = ({
               className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
               disabled={isLoading}
             >
-              {isLoading ? <div className="flex items-center justify-center gap-x-2">Saving <CustomLoader /></div> : 'Save & Next'}
-
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-x-2">
+                  Saving <CustomLoader />
+                </div>
+              ) : (
+                "Save & Next"
+              )}
             </button>
           ) : (
             <Button onClick={handleNextStep} text={"Next"} />

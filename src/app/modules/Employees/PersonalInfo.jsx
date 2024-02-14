@@ -34,9 +34,16 @@ const validationSchema = Joi.object({
     .max(20)
     .required()
     .label("Last Name"),
-  emergency_country_code: Joi.string().required().label("Country Code"),
+  emergency_country_code: Joi.string()
+    .pattern(/^\+\d{1,4}$/) // Assuming country codes start with '+' followed by 1 to 4 digits
+    .required()
+    .label("Country Code")
+    .messages({
+      "string.empty": `Country Code is required`,
+      "string.pattern.base": `Country Code must be a valid country code`,
+    }),
   emergency_phone_no: Joi.string()
-    .pattern(/^\d{10,15}$/) // Assuming phone numbers are between 10 and 15 digits long
+    .pattern(/^\d{8,15}$/) // Assuming phone numbers are between 10 and 15 digits long
     .required()
     .label("Emergency Phone Number")
     .messages({
