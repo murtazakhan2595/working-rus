@@ -23,7 +23,6 @@ import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
-import { links, managerlinks } from "../../../../data/Data";
 import { RiProfileLine } from "react-icons/ri";
 import { LiaHomeSolid } from "react-icons/lia";
 
@@ -44,11 +43,6 @@ const MobSidebar = ({
   const [previousPage, setPreviousPage] = useState("");
   const [projectCount, setProjectCount] = useState(0);
   const [isLinksOpen, setIsLinksOpen] = useState(false);
-  const empLinks = links.filter((link) => link.text !== "Emp Sheet");
-  const validateLinks = empLinks.filter(
-    (link) => link.text !== "Recruitment Form"
-  );
-
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
   };
@@ -58,11 +52,10 @@ const MobSidebar = ({
   };
 
   const getProjects = async (
-    url = `${baseUrl}/project/${
-      userProfile.role === 1 || userProfile.role === 2
+    url = `${baseUrl}/project/${userProfile.role === 1 || userProfile.role === 2
         ? ""
         : `?search={"project_members":[${userProfile.id}]}`
-    }`
+      }`
   ) => {
     try {
       await axios
@@ -79,7 +72,7 @@ const MobSidebar = ({
             setPreviousPage(response.data.previous);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -92,9 +85,8 @@ const MobSidebar = ({
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`fixed inset-y-0 left-0 z-50 w-56 bg-[#283b91] text-white p-4 transform transition-transform duration-300 ease-in-out ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`fixed inset-y-0 left-0 z-50 w-56 bg-[#283b91] text-white p-4 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           <div className="text-xl bg-white py-3 px-7 flex flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 rounded-md">
             <img src={logo} className="inline-block w-10" alt="logo" />
@@ -117,9 +109,8 @@ const MobSidebar = ({
                 <li>
                   <Link to="/">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <LiaHomeSolid />
@@ -131,9 +122,8 @@ const MobSidebar = ({
                 <li>
                   <Link to="/profile">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <RiProfileLine />
@@ -145,9 +135,8 @@ const MobSidebar = ({
                 <li>
                   <Link to="/employees">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/employees" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/employees" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <BiSpreadsheet />
@@ -159,9 +148,8 @@ const MobSidebar = ({
                 <li>
                   <Link to="/jobs">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <MdOutlinePayment />
@@ -173,11 +161,10 @@ const MobSidebar = ({
                 <li>
                   <Link to="/leave-application">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/leave-application"
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
                           ? "bg-[#259ED8]"
                           : ""
-                      }`}
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <MdOutlineTimeToLeave />
@@ -199,33 +186,30 @@ const MobSidebar = ({
                     <>
                       <Link to="/leave-list">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-list"
+                          className={`py-2 pl-10 ${location.pathname === "/leave-list"
                               ? "border-2 border-[#259ED8] rounded-lg my-1"
                               : ""
-                          }`}
+                            }`}
                         >
                           Leave Applications
                         </div>
                       </Link>
                       <Link to="/leave-calender">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-calender"
+                          className={`py-2 pl-10 ${location.pathname === "/leave-calender"
                               ? "border-2 border-[#259ED8] rounded-lg my-1"
                               : ""
-                          }`}
+                            }`}
                         >
                           Leave Calender
                         </div>
                       </Link>
                       <Link to="/leave-balance">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-balance"
+                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
                               ? "border-2 border-[#259ED8] rounded-lg my-1"
                               : ""
-                          }`}
+                            }`}
                         >
                           Leave Balance
                         </div>
@@ -240,9 +224,8 @@ const MobSidebar = ({
                 <li>
                   <Link to="/">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <LiaHomeSolid />
@@ -254,9 +237,8 @@ const MobSidebar = ({
                 <li>
                   <Link to="/profile">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <RiProfileLine />
@@ -268,9 +250,8 @@ const MobSidebar = ({
                 <li>
                   <Link to="/employees">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/employees" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/employees" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <BiSpreadsheet />
@@ -282,9 +263,8 @@ const MobSidebar = ({
                 <li>
                   <Link to="/jobs">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <MdOutlinePayment />
@@ -306,33 +286,30 @@ const MobSidebar = ({
                     <>
                       <Link to="/leave-list">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-list"
+                          className={`py-2 pl-10 ${location.pathname === "/leave-list"
                               ? "border-2 border-[#259ED8] rounded-lg my-1"
                               : ""
-                          }`}
+                            }`}
                         >
                           Leave Applications
                         </div>
                       </Link>
                       <Link to="/leave-calender">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-calender"
+                          className={`py-2 pl-10 ${location.pathname === "/leave-calender"
                               ? "border-2 border-[#259ED8] rounded-lg my-1"
                               : ""
-                          }`}
+                            }`}
                         >
                           Leave Calender
                         </div>
                       </Link>
                       <Link to="/leave-balance">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-balance"
+                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
                               ? "border-2 border-[#259ED8] rounded-lg my-1"
                               : ""
-                          }`}
+                            }`}
                         >
                           Leave Balance
                         </div>
@@ -342,14 +319,13 @@ const MobSidebar = ({
                 </div>
               </>
             )}
-            {(userProfile.role === 2 || userProfile.role === 4) && (
+            {(userProfile.role === 2) && (
               <>
                 <li>
                   <Link to="/">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <LiaHomeSolid />
@@ -361,9 +337,8 @@ const MobSidebar = ({
                 <li>
                   <Link to="/profile">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <RiProfileLine />
@@ -376,11 +351,10 @@ const MobSidebar = ({
                 <li>
                   <Link to="/leave-application">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/leave-application"
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
                           ? "bg-[#259ED8]"
                           : ""
-                      }`}
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <MdOutlineTimeToLeave />
@@ -402,22 +376,90 @@ const MobSidebar = ({
                     <>
                       <Link to="/leave-list">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-list"
+                          className={`py-2 pl-10 ${location.pathname === "/leave-list"
                               ? "border-2 border-[#259ED8] rounded-lg my-1"
                               : ""
-                          }`}
+                            }`}
                         >
                           Leave Applications
                         </div>
                       </Link>
                       <Link to="/leave-balance">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-balance"
+                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
                               ? "border-2 border-[#259ED8] rounded-lg my-1"
                               : ""
-                          }`}
+                            }`}
+                        >
+                          Leave Balance
+                        </div>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+            {(userProfile.role === 4) && (
+              <>
+                <li>
+                  <Link to="/">
+                    <div
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
+                        }`}
+                    >
+                      <div className="text-white text-xl">
+                        <LiaHomeSolid />
+                      </div>
+                      <p className="text-white">Home</p>
+                    </div>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/profile">
+                    <div
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
+                        }`}
+                    >
+                      <div className="text-white text-xl">
+                        <RiProfileLine />
+                      </div>
+                      <p className="text-white">Profile</p>
+                    </div>
+                  </Link>
+                </li>
+
+                <li>
+                  <Link to="/leave-application">
+                    <div
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
+                          ? "bg-[#259ED8]"
+                          : ""
+                        }`}
+                    >
+                      <div className="text-white text-xl">
+                        <MdOutlineTimeToLeave />
+                      </div>
+                      <p className="text-white">Leave Application</p>
+                    </div>
+                  </Link>
+                </li>
+
+                <div className="text-white bg-[#202F72] rounded-lg mb-2">
+                  <div
+                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    onClick={() => setIsLinksOpen(!isLinksOpen)}
+                  >
+                    <PiSuitcaseRollingBold className="text-4xl" />
+                    Leave Application and Data
+                  </div>
+                  {isLinksOpen && (
+                    <>
+                      <Link to="/leave-balance">
+                        <div
+                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
+                              ? "border-2 border-[#259ED8] rounded-lg my-1"
+                              : ""
+                            }`}
                         >
                           Leave Balance
                         </div>
@@ -619,9 +661,8 @@ const MobSidebar = ({
           </ul>
           {/* Sidebar collapse button */}
           <button
-            className={`bg-[#283b91] text-white z-10 p-2 absolute ${
-              isSidebarOpen ? "left-56" : "left-0"
-            } rounded-e-lg top-0 mt-4 mr-4`}
+            className={`bg-[#283b91] text-white z-10 p-2 absolute ${isSidebarOpen ? "left-56" : "left-0"
+              } rounded-e-lg top-0 mt-4 mr-4`}
             onClick={handleSidebarToggle}
           >
             {isSidebarOpen ? (
@@ -633,9 +674,8 @@ const MobSidebar = ({
         </div>
 
         <button
-          className={`bg-[#283b91] text-white z-10 p-2 absolute ${
-            isSidebarOpen ? "hidden" : "left-0"
-          } rounded-e-lg top-3 mt-4 mr-4`}
+          className={`bg-[#283b91] text-white z-10 p-2 absolute ${isSidebarOpen ? "hidden" : "left-0"
+            } rounded-e-lg top-3 mt-4 mr-4`}
           onClick={handleSidebarToggle}
         >
           {isSidebarOpen ? (

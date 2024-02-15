@@ -22,12 +22,6 @@ import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
-import {
-  hrLinks,
-  leaveLinks,
-  links,
-  managerlinks,
-} from "../../../../data/Data";
 import { LiaHomeSolid } from "react-icons/lia";
 import { RiProfileLine } from "react-icons/ri";
 import { BiSpreadsheet } from "react-icons/bi";
@@ -50,8 +44,6 @@ const Sidebar = ({
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
   const [projectsCount, setProjectCount] = useState(0);
-  const empLinks = links.filter((link) => link.text !== "Employee Sheet");
-  const validateLinks = empLinks.filter((link) => link.text !== "Recruitment");
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -62,11 +54,10 @@ const Sidebar = ({
   };
 
   const getProjects = async (
-    url = `${baseUrl}/project/${
-      userProfile.role === 1 || userProfile.role === 2
-        ? ""
-        : `?search={"project_members":[${userProfile.id}]}`
-    }`
+    url = `${baseUrl}/project/${userProfile.role === 1 || userProfile.role === 2
+      ? ""
+      : `?search={"project_members":[${userProfile.id}]}`
+      }`
   ) => {
     try {
       await axios
@@ -83,7 +74,7 @@ const Sidebar = ({
             setPreviousPage(response.data.previous);
           }
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -96,9 +87,8 @@ const Sidebar = ({
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`h-screen bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${
-            isSidebarOpen ? "" : "hidden"
-          }`}
+          className={`h-screen bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${isSidebarOpen ? "" : "hidden"
+            }`}
         >
           <div className="text-xl z-10 bg-white py-3 px-7 flex flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 rounded-md relative">
             <img src={logo} className="inline-block w-12" alt="logo" />
@@ -121,9 +111,8 @@ const Sidebar = ({
                 <li>
                   <Link to="/">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <LiaHomeSolid />
@@ -135,9 +124,8 @@ const Sidebar = ({
                 <li>
                   <Link to="/profile">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <RiProfileLine />
@@ -149,9 +137,8 @@ const Sidebar = ({
                 <li>
                   <Link to="/employees">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/employees" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/employees" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <BiSpreadsheet />
@@ -163,9 +150,8 @@ const Sidebar = ({
                 <li>
                   <Link to="/jobs">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <MdOutlinePayment />
@@ -177,11 +163,10 @@ const Sidebar = ({
                 <li>
                   <Link to="/leave-application">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/leave-application"
-                          ? "bg-[#259ED8]"
-                          : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
+                        ? "bg-[#259ED8]"
+                        : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <MdOutlineTimeToLeave />
@@ -203,33 +188,30 @@ const Sidebar = ({
                     <>
                       <Link to="/leave-list">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-list"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
-                          }`}
+                          className={`py-2 pl-10 ${location.pathname === "/leave-list"
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
+                            }`}
                         >
                           Leave Applications
                         </div>
                       </Link>
                       <Link to="/leave-calender">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-calender"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
-                          }`}
+                          className={`py-2 pl-10 ${location.pathname === "/leave-calender"
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
+                            }`}
                         >
                           Leave Calender
                         </div>
                       </Link>
                       <Link to="/leave-balance">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-balance"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
-                          }`}
+                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
+                            }`}
                         >
                           Leave Balance
                         </div>
@@ -244,9 +226,8 @@ const Sidebar = ({
                 <li>
                   <Link to="/">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <LiaHomeSolid />
@@ -258,9 +239,8 @@ const Sidebar = ({
                 <li>
                   <Link to="/profile">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <RiProfileLine />
@@ -272,9 +252,8 @@ const Sidebar = ({
                 <li>
                   <Link to="/employees">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/employees" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/employees" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <BiSpreadsheet />
@@ -286,9 +265,8 @@ const Sidebar = ({
                 <li>
                   <Link to="/jobs">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <MdOutlinePayment />
@@ -310,33 +288,30 @@ const Sidebar = ({
                     <>
                       <Link to="/leave-list">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-list"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
-                          }`}
+                          className={`py-2 pl-10 ${location.pathname === "/leave-list"
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
+                            }`}
                         >
                           Leave Applications
                         </div>
                       </Link>
                       <Link to="/leave-calender">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-calender"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
-                          }`}
+                          className={`py-2 pl-10 ${location.pathname === "/leave-calender"
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
+                            }`}
                         >
                           Leave Calender
                         </div>
                       </Link>
                       <Link to="/leave-balance">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-balance"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
-                          }`}
+                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
+                            }`}
                         >
                           Leave Balance
                         </div>
@@ -346,14 +321,13 @@ const Sidebar = ({
                 </div>
               </>
             )}
-            {(userProfile.role === 2 || userProfile.role === 4) && (
+            {(userProfile.role === 2) && (
               <>
                 <li>
                   <Link to="/">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <LiaHomeSolid />
@@ -365,9 +339,8 @@ const Sidebar = ({
                 <li>
                   <Link to="/profile">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <RiProfileLine />
@@ -380,11 +353,10 @@ const Sidebar = ({
                 <li>
                   <Link to="/leave-application">
                     <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${
-                        location.pathname === "/leave-application"
-                          ? "bg-[#259ED8]"
-                          : ""
-                      }`}
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
+                        ? "bg-[#259ED8]"
+                        : ""
+                        }`}
                     >
                       <div className="text-white text-xl">
                         <MdOutlineTimeToLeave />
@@ -406,22 +378,90 @@ const Sidebar = ({
                     <>
                       <Link to="/leave-list">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-list"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
-                          }`}
+                          className={`py-2 pl-10 ${location.pathname === "/leave-list"
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
+                            }`}
                         >
                           Leave Applications
                         </div>
                       </Link>
                       <Link to="/leave-balance">
                         <div
-                          className={`py-2 pl-10 ${
-                            location.pathname === "/leave-balance"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
-                          }`}
+                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
+                            }`}
+                        >
+                          Leave Balance
+                        </div>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+            {(userProfile.role === 4) && (
+              <>
+                <li>
+                  <Link to="/">
+                    <div
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
+                        }`}
+                    >
+                      <div className="text-white text-xl">
+                        <LiaHomeSolid />
+                      </div>
+                      <p className="text-white">Home</p>
+                    </div>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/profile">
+                    <div
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
+                        }`}
+                    >
+                      <div className="text-white text-xl">
+                        <RiProfileLine />
+                      </div>
+                      <p className="text-white">Profile</p>
+                    </div>
+                  </Link>
+                </li>
+
+                <li>
+                  <Link to="/leave-application">
+                    <div
+                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
+                        ? "bg-[#259ED8]"
+                        : ""
+                        }`}
+                    >
+                      <div className="text-white text-xl">
+                        <MdOutlineTimeToLeave />
+                      </div>
+                      <p className="text-white">Leave Application</p>
+                    </div>
+                  </Link>
+                </li>
+
+                <div className="text-white bg-[#202F72] rounded-lg mb-2">
+                  <div
+                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    onClick={() => setIsLinksOpen(!isLinksOpen)}
+                  >
+                    <PiSuitcaseRollingBold className="text-4xl" />
+                    Leave Application and Data
+                  </div>
+                  {isLinksOpen && (
+                    <>
+                      <Link to="/leave-balance">
+                        <div
+                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
+                            }`}
                         >
                           Leave Balance
                         </div>
@@ -525,9 +565,8 @@ const Sidebar = ({
 
         {/* Sidebar collapse button */}
         <button
-          className={`bg-[#283b91] text-white p-1.5 absolute ${
-            isSidebarOpen ? "left-[13.5rem]" : "left-0"
-          } rounded-e-lg top-3 mt-4 mr-4`}
+          className={`bg-[#283b91] text-white p-1.5 absolute ${isSidebarOpen ? "left-[13.5rem]" : "left-0"
+            } rounded-e-lg top-3 mt-4 mr-4`}
           onClick={handleSidebarToggle}
         >
           {isSidebarOpen ? (
