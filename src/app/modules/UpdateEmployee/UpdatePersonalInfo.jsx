@@ -11,10 +11,10 @@ import { toast, ToastContainer } from "react-toastify";
 import CustomLoader from "../../../common/CustomLoader";
 
 const validationSchema = Joi.object({
-  first_name: Joi.string().min(3).max(20).required().label("First Name"),
-  last_name: Joi.string().min(3).max(20).required().label("Last Name"),
-  father_name: Joi.string().min(3).max(20).required().label("Father Name"),
-  mother_name: Joi.string().min(3).max(20).required().label("Mother Name"),
+  first_name: Joi.string().min(3).max(40).required().label("First Name"),
+  last_name: Joi.string().min(3).max(40).required().label("Last Name"),
+  father_name: Joi.string().min(3).max(40).required().label("Father Name"),
+  mother_name: Joi.string().min(3).max(40).required().label("Mother Name"),
   mobile_no: Joi.string()
     .pattern(/^\+?\d{10,15}$/) // Allows for optional '+' sign at the beginning followed by 10 to 15 digits
     .required()
@@ -24,6 +24,8 @@ const validationSchema = Joi.object({
       "string.pattern.base": `Phone Number must be a valid mobile number`,
     }),
   date_of_birth: Joi.string().required().label("DOB"),
+  // marital_status: Joi.string().min(3).max(20).required().label("Marital Status"),
+  // nationality: Joi.string().min(3).max(20).required().label("Nationality"),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required()
@@ -127,8 +129,8 @@ const PersonalInfo = ({
       const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
       setImagePreview(
         updatedDP.file ||
-          employeeData.profile_picture?.file ||
-          employeeData.profile_picture
+        employeeData.profile_picture?.file ||
+        employeeData.profile_picture
       );
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -165,6 +167,8 @@ const PersonalInfo = ({
       mother_name: checkData.mother_name,
       mobile_no: checkData.mobile_no,
       date_of_birth: checkData.date_of_birth,
+      marital_status: checkData.marital_status,
+      nationality: checkData.nationality,
       email: checkData.email,
       work_email: checkData.work_email,
       current_address: checkData.current_address,
@@ -242,9 +246,8 @@ const PersonalInfo = ({
                   name="first_name"
                   id=""
                   placeholder="First Name here"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.first_name && (
@@ -268,9 +271,8 @@ const PersonalInfo = ({
                   name="last_name"
                   id=""
                   placeholder="Last Name here"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.last_name && (
@@ -280,6 +282,7 @@ const PersonalInfo = ({
                 )}
               </div>
             </div>
+
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                 <label
@@ -296,9 +299,8 @@ const PersonalInfo = ({
                   name="father_name"
                   id=""
                   placeholder="Father Name here"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.father_name && (
@@ -322,9 +324,8 @@ const PersonalInfo = ({
                   name="mother_name"
                   id=""
                   placeholder="Mother Name here"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.mother_name && (
@@ -334,6 +335,7 @@ const PersonalInfo = ({
                 )}
               </div>
             </div>
+
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2 ">
                 <label
@@ -353,9 +355,8 @@ const PersonalInfo = ({
                     name="mobile_no"
                     id=""
                     placeholder="0000000000"
-                    className={`${
-                      isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#55657] placeholder-opacity-50`}
+                    className={`${isEdit ? "text-black" : "text-gray-500"
+                      } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#55657] placeholder-opacity-50`}
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                 </div>
@@ -408,6 +409,62 @@ const PersonalInfo = ({
                 )}
               </div>
             </div>
+            {/* ///////////////martial status */}
+            {/* <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+            <div className="flex flex-col mt-2 md:w-1/2">
+                <label
+                  htmlFor="marital_status"
+                  className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                >
+                  Marital Status:
+                </label>
+                <input
+                  type="text"
+                  disabled={isEdit ? false : true}
+                  value={defaultData.marital_status}
+                  name="marital_status"
+                  id=""
+                  placeholder="Marital Status here"
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onChange={(e) => handleEdit(e.target.name, e.target.value)}
+                />
+                {errors.marital_status && (
+                  <span className="text-red-500 text-sm ">
+                    {errors.marital_status}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col mt-2 md:w-1/2">
+                <label
+                  htmlFor="nationality"
+                  className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                >
+                  Nationality:
+                </label>
+                <input
+                  type="email"
+                  disabled={isEdit ? false : true}
+                  value={defaultData.nationality}
+                  name="nationality"
+                  id=""
+                  placeholder="Nationality Here"
+                  className={`${
+                    isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onChange={(e) => handleEdit(e.target.name, e.target.value)}
+                />
+                {errors.nationality && (
+                  <span className="text-red-500 text-sm ">
+                    {errors.nationality}
+                  </span>
+                )}
+              </div>
+            </div> */}
+
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                 <label
@@ -423,9 +480,8 @@ const PersonalInfo = ({
                   value={defaultData.email}
                   name="email"
                   placeholder="Email Here"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.email && (
@@ -447,9 +503,8 @@ const PersonalInfo = ({
                   name="work_email"
                   id=""
                   placeholder="Email Here"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.work_email && (
@@ -459,6 +514,7 @@ const PersonalInfo = ({
                 )}
               </div>
             </div>
+
             <div className="flex flex-col mt-2 md:mt-5">
               <label
                 htmlFor="current_address"
@@ -474,9 +530,8 @@ const PersonalInfo = ({
                 name="current_address"
                 id=""
                 placeholder="Current Address here"
-                className={`${
-                  isEdit ? "text-black" : "text-gray-500"
-                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.current_address && (
@@ -485,6 +540,7 @@ const PersonalInfo = ({
                 </span>
               )}
             </div>
+
             <div className="flex flex-col mt-2 md:mt-5">
               <label
                 htmlFor="residential_address"
@@ -500,9 +556,8 @@ const PersonalInfo = ({
                 name="residential_address"
                 id=""
                 placeholder="Permanent Address here"
-                className={`${
-                  isEdit ? "text-black" : "text-gray-500"
-                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.residential_address && (
@@ -511,6 +566,7 @@ const PersonalInfo = ({
                 </span>
               )}
             </div>
+
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                 <label
@@ -526,9 +582,8 @@ const PersonalInfo = ({
                   value={defaultData.nic}
                   placeholder="NIC Here"
                   name="nic"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.nic && (
@@ -551,9 +606,8 @@ const PersonalInfo = ({
                   placeholder="Passport Number Here (optional)"
                   name="passport_number"
                   required=""
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.passport_number && (
@@ -627,9 +681,8 @@ const PersonalInfo = ({
                 name="emergency_first_name"
                 id=""
                 placeholder="First Name Here"
-                className={`${
-                  isEdit ? "text-black" : "text-gray-500"
-                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_first_name && (
@@ -653,9 +706,8 @@ const PersonalInfo = ({
                 name="emergency_last_name"
                 id=""
                 placeholder="Last Name Here"
-                className={`${
-                  isEdit ? "text-black" : "text-gray-500"
-                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_last_name && (
@@ -683,9 +735,8 @@ const PersonalInfo = ({
                   name="emergency_phone_no"
                   id=""
                   placeholder="Phone Number here"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
               </div>
@@ -712,9 +763,8 @@ const PersonalInfo = ({
                 name="emergency_relation"
                 id=""
                 placeholder="emergency_relation Here"
-                className={`${
-                  isEdit ? "text-black" : "text-gray-500"
-                } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                className={`${isEdit ? "text-black" : "text-gray-500"
+                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_relation && (

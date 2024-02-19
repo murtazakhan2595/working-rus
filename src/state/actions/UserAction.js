@@ -13,6 +13,7 @@ export const setToken = (token) => {
 };  
 
 export const setUserLogout = () => {
+  sessionStorage.clear();
   return {
     type: 'SET_USER_LOGOUT',
   };

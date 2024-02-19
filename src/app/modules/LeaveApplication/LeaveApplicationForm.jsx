@@ -28,6 +28,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
     contact_no: "",
     address_during_leave: "",
     report_to: null,
+    indirect_report_to: [],
   };
 
   const [formData, setFormData] = useState(initialData);
@@ -47,6 +48,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
 
         if (response.status === 200) {
           setManagers(response.data);
+          console.log('managerssss', response.data);
         }
       } catch (error) {
         toast.error("Error fetching managers. Please try again.", {
@@ -58,8 +60,15 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
     fetchManagers();
   }, []);
 
-  const handleChange = (name, value) => {
+  const handleChange = (name, value, values) => {
     setFormData((prevData) => {
+      if (name === "indirect_report_to") {
+        return {
+          ...prevData,
+          [name]: values, // Update with the array of selected values
+        };
+      }
+
       if (name === "report_to") {
         return {
           ...prevData,
@@ -88,6 +97,8 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       };
     });
   };
+
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -128,6 +139,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       contact_no: formData.contact_no,
       address_during_leave: formData.address_during_leave,
       report_to: formData.report_to,
+      indirect_report_to: formData.indirect_report_to
     };
 
     console.log(data);
@@ -523,26 +535,55 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               />
             </div>
-            <div className="py-2 flex justify-between md:justify-normal lg:gap-x-[18px]">
-              <label
-                className="font-sfpro tracking-wide font-semibold
+            <div className="flex gap-x-60">
+              <div className="py-2 flex justify-between md:justify-normal lg:gap-x-[18px]">
+                <label
+                  className="font-sfpro tracking-wide font-semibold
                             text-input text-base md:w-[7.5rem] lg:w-32"
-              >
-                Reporting Manager:
-              </label>
-              <Select
-                menuPlacement="auto"
-                className="w-full md:w-[45%] lg:w-[20%]"
-                name="report_to"
-                options={managers?.map((manager) => ({
-                  value: manager.id,
-                  label: manager.department_manager,
-                }))}
-                value={formData.report_to ? formData.report_to.value : null}
-                onChange={(selectedOption) =>
-                  handleChange("report_to", selectedOption.value)
-                }
-              />
+                >
+                  Direct Manager:
+                </label>
+                <Select
+                  menuPlacement="auto"
+                  // className="w-full md:w-[45%] lg:w-[20%]"
+                  name="report_to"
+                  options={managers
+                    ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
+                    .map((manager) => ({
+                      value: manager.id,
+                      label: manager.username,
+                    }))}
+                  value={formData.report_to ? formData.report_to.value : null}
+                  onChange={(selectedOption) =>
+                    handleChange("report_to", selectedOption.value)
+                  }
+                />
+              </div>
+              <div className="py-2 flex justify-between md:justify-normal lg:gap-x-[18px]">
+                <label
+                  className="font-sfpro tracking-wide font-semibold
+                            text-input text-base md:w-[7.5rem] lg:w-32"
+                >
+                  In-Direct Manager:
+                </label>
+                <Select
+                  menuPlacement="auto"
+                  name="indirect_report_to"
+                  options={managers
+                    ?.filter(manager => manager.user_role === 2)
+                    .map((manager) => ({
+                      value: manager.id,
+                      label: manager.username,
+                    }))}
+                  value={formData.indirect_report_to}
+                  isMulti={true} // Enable multi-select
+                  onChange={(selectedOptions) =>
+                    handleChange("indirect_report_to", selectedOptions.map(option => option.value))
+                  }
+                />
+
+
+              </div>
             </div>
             <button
               disabled={isButtonDisabled}

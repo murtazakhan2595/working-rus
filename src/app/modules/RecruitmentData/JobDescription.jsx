@@ -152,6 +152,10 @@ const JobDescription = ({ token, baseUrl }) => {
             Job Description:
           </h2>
           <p>{jobDetails?.Job_Description}</p>
+          <h2 className="py-5 text-baseBlue text-xl font-semibold">
+            Job Requirement:
+          </h2>
+          <p>{jobDetails?.Job_Requirement}</p>
         </div>
       </div>
     </>

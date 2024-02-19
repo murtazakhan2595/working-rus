@@ -6,13 +6,15 @@ import Joi from "joi";
 import Button from "./Button";
 
 const validationSchema = Joi.object({
-  first_name: Joi.string().min(3).max(20).required().label("First Name"),
-  last_name: Joi.string().min(3).max(20).required().label("Last Name"),
-  father_name: Joi.string().min(3).max(20).required().label("Father Name"),
-  mother_name: Joi.string().min(3).max(20).required().label("Mother Name"),
-  country_code: Joi.string().max(4).required().label("Country Code"),
+  first_name: Joi.string().min(3).max(40).required().label("First Name"),
+  last_name: Joi.string().min(3).max(40).required().label("Last Name"),
+  father_name: Joi.string().min(3).max(40).required().label("Father Name"),
+  mother_name: Joi.string().min(3).max(40).required().label("Mother Name"),
+  country_code: Joi.string().max(6).required().label("Country Code"),
   mobile_no: Joi.string().required().label("Phone Number"),
   date_of_birth: Joi.string().required().label("DOB"),
+  // marital_status: Joi.string().min(3).max(20).required().label("Marital Status"),
+  // nationality: Joi.string().min(3).max(20).required().label("Nationality"),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required()
@@ -26,12 +28,12 @@ const validationSchema = Joi.object({
   nic: Joi.string().required().label("NIC"),
   emergency_first_name: Joi.string()
     .min(3)
-    .max(20)
+    .max(40)
     .required()
     .label("First Name"),
   emergency_last_name: Joi.string()
     .min(3)
-    .max(20)
+    .max(40)
     .required()
     .label("Last Name"),
   emergency_country_code: Joi.string()
@@ -144,6 +146,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
   };
 
   const handleNextStep = () => {
+    console.log('clicked');
     let checkData = getDataFromSessionStorage("personalInfo");
     const copyCheckData = { ...checkData };
     const removePassportValidity = "passport_number";
@@ -270,6 +273,56 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                 )}
               </div>
             </div>
+
+            {/* <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+              <div className="flex flex-col mt-2 md:w-1/2">
+                <label
+                  htmlFor="marital_status"
+                  className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                >
+                  Marital Status:
+                </label>
+                <input
+                  type="text"
+                  value={personalInfo.marital_status}
+                  name="marital_status"
+                  id=""
+                  placeholder="Marital Status"
+                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                />
+                {errors.marital_status && (
+                  <span className="text-red-500 text-sm ">
+                    {errors.marital_status}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col mt-2 md:w-1/2">
+                <label
+                  htmlFor="nationality"
+                  className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                >
+                  Nationality:
+                </label>
+                <input
+                  type="text"
+                  value={personalInfo.nationality}
+                  name="nationality"
+                  id=""
+                  placeholder="Nationality here"
+                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                />
+                {errors.nationality && (
+                  <span className="text-red-500 text-sm ">
+                    {errors.nationality}
+                  </span>
+                )}
+              </div>
+            </div> */}
+
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2 ">
                 <label
@@ -362,6 +415,53 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                 )}
               </div>
             </div>
+
+            {/* <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+              <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                <label
+                  htmlFor="email"
+                  className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                >
+                  Personal Email:
+                </label>
+                <input
+                  type="email"
+                  value={personalInfo.email}
+                  name="email"
+                  placeholder="Email Here"
+                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                />
+                {errors.email && (
+                  <span className="text-red-500 text-sm ">{errors.email}</span>
+                )}
+              </div>
+              <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                <label
+                  htmlFor="work_email"
+                  className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                >
+                  Work Email:
+                </label>
+                <input
+                  type="email"
+                  value={personalInfo.work_email}
+                  name="work_email"
+                  id=""
+                  placeholder="Email Here"
+                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                />
+                {errors.work_email && (
+                  <span className="text-red-500 text-sm ">
+                    {errors.work_email}
+                  </span>
+                )}
+              </div>
+            </div> */}
+
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                 <label
@@ -407,6 +507,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                 )}
               </div>
             </div>
+
             <div className="flex flex-col mt-2 md:mt-5">
               <label
                 htmlFor="current_address"
