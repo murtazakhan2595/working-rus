@@ -64,10 +64,10 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
     setFormData((prevData) => {
       if (name === "indirect_report_to") {
         console.log("Selected In-Direct Managers:", values);
-        const uniqueValues = [...new Set([...prevData.indirect_report_to, ...values])];
+        const uniqueValues = [...new Set([...prevData.indirect_report_to, ...values])]; 
         return {
           ...prevData,
-          indirect_report_to: uniqueValues,
+          indirect_report_to: uniqueValues, 
         };
       }
 
@@ -100,7 +100,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
     });
   };
 
-
+  
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
@@ -536,17 +536,17 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               />
             </div>
-            <div className="flex flex-col md:flex-row md:items-center lg:gap-x-48 md:gap-x-6">
-              <div className="py-2 flex  md:items-center justify-between md:justify-normal lg:gap-x-[11px]">
+            <div className="flex items-center gap-x-48">
+              <div className="py-2 flex items-center justify-between md:justify-normal lg:gap-x-[11px]">
                 <label
                   className="font-sfpro tracking-wide font-semibold
-                            text-input text-base md:w-[12.8rem] lg:w-[14rem]"
+                            text-input text-base md:w-[7.5rem] lg:w-[14rem]"
                 >
                   Direct Manager:
                 </label>
                 <Select
                   menuPlacement="auto"
-                  className="w-full"
+                  className="w-full md:w-[45%] lg:w-full"
                   name="report_to"
                   options={managers
                     ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
@@ -560,10 +560,10 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   }
                 />
               </div>
-              <div className="py-2 flex md:items-center justify-between md:justify-normal lg:gap-x-[18px]">
+              <div className="py-2 flex items-center justify-between md:justify-normal lg:gap-x-[18px]">
                 <label
                   className="font-sfpro tracking-wide font-semibold
-                            text-input text-base md:w-[15rem] lg:w-[18rem]"
+                            text-input text-base md:w-[7.5rem] lg:w-[18rem]"
                 >
                   In-Direct Manager:
                 </label>
@@ -571,7 +571,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   isMulti={true} // Enable multi-select
                   isClearable={true}
                   menuPlacement="auto"
-                  className="w-full md:w-[80%] lg:w-full"
+                  className="w-full md:w-[45%] lg:w-full"
                   name="indirect_report_to"
                   options={managers
                     ?.filter(manager => manager.user_role === 2)
@@ -594,7 +594,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
             <button
               disabled={isButtonDisabled}
               type="submit"
-              className="bg-[#283B91] text-white block mx-auto px-6 py-2 rounded-md font-semibold tracking-widest md:mt-4 md:mb-8 lg:mb-6"
+              className="bg-[#283B91] text-white block mx-auto px-6 py-2 rounded-md font-semibold tracking-widest md:mt-4 lg:mb-6"
             >
               Submit Application
             </button>

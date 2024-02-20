@@ -173,14 +173,6 @@ const JobsDataTable = ({ baseUrl, token }) => {
                 <th className="px-4 py-3 text-left  rounded-tl-lg">Job ID</th>
                 <th className="flex gap-x-2 items-center px-6 py-3 text-left  rounded-tl-lg">
                   Job Title
-                  {/* <div className="relative">
-                  <IoIosSearch className="absolute top-2 left-3 text-white" />
-                  <input
-                    type="search"
-                    placeholder="Search"
-                    className="focus:outline-none focus:border-non bg-[#D7D7D7] py-1 pl-8 pr-4 text-white placeholder-white border-none rounded-md w-28"
-                  />
-                </div> */}
                 </th>
                 <th className="px-6 py-3 text-left">Posted Date</th>
                 <th className="px-6 py-3 text-left">End Date</th>
