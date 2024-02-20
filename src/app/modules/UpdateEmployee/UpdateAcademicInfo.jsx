@@ -180,7 +180,6 @@ const AcademicRecords = ({
 
 
   const handleSave = async () => {
-    setIsLoading(true);
     const fieldErrors = {};
     for (let i = 0; i < certificationSections.length; i++) {
       const certification = certificationSections[i];
@@ -235,6 +234,8 @@ const AcademicRecords = ({
       }
       return;
     } else {
+      setIsLoading(true);
+
       try {
 
         let education = {

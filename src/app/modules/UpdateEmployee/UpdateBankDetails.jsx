@@ -131,7 +131,6 @@ const BankDetails = ({
         { headers }
       );
       if (response.status === 200) {
-        setIsLoading(false);
         setDefaultData(UpdatedBankInfo);
         sessionStorage.clear();
         toast.success("Bank Details Updated!", {
@@ -141,14 +140,16 @@ const BankDetails = ({
         nextstep();
       }
     } catch (error) {
-      setIsLoading(false);
       console.error("Error saving data:", error);
       toast.error("Form submission failed. Please try again.", {
         position: "top-center",
         autoClose: 3000,
       });
+    } finally {
+      setIsLoading(false); // Set isLoading to false regardless of success or failure
     }
   };
+  
 
 
   const handleNextStep = () => {

@@ -24,8 +24,8 @@ const validationSchema = Joi.object({
       "string.pattern.base": `Phone Number must be a valid mobile number`,
     }),
   date_of_birth: Joi.string().required().label("DOB"),
-  // marital_status: Joi.string().min(3).max(20).required().label("Marital Status"),
-  // nationality: Joi.string().min(3).max(20).required().label("Nationality"),
+  marital_status: Joi.string().min(3).max(20).required().label("Marital Status"),
+  nationality: Joi.string().min(3).max(40).required().label("Nationality"),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required()
@@ -158,7 +158,6 @@ const PersonalInfo = ({
     setDataInSessionStorage("UpdatedDP", imagePreview);
   }, [imagePreview]);
   const handleSave = async () => {
-    setIsLoading(true);
     let checkData = getDataFromSessionStorage("UpdatedPersonalInfo");
     const copyCheckData = {
       first_name: checkData.first_name,
@@ -193,9 +192,9 @@ const PersonalInfo = ({
       const imageError = { image: "Please upload an image." };
       setErrors(imageError);
     } else {
+      setIsLoading(true); // Set isLoading to true only when there are no validation errors
       setErrors({});
       let updatedData = getDataFromSessionStorage("UpdatedPersonalInfo");
-      let updatedDP = getDataFromSessionStorage("UpdatedDP");
       if (updatedData.passport_number === "") {
         updatedData["passport_number"] = "000000000000000";
       }
@@ -212,11 +211,11 @@ const PersonalInfo = ({
           position: "top-right",
           autoClose: 3000,
         });
-        sessionStorage.clear();
         nextstep();
       }
     }
   };
+  
   const handleNextStep = () => {
     sessionStorage.clear();
     nextstep();
@@ -410,7 +409,7 @@ const PersonalInfo = ({
               </div>
             </div>
             {/* ///////////////martial status */}
-            {/* <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
             <div className="flex flex-col mt-2 md:w-1/2">
                 <label
                   htmlFor="marital_status"
@@ -463,7 +462,7 @@ const PersonalInfo = ({
                   </span>
                 )}
               </div>
-            </div> */}
+            </div>
 
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">

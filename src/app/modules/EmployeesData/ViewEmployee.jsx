@@ -203,7 +203,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
             {" "}
-            {data.place_of_birth ? data.place_of_birth : ""}
+            {data.nationality ? data.nationality : ""}
           </div>
         </div>
         <div className="flex lg:hidden">
@@ -234,7 +234,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                   </div>
                   <div className="px-4 py-2 text-lef">
                     {" "}
-                    {data.place_of_birth ? data.place_of_birth : ""}
+                    {data.nationality ? data.nationality : ""}
                   </div>
                 </div>
               }

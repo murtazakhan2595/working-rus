@@ -13,8 +13,8 @@ const validationSchema = Joi.object({
   country_code: Joi.string().max(6).required().label("Country Code"),
   mobile_no: Joi.string().required().label("Phone Number"),
   date_of_birth: Joi.string().required().label("DOB"),
-  // marital_status: Joi.string().min(3).max(20).required().label("Marital Status"),
-  // nationality: Joi.string().min(3).max(20).required().label("Nationality"),
+  marital_status: Joi.string().min(3).max(20).required().label("Marital Status"),
+  nationality: Joi.string().min(3).max(20).required().label("Nationality"),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required()
@@ -274,7 +274,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
               </div>
             </div>
 
-            {/* <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:w-1/2">
                 <label
                   htmlFor="marital_status"
@@ -321,7 +321,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   </span>
                 )}
               </div>
-            </div> */}
+            </div>
 
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2 ">
@@ -416,51 +416,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
               </div>
             </div>
 
-            {/* <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-              <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                <label
-                  htmlFor="email"
-                  className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                >
-                  Personal Email:
-                </label>
-                <input
-                  type="email"
-                  value={personalInfo.email}
-                  name="email"
-                  placeholder="Email Here"
-                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
-                  onChange={(e) => handleChange(e.target.name, e.target.value)}
-                />
-                {errors.email && (
-                  <span className="text-red-500 text-sm ">{errors.email}</span>
-                )}
-              </div>
-              <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                <label
-                  htmlFor="work_email"
-                  className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                >
-                  Work Email:
-                </label>
-                <input
-                  type="email"
-                  value={personalInfo.work_email}
-                  name="work_email"
-                  id=""
-                  placeholder="Email Here"
-                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
-                  onChange={(e) => handleChange(e.target.name, e.target.value)}
-                />
-                {errors.work_email && (
-                  <span className="text-red-500 text-sm ">
-                    {errors.work_email}
-                  </span>
-                )}
-              </div>
-            </div> */}
+           
 
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">

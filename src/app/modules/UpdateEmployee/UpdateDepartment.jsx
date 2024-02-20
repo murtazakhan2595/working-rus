@@ -135,24 +135,24 @@ const Department = ({ errors, setErrors, prevstep, token,
         let response = await axios.patch(`${baseUrl}/emp/${userProfile.id}`, UpdatedDepartmentInfo, { headers });
         if (response.status === 200) {
           setIsEdit(!isEdit);
-          sessionStorage.clear();
           toast.success('Department Information Updated!', {
             position: 'top-right',
             autoClose: 3000,
           });
-          setIsLoading(false);
-          sessionStorage.clear();
+          sessionStorage.clear(); // Remove the redundant sessionStorage.clear() here
         }
       } catch (error) {
-        setIsLoading(false);
         console.error('Error saving data:', error);
         toast.error('Failed to update department information. Please try again.', {
           position: 'top-center',
           autoClose: 3000,
         });
+      } finally {
+        setIsLoading(false); // Set isLoading to false regardless of success or failure
       }
     }
   };
+
 
   const setDataInSessionStorage = (key, data) => {
     const serializedData = JSON.stringify(data);
@@ -203,7 +203,6 @@ const Department = ({ errors, setErrors, prevstep, token,
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                   {errors.direct_report && <span className="text-red-500 text-sm ">{errors.direct_report}</span>}
-
                 </div>
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                   <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium
