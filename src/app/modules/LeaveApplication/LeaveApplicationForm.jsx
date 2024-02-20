@@ -64,20 +64,21 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
     setFormData((prevData) => {
       if (name === "indirect_report_to") {
         console.log("Selected In-Direct Managers:", values);
-        const uniqueValues = [...new Set([...prevData.indirect_report_to, ...values])];
+        const updatedValues = values || []; // In case 'values' is null
+        const uniqueValues = [...new Set(updatedValues)];
         return {
           ...prevData,
           indirect_report_to: uniqueValues,
         };
       }
-
+  
       if (name === "report_to") {
         return {
           ...prevData,
           [name]: value,
         };
       }
-
+  
       if (name.includes("leave_type.")) {
         // Checkbox handling
         const leaveType = name.split(".")[1];
@@ -85,13 +86,13 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
           ...prevData.leave_type,
           [leaveType]: !prevData.leave_type[leaveType],
         };
-
+  
         return {
           ...prevData,
           leave_type: updatedLeaveType,
         };
       }
-
+  
       // Regular input fields
       return {
         ...prevData,
@@ -99,6 +100,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       };
     });
   };
+  
 
 
   const headers = {
