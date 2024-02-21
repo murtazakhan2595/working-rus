@@ -10,14 +10,13 @@ import suitcase from "../../../assets/images/suitcase.png";
 import magistrate from "../../../assets/images/magistrate.png";
 import employee from "../../../assets/images/employee.png";
 
-const JobDescription = ({ token, baseUrl }) => {
+const JobDescription = ({ baseUrl }) => {
   const [jobDetails, setJobDetails] = useState(null);
+  const searchParams = new URLSearchParams(window.location.search);
+  const jobStatus = searchParams.get("status");
 
   const { id } = useParams();
-  // Functions for calling the API
 
-
-  // Fetching users
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -127,7 +126,7 @@ const JobDescription = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center  gap-x-2 md:w-[30%] xl:w-auto ml-[25px] md:ml-0">
                 <div className="text-[28px]">
-                <img src={employee} alt="employee" className="w-7" />
+                  <img src={employee} alt="employee" className="w-7" />
                 </div>
                 <div className="flex items-center">
                   <div className="text-sm md:text-base">
@@ -137,17 +136,44 @@ const JobDescription = ({ token, baseUrl }) => {
                 </div>
               </div>
             </div>
-            <Link to={`/apply/${jobDetails?.id}`}>
+            {jobStatus === "expired" ? "" : <Link to={`/apply/${jobDetails?.id}`}>
               <div className="flex justify-center md:flex-end">
                 <button className="md:w-[25%] mt-2 md:-mt-8 xl:mt-0 xl:w-full bg-baseBlue text-white px-5 py-1 rounded-md font-sfpro">
                   Apply Now
                 </button>
               </div>
-            </Link>
+            </Link>}
+
           </div>
         </div>
         {/* job description */}
-        <div className="bg-[#F9F9F9] px-6 xl:px-14 overflow-y-auto max-h-[500px] h-[600px]">
+        {jobStatus === 'expired' ? <p className="text-center text-red-600 mt-10 font-semibold text-lg">
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50"
+          >
+            <div className="bg-white p-5 rounded-lg shadow-lg relative w-full md:w-2/3 lg:w-1/3">
+              
+              <div className="flex items-center gap-x-5">
+                <div className="text-6xl">
+                  😔
+                </div>
+                <div>
+                  <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-bold">Job Expired! </h1>
+                  </div>
+                  <p className="text-left text-black mt-2 font-semibold text-lg">
+                    Sorry you are late, this job is expired. For more updates, please follow the
+                    <Link to="https://tecbrix.com/careers/" target="_blank" className="underline mx-2 text-baseBlue">
+                      careers
+                    </Link>
+                    pages.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </p> : <div className="bg-[#F9F9F9] px-6 xl:px-14 overflow-y-auto max-h-[500px] h-[600px]">
           <h2 className="py-5 text-baseBlue text-xl font-semibold">
             Job Description:
           </h2>
@@ -157,6 +183,8 @@ const JobDescription = ({ token, baseUrl }) => {
           </h2>
           <p>{jobDetails?.Job_Requirement}</p>
         </div>
+        }
+
       </div>
     </>
   );
@@ -164,7 +192,6 @@ const JobDescription = ({ token, baseUrl }) => {
 
 const mapStateToProps = (state) => {
   return {
-    token: state.user.token,
     baseUrl: state.user.baseUrl,
   };
 };

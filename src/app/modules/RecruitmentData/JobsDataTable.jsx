@@ -1,6 +1,5 @@
 import { connect } from "react-redux";
 import RecruitmentDataHeader from "./RecruitmentDataHeader";
-import { IoIosSearch } from "react-icons/io";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -257,11 +256,10 @@ const JobsDataTable = ({ baseUrl, token }) => {
                       <div className="flex items-center gap-x-2">
                         <Link
                           target="_blank"
-                          to={`/job-description/${post.id}`}
+                          to={`/job-description/${post.id}?status=${post.status}`}
                           className="underline flex items-center gap-x-2 text-blue-600"
                         >
                           <span>www.joblink.com/{post.id}</span>
-                          {/* <span>www.hrms-{post.Job_Title}.com/{post.id}</span> */}
                         </Link>
                         <MdContentCopy
                           className="cursor-pointer text-baseBlue"
@@ -272,11 +270,10 @@ const JobsDataTable = ({ baseUrl, token }) => {
                       </div>
                     </td>
                     <td
-                      className={`px-6 py-3 text-left font-bold ${
-                        post.status === "live"
+                      className={`px-6 py-3 text-left font-bold ${post.status === "live"
                           ? "text-green-700"
                           : "text-red-700"
-                      }`}
+                        }`}
                     >
                       {post.status.charAt(0).toUpperCase() +
                         post.status.slice(1)}
