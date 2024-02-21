@@ -46,17 +46,19 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   }, [baseUrl, token]);
 
   // Filter users locally based on search input
-  // Filter users locally based on search input
   useEffect(() => {
+    setCurrentPage(1); // Reset current page to 1 when search term changes
+    const lowerCaseFilter = filter.toLowerCase();
     const filtered = users.filter((user) => {
       const userIdWithPrefix = `TXB-${user.id.toString().padStart(4, "0")}`;
       return (
-        userIdWithPrefix.includes(filter) ||
-        user.username.toLowerCase().includes(filter) ||
-        `${user.first_name} ${user.last_name}`.toLowerCase().includes(filter) ||
-        user.email.toLowerCase().includes(filter)
+        userIdWithPrefix.toLowerCase().includes(lowerCaseFilter) ||
+        user.username.toLowerCase().includes(lowerCaseFilter) ||
+        `${user.first_name} ${user.last_name}`.toLowerCase().includes(lowerCaseFilter) ||
+        user.email.toLowerCase().includes(lowerCaseFilter)
       );
     });
+    console.log("Filtered users:", filtered); // Add this line
     setFilteredUsers(filtered);
   }, [filter, users]);
 
