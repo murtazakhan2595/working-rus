@@ -264,7 +264,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
                         <MdContentCopy
                           className="cursor-pointer text-baseBlue"
                           onClick={() =>
-                            copyToClipboard(`${url}/job-description/${post.id}`)
+                            copyToClipboard(`${url}/job-description/${post.id}?status=${post.status}`)
                           }
                         />
                       </div>

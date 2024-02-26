@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import SubStepsIndicator from "./UpdateSubSteps";
 import Button from "./Button";
 import CustomLoader from "../../../common/CustomLoader";
+import { BiEdit } from "react-icons/bi";
 
 const SubmitCV = ({
   errors,
@@ -42,9 +43,8 @@ const SubmitCV = ({
       const cvRes = cvResponse.data[0];
       if (cvRes) {
         setHaveCV(cvRes);
+        setCvName(cvRes.document.name);
       }
-      setCvName(cvRes?.document?.name);
-      setCv(cv);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -86,6 +86,11 @@ const SubmitCV = ({
   }, [cv]);
 
   const handleSave = async () => {
+    if (!isEdit || (isEdit && !cv)) {
+      nextstep();
+      return; // Exit early if not in edit mode or no new CV selected
+    }
+  
     if (!cv) {
       const validationErrors = { cv: "CV is required" };
       setErrors(validationErrors);
@@ -138,19 +143,41 @@ const SubmitCV = ({
       setIsLoading(false); // Clear loading state after save operation
     }
   };
+  
 
   const handleNextStep = () => {
     sessionStorage.clear();
     nextstep();
   };
 
+  const handleFieldClick = () => {
+    setIsEdit(true);
+  };
+
   return (
     <>
       <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
         <SubStepsIndicator substep={substep} />
-        <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
-          Submit Your CV:
-        </h2>
+        <div className="flex justify-between">
+          <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
+            Submit Your CV:
+          </h2>
+          <div className="flex gap-2">
+            {isEdit ? (
+              null
+            ) : (
+              <button
+                onClick={() => {
+                  setIsEdit(!isEdit);
+                }}
+                className="bg-baseBlue rounded-full text-white p-3"
+              >
+                <BiEdit className="text-xl" />
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-col md:flex-row lg:gap-x-36">
           <div className="order-2 md:order-1 md:w-[65%]">
             <h2 className="text-input opacity-70 tracking-wide text-base mt-3 mb-3 lg:mb-4 lg:text-base">
@@ -160,6 +187,7 @@ const SubmitCV = ({
               htmlFor="file-upload"
               className="cursor-pointer opacity-70 
             rounded-lg py-1 text-input"
+              onClick={handleFieldClick} // Add onClick to trigger edit mode
             >
               <div
                 className={`${isEdit ? "text-gray-700" : "text-gray-500"
@@ -203,21 +231,20 @@ const SubmitCV = ({
               Cancel
             </button>
           ) : (
-            <button
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Edit
-            </button>
+            null
           )}
           {isEdit ? (
             <button
               onClick={handleSave}
               className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
             >
-              {isLoading ? <div className="flex items-center justify-center gap-x-2">Saving <CustomLoader /></div> : 'Save & Next'}
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-x-2">
+                  Saving <CustomLoader />
+                </div>
+              ) : (
+                "Save & Next"
+              )}
             </button>
           ) : (
             <Button onClick={handleNextStep} text={"Next"} />

@@ -251,20 +251,20 @@ function Login({ setUserProfile, baseUrl, setToken }) {
                   <div className="text-sm text-rose-500">{errors.password}</div>
                 </div>
 
-                <div className="text-sm text-right my-2">
+                {/* <div className="text-sm text-right my-2">
                   <a
                     href="#"
                     className="font-semibold text-[#1176BC] hover:text-cyan-900 no-underline text-sm font-montserrat tracking-tight"
                   >
                     Forgot password ?
                   </a>
-                </div>
+                </div> */}
               </div>
 
               <div>
                 <button
                   type="submit"
-                  className="flex w-full mt-4 justify-center rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-sm md:text-lg font-semibold 
+                  className="flex w-full mt-6 justify-center rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-sm md:text-lg font-semibold 
                   leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
                   focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat"
                 >

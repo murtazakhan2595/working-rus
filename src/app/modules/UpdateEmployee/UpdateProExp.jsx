@@ -10,6 +10,7 @@ import { RxCross2 } from "react-icons/rx";
 import { connect } from "react-redux";
 import axios from "axios";
 import CustomLoader from "../../../common/CustomLoader";
+import { BiEdit } from "react-icons/bi";
 
 const ProfessionalExp = ({
   errors,
@@ -164,6 +165,10 @@ const ProfessionalExp = ({
     "Content-Type": "application/json",
   };
 
+  const handleEditClick = () => {
+    setIsEdit(true);
+  };
+
   const fetchData = async () => {
     try {
       const experiencesResponse = await axios.get(
@@ -199,7 +204,24 @@ const ProfessionalExp = ({
   return (
     <>
       <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
-        <SubStepsIndicator substep={substep} />
+        <div className="flex items-center justify-between">
+          <SubStepsIndicator substep={substep} />
+          <div className="flex gap-2">
+            {isEdit ? (
+              null
+            ) : (
+              <button
+                onClick={() => {
+                  setIsEdit(!isEdit);
+                }}
+                className="bg-baseBlue rounded-full text-white p-3"
+              >
+                <BiEdit className="text-xl" />
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-col md:flex-row lg:gap-x-36">
           <div className="order-2 md:order-1 md:w-[60%]">
             {experienceSections.map((experience, index) => (
@@ -218,9 +240,14 @@ const ProfessionalExp = ({
                       }}
                     />
                   )}
-                  <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
-                    Professional Experience {index + 1}:
-                  </h2>
+                  <div className="flex justify-between w-full">
+                    <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
+                      Professional Experience {index + 1}:
+                    </h2>
+
+                  </div>
+
+
                 </div>
 
                 <div className="flex flex-col">
@@ -234,7 +261,7 @@ const ProfessionalExp = ({
                       </label>
                       <input
                         type="text"
-                        disabled={isEdit ? false : true}
+                        // disabled={isEdit ? false : true}
                         name="exp_organization"
                         placeholder="Organization"
                         value={experience.exp_organization}
@@ -245,6 +272,7 @@ const ProfessionalExp = ({
                           setExperienceSections(updatedSections);
                           clearError(`exp_organization_${index}`);
                         }}
+                        onClick={handleEditClick}
                         className={`${isEdit ? "text-black" : "text-gray-500"
                           } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                       />
@@ -263,12 +291,13 @@ const ProfessionalExp = ({
                       </label>
                       <input
                         type="text"
-                        disabled={isEdit ? false : true}
+                        // disabled={isEdit ? false : true}
                         name="exp_designation"
                         placeholder="Designation"
                         className={`${isEdit ? "text-black" : "text-gray-500"
                           } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                         value={experience.exp_designation}
+                        onClick={handleEditClick}
                         onChange={(e) => {
                           const updatedSections = [...experienceSections];
                           updatedSections[index].exp_designation =
@@ -292,38 +321,40 @@ const ProfessionalExp = ({
                       >
                         Start Date:
                       </label>
-                      <Datepicker
-                        disabled={isEdit ? false : true}
-                        day={
-                          experience?.exp_start_date
-                            ? experience?.exp_start_date.substr(0, 2)
-                            : null
-                        }
-                        month={
-                          experience?.exp_start_date
-                            ? experience?.exp_start_date.substr(3, 2)
-                            : null
-                        }
-                        year={
-                          experience?.exp_start_date
-                            ? experience?.exp_start_date.substr(6, 4)
-                            : null
-                        }
-                        name="exp_start_date"
-                        selected={moment(
-                          experience.exp_start_date,
-                          "DD-MM-YYYY"
-                        ).toDate()}
-                        onChange={(date) => {
-                          const formattedDate = moment(date)
-                            .format("DD-MM-YYYY")
-                            .toLowerCase();
-                          const updatedSections = [...experienceSections];
-                          updatedSections[index].exp_start_date = formattedDate;
-                          setExperienceSections(updatedSections);
-                          clearError(`exp_start_date_${index}`);
-                        }}
-                      />
+                      <div onClick={handleEditClick} >
+                        <Datepicker
+                          // disabled={isEdit ? false : true}
+                          day={
+                            experience?.exp_start_date
+                              ? experience?.exp_start_date.substr(0, 2)
+                              : null
+                          }
+                          month={
+                            experience?.exp_start_date
+                              ? experience?.exp_start_date.substr(3, 2)
+                              : null
+                          }
+                          year={
+                            experience?.exp_start_date
+                              ? experience?.exp_start_date.substr(6, 4)
+                              : null
+                          }
+                          name="exp_start_date"
+                          selected={moment(
+                            experience.exp_start_date,
+                            "DD-MM-YYYY"
+                          ).toDate()}
+                          onChange={(date) => {
+                            const formattedDate = moment(date)
+                              .format("DD-MM-YYYY")
+                              .toLowerCase();
+                            const updatedSections = [...experienceSections];
+                            updatedSections[index].exp_start_date = formattedDate;
+                            setExperienceSections(updatedSections);
+                            clearError(`exp_start_date_${index}`);
+                          }}
+                        />
+                      </div>
                       {errors[`exp_start_date_${index}`] && (
                         <div className="text-red-500 text-sm">
                           {errors[`exp_start_date_${index}`]}
@@ -337,38 +368,40 @@ const ProfessionalExp = ({
                       >
                         End Date:
                       </label>
-                      <Datepicker
-                        name="exp_end_date"
-                        disabled={isEdit ? false : true}
-                        day={
-                          experience?.exp_end_date
-                            ? experience?.exp_end_date.substr(0, 2)
-                            : null
-                        }
-                        month={
-                          experience?.exp_end_date
-                            ? experience?.exp_end_date.substr(3, 2)
-                            : null
-                        }
-                        year={
-                          experience?.exp_end_date
-                            ? experience?.exp_end_date.substr(6, 4)
-                            : null
-                        }
-                        selected={moment(
-                          experience.exp_end_date,
-                          "DD-MM-YYYY"
-                        ).toDate()}
-                        onChange={(date) => {
-                          const formattedDate = moment(date)
-                            .format("DD-MM-YYYY")
-                            .toLowerCase();
-                          const updatedSections = [...experienceSections];
-                          updatedSections[index].exp_end_date = formattedDate;
-                          setExperienceSections(updatedSections);
-                          clearError(`exp_end_date_${index}`);
-                        }}
-                      />
+                      <div onClick={handleEditClick} >
+                        <Datepicker
+                          name="exp_end_date"
+                          // disabled={isEdit ? false : true}
+                          day={
+                            experience?.exp_end_date
+                              ? experience?.exp_end_date.substr(0, 2)
+                              : null
+                          }
+                          month={
+                            experience?.exp_end_date
+                              ? experience?.exp_end_date.substr(3, 2)
+                              : null
+                          }
+                          year={
+                            experience?.exp_end_date
+                              ? experience?.exp_end_date.substr(6, 4)
+                              : null
+                          }
+                          selected={moment(
+                            experience.exp_end_date,
+                            "DD-MM-YYYY"
+                          ).toDate()}
+                          onChange={(date) => {
+                            const formattedDate = moment(date)
+                              .format("DD-MM-YYYY")
+                              .toLowerCase();
+                            const updatedSections = [...experienceSections];
+                            updatedSections[index].exp_end_date = formattedDate;
+                            setExperienceSections(updatedSections);
+                            clearError(`exp_end_date_${index}`);
+                          }}
+                        />
+                      </div>
                       {errors[`exp_end_date_${index}`] && (
                         <div className="text-red-500 text-sm">
                           {errors[`exp_end_date_${index}`]}
@@ -381,58 +414,60 @@ const ProfessionalExp = ({
                       <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
                         Experience Letter:
                       </h2>
-                      {experience.exp_letter ? (
-                        <div className="flex   items-center">
-                          <div
-                            className={`${isEdit ? "opacity-50" : "text-gray-500"
-                              }`}
-                          >
-                            {experience.exp_letter.name}
-                          </div>
-                          <WiCloudRefresh
-                            onClick={() => {
-                              if (isEdit) {
-                                const updatedSections = [...experienceSections];
-                                updatedSections[index].exp_letter = "";
-                                setExperienceSections(updatedSections);
-                              }
-                            }}
-                            className={`${isEdit ? "text-blue-600" : "text-gray-500"}text-xl`}
-                          />
-                        </div>
-                      ) : (
-                        <label
-                          htmlFor="file-upload"
-                          className="cursor-pointer opacity-70 rounded-lg text-input"
-                        >
-                          <input
-                            id="file-upload"
-                            type="file"
-                            disabled={isEdit ? false : true}
-                            name="exp_letter"
-                            accept=".pdf"
-                            max-size="104857600"
-                            onChange={(e) => {
-                              let file = e.target.files[0];
-                              const updatedSections = [...experienceSections];
-                              const fileData = { name: file.name };
-                              if (file) {
-                                const reader = new FileReader();
-                                reader.onload = (e) => {
-                                  let i = index;
-                                  updatedSections[i].exp_letter = {
-                                    name: fileData.name,
-                                    file: e.target.result,
-                                  };
+                      <div onClick={handleEditClick}>
+                        {experience.exp_letter ? (
+                          <div className="flex   items-center">
+                            <div
+                              className={`${isEdit ? "opacity-50" : "text-gray-500"
+                                }`}
+                            >
+                              {experience.exp_letter.name}
+                            </div>
+                            <WiCloudRefresh
+                              onClick={() => {
+                                if (isEdit) {
+                                  const updatedSections = [...experienceSections];
+                                  updatedSections[index].exp_letter = "";
                                   setExperienceSections(updatedSections);
-                                };
-                                reader.readAsDataURL(file);
-                                setErrors(`exp_letter_${index}`);
-                              }
-                            }}
-                          />
-                        </label>
-                      )}
+                                }
+                              }}
+                              className={`${isEdit ? "text-blue-600" : "text-gray-500"}text-xl`}
+                            />
+                          </div>
+                        ) : (
+                          <label
+                            htmlFor="file-upload"
+                            className="cursor-pointer opacity-70 rounded-lg text-input"
+                          >
+                            <input
+                              id="file-upload"
+                              type="file"
+                              // disabled={isEdit ? false : true}
+                              name="exp_letter"
+                              accept=".pdf"
+                              max-size="104857600"
+                              onChange={(e) => {
+                                let file = e.target.files[0];
+                                const updatedSections = [...experienceSections];
+                                const fileData = { name: file.name };
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onload = (e) => {
+                                    let i = index;
+                                    updatedSections[i].exp_letter = {
+                                      name: fileData.name,
+                                      file: e.target.result,
+                                    };
+                                    setExperienceSections(updatedSections);
+                                  };
+                                  reader.readAsDataURL(file);
+                                  setErrors(`exp_letter_${index}`);
+                                }
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
                       {errors[`exp_letter_${index}`] && (
                         <div className="text-red-500 text-sm">
                           {errors[`exp_letter_${index}`]}
@@ -446,15 +481,15 @@ const ProfessionalExp = ({
                 </div>
               </div>
             ))}
-            {isEdit && (
-              <button
-                onClick={addExperienceSection}
-                className="mt-4 mb-5 rounded-lg w-52 border border-[#25A8E0] cursor-pointer text-[#555657] py-1"
-              >
-                <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>
-                Add New Experience
-              </button>
-            )}
+            {/* {isEdit && ( */}
+            <button
+              onClick={addExperienceSection}
+              className="mt-4 mb-5 rounded-lg w-52 border border-[#25A8E0] cursor-pointer text-[#555657] py-1"
+            >
+              <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>
+              Add New Experience
+            </button>
+            {/* )} */}
           </div>
         </div>
         <div className="flex gap-x-5 mb-40 mt-4 md:mt-0">
@@ -469,14 +504,15 @@ const ProfessionalExp = ({
               Cancel
             </button>
           ) : (
-            <button
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Edit
-            </button>
+            // <button
+            //   onClick={() => {
+            //     setIsEdit(!isEdit);
+            //   }}
+            //   className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
+            // >
+            //   Edit
+            // </button>
+            null
           )}
           {isEdit ? (
             <button

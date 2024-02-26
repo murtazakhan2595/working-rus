@@ -12,6 +12,7 @@ import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import CustomLoader from "../../../common/CustomLoader";
+import { BiEdit } from "react-icons/bi";
 
 const academicOptions = [
   { value: "Intermediate", label: "Intermediate" },
@@ -367,12 +368,33 @@ const AcademicRecords = ({
     }
   };
 
+  const handleEditClick = () => {
+    setIsEdit(true);
+  };
+
+
   return (
     <>
       <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
-        <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
-          Academic Records:
-        </h2>
+        <div className="flex justify-between">
+          <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
+            Academic Records:
+          </h2>
+          <div className="flex gap-2">
+            {isEdit ? (
+              null
+            ) : (
+              <button
+                onClick={() => {
+                  setIsEdit(!isEdit);
+                }}
+                className="bg-baseBlue rounded-full text-white p-3"
+              >
+                <BiEdit className="text-xl" />
+              </button>
+            )}
+          </div>
+        </div>
         <div className="flex flex-col md:flex-row lg:gap-x-36">
           <div className="order-2 md:order-1 md:w-[55%]">
             <div className="flex flex-col">
@@ -385,23 +407,25 @@ const AcademicRecords = ({
                   >
                     Education Level:
                   </label>
-                  <Select
-                    name="education"
-                    isDisabled={isEdit ? false : true}
-                    value={academicOptions.find(
-                      (option) => option.value === academicInfo.education_level
-                    )}
-                    options={academicOptions}
-                    isSearchable={false}
-                    className="focus:outline-none border-none"
-                    onChange={(selectedOption) => {
-                      setAcademicInfo({
-                        ...academicInfo,
-                        education_level: selectedOption.value,
-                      });
-                      setErrors({ ...errors, education_level: null });
-                    }}
-                  />
+                  <div onClick={handleEditClick}>
+                    <Select
+                      name="education"
+                      // isDisabled={isEdit ? false : true}
+                      value={academicOptions.find(
+                        (option) => option.value === academicInfo.education_level
+                      )}
+                      options={academicOptions}
+                      isSearchable={false}
+                      className="focus:outline-none border-none"
+                      onChange={(selectedOption) => {
+                        setAcademicInfo({
+                          ...academicInfo,
+                          education_level: selectedOption.value,
+                        });
+                        setErrors({ ...errors, education_level: null });
+                      }}
+                    />
+                  </div>
                   {errors.education_level && (
                     <div className="text-red-500 text-sm">
                       {errors.education_level}
@@ -418,16 +442,16 @@ const AcademicRecords = ({
                   </label>
                   <input
                     type="text"
-                    disabled={isEdit ? false : true}
+                    // disabled={isEdit ? false : true}
                     value={academicInfo.program}
                     name="program"
-                    id=""
                     placeholder="Program Here"
                     className={`${isEdit ? "text-black" : "text-gray-500"
                       } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
+                    onClick={handleEditClick}
                   />
                   {errors.program && (
                     <div className="text-red-500 text-sm">{errors.program}</div>
@@ -444,14 +468,14 @@ const AcademicRecords = ({
                 </label>
                 <input
                   type="text"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
                   value={academicInfo.institute_name}
                   name="institute_name"
-                  id=""
                   placeholder="Institute Name Here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
+                  onClick={handleEditClick}
                 />
                 {errors.institute_name && (
                   <div className="text-red-500 text-sm">
@@ -468,30 +492,32 @@ const AcademicRecords = ({
                   >
                     Start Date:
                   </label>
-                  <Datepicker
-                    disabled={isEdit ? false : true}
-                    name="startdate"
-                    day={
-                      academicInfo.edu_start_date
-                        ? academicInfo.edu_start_date.substr(0, 2)
-                        : null
-                    }
-                    month={
-                      academicInfo.edu_start_date
-                        ? academicInfo.edu_start_date.substr(3, 2)
-                        : null
-                    }
-                    year={
-                      academicInfo.edu_start_date
-                        ? academicInfo.edu_start_date.substr(6, 4)
-                        : null
-                    }
-                    selected={moment(
-                      academicInfo.edu_start_date,
-                      "DD-MM-YYYY"
-                    ).toDate()}
-                    onChange={handleStartDate}
-                  />
+                  <div onClick={handleEditClick}>
+                    <Datepicker
+                      // disabled={isEdit ? false : true}
+                      name="startdate"
+                      day={
+                        academicInfo.edu_start_date
+                          ? academicInfo.edu_start_date.substr(0, 2)
+                          : null
+                      }
+                      month={
+                        academicInfo.edu_start_date
+                          ? academicInfo.edu_start_date.substr(3, 2)
+                          : null
+                      }
+                      year={
+                        academicInfo.edu_start_date
+                          ? academicInfo.edu_start_date.substr(6, 4)
+                          : null
+                      }
+                      selected={moment(
+                        academicInfo.edu_start_date,
+                        "DD-MM-YYYY"
+                      ).toDate()}
+                      onChange={handleStartDate}
+                    />
+                  </div>
                   {errors.edu_start_date && (
                     <div className="text-red-500 text-sm">
                       {errors.edu_start_date}
@@ -506,30 +532,32 @@ const AcademicRecords = ({
                   >
                     End Date:
                   </label>
-                  <Datepicker
-                    disabled={isEdit ? false : true}
-                    name="enddate"
-                    day={
-                      academicInfo.edu_end_date
-                        ? academicInfo.edu_end_date.substr(0, 2)
-                        : null
-                    }
-                    month={
-                      academicInfo.edu_end_date
-                        ? academicInfo.edu_end_date.substr(3, 2)
-                        : null
-                    }
-                    year={
-                      academicInfo.edu_end_date
-                        ? academicInfo.edu_end_date.substr(6, 4)
-                        : null
-                    }
-                    selected={moment(
-                      academicInfo.edu_end_date,
-                      "DD-MM-YYYY"
-                    ).toDate()}
-                    onChange={handleEndDate}
-                  />
+                  <div onClick={handleEditClick}>
+                    <Datepicker
+                      // disabled={isEdit ? false : true}
+                      name="enddate"
+                      day={
+                        academicInfo.edu_end_date
+                          ? academicInfo.edu_end_date.substr(0, 2)
+                          : null
+                      }
+                      month={
+                        academicInfo.edu_end_date
+                          ? academicInfo.edu_end_date.substr(3, 2)
+                          : null
+                      }
+                      year={
+                        academicInfo.edu_end_date
+                          ? academicInfo.edu_end_date.substr(6, 4)
+                          : null
+                      }
+                      selected={moment(
+                        academicInfo.edu_end_date,
+                        "DD-MM-YYYY"
+                      ).toDate()}
+                      onChange={handleEndDate}
+                    />
+                  </div>
                   {errors.edu_end_date && (
                     <div className="text-red-500 text-sm">
                       {errors.edu_end_date}
@@ -542,39 +570,41 @@ const AcademicRecords = ({
                   <h2 className="text-input tracking-wide text-base mt-3 mb-3 lg:mb-0 lg:text-base">
                     Attach Certification:
                   </h2>
-                  {academicInfo.certificate?.document?.hasOwnProperty("name") ? (
-                    <div className="flex gap-1  items-center">
-                      <div className="opacity-50">
-                        {academicInfo.certificate?.document?.name}
+                  <div onClick={handleEditClick}>
+                    {academicInfo.certificate?.document?.hasOwnProperty("name") ? (
+                      <div className="flex gap-1  items-center">
+                        <div className="opacity-50">
+                          {academicInfo.certificate?.document?.name}
+                        </div>
+                        <WiCloudRefresh
+                          onClick={() => {
+                            if (isEdit) {
+                              setAcademicInfo({ ...academicInfo, certificate: { ...academicInfo.certificate, document: {} } });
+                              setDataInSessionStorage("UpdatedAcademicInfo", academicInfo);
+                            }
+                          }}
+                          className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
+                        />
                       </div>
-                      <WiCloudRefresh
-                        onClick={() => {
-                          if (isEdit) {
-                            setAcademicInfo({ ...academicInfo, certificate: { ...academicInfo.certificate, document: {} } });
-                            setDataInSessionStorage("UpdatedAcademicInfo", academicInfo);
-                          }
-                        }}
-                        className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
-                      />
-                    </div>
-                  ) : (
-                    <label
-                      htmlFor="file-upload"
-                      className="cursor-pointer opacity-70 
+                    ) : (
+                      <label
+                        htmlFor="file-upload"
+                        className="cursor-pointer opacity-70 
                     rounded-lg py-1 text-input"
-                    >
-                      <input
-                        disabled={isEdit ? false : true}
-                        id="file-upload"
-                        type="file"
-                        name="file"
-                        accept=".pdf"
-                        download="file"
-                        className="leading-5"
-                        onChange={handleFileChange}
-                      />
-                    </label>
-                  )}
+                      >
+                        <input
+                          disabled={isEdit ? false : true}
+                          id="file-upload"
+                          type="file"
+                          name="file"
+                          accept=".pdf"
+                          download="file"
+                          className="leading-5"
+                          onChange={handleFileChange}
+                        />
+                      </label>
+                    )}
+                  </div>
                   {errors.certificate && (
                     <div className="text-red-500 text-sm">
                       {errors.certificate}
@@ -624,7 +654,7 @@ const AcademicRecords = ({
                     Certification Name:
                   </label>
                   <input
-                    disabled={isEdit ? false : true}
+                    // disabled={isEdit ? false : true}
                     type="text"
                     name="certification_name"
                     placeholder="Certification Name"
@@ -636,6 +666,7 @@ const AcademicRecords = ({
                       setCertificationSections(updatedSections);
                       clearCerError(`certification_name_${index}`);
                     }}
+                    onClick={handleEditClick}
                     className={`${isEdit ? "text-black" : "text-gray-500"
                       } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                   />
@@ -654,38 +685,40 @@ const AcademicRecords = ({
                   >
                     Completion Date:
                   </label>
-                  <Datepicker
-                    disabled={isEdit ? false : true}
-                    day={
-                      certification?.completion_date
-                        ? certification?.completion_date.substr(0, 2)
-                        : null
-                    }
-                    month={
-                      certification?.completion_date
-                        ? certification?.completion_date.substr(3, 2)
-                        : null
-                    }
-                    year={
-                      certification?.completion_date
-                        ? certification?.completion_date.substr(6, 4)
-                        : null
-                    }
-                    name="completion_date"
-                    selected={moment(
-                      certification.completion_date,
-                      "DD-MM-YYYY"
-                    ).toDate()}
-                    onChange={(date) => {
-                      const formattedDate = moment(date)
-                        .format("DD-MM-YYYY")
-                        .toLowerCase();
-                      const updatedSections = [...certificationSections];
-                      updatedSections[index].completion_date = formattedDate;
-                      setCertificationSections(updatedSections);
-                      clearCerError(`completion_date_${index}`);
-                    }}
-                  />
+                  <div onClick={handleEditClick}>
+                    <Datepicker
+                      // disabled={isEdit ? false : true}
+                      day={
+                        certification?.completion_date
+                          ? certification?.completion_date.substr(0, 2)
+                          : null
+                      }
+                      month={
+                        certification?.completion_date
+                          ? certification?.completion_date.substr(3, 2)
+                          : null
+                      }
+                      year={
+                        certification?.completion_date
+                          ? certification?.completion_date.substr(6, 4)
+                          : null
+                      }
+                      name="completion_date"
+                      selected={moment(
+                        certification.completion_date,
+                        "DD-MM-YYYY"
+                      ).toDate()}
+                      onChange={(date) => {
+                        const formattedDate = moment(date)
+                          .format("DD-MM-YYYY")
+                          .toLowerCase();
+                        const updatedSections = [...certificationSections];
+                        updatedSections[index].completion_date = formattedDate;
+                        setCertificationSections(updatedSections);
+                        clearCerError(`completion_date_${index}`);
+                      }}
+                    />
+                  </div>
                   {cerErrors[`completion_date_${index}`] && (
                     <div className="text-red-500 text-sm">
                       {cerErrors[`completion_date_${index}`]}
@@ -699,38 +732,40 @@ const AcademicRecords = ({
                   >
                     Expiry Date:
                   </label>
-                  <Datepicker
-                    disabled={isEdit ? false : true}
-                    name="expiry_date"
-                    day={
-                      certification?.expiry_date
-                        ? certification?.expiry_date.substr(0, 2)
-                        : null
-                    }
-                    month={
-                      certification?.expiry_date
-                        ? certification?.expiry_date.substr(3, 2)
-                        : null
-                    }
-                    year={
-                      certification?.expiry_date
-                        ? certification?.expiry_date.substr(6, 4)
-                        : null
-                    }
-                    selected={moment(
-                      certification.expiry_date,
-                      "DD-MM-YYYY"
-                    ).toDate()}
-                    onChange={(date) => {
-                      const formattedDate = moment(date)
-                        .format("DD-MM-YYYY")
-                        .toLowerCase();
-                      const updatedSections = [...certificationSections];
-                      updatedSections[index].expiry_date = formattedDate;
-                      setCertificationSections(updatedSections);
-                      clearCerError(`expiry_date_${index}`);
-                    }}
-                  />
+                  <div onClick={handleEditClick}>
+                    <Datepicker
+                      // disabled={isEdit ? false : true}
+                      name="expiry_date"
+                      day={
+                        certification?.expiry_date
+                          ? certification?.expiry_date.substr(0, 2)
+                          : null
+                      }
+                      month={
+                        certification?.expiry_date
+                          ? certification?.expiry_date.substr(3, 2)
+                          : null
+                      }
+                      year={
+                        certification?.expiry_date
+                          ? certification?.expiry_date.substr(6, 4)
+                          : null
+                      }
+                      selected={moment(
+                        certification.expiry_date,
+                        "DD-MM-YYYY"
+                      ).toDate()}
+                      onChange={(date) => {
+                        const formattedDate = moment(date)
+                          .format("DD-MM-YYYY")
+                          .toLowerCase();
+                        const updatedSections = [...certificationSections];
+                        updatedSections[index].expiry_date = formattedDate;
+                        setCertificationSections(updatedSections);
+                        clearCerError(`expiry_date_${index}`);
+                      }}
+                    />
+                  </div>
                   {cerErrors[`expiry_date_${index}`] && (
                     <div className="text-red-500 text-sm">
                       {cerErrors[`expiry_date_${index}`]}
@@ -743,55 +778,57 @@ const AcademicRecords = ({
                   <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
                     Certification Body:
                   </h2>
-                  {certification.certification_body ? (
-                    <div className="flex gap-1  items-center">
-                      <div className="opacity-50">
-                        {certification.certification_body.name}
-                      </div>
-                      <WiCloudRefresh
-                        onClick={() => {
-                          if (isEdit) {
-                            const updatedSections = [...certificationSections];
-                            updatedSections[index].certification_body = "";
-                            setCertificationSections(updatedSections);
-                          }
-                        }}
-                        className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
-                      />
-                    </div>
-                  ) : (
-                    <label
-                      htmlFor="file-upload"
-                      className="cursor-pointer opacity-70 rounded-lg text-input"
-                    >
-                      <input
-                        disabled={isEdit ? false : true}
-                        id="file-upload"
-                        type="file"
-                        name="certification_body"
-                        accept=".pdf"
-                        max-size="104857600"
-                        onChange={(e) => {
-                          let file = e.target.files[0];
-                          const updatedSections = [...certificationSections];
-                          const fileData = { name: file.name };
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                              let i = index;
-                              updatedSections[i].certification_body = {
-                                name: fileData.name,
-                                file: e.target.result,
-                              };
+                  <div onClick={handleEditClick}>
+                    {certification.certification_body ? (
+                      <div className="flex gap-1  items-center">
+                        <div className="opacity-50">
+                          {certification.certification_body.name}
+                        </div>
+                        <WiCloudRefresh
+                          onClick={() => {
+                            if (isEdit) {
+                              const updatedSections = [...certificationSections];
+                              updatedSections[index].certification_body = "";
                               setCertificationSections(updatedSections);
-                            };
-                            reader.readAsDataURL(file);
-                            clearCerError(`certification_body_${index}`);
-                          }
-                        }}
-                      />
-                    </label>
-                  )}
+                            }
+                          }}
+                          className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
+                        />
+                      </div>
+                    ) : (
+                      <label
+                        htmlFor="file-upload"
+                        className="cursor-pointer opacity-70 rounded-lg text-input"
+                      >
+                        <input
+                          disabled={isEdit ? false : true}
+                          id="file-upload"
+                          type="file"
+                          name="certification_body"
+                          accept=".pdf"
+                          max-size="104857600"
+                          onChange={(e) => {
+                            let file = e.target.files[0];
+                            const updatedSections = [...certificationSections];
+                            const fileData = { name: file.name };
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (e) => {
+                                let i = index;
+                                updatedSections[i].certification_body = {
+                                  name: fileData.name,
+                                  file: e.target.result,
+                                };
+                                setCertificationSections(updatedSections);
+                              };
+                              reader.readAsDataURL(file);
+                              clearCerError(`certification_body_${index}`);
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
                   {cerErrors[`certification_body_${index}`] && (
                     <div className="text-red-500 block text-sm">
                       {cerErrors[`certification_body_${index}`]}
@@ -806,15 +843,15 @@ const AcademicRecords = ({
           </div>
         ))}
         {(certificationSections.length === 0 && !isEdit) && <div className="mb-1 text-gray-500 inline-block">0 Certifications</div>}
-        {isEdit &&
-          <button
-            onClick={addCertificationSection}
-            className="mt-1 mb-3 rounded-lg w-52 border border-[#25A8E0] cursor-pointer text-[#555657] py-1"
-          >
-            <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add
-            New Certification
-          </button>
-        }
+        {/* {isEdit && */}
+        <button
+          onClick={addCertificationSection}
+          className="mt-1 mb-3 rounded-lg w-52 border border-[#25A8E0] cursor-pointer text-[#555657] py-1"
+        >
+          <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add
+          New Certification
+        </button>
+        {/* } */}
         <div className="flex gap-x-5 mb-40 mt-5 md:mt-0">
           {!isEdit && <Button onClick={prevstep} text={"Previous"} />}
           {isEdit ? (
@@ -827,14 +864,15 @@ const AcademicRecords = ({
               Cancel
             </button>
           ) : (
-            <button
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Edit
-            </button>
+            // <button
+            //   onClick={() => {
+            //     setIsEdit(!isEdit);
+            //   }}
+            //   className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
+            // >
+            //   Edit
+            // </button>
+            null
           )}
           {isEdit ? (
             <button

@@ -9,6 +9,7 @@ import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
 import CustomLoader from "../../../common/CustomLoader";
+import { BiEdit } from "react-icons/bi";
 
 const validationSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
@@ -105,7 +106,7 @@ const PersonalInfo = ({
       reader.onload = (e) => {
         setDataInSessionStorage("UpdatedDP", {
           name: selectedFile.name,
-          file: e.target.result,
+          // file: e.target.result,
         });
         setImagePreview(e.target.result);
       };
@@ -126,9 +127,9 @@ const PersonalInfo = ({
       setDefaultData(employeeData);
 
       // Check session storage first, then fallback to local state
-      const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
+      // const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
       setImagePreview(
-        updatedDP.file ||
+        // updatedDP.file ||
         employeeData.profile_picture?.file ||
         employeeData.profile_picture
       );
@@ -144,6 +145,7 @@ const PersonalInfo = ({
   const handleEdit = (name, value) => {
     setDefaultData({ ...defaultData, [name]: value });
     setErrors({ ...errors, [name]: null });
+    setIsEdit(true);
   };
 
   const handledate_of_birthChange = (date) => {
@@ -215,18 +217,41 @@ const PersonalInfo = ({
       }
     }
   };
-  
+
   const handleNextStep = () => {
     sessionStorage.clear();
     nextstep();
   };
 
+
+  const handleFieldClick = () => {
+    setIsEdit(true);
+  }
+
   return (
     <>
       <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
-        <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
-          Personal Information:{" "}
-        </h2>
+
+        <div className="flex justify-between">
+          <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
+            Personal Information:{" "}
+          </h2>
+          <div className="flex gap-2">
+            {isEdit ? (
+              null
+            ) : (
+              <button
+                onClick={() => {
+                  setIsEdit(!isEdit);
+                }}
+                className="bg-baseBlue rounded-full text-white p-3"
+              >
+                <BiEdit className="text-xl" />
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-col md:flex-row lg:gap-x-36">
           <div className="order-2 md:order-1 md:w-[65%]">
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
@@ -240,13 +265,14 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="text"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.first_name}
                   name="first_name"
-                  id=""
                   placeholder="First Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.first_name && (
@@ -265,13 +291,14 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="text"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.last_name}
                   name="last_name"
-                  id=""
                   placeholder="Last Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.last_name && (
@@ -293,13 +320,14 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="text"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.father_name}
                   name="father_name"
-                  id=""
                   placeholder="Father Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.father_name && (
@@ -318,13 +346,14 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="text"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.mother_name}
                   name="mother_name"
-                  id=""
                   placeholder="Mother Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.mother_name && (
@@ -346,16 +375,17 @@ const PersonalInfo = ({
                 </label>
                 <div className="flex gap-1">
                   <input
+                    // disabled={isEdit ? false : true}
+                    readOnly={!isEdit}
                     type="text"
                     inputMode="decimal"
                     pattern="[+0-9]"
-                    disabled={isEdit ? false : true}
                     value={defaultData.mobile_no}
                     name="mobile_no"
-                    id=""
                     placeholder="0000000000"
                     className={`${isEdit ? "text-black" : "text-gray-500"
                       } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#55657] placeholder-opacity-50`}
+                    onClick={handleFieldClick}
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                 </div>
@@ -378,6 +408,7 @@ const PersonalInfo = ({
                 </label>
                 <Datepicker
                   disabled={isEdit ? false : true}
+                  // readOnly={!isEdit}
                   day={
                     defaultData.date_of_birth
                       ? defaultData.date_of_birth.substr(0, 2)
@@ -399,6 +430,7 @@ const PersonalInfo = ({
                     defaultData.date_of_birth,
                     "DD-MM-YYYY"
                   ).toDate()}
+                  // onClick={handleFieldClick}
                   onChange={handledate_of_birthChange}
                 />
                 {errors.date_of_birth && (
@@ -410,7 +442,7 @@ const PersonalInfo = ({
             </div>
             {/* ///////////////martial status */}
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-            <div className="flex flex-col mt-2 md:w-1/2">
+              <div className="flex flex-col mt-2 md:w-1/2">
                 <label
                   htmlFor="marital_status"
                   className="font-sfpro tracking-wide font-medium
@@ -420,14 +452,14 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="text"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.marital_status}
                   name="marital_status"
-                  id=""
                   placeholder="Marital Status here"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.marital_status && (
@@ -446,14 +478,14 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="email"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.nationality}
                   name="nationality"
-                  id=""
                   placeholder="Nationality Here"
-                  className={`${
-                    isEdit ? "text-black" : "text-gray-500"
-                  } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  className={`${isEdit ? "text-black" : "text-gray-500"
+                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.nationality && (
@@ -475,12 +507,14 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="email"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.email}
                   name="email"
                   placeholder="Email Here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.email && (
@@ -497,13 +531,14 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="email"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.work_email}
                   name="work_email"
-                  id=""
                   placeholder="Email Here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.work_email && (
@@ -524,13 +559,14 @@ const PersonalInfo = ({
               </label>
               <input
                 type="text"
-                disabled={isEdit ? false : true}
+                // disabled={isEdit ? false : true}
+                readOnly={!isEdit}
                 value={defaultData.current_address}
                 name="current_address"
-                id=""
                 placeholder="Current Address here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.current_address && (
@@ -550,13 +586,14 @@ const PersonalInfo = ({
               </label>
               <input
                 type="text"
-                disabled={isEdit ? false : true}
+                // disabled={isEdit ? false : true}
+                readOnly={!isEdit}
                 value={defaultData.residential_address}
                 name="residential_address"
-                id=""
                 placeholder="Permanent Address here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.residential_address && (
@@ -577,12 +614,14 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="number"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.nic}
                   placeholder="NIC Here"
                   name="nic"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.nic && (
@@ -599,14 +638,16 @@ const PersonalInfo = ({
                 </label>
                 <input
                   type="text"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.passport_number}
                   data-inputmask="'mask': '99999-9999999-9'"
-                  placeholder="Passport Number Here (optional)"
+                  placeholder="Passport Number (optional)"
                   name="passport_number"
                   required=""
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.passport_number && (
@@ -646,7 +687,9 @@ const PersonalInfo = ({
                   </span>
                 </div>
                 <input
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
+                  onClick={handleFieldClick}
                   id="file-upload"
                   type="file"
                   accept="image/*"
@@ -675,13 +718,14 @@ const PersonalInfo = ({
               </label>
               <input
                 type="text"
-                disabled={isEdit ? false : true}
+                // disabled={isEdit ? false : true}
+                readOnly={!isEdit}
                 value={defaultData.emergency_first_name}
                 name="emergency_first_name"
-                id=""
                 placeholder="First Name Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_first_name && (
@@ -700,13 +744,14 @@ const PersonalInfo = ({
               </label>
               <input
                 type="text"
-                disabled={isEdit ? false : true}
+                // disabled={isEdit ? false : true}
+                readOnly={!isEdit}
                 value={defaultData.emergency_last_name}
                 name="emergency_last_name"
-                id=""
                 placeholder="Last Name Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_last_name && (
@@ -729,13 +774,14 @@ const PersonalInfo = ({
                 <input
                   type="text"
                   pattern="[+0-9]"
-                  disabled={isEdit ? false : true}
+                  // disabled={isEdit ? false : true}
+                  readOnly={!isEdit}
                   value={defaultData.emergency_phone_no}
                   name="emergency_phone_no"
-                  id=""
                   placeholder="Phone Number here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
               </div>
@@ -757,13 +803,14 @@ const PersonalInfo = ({
               </label>
               <input
                 type="text"
-                disabled={isEdit ? false : true}
+                // disabled={isEdit ? false : true}
+                readOnly={!isEdit}
                 value={defaultData.emergency_relation}
                 name="emergency_relation"
-                id=""
                 placeholder="emergency_relation Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_relation && (
@@ -785,14 +832,15 @@ const PersonalInfo = ({
               Cancel
             </button>
           ) : (
-            <button
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Edit
-            </button>
+            // <button
+            //   onClick={() => {
+            //     setIsEdit(!isEdit);
+            //   }}
+            //   className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
+            // >
+            //   Edit
+            // </button>
+            null
           )}
           {isEdit ? (
             <button
