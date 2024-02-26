@@ -97,7 +97,7 @@ const JobDescription = ({ baseUrl }) => {
                   <div className="text-sm md:text-base">
                     {" "}
                     <p>
-                      {jobDetails?.min_salary} - {jobDetails?.max_salary}
+                      {Number(jobDetails?.min_salary).toLocaleString()} - {Number(jobDetails?.max_salary).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -152,7 +152,7 @@ const JobDescription = ({ baseUrl }) => {
             className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50"
           >
             <div className="bg-white p-5 rounded-lg shadow-lg relative w-full md:w-2/3 lg:w-1/3">
-              
+
               <div className="flex items-center gap-x-5">
                 <div className="text-6xl">
                   😔

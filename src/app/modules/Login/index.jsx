@@ -55,16 +55,16 @@ function Login({ setUserProfile, baseUrl, setToken }) {
     }
 
     // Clear any existing validation errors
-    setErrors({});
-    const { error } = loginSchema.validate(values, { abortEarly: false });
-    if (error) {
-      const newErrors = {};
-      error.details.forEach((detail) => {
-        newErrors[detail.path[0]] = detail.message;
-      });
-      setErrors(newErrors);
-      return;
-    }
+    // setErrors({});
+    // const { error } = loginSchema.validate(values, { abortEarly: false });
+    // if (error) {
+    //   const newErrors = {};
+    //   error.details.forEach((detail) => {
+    //     newErrors[detail.path[0]] = detail.message;
+    //   });
+    //   setErrors(newErrors);
+    //   return;
+    // }
 
     try {
       const response = await axios.post(`${baseUrl}/token/`, {
@@ -144,17 +144,17 @@ function Login({ setUserProfile, baseUrl, setToken }) {
     }));
   };
 
-  const loginSchema = Joi.object({
-    username: Joi.string()
-      .required("Username Required")
-      .label("UserName")
-      .messages({
-        "string.empty": `Enter Your Username`,
-      }),
-    password: Joi.string().required().label("Password").messages({
-      "string.empty": `Enter Your Password`,
-    }),
-  });
+  // const loginSchema = Joi.object({
+  //   username: Joi.string()
+  //     .required("Username Required")
+  //     .label("UserName")
+  //     .messages({
+  //       "string.empty": `Enter Your Username`,
+  //     }),
+  //   password: Joi.string().required().label("Password").messages({
+  //     "string.empty": `Enter Your Password`,
+  //   }),
+  // });
 
   // checking connection
   useEffect(() => {
@@ -206,7 +206,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
               <div>
                 <div className="mt-2">
                   <input
-                    id="username"
+                  required
                     name="username"
                     type="text"
                     autoComplete="username"
@@ -224,7 +224,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
               <div>
                 <div className="mt-4 relative">
                   <input
-                    id="password"
+                  required
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
