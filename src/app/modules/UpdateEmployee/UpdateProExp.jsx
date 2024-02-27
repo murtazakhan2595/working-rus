@@ -39,6 +39,7 @@ const ProfessionalExp = ({
   const [isEdit, setIsEdit] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [disableEndDate, setDisableEndDate] = useState(false);
 
   const addExperienceSection = () => {
     setExperienceSections([...experienceSections, {}]);
@@ -99,9 +100,11 @@ const ProfessionalExp = ({
             exp_start_date: moment(exp.exp_start_date, "DD-MM-YYYY").format(
               "YYYY-MM-DD"
             ),
-            exp_end_date: moment(exp.exp_end_date, "DD-MM-YYYY").format(
-              "YYYY-MM-DD"
-            ),
+            // exp_end_date: moment(exp.exp_end_date, "DD-MM-YYYY").format(
+            //   "YYYY-MM-DD"
+            // ),
+            exp_end_date: disableEndDate ? null : moment(exp.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD"),
+
           };
           if (exp.hasOwnProperty("id")) {
             let res = await axios.patch(
@@ -169,6 +172,27 @@ const ProfessionalExp = ({
     setIsEdit(true);
   };
 
+  // const fetchData = async () => {
+  //   try {
+  //     const experiencesResponse = await axios.get(
+  //       `${baseUrl}/experience/?search={"employee_id":${id}}`,
+  //       { headers }
+  //     );
+  //     const experiencesData = experiencesResponse.data;
+
+  //     const formattedExperiencesData = experiencesData.map((experience) => ({
+  //       ...experience,
+  //       exp_start_date: moment(experience.exp_start_date).format("DD-MM-YYYY"),
+  //       exp_end_date: moment(experience.exp_end_date).format("DD-MM-YYYY"),
+  //     }));
+
+  //     setExperienceSections(formattedExperiencesData);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+
+
   const fetchData = async () => {
     try {
       const experiencesResponse = await axios.get(
@@ -177,6 +201,11 @@ const ProfessionalExp = ({
       );
       const experiencesData = experiencesResponse.data;
 
+      // Check if any experience has null exp_end_date
+      const hasNullEndDate = experiencesData.some(
+        (experience) => experience.exp_end_date === null
+      );
+
       const formattedExperiencesData = experiencesData.map((experience) => ({
         ...experience,
         exp_start_date: moment(experience.exp_start_date).format("DD-MM-YYYY"),
@@ -184,6 +213,7 @@ const ProfessionalExp = ({
       }));
 
       setExperienceSections(formattedExperiencesData);
+      setDisableEndDate(hasNullEndDate); // Set disableEndDate state based on null exp_end_date
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -368,10 +398,10 @@ const ProfessionalExp = ({
                       >
                         End Date:
                       </label>
-                      <div onClick={handleEditClick} >
+                      <div onClick={handleEditClick} className="flex items-center gap-x-2" >
                         <Datepicker
+                          disabled={disableEndDate} // Disable the Datepicker based on the disableEndDate state
                           name="exp_end_date"
-                          // disabled={isEdit ? false : true}
                           day={
                             experience?.exp_end_date
                               ? experience?.exp_end_date.substr(0, 2)
@@ -401,6 +431,14 @@ const ProfessionalExp = ({
                             clearError(`exp_end_date_${index}`);
                           }}
                         />
+                        <input
+                          type="checkbox"
+                          checked={disableEndDate}
+                          onChange={(e) => setDisableEndDate(e.target.checked)}
+                          className="ml-3"
+                        />
+                        <label>Till to Date</label>
+
                       </div>
                       {errors[`exp_end_date_${index}`] && (
                         <div className="text-red-500 text-sm">

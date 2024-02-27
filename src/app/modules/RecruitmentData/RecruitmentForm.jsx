@@ -36,14 +36,29 @@ const RecruitmentForm = ({ token, baseUrl }) => {
 
   const navigate = useNavigate();
 
+  // const handleChange = (name, value) => {
+  //   const numericValue = parseFloat(value.replace(/,/g, ''));
+
+  //   setFormData({
+  //     ...formData,
+  //     [name]: numericValue,
+  //   });
+  // };
+
   const handleChange = (name, value) => {
-    const numericValue = parseFloat(value.replace(/,/g, ''));
+    let numericValue;
+    if (value === '') {
+      numericValue = null; // or any other appropriate value like 0
+    } else {
+      numericValue = parseFloat(value.replace(/,/g, ''));
+    }
 
     setFormData({
       ...formData,
       [name]: numericValue,
     });
   };
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -78,8 +93,8 @@ const RecruitmentForm = ({ token, baseUrl }) => {
             Employee_Type: jobData.Employee_Type
               ? { label: jobData.Employee_Type, value: jobData.Employee_Type }
               : null,
-            min_salary: jobData.min_salary,
-            max_salary: jobData.max_salary,
+            min_salary: Number(jobData.min_salary)?.toLocaleString(),
+            max_salary: Number(jobData.max_salary)?.toLocaleString(),
             Deadline: jobData.Deadline,
           });
         }
@@ -386,7 +401,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                   placeholder="min"
                   className="w-[30%] lg:w-[40%] pl-2 bg-white rounded h-8 text-sm
       placeholder-[#555657] placeholder-opacity-50 text-black"
-                  value={formData.min_salary.toLocaleString()}
+                  value={formData.min_salary?.toLocaleString()}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />{" "}
                 min -
@@ -396,7 +411,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                   placeholder="max"
                   className="w-[30%] lg:w-[38%] pl-2 bg-white rounded h-8 text-sm
       placeholder-[#555657] placeholder-opacity-50 text-black"
-                  value={formData.max_salary.toLocaleString()}
+                  value={formData.max_salary?.toLocaleString()}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />{" "}
                 max

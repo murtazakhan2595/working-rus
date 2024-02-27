@@ -116,7 +116,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
   };
 
   return (
-    <div className="w-full overflow-x-auto overflow-y-auto max-h-[100vh] roundScroll md:px-4 xl:px-8">
+    <div className="w-full overflow-x-auto overflow-y-auto max-h-[100vh] scroll md:px-4 xl:px-8">
       {/* image */}
       <div className="flex items-center gap-x-8 bg-[#f9f9f9] px-4 lg:px-10 py-4 border border-[#707070] relative">
         <div
