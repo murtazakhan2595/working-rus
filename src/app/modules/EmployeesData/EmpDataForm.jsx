@@ -32,6 +32,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
   const [refreshComponent, setRefreshComponent] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isApiCallInProgress, setIsApiCallInProgress] = useState(false);
+  const [email, setEmail] = useState("");
 
   const handleChange = (name, value) => {
     setFormData({
@@ -42,6 +43,8 @@ const EmpDataForm = ({ token, baseUrl }) => {
     if (name === "username") {
       validateInput(value);
       setEnteredUsername(value);
+    } else if (name === "email") {
+      setEmail(value);
     }
   };
 
@@ -350,8 +353,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
            justify-center items-center absolute md:w-[40%] lg:w-[26%] lg:h-[24%]"
           >
             <p className="text-base text-center text-gray-400">
-              User has been successfully registered and has been sent to{" "}
-              {enteredUsername}@gmail.com
+              User has been successfully registered and has been sent to {email}
             </p>
             <div
               className="absolute top-4 right-4 text-white bg-[#ECECEC] rounded-full p-[2px] cursor-pointer"
