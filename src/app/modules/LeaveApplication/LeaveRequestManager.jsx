@@ -36,7 +36,6 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
       });
       if (response.status === 200) {
         setApplication(response.data);
-        console.log("testing", response.data);
       }
     } catch (error) {
       console.log(error);
@@ -47,7 +46,6 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
     try {
       const response = await axios.get(`${baseUrl}/emp/`, { headers });
       if (response.status === 200) {
-        console.log("manangers", response.data);
         setManagers(response.data);
       }
     } catch (error) {
@@ -119,8 +117,19 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
     }
   };
 
-  const handleSubmit = async (action) => {
+  const handleSubmit = async (action, event) => {
     try {
+      event.preventDefault(); 
+
+      // Check if the comments field is empty
+      if (!formFields.comments.trim()) {
+        toast.error("Comments are required!", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1000,
+        });
+        return; // Return early if comments field is empty
+      }
+
       // Call handleLeaveAction with the appropriate action
       await handleLeaveAction(action);
     } catch (error) {
@@ -136,10 +145,10 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
         <LeaveRequestData application={application} managers={managers} />
 
         {/* comments */}
-        <form className="w-full">
+        <form className="w-full" onSubmit={(event) => handleSubmit("accept", event)}>
           <div className="flex flex-col md:flex-row items-center justify-between md:justify-normal md:gap-x-11 lg:gap-x-14">
             <h1 className="text-baseBlue text-base tracking-wider font-semibold md:my-6">
-              HR Comments
+              Comments
             </h1>
             <textarea
               className="rounded-md pl-2 w-full md:w-[77.5%] lg:w-[75%]"
@@ -152,16 +161,15 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
 
           <div className="flex items-center justify-between mt-3 md:mt-4 lg:mb-6 lg:w-[70%]">
             <button
-              type="button"
+              type="submit"
               className="bg-[#283B91] text-white block mx-auto px-6 py-1 rounded-md tracking-widest "
-              onClick={() => handleSubmit("accept")}
             >
               Accept
             </button>
             <button
-              type="button"
+              type="submit"
               className="bg-[#283B91] text-white block mx-auto px-6 py-1 rounded-md tracking-widest"
-              onClick={() => handleSubmit("reject")}
+              onClick={(event) => handleSubmit("reject", event)}
             >
               Reject
             </button>

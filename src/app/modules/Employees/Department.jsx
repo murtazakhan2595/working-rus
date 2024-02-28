@@ -1,38 +1,79 @@
 import Joi from 'joi';
 import Button from './Button';
-import {useState , useEffect} from 'react'
+import { useState, useEffect } from 'react';
+import CustomLoader from '../../../common/CustomLoader';
 
 const departmentSchema = Joi.object({
-    department_name: Joi.string().required().label('Department Name'),
-    department_position: Joi.string().required().label('Position'),
-    direct_report: Joi.string().required().label('Direct Report'),
-    indirect_report: Joi.string().required().label('Indirect Report'),
-    department_manager: Joi.string().required().label('Department Manager'),
+    department_name: Joi.string()
+        .regex(/^[a-zA-Z\s]+$/)
+        .required()
+        .label('Department Name')
+        .messages({
+            "string.empty": `Department Name is required`,
+            "string.pattern.base": `Department Name must only contain letters and spaces`,
+        }),
+    department_position: Joi.string()
+        .regex(/^[a-zA-Z\s]+$/)
+        .required()
+        .label('Position')
+        .messages({
+            "string.empty": `Position is required`,
+            "string.pattern.base": `Position must only contain letters and spaces`,
+        }),
+    direct_report: Joi.string()
+        .regex(/^[a-zA-Z\s]+$/)
+        .required()
+        .label('Direct Report')
+        .messages({
+            "string.empty": `Direct Report is required`,
+            "string.pattern.base": `Direct Report must only contain letters and spaces`,
+        }),
+    indirect_report: Joi.string()
+        .regex(/^[a-zA-Z\s]+$/)
+        .required()
+        .label('Indirect Report')
+        .messages({
+            "string.empty": `Indirect Report is required`,
+            "string.pattern.base": `Indirect Report must only contain letters and spaces`,
+        }),
+    department_manager: Joi.string()
+        .regex(/^[a-zA-Z\s]+$/)
+        .required()
+        .label('Department Manager')
+        .messages({
+            "string.empty": `Department Manager is required`,
+            "string.pattern.base": `Department Manager must only contain letters and spaces`,
+        }),
 });
 
+
+
 const Department = ({ errors, setErrors, prevstep, submitForm }) => {
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const getDataFromSessionStorage = (key) => {
         const serializedData = sessionStorage.getItem(key);
         const data = JSON.parse(serializedData);
         return data;
-      };
-      const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo")
-      const intialDepartmentInfo = { 
-        department_name : defaultDeparmentInfo?.department_name ? defaultDeparmentInfo.department_name : '' ,
-        department_position : defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
-        direct_report : defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
-        indirect_report : defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
-        department_manager : defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager :''
-         };
-      const [departmentInfo , setDepartmentInfo] = useState(intialDepartmentInfo)
+    };
+    const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo")
+    const intialDepartmentInfo = {
+        department_name: defaultDeparmentInfo?.department_name ? defaultDeparmentInfo.department_name : '',
+        department_position: defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
+        direct_report: defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
+        indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
+        department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : ''
+    };
+    const [departmentInfo, setDepartmentInfo] = useState(intialDepartmentInfo)
 
 
-      useEffect(() => {
-        setDataInSessionStorage('departmentInfo',departmentInfo)
-      }, [departmentInfo])
+    useEffect(() => {
+        setDataInSessionStorage('departmentInfo', departmentInfo)
+    }, [departmentInfo])
 
-    const handleNextStep = () => {
+    const handleNextStep = async () => {
+        setIsLoading(true);
         const { error } = departmentSchema.validate(
             {
                 department_name: departmentInfo.department_name,
@@ -51,18 +92,19 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
             });
             setErrors(validationErrors);
         } else {
-            // Proceed to the next step
-            submitForm();
+            setIsLoading(true); // Show loader
+            await submitForm(); // Submit the form
+            setIsLoading(false);
         }
     };
     const setDataInSessionStorage = (key, data) => {
         const serializedData = JSON.stringify(data);
         sessionStorage.setItem(key, serializedData);
-      };
+    };
     const handleChange = (name, value) => {
-        setDepartmentInfo({...departmentInfo,[name]:value})
+        setDepartmentInfo({ ...departmentInfo, [name]: value })
         setErrors({ ...errors, [name]: null });
-       
+
     };
     return (
         <>
@@ -133,7 +175,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
 
                 <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40">
                     <Button onClick={prevstep} text={'Previous'} />
-                    <Button onClick={handleNextStep} text={'Submit'} />
+                    <Button onClick={handleNextStep} text={isLoading ? <div className='flex items-center gap-x-2'><span>Submit </span><CustomLoader /></div> : 'Submit'} />
 
                 </div>
             </div >

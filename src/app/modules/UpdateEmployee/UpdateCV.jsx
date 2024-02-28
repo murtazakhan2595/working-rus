@@ -1,10 +1,12 @@
-import SubStepsIndicator from "./UpdateSubSteps";
-import Button from "./Button";
-import { connect } from "react-redux";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { connect } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
+import SubStepsIndicator from "./UpdateSubSteps";
+import Button from "./Button";
+import CustomLoader from "../../../common/CustomLoader";
+import { BiEdit } from "react-icons/bi";
 
 const SubmitCV = ({
   errors,
@@ -16,23 +18,12 @@ const SubmitCV = ({
   userProfile,
   baseUrl,
 }) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
-  let getCV = getDataFromSessionStorage("UpdatedCV");
-  const [cv, setCv] = useState(getCV);
-  const [cvName, setCvName] = useState(
-    getCV?.name ? getCV?.name : "No Chosen File"
-  );
+  const [cv, setCv] = useState(null);
+  const [cvName, setCvName] = useState("No Chosen File");
   const [isEdit, setIsEdit] = useState(false);
   const [haveCV, setHaveCV] = useState(false);
-  let [cancelBox, setCancelBox] = useState(false);
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
+  const [cancelBox, setCancelBox] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const id = userProfile.id;
 
@@ -52,9 +43,8 @@ const SubmitCV = ({
       const cvRes = cvResponse.data[0];
       if (cvRes) {
         setHaveCV(cvRes);
+        setCvName(cvRes.document.name);
       }
-      setCvName(cvRes?.document?.name);
-      setCv(cv);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -75,7 +65,6 @@ const SubmitCV = ({
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        // setCv({"name" : cvData.name ,"file" :e.target.result})
         setCv({ name: file.name, file: e.target.result });
         setCvName(cvData.name);
       };
@@ -93,14 +82,20 @@ const SubmitCV = ({
   };
 
   useEffect(() => {
-    setDataInSessionStorage("UpdatedCV", cv);
+    sessionStorage.setItem("UpdatedCV", JSON.stringify(cv));
   }, [cv]);
 
   const handleSave = async () => {
+    if (!isEdit || (isEdit && !cv)) {
+      nextstep();
+      return; // Exit early if not in edit mode or no new CV selected
+    }
+  
     if (!cv) {
       const validationErrors = { cv: "CV is required" };
       setErrors(validationErrors);
     } else {
+      setIsLoading(true); // Set loading state to true before save operation
       try {
         if (haveCV) {
           const cvResponse = await axios.patch(
@@ -138,29 +133,51 @@ const SubmitCV = ({
             });
           }
         }
+        nextstep();
       } catch (error) {
         toast.error("Could not update the cv, Please try again later!", {
           position: "top-right",
           autoClose: 3000,
         });
       }
-      sessionStorage.clear();
-      nextstep();
+      setIsLoading(false); // Clear loading state after save operation
     }
   };
+  
 
   const handleNextStep = () => {
     sessionStorage.clear();
     nextstep();
   };
 
+  const handleFieldClick = () => {
+    setIsEdit(true);
+  };
+
   return (
     <>
       <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
         <SubStepsIndicator substep={substep} />
-        <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
-          Submit Your CV:
-        </h2>
+        <div className="flex justify-between">
+          <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
+            Submit Your CV:
+          </h2>
+          <div className="flex gap-2">
+            {isEdit ? (
+              null
+            ) : (
+              <button
+                onClick={() => {
+                  setIsEdit(!isEdit);
+                }}
+                className="bg-baseBlue rounded-full text-white p-3"
+              >
+                <BiEdit className="text-xl" />
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-col md:flex-row lg:gap-x-36">
           <div className="order-2 md:order-1 md:w-[65%]">
             <h2 className="text-input opacity-70 tracking-wide text-base mt-3 mb-3 lg:mb-4 lg:text-base">
@@ -170,11 +187,11 @@ const SubmitCV = ({
               htmlFor="file-upload"
               className="cursor-pointer opacity-70 
             rounded-lg py-1 text-input"
+              onClick={handleFieldClick} // Add onClick to trigger edit mode
             >
               <div
-                className={`${
-                  isEdit ? "text-gray-700" : "text-gray-500"
-                } flex mb-2`}
+                className={`${isEdit ? "text-gray-700" : "text-gray-500"
+                  } flex mb-2`}
               >
                 <div className="bg-gray-200 border-gray-400 border py-1 px-3 rounded-l-md ">
                   {isEdit ? "Upload CV" : "CV"}{" "}
@@ -214,21 +231,20 @@ const SubmitCV = ({
               Cancel
             </button>
           ) : (
-            <button
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Edit
-            </button>
+            null
           )}
           {isEdit ? (
             <button
               onClick={handleSave}
               className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
             >
-              Save & Next
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-x-2">
+                  Saving <CustomLoader />
+                </div>
+              ) : (
+                "Save & Next"
+              )}
             </button>
           ) : (
             <Button onClick={handleNextStep} text={"Next"} />

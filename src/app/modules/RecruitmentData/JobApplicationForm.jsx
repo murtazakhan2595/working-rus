@@ -174,7 +174,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                <img src={time} alt="time" className="w-7" />
+                  <img src={time} alt="time" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -185,7 +185,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto ml-[50px] md:ml-0">
                 <div className="text-[28px]">
-                <img src={pin} alt="pin" className="w-7" />
+                  <img src={pin} alt="pin" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -196,20 +196,20 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                <img src={money} alt="money" className="w-7" />
+                  <img src={money} alt="money" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
                     {" "}
                     <p>
-                      {jobDetails?.min_salary} - {jobDetails?.max_salary}
+                      {Number(jobDetails?.min_salary).toLocaleString()} - {Number(jobDetails?.max_salary).toLocaleString()}
                     </p>
                   </div>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                <img src={suitcase} alt="suitcase" className="w-7" />
+                  <img src={suitcase} alt="suitcase" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -220,7 +220,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center  gap-x-2 md:w-[30%] xl:w-auto">
                 <div className="text-[28px]">
-                <img src={magistrate} alt="magistrate" className="w-7" />
+                  <img src={magistrate} alt="magistrate" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -231,7 +231,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex flex-wrap items-center  gap-x-2 md:w-[30%] xl:w-auto ml-[25px] md:ml-0">
                 <div className="text-[28px]">
-                <img src={employee} alt="employee" className="w-7" />
+                  <img src={employee} alt="employee" className="w-7" />
                 </div>
                 <div className="flex">
                   <div className="text-sm md:text-base">
@@ -245,15 +245,14 @@ const JobApplicationForm = ({ token, baseUrl }) => {
         </div>
         {/* job description */}
         {loading ? (
-           <div className="fixed top-0 left-0 w-full h-full backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
-           <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
-           <p className="text-gray-600 mt-4">Loading...</p>
-         </div>
+          <div className="fixed top-0 left-0 w-full h-full backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
+            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
+            <p className="text-gray-600 mt-4">Loading...</p>
+          </div>
         ) : (
           <div
-            className={`bg-[#F9F9F9] xl:px-8 ${
-              loading ? "filter blur-sm" : ""
-            }`}
+            className={`bg-[#F9F9F9] xl:px-8 ${loading ? "filter blur-sm" : ""
+              }`}
           >
             <form onSubmit={handleSubmit}>
               <div
@@ -326,7 +325,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
                           onChange={handleChange}
                         />
                       </div>
-                       <div className="w-full flex flex-col">
+                      <div className="w-full flex flex-col">
                         <div className="py-1 md:py-2">
                           <label
                             htmlFor="email"
@@ -370,7 +369,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
                           onChange={handleChange}
                         />
                       </div>
-                     
+
                       <div className="w-full flex flex-col">
                         <div className="py-1 md:py-2 lg:mt-2">
                           <label

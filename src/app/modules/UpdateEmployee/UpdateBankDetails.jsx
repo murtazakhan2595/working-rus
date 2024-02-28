@@ -5,14 +5,74 @@ import { RxCross2 } from "react-icons/rx";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
+import CustomLoader from "../../../common/CustomLoader";
+import { BiEdit } from "react-icons/bi";
 
 const bankSchema = Joi.object({
-  bank_name: Joi.string().min(5).max(50).required().label("Bank Name"),
-  account_title: Joi.string().min(5).required().label("Account Title"),
-  account_number: Joi.string().min(10).required().label("Account Number"),
-  branch_address: Joi.string().min(10).required().label("Branch Address"),
-  branch_code: Joi.string().min(3).required().label("Branch Code"),
+  bank_name: Joi.string()
+    .regex(/^[a-zA-Z\s]+$/)
+    .required()
+    .label("Bank Name")
+    .messages({
+      "string.empty": `Bank Name is required`,
+      "string.pattern.base": `Bank Name must contain only letters and spaces`,
+    }),
+  account_title: Joi.string()
+    .regex(/^[a-zA-Z\s]+$/)
+    .required()
+    .label("Account Title")
+    .messages({
+      "string.empty": `Account Title is required`,
+      "string.pattern.base": `Account Title must contain only letters and spaces`,
+    }),
+  account_number: Joi.string()
+    .regex(/^\d+$/) // Only numbers allowed
+    .min(10) // Minimum length 10 digits
+    .required()
+    .label("Account Number")
+    .messages({
+      "string.empty": `Account Number is required`,
+      "string.pattern.base": `Account Number must contain only numbers`,
+      "string.min": `Account Number must be at least 10 digits long`,
+    }),
+  account_iban: Joi.string()
+    .alphanum() // Allow alphanumeric characters
+    .min(10) // Assuming a minimum length for IBAN
+    .required()
+    .label("IBAN")
+    .messages({
+      "string.empty": `IBAN is required`,
+      "string.alphanum": `IBAN must contain only letters and numbers`,
+    }),
+  branch_address: Joi.string()
+    .min(10) // Minimum length 10 characters
+    .required()
+    .label("Branch Address")
+    .messages({
+      "string.empty": `Branch Address is required`,
+      "string.min": `Branch Address must be at least 10 characters long`,
+    }),
+  branch_code: Joi.string()
+    .regex(/^\d+$/) // Only numbers allowed
+    .min(3) // Minimum length 3 digits
+    .required()
+    .label("Branch Code")
+    .messages({
+      "string.empty": `Branch Code is required`,
+      "string.pattern.base": `Branch Code must contain only numbers`,
+      "string.min": `Branch Code must be at least 3 digits long`,
+    }),
+  swift_code: Joi.string()
+    .alphanum() // Allow alphanumeric characters
+    .min(4) // Assuming a minimum length for Swift code
+    .required()
+    .label("Swift Code")
+    .messages({
+      "string.empty": `Swift Code is required`,
+      "string.alphanum": `Swift Code must contain only letters and numbers`,
+    }),
 });
+
 
 const BankDetails = ({
   errors,
@@ -29,9 +89,10 @@ const BankDetails = ({
     return data;
   };
   let [isEdit, setIsEdit] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   let [cancelBox, setCancelBox] = useState(false);
-    let [defaultData, setDefaultData] = useState({});
-    
+  let [defaultData, setDefaultData] = useState({});
+
   const setDataInSessionStorage = (key, data) => {
     const serializedData = JSON.stringify(data);
     sessionStorage.setItem(key, serializedData);
@@ -50,18 +111,18 @@ const BankDetails = ({
         headers,
       });
       const employeeData = employeeResponse.data;
-      if (employeeData){
-          let bankObj ={
-              account_iban:employeeData.account_iban, 
-              account_number: employeeData.account_number,
-              account_title: employeeData.account_title,
-              bank_name: employeeData.bank_name,
-              branch_address: employeeData.branch_address,
-              branch_code: employeeData.branch_code,
-              swift_code: employeeData.swift_code
-            }
-            setDefaultData(bankObj);
-        }
+      if (employeeData) {
+        let bankObj = {
+          account_iban: employeeData.account_iban,
+          account_number: employeeData.account_number,
+          account_title: employeeData.account_title,
+          bank_name: employeeData.bank_name,
+          branch_address: employeeData.branch_address,
+          branch_code: employeeData.branch_code,
+          swift_code: employeeData.swift_code,
+        };
+        setDefaultData(bankObj);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -74,70 +135,113 @@ const BankDetails = ({
   const handleEdit = (name, value) => {
     setDefaultData({ ...defaultData, [name]: value });
     setErrors({ ...errors, [name]: null });
+    setIsEdit(true); // Set isEdit to true when any field is clicked
   };
 
   useEffect(() => {
     setDataInSessionStorage("UpdatedBankInfo", defaultData);
   }, [defaultData]);
 
+  // const handleSave = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");
+  //     let response = await axios.patch(
+  //       `${baseUrl}/emp/${userProfile.id}`,
+  //       UpdatedBankInfo,
+  //       { headers }
+  //     );
+  //     if (response.status === 200) {
+  //       setDefaultData(UpdatedBankInfo);
+  //       sessionStorage.clear();
+  //       toast.success("Bank Details Updated!", {
+  //         position: "top-right",
+  //         autoClose: 3000,
+  //       });
+  //       nextstep();
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving data:", error);
+  //     toast.error("Form submission failed. Please try again.", {
+  //       position: "top-center",
+  //       autoClose: 3000,
+  //     });
+  //   } finally {
+  //     setIsLoading(false); // Set isLoading to false regardless of success or failure
+  //   }
+  // };
 
   const handleSave = async () => {
-    const { error } = bankSchema.validate(
-      {
-        bank_name: defaultData.bank_name,
-        account_title: defaultData.account_title,
-        account_number: defaultData.account_number,
-        branch_address: defaultData.branch_address,
-        branch_code: defaultData.branch_code,
-      },
-      { abortEarly: false }
-    );
-
+    // Validate input data using the bankSchema
+    const { error } = bankSchema.validate(defaultData, { abortEarly: false });
     if (error) {
+      // If validation fails, set errors state accordingly
       const validationErrors = {};
-      error.details.forEach((detail) => {
-        validationErrors[detail.path[0]] = detail.message;
+      error.details.forEach((errorDetail) => {
+        validationErrors[errorDetail.path[0]] = errorDetail.message;
       });
-      if (defaultData.account_iban) {
-        if (defaultData.account_iban.length < 10)
-          validationErrors.account_iban =
-            "IBAN number must be at least 10 characters";
-      }
       setErrors(validationErrors);
-    } else {
-        setErrors({});
-        let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");
-        let response = await axios.patch(
-          `${baseUrl}/emp/${userProfile.id}`,
-          UpdatedBankInfo,
-          { headers }
-        );
-        if (response.status === 200) {
-          setIsEdit(!isEdit);
-          sessionStorage.clear();
-          toast.success("Bank Detials Updated!", {
-              position: "top-right",
-              autoClose: 3000,
-            });
-            sessionStorage.clear()
-            nextstep();
-        }
+      return; // Exit the function without saving if there are validation errors
+    }
 
+    setIsLoading(true);
+    try {
+      // Save data to the server
+      let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");
+      let response = await axios.patch(
+        `${baseUrl}/emp/${userProfile.id}`,
+        UpdatedBankInfo,
+        { headers }
+      );
+      if (response.status === 200) {
+        setDefaultData(UpdatedBankInfo);
+        sessionStorage.clear();
+        toast.success("Bank Details Updated!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        nextstep();
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+      toast.error("Form submission failed. Please try again.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+    } finally {
+      setIsLoading(false); // Set isLoading to false regardless of success or failure
     }
   };
 
   const handleNextStep = () => {
-      sessionStorage.clear()
-      nextstep();
+    sessionStorage.clear();
+    nextstep();
   };
 
   return (
     <>
       <div>
         <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
-          <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
-            Bank Details:
-          </h2>
+          <div className="flex justify-between">
+            <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
+              Bank Details:
+
+            </h2>
+            <div className="flex gap-2">
+              {isEdit ? (
+                null
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsEdit(!isEdit);
+                  }}
+                  className="bg-baseBlue rounded-full text-white p-3"
+                >
+                  <BiEdit className="text-xl" />
+                </button>
+              )}
+            </div>
+          </div>
           <div className="flex flex-col md:flex-row lg:gap-x-36">
             <div className="order-2 md:order-1 md:w-[50%]">
               <div className="flex flex-col">
@@ -152,14 +256,13 @@ const BankDetails = ({
                     </label>
                     <input
                       type="text"
-                      disabled={isEdit ? false : true}
+                      readOnly={!isEdit} // Use readOnly instead of disabled
                       value={defaultData.bank_name}
                       name="bank_name"
-                      id=""
                       placeholder="Bank Name Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      onClick={() => setIsEdit(true)} // Set isEdit to true when clicked
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -180,14 +283,14 @@ const BankDetails = ({
                     </label>
                     <input
                       type="text"
-                      disabled={isEdit ? false : true}
+                      readOnly={!isEdit} // Use readOnly instead of disabled
                       value={defaultData.account_title}
                       name="account_title"
-                      id=""
+                      
                       placeholder="Account Title Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      onClick={() => setIsEdit(true)} // Set isEdit to true when clicked
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -210,13 +313,14 @@ const BankDetails = ({
                     </label>
                     <input
                       type="number"
+                      readOnly={!isEdit} // Use readOnly instead of disabled
                       value={defaultData.account_number}
                       name="account_number"
-                      id=""
+                      
                       placeholder="Account Number Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      onClick={() => setIsEdit(true)} // Set isEdit to true when clicked
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -237,14 +341,14 @@ const BankDetails = ({
                     </label>
                     <input
                       type="text"
-                      disabled={isEdit ? false : true}
+                      readOnly={!isEdit} // Use readOnly instead of disabled
                       value={defaultData.account_iban}
                       name="account_iban"
-                      id=""
+                      
                       placeholder="IBAN Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      }  pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        }  pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      onClick={() => setIsEdit(true)} // Set isEdit to true when clicked
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -266,14 +370,14 @@ const BankDetails = ({
                   </label>
                   <input
                     type="text"
-                    disabled={isEdit ? false : true}
+                    readOnly={!isEdit} // Use readOnly instead of disabled
                     value={defaultData.branch_address}
                     name="branch_address"
-                    id=""
+                    
                     placeholder="Branch Address Here"
-                    className={`${
-                        isEdit ? "text-black" : "text-gray-500"
+                    className={`${isEdit ? "text-black" : "text-gray-500"
                       } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                    onClick={() => setIsEdit(true)} // Set isEdit to true when clicked
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                   {errors.branch_address && (
@@ -293,13 +397,14 @@ const BankDetails = ({
                     </label>
                     <input
                       type="number"
+                      readOnly={!isEdit} // Use readOnly instead of disabled
                       value={defaultData.branch_code}
                       name="branch_code"
-                      id=""
+                      
                       placeholder="Branch Code Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      onClick={() => setIsEdit(true)} // Set isEdit to true when clicked
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -319,14 +424,15 @@ const BankDetails = ({
                       Swift Code:
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                      readOnly={!isEdit}
                       value={defaultData.swift_code}
                       name="swift_code"
-                      id=""
+                      
                       placeholder="Swift Code Here"
-                      className={`${
-                        isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      className={`${isEdit ? "text-black" : "text-gray-500"
+                        } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                      onClick={() => setIsEdit(true)} // Set isEdit to true when clicked
                       onChange={(e) =>
                         handleEdit(e.target.name, e.target.value)
                       }
@@ -342,37 +448,38 @@ const BankDetails = ({
             </div>
           </div>
 
-        <div className="flex gap-x-5 mb-40 mt-4 ">
-          {!isEdit && <Button onClick={prevstep} text={"Previous"} />}
-          {isEdit ? (
-            <button
-              onClick={() => {
-                setCancelBox(!cancelBox);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Cancel
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Edit
-            </button>
-          )}
-          {isEdit ? (
-            <button
-              onClick={handleSave}
-              className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
-            >
-              Save & Next
-            </button>
-          ) : (
-            <Button onClick={handleNextStep} text={"Next"} />
-          )}
+          <div className="flex gap-x-5 mb-40 mt-4 ">
+            {!isEdit && <Button onClick={prevstep} text={"Previous"} />}
+            {isEdit ? (
+              <button
+                onClick={() => {
+                  setCancelBox(!cancelBox);
+                }}
+                className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
+              >
+                Cancel
+              </button>
+            ) : (
+              // <button
+              //   onClick={() => {
+              //     setIsEdit(!isEdit);
+              //   }}
+              //   className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
+              // >
+              //   Edit
+              // </button>
+              null
+            )}
+            {isEdit ? (
+              <button
+                onClick={handleSave}
+                className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
+              >
+                {isLoading ? <div className="flex items-center justify-center gap-x-2">Saving <CustomLoader /></div> : 'Save & Next'}
+              </button>
+            ) : (
+              <Button onClick={handleNextStep} text={"Next"} />
+            )}
           </div>
         </div>
       </div>

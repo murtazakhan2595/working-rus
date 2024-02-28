@@ -7,7 +7,8 @@ import LeaveRequestData from "./LeaveRequestData";
 import { toast } from "react-toastify";
 
 const defaultFormFields = {
-  comments: "",
+  managerComments: "",
+  hrComments: "",
 };
 
 const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
@@ -15,18 +16,15 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
   const [application, setApplication] = useState();
   const [managers, setManagers] = useState([]);
   const [formFields, setFormFields] = useState(defaultFormFields);
-  const { comments } = formFields;
+  const { managerComments, hrComments } = formFields;
 
   const navigate = useNavigate();
 
-  console.log(formFields);
   const handleChange = (event) => {
     const { name, value } = event.target;
-
     setFormFields({ ...formFields, [name]: value });
   };
 
-  // fetch application by id
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
@@ -40,7 +38,6 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
 
       if (response.status === 200) {
         setApplication(response.data);
-        console.log("leave Manager", response.data);
       }
     } catch (error) {
       console.log(error);
@@ -54,7 +51,6 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
       });
 
       if (response.status === 200) {
-        console.log("manangers", response.data);
         setManagers(response.data);
       }
     } catch (error) {
@@ -97,7 +93,7 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
           address_during_leave: application.address_during_leave,
           report_to: application.report_to,
           manager_comment: application.manager_comment,
-          hr_comment: formFields.comments,
+          hr_comment: formFields.hrComments,
           status_manager: application.status_manager,
           status_hr,
         },
@@ -128,12 +124,25 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
     }
   };
 
-  const handleSubmit = async (action) => {
+  const handleSubmit = async (action, event) => {
     try {
+      event.preventDefault();
+
+      // Check if the comments field is empty
+      if (!formFields.hrComments.trim()) {
+        toast.error("HR Comments are required!", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1000,
+        });
+        return; // Return early if comments field is empty
+      }
+
       await handleLeaveAction(action);
     } catch (error) {
-      console.log(error);
-      // Handle error
+      toast.error(error, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
     }
   };
 
@@ -141,10 +150,9 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
     <div className="bg-[#F9F9F9] w-full">
       <LeaveHeader post="Leave Request" />
       <div className="px-3 lg:px-7 h-[76vh] md:h-[76vh] lg:h-[80vh] overflow-y-scroll scroll">
-        <LeaveRequestData application={application} />
+        <LeaveRequestData application={application} managers={managers} />
 
-        {/* comments */}
-        <form className="w-full">
+        <form className="w-full" onSubmit={(event) => handleSubmit("accept", event)}>
           <div className="flex flex-col md:flex-row items-center justify-between md:justify-normal md:gap-x-11 lg:gap-x-16">
             <h1 className="text-baseBlue text-base tracking-wider font-semibold md:my-6 lg:w-20">
               Manager Comments
@@ -155,38 +163,36 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
               value={application?.manager_comment}
             />
           </div>
-        </form>
 
-        <form className="w-full">
           <div className="flex flex-col md:flex-row items-center justify-between md:justify-normal md:gap-x-11 lg:gap-x-10">
             <h1 className="text-baseBlue text-base tracking-wider font-semibold md:my-6">
               HR Comments
             </h1>
             <textarea
               className="rounded-md pl-2 w-full md:w-[77.5%] lg:w-[75%]"
-              name="comments"
+              name="hrComments"
               onChange={handleChange}
-              value={comments}
+              value={hrComments}
+              required
             />
           </div>
-        </form>
 
-        <div className="flex items-center justify-between mt-3 md:mt-4 lg:mb-6 lg:w-[70%]">
-          <button
-            type="button"
-            className="bg-[#283B91] text-white block mx-auto px-6 py-1 rounded-md tracking-widest "
-            onClick={() => handleSubmit("accept")}
-          >
-            Accept
-          </button>
-          <button
-            type="button"
-            className="bg-[#283B91] text-white block mx-auto px-6 py-1 rounded-md tracking-widest"
-            onClick={() => handleSubmit("reject")}
-          >
-            Reject
-          </button>
-        </div>
+          <div className="flex items-center justify-between mt-3 md:mt-4 lg:mb-6 lg:w-[70%]">
+            <button
+              type="submit"
+              className="bg-[#283B91] text-white block mx-auto px-6 py-1 rounded-md tracking-widest "
+            >
+              Accept
+            </button>
+            <button
+              type="submit"
+              className="bg-[#283B91] text-white block mx-auto px-6 py-1 rounded-md tracking-widest"
+              onClick={(event) => handleSubmit("reject", event)}
+            >
+              Reject
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

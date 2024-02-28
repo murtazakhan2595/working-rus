@@ -15,6 +15,7 @@ import moment from "moment";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import { IoMdLogOut } from "react-icons/io";
+import { RiArrowDownSFill } from "react-icons/ri";
 
 const EmpForm = ({ baseUrl, token, userProfile }) => {
   const cookies = new Cookies();
@@ -22,6 +23,8 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [subStep, setSubStep] = useState(1);
   const [errors, setErrors] = useState({});
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
 
   const totalSteps = 5;
 
@@ -213,6 +216,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           sessionStorage.clear();
           setTimeout(() => {
             navigate("/");
+            sessionStorage.clear();
           }, 3000);
         } else {
           toast.error("Form submission failed. Please try again.", {
@@ -260,6 +264,15 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       setSubStep(2);
     }
   };
+  const handleDropdownClick = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleLogout = () => {
+    cookies.set("token", "", { path: "*" });
+    setUserLogout();
+    navigate("/");
+  };
 
   return (
     <>
@@ -269,8 +282,30 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           <h1 className="text-center font-bold font-sfpro text-lg tracking-wide lg:text-2xl md:mb-6">
             Employment Information
           </h1>
+          <div className="relative">
+            <div
+              className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
+              onClick={handleDropdownClick}
+            >
+              <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
+              <div className="text-[#283b91]">{userProfile.username}</div>
+              <div className="text-[#283b91]">
+                <RiArrowDownSFill />
+              </div>
+            </div>
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-1 w-48 bg-[#283b91] border rounded-lg shadow-lg">
+                <button
+                  className="block w-full py-2 px-4 text-left hover:bg-gray-100 hover:text-[#283b91] text-white"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
 
-          <div
+          {/* <div
             className="flex justify-center items-center lg:mb-6 gap-x-3 border border-red-600 bg-red-600 text-white border-b px-3 md:px-4 lg:px-4 py-1 rounded-md cursor-pointer"
             onClick={() => {
               cookies.set("token", "", { path: "*" });
@@ -280,7 +315,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           >
             <button className="md:mb">Logout</button>
             <IoMdLogOut className="md:mb" />
-          </div>
+          </div> */}
         </div>
 
         <FormIndicator

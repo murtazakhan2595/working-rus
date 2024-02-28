@@ -32,6 +32,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
   const [refreshComponent, setRefreshComponent] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isApiCallInProgress, setIsApiCallInProgress] = useState(false);
+  const [email, setEmail] = useState("");
 
   const handleChange = (name, value) => {
     setFormData({
@@ -42,6 +43,8 @@ const EmpDataForm = ({ token, baseUrl }) => {
     if (name === "username") {
       validateInput(value);
       setEnteredUsername(value);
+    } else if (name === "email") {
+      setEmail(value);
     }
   };
 
@@ -103,14 +106,14 @@ const EmpDataForm = ({ token, baseUrl }) => {
       if (
         error.response &&
         error.response.data.username[0] ===
-          "A user with that username already exists."
+        "A user with that username already exists."
       ) {
         toast.error("A user with that username already exists.", {
           position: toast.POSITION.TOP_RIGHT,
         });
       } else {
         console.error("API Error:", error);
-        toast.error("Error submitting the form. Please try again.", {
+        toast.error(error, {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
@@ -312,6 +315,8 @@ const EmpDataForm = ({ token, baseUrl }) => {
                   className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
           placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
+                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                  title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters"
                 />
               </div>
               <div className="flex items-center mt-2">
@@ -348,8 +353,7 @@ const EmpDataForm = ({ token, baseUrl }) => {
            justify-center items-center absolute md:w-[40%] lg:w-[26%] lg:h-[24%]"
           >
             <p className="text-base text-center text-gray-400">
-              User has been successfully registered and has been sent to{" "}
-              {enteredUsername}
+              User has been successfully registered and has been sent to {email}
             </p>
             <div
               className="absolute top-4 right-4 text-white bg-[#ECECEC] rounded-full p-[2px] cursor-pointer"

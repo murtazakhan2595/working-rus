@@ -1,12 +1,10 @@
-// EmpDataSheet.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import EmpDataHeader from "./EmpDataHeader";
-import Loader from "../../../common/Loader";
-
+import EmpSheetLoader from "../../../common/EmpSheetLoad";
 
 const userRoles = [
   { value: 3, label: "HR" },
@@ -21,14 +19,15 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8); // Adjust as needed
   const [filter, setFilter] = useState("");
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
 
   // Functions for calling the API
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-
-  // Fetching users without pagination
+  // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -36,15 +35,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
           headers,
         });
         const usersData = response.data;
-        const filteredUsers = usersData.filter(
-          (user) =>
-            user.id.toString().includes(filter) ||
-            user.username.toLowerCase().includes(filter) ||
-            `${user.first_name} ${user.last_name}`.includes(
-              filter.toLowerCase()
-            )
-        );
-        setUsers(filteredUsers);
+        setUsers(usersData);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -52,16 +43,34 @@ const EmpDataSheet = ({ baseUrl, token }) => {
     };
 
     fetchUsers();
-  }, [filter]);
+  }, [baseUrl, token]);
+
+  // Filter users locally based on search input
+  useEffect(() => {
+    setCurrentPage(1); // Reset current page to 1 when search term changes
+    const lowerCaseFilter = filter.toLowerCase();
+    const filtered = users.filter((user) => {
+      const userIdWithPrefix = `TXB-${user.id.toString().padStart(4, "0")}`;
+      return (
+        userIdWithPrefix.toLowerCase().includes(lowerCaseFilter) ||
+        user.username.toLowerCase().includes(lowerCaseFilter) ||
+        `${user.first_name} ${user.last_name}`.toLowerCase().includes(lowerCaseFilter) ||
+        user.email.toLowerCase().includes(lowerCaseFilter)
+      );
+    });
+    console.log("Filtered users:", filtered); // Add this line
+    setFilteredUsers(filtered);
+  }, [filter, users]);
+
 
   // Calculate current page users
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
-  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
   // Handle Next and Previous page
   const handleNextPage = () => {
-    if (indexOfLastUser < users.length) {
+    if (indexOfLastUser < filteredUsers.length) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -93,7 +102,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
             </tr>
           </thead>
           {loading ? (
-            <Loader />
+            <EmpSheetLoader />
           ) : (
             <tbody className="bg-white text-gray-500">
               {currentUsers.map((user) => (
@@ -111,9 +120,9 @@ const EmpDataSheet = ({ baseUrl, token }) => {
                   <td className="px-6 py-2 text-left">{user.email}</td>
                   <td className="px-6 py-2 text-left">
                     {Array.isArray(userRoles) &&
-                    userRoles.some((role) => role.value === user.user_role)
+                      userRoles.some((role) => role.value === user.user_role)
                       ? userRoles.find((role) => role.value === user.user_role)
-                          .label
+                        .label
                       : ""}
                   </td>
                   <td className="px-6 py-2 text-left">
@@ -142,7 +151,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
 
         <button
           onClick={handleNextPage}
-          disabled={indexOfLastUser >= users.length}
+          disabled={indexOfLastUser >= filteredUsers.length}
           className="text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md"
         >
           <BsArrowRightShort className="text-white text-2xl" />

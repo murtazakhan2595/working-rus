@@ -1,6 +1,5 @@
 import { connect } from "react-redux";
 import RecruitmentDataHeader from "./RecruitmentDataHeader";
-import { IoIosSearch } from "react-icons/io";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -173,14 +172,6 @@ const JobsDataTable = ({ baseUrl, token }) => {
                 <th className="px-4 py-3 text-left  rounded-tl-lg">Job ID</th>
                 <th className="flex gap-x-2 items-center px-6 py-3 text-left  rounded-tl-lg">
                   Job Title
-                  {/* <div className="relative">
-                  <IoIosSearch className="absolute top-2 left-3 text-white" />
-                  <input
-                    type="search"
-                    placeholder="Search"
-                    className="focus:outline-none focus:border-non bg-[#D7D7D7] py-1 pl-8 pr-4 text-white placeholder-white border-none rounded-md w-28"
-                  />
-                </div> */}
                 </th>
                 <th className="px-6 py-3 text-left">Posted Date</th>
                 <th className="px-6 py-3 text-left">End Date</th>
@@ -265,26 +256,24 @@ const JobsDataTable = ({ baseUrl, token }) => {
                       <div className="flex items-center gap-x-2">
                         <Link
                           target="_blank"
-                          to={`/job-description/${post.id}`}
+                          to={`/job-description/${post.id}?status=${post.status}`}
                           className="underline flex items-center gap-x-2 text-blue-600"
                         >
                           <span>www.joblink.com/{post.id}</span>
-                          {/* <span>www.hrms-{post.Job_Title}.com/{post.id}</span> */}
                         </Link>
                         <MdContentCopy
                           className="cursor-pointer text-baseBlue"
                           onClick={() =>
-                            copyToClipboard(`${url}/job-description/${post.id}`)
+                            copyToClipboard(`${url}/job-description/${post.id}?status=${post.status}`)
                           }
                         />
                       </div>
                     </td>
                     <td
-                      className={`px-6 py-3 text-left font-bold ${
-                        post.status === "live"
+                      className={`px-6 py-3 text-left font-bold ${post.status === "live"
                           ? "text-green-700"
                           : "text-red-700"
-                      }`}
+                        }`}
                     >
                       {post.status.charAt(0).toUpperCase() +
                         post.status.slice(1)}

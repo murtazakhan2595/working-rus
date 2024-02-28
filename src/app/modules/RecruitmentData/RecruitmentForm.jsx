@@ -36,12 +36,29 @@ const RecruitmentForm = ({ token, baseUrl }) => {
 
   const navigate = useNavigate();
 
+  // const handleChange = (name, value) => {
+  //   const numericValue = parseFloat(value.replace(/,/g, ''));
+
+  //   setFormData({
+  //     ...formData,
+  //     [name]: numericValue,
+  //   });
+  // };
+
   const handleChange = (name, value) => {
+    let numericValue;
+    if (value === '') {
+      numericValue = null; // or any other appropriate value like 0
+    } else {
+      numericValue = parseFloat(value.replace(/,/g, ''));
+    }
+
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: numericValue,
     });
   };
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -76,8 +93,8 @@ const RecruitmentForm = ({ token, baseUrl }) => {
             Employee_Type: jobData.Employee_Type
               ? { label: jobData.Employee_Type, value: jobData.Employee_Type }
               : null,
-            min_salary: jobData.min_salary,
-            max_salary: jobData.max_salary,
+            min_salary: Number(jobData.min_salary)?.toLocaleString(),
+            max_salary: Number(jobData.max_salary)?.toLocaleString(),
             Deadline: jobData.Deadline,
           });
         }
@@ -177,7 +194,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
       <RecruitmentDataHeader title="Add New Post" />
 
       <form onSubmit={handleSubmit}>
-        <div className="px-2 py-3 md:px-3 md:py-4 lg:px-10 lg:py-8 overflow-y-auto xScroll max-h-[76vh] md:h-[100vh]">
+        <div className="px-2 py-3 md:px-3 md:py-4 lg:px-10 lg:py-8 overflow-y-auto scroll max-h-[76vh] md:h-[100vh]">
           <div className="flex flex-col gap-y-6">
             {/* <div className="w-full flex flex-col md:flex-row lg:flex-row">
               <div className="w-[30%] md:w-[20%] lg:w-[15%] mb-1 md:mb-0 lg:mb-0">
@@ -379,22 +396,22 @@ const RecruitmentForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex items-center gap-x-2 text-input">
                 <input
-                  type="number"
+                  type="text"
                   name="min_salary"
                   placeholder="min"
                   className="w-[30%] lg:w-[40%] pl-2 bg-white rounded h-8 text-sm
-                  placeholder-[#555657] placeholder-opacity-50 text-black"
-                  value={formData.min_salary}
+      placeholder-[#555657] placeholder-opacity-50 text-black"
+                  value={formData.min_salary?.toLocaleString()}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />{" "}
                 min -
                 <input
-                  type="number"
+                  type="text"
                   name="max_salary"
                   placeholder="max"
                   className="w-[30%] lg:w-[38%] pl-2 bg-white rounded h-8 text-sm
-                  placeholder-[#555657] placeholder-opacity-50 text-black"
-                  value={formData.max_salary}
+      placeholder-[#555657] placeholder-opacity-50 text-black"
+                  value={formData.max_salary?.toLocaleString()}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />{" "}
                 max

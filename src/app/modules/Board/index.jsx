@@ -587,8 +587,9 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
                                             ""
                                           )}
                                           <BsTrash3
-                                            className="text-sm opacity-50 cursor-pointer"
-                                            onClick={() => {
+                                            className="text-sm opacity-50 cursor-pointer hover:text-red-700 hover:scale-125 transition-colors duration-300"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
                                               deleteTasks(task.id);
                                             }}
                                           />

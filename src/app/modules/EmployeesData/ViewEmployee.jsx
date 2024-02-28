@@ -27,9 +27,10 @@ const ViewEmployee = ({ token, baseUrl }) => {
       const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
         headers,
       });
+      console.log('employee', employeeResponse)
       const employeeData = employeeResponse.data;
       setData(employeeData);
-      setProfileImage(employeeData.profile_picture);
+      setProfileImage(employeeResponse.data?.profile_picture.file || employeeResponse.data?.profile_picture);
 
       // Fetch experiences data
       const experiencesResponse = await axios.get(
@@ -115,7 +116,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
   };
 
   return (
-    <div className="w-full overflow-x-auto overflow-y-auto max-h-[100vh] roundScroll md:px-4 xl:px-8">
+    <div className="w-full overflow-x-auto overflow-y-auto max-h-[100vh] scroll md:px-4 xl:px-8">
       {/* image */}
       <div className="flex items-center gap-x-8 bg-[#f9f9f9] px-4 lg:px-10 py-4 border border-[#707070] relative">
         <div
@@ -125,7 +126,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           {profileImage ? (
             <img
               src={profileImage}
-              alt={`${data.first_name} ${data.last_name}'s Profile Picture`}
+              alt={`${data.first_name} ${data.last_name}'s Picture`}
               style={{ width: "100px", height: "100px", borderRadius: "50%" }}
             />
           ) : (
@@ -202,7 +203,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
             {" "}
-            {data.place_of_birth ? data.place_of_birth : ""}
+            {data.nationality ? data.nationality : ""}
           </div>
         </div>
         <div className="flex lg:hidden">
@@ -233,7 +234,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
                   </div>
                   <div className="px-4 py-2 text-lef">
                     {" "}
-                    {data.place_of_birth ? data.place_of_birth : ""}
+                    {data.nationality ? data.nationality : ""}
                   </div>
                 </div>
               }
