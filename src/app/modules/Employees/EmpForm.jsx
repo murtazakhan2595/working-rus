@@ -283,13 +283,15 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           <h1 className="text-center font-bold font-sfpro text-lg tracking-wide lg:text-2xl md:mb-6">
             Employment Information
           </h1>
-          <div className="relative">
+          <div className="relative ">
             <div
-              className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
+              className="flex py-2 justify-end px-[.5rem] items-center gap-3 rounded-lg rounded-tl-full rounded-bl-full md:rounded-tl-md md:rounded-bl-md bg-gray-200 cursor-pointer"
               onClick={handleDropdownClick}
             >
               <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
-              <div className="text-[#283b91]">{userProfile.username}</div>
+              <div className="text-[#283b91] hidden md:block lg:block">
+                {userProfile.username}
+              </div>
               <div className="text-[#283b91]">
                 <RiArrowDownSFill />
               </div>
@@ -305,7 +307,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
               </div>
             )}
           </div>
-
           {/* <div
             className="flex justify-center items-center lg:mb-6 gap-x-3 border border-red-600 bg-red-600 text-white border-b px-3 md:px-4 lg:px-4 py-1 rounded-md cursor-pointer"
             onClick={() => {

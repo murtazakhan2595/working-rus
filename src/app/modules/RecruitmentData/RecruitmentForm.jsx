@@ -36,12 +36,27 @@ const RecruitmentForm = ({ token, baseUrl }) => {
 
   const navigate = useNavigate();
 
+  // const handleChange = (name, value) => {
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+  // };
+
   const handleChange = (name, value) => {
+    let newValue = value;
+
+    if (name === "min_salary" || name === "max_salary") {
+      newValue = Number(value.replace(/,/g, ""));
+    }
+
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: newValue,
     });
   };
+
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -379,26 +394,27 @@ const RecruitmentForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex items-center gap-x-2 text-input">
                 <input
-                  type="number"
+                  type="text"
                   name="min_salary"
                   placeholder="min"
                   className="w-[30%] lg:w-[40%] pl-2 bg-white rounded h-8 text-sm
-      placeholder-[#555657] placeholder-opacity-50 text-black"
-                  value={formData.min_salary?.toLocaleString()}
+    placeholder-[#555657] placeholder-opacity-50 text-black"
+                  value={formData.min_salary.toLocaleString()}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />{" "}
                 min -
                 <input
-                  type="number"
+                  type="text"
                   name="max_salary"
                   placeholder="max"
                   className="w-[30%] lg:w-[38%] pl-2 bg-white rounded h-8 text-sm
-      placeholder-[#555657] placeholder-opacity-50 text-black"
-                  value={formData.max_salary?.toLocaleString()}
+    placeholder-[#555657] placeholder-opacity-50 text-black"
+                  value={formData.max_salary.toLocaleString()}
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 />{" "}
                 max
               </div>
+
             </div>
             <div className="w-full flex">
               <div className="w-[28%] md:w-[20%] lg:w-[15%]">

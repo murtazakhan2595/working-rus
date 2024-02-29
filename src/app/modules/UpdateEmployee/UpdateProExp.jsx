@@ -399,7 +399,7 @@ const ProfessionalExp = ({
                         End Date:
                       </label>
                       <div onClick={handleEditClick} className="flex items-center gap-x-2" >
-                        <Datepicker
+                        {/* <Datepicker
                           disabled={disableEndDate} // Disable the Datepicker based on the disableEndDate state
                           name="exp_end_date"
                           day={
@@ -430,7 +430,41 @@ const ProfessionalExp = ({
                             setExperienceSections(updatedSections);
                             clearError(`exp_end_date_${index}`);
                           }}
+                        /> */}
+                        <Datepicker
+                          disabled={disableEndDate}
+                          name="exp_end_date"
+                          day={
+                            experience?.exp_end_date && !disableEndDate
+                              ? experience?.exp_end_date.substr(0, 2)
+                              : null
+                          }
+                          month={
+                            experience?.exp_end_date && !disableEndDate
+                              ? experience?.exp_end_date.substr(3, 2)
+                              : null
+                          }
+                          year={
+                            experience?.exp_end_date && !disableEndDate
+                              ? experience?.exp_end_date.substr(6, 4)
+                              : null
+                          }
+                          selected={
+                            disableEndDate
+                              ? new Date() // Set current date if end date is disabled
+                              : moment(experience.exp_end_date, "DD-MM-YYYY").toDate()
+                          }
+                          onChange={(date) => {
+                            const formattedDate = moment(date)
+                              .format("DD-MM-YYYY")
+                              .toLowerCase();
+                            const updatedSections = [...experienceSections];
+                            updatedSections[index].exp_end_date = formattedDate;
+                            setExperienceSections(updatedSections);
+                            clearError(`exp_end_date_${index}`);
+                          }}
                         />
+
                         <input
                           type="checkbox"
                           checked={disableEndDate}
