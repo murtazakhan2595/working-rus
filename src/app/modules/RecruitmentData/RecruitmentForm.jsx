@@ -36,29 +36,12 @@ const RecruitmentForm = ({ token, baseUrl }) => {
 
   const navigate = useNavigate();
 
-  // const handleChange = (name, value) => {
-  //   const numericValue = parseFloat(value.replace(/,/g, ''));
-
-  //   setFormData({
-  //     ...formData,
-  //     [name]: numericValue,
-  //   });
-  // };
-
   const handleChange = (name, value) => {
-    let numericValue;
-    if (value === '') {
-      numericValue = null; // or any other appropriate value like 0
-    } else {
-      numericValue = parseFloat(value.replace(/,/g, ''));
-    }
-
     setFormData({
       ...formData,
-      [name]: numericValue,
+      [name]: value,
     });
   };
-
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -175,7 +158,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
             navigate("/jobs");
           }
         } catch (error) {
-          toast.error("Error submitting the form. Please try again.", {
+          toast.error(error, {
             position: toast.POSITION.TOP_RIGHT,
           });
         } finally {
@@ -396,7 +379,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex items-center gap-x-2 text-input">
                 <input
-                  type="text"
+                  type="number"
                   name="min_salary"
                   placeholder="min"
                   className="w-[30%] lg:w-[40%] pl-2 bg-white rounded h-8 text-sm
@@ -406,7 +389,7 @@ const RecruitmentForm = ({ token, baseUrl }) => {
                 />{" "}
                 min -
                 <input
-                  type="text"
+                  type="number"
                   name="max_salary"
                   placeholder="max"
                   className="w-[30%] lg:w-[38%] pl-2 bg-white rounded h-8 text-sm

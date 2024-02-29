@@ -76,7 +76,7 @@ const ProfessionalExp = ({
       if (!experience.exp_start_date) {
         fieldErrors[`exp_start_date_${i}`] = "Start Date is required.";
       }
-      if (!experience.exp_end_date) {
+      if (!disableEndDate && !experience.exp_end_date) {
         fieldErrors[`exp_end_date_${i}`] = "End Date is required.";
       }
       // if (!experience.exp_letter?.hasOwnProperty("name")) {
@@ -104,8 +104,8 @@ const ProfessionalExp = ({
             //   "YYYY-MM-DD"
             // ),
             exp_end_date: disableEndDate ? null : moment(exp.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD"),
-
           };
+
           if (exp.hasOwnProperty("id")) {
             let res = await axios.patch(
               `${baseUrl}/experience/${exp.id}`,
@@ -434,7 +434,14 @@ const ProfessionalExp = ({
                         <input
                           type="checkbox"
                           checked={disableEndDate}
-                          onChange={(e) => setDisableEndDate(e.target.checked)}
+                          onChange={(e) => {
+                            setDisableEndDate(e.target.checked);
+                            // Update exp_end_date based on checkbox status
+                            const updatedSections = [...experienceSections];
+                            updatedSections[index].exp_end_date = e.target.checked ? null : experience.exp_end_date;
+                            setExperienceSections(updatedSections);
+                            clearError(`exp_end_date_${index}`);
+                          }}
                           className="ml-3"
                         />
                         <label>Till to Date</label>

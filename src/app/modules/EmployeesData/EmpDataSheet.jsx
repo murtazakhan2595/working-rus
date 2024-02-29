@@ -21,12 +21,12 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   const [filter, setFilter] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
 
-
   // Functions for calling the API
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
+
   // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
@@ -61,7 +61,6 @@ const EmpDataSheet = ({ baseUrl, token }) => {
     console.log("Filtered users:", filtered); // Add this line
     setFilteredUsers(filtered);
   }, [filter, users]);
-
 
   // Calculate current page users
   const indexOfLastUser = currentPage * itemsPerPage;
@@ -144,17 +143,17 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className="text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md"
+          className={`text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md ${currentPage === 1 ? 'hidden' : ''}`}
         >
-          <BsArrowLeftShort className="text-white text-2xl" />
+          <BsArrowLeftShort className="text-white text-2xl" title="Previous" />
         </button>
 
         <button
           onClick={handleNextPage}
           disabled={indexOfLastUser >= filteredUsers.length}
-          className="text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md"
+          className={`text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md ${indexOfLastUser >= filteredUsers.length ? 'hidden' : ''}`}
         >
-          <BsArrowRightShort className="text-white text-2xl" />
+          <BsArrowRightShort className="text-white text-2xl" title="Next"  />
         </button>
       </div>
     </div>

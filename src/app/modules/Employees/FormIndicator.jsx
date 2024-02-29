@@ -5,6 +5,7 @@ import { FaCreditCard } from 'react-icons/fa';
 const FormIndicator = ({ currentStep, setCurrentStep }) => {
     const arr2 = [
         { icon: <BsFillPersonFill />, name: 'Personal Information' },
+        { icon: <BsFillEnvelopeFill />, name: 'Visa' },
         { icon: <BsFillEnvelopeFill />, name: 'Experience' },
         { icon: <RiGraduationCapFill />, name: 'Academic' },
         { icon: <FaCreditCard />, name: 'Banking' },

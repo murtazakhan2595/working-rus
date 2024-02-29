@@ -842,7 +842,7 @@ const AcademicRecords = ({
             </div>
           </div>
         ))}
-        {(certificationSections.length === 0 && !isEdit) && <div className="mb-1 text-gray-500 inline-block">0 Certifications</div>}
+        {(certificationSections.length === 0 && !isEdit) && <div className="mb-1 text-gray-500 block">0 Certifications</div>}
         {/* {isEdit && */}
         <button
           onClick={addCertificationSection}

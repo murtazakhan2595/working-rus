@@ -206,7 +206,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
               <div>
                 <div className="mt-2">
                   <input
-                  required
+                    required
                     name="username"
                     type="text"
                     autoComplete="username"
@@ -224,7 +224,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
               <div>
                 <div className="mt-4 relative">
                   <input
-                  required
+                    required
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
@@ -238,9 +238,8 @@ function Login({ setUserProfile, baseUrl, setToken }) {
                   <button
                     type="button"
                     onClick={handlePasswordVisibility}
-                    className={`absolute top-0 right-2 translate-y-[70%] ${
-                      showPassword ? "text-gray-400" : ""
-                    }`}
+                    className={`absolute top-0 right-2 translate-y-[70%] ${showPassword ? "text-gray-400" : ""
+                      }`}
                   >
                     {showPassword ? (
                       <BiShow className="text-gray-400" />
@@ -285,9 +284,8 @@ function Login({ setUserProfile, baseUrl, setToken }) {
                   className=" justify-start font-medium text-sm text-gray text-[#1176BC] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
                 >
                   <span
-                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${
-                      isChecked ? "bg-[#25A8E0]" : "bg-[#EBEBEB]"
-                    } transition-all duration-300`}
+                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${isChecked ? "bg-[#25A8E0]" : "bg-[#EBEBEB]"
+                      } transition-all duration-300`}
                     style={{
                       border: "none",
                     }}
