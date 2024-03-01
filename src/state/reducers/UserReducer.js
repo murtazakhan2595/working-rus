@@ -14,6 +14,7 @@ const initialState = {
       : "https://hrms-production-lb-502480595.eu-west-1.elb.amazonaws.com:8080/api",
 };
 
+
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case "SET_USER_PROFILE":
