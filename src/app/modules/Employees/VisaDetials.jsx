@@ -1,72 +1,109 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Datepicker from '../Dashboard/Datepicker';
 import Button from './Button';
+import { getAllCountries } from 'countries-and-timezones';
+import Select from "react-select";
+import { visaOptions } from '../../../data/Data';
+import moment from 'moment';
 
-const VisaDetials = () => {
-    const [passportNumber, setPassportNumber] = useState('');
-    const [passportIssuanceCountry, setPassportIssuanceCountry] = useState('');
-    const [passportIssuanceDate, setPassportIssuanceDate] = useState('');
-    const [passportExpiryDate, setPassportExpiryDate] = useState('');
-    const [passportCopy, setPassportCopy] = useState([]);
-
-    const [entryPermitNumber, setEntryPermitNumber] = useState('');
-    const [visaIssuanceCountry, setVisaIssuanceCountry] = useState('');
-    const [uidNumber, setUidNumber] = useState('');
-    const [visaType, setVisaType] = useState('');
-    const [visaIssuanceDate, setVisaIssuanceDate] = useState('');
-    const [visaExpiryDate, setVisaExpiryDate] = useState('');
-    const [visaDuration, setVisaDuration] = useState('');
-    const [visaCountryEntryDate, setVisaCountryEntryDate] = useState('');
-    const [visaCountryExitDate, setVisaCountryExitDate] = useState('');
-    const [entryPermitDocument, setEntryPermitDocument] = useState([]);
-    const [visaPage, setVisaPage] = useState([]);
-    const [medicalResult, setMedicalResult] = useState('');
-    const [idApplication, setIdApplication] = useState('');
-
-    const [livingCountryIDNumber, setLivingCountryIDNumber] = useState('');
-    const [placeOfIssuance, setPlaceOfIssuance] = useState('');
-    const [idIssuanceDate, setIdIssuanceDate] = useState('');
-    const [idExpiryDate, setIdExpiryDate] = useState('');
-    const [idUploadFront, setIdUploadFront] = useState([]);
-    const [idUploadBack, setIdUploadBack] = useState([]);
-
-    const [dhaID, setDhaID] = useState('');
-    const [cardNumber, setCardNumber] = useState('');
-    const [insurancePolicy, setInsurancePolicy] = useState('');
-    const [insuranceCompany, setInsuranceCompany] = useState('');
-    const [insuranceActiveDate, setInsuranceActiveDate] = useState('');
-    const [insuranceExpiryDate, setInsuranceExpiryDate] = useState('');
-    const [insuranceCardUpload, setInsuranceCardUpload] = useState([]);
-
-    const handlePassportCopyChange = (e) => {
-        const files = Array.from(e.target.files);
-        setPassportCopy(files);
+const VisaDetials = ({ prevstep, nextstep }) => {
+    const getDataFromSessionStorage = (key) => {
+        const serializedData = sessionStorage.getItem(key);
+        const data = JSON.parse(serializedData);
+        return data;
     };
 
-    const handleEntryPermitDocumentChange = (e) => {
-        const files = Array.from(e.target.files);
-        setEntryPermitDocument(files);
+    const setDataInSessionStorage = (key, data) => {
+        const serializedData = JSON.stringify(data);
+        sessionStorage.setItem(key, serializedData);
+    };
+    let storedData = getDataFromSessionStorage("visaDetails");
+    const storedVisaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
+
+    let [visaDetails, setVisaDetails] = useState({
+        passport_number: storedData?.passport_number ? storedData.passport_number : null,
+        Passport_Issuance_Country: storedData?.Passport_Issuance_Country ? storedData.Passport_Issuance_Country : null,
+        Passport_Issuance_Date: storedData?.Passport_Issuance_Date ? storedData.Passport_Issuance_Date : null,
+        Passport_Expiry_Date: storedData?.Passport_Expiry_Date ? storedData.Passport_Expiry_Date : null,
+        entry_permit_number: storedData?.entry_permit_number ? storedData.entry_permit_number : "",
+        country_of_visa_issuance: storedData?.country_of_visa_issuance ? storedData.country_of_visa_issuance : "",
+        uid_number: storedData?.uid_number ? storedData.uid_number : "",
+        visa_type: storedData?.visa_type ? storedData.visa_type : "",
+        visa_issuance_date: storedData?.visa_issuance_date ? storedData.visa_issuance_date : null,
+        visa_expiry_date: storedData?.visa_expiry_date ? storedData.visa_expiry_date : null,
+        visa_duration: storedData?.visa_duration ? storedData.visa_duration : "",
+        visa_country_entry_date: storedData?.visa_country_entry_date ? storedData.visa_country_entry_date : null,
+        visa_country_exit_date: storedData?.visa_country_exit_date ? storedData.visa_country_exit_date : null,
+        living_country_id_no: storedData?.living_country_id_no ? storedData.living_country_id_no : "",
+        place_of_issuance: storedData?.place_of_issuance ? storedData.place_of_issuance : "",
+        id_issuance_date: storedData?.id_issuance_date ? storedData.id_issuance_date : null,
+        id_expiry_date: storedData?.id_expiry_date ? storedData.id_expiry_date : null,
+        dha_id: storedData?.dha_id ? storedData.dha_id : "",
+        card_number: storedData?.card_number ? storedData.card_number : "",
+        insurance_policy: storedData?.insurance_policy ? storedData.insurance_policy : "",
+        insurance_company: storedData?.insurance_company ? storedData.insurance_company : "",
+        insurance_active_date: storedData?.insurance_active_date ? storedData.insurance_active_date : null,
+        insurance_expiry_date: storedData?.insurance_expiry_date ? storedData.insurance_expiry_date : null,
+    })
+
+    const [visaDetailsFiles, setVisaDetailsFiles] = useState(storedVisaDetailsFiles || {});
+
+
+    const handleChange = (name, value) => {
+        setVisaDetails({ ...visaDetails, [name]: value });
+        console.log("Updated visaDetails:", { ...visaDetails, [name]: value });
     };
 
-    const handleVisaPageChange = (e) => {
-        const files = Array.from(e.target.files);
-        setVisaPage(files);
+    // Handle change for date inputs
+    const handleDateChange = (date, name) => {
+        const formattedDate = moment(date).format("YYYY-MM-DD"); // Format the date as "YYYY-MM-DD"
+        setVisaDetails({ ...visaDetails, [name]: formattedDate });
+        console.log("Updated visaDetails:", { ...visaDetails, [name]: formattedDate });
     };
 
-    const handleIdUploadFrontChange = (e) => {
-        const files = Array.from(e.target.files);
-        setIdUploadFront(files);
+    const handleFileChange = (name, files) => {
+        Promise.all(
+            Array.from(files).map((file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
+                    reader.onerror = (error) => reject(error);
+                    reader.readAsDataURL(file);
+                });
+            })
+        )
+            .then((fileContents) => {
+                setVisaDetailsFiles({ ...visaDetailsFiles, [name]: fileContents });
+            })
+            .catch((error) => console.error("Error reading files:", error));
     };
 
-    const handleIdUploadBackChange = (e) => {
-        const files = Array.from(e.target.files);
-        setIdUploadBack(files);
+    useEffect(() => {
+        // Save visa details to session storage
+        setDataInSessionStorage("visaDetails", visaDetails);
+    }, [visaDetails]);
+
+    useEffect(() => {
+        // Save visa files to session storage
+        setDataInSessionStorage("visaDetailsFiles", visaDetailsFiles);
+    }, [visaDetailsFiles]);
+
+
+    // Function to handle previous step
+    const handlePreviousStep = () => {
+        prevstep();
     };
 
-    const handleInsuranceCardUploadChange = (e) => {
-        const files = Array.from(e.target.files);
-        setInsuranceCardUpload(files);
+    // Function to handle next step
+    const handleNextStep = () => {
+        nextstep();
     };
+
+    // Get country options for Select component
+    const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+        value: countryCode,
+        label: getAllCountries()[countryCode].name
+    }));
 
     return (
         <div className="bg-[#F9F9F9] h-[76vh] overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
@@ -81,7 +118,7 @@ const VisaDetials = () => {
                     >
                         Passport Number:
                     </label>
-                    <input type="text" value={passportNumber} onChange={(e) => setPassportNumber(e.target.value)} placeholder="Passport Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    <input type="text" name="passport_number" value={visaDetails.passport_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Passport Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
                     />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -91,8 +128,18 @@ const VisaDetials = () => {
                     >
                         Passport Issuance:
                     </label>
-                    <input type="text" value={passportIssuanceCountry}
-                        onChange={(e) => setPassportIssuanceCountry(e.target.value)} placeholder="Passport Issuance Country" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <Select
+                        className=""
+                        name="Passport_Issuance_Country"
+                        options={countryOptions}
+                        value={countryOptions.find(
+                            (option) => option.label === visaDetails.Passport_Issuance_Country
+                        )}
+                        onChange={(selectedOption) =>
+                            handleChange("Passport_Issuance_Country", selectedOption.label)
+                        }
+                    // required
+                    />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[15%]">
 
@@ -102,7 +149,12 @@ const VisaDetials = () => {
                     >
                         Issuance Date:
                     </label>
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.Passport_Issuance_Date ? moment(visaDetails.Passport_Issuance_Date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "Passport_Issuance_Date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[13%]">
 
@@ -112,10 +164,14 @@ const VisaDetials = () => {
                     >
                         Expiry Date:
                     </label>
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.Passport_Expiry_Date ? moment(visaDetails.Passport_Expiry_Date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "Passport_Expiry_Date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
                 </div>
 
-                {/* <input type="date" value={passportExpiryDate} onChange={(e) => setPassportExpiryDate(e.target.value)} placeholder="Passport Expiry Date" className='w-[48%]' /> */}
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[23%]">
 
                     <label
@@ -124,7 +180,7 @@ const VisaDetials = () => {
                     >
                         Passport Copy:
                     </label>
-                    <input type="file" onChange={handlePassportCopyChange} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} multiple />
                 </div>
 
             </div>
@@ -141,7 +197,7 @@ const VisaDetials = () => {
                         Entry Permit Number
                     </label>
 
-                    <input type="text" value={entryPermitNumber} onChange={(e) => setEntryPermitNumber(e.target.value)} placeholder="Entry Permit Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <input type="text" name="entry_permit_number" value={visaDetails.entry_permit_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Entry Permit Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
@@ -150,7 +206,19 @@ const VisaDetials = () => {
                     >
                         Visa Issuance Country
                     </label>
-                    <input type="text" value={visaIssuanceCountry} onChange={(e) => setVisaIssuanceCountry(e.target.value)} placeholder="Visa Issuance Country" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                   <Select
+                        className=""
+                        name="country_of_visa_issuance"
+                        options={countryOptions}
+                        // value={visaDetails.country_of_visa_issuance}
+                        value={countryOptions.find(
+                            (option) => option.label === visaDetails.country_of_visa_issuance
+                        )}
+                        onChange={(selectedOption) =>
+                            handleChange("country_of_visa_issuance", selectedOption.label)
+                        }
+                    // required
+                    />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
@@ -159,7 +227,7 @@ const VisaDetials = () => {
                     >
                         UID Number
                     </label>
-                    <input type="text" value={uidNumber} onChange={(e) => setUidNumber(e.target.value)} placeholder="UID Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <input type="text" name="uid_number" value={visaDetails.uid_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="UID Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
@@ -168,7 +236,18 @@ const VisaDetials = () => {
                     >
                         Visa Type
                     </label>
-                    <input type="text" value={visaType} onChange={(e) => setVisaType(e.target.value)} placeholder="Visa Type" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <Select
+                        className=""
+                        name="visa_type"
+                        options={visaOptions}
+                        value={visaOptions.find(
+                            (option) => option.value === visaDetails.visa_type
+                        )}
+                        onChange={(selectedOption) =>
+                            handleChange("visa_type", selectedOption.value)
+                        }
+                    // required
+                    />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
@@ -178,7 +257,12 @@ const VisaDetials = () => {
                         Visa Issuance Date
                     </label>
                     {/* <input type="date" value={visaIssuanceDate} onChange={(e) => setVisaIssuanceDate(e.target.value)} placeholder="Visa Issuance Date" /> */}
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.visa_issuance_date ? moment(visaDetails.visa_issuance_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "visa_issuance_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
@@ -187,7 +271,12 @@ const VisaDetials = () => {
                     >
                         Visa Expiry Date
                     </label>
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.visa_expiry_date ? moment(visaDetails.visa_expiry_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "visa_expiry_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
                 </div>
                 {/* <input type="date" value={visaExpiryDate} onChange={(e) => setVisaExpiryDate(e.target.value)} placeholder="Visa Expiry Date" /> */}
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -197,7 +286,7 @@ const VisaDetials = () => {
                     >
                         Visa Duration
                     </label>
-                    <input type="text" value={visaDuration} onChange={(e) => setVisaDuration(e.target.value)} placeholder="Visa Duration" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <input type="text" name="visa_duration" value={visaDetails.visa_duration} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Visa Duration" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
@@ -207,7 +296,12 @@ const VisaDetials = () => {
                         Visa Country Entry Date
                     </label>
                     {/* <input type="date" value={visaCountryEntryDate} onChange={(e) => setVisaCountryEntryDate(e.target.value)} placeholder="Visa Country Entry Date" /> */}
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.visa_country_entry_date ? moment(visaDetails.visa_country_entry_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "visa_country_entry_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
@@ -216,7 +310,12 @@ const VisaDetials = () => {
                     >
                         Visa Country Exit Date
                     </label>
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.visa_country_exit_date ? moment(visaDetails.visa_country_exit_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "visa_country_exit_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
                 </div>
                 {/* <input type="date" value={visaCountryExitDate} onChange={(e) => setVisaCountryExitDate(e.target.value)} placeholder="Visa Country Exit Date" /> */}
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -226,7 +325,7 @@ const VisaDetials = () => {
                     >
                         Entry Permit
                     </label>
-                    <input type="file" onChange={handleEntryPermitDocumentChange} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('enter_permit', e.target.files)} multiple />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -236,7 +335,7 @@ const VisaDetials = () => {
                     >
                         Visa Page
                     </label>
-                    <input type="file" onChange={handleVisaPageChange} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} multiple />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -258,9 +357,7 @@ const VisaDetials = () => {
                     >
                         ID Application
                     </label>
-                    <input type="file"
-                        // onChange={handleMedicalResultChange} 
-                        multiple />
+                    <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)} multiple />
                     {/* <input type="text" value={idApplication} onChange={(e) => setIdApplication(e.target.value)} placeholder="ID Application" /> */}
                 </div>
             </div>
@@ -277,7 +374,7 @@ const VisaDetials = () => {
                     >
                         Living Country ID No
                     </label>
-                    <input type="text" value={livingCountryIDNumber} onChange={(e) => setLivingCountryIDNumber(e.target.value)} placeholder="Living Country ID Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <input type="text" name="living_country_id_no" value={visaDetails.living_country_id_no} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Living Country ID Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
@@ -286,7 +383,18 @@ const VisaDetials = () => {
                     >
                         Place of Issuance
                     </label>
-                    <input type="text" value={placeOfIssuance} onChange={(e) => setPlaceOfIssuance(e.target.value)} placeholder="Place of Issuance" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <Select
+                        className=""
+                        name="place_of_issuance"
+                        options={countryOptions}
+                        value={countryOptions.find(
+                            (option) => option.value === visaDetails.place_of_issuance
+                        )}
+                        onChange={(selectedOption) =>
+                            handleChange("place_of_issuance", selectedOption.label)
+                        }
+                    // required
+                    />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
@@ -295,7 +403,12 @@ const VisaDetials = () => {
                     >
                         ID issuance Date
                     </label>
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.id_issuance_date ? moment(visaDetails.id_issuance_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "id_issuance_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
                     {/* <input type="date" value={idIssuanceDate} onChange={(e) => setIdIssuanceDate(e.target.value)} placeholder="ID Issuance Date" /> */}
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -307,7 +420,12 @@ const VisaDetials = () => {
                         ID Expiry Date
                     </label>
                     {/* <input type="date" value={idExpiryDate} onChange={(e) => setIdExpiryDate(e.target.value)} placeholder="ID Expiry Date" /> */}
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.id_expiry_date ? moment(visaDetails.id_expiry_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "id_expiry_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -317,7 +435,7 @@ const VisaDetials = () => {
                     >
                         ID Front
                     </label>
-                    <input type="file" onChange={handleIdUploadFrontChange} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} multiple />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -327,7 +445,7 @@ const VisaDetials = () => {
                     >
                         ID Back
                     </label>
-                    <input type="file" onChange={handleIdUploadBackChange} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} multiple />
                 </div>
             </div>
 
@@ -343,7 +461,8 @@ const VisaDetials = () => {
                     >
                         DHA ID
                     </label>
-                    <input type="text" value={dhaID} onChange={(e) => setDhaID(e.target.value)}
+                    <input type="text" name="dha_id" value={visaDetails.dha_id}
+                        onChange={(e) => handleChange(e.target.name, e.target.value)}
                         placeholder="DHA ID" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -354,7 +473,7 @@ const VisaDetials = () => {
                     >
                         Card Number
                     </label>
-                    <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} placeholder="Card Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <input type="text" name="card_number" value={visaDetails.card_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Card Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -364,7 +483,7 @@ const VisaDetials = () => {
                     >
                         Insurance Policy
                     </label>
-                    <input type="text" value={insurancePolicy} onChange={(e) => setInsurancePolicy(e.target.value)} placeholder="Insurance Policy" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <input type="text" name='insurance_policy' value={visaDetails.insurance_policy} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Insurance Policy" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
 
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -375,7 +494,7 @@ const VisaDetials = () => {
                     >
                         Insurance Company
                     </label>
-                    <input type="text" value={insuranceCompany} onChange={(e) => setInsuranceCompany(e.target.value)} placeholder="Insurance Company" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    <input type="text" name='insurance_company' value={visaDetails.insurance_company} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Insurance Company" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
 
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -388,7 +507,12 @@ const VisaDetials = () => {
                     </label>
                     {/* <input type="date" value={insuranceActiveDate} onChange={(e) => setInsuranceActiveDate(e.target.value)} placeholder="Insurance Active Date" /> */}
 
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.insurance_active_date ? moment(visaDetails.insurance_active_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "insurance_active_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
 
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -400,7 +524,12 @@ const VisaDetials = () => {
                         Insurance Expiry Date
                     </label>
                     {/* <input type="date" value={insuranceExpiryDate} onChange={(e) => setInsuranceExpiryDate(e.target.value)} placeholder="Insurance Expiry Date" /> */}
-                    <Datepicker />
+                    <Datepicker
+                        selected={visaDetails.insurance_expiry_date ? moment(visaDetails.insurance_expiry_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "insurance_expiry_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
 
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -412,15 +541,15 @@ const VisaDetials = () => {
                         Insurance Card
 
                     </label>
-                    <input type="file" onChange={handleInsuranceCardUploadChange} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} multiple />
                 </div>
             </div>
             <div className="flex gap-x-20 mt-6 lg:mt-6 md:mt-0 mb-6">
                 <Button
-                    // onClick={prevstep}
+                    onClick={handlePreviousStep}
                     text={'Previous'} />
                 <Button
-                    //  onClick={handleNextStep}
+                    onClick={handleNextStep}
                     text={'Next'} />
             </div>
         </div>

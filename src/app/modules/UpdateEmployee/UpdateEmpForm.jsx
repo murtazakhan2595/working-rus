@@ -13,6 +13,7 @@ import { RiArrowDownSFill } from "react-icons/ri";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import { Navigate, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
+import VisaDetails from "./UpdateVisaDetails";
 
 
 const EmpForm = ({ userProfile }) => {
@@ -24,10 +25,10 @@ const EmpForm = ({ userProfile }) => {
   const navigate = useNavigate();
   const cookies = new Cookies();
 
-  const totalSteps = 5;
+  const totalSteps = 6;
 
   const nextStep = () => {
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       if (subStep < 2) {
         setSubStep(subStep + 1);
       } else {
@@ -40,7 +41,7 @@ const EmpForm = ({ userProfile }) => {
   };
 
   const prevStep = () => {
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       if (subStep > 1) {
         setSubStep(subStep - 1);
       } else {
@@ -114,7 +115,16 @@ const EmpForm = ({ userProfile }) => {
             setErrors={setErrors}
           />
         )}
-        {currentStep === 2 && subStep === 1 && (
+
+        {currentStep === 2 && (
+          <VisaDetails
+            prevstep={prevStep}
+            nextstep={nextStep}
+            errors={errors}
+            setErrors={setErrors}
+          />
+        )}
+        {currentStep === 3 && subStep === 1 && (
           <SubmitCV
             errors={errors}
             setErrors={setErrors}
@@ -123,7 +133,7 @@ const EmpForm = ({ userProfile }) => {
             nextstep={nextStep}
           />
         )}
-        {currentStep === 2 && subStep === 2 && (
+        {currentStep === 3 && subStep === 2 && (
           <ProfessionalExp
             errors={errors}
             setErrors={setErrors}
@@ -132,7 +142,7 @@ const EmpForm = ({ userProfile }) => {
             nextstep={nextStep}
           />
         )}
-        {currentStep === 3 && (
+        {currentStep === 4 && (
           <AcademicRecords
             errors={errors}
             setErrors={setErrors}
@@ -140,7 +150,7 @@ const EmpForm = ({ userProfile }) => {
             nextstep={nextStep}
           />
         )}
-        {currentStep === 4 && (
+        {currentStep === 5 && (
           <BankDetails
             errors={errors}
             setErrors={setErrors}
@@ -148,7 +158,7 @@ const EmpForm = ({ userProfile }) => {
             nextstep={nextStep}
           />
         )}
-        {currentStep === 5 && (
+        {currentStep === 6 && (
           <Department
             prevstep={prevStep}
             errors={errors}

@@ -2,6 +2,30 @@ import Joi from 'joi';
 import Button from './Button';
 import { useState, useEffect } from 'react';
 import CustomLoader from '../../../common/CustomLoader';
+import Select from "react-select";
+import moment from 'moment';
+import Datepicker from '../Dashboard/Datepicker';
+
+const jobRoles = [
+    { label: 'Intern', value: 'Intern' },
+    { label: 'Part-Time', value: 'Part-Time' },
+    { label: 'Full-Time', value: 'Full-Time' },
+    { label: 'Contract', value: 'Contract' },
+    { label: 'Freelancer', value: 'Freelancer' }
+];
+
+const employeeStatus = [
+    { label: 'Active', value: 'active' },
+    { label: 'Terminated', value: 'terminated' },
+    { label: 'Deceased', value: 'deceased' },
+    { label: 'Resigned', value: 'resigned' },
+    { label: 'Probation', value: 'probation' },
+    { label: 'Notice Period', value: 'notice_period' },
+    { label: 'Exit', value: 'exit' },
+    { label: 'Absconded', value: 'absconded' },
+    { label: 'Legal Case', value: 'legal_case' }
+];
+
 
 const departmentSchema = Joi.object({
     department_name: Joi.string()
@@ -63,7 +87,9 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
         department_position: defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
         direct_report: defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
         indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
-        department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : ''
+        department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : '',
+        employee_type: defaultDeparmentInfo?.employee_type ? defaultDeparmentInfo.employee_type : '',
+        joining_date: defaultDeparmentInfo?.joining_date ? defaultDeparmentInfo.joining_date : null,
     };
     const [departmentInfo, setDepartmentInfo] = useState(intialDepartmentInfo)
 
@@ -106,6 +132,14 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
         setErrors({ ...errors, [name]: null });
 
     };
+
+    const handleJoiningDate = (date) => {
+        const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
+        handleChange("joining_date", formattedDate);
+    };
+
+
+
     return (
         <>
             <div className='bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10'>
@@ -135,6 +169,57 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
 
                                 </div>
                             </div>
+                            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        className="font-sfpro tracking-wide 
+                  font-medium text-input text-base mb-1"
+                                    >
+                                        Employee Type:
+                                    </label>
+                                    <div
+                                    // onClick={handleEditClick}
+                                    >
+                                        <Select
+                                            name="employee_type"
+                                            value={jobRoles.find(
+                                                (option) => option.label === departmentInfo.employee_type
+                                            )}
+                                            options={jobRoles}
+                                            isSearchable={false}
+                                            className="focus:outline-none border-none"
+                                            onChange={(selectedOption) =>
+                                                handleChange("employee_type", selectedOption.value)
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                                {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    className="font-sfpro tracking-wide 
+                  font-medium text-input text-base mb-1"
+                  >
+                    Employee status:
+                  </label>
+                  <div
+                  // onClick={handleEditClick}
+                  >
+                    <Select
+                      name="employee_status"
+                      isDisabled={isEdit ? false : true}
+                      value={employeeStatus.find(
+                        (option) => option.value === defaultData?.employee_status?.value
+                      )}
+                      options={employeeStatus}
+                      isSearchable={false}
+                      className="focus:outline-none border-none"
+                      onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
+                    />
+                  </div>
+                </div> */}
+                            </div>
+
+
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                     <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
@@ -168,7 +253,47 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
                                     />
                                     {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
                                 </div>
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        htmlFor="date_of_birth"
+                                        className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                                    >
+                                        Joining Date:
+                                    </label>
+                                    <Datepicker
+                                        // disabled={isEdit ? false : true}
+                                        // readOnly={!isEdit}
+                                        day={
+                                            departmentInfo.joining_date
+                                                ? departmentInfo.joining_date.substr(0, 2)
+                                                : null
+                                        }
+                                        month={
+                                            departmentInfo.joining_date
+                                                ? departmentInfo.joining_date.substr(3, 2)
+                                                : null
+                                        }
+                                        year={
+                                            departmentInfo.joining_date
+                                                ? departmentInfo.joining_date.substr(8, 4)
+                                                : null
+                                        }
+                                        name="joining_date"
+                                        className="z-50"
+                                        selected={moment(departmentInfo.joining_date, "YYYY-MM-DD").toDate()}
+                                        // onClick={handleFieldClick}
+                                        onChange={handleJoiningDate}
+                                    />
+                                    {/* {errors.joining_date && (
+                    <span className="text-red-500 text-sm ">
+                      {errors.joining_date}
+                    </span>
+                  )} */}
+                                </div>
+
                             </div>
+
                         </div>
                     </div>
                 </div>

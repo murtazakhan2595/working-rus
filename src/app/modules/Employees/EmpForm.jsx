@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
-import { IoMdLogOut } from "react-icons/io";
 import { RiArrowDownSFill } from "react-icons/ri";
 import VisaDetials from "./VisaDetials";
 
@@ -28,6 +27,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
 
 
   const totalSteps = 6;
+  const requestData = [];
 
   const handleFormChange = (name, value) => {
     setErrors({ ...errors, [name]: null });
@@ -40,6 +40,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
         return data;
       };
       let personalInfo = getDataFromSessionStorage("personalInfo");
+      let visaDetails = getDataFromSessionStorage("visaDetails");
       let bankInfo = getDataFromSessionStorage("bankInfo");
       let departmentInfo = getDataFromSessionStorage("departmentInfo");
       let academicInfo = getDataFromSessionStorage("academicInfo");
@@ -47,6 +48,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       let profilePhoto = getDataFromSessionStorage("profilePhoto");
       let proExp = getDataFromSessionStorage("proExp");
       let cv = getDataFromSessionStorage("cv");
+      let visaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
       if (personalInfo && personalInfo.country_code && personalInfo.mobile_no) {
         personalInfo.mobile_no =
           personalInfo.country_code + personalInfo.mobile_no;
@@ -72,6 +74,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       }
       let userDetials = {
         ...personalInfo,
+        ...visaDetails,
         ...bankInfo,
         ...departmentInfo,
         is_filled: true,
@@ -87,6 +90,9 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           },
         }
       );
+
+
+
       if (response.status === 200) {
         const cvResponse = await axios.post(
           `${baseUrl}/attachment/`,
@@ -113,9 +119,9 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
               exp_start_date: moment(exp.exp_start_date, "DD-MM-YYYY").format(
                 "YYYY-MM-DD"
               ),
-              exp_end_date: moment(exp.exp_end_date, "DD-MM-YYYY").format(
-                "YYYY-MM-DD"
-              ),
+              exp_end_date: exp.exp_end_date
+                ? moment(exp.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD")
+                : null,
             };
             let res = await axios.post(`${baseUrl}/experience/`, experience, {
               headers: {
@@ -218,6 +224,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           setTimeout(() => {
             navigate("/");
             sessionStorage.clear();
+            // return;
           }, 3000);
         } else {
           toast.error("Form submission failed. Please try again.", {
@@ -232,6 +239,183 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           autoClose: 3000, // Close after 3 seconds
         });
       }
+
+      if (response.status === 200) {
+        for (const key in visaDetailsFiles) {
+          if (visaDetailsFiles.hasOwnProperty(key)) {
+            const files = visaDetailsFiles[key];
+            for (const file of files) {
+              let attachmentResponse = await axios.post(
+                `${baseUrl}/attachment/`,
+                {
+                  employee_id: userProfile.id,
+                  name: key,
+                  description: `${key} File`,
+                  document: file.data,
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              if (attachmentResponse.status !== 201) {
+                toast.error("Form submission failed. Please try again.", {
+                  position: "top-center",
+                  autoClose: 3000,
+                });
+              }
+              if (attachmentResponse.status === 200) {
+                const cvResponse = await axios.post(
+                  `${baseUrl}/attachment/`,
+                  {
+                    employee_id: userProfile.id,
+                    name: "cv",
+                    description: "Curriculum Vitae",
+                    document: cv,
+                  },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+                if (cvResponse.status === 201) {
+                  proExp.map(async (exp) => {
+                    let experience = {
+                      employee_id: userProfile.id,
+                      exp_organization: exp.exp_organization,
+                      exp_designation: exp.exp_designation,
+                      exp_letter: exp.file,
+                      exp_start_date: moment(exp.exp_start_date, "DD-MM-YYYY").format(
+                        "YYYY-MM-DD"
+                      ),
+                      exp_end_date: moment(exp.exp_end_date, "DD-MM-YYYY").format(
+                        "YYYY-MM-DD"
+                      ),
+                    };
+                    let res = await axios.post(`${baseUrl}/experience/`, experience, {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                      },
+                    });
+                    if (res.status !== 201) {
+                      toast.error("Form submission failed. Please try again.", {
+                        position: "top-center",
+                        autoClose: 3000,
+                      });
+                      return;
+                    }
+                  });
+
+                  let education = {
+                    employee_id: userProfile.id,
+                    education_level: academicInfo.education_level,
+                    program: academicInfo.program,
+                    institute_name: academicInfo.institute_name,
+                    edu_start_date: moment(
+                      academicInfo.edu_start_date,
+                      "DD-MM-YYYY"
+                    ).format("YYYY-MM-DD"),
+                    edu_end_date: moment(
+                      academicInfo.edu_end_date,
+                      "DD-MM-YYYY"
+                    ).format("YYYY-MM-DD"),
+                  };
+                  let resEdu = await axios.post(`${baseUrl}/education/`, education, {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                  });
+                  if (resEdu.status !== 201) {
+                    toast.error("Form submission failed. Please try again.", {
+                      position: "top-center",
+                      autoClose: 3000,
+                    });
+                    return;
+                  }
+
+                  let acadmicDoc = {
+                    employee_id: userProfile.id,
+                    name: "acadmicDoc",
+                    description: "Acadmic Document",
+                    document: academicInfo.certificate,
+                  };
+                  let resAcademicDoc = await axios.post(
+                    `${baseUrl}/attachment/`,
+                    acadmicDoc,
+                    {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  );
+                  if (resAcademicDoc.status !== 201) {
+                    toast.error("Form submission failed. Please try again.", {
+                      position: "top-center",
+                      autoClose: 3000,
+                    });
+                    return;
+                  }
+                  certifications.map(async (crt) => {
+                    let certification = {
+                      employee_id: userProfile.id,
+                      certification_name: crt.certification_name,
+                      completion_date: crt.completion_date,
+                      certification_body: crt.certification_body,
+                      expiry_date: crt.expiry_date,
+                    };
+                    let res = await axios.post(
+                      `${baseUrl}/certification/`,
+                      certification,
+                      {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
+                      }
+                    );
+                    if (res.status !== 201) {
+                      toast.error("Form submission failed. Please try again.", {
+                        position: "top-center",
+                        autoClose: 3000,
+                      });
+                      return;
+                    }
+                  });
+
+                  toast.success("Form submitted successfully!", {
+                    position: "top-center",
+                    autoClose: 3000,
+                  });
+                  sessionStorage.clear();
+                  setTimeout(() => {
+                    navigate("/");
+                    sessionStorage.clear();
+                  }, 3000);
+                } else {
+                  toast.error("Form submission failed. Please try again.", {
+                    position: "top-center",
+                    autoClose: 3000,
+                  });
+                  return;
+                }
+              } else {
+                toast.error("Form submission failed. Please try again.", {
+                  position: "top-center",
+                  autoClose: 3000, // Close after 3 seconds
+                });
+              }
+            }
+          }
+        }
+      }
+
     } catch (error) {
       toast.error("Form submission failed. Please try again.", {
         position: "top-center",
@@ -254,7 +438,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
   };
 
   const prevStep = () => {
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       if (subStep > 1) {
         setSubStep(subStep - 1);
       } else {
@@ -307,17 +491,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
               </div>
             )}
           </div>
-          {/* <div
-            className="flex justify-center items-center lg:mb-6 gap-x-3 border border-red-600 bg-red-600 text-white border-b px-3 md:px-4 lg:px-4 py-1 rounded-md cursor-pointer"
-            onClick={() => {
-              cookies.set("token", "", { path: "*" });
-              setUserLogout();
-              navigate("/");
-            }}
-          >
-            <button className="md:mb">Logout</button>
-            <IoMdLogOut className="md:mb" />
-          </div> */}
         </div>
 
         <FormIndicator
@@ -338,6 +511,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
         )}
         {currentStep === 2 && (
           <VisaDetials
+            prevstep={prevStep}
             nextstep={nextStep}
             errors={errors}
             setErrors={setErrors}

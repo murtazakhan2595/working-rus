@@ -11,6 +11,13 @@ const ViewEmployee = ({ token, baseUrl }) => {
   const [certifications, setCertifications] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);
   const [profileImage, setProfileImage] = useState(null);
+  const [entryPermitDoc, setEntyPermitDoc] = useState({});
+  const [visaPageDoc, setVisaPageDoc] = useState({});
+  const [medicalDoc, setMedicalDoc] = useState({});
+  const [idAppDoc, setIdAppDoc] = useState({});
+  const [idFront, setIdFront] = useState({});
+  const [idBack, setIdBack] = useState({});
+  const [insuranceCard, setInsuranceCard] = useState({});
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -71,6 +78,76 @@ const ViewEmployee = ({ token, baseUrl }) => {
     const docRes = docResponse.data[0];
     let acadamicDocument = docRes;
 
+    const entryPermitResponse = await axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"enter_permit"}`,
+      {
+        headers,
+      }
+    );
+
+    let entryDocument = entryPermitResponse?.data[0]
+    setEntyPermitDoc(entryDocument)
+
+    const visaDocResponse = await axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"visa_page"}`,
+      {
+        headers,
+      }
+    );
+
+    let visaDocument = visaDocResponse?.data[0]
+    setVisaPageDoc(visaDocument)
+
+    const medicalResponse = await axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"medical"}`,
+      {
+        headers,
+      }
+    );
+
+    let medicalDocRes = medicalResponse?.data[0]
+    setMedicalDoc(medicalDocRes)
+
+    const IdAppResponse = await axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_application"}`,
+      {
+        headers,
+      }
+    );
+
+    let IdAppDocRes = IdAppResponse?.data[0]
+    setIdAppDoc(IdAppDocRes)
+
+    const IdFrontResponse = await axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_front"}`,
+      {
+        headers,
+      }
+    );
+
+    let IdFrontDocRes = IdFrontResponse?.data[0]
+    setIdFront(IdFrontDocRes)
+
+    const IdBackResponse = await axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_back"}`,
+      {
+        headers,
+      }
+    );
+
+    let IdBacKDocRes = IdBackResponse?.data[0]
+    setIdBack(IdBacKDocRes)
+
+    const InsuranceCardResponse = await axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"insurance_card"}`,
+      {
+        headers,
+      }
+    );
+
+    let InsuranceCardDocRes = InsuranceCardResponse?.data[0]
+    setInsuranceCard(InsuranceCardDocRes)
+
     // Combine educationData with acadamicDocument
     const educationAndAcadDocs = educationData.map((educationItem) => ({
       ...educationItem,
@@ -85,35 +162,90 @@ const ViewEmployee = ({ token, baseUrl }) => {
     fetchData();
   }, []);
 
+  // const downloadAttachment = async (file, name) => {
+  //   try {
+  //     const response = await axios.get(file, {
+  //       responseType: "blob",
+  //     });
+  //     const blob = new Blob([response.data], { type: "application/pdf" });
+
+  //     const url = window.URL.createObjectURL(blob);
+  //     console.log("Content-Type:", response.headers["content-type"]);
+
+  //     // Create a temporary link element
+  //     const link = document.createElement("a");
+  //     link.href = url;
+
+  //     // Set the download attribute to the desired file name
+  //     link.download = `${name}.pdf`; // You can adjust the file name accordingly
+
+  //     // Append the link to the document
+  //     document.body.appendChild(link);
+
+  //     // Programmatically trigger a click on the link to initiate the download
+  //     link.click();
+
+  //     // Remove the link from the document
+  //     document.body.removeChild(link);
+  //   } catch (error) {
+  //     console.error("Error fetching CV:", error);
+  //   }
+  // };
+
   const downloadAttachment = async (file, name) => {
     try {
       const response = await axios.get(file, {
         responseType: "blob",
       });
-      const blob = new Blob([response.data], { type: "application/pdf" });
 
-      const url = window.URL.createObjectURL(blob);
-      console.log("Content-Type:", response.headers["content-type"]);
+      const contentType = response.headers["content-type"];
 
-      // Create a temporary link element
-      const link = document.createElement("a");
-      link.href = url;
-
-      // Set the download attribute to the desired file name
-      link.download = `${name}_cv.pdf`; // You can adjust the file name accordingly
-
-      // Append the link to the document
-      document.body.appendChild(link);
-
-      // Programmatically trigger a click on the link to initiate the download
-      link.click();
-
-      // Remove the link from the document
-      document.body.removeChild(link);
+      // Check if the content type indicates a PDF
+      if (contentType === 'application/pdf') {
+        console.log("Downloading PDF...");
+        downloadFile(response.data, `${name}.pdf`);
+      } else if (contentType.startsWith('image')) {
+        console.log("Downloading image...");
+        downloadFile(response.data, `${name}.${getImageExtension(contentType)}`);
+      } else {
+        console.error("Unsupported file type.");
+      }
     } catch (error) {
-      console.error("Error fetching CV:", error);
+      console.error("Error fetching file:", error);
     }
   };
+
+  const downloadFile = (data, fileName) => {
+    const url = window.URL.createObjectURL(data);
+
+    // Create a temporary link element
+    const link = document.createElement("a");
+    link.href = url;
+
+    // Set the download attribute to the desired file name
+    link.download = fileName;
+
+    // Programmatically trigger a click on the link to initiate the download
+    link.click();
+
+    // Clean up
+    window.URL.revokeObjectURL(url);
+  };
+
+  const getImageExtension = (contentType) => {
+    switch (contentType) {
+      case 'image/jpeg':
+        return 'jpg';
+      case 'image/png':
+        return 'png';
+      case 'image/gif':
+        return 'gif';
+      // Add support for more image formats if needed
+      default:
+        return 'jpg'; // Default to jpg if the format is not recognized
+    }
+  };
+
 
   return (
     <div className="w-full overflow-x-auto overflow-y-auto max-h-[100vh] scroll md:px-4 xl:px-8">
@@ -137,9 +269,9 @@ const ViewEmployee = ({ token, baseUrl }) => {
           )}
         </div>
 
-          <div className="absolute top-2 right-3 bg-gray-200 rounded-full text-gray-400 cursor-pointer" onClick={() => navigate("/employees")}>
-            <RxCrossCircled />
-          </div>
+        <div className="absolute top-2 right-3 bg-gray-200 rounded-full text-gray-400 cursor-pointer" onClick={() => navigate("/employees")}>
+          <RxCrossCircled />
+        </div>
         <div className="flex flex-col">
           <div className="text-gray-400 text-sm">
             <span>Employee ID:</span> TXB-{id.toString().padStart(4, "0")}
@@ -299,9 +431,8 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
           <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
             {" "}
-            {`${data.emergency_first_name ? data.emergency_first_name : ""} ${
-              data.emergency_last_name
-            }`}
+            {`${data.emergency_first_name ? data.emergency_first_name : ""} ${data.emergency_last_name
+              }`}
           </div>
         </div>
         <div className="flex lg:hidden">
@@ -313,6 +444,431 @@ const ViewEmployee = ({ token, baseUrl }) => {
             {data.emergency_relation ? data.emergency_relation : ""}
           </div>
         </div>
+      </div>
+      {/* visa details */}
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-[#707070]">
+        Passport Details:
+      </div>
+      <div className="">
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Passport Number
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.passport_number}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Passport Issuance
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.passport_issuance_country ? data.passport_issuance_country : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Issuance Date
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.passport_issuance_date ? data.passport_issuance_date : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Expiry Date
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {data.passport_expiry_date ? data.passport_expiry_date : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Passport Copy
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            passport copy here
+          </div>
+        </div>
+
+      </div>
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-[#707070]">
+        Visa Details:
+      </div>
+      <div className="">
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Entry Permit Number
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.entry_permit_number ? data.entry_permit_number : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Visa Issuance Country
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.country_of_visa_issuance ? data.country_of_visa_issuance : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            UID Number
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.uid_number ? data.uid_number : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Visa Type
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {data.visa_type ? data.visa_type : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Visa Country Entry Date
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.visa_country_entry_date ? data.visa_country_entry_date : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Visa Country Exit Date
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.visa_country_exit_date ? data.visa_country_exit_date : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Entry Permit
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {entryPermitDoc ? (
+              <button
+                onClick={() =>
+                  downloadAttachment(
+                    entryPermitDoc.document,
+                    entryPermitDoc.name
+                  )
+                }
+              >
+                {entryPermitDoc.name?.length > 15 ? (
+                  <>
+                    {entryPermitDoc.name.slice(
+                      0,
+                      12
+                    )}
+                    ...
+                  </>
+                ) : (
+                  entryPermitDoc.name
+                )}
+                <IoMdDownload className="text-xl" />
+              </button>
+            ) : (
+              "N/A"
+            )}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Visa Page
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {visaPageDoc ? (
+              <button
+                onClick={() =>
+                  downloadAttachment(
+                    visaPageDoc.document,
+                    visaPageDoc.name
+                  )
+                }
+              >
+                {visaPageDoc.name?.length > 15 ? (
+                  <>
+                    {visaPageDoc.name.slice(
+                      0,
+                      12
+                    )}
+                    ...
+                  </>
+                ) : (
+                  visaPageDoc.name
+                )}
+                <IoMdDownload className="text-xl" />
+              </button>
+            ) : (
+              "N/A"
+            )}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Medical Result
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {medicalDoc ? (
+              <button
+                onClick={() =>
+                  downloadAttachment(
+                    medicalDoc.document,
+                    medicalDoc.name
+                  )
+                }
+              >
+                {medicalDoc.name?.length > 15 ? (
+                  <>
+                    {medicalDoc.name.slice(
+                      0,
+                      12
+                    )}
+                    ...
+                  </>
+                ) : (
+                  medicalDoc.name
+                )}
+                <IoMdDownload className="text-xl" />
+              </button>
+            ) : (
+              "N/A"
+            )}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            ID Application
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {idAppDoc ? (
+              <button
+                onClick={() =>
+                  downloadAttachment(
+                    idAppDoc.document,
+                    idAppDoc.name
+                  )
+                }
+              >
+                {idAppDoc.name?.length > 15 ? (
+                  <>
+                    {idAppDoc.name.slice(
+                      0,
+                      12
+                    )}
+                    ...
+                  </>
+                ) : (
+                  idAppDoc.name
+                )}
+                <IoMdDownload className="text-xl" />
+              </button>
+            ) : (
+              "N/A"
+            )}
+          </div>
+        </div>
+
+      </div>
+
+      {/* ID details */}
+
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-[#707070]">
+        ID Details:
+      </div>
+      <div className="">
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Living Country ID No
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.living_country_id_no}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Place of Issuance
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.place_of_issuance ? data.place_of_issuance : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            ID Issuance Date
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data.id_issuance_date ? data.id_issuance_date : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            ID Expiry Date
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {data.id_expiry_date ? data.id_expiry_date : ""}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            ID Front
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {idFront ? (
+              <button
+                onClick={() =>
+                  downloadAttachment(
+                    idFront.document,
+                    idFront.name
+                  )
+                }
+              >
+                {idFront.name?.length > 15 ? (
+                  <>
+                    {idFront.name.slice(
+                      0,
+                      12
+                    )}
+                    ...
+                  </>
+                ) : (
+                  idFront.name
+                )}
+                <IoMdDownload className="text-xl" />
+              </button>
+            ) : (
+              "N/A"
+            )}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            ID Back
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {idBack ? (
+              <button
+                onClick={() =>
+                  downloadAttachment(
+                    idBack.document,
+                    idBack.name
+                  )
+                }
+              >
+                {idBack.name?.length > 15 ? (
+                  <>
+                    {idBack.name.slice(
+                      0,
+                      12
+                    )}
+                    ...
+                  </>
+                ) : (
+                  idBack.name
+                )}
+                <IoMdDownload className="text-xl" />
+              </button>
+            ) : (
+              "N/A"
+            )}
+          </div>
+        </div>
+
+      </div>
+
+      <div className="text-baseBlue text-xl font-extrabold py-2 px-3 my-4 border border-[#707070]">
+        Insurance Details:
+      </div>
+      <div className="">
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            DHA ID
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data?.dha_id}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Card Number
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data?.card_number}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Insurance Policy
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data?.insurance_policy}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Insurance Company
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {" "}
+            {data?.insurance_company}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Insurance Active Date
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data?.insurance_active_date}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Insurance Expiry Date
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {data?.insurance_expiry_date}
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-[40%] xl:w-[24%] px-4 py-2 text-left font-bold border border-r-gray-400 text-[#555657]">
+            Insurance Card
+          </div>
+          <div className="w-[60%] xl:w-[76%] px-4 py-2 text-left border text-gray-500">
+            {insuranceCard ? (
+              <button
+                onClick={() =>
+                  downloadAttachment(
+                    insuranceCard.document,
+                    insuranceCard.name
+                  )
+                }
+              >
+                {insuranceCard.name?.length > 15 ? (
+                  <>
+                    {insuranceCard.name.slice(
+                      0,
+                      12
+                    )}
+                    ...
+                  </>
+                ) : (
+                  insuranceCard.name
+                )}
+                <IoMdDownload className="text-xl" />
+              </button>
+            ) : (
+              "N/A"
+            )}
+          </div>
+        </div>
+
       </div>
 
       {/* Banking Information */}

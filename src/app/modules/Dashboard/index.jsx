@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import WorkTime from "./WorkTime";
 import TodoList from "./Todolist";
 import TaskPlanner from "./TaskPlanner";
-import "./index.css";
+// import "./index.css";
 import DailyTaskRpt from "./DailyTaskRpt";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
@@ -33,7 +33,8 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
       {/* ##########################   First Column   ########################## */}
 
       <div
-        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll ${isSidebarOpen ? "3xl:w-[92%] xl:w-[86%] w-[100%]" : "3xl:w-[100%] xl:w-[100%] w-[100%]"
+        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll
+         ${isSidebarOpen ? "3xl:w-[92%] xl:w-[86%] w-[100%]" : "3xl:w-[100%] xl:w-[100%] w-[100%]"
           }`}
       >
         {/***********************   Dashboard Header   **********************************/}
@@ -113,7 +114,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
 
         {/* **********************   Todos List & Working Time   ********************************* */}
         {/* <div className="flex 2xl:flex-row sm:flex-row flex-col-reverse justify-between sm:mr-14 xl:self-end xl:items-end"> */}
-        <div className="flex  md:flex-row xs:flex-col-reverse justify-between md:mr-14 m-1 lg:mr-1 xl:self-end xl:items-start">
+        <div className="flex md:flex-row xs:flex-col-reverse justify-between md:mr-14 m-1 lg:mr-1 xl:self-end xl:items-start">
           {/***********************   Todos List   **********************************/}
           <TodoList />
           {/***********************   Working Time   **********************************/}

@@ -8,6 +8,30 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import CustomLoader from '../../../common/CustomLoader';
 import { BiEdit } from 'react-icons/bi';
+import moment from 'moment';
+import Datepicker from "../Dashboard/Datepicker";
+import Select from "react-select";
+
+
+const jobRoles = [
+  { label: 'Intern', value: 'Intern' },
+  { label: 'Part-Time', value: 'Part-Time' },
+  { label: 'Full-Time', value: 'Full-Time' },
+  { label: 'Contract', value: 'Contract' },
+  { label: 'Freelancer', value: 'Freelancer' }
+];
+
+const employeeStatus = [
+  { label: 'Active', value: 'active' },
+  { label: 'Terminated', value: 'terminated' },
+  { label: 'Deceased', value: 'deceased' },
+  { label: 'Resigned', value: 'resigned' },
+  { label: 'Probation', value: 'probation' },
+  { label: 'Notice Period', value: 'notice_period' },
+  { label: 'Exit', value: 'exit' },
+  { label: 'Absconded', value: 'absconded' },
+  { label: 'Legal Case', value: 'legal_case' }
+];
 
 const departmentSchema = Joi.object({
   department_name: Joi.string()
@@ -86,7 +110,10 @@ const Department = ({ errors, setErrors, prevstep, token,
           department_position: employeeData.department_position,
           direct_report: employeeData.direct_report,
           indirect_report: employeeData.indirect_report,
-          department_manager: employeeData.department_manager
+          department_manager: employeeData.department_manager,
+          joining_date: employeeData.joining_date,
+          employee_type: jobRoles.find(role => role.value === employeeData.employee_type)?.label
+          // employee_status: employeeData?.employee_status?.value
         }
         setDefaultData(departmentObj);
       }
@@ -112,6 +139,7 @@ const Department = ({ errors, setErrors, prevstep, token,
         direct_report: defaultData.direct_report,
         indirect_report: defaultData.indirect_report,
         department_manager: defaultData.department_manager,
+        // joining_date: defaultData.joining_date,
       },
       { abortEarly: false }
     );
@@ -153,9 +181,25 @@ const Department = ({ errors, setErrors, prevstep, token,
     sessionStorage.setItem(key, serializedData);
   };
 
+  // const handleEdit = (name, value) => {
+  //   setDefaultData({ ...defaultData, [name]: value });
+  //   setErrors({ ...errors, [name]: null });
+  // };
+
   const handleEdit = (name, value) => {
-    setDefaultData({ ...defaultData, [name]: value });
+    // Check if the name is 'employee_type'
+    if (name === 'employee_type') {
+      setDefaultData({ ...defaultData, [name]: value.value });
+    } else {
+      setDefaultData({ ...defaultData, [name]: value });
+    }
+    // Clear errors for the updated field
     setErrors({ ...errors, [name]: null });
+  };
+
+  const handleJoiningDate = (date) => {
+    const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
+    handleEdit("joining_date", formattedDate);
   };
 
   return (
@@ -207,6 +251,55 @@ const Department = ({ errors, setErrors, prevstep, token,
                   {errors.department_position && <span className="text-red-500 text-sm ">{errors.department_position}</span>}
                 </div>
               </div>
+
+              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    className="font-sfpro tracking-wide 
+                  font-medium text-input text-base mb-1"
+                  >
+                    Employee Type:
+                  </label>
+                  <div
+                  // onClick={handleEditClick}
+                  >
+                    <Select
+                      name="employee_type"
+                      isDisabled={isEdit ? false : true}
+                      value={jobRoles.find(
+                        (option) => option.label === defaultData.employee_type
+                      )}
+                      options={jobRoles}
+                      isSearchable={false}
+                      className="focus:outline-none border-none"
+                      onChange={(selectedOption) => handleEdit("employee_type", selectedOption)}
+                    />
+                  </div>
+                </div>
+                {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    className="font-sfpro tracking-wide 
+                  font-medium text-input text-base mb-1"
+                  >
+                    Employee status:
+                  </label>
+                  <div
+                  // onClick={handleEditClick}
+                  >
+                    <Select
+                      name="employee_status"
+                      isDisabled={isEdit ? false : true}
+                      value={employeeStatus.find(
+                        (option) => option.value === defaultData?.employee_status?.value
+                      )}
+                      options={employeeStatus}
+                      isSearchable={false}
+                      className="focus:outline-none border-none"
+                      onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
+                    />
+                  </div>
+                </div> */}
+              </div>
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                   <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
@@ -243,6 +336,48 @@ const Department = ({ errors, setErrors, prevstep, token,
                   />
                   {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
                 </div>
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    htmlFor="date_of_birth"
+                    className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                  >
+                    Joining Date:
+                  </label>
+                  <Datepicker
+                    disabled={isEdit ? false : true}
+                    // readOnly={!isEdit}
+                    day={
+                      defaultData.joining_date
+                        ? defaultData.joining_date.substr(0, 2)
+                        : null
+                    }
+                    month={
+                      defaultData.joining_date
+                        ? defaultData.joining_date.substr(3, 2)
+                        : null
+                    }
+                    year={
+                      defaultData.joining_date
+                        ? defaultData.joining_date.substr(8, 4)
+                        : null
+                    }
+                    name="joining_date"
+                    className="z-50"
+                    selected={moment(
+                      defaultData.joining_date,
+                      "DD-MM-YYYY"
+                    ).toDate()}
+                    // onClick={handleFieldClick}
+                    onChange={handleJoiningDate}
+                  />
+                  {/* {errors.joining_date && (
+                    <span className="text-red-500 text-sm ">
+                      {errors.joining_date}
+                    </span>
+                  )} */}
+                </div>
+
               </div>
             </div>
           </div>

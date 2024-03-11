@@ -294,7 +294,8 @@ const ProfessionalExp = ({
                           const updatedSections = [...experienceSections];
                           updatedSections[index].disableEndDate = e.target.checked;
                           if (e.target.checked) {
-                            updatedSections[index].exp_end_date = null; // Set end date to null if Till Date is checked
+                            // updatedSections[index].exp_end_date = null; // Set end date to null if Till Date is checked
+                            updatedSections[index].exp_end_date = e.target.checked ? null : experience.exp_end_date;
                           }
                           setExperienceSections(updatedSections);
                         }}

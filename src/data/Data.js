@@ -25,6 +25,15 @@ export const statusOptions = [
   { value: "Completed", label: "Completed" },
 ];
 
+export const visaOptions = [
+  { value: "Visit", label: "Visit Visa" },
+  { value: "Tourist", label: "tourist visa" },
+  { value: "Residency", label: "Residency visa" },
+  { value: "Golden", label: "Golden visa" },
+  { value: "Green", label: "Green visa" },
+  // { value: "partner visa", label: "Partner visa" },
+];
+
 export const academicOptions = [
   {
     value: "inter",
@@ -58,6 +67,7 @@ export const employeeTypeOptions = [
   { value: "Contract", label: "Contract" },
   { value: "Freelancer", label: "Freelancer" },
 ];
+
 
 export const educationTypeOptions = [
   { value: "Bachelor", label: "Bachelor" },

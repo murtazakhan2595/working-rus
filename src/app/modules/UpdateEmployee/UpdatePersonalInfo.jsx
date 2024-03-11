@@ -156,6 +156,7 @@ const PersonalInfo = ({
   useEffect(() => {
     setDataInSessionStorage("UpdatedPersonalInfo", defaultData);
   }, [defaultData]);
+  
   useEffect(() => {
     setDataInSessionStorage("UpdatedDP", imagePreview);
   }, [imagePreview]);
@@ -201,6 +202,7 @@ const PersonalInfo = ({
         updatedData["passport_number"] = "000000000000000";
       }
       updatedData["profile_picture"] = updatedDP;
+      
       let response = await axios.patch(
         `${baseUrl}/emp/${userProfile.id}`,
         updatedData,
@@ -628,7 +630,7 @@ const PersonalInfo = ({
                   <span className="text-red-500 text-sm ">{errors.nic}</span>
                 )}
               </div>
-              <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+              {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                 <label
                   htmlFor="passport_number"
                   className="font-sfpro tracking-wide font-medium
@@ -655,7 +657,7 @@ const PersonalInfo = ({
                     {errors.passport_number}
                   </span>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="order-1 md:order-2 md:w-[35%]">

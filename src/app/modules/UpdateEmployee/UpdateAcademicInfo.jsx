@@ -256,12 +256,15 @@ const AcademicRecords = ({
         if (resEdu.status !== 200) {
           return
         }
+
         let acadmicDoc = {
           employee_id: userProfile.id,
           name: "acadmicDoc",
           description: "Acadmic Document",
           document: academicInfo.certificate.document
         }
+
+        
         if (academicInfo.certificate?.hasOwnProperty("id")) {
           let res = await axios.patch(`${baseUrl}/attachment/${academicInfo.certificate.id}`, acadmicDoc, {
             headers: {
@@ -319,6 +322,8 @@ const AcademicRecords = ({
             });
           }
         });
+
+        
         deleteExp.map(async (delExp) => {
           let res = await axios.delete(`${baseUrl}/certification/${delExp}`, {
             headers: {
