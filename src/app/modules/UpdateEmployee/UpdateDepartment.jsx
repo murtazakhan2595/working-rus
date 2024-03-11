@@ -12,7 +12,6 @@ import moment from 'moment';
 import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 
-
 const jobRoles = [
   { label: 'Intern', value: 'Intern' },
   { label: 'Part-Time', value: 'Part-Time' },
@@ -22,15 +21,15 @@ const jobRoles = [
 ];
 
 const employeeStatus = [
-  { label: 'Active', value: 'active' },
-  { label: 'Terminated', value: 'terminated' },
-  { label: 'Deceased', value: 'deceased' },
-  { label: 'Resigned', value: 'resigned' },
-  { label: 'Probation', value: 'probation' },
-  { label: 'Notice Period', value: 'notice_period' },
-  { label: 'Exit', value: 'exit' },
-  { label: 'Absconded', value: 'absconded' },
-  { label: 'Legal Case', value: 'legal_case' }
+  { label: 'Active', value: 'Active' },
+  { label: 'Terminated', value: 'Terminated' },
+  { label: 'Deceased', value: 'Deceased' },
+  { label: 'Resigned', value: 'Resigned' },
+  { label: 'Probation', value: 'Probation' },
+  { label: 'Notice Period', value: 'Notice Period' },
+  { label: 'Exit', value: 'Exit' },
+  { label: 'Absconded', value: 'Absconded' },
+  { label: 'Legal Case', value: 'Legal Case' }
 ];
 
 const departmentSchema = Joi.object({
@@ -105,16 +104,16 @@ const Department = ({ errors, setErrors, prevstep, token,
       });
       const employeeData = employeeResponse.data;
       if (employeeData) {
-        let departmentObj = {
+        const departmentObj = {
           department_name: employeeData.department_name,
           department_position: employeeData.department_position,
           direct_report: employeeData.direct_report,
           indirect_report: employeeData.indirect_report,
           department_manager: employeeData.department_manager,
           joining_date: employeeData.joining_date,
-          employee_type: jobRoles.find(role => role.value === employeeData.employee_type)?.label
-          // employee_status: employeeData?.employee_status?.value
-        }
+          employee_type: employeeData.employee_type,
+          employee_status: employeeData.employee_status
+        };
         setDefaultData(departmentObj);
       }
     } catch (error) {
@@ -190,7 +189,10 @@ const Department = ({ errors, setErrors, prevstep, token,
     // Check if the name is 'employee_type'
     if (name === 'employee_type') {
       setDefaultData({ ...defaultData, [name]: value.value });
-    } else {
+    } else if (name === "employee_status") {
+      setDefaultData({ ...defaultData, [name]: value.value });
+    }
+    else {
       setDefaultData({ ...defaultData, [name]: value });
     }
     // Clear errors for the updated field
@@ -198,9 +200,10 @@ const Department = ({ errors, setErrors, prevstep, token,
   };
 
   const handleJoiningDate = (date) => {
-    const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
+    const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleEdit("joining_date", formattedDate);
   };
+
 
   return (
     <>
@@ -266,17 +269,16 @@ const Department = ({ errors, setErrors, prevstep, token,
                     <Select
                       name="employee_type"
                       isDisabled={isEdit ? false : true}
-                      value={jobRoles.find(
-                        (option) => option.label === defaultData.employee_type
-                      )}
+                      value={jobRoles.find(option => option.label === defaultData.employee_type)}
                       options={jobRoles}
                       isSearchable={false}
                       className="focus:outline-none border-none"
-                      onChange={(selectedOption) => handleEdit("employee_type", selectedOption)}
+                      onChange={selectedOption => handleEdit("employee_type", selectedOption)}
                     />
+
                   </div>
                 </div>
-                {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                   <label
                     className="font-sfpro tracking-wide 
                   font-medium text-input text-base mb-1"
@@ -287,18 +289,16 @@ const Department = ({ errors, setErrors, prevstep, token,
                   // onClick={handleEditClick}
                   >
                     <Select
-                      name="employee_status"
                       isDisabled={isEdit ? false : true}
-                      value={employeeStatus.find(
-                        (option) => option.value === defaultData?.employee_status?.value
-                      )}
+                      name="employee_status"
+                      value={employeeStatus.find(option => option.label === defaultData.employee_status)}
                       options={employeeStatus}
                       isSearchable={false}
                       className="focus:outline-none border-none"
                       onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
                     />
                   </div>
-                </div> */}
+                </div>
               </div>
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
@@ -359,7 +359,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                     }
                     year={
                       defaultData.joining_date
-                        ? defaultData.joining_date.substr(8, 4)
+                        ? defaultData.joining_date.substr(6, 4)
                         : null
                     }
                     name="joining_date"

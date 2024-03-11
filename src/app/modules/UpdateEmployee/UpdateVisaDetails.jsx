@@ -44,6 +44,7 @@ const VisaDetails = ({ prevstep,
     idBack: null,
     insuranceCard: null,
   });
+  const [docs, setDocs] = useState([]);
   const id = userProfile.id;
 
   const headers = {
@@ -98,8 +99,10 @@ const VisaDetails = ({ prevstep,
       const IdAppResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_application"}`, { headers });
       const IdFrontResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_front"}`, { headers });
       const IdBackResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_back"}`, { headers });
-      const InsuranceCardResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"insurance_card"}`, { headers });
+      const InsuranceCardResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id}}`, { headers });
 
+      setDocs(InsuranceCardResponse.data);
+      console.log(InsuranceCardResponse.data);
 
       // Update state with fetched documents
       setDocuments({
@@ -411,7 +414,7 @@ const VisaDetails = ({ prevstep,
           >
             Passport Copy:
           </label>
-          <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)}  />
+          <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} />
         </div>
       </div>
 
@@ -666,8 +669,8 @@ const VisaDetails = ({ prevstep,
               name="enter_permit"
               className="hidden"
               onChange={(e) => handleFileChange('enter_permit', e.target.files)}
-              
-              
+
+
             />
           </>
           {/* )} */}
@@ -686,7 +689,7 @@ const VisaDetails = ({ prevstep,
           >
             Visa Page
           </label>
-          <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)}  />
+          <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} />
         </div>
 
 
@@ -706,7 +709,7 @@ const VisaDetails = ({ prevstep,
           </label>
           <input type="file"
             onChange={(e) => handleFileChange('medical', e.target.files)}
-             />
+          />
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <div className="flex items-center gap-x-2">
@@ -720,7 +723,7 @@ const VisaDetails = ({ prevstep,
           >
             ID Application
           </label>
-          <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)}  />
+          <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)} />
         </div>
       </div>
 
@@ -844,8 +847,8 @@ const VisaDetails = ({ prevstep,
           >
             ID Front
           </label>
-          <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} 
-           />
+          <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)}
+          />
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <div className="flex items-center gap-x-2">
@@ -859,8 +862,8 @@ const VisaDetails = ({ prevstep,
           >
             ID Back
           </label>
-          <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} 
-           />
+          <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)}
+          />
         </div>
       </div>
 
@@ -1018,7 +1021,7 @@ const VisaDetails = ({ prevstep,
           >
             Insurance Card
           </label>
-          <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)}  />
+          <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} />
         </div>
       </div>
       <div className="flex gap-x-5 mb-40 mt-5">

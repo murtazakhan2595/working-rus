@@ -5,6 +5,8 @@ import CustomLoader from '../../../common/CustomLoader';
 import Select from "react-select";
 import moment from 'moment';
 import Datepicker from '../Dashboard/Datepicker';
+// import jobRoles from '../../../data/Data'
+// import employeeStatus from '../../../data/Data'
 
 const jobRoles = [
     { label: 'Intern', value: 'Intern' },
@@ -15,15 +17,15 @@ const jobRoles = [
 ];
 
 const employeeStatus = [
-    { label: 'Active', value: 'active' },
-    { label: 'Terminated', value: 'terminated' },
-    { label: 'Deceased', value: 'deceased' },
-    { label: 'Resigned', value: 'resigned' },
-    { label: 'Probation', value: 'probation' },
-    { label: 'Notice Period', value: 'notice_period' },
-    { label: 'Exit', value: 'exit' },
-    { label: 'Absconded', value: 'absconded' },
-    { label: 'Legal Case', value: 'legal_case' }
+    { label: 'Active', value: 'Active' },
+    { label: 'Terminated', value: 'Terminated' },
+    { label: 'Deceased', value: 'Deceased' },
+    { label: 'Resigned', value: 'Resigned' },
+    { label: 'Probation', value: 'Probation' },
+    { label: 'Notice Period', value: 'Notice Period' },
+    { label: 'Exit', value: 'Exit' },
+    { label: 'Absconded', value: 'Absconded' },
+    { label: 'Legal Case', value: 'Legal Case' }
 ];
 
 
@@ -89,10 +91,10 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
         indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
         department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : '',
         employee_type: defaultDeparmentInfo?.employee_type ? defaultDeparmentInfo.employee_type : '',
+        employee_status: defaultDeparmentInfo?.employee_status ? defaultDeparmentInfo.employee_status : '',
         joining_date: defaultDeparmentInfo?.joining_date ? defaultDeparmentInfo.joining_date : null,
     };
     const [departmentInfo, setDepartmentInfo] = useState(intialDepartmentInfo)
-
 
     useEffect(() => {
         setDataInSessionStorage('departmentInfo', departmentInfo)
@@ -134,7 +136,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
     };
 
     const handleJoiningDate = (date) => {
-        const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
+        const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
         handleChange("joining_date", formattedDate);
     };
 
@@ -194,29 +196,30 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
                                         />
                                     </div>
                                 </div>
-                                {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                  <label
-                    className="font-sfpro tracking-wide 
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        className="font-sfpro tracking-wide 
                   font-medium text-input text-base mb-1"
-                  >
-                    Employee status:
-                  </label>
-                  <div
-                  // onClick={handleEditClick}
-                  >
-                    <Select
-                      name="employee_status"
-                      isDisabled={isEdit ? false : true}
-                      value={employeeStatus.find(
-                        (option) => option.value === defaultData?.employee_status?.value
-                      )}
-                      options={employeeStatus}
-                      isSearchable={false}
-                      className="focus:outline-none border-none"
-                      onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
-                    />
-                  </div>
-                </div> */}
+                                    >
+                                        Employee status:
+                                    </label>
+                                    <div
+                                    // onClick={handleEditClick}
+                                    >
+                                        <Select
+                                            name="employee_status"
+                                            // value={departmentInfo?.employee_status}
+                                            value={employeeStatus.find(
+                                                (option) => option.label === departmentInfo?.employee_status
+                                            )}
+                                            options={employeeStatus}
+                                            isSearchable={false}
+                                            className="focus:outline-none border-none"
+                                            onChange={(selectedOption) => handleChange("employee_status", selectedOption.value)}
+                                        />
+
+                                    </div>
+                                </div>
                             </div>
 
 
@@ -276,12 +279,12 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
                                         }
                                         year={
                                             departmentInfo.joining_date
-                                                ? departmentInfo.joining_date.substr(8, 4)
+                                                ? departmentInfo.joining_date.substr(6, 4)
                                                 : null
                                         }
                                         name="joining_date"
                                         className="z-50"
-                                        selected={moment(departmentInfo.joining_date, "YYYY-MM-DD").toDate()}
+                                        selected={moment(departmentInfo.joining_date, "DD-MM-YYYY").toDate()}
                                         // onClick={handleFieldClick}
                                         onChange={handleJoiningDate}
                                     />

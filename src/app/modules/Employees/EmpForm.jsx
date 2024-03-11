@@ -424,8 +424,34 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
     }
   };
 
+  // const nextStep = () => {
+  //   if (currentStep === 2) {
+  //     if (subStep < 2) {
+  //       setSubStep(subStep + 1);
+  //     } else {
+  //       setCurrentStep(currentStep + 1);
+  //       setSubStep(1);
+  //     }
+  //   } else if (currentStep < totalSteps) {
+  //     setCurrentStep(currentStep + 1);
+  //   }
+  // };
+
+  // const prevStep = () => {
+  //   if (currentStep === 3) {
+  //     if (subStep > 1) {
+  //       setSubStep(subStep - 1);
+  //     } else {
+  //       setCurrentStep(currentStep - 1);
+  //     }
+  //   } else if (currentStep > 1) {
+  //     setCurrentStep(currentStep - 1);
+  //     setSubStep(2);
+  //   }
+  // };
+
   const nextStep = () => {
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       if (subStep < 2) {
         setSubStep(subStep + 1);
       } else {
@@ -449,6 +475,9 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       setSubStep(2);
     }
   };
+
+
+
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
