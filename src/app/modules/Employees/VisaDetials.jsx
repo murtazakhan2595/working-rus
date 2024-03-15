@@ -20,6 +20,43 @@ const VisaDetials = ({ prevstep, nextstep }) => {
     let storedData = getDataFromSessionStorage("visaDetails");
     const storedVisaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
 
+    // const visaDetailsSchema = Joi.object({
+    //     passport_number: Joi.required().label('Passport Number'),
+    //     Passport_Issuance_Country: Joi.required().label('Issuance Country'),
+    //     Passport_Issuance_Date: Joi.date().required().label('Passport Issuance Date'),
+    //     Passport_Expiry_Date: Joi.date().required().label('Passport Expiry Date'),
+
+    //     // visa
+    //     entry_permit_number: Joi.string().required().label('Entry Permit Number'),
+    //     country_of_visa_issuance: Joi.string().required().label('Visa Issuance Country'),
+    //     uid_number: Joi.string().required().label('UID Number'),
+    //     visa_type: Joi.string().required().label('Visa Type'),
+    //     visa_issuance_date: Joi.date().iso().required().label('Visa Issuance Date'),
+    //     visa_expiry_date: Joi.date().iso().required().label('Visa Expiry Date'),
+    //     visa_duration: Joi.string().required().label('Visa Duration'),
+    //     visa_country_entry_date: Joi.date().iso().required().label('Visa Country Entry Date'),
+    //     visa_country_exit_date: Joi.date().iso().required().label('Visa Country Exit Date'),
+    //     enter_permit: Joi.any().label('Entry Permit'),
+    //     visa_page: Joi.any().label('Visa Page'),
+    //     medical: Joi.any().label('Medical Result'),
+    //     id_application: Joi.any().label('ID Application'),
+
+    //     living_country_id_no: Joi.required().label('Living Country ID Number'),
+    //     place_of_issuance: Joi.required().label('Place of Issuance'),
+    //     id_issuance_date: Joi.date().required().label('ID Issuance Date'),
+    //     id_expiry_date: Joi.date().required().label('ID Expiry Date'),
+    //     id_front: Joi.string().trim().allow('').label('ID Front'),
+    //     id_back: Joi.string().trim().allow('').label('ID Back'),
+    //     // id 
+    //     dha_id: Joi.required().label('DHA ID'),
+        
+    //     card_number: Joi.required().label('Card Number'),
+    //     insurance_policy: Joi.required().label('Insurance Policy'),
+    //     insurance_company: Joi.required().label('Insurance Company'),
+    //     insurance_active_date: Joi.date().required().label('Insurance Active Date'),
+    //     insurance_expiry_date: Joi.required().label('Insurance Expiry Date'),
+    // });
+
     let [visaDetails, setVisaDetails] = useState({
         passport_number: storedData?.passport_number ? storedData.passport_number : null,
         Passport_Issuance_Country: storedData?.Passport_Issuance_Country ? storedData.Passport_Issuance_Country : null,
@@ -47,6 +84,16 @@ const VisaDetials = ({ prevstep, nextstep }) => {
     })
 
     const [visaDetailsFiles, setVisaDetailsFiles] = useState(storedVisaDetailsFiles || {});
+    const [showVisa, setShowVisa] = useState(true);
+    const [showInsurance, setShowInsurance] = useState(true);
+
+    const toggleShowVisa = () => {
+        setShowVisa(!showVisa)
+    }
+
+    const toggleShowInsurance = () => {
+        setShowInsurance(!showInsurance)
+    }
 
 
     const handleChange = (name, value) => {
@@ -180,15 +227,18 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     >
                         Passport Copy:
                     </label>
-                    <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)}  />
                 </div>
 
             </div>
 
-            <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:mt-7 lg:text-lg mt-2">
-                Visa Details
+            <h2 className="mb-2 lg:mb-4 lg:mt-7 mt-2 flex items-center gap-x-3">
+                <p className='text-baseBlue tracking-wide lg:text-lg'>Visa Details</p>
+                <input type="checkbox" checked={showVisa} onChange={toggleShowVisa} />
+                <label className='text-sm text-gray-500'>Not Applicable</label>
+
             </h2>
-            <div className='flex w-[100%] flex-wrap gap-3'>
+            {showVisa && <div className='flex w-[100%] flex-wrap gap-3'>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
                         className="font-sfpro tracking-wide font-medium
@@ -206,7 +256,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     >
                         Visa Issuance Country
                     </label>
-                   <Select
+                    <Select
                         className=""
                         name="country_of_visa_issuance"
                         options={countryOptions}
@@ -325,7 +375,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     >
                         Entry Permit
                     </label>
-                    <input type="file" onChange={(e) => handleFileChange('enter_permit', e.target.files)} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('enter_permit', e.target.files)}  />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -335,7 +385,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     >
                         Visa Page
                     </label>
-                    <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)}  />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -346,8 +396,8 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                         Medical Result
                     </label>
                     <input type="file"
-                        // onChange={handleMedicalResultChange} 
-                        multiple />
+                        onChange={(e) => handleFileChange('medical', e.target.files)}
+                         />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -357,10 +407,10 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     >
                         ID Application
                     </label>
-                    <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)}  />
                     {/* <input type="text" value={idApplication} onChange={(e) => setIdApplication(e.target.value)} placeholder="ID Application" /> */}
                 </div>
-            </div>
+            </div>}
 
             <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-2 lg:mt-7 lg:text-lg mt-2">
                 ID Details
@@ -435,7 +485,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     >
                         ID Front
                     </label>
-                    <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)}  />
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -445,105 +495,110 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     >
                         ID Back
                     </label>
-                    <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} multiple />
+                    <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)}  />
                 </div>
             </div>
 
-            <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-2 lg:mt-7 lg:text-lg mt-2">
-                Insurance Details
+            <h2 className="mb-2 lg:mb-4 lg:mt-7 mt-2 flex items-center gap-x-3">
+                <p className='text-baseBlue tracking-wide lg:text-lg'>Insurance Details</p>
+                <input type="checkbox" checked={showInsurance} onChange={toggleShowInsurance} />
+                <label className='text-sm text-gray-500'>Not Applicable</label>
             </h2>
-            <div className='flex w-[100%] flex-wrap items-center gap-3'>
 
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        DHA ID
-                    </label>
-                    <input type="text" name="dha_id" value={visaDetails.dha_id}
-                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                        placeholder="DHA ID" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+            {showInsurance &&
+                <div className='flex w-[100%] flex-wrap items-center gap-3'>
+                    <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+                        <label
+                            className="font-sfpro tracking-wide font-medium
+                        text-input text-base mb-1"
+                        >
+                            DHA ID
+                        </label>
+                        <input type="text" name="dha_id" value={visaDetails.dha_id}
+                            onChange={(e) => handleChange(e.target.name, e.target.value)}
+                            placeholder="DHA ID" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    </div>
+                    <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+                        <label
+                            className="font-sfpro tracking-wide font-medium
+                        text-input text-base mb-1"
+                        >
+                            Card Number
+                        </label>
+                        <input type="text" name="card_number" value={visaDetails.card_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Card Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                    </div>
+                    <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+                        <label
+                            className="font-sfpro tracking-wide font-medium
+                        text-input text-base mb-1"
+                        >
+                            Insurance Policy
+                        </label>
+                        <input type="text" name='insurance_policy' value={visaDetails.insurance_policy} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Insurance Policy" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+
+                    </div>
+                    <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+                        <label
+                            className="font-sfpro tracking-wide font-medium
+                        text-input text-base mb-1"
+                        >
+                            Insurance Company
+                        </label>
+                        <input type="text" name='insurance_company' value={visaDetails.insurance_company} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Insurance Company" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+
+                    </div>
+                    <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+                        <label
+                            className="font-sfpro tracking-wide font-medium
+                        text-input text-base mb-1"
+                        >
+                            Insurance Active Date
+                        </label>
+                        {/* <input type="date" value={insuranceActiveDate} onChange={(e) => setInsuranceActiveDate(e.target.value)} placeholder="Insurance Active Date" /> */}
+
+                        <Datepicker
+                            selected={visaDetails.insurance_active_date ? moment(visaDetails.insurance_active_date, "YYYY-MM-DD").toDate() : null}
+                            onChange={(date) => handleDateChange(date, "insurance_active_date")}
+                            dateFormat="yyyy-MM-dd"
+                            className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                        />
+
+                    </div>
+                    <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+                        <label
+                            className="font-sfpro tracking-wide font-medium
+                        text-input text-base mb-1"
+                        >
+                            Insurance Expiry Date
+                        </label>
+                        {/* <input type="date" value={insuranceExpiryDate} onChange={(e) => setInsuranceExpiryDate(e.target.value)} placeholder="Insurance Expiry Date" /> */}
+                        <Datepicker
+                            selected={visaDetails.insurance_expiry_date ? moment(visaDetails.insurance_expiry_date, "YYYY-MM-DD").toDate() : null}
+                            onChange={(date) => handleDateChange(date, "insurance_expiry_date")}
+                            dateFormat="yyyy-MM-dd"
+                            className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                        />
+
+                    </div>
+                    <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+                        <label
+                            className="font-sfpro tracking-wide font-medium
+                        text-input text-base mb-1"
+                        >
+                            Insurance Card
+
+                        </label>
+                        <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)}  />
+                    </div>
                 </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        Card Number
-                    </label>
-                    <input type="text" name="card_number" value={visaDetails.card_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Card Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        Insurance Policy
-                    </label>
-                    <input type="text" name='insurance_policy' value={visaDetails.insurance_policy} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Insurance Policy" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
-
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        Insurance Company
-                    </label>
-                    <input type="text" name='insurance_company' value={visaDetails.insurance_company} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Insurance Company" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
-
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        Insurance Active Date
-                    </label>
-                    {/* <input type="date" value={insuranceActiveDate} onChange={(e) => setInsuranceActiveDate(e.target.value)} placeholder="Insurance Active Date" /> */}
-
-                    <Datepicker
-                        selected={visaDetails.insurance_active_date ? moment(visaDetails.insurance_active_date, "YYYY-MM-DD").toDate() : null}
-                        onChange={(date) => handleDateChange(date, "insurance_active_date")}
-                        dateFormat="yyyy-MM-dd"
-                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
-                    />
-
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        Insurance Expiry Date
-                    </label>
-                    {/* <input type="date" value={insuranceExpiryDate} onChange={(e) => setInsuranceExpiryDate(e.target.value)} placeholder="Insurance Expiry Date" /> */}
-                    <Datepicker
-                        selected={visaDetails.insurance_expiry_date ? moment(visaDetails.insurance_expiry_date, "YYYY-MM-DD").toDate() : null}
-                        onChange={(date) => handleDateChange(date, "insurance_expiry_date")}
-                        dateFormat="yyyy-MM-dd"
-                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
-                    />
-
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        Insurance Card
-
-                    </label>
-                    <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} multiple />
-                </div>
-            </div>
+            }
             <div className="flex gap-x-20 mt-6 lg:mt-6 md:mt-0 mb-6">
                 <Button
                     onClick={handlePreviousStep}
