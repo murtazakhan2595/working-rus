@@ -5,8 +5,9 @@ import CustomLoader from '../../../common/CustomLoader';
 import Select from "react-select";
 import moment from 'moment';
 import Datepicker from '../Dashboard/Datepicker';
-// import jobRoles from '../../../data/Data'
-// import employeeStatus from '../../../data/Data'
+import CustomSelect from '../UpdateEmployee/customSelect';
+import axios from "axios";
+import { connect } from 'react-redux';
 
 const jobRoles = [
     { label: 'Intern', value: 'Intern' },
@@ -28,6 +29,19 @@ const employeeStatus = [
     { label: 'Legal Case', value: 'Legal Case' }
 ];
 
+const HeadOfDepartment = [
+    { label: 'Naveed (CEO)', value: 'Naveed' },
+    { label: 'Komal (Peoples Teams Head)', value: 'Komal' },
+    { label: 'Farhan (HR Manager)', value: 'Farhan' },
+    { label: 'Arshad Ali (Business Development & Sales)', value: 'Arshad Ali' },
+    { label: 'Haris (Pre-Sales)', value: 'Haris' },
+    { label: 'Sadia (Project Management)', value: 'Sadia' },
+    { label: 'Asra (Front End Lead)', value: 'Asra' },
+    { label: 'Shujat ( Backend Lead)', value: 'Shujat' },
+    { label: 'Faisal( Operations )', value: 'Faisal' },
+    { label: 'Imran (Marketing)', value: 'Imran' },
+    { label: 'Prakash ( VP Sales)', value: 'Prakash' },
+];
 
 const departmentSchema = Joi.object({
     department_name: Joi.string()
@@ -46,36 +60,17 @@ const departmentSchema = Joi.object({
             "string.empty": `Position is required`,
             "string.pattern.base": `Position must only contain letters and spaces`,
         }),
-    direct_report: Joi.string()
-        .regex(/^[a-zA-Z\s]+$/)
-        .required()
-        .label('Direct Report')
-        .messages({
-            "string.empty": `Direct Report is required`,
-            "string.pattern.base": `Direct Report must only contain letters and spaces`,
-        }),
-    indirect_report: Joi.string()
-        .regex(/^[a-zA-Z\s]+$/)
-        .required()
-        .label('Indirect Report')
-        .messages({
-            "string.empty": `Indirect Report is required`,
-            "string.pattern.base": `Indirect Report must only contain letters and spaces`,
-        }),
-    department_manager: Joi.string()
-        .regex(/^[a-zA-Z\s]+$/)
-        .required()
-        .label('Department Manager')
-        .messages({
-            "string.empty": `Department Manager is required`,
-            "string.pattern.base": `Department Manager must only contain letters and spaces`,
-        }),
+    direct_report: Joi.string().required(),
+    indirect_report: Joi.string().required(),
+    department_manager: Joi.string().required()
 });
 
 
 
-const Department = ({ errors, setErrors, prevstep, submitForm }) => {
+const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
+    const [managers, setManagers] = useState([]);
+
 
 
     const getDataFromSessionStorage = (key) => {
@@ -99,6 +94,26 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
     useEffect(() => {
         setDataInSessionStorage('departmentInfo', departmentInfo)
     }, [departmentInfo])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${baseUrl}/emp/`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.status === 200) {
+                    setManagers(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                // Handle errors here if needed
+            }
+        };
+
+        fetchData(); // Call the async function to fetch data
+    }, []);
 
     const handleNextStep = async () => {
         setIsLoading(true);
@@ -224,43 +239,88 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
 
 
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                                     <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Direct Report:</label>
-                                    <input type="text" value={departmentInfo.direct_report} name="direct_report" id="" placeholder='Direct Report Here'
-                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
+        text-input text-base mb-1'>Direct Report:</label>
+                                    <CustomSelect
+                                        name='direct_report'
+                                        placeholder="Select Direct Report To..."
+                                        // value={managers.filter(manager => defaultDeparmentInfo.direct_report.includes(manager.label))}
+                                        value={managers.find(manager => manager.label === defaultDeparmentInfo?.direct_report)}
+                                        onChange={(selectedOption) => handleChange("direct_report", selectedOption.label)}
+                                        // onChange={(selectedOptions) => handleEdit("direct_report", selectedOptions.map(option => option.label))}
+                                        options={managers
+                                            ?.filter(manager => manager.username) // Filter managers with user_role equal to 2
+                                            .map((manager) => ({
+                                                value: manager.id,
+                                                label: manager.username,
+                                            }))}
+                                    // isEdit={isEdit} // Pass down the isEdit prop
+                                    // isMulti={true}
                                     />
                                     {errors.direct_report && <span className="text-red-500 text-sm ">{errors.direct_report}</span>}
-
                                 </div>
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                     <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Indirect Report:</label>
-                                    <input type="text" value={departmentInfo.indirect_report} name="indirect_report" id="" placeholder='Indirect Report Here'
-                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
+        text-input text-base mb-1'>Indirect Report:</label>
+                                    <CustomSelect
+                                        menuPlacement="auto"
+                                        name='indirect_report'
+                                        placeholder="Select Indirect Report To..."
+                                        value={managers.find(manager => manager.label === defaultDeparmentInfo?.indirect_report)}
+                                        onChange={(selectedOption) => handleChange("indirect_report", selectedOption.label)}
+                                        // onChange={(selectedOptions) => handleEdit("indirect_report", selectedOptions.map(option => option.label))}
+                                        options={managers
+                                            ?.filter(manager => manager.username) // Filter managers with user_role equal to 2
+                                            .map((manager) => ({
+                                                value: manager.id,
+                                                label: manager.username,
+                                            }))}
+                                    // isEdit={isEdit} // Pass down the isEdit prop
+                                    // isMulti={true}
                                     />
                                     {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
                                 </div>
-
                             </div>
 
+
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2 lg:w-[45.5%]'>
+
+                                {/* <div className='flex flex-col mt-2 md:mt-5 md:w-1/2 lg:w-[45.5%]'>
                                     <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Department Manager:</label>
+                                   text-input text-base mb-1'>Department Manager:</label>
                                     <input type="text" value={departmentInfo.department_manager} name="department_manager" id="" placeholder='Department Manager Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                                     />
                                     {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
+                                </div> */}
+                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
+                                    <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
+                        text-input text-base mb-1'>Department Manager:</label>
+                                    <Select
+                                        // isDisabled={isEdit ? false : true}
+                                        menuPlacement="top"
+                                        name='department_manager'
+                                        value={HeadOfDepartment.find(manager => manager.label === departmentInfo?.department_manager)}
+                                        onChange={(selectedOption) => handleChange("department_manager", selectedOption.value)}
+                                        options={HeadOfDepartment}
+                                    // options={managers
+                                    //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
+                                    //   .map((manager) => ({
+                                    //     value: manager.id,
+                                    //     label: manager.username,
+                                    //   }))}
+                                    />
+
+                                    {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
                                 </div>
+
                                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                                     <label
                                         htmlFor="date_of_birth"
                                         className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
+                                  text-input text-base mb-1"
                                     >
                                         Joining Date:
                                     </label>
@@ -311,4 +371,12 @@ const Department = ({ errors, setErrors, prevstep, submitForm }) => {
     )
 }
 
-export default Department
+const mapStateToProps = (state) => {
+    return {
+        userProfile: state.user.userProfile,
+        token: state.user.token,
+        baseUrl: state.user.baseUrl,
+    };
+};
+
+export default connect(mapStateToProps)(Department);

@@ -11,6 +11,7 @@ import { BiEdit } from 'react-icons/bi';
 import moment from 'moment';
 import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
+import CustomSelect from './customSelect';
 
 const jobRoles = [
   { label: 'Intern', value: 'Intern' },
@@ -32,6 +33,20 @@ const employeeStatus = [
   { label: 'Legal Case', value: 'Legal Case' }
 ];
 
+const HeadOfDepartment = [
+  { label: 'Naveed (CEO)', value: 'Naveed' },
+  { label: 'Komal (Peoples Teams Head)', value: 'Komal' },
+  { label: 'Farhan (HR Manager)', value: 'Farhan' },
+  { label: 'Arshad Ali (Business Development & Sales)', value: 'Arshad Ali' },
+  { label: 'Haris (Pre-Sales)', value: 'Haris' },
+  { label: 'Sadia (Project Management)', value: 'Sadia' },
+  { label: 'Asra (Front End Lead)', value: 'Asra' },
+  { label: 'Shujat ( Backend Lead)', value: 'Shujat' },
+  { label: 'Faisal( Operations )', value: 'Faisal' },
+  { label: 'Imran (Marketing)', value: 'Imran' },
+  { label: 'Prakash ( VP Sales)', value: 'Prakash' },
+];
+
 const departmentSchema = Joi.object({
   department_name: Joi.string()
     .regex(/^[a-zA-Z\s]+$/)
@@ -49,30 +64,9 @@ const departmentSchema = Joi.object({
       "string.empty": `Position is required`,
       "string.pattern.base": `Position must only contain letters and spaces`,
     }),
-  direct_report: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
-    .required()
-    .label('Direct Report')
-    .messages({
-      "string.empty": `Direct Report is required`,
-      "string.pattern.base": `Direct Report must only contain letters and spaces`,
-    }),
-  indirect_report: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
-    .required()
-    .label('Indirect Report')
-    .messages({
-      "string.empty": `Indirect Report is required`,
-      "string.pattern.base": `Indirect Report must only contain letters and spaces`,
-    }),
-  department_manager: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
-    .required()
-    .label('Department Manager')
-    .messages({
-      "string.empty": `Department Manager is required`,
-      "string.pattern.base": `Department Manager must only contain letters and spaces`,
-    }),
+  direct_report: Joi.string().required(),
+  indirect_report: Joi.string().required(),
+  department_manager: Joi.string().required()
 });
 
 const Department = ({ errors, setErrors, prevstep, token,
@@ -88,7 +82,9 @@ const Department = ({ errors, setErrors, prevstep, token,
   let [cancelBox, setCancelBox] = useState(false);
   let [defaultData, setDefaultData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [managers, setManagers] = useState([]);
   const navigate = useNavigate()
+  const [showIndirectReport, setShowIndirectReport] = useState(false);
 
   const id = userProfile.id;
 
@@ -103,6 +99,7 @@ const Department = ({ errors, setErrors, prevstep, token,
         headers,
       });
       const employeeData = employeeResponse.data;
+      console.log('emplyee data', employeeData);
       if (employeeData) {
         const departmentObj = {
           department_name: employeeData.department_name,
@@ -115,11 +112,23 @@ const Department = ({ errors, setErrors, prevstep, token,
           employee_status: employeeData.employee_status
         };
         setDefaultData(departmentObj);
+
+        // Fetch managers
+        const response = await axios.get(`${baseUrl}/emp/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setManagers(response.data);
+        }
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
 
   useEffect(() => {
     fetchData();
@@ -185,24 +194,54 @@ const Department = ({ errors, setErrors, prevstep, token,
   //   setErrors({ ...errors, [name]: null });
   // };
 
-  const handleEdit = (name, value) => {
-    // Check if the name is 'employee_type'
-    if (name === 'employee_type') {
+  const handleEdit = (name, value, values) => {
+    // Check if the name is 'employee_type' or 'employee_status'
+    if (name === 'employee_type' || name === 'employee_status') {
       setDefaultData({ ...defaultData, [name]: value.value });
-    } else if (name === "employee_status") {
-      setDefaultData({ ...defaultData, [name]: value.value });
-    }
-    else {
+    } else if (name === "indirect_report" || name === "direct_report") {
+      console.log(`Selected ${name === "indirect_report" ? "In-Direct" : "Direct"} Managers:`, values);
+      const updatedValues = values || []; // In case 'values' is null
+      const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
+      setDefaultData({
+        ...defaultData,
+        [name]: uniqueValues.join(', '), // Convert array to string
+      });
+    } else {
       setDefaultData({ ...defaultData, [name]: value });
     }
     // Clear errors for the updated field
     setErrors({ ...errors, [name]: null });
   };
 
+
+
   const handleJoiningDate = (date) => {
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleEdit("joining_date", formattedDate);
   };
+
+  // useEffect(() => {
+  //   const fetchManagers = async () => {
+  //     try {
+  //       const response = await axios.get(`${baseUrl}/emp/`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       if (response.status === 200) {
+  //         setManagers(response.data);
+  //         console.log('managerssss', response.data);
+  //       }
+  //     } catch (error) {
+  //       toast.error("Error fetching managers. Please try again.", {
+  //         position: toast.POSITION.TOP_RIGHT,
+  //       });
+  //     }
+  //   };
+
+  //   fetchManagers();
+  // }, []);
 
 
   return (
@@ -292,40 +331,76 @@ const Department = ({ errors, setErrors, prevstep, token,
                       isDisabled={isEdit ? false : true}
                       name="employee_status"
                       value={employeeStatus.find(option => option.label === defaultData.employee_status)}
+                      onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
                       options={employeeStatus}
                       isSearchable={false}
                       className="focus:outline-none border-none"
-                      onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
                     />
                   </div>
                 </div>
               </div>
+
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                   <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Direct Report:</label>
-                  <input type="text" readOnly={!isEdit} value={defaultData.direct_report} name="direct_report" id="" placeholder='Direct Report Here'
-                    className={`${isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                    onClick={() => setIsEdit(true)}
-                    onChange={(e) => handleEdit(e.target.name, e.target.value)}
+                      text-input text-base mb-1'>Direct Report:</label>
+                  <CustomSelect
+                    name='direct_report'
+                    placeholder="Select Direct Report To..."
+                    value={managers.find(manager => manager.label === defaultData.direct_report)}
+                    onChange={(selectedOption) => handleEdit("direct_report", selectedOption, selectedOption)} // Pass selectedOption as values
+                    options={managers
+                      ?.filter(manager => manager.username)
+                      .map((manager) => ({
+                        value: manager.id,
+                        label: manager.username,
+                      }))}
+                    isEdit={isEdit}
+                    isMulti={true}
                   />
                   {errors.direct_report && <span className="text-red-500 text-sm ">{errors.direct_report}</span>}
                 </div>
+
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                   <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Indirect Report:</label>
-                  <input type="text" readOnly={!isEdit} value={defaultData.indirect_report} name="indirect_report" id="" placeholder='Indirect Report Here'
-                    className={`${isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                    onClick={() => setIsEdit(true)}
-                    onChange={(e) => handleEdit(e.target.name, e.target.value)}
-                  />
-                  {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
+                      text-input text-base mb-1'>Indirect Report:</label>
+                  <div className='flex gap-2'>
+                    <div>
+                      <input
+                        type="checkbox"
+                        checked={showIndirectReport}
+                        onChange={() => setShowIndirectReport(!showIndirectReport)}
+                      />
+                    </div>
+                    <div className='w-full'>
+                      {showIndirectReport && (
+                        <>
+                          <CustomSelect
+                            name='indirect_report'
+                            placeholder="Select Direct Report To..."
+                            value={managers.find(manager => manager.label === defaultData.indirect_report)}
+                            onChange={(selectedOption) => handleEdit("indirect_report", selectedOption, selectedOption)}
+                            options={managers
+                              ?.filter(manager => manager.username)
+                              .map((manager) => ({
+                                value: manager.id,
+                                label: manager.username,
+                              }))}
+                            isEdit={isEdit}
+                            isMulti={true}
+                          />
+                          {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
+
               </div>
+
+
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2 lg:w-[45.5%]'>
+                {/* <div className='flex flex-col mt-2 md:mt-5 md:w-1/2 lg:w-[45.5%]'>
                   <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Department Manager:</label>
                   <input type="text" readOnly={!isEdit} value={defaultData.department_manager} name="department_manager" id="" placeholder='Department Manager Here'
@@ -335,7 +410,28 @@ const Department = ({ errors, setErrors, prevstep, token,
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                   {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
+                </div> */}
+                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
+                  <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
+                        text-input text-base mb-1'>Department Manager:</label>
+                  <Select
+                    isDisabled={isEdit ? false : true}
+                    menuPlacement="top"
+                    name='department_manager'
+                    value={HeadOfDepartment.find(manager => manager.label === defaultData.department_manager)}
+                    onChange={(selectedOption) => handleEdit("department_manager", selectedOption.value)}
+                    options={HeadOfDepartment}
+                  // options={managers
+                  //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
+                  //   .map((manager) => ({
+                  //     value: manager.id,
+                  //     label: manager.username,
+                  //   }))}
+                  />
+
+                  {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
                 </div>
+
                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                   <label
                     htmlFor="date_of_birth"
@@ -453,7 +549,8 @@ const Department = ({ errors, setErrors, prevstep, token,
             </div>
           </div>
         </div>
-      )}
+      )
+      }
       <ToastContainer />
     </>
   )
