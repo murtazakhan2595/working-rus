@@ -91,9 +91,38 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
         }
       );
 
-
-
       if (response.status === 200) {
+         for (const key in visaDetailsFiles) {
+          if (visaDetailsFiles.hasOwnProperty(key)) {
+            const files = visaDetailsFiles[key];
+            for (const file of files) {
+              let attachmentResponse = await axios.post(
+                `${baseUrl}/attachment/`,
+                {
+                  employee_id: userProfile.id,
+                  name: key,
+                  description: `${key} File`,
+                  document: {
+                    name:file.name,
+                    data:file.data,
+                  },
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              if (attachmentResponse.status !== 201) {
+                toast.error("Attachements submission Failed. Please try again.", {
+                  position: "top-center",
+                  autoClose: 3000,
+                });
+              }
+            }
+          }
+        }
         const cvResponse = await axios.post(
           `${baseUrl}/attachment/`,
           {
@@ -238,186 +267,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
         //   position: "top-center",
         //   autoClose: 3000, // Close after 3 seconds
         // });
-      }
-
-      if (response.status === 200) {
-        console.log('visa details files,', visaDetailsFiles);
-        for (const key in visaDetailsFiles) {
-          if (visaDetailsFiles.hasOwnProperty(key)) {
-            const files = visaDetailsFiles[key];
-            for (const file of files) {
-              let attachmentResponse = await axios.post(
-                `${baseUrl}/attachment/`,
-                {
-                  employee_id: userProfile.id,
-                  name: key,
-                  description: `${key} File`,
-                  document: {
-                    name:file.name,
-                    data:file.data,
-                  },
-                },
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-              if (attachmentResponse.status !== 201) {
-                toast.error("Form submission failed. Please try again.", {
-                  position: "top-center",
-                  autoClose: 3000,
-                });
-              }
-              if (attachmentResponse.status === 200) {
-                const cvResponse = await axios.post(
-                  `${baseUrl}/attachment/`,
-                  {
-                    employee_id: userProfile.id,
-                    name: "cv",
-                    description: "Curriculum Vitae",
-                    document: cv,
-                  },
-                  {
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                      "Content-Type": "application/json",
-                    },
-                  }
-                );
-                if (cvResponse.status === 201) {
-                  proExp.map(async (exp) => {
-                    let experience = {
-                      employee_id: userProfile.id,
-                      exp_organization: exp.exp_organization,
-                      exp_designation: exp.exp_designation,
-                      exp_letter: exp.file,
-                      exp_start_date: moment(exp.exp_start_date, "DD-MM-YYYY").format(
-                        "YYYY-MM-DD"
-                      ),
-                      exp_end_date: moment(exp.exp_end_date, "DD-MM-YYYY").format(
-                        "YYYY-MM-DD"
-                      ),
-                    };
-                    let res = await axios.post(`${baseUrl}/experience/`, experience, {
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                      },
-                    });
-                    if (res.status !== 201) {
-                      // toast.error("Form submission failed. Please try again.", {
-                      //   position: "top-center",
-                      //   autoClose: 3000,
-                      // });
-                      return;
-                    }
-                  });
-
-                  let education = {
-                    employee_id: userProfile.id,
-                    education_level: academicInfo.education_level,
-                    program: academicInfo.program,
-                    institute_name: academicInfo.institute_name,
-                    edu_start_date: moment(
-                      academicInfo.edu_start_date,
-                      "DD-MM-YYYY"
-                    ).format("YYYY-MM-DD"),
-                    edu_end_date: moment(
-                      academicInfo.edu_end_date,
-                      "DD-MM-YYYY"
-                    ).format("YYYY-MM-DD"),
-                  };
-                  let resEdu = await axios.post(`${baseUrl}/education/`, education, {
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                      "Content-Type": "application/json",
-                    },
-                  });
-                  if (resEdu.status !== 201) {
-                    toast.error("Form submission failed. Please try again.", {
-                      position: "top-center",
-                      autoClose: 3000,
-                    });
-                    return;
-                  }
-
-                  let acadmicDoc = {
-                    employee_id: userProfile.id,
-                    name: "acadmicDoc",
-                    description: "Acadmic Document",
-                    document: academicInfo.certificate,
-                  };
-                  let resAcademicDoc = await axios.post(
-                    `${baseUrl}/attachment/`,
-                    acadmicDoc,
-                    {
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                      },
-                    }
-                  );
-                  if (resAcademicDoc.status !== 201) {
-                    toast.error("Form submission failed. Please try again.", {
-                      position: "top-center",
-                      autoClose: 3000,
-                    });
-                    return;
-                  }
-                  certifications.map(async (crt) => {
-                    let certification = {
-                      employee_id: userProfile.id,
-                      certification_name: crt.certification_name,
-                      completion_date: crt.completion_date,
-                      certification_body: crt.certification_body,
-                      expiry_date: crt.expiry_date,
-                    };
-                    let res = await axios.post(
-                      `${baseUrl}/certification/`,
-                      certification,
-                      {
-                        headers: {
-                          Authorization: `Bearer ${token}`,
-                          "Content-Type": "application/json",
-                        },
-                      }
-                    );
-                    if (res.status !== 201) {
-                      // toast.error("Form submission failed. Please try again.", {
-                      //   position: "top-center",
-                      //   autoClose: 3000,
-                      // });
-                      return;
-                    }
-                  });
-
-                  toast.success("Form submitted successfully!", {
-                    position: "top-center",
-                    autoClose: 3000,
-                  });
-                  sessionStorage.clear();
-                  setTimeout(() => {
-                    navigate("/");
-                    sessionStorage.clear();
-                  }, 3000);
-                } else {
-                  // toast.error("Form submission failed. Please try again.", {
-                  //   position: "top-center",
-                  //   autoClose: 3000,
-                  // });
-                  return;
-                }
-              } else {
-                // toast.error("Form submission failed. Please try again.", {
-                //   position: "top-center",
-                //   autoClose: 3000, // Close after 3 seconds
-                // });
-              }
-            }
-          }
-        }
       }
 
     } catch (error) {

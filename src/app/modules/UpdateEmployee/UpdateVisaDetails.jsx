@@ -14,98 +14,23 @@ import { WiCloudRefresh } from 'react-icons/wi';
 import Joi from "joi";
 import { RxCross2 } from 'react-icons/rx';
 
-const VisaDetails = ({ prevstep,
+
+const UpdateVisaDetails = ({ prevstep,
   nextstep,
   token,
   errors,
   setErrors,
   userProfile,
   baseUrl, }) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
 
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
-  let storedData = getDataFromSessionStorage("visaDetails");
-  const storedVisaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
-
-  let [defaultData, setDefaultData] = useState({});
-  const [visaDetailsFiles, setVisaDetailsFiles] = useState(storedVisaDetailsFiles || {});
   let [isEdit, setIsEdit] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [documents, setDocuments] = useState({
-    passportCopyDoc: null,
-    entryPermitDoc: null,
-    visaPageDoc: null,
-    medicalDoc: null,
-    idAppDoc: null,
-    idFront: null,
-    idBack: null,
-    insuranceCard: null,
-  });
-
-  const visaDetailsSchema = Joi.object({
-    passport_number: Joi.required().label('Passport Number'),
-    Passport_Issuance_Country: Joi.required().label('Issuance Country'),
-    Passport_Issuance_Date: Joi.date().required().label('Passport Issuance Date'),
-    Passport_Expiry_Date: Joi.date().required().label('Passport Expiry Date'),
-
-    // visa
-    entry_permit_number: Joi.string().required().label('Entry Permit Number'),
-    country_of_visa_issuance: Joi.string().required().label('Visa Issuance Country'),
-    uid_number: Joi.string().required().label('UID Number'),
-    visa_type: Joi.string().required().label('Visa Type'),
-    visa_issuance_date: Joi.date().iso().required().label('Visa Issuance Date'),
-    visa_expiry_date: Joi.date().iso().required().label('Visa Expiry Date'),
-    visa_duration: Joi.string().required().label('Visa Duration'),
-    visa_country_entry_date: Joi.date().iso().required().label('Visa Country Entry Date'),
-    visa_country_exit_date: Joi.date().iso().required().label('Visa Country Exit Date'),
-    enter_permit: Joi.any().label('Entry Permit'),
-    visa_page: Joi.any().label('Visa Page'),
-    medical: Joi.any().label('Medical Result'),
-    id_application: Joi.any().label('ID Application'),
-
-    living_country_id_no: Joi.required().label('Living Country ID Number'),
-    place_of_issuance: Joi.required().label('Place of Issuance'),
-    id_issuance_date: Joi.date().required().label('ID Issuance Date'),
-    id_expiry_date: Joi.date().required().label('ID Expiry Date'),
-    id_front: Joi.string().trim().allow('').label('ID Front'),
-    id_back: Joi.string().trim().allow('').label('ID Back'),
-    // id 
-    dha_id: Joi.required().label('DHA ID'),
-    card_number: Joi.required().label('Card Number'),
-    insurance_policy: Joi.required().label('Insurance Policy'),
-    insurance_company: Joi.required().label('Insurance Company'),
-    insurance_active_date: Joi.date().required().label('Insurance Active Date'),
-    insurance_expiry_date: Joi.required().label('Insurance Expiry Date'),
-  });
-
-
-  const [showVisa, setShowVisa] = useState(true);
-  const [showInsurance, setShowInsurance] = useState(true);
-  const [showPassport, setShowPassport] = useState(true);
+  let [defaultData, setDefaultData] = useState({});
+  const [documents, setDocuments] = useState({});
+  const [visaDetailsFiles, setVisaDetailsFiles] = useState({})
   const [cancelBox, setCancelBox] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const id = userProfile.id;
-
-
-
-  const toggleShowPassport = () => {
-    setShowPassport(!showPassport)
-  }
-
-  const toggleShowVisa = () => {
-    setShowVisa(!showVisa)
-  }
-
-  const toggleShowInsurance = () => {
-    setShowInsurance(!showInsurance)
-  }
-
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -117,32 +42,7 @@ const VisaDetails = ({ prevstep,
       const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
         headers,
       });
-      const employeeData = employeeResponse.data;
-      setDefaultData({
-        passport_number: employeeData.passport_number,
-        Passport_Issuance_Country: employeeData.Passport_Issuance_Country,
-        Passport_Issuance_Date: employeeData.Passport_Issuance_Date,
-        Passport_Expiry_Date: employeeData.Passport_Expiry_Date,
-        entry_permit_number: employeeData.entry_permit_number,
-        country_of_visa_issuance: employeeData.country_of_visa_issuance,
-        visa_duration: employeeData.visa_duration,
-        uid_number: employeeData.uid_number,
-        living_country_id_no: employeeData.living_country_id_no,
-        dha_id: employeeData.dha_id,
-        card_number: employeeData.card_number,
-        insurance_policy: employeeData.insurance_policy,
-        insurance_company: employeeData.insurance_company,
-        visa_expiry_date: employeeData.visa_expiry_date,
-        visa_issuance_date: employeeData.visa_issuance_date,
-        visa_country_entry_date: employeeData.visa_country_entry_date,
-        visa_country_exit_date: employeeData.visa_country_exit_date,
-        id_issuance_date: employeeData.id_issuance_date,
-        id_expiry_date: employeeData.id_expiry_date,
-        insurance_active_date: employeeData.insurance_active_date,
-        insurance_expiry_date: employeeData.insurance_expiry_date,
-        visa_type: employeeData.visa_type,
-        place_of_issuance: employeeData.place_of_issuance,
-      });
+      setDefaultData(employeeResponse.data);
 
       // setDefaultData(employeeData)
     } catch (error) {
@@ -152,39 +52,61 @@ const VisaDetails = ({ prevstep,
 
   const fetchDocs = async () => {
     try {
-      const passportCopyResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"passport_copy"}`, { headers });
-      const entryPermitResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"enter_permit"}`, { headers });
-      const visaDocResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"visa_page"}`, { headers });
-      const medicalResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"medical"}`, { headers });
-      const IdAppResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_application"}`, { headers });
-      const IdFrontResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_front"}`, { headers });
-      const IdBackResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_back"}`, { headers });
-      const InsuranceCardResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id}, "name":"insurance_card"}`, { headers });
+      const responseArray = await Promise.all([
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"passport_copy"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"enter_permit"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"visa_page"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"medical"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_application"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_front"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_back"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"insurance_card"}`, { headers })
+      ]);
 
-      // Update state with fetched documents
-      setDocuments({
-        passportCopyDoc: passportCopyResponse.data[0],
-        entryPermitDoc: entryPermitResponse.data[0],
-        visaPageDoc: visaDocResponse.data[0],
-        medicalDoc: medicalResponse.data[0],
-        idAppDoc: IdAppResponse.data[0],
-        idFront: IdFrontResponse.data[0],
-        idBack: IdBackResponse.data[0],
-        insuranceCard: InsuranceCardResponse.data[0],
-      });
+      // Construct an object mapping document names to their responses
+      const newDocuments = {
+        passport_copy: responseArray[0].data[0],
+        enter_permit: responseArray[1].data[0],
+        visa_page: responseArray[2].data[0],
+        medical: responseArray[3].data[0],
+        id_application: responseArray[4].data[0],
+        id_front: responseArray[5].data[0],
+        id_back: responseArray[6].data[0],
+        insurance_card: responseArray[7].data[0]
+      };
+
+      // Update state with the newDocuments object
+      setDocuments(newDocuments);
     } catch (error) {
       console.error("Error fetching documents:", error);
     }
   };
 
 
+
   useEffect(() => {
-    fetchData();
+    fetchData()
     fetchDocs()
-  }, []);
+  }, [])
 
 
-  // Handle change for date inputs
+  const handleEdit = (name, value) => {
+    let modifiedValue = value;
+    if (name === "visa_type") {
+      modifiedValue = value.value;
+    } else if (name === "place_of_issuance" || name === "Passport_Issuance_Country" || name === "country_of_visa_issuance") {
+      modifiedValue = value.label
+    }
+    // Update defaultData state
+    setDefaultData({ ...defaultData, [name]: modifiedValue });
+    setIsEdit(true);
+  };
+
+  const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name
+  }));
+
   const handleDateChange = (date, name) => {
     const formattedDate = moment(date).format("YYYY-MM-DD"); // Format the date as "YYYY-MM-DD"
     handleEdit(name, formattedDate);
@@ -202,190 +124,122 @@ const VisaDetails = ({ prevstep,
       })
     )
       .then((fileContents) => {
-        setVisaDetailsFiles({ ...visaDetailsFiles, [name]: fileContents });
+        const updatedFiles = { ...visaDetailsFiles };
+        updatedFiles[name] = fileContents;
+        // Set the updated files state
+        setVisaDetailsFiles(updatedFiles);
       })
       .catch((error) => console.error("Error reading files:", error));
   };
 
-
-  useEffect(() => {
-    // Save visa files to session storage
-    setDataInSessionStorage("visaDetailsFiles", visaDetailsFiles);
-  }, [visaDetailsFiles]);
-
-  // Function to handle next step
-  const handleNextStep = () => {
-    nextstep();
-  };
-
-  // Get country options for Select component
-  const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
-    value: countryCode,
-    label: getAllCountries()[countryCode].name
-  }));
-
-
-
-  // handleEdit
-  const handleEdit = (name, value) => {
-    let modifiedValue = value;
-    if (name === "visa_type") {
-      modifiedValue = value.value;
-    } else if (name === "place_of_issuance" || name === "Passport_Issuance_Country" || name === "country_of_visa_issuance") {
-      modifiedValue = value.label
-    }
-    // Update defaultData state
-    setDefaultData({ ...defaultData, [name]: modifiedValue });
-    setIsEdit(true);
-
-    // Clear error for the field when it's filled
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
-    }
-  };
-
-
   const updateDataOnServer = async () => {
+    setIsLoading(true);
     try {
       // Make a copy of the updated data
       const updatedDataCopy = { ...defaultData };
 
-      // Patch the updated data to the API
-      const { error } = visaDetailsSchema.validate(updatedDataCopy, {
-        abortEarly: false,
-      })
-      if (error) {
-        const validationErrors = {};
-        error.details.forEach(detail => {
-          validationErrors[detail.path[0]] = detail.message;
-        })
-        setErrors(validationErrors);
-
-      }
+      // Update regular fields
       const response = await axios.patch(`${baseUrl}/emp/${id}`, updatedDataCopy, { headers });
-      if (response.status === 200 || response.status === 204) {
 
-        const medicalRes = await axios.patch(`${baseUrl}/attachment/${documents.medicalDoc.id}`, {
-          "employee_id": id,
-          "name": "medical",
-          "description": `${visaDetailsFiles.medical[0]?.name} file`,
-          document: {
-            name: visaDetailsFiles.medical[0]?.name,
-            data: visaDetailsFiles.medical[0]?.data,
-          },
-        }, { headers });
+      // Update file fields
+      // const updateAttachments = async (docName, fileData) => {
+      //   if (documents[docName]?.id && fileData) {
+      //     await axios.patch(`${baseUrl}/attachment/${documents[docName]?.id}`, {
+      //       employee_id: id,
+      //       name: docName,
+      //       description: `${fileData.name} file`,
+      //       document: {
+      //         name: fileData.name,
+      //         data: fileData.data,
+      //       },
+      //     }, { headers });
+      //   }
+      // };
 
-        const idAppRes = await axios.patch(`${baseUrl}/attachment/${documents.idAppDoc?.id}`, {
-          "employee_id": id,
-          "name": "id_application",
-          "description": `${visaDetailsFiles.id_application[0]?.name} file`,
-          document: {
-            name: visaDetailsFiles.id_application[0]?.name,
-            data: visaDetailsFiles.id_application[0]?.data,
-          },
-        }, { headers });
+      const updateAttachments = async (docName, fileData) => {
+        setIsLoading(true);
+        try {
+          // If there is an existing document ID for the specified document name
+          if (documents[docName]?.id) {
+            // Update the existing attachment
+            await axios.patch(`${baseUrl}/attachment/${documents[docName]?.id}`, {
+              employee_id: id,
+              name: docName,
+              description: `${fileData.name} file`,
+              document: {
+                name: fileData.name,
+                data: fileData.data,
+              },
+            }, { headers });
+          } else {
+            // Otherwise, post a new attachment
+            await axios.post(`${baseUrl}/attachment/`, {
+              employee_id: id,
+              name: docName,
+              description: `${fileData.name} file`,
+              document: {
+                name: fileData.name,
+                data: fileData.data,
+              },
+            }, { headers });
+          }
+        } catch (error) {
+          console.error(`Error updating/creating ${docName} attachment:`, error);
+          // Handle errors here
+        }
 
-        const visaRes = await axios.patch(`${baseUrl}/attachment/${documents.visaPageDoc?.id}`, {
-          "employee_id": id,
-          "name": "visa_page",
-          "description": `${visaDetailsFiles.visa_page[0]?.name} file`,
-          document: {
-            name: visaDetailsFiles.visa_page[0]?.name,
-            data: visaDetailsFiles.visa_page[0]?.data,
-          },
-        }, { headers });
+        setIsLoading(false);
+      };
 
-        const entryPermitResponse = await axios.patch(`${baseUrl}/attachment/${documents.entryPermitDoc?.id}`, {
-          "employee_id": id,
-          "name": "enter_permit",
-          "description": `${visaDetailsFiles.enter_permit[0]?.name} file`,
-          document: {
-            name: visaDetailsFiles.enter_permit[0]?.name,
-            data: visaDetailsFiles.enter_permit[0]?.data,
-          },
-        }, { headers });
-
-        const idBackRes = await axios.patch(`${baseUrl}/attachment/${documents.idBack?.id}`, {
-          "employee_id": id,
-          "name": "id_back",
-          "description": `${visaDetailsFiles.id_back[0]?.name} file`,
-          document: {
-            name: visaDetailsFiles.id_back[0]?.name,
-            data: visaDetailsFiles.id_back[0]?.data,
-          },
-        }, { headers });
-
-        const idFrontRes = await axios.patch(`${baseUrl}/attachment/${documents.idFront?.id}`, {
-          "employee_id": id,
-          "name": "id_front",
-          "description": `${visaDetailsFiles.id_front[0]?.name} file`,
-          document: {
-            name: visaDetailsFiles.id_front[0]?.name,
-            data: visaDetailsFiles.id_front[0]?.data,
-          },
-        }, { headers });
-
-      }
-
-      const passportRes = await axios.patch(`${baseUrl}/attachment/${documents.passportCopyDoc?.id}`, {
-        "employee_id": id,
-        "name": "passport_copy",
-        "description": `${visaDetailsFiles.passport_copy[0]?.name} file`,
-        document: {
-          name: visaDetailsFiles.passport_copy[0]?.name,
-          data: visaDetailsFiles.passport_copy[0]?.data,
-        },
-      }, { headers });
-
-      const insuranceRes = await axios.patch(`${baseUrl}/attachment/${documents.insuranceCard?.id}`, {
-        "employee_id": id,
-        "name": "insurance_card",
-        "description": `${visaDetailsFiles.insurance_card[0]?.name} file`,
-        document: {
-          name: visaDetailsFiles.insurance_card[0]?.name,
-          data: visaDetailsFiles.insurance_card[0]?.data,
-        },
-      }, { headers });
-
-      sessionStorage.clear();
-
-
-      // If the update is successful, clear session storage
+      await Promise.all([
+        updateAttachments('medical', visaDetailsFiles.medical ? visaDetailsFiles.medical[0] : null),
+        updateAttachments('id_application', visaDetailsFiles.id_application ? visaDetailsFiles.id_application[0] : null),
+        updateAttachments('visa_page', visaDetailsFiles.visa_page ? visaDetailsFiles.visa_page[0] : null),
+        updateAttachments('enter_permit', visaDetailsFiles.enter_permit ? visaDetailsFiles.enter_permit[0] : null),
+        updateAttachments('id_back', visaDetailsFiles.id_back ? visaDetailsFiles.id_back[0] : null),
+        updateAttachments('id_front', visaDetailsFiles.id_front ? visaDetailsFiles.id_front[0] : null),
+        updateAttachments('passport_copy', visaDetailsFiles.passport_copy ? visaDetailsFiles.passport_copy[0] : null),
+        updateAttachments('insurance_card', visaDetailsFiles.insurance_card ? visaDetailsFiles.insurance_card[0] : null)
+      ]);
 
       // Notify user
       toast.success("Visa details updated successfully!", {
         position: "top-right",
         autoClose: 1000,
       });
+
       // Move to the next step
       nextstep();
-      sessionStorage.clear();
-
     } catch (error) {
-      console.error("Error updating data:", error);
-      // Handle errors here
+      toast.error(error, {
+        position: "top-right",
+        autoClose: 1000,
+      });
     }
   };
 
-
   const handleSave = () => {
     updateDataOnServer();
-    setIsEdit(false);
+    // setIsEdit(false);
   };
 
-  // Function to handle removing a document
-  const removeDocument = (documentName) => {
-    setDocuments({ ...documents, [documentName]: null });
-  };
 
+  // enable edit on click
+
+  const handleFieldClick = () => {
+    setIsEdit(true);
+  }
+
+
+  const handleNextStep = () => {
+    nextstep();
+  };
 
   return (
     <div className="bg-[#F9F9F9] h-[76vh] overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
       <div className="flex justify-between">
         <h2 className="tracking-wide mb-4 flex items-center gap-x-3">
           <p className='text-baseBlue lg:text-lg'>Passport Details</p>
-          <input type="checkbox" checked={showPassport} onChange={toggleShowPassport} />
-          <label className='text-sm text-gray-500'>Not Applicable</label>
         </h2>
         <div className="flex gap-2">
           {isEdit ? (
@@ -402,35 +256,31 @@ const VisaDetails = ({ prevstep,
           )}
         </div>
       </div>
-      {showPassport &&
-        <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+      <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Passport Number:
-            </label>
-            <input type="text" name="passport_number"
-              readOnly={!isEdit}
-              value={defaultData.passport_number}
-              onChange={(e) => handleEdit(e.target.name, e.target.value)}
-              placeholder="Passport Number" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            />
-            {errors.passport_number && (
-              <span className="text-red-500 text-sm ">
-                {errors.passport_number}
-              </span>
-            )}
-          </div>
+          >
+            Passport Number:
+          </label>
+          <input type="text" name="passport_number"
+            readOnly={!isEdit}
+            value={defaultData.passport_number}
+            onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            placeholder="Passport Number" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+            onClick={handleFieldClick}
+          />
+        </div>
 
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Passport Issuance:
-            </label>
+          >
+            Passport Issuance:
+          </label>
+          <div onClick={handleFieldClick}>
             <Select
               className={`${isEdit ? "text-black" : "text-gray-500"}`}
               name="Passport_Issuance_Country"
@@ -439,23 +289,21 @@ const VisaDetails = ({ prevstep,
                 (option) => option.label === defaultData.Passport_Issuance_Country
               )}
               onChange={(selectedOption) => handleEdit("Passport_Issuance_Country", selectedOption)}
+              onClick={handleFieldClick}
               isDisabled={!isEdit}
             />
-            {errors.passport_number && (
-              <span className="text-red-500 text-sm ">
-                {errors.passport_number}
-              </span>
-            )}
           </div>
+        </div>
 
 
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[15%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[15%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Issuance Date:
-            </label>
+          >
+            Issuance Date:
+          </label>
+          <div onClick={handleFieldClick} >
             <Datepicker
               day={
                 defaultData.Passport_Issuance_Date
@@ -481,20 +329,20 @@ const VisaDetails = ({ prevstep,
                   : null
               }
               onChange={(date) => handleDateChange(date, "Passport_Issuance_Date")}
+
             />
-            {errors.Passport_Issuance_Date && (
-              <span className="text-red-500 text-sm ">
-                {errors.Passport_Issuance_Date}
-              </span>
-            )}
           </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[14.2%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+        </div>
+
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[14.2%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Expiry Date:
-            </label>
+          >
+            Expiry Date:
+          </label>
+          <div onClick={handleFieldClick} >
+
             <Datepicker
               day={
                 defaultData.Passport_Expiry_Date
@@ -520,79 +368,62 @@ const VisaDetails = ({ prevstep,
                   : null
               }
               onChange={(date) => handleDateChange(date, "Passport_Expiry_Date")}
-            />
-            {errors.Passport_Expiry_Date && (
-              <span className="text-red-500 text-sm ">
-                {errors.Passport_Expiry_Date}
-              </span>
-            )}
 
-          </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[23%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-            >
-              Passport Copy:
-            </label>
-            {isEdit ? (
-              <div className="flex items-center gap-x-2">
-                <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} />
-                {/* {documents.passportCopyDoc ? documents.passportCopyDoc.document.name : "Not available"}
-                <WiCloudRefresh className="text-blue-600 text-xl" /> */}
-              </div>
-            ) : (
-              <div className="flex items-center gap-x-2">
-                {documents.passportCopyDoc ? documents.passportCopyDoc.document.name : "Not available"}
-                <WiCloudRefresh className="text-gray-500 text-xl" />
-              </div>
-            )}
-            {/* <div className="flex items-center gap-x-2">
-              {documents.passportCopyDoc ? documents.passportCopyDoc.document.name : "Not available"}
-              <WiCloudRefresh className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`} />
-            </div>
-            <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} /> */}
+            />
           </div>
         </div>
-      }
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[23%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+          >
+            Passport Copy:
+          </label>
+          {isEdit ? (
+            <div className="flex items-center gap-x-2">
+              <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} />
+            </div>
+          ) : (
+            <div className="flex items-center gap-x-2">
+              {documents.passport_copy ? documents.passport_copy.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+            </div>
+          )}
 
+        </div>
+      </div>
 
+      {/* Visa */}
       <h2 className="mb-2 lg:mb-4 lg:mt-7 mt-2 flex items-center gap-x-3">
         <p className='text-baseBlue tracking-wide lg:text-lg'>Visa Details</p>
-        <input type="checkbox" checked={showVisa} onChange={toggleShowVisa} />
-        <label className='text-sm text-gray-500'>Not Applicable</label>
       </h2>
-
-      {showVisa &&
-        <div className='flex w-[100%] flex-wrap gap-3'>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+      <div className='flex w-[100%] flex-wrap gap-3'>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Entry Permit Number
-            </label>
+          >
+            Entry Permit Number
+          </label>
 
-            <input type="text" name="entry_permit_number"
-              value={defaultData.entry_permit_number}
-              placeholder="Entry Permit Number"
-              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
+          <input type="text" name="entry_permit_number"
+            value={defaultData.entry_permit_number}
+            placeholder="Entry Permit Number"
+            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            />
-            {errors.entry_permit_number && (
-              <span className="text-red-500 text-sm ">
-                {errors.entry_permit_number}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+            onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            onClick={handleFieldClick}
+          />
+
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Visa Issuance Country
-            </label>
+          >
+            Visa Issuance Country
+          </label>
+          <div onClick={handleFieldClick}>
             <Select
               className={`${isEdit ? "text-black" : "text-gray-500"}`}
               name="country_of_visa_issuance"
@@ -603,39 +434,44 @@ const VisaDetails = ({ prevstep,
               onChange={(selectedOption) => handleEdit("country_of_visa_issuance", selectedOption)}
               isDisabled={!isEdit}
             />
-            {errors.country_of_visa_issuance && (
-              <span className="text-red-500 text-sm ">
-                {errors.country_of_visa_issuance}
-              </span>
-            )}
+
           </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+          {/* {errors.country_of_visa_issuance && (
+            <span className="text-red-500 text-sm ">
+              {errors.country_of_visa_issuance}
+            </span>
+          )} */}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              UID Number
-            </label>
-            <input type="text" name="uid_number"
-              value={defaultData.uid_number}
-              placeholder="UID Number"
-              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+          >
+            UID Number
+          </label>
+          <input type="text" name="uid_number"
+            value={defaultData.uid_number}
+            placeholder="UID Number"
+            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
              placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            />
-            {errors.uid_number && (
-              <span className="text-red-500 text-sm ">
-                {errors.uid_number}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+            onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            onClick={handleFieldClick}
+          />
+          {/* {errors.uid_number && (
+            <span className="text-red-500 text-sm ">
+              {errors.uid_number}
+            </span>
+          )} */}
+        </div>
+
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Visa Type
-            </label>
+          >
+            Visa Type
+          </label>
+          <div onClick={handleFieldClick}>
             <Select
               className={`${isEdit ? "text-black" : "text-gray-500"}`}
               name="visa_type"
@@ -646,19 +482,21 @@ const VisaDetails = ({ prevstep,
               onChange={(selectedOption) => handleEdit("visa_type", selectedOption)}
               isDisabled={!isEdit}
             />
-            {errors.visa_type && (
-              <span className="text-red-500 text-sm ">
-                {errors.visa_type}
-              </span>
-            )}
           </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+          {/* {errors.visa_type && (
+            <span className="text-red-500 text-sm ">
+              {errors.visa_type}
+            </span>
+          )} */}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Visa Issuance Date
-            </label>
+          >
+            Visa Issuance Date
+          </label>
+          <div onClick={handleFieldClick}>
             <Datepicker
               day={
                 defaultData.visa_issuance_date
@@ -684,20 +522,24 @@ const VisaDetails = ({ prevstep,
                   : null
               }
               onChange={(date) => handleDateChange(date, "visa_issuance_date")}
+
             />
-            {errors.visa_issuance_date && (
-              <span className="text-red-500 text-sm ">
-                {errors.visa_issuance_date}
-              </span>
-            )}
           </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+          {/* {errors.visa_issuance_date && (
+            <span className="text-red-500 text-sm ">
+              {errors.visa_issuance_date}
+            </span>
+          )} */}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Visa Expiry Date
-            </label>
+          >
+            Visa Expiry Date
+          </label>
+          <div onClick={handleFieldClick}>
+
             <Datepicker
               day={
                 defaultData.visa_expiry_date
@@ -723,39 +565,46 @@ const VisaDetails = ({ prevstep,
                   : null
               }
               onChange={(date) => handleDateChange(date, "visa_expiry_date")}
+
             />
-            {errors.visa_expiry_date && (
-              <span className="text-red-500 text-sm ">
-                {errors.visa_expiry_date}
-              </span>
-            )}
           </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+          {/* {errors.visa_expiry_date && (
+            <span className="text-red-500 text-sm ">
+              {errors.visa_expiry_date}
+            </span>
+          )} */}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Visa Duration
-            </label>
-            <input type="text" name="visa_duration"
-              value={defaultData.visa_duration}
-              placeholder="Visa Duration" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+          >
+            Visa Duration
+          </label>
+          <input type="text" name="visa_duration"
+            value={defaultData.visa_duration}
+            placeholder="Visa Duration" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
              placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            />
-            {errors.visa_duration && (
-              <span className="text-red-500 text-sm ">
-                {errors.visa_duration}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+            onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            disabled={!isEdit}
+            onClick={handleFieldClick}
+          />
+          {/* {errors.visa_duration && (
+            <span className="text-red-500 text-sm ">
+              {errors.visa_duration}
+            </span>
+          )} */}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Visa Country Entry Date
-            </label>
+          >
+            Visa Country Entry Date
+          </label>
+
+
+          <div onClick={handleFieldClick}>
             <Datepicker
               day={
                 defaultData.visa_country_entry_date
@@ -781,20 +630,23 @@ const VisaDetails = ({ prevstep,
                   : null
               }
               onChange={(date) => handleDateChange(date, "visa_country_entry_date")}
+
             />
-            {errors.visa_country_entry_date && (
-              <span className="text-red-500 text-sm ">
-                {errors.visa_country_entry_date}
-              </span>
-            )}
           </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+          {/* {errors.visa_country_entry_date && (
+            <span className="text-red-500 text-sm ">
+              {errors.visa_country_entry_date}
+            </span>
+          )} */}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Visa Country Exit Date
-            </label>
+          >
+            Visa Country Exit Date
+          </label>
+          <div onClick={handleFieldClick}>
             <Datepicker
               day={
                 defaultData.visa_country_exit_date
@@ -820,101 +672,98 @@ const VisaDetails = ({ prevstep,
                   : null
               }
               onChange={(date) => handleDateChange(date, "visa_country_exit_date")}
+
             />
-            {errors.visa_country_exit_date && (
-              <span className="text-red-500 text-sm ">
-                {errors.visa_country_exit_date}
-              </span>
-            )}
           </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+          {/* {errors.visa_country_exit_date && (
+            <span className="text-red-500 text-sm ">
+              {errors.visa_country_exit_date}
+            </span>
+          )} */}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Entry Permit:
-            </label>
-            {isEdit ? (
-              <div className="flex items-center gap-x-2">
-                <input type="file" onChange={(e) => handleFileChange('enter_permit', e.target.files)} />
-                {/* {documents.entryPermitDoc ? documents.entryPermitDoc.document.name : "Not available"}
-                <WiCloudRefresh className="text-blue-600 text-xl" /> */}
-              </div>
-            ) : (
-              <div className="flex items-center gap-x-2">
-                {documents.entryPermitDoc ? documents.entryPermitDoc.document.name : "Not available"}
-                <WiCloudRefresh className="text-gray-500 text-xl" />
-              </div>
-            )}
-          </div>
+          >
+            Entry Permit:
+          </label>
+          {isEdit ? (
+            <div className="flex items-center gap-x-2">
+              <input type="file" onChange={(e) => handleFileChange('enter_permit', e.target.files)} />
+            </div>
+          ) : (
+            <div className="flex items-center gap-x-2">
+              {documents.enter_permit ? documents.enter_permit.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+            </div>
+          )}
+        </div>
 
 
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
-            <label
-              className="font-sfpro tracking-wide font-medium
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Visa Page
-            </label>
-            {isEdit ? (
-              <div className="flex items-center gap-x-2">
-                <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} />
-                {/* {documents.visaPageDoc ? documents.visaPageDoc.document.name : "Not available"}
+          >
+            Visa Page
+          </label>
+          {isEdit ? (
+            <div className="flex items-center gap-x-2">
+              <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} />
+              {/* {documents.visa_page ? documents.visa_page.document.name : "Not available"}
                 <WiCloudRefresh className="text-blue-600 text-xl" /> */}
-              </div>
-            ) : (
-              <div className="flex items-center gap-x-2">
-                {documents.visaPageDoc ? documents.visaPageDoc.document.name : "Not available"}
-                <WiCloudRefresh className="text-gray-500 text-xl" />
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-x-2">
+              {documents.visa_page ? documents.visa_page.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+            </div>
+          )}
+        </div>
 
 
 
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              Medical Result
-            </label>
-            {isEdit ? (
-              <div className="flex items-center gap-x-2">
-                <input type="file" onChange={(e) => handleFileChange('medical', e.target.files)} />
-                {/* {documents.medicalDoc ? documents.medicalDoc.document.name : "Not available"}
-                <WiCloudRefresh className="text-blue-600 text-xl" /> */}
-              </div>
-            ) : (
-              <div className="flex items-center gap-x-2">
-                {documents.medicalDoc ? documents.medicalDoc.document.name : "Not available"}
-                <WiCloudRefresh className="text-gray-500 text-xl" />
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+          >
+            Medical Result
+          </label>
+          {isEdit ? (
+            <div className="flex items-center gap-x-2">
+              <input type="file" onChange={(e) => handleFileChange('medical', e.target.files)} />
+            </div>
+          ) : (
+            <div className="flex items-center gap-x-2">
+              {documents.medical ? documents.medical.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-            >
-              ID Application
-            </label>
-            {isEdit ? (
-              <div className="flex items-center gap-x-2">
-                <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)} />
-                {/* {documents.idAppDoc ? documents.idAppDoc.document.name : "Not available"}
-                <WiCloudRefresh className="text-blue-600 text-xl" /> */}
-              </div>
-            ) : (
-              <div className="flex items-center gap-x-2">
-                {documents.idAppDoc ? documents.idAppDoc.document.name : "Not available"}
-                <WiCloudRefresh className="text-gray-500 text-xl" />
-              </div>
-            )}
-          </div>
-        </div>}
+          >
+            ID Application
+          </label>
+          {isEdit ? (
+            <div className="flex items-center gap-x-2">
+              <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)} />
+            </div>
+          ) : (
+            <div className="flex items-center gap-x-2">
+              {documents.id_application ? documents.id_application.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+            </div>
+          )}
+        </div>
+      </div>
 
+      {/* ID Details */}
 
       <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-2 lg:mt-7 lg:text-lg mt-2">
         ID Details
@@ -933,6 +782,7 @@ const VisaDetails = ({ prevstep,
             className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
             onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            onClick={handleFieldClick}
           />
           {errors.living_country_id_no && (
             <span className="text-red-500 text-sm ">
@@ -947,17 +797,19 @@ const VisaDetails = ({ prevstep,
           >
             Place of Issuance
           </label>
-          <Select
-            className={`${isEdit ? "text-black" : "text-gray-500"}`}
-            name="place_of_issuance"
-            options={countryOptions}
-            value={countryOptions.find(
-              (option) => option.label === defaultData.place_of_issuance
-            )}
-            onChange={(selectedOption) => handleEdit("place_of_issuance", selectedOption)}
-            isDisabled={!isEdit}
-            onBlur={() => console.log('Value:', defaultData.place_of_issuance)}
-          />
+          <div onClick={handleFieldClick}>
+
+            <Select
+              className={`${isEdit ? "text-black" : "text-gray-500"}`}
+              name="place_of_issuance"
+              options={countryOptions}
+              value={countryOptions.find(
+                (option) => option.label === defaultData.place_of_issuance
+              )}
+              onChange={(selectedOption) => handleEdit("place_of_issuance", selectedOption)}
+              isDisabled={!isEdit}
+            />
+          </div>
           {errors.place_of_issuance && (
             <span className="text-red-500 text-sm ">
               {errors.place_of_issuance}
@@ -971,72 +823,76 @@ const VisaDetails = ({ prevstep,
           >
             ID issuance Date
           </label>
-          <Datepicker
-            day={
-              defaultData.id_issuance_date
-                ? defaultData.id_issuance_date.substr(8, 2)
-                : null
-            }
-            month={
-              defaultData.id_issuance_date
-                ? defaultData.id_issuance_date.substr(5, 2)
-                : null
-            }
-            year={
-              defaultData.id_issuance_date
-                ? defaultData.id_issuance_date.substr(0, 4)
-                : null
-            }
-            name="id_issuance_date"
-            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
+          <div onClick={handleFieldClick}>
+            <Datepicker
+              day={
+                defaultData.id_issuance_date
+                  ? defaultData.id_issuance_date.substr(8, 2)
+                  : null
+              }
+              month={
+                defaultData.id_issuance_date
+                  ? defaultData.id_issuance_date.substr(5, 2)
+                  : null
+              }
+              year={
+                defaultData.id_issuance_date
+                  ? defaultData.id_issuance_date.substr(0, 4)
+                  : null
+              }
+              name="id_issuance_date"
+              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            selected={
-              defaultData.id_issuance_date
-                ? moment(defaultData.id_issuance_date, "YYYY-MM-DD").toDate()
-                : null
-            }
-            onChange={(date) => handleDateChange(date, "id_issuance_date")}
-          />
+              selected={
+                defaultData.id_issuance_date
+                  ? moment(defaultData.id_issuance_date, "YYYY-MM-DD").toDate()
+                  : null
+              }
+              onChange={(date) => handleDateChange(date, "id_issuance_date")}
+            />
+          </div>
           {errors.id_issuance_date && (
             <span className="text-red-500 text-sm ">
               {errors.id_issuance_date}
             </span>
           )}
         </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
             ID Expiry Date
           </label>
-          <Datepicker
-            day={
-              defaultData.id_expiry_date
-                ? defaultData.id_expiry_date.substr(8, 2)
-                : null
-            }
-            month={
-              defaultData.id_expiry_date
-                ? defaultData.id_expiry_date.substr(5, 2)
-                : null
-            }
-            year={
-              defaultData.id_expiry_date
-                ? defaultData.id_expiry_date.substr(0, 4)
-                : null
-            }
-            name="id_expiry_date"
-            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+          <div onClick={handleFieldClick}>
+            <Datepicker
+              day={
+                defaultData.id_expiry_date
+                  ? defaultData.id_expiry_date.substr(8, 2)
+                  : null
+              }
+              month={
+                defaultData.id_expiry_date
+                  ? defaultData.id_expiry_date.substr(5, 2)
+                  : null
+              }
+              year={
+                defaultData.id_expiry_date
+                  ? defaultData.id_expiry_date.substr(0, 4)
+                  : null
+              }
+              name="id_expiry_date"
+              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
              placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            selected={
-              defaultData.id_expiry_date
-                ? moment(defaultData.id_expiry_date, "YYYY-MM-DD").toDate()
-                : null
-            }
-            onChange={(date) => handleDateChange(date, "id_expiry_date")}
-          />
+              selected={
+                defaultData.id_expiry_date
+                  ? moment(defaultData.id_expiry_date, "YYYY-MM-DD").toDate()
+                  : null
+              }
+              onChange={(date) => handleDateChange(date, "id_expiry_date")}
+            />
+          </div>
           {errors.id_expiry_date && (
             <span className="text-red-500 text-sm ">
               {errors.id_expiry_date}
@@ -1046,8 +902,7 @@ const VisaDetails = ({ prevstep,
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
           <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
+            className="font-sfpro tracking-wide font-mediumtext-input text-base mb-1"
           >
             ID Front
           </label>
@@ -1059,8 +914,8 @@ const VisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.idFront ? documents.idFront.document.name : "Not available"}
-              <WiCloudRefresh className="text-gray-500 text-xl" />
+              {documents.id_front ? documents.id_front.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
           {errors.id_front && (
@@ -1085,8 +940,8 @@ const VisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.idBack ? documents.idBack.document.name : "Not available"}
-              <WiCloudRefresh className="text-gray-500 text-xl" />
+              {documents.id_back ? documents.id_back.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
           {errors.id_back && (
@@ -1097,106 +952,109 @@ const VisaDetails = ({ prevstep,
         </div>
       </div>
 
-      <h2 className="flex items-center gap-x-3 mb-2 lg:mb-2 lg:mt-7 mt-2">
-        <p className="text-baseBlue tracking-wide lg:text-lg ">Insurance Details</p>
-        <input type="checkbox" checked={showInsurance} onChange={toggleShowInsurance} />
-        <label className='text-sm text-gray-500'>Not Applicable</label>
+      <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-2 lg:mt-7 lg:text-lg mt-2">
+        Insurance Details
       </h2>
-      {showInsurance &&
-        <div className='flex w-[100%] flex-wrap items-center gap-3'>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
+      {/* test */}
+      <div className='flex w-[100%] flex-wrap items-center gap-3'>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
-            >
-              DHA ID
-            </label>
-            <input type="text" name="dha_id"
-              value={defaultData.dha_id}
-              placeholder="DHA ID"
-              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+          >
+            DHA ID
+          </label>
+          <input type="text" name="dha_id"
+            value={defaultData.dha_id}
+            placeholder="DHA ID"
+            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            />
-            {errors.dha_id && (
-              <span className="text-red-500 text-sm ">
-                {errors.dha_id}
-              </span>
-            )}
+            onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            onClick={handleFieldClick}
+          />
+          {errors.dha_id && (
+            <span className="text-red-500 text-sm ">
+              {errors.dha_id}
+            </span>
+          )}
 
-          </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
-            <label
-              className="font-sfpro tracking-wide font-medium
+          <label
+            className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
-            >
-              Card Number
-            </label>
-            <input type="text" name="card_number"
-              value={defaultData.card_number}
-              placeholder="Card Number" className={`pl-2 bg-white rounded h-8 text-sm
+          >
+            Card Number
+          </label>
+          <input type="text" name="card_number"
+            value={defaultData.card_number}
+            placeholder="Card Number" className={`pl-2 bg-white rounded h-8 text-sm
            placeholder-[#555657] placeholder-opacity-50 w-[100%] 
            ${isEdit ? "text-black" : "text-gray-500"}`}
-              onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            />
-            {errors.card_number && (
-              <span className="text-red-500 text-sm ">
-                {errors.card_number}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            onClick={handleFieldClick}
+          />
+          {errors.card_number && (
+            <span className="text-red-500 text-sm ">
+              {errors.card_number}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
-            <label
-              className="font-sfpro tracking-wide font-medium
+          <label
+            className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
-            >
-              Insurance Policy
-            </label>
-            <input type="text" name='insurance_policy'
-              value={defaultData.insurance_policy}
-              placeholder="Insurance Policy" className={`pl-2 bg-white rounded h-8 text-sm
+          >
+            Insurance Policy
+          </label>
+          <input type="text" name='insurance_policy'
+            value={defaultData.insurance_policy}
+            placeholder="Insurance Policy" className={`pl-2 bg-white rounded h-8 text-sm
            placeholder-[#555657] placeholder-opacity-50 w-[100%] 
            ${isEdit ? "text-black" : "text-gray-500"}`}
-              onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            />
-            {errors.insurance_policy && (
-              <span className="text-red-500 text-sm ">
-                {errors.insurance_policy}
-              </span>
-            )}
+            onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            onClick={handleFieldClick}
+          />
+          {errors.insurance_policy && (
+            <span className="text-red-500 text-sm ">
+              {errors.insurance_policy}
+            </span>
+          )}
 
-          </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
-            <label
-              className="font-sfpro tracking-wide font-medium
+          <label
+            className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
-            >
-              Insurance Company
-            </label>
-            <input type="text" name='insurance_company'
-              value={defaultData.insurance_company}
-              placeholder="Insurance Company"
-              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+          >
+            Insurance Company
+          </label>
+          <input type="text" name='insurance_company'
+            value={defaultData.insurance_company}
+            placeholder="Insurance Company"
+            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            />
-            {errors.insurance_company && (
-              <span className="text-red-500 text-sm ">
-                {errors.insurance_company}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            onClick={handleFieldClick}
+          />
+          {errors.insurance_company && (
+            <span className="text-red-500 text-sm ">
+              {errors.insurance_company}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
-            <label
-              className="font-sfpro tracking-wide font-medium
+          <label
+            className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
-            >
-              Insurance Active Date
-            </label>
+          >
+            Insurance Active Date
+          </label>
+          <div onClick={handleFieldClick}>
             <Datepicker
               day={
                 defaultData.insurance_active_date
@@ -1223,20 +1081,22 @@ const VisaDetails = ({ prevstep,
               }
               onChange={(date) => handleDateChange(date, "insurance_active_date")}
             />
-            {errors.insurance_active_date && (
-              <span className="text-red-500 text-sm ">
-                {errors.insurance_active_date}
-              </span>
-            )}
           </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          {errors.insurance_active_date && (
+            <span className="text-red-500 text-sm ">
+              {errors.insurance_active_date}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
-            <label
-              className="font-sfpro tracking-wide font-medium
+          <label
+            className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
-            >
-              Insurance Expiry Date
-            </label>
+          >
+            Insurance Expiry Date
+          </label>
+          <div onClick={handleFieldClick}>
             <Datepicker
               day={
                 defaultData.insurance_expiry_date
@@ -1263,34 +1123,34 @@ const VisaDetails = ({ prevstep,
               }
               onChange={(date) => handleDateChange(date, "insurance_expiry_date")}
             />
-            {errors.insurance_expiry_date && (
-              <span className="text-red-500 text-sm ">
-                {errors.insurance_expiry_date}
-              </span>
-            )}
           </div>
-          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-            <label
-              className="font-sfpro tracking-wide font-medium
-                          text-input text-base mb-1"
-            >
-              Insurance Card
-            </label>
-            {isEdit ? (
-              <div className="flex items-center gap-x-2">
-                <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} />
-                {/* {documents.insuranceCard ? documents.insuranceCard.document.name : "Not available"}
-                <WiCloudRefresh className="text-blue-600 text-xl" /> */}
-              </div>
-            ) : (
-              <div className="flex items-center gap-x-2">
-                {documents.insuranceCard ? documents.insuranceCard.document.name : "Not available"}
-                <WiCloudRefresh className="text-gray-500 text-xl" />
-              </div>
-            )}
-          </div>
+          {errors.insurance_expiry_date && (
+            <span className="text-red-500 text-sm ">
+              {errors.insurance_expiry_date}
+            </span>
+          )}
         </div>
-      }
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
+                          text-input text-base mb-1"
+          >
+            Insurance Card
+          </label>
+          {isEdit ? (
+            <div className="flex items-center gap-x-2">
+              <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} />
+              {/* {documents.insuranceCard ? documents.insuranceCard.document.name : "Not available"}
+                <WiCloudRefresh className="text-blue-600 text-xl" /> */}
+            </div>
+          ) : (
+            <div className="flex items-center gap-x-2">
+              {documents.insurance_card ? documents.insurance_card.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="flex gap-x-5 mb-40 mt-5">
         {!isEdit && <Button onClick={prevstep} text={"Previous"} />}
@@ -1359,9 +1219,9 @@ const VisaDetails = ({ prevstep,
         </div>
       )}
     </div>
-
-  );
+  )
 }
+
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
@@ -1370,4 +1230,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(VisaDetails);
+export default connect(mapStateToProps)(UpdateVisaDetails);

@@ -32,16 +32,16 @@ const FormIndicator = ({ currentStep, setCurrentStep }) => {
                 >
                     <div className="flex justify-center items-center">
                         <div
-                            className={`h-0.5 w-6 ml-1 md:w-8 lg:w-12 ${index + 1 <= currentStep ? 'bg-[#25A8E0]' : 'bg-[#E2E2E2]'
+                            className={`h-0.5 w-6 ml-1 md:w-8 lg:w-12 cursor-pointer ${index + 1 <= currentStep ? 'bg-[#25A8E0]' : 'bg-[#E2E2E2]'
                                 }`}
                         ></div>
                         <div
-                            className={`text-xs h-6 w-6 p-1 rounded-full border border-[#F9F9F9] flex justify-center items-center text-white ${index + 1 <= currentStep ? 'bg-[#25A8E0]' : 'bg-[#E2E2E2]'
+                            className={`text-xs h-6 w-6 p-1 rounded-full border border-[#F9F9F9] flex justify-center items-center cursor-pointer text-white ${index + 1 <= currentStep ? 'bg-[#25A8E0]' : 'bg-[#E2E2E2]'
                                 }`}
                         >
                             {step.icon}
                         </div>
-                        <div className="tracking-wide lg:tracking-widest hidden md:block lg:block">
+                        <div className="tracking-wide lg:tracking-widest hidden md:block lg:block cursor-pointer">
                             {step.name}
                         </div>
                     </div>
