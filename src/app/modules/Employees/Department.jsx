@@ -70,6 +70,8 @@ const departmentSchema = Joi.object({
 const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
+    const [showIndirectReport, setShowIndirectReport] = useState(false);
+
 
 
 
@@ -144,10 +146,23 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
         const serializedData = JSON.stringify(data);
         sessionStorage.setItem(key, serializedData);
     };
-    const handleChange = (name, value) => {
-        setDepartmentInfo({ ...departmentInfo, [name]: value })
+    const handleChange = (name, value, values) => {
+        // Check if the name is 'employee_type' or 'employee_status'
+        if (name === 'employee_type' || name === 'employee_status') {
+            setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+        } else if (name === "indirect_report" || name === "direct_report") {
+            console.log(`Selected ${name === "indirect_report" ? "In-Direct" : "Direct"} Managers:`, values);
+            const updatedValues = values || []; // In case 'values' is null
+            const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
+            setDepartmentInfo({
+                ...departmentInfo,
+                [name]: uniqueValues.join(', '), // Convert array to string
+            });
+        } else {
+            setDepartmentInfo({ ...departmentInfo, [name]: value });
+        }
+        // Clear errors for the updated field
         setErrors({ ...errors, [name]: null });
-
     };
 
     const handleJoiningDate = (date) => {
@@ -189,7 +204,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                                     <label
-                                        className="font-sfpro tracking-wide 
+                                        className="font-sfpro tracking-wide
                   font-medium text-input text-base mb-1"
                                     >
                                         Employee Type:
@@ -213,7 +228,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                 </div>
                                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                                     <label
-                                        className="font-sfpro tracking-wide 
+                                        className="font-sfpro tracking-wide
                   font-medium text-input text-base mb-1"
                                     >
                                         Employee status:
@@ -247,7 +262,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                         placeholder="Select Direct Report To..."
                                         // value={managers.filter(manager => defaultDeparmentInfo.direct_report.includes(manager.label))}
                                         value={managers.find(manager => manager.label === defaultDeparmentInfo?.direct_report)}
-                                        onChange={(selectedOption) => handleChange("direct_report", selectedOption.label)}
+                                        onChange={(selectedOption) => handleChange("direct_report", selectedOption, selectedOption)}
                                         // onChange={(selectedOptions) => handleEdit("direct_report", selectedOptions.map(option => option.label))}
                                         options={managers
                                             ?.filter(manager => manager.username) // Filter managers with user_role equal to 2
@@ -255,31 +270,58 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                                 value: manager.id,
                                                 label: manager.username,
                                             }))}
-                                    // isEdit={isEdit} // Pass down the isEdit prop
-                                    // isMulti={true}
+                                        isEdit={true} // Pass down the isEdit prop
+                                        isMulti={true}
                                     />
                                     {errors.direct_report && <span className="text-red-500 text-sm ">{errors.direct_report}</span>}
                                 </div>
+
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium
-        text-input text-base mb-1'>Indirect Report:</label>
-                                    <CustomSelect
-                                        menuPlacement="auto"
-                                        name='indirect_report'
-                                        placeholder="Select Indirect Report To..."
-                                        value={managers.find(manager => manager.label === defaultDeparmentInfo?.indirect_report)}
-                                        onChange={(selectedOption) => handleChange("indirect_report", selectedOption.label)}
-                                        // onChange={(selectedOptions) => handleEdit("indirect_report", selectedOptions.map(option => option.label))}
-                                        options={managers
-                                            ?.filter(manager => manager.username) // Filter managers with user_role equal to 2
-                                            .map((manager) => ({
-                                                value: manager.id,
-                                                label: manager.username,
-                                            }))}
-                                    // isEdit={isEdit} // Pass down the isEdit prop
-                                    // isMulti={true}
-                                    />
-                                    {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
+                                    <div className='flex gap-x-3'>
+
+                                        <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium text-input text-base mb-1'>
+                                            Indirect Report:
+                                        </label>
+
+                                        <div className='flex items-center gap-2'>
+                                            <input
+                                                type="checkbox"
+                                                checked={showIndirectReport}
+                                                onChange={() => setShowIndirectReport(!showIndirectReport)}
+                                            />
+                                            <span>Yes</span>
+                                        </div>
+                                        <div className='flex items-center gap-2'>
+                                            <input
+                                                type="checkbox"
+                                                checked={!showIndirectReport}
+                                                onChange={() => setShowIndirectReport(!showIndirectReport)}
+                                            />
+                                            <span>No</span>
+                                        </div>
+                                    </div>
+                                    {showIndirectReport &&
+                                        <>
+
+                                            <CustomSelect
+                                                menuPlacement="auto"
+                                                name='indirect_report'
+                                                placeholder="Select Indirect Report To..."
+                                                value={managers.find(manager => manager.label === defaultDeparmentInfo?.indirect_report)}
+                                                onChange={(selectedOption) => handleChange("indirect_report", selectedOption, selectedOption)}
+                                                // onChange={(selectedOptions) => handleEdit("indirect_report", selectedOptions.map(option => option.label))}
+                                                options={managers
+                                                    ?.filter(manager => manager.username) // Filter managers with user_role equal to 2
+                                                    .map((manager) => ({
+                                                        value: manager.id,
+                                                        label: manager.username,
+                                                    }))}
+                                                isEdit={true} // Pass down the isEdit prop
+                                                isMulti={true}
+                                            />
+                                            {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
+                                        </>
+                                    }
                                 </div>
                             </div>
 
@@ -297,7 +339,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                 </div> */}
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
                                     <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
-                        text-input text-base mb-1'>Department Manager:</label>
+                        text-input text-base mb-1'>Department Head:</label>
                                     <Select
                                         // isDisabled={isEdit ? false : true}
                                         menuPlacement="top"

@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+// CustomSelect component
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-
-const CustomSelect = ({ value, options, onChange, isEdit,placeholder,isMulti }) => {
+ 
+const CustomSelect = ({ value, options, onChange, isEdit, placeholder, isMulti }) => {
   const [inputValue, setInputValue] = useState('');
-
+ 
+  useEffect(() => {
+    // Set initial inputValue to the label of the current value
+    if (value) setInputValue(value.label || '');
+  }, []);
+ 
   const handleInputChange = (inputValue) => {
     setInputValue(inputValue);
   };
-
+ 
   return (
     <Select
-      menuIsOpen={inputValue.length > 0} // Open menu only when there is input value
+      menuIsOpen={inputValue.length > 0}
       onInputChange={handleInputChange}
       inputValue={inputValue}
       value={value}
@@ -18,14 +24,14 @@ const CustomSelect = ({ value, options, onChange, isEdit,placeholder,isMulti }) 
       options={options}
       placeholder={placeholder}
       isMulti={isMulti}
-    //   isDisabled={!isEdit} // Use the isEdit prop to determine if the field should be disabled
-      noOptionsMessage={() => "No such employee found"} // Custom message when no options are available
+      isDisabled={!isEdit} // Disable if not in edit mode
+      noOptionsMessage={() => "No such employee found"}
       styles={{
-        control: (provided) => ({ ...provided, minHeight: 0 }), // Adjust control height
-        indicatorsContainer: (provided) => ({ ...provided, display: "none" }), // Hide dropdown indicators
+        control: (provided) => ({ ...provided, minHeight: 0 }),
+        indicatorsContainer: (provided) => ({ ...provided, display: "none" }),
       }}
     />
   );
 };
-
+ 
 export default CustomSelect;

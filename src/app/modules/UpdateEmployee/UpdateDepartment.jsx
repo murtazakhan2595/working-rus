@@ -85,6 +85,7 @@ const Department = ({ errors, setErrors, prevstep, token,
   const [managers, setManagers] = useState([]);
   const navigate = useNavigate()
   const [showIndirectReport, setShowIndirectReport] = useState(false);
+  
 
   const id = userProfile.id;
 
@@ -297,13 +298,13 @@ const Department = ({ errors, setErrors, prevstep, token,
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                   <label
-                    className="font-sfpro tracking-wide 
+                    className="font-sfpro tracking-wide
                   font-medium text-input text-base mb-1"
                   >
                     Employee Type:
                   </label>
                   <div
-                  // onClick={handleEditClick}
+                    onClick={() => setIsEdit(true)}
                   >
                     <Select
                       name="employee_type"
@@ -319,7 +320,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                 </div>
                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                   <label
-                    className="font-sfpro tracking-wide 
+                    className="font-sfpro tracking-wide
                   font-medium text-input text-base mb-1"
                   >
                     Employee status:
@@ -327,15 +328,17 @@ const Department = ({ errors, setErrors, prevstep, token,
                   <div
                   // onClick={handleEditClick}
                   >
-                    <Select
-                      isDisabled={isEdit ? false : true}
-                      name="employee_status"
-                      value={employeeStatus.find(option => option.label === defaultData.employee_status)}
-                      onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
-                      options={employeeStatus}
-                      isSearchable={false}
-                      className="focus:outline-none border-none"
-                    />
+                    <div onClick={() => setIsEdit(true)}>
+                      <Select
+                        isDisabled={isEdit ? false : true}
+                        name="employee_status"
+                        value={employeeStatus.find(option => option.label === defaultData.employee_status)}
+                        onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
+                        options={employeeStatus}
+                        isSearchable={false}
+                        className="focus:outline-none border-none"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -343,58 +346,83 @@ const Department = ({ errors, setErrors, prevstep, token,
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                   <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
-                      text-input text-base mb-1'>Direct Report:</label>
-                  <CustomSelect
-                    name='direct_report'
-                    placeholder="Select Direct Report To..."
-                    value={managers.find(manager => manager.label === defaultData.direct_report)}
-                    onChange={(selectedOption) => handleEdit("direct_report", selectedOption, selectedOption)} // Pass selectedOption as values
-                    options={managers
-                      ?.filter(manager => manager.username)
-                      .map((manager) => ({
-                        value: manager.id,
-                        label: manager.username,
-                      }))}
-                    isEdit={isEdit}
-                    isMulti={true}
-                  />
+    text-input text-base mb-1'>Direct Report:</label>
+                  <div onClick={() => setIsEdit(true)}>
+                    <CustomSelect
+                      name='direct_report'
+                      placeholder="Select Direct Report To..."
+                      value={managers.find(manager => manager.label === defaultData.direct_report)}
+                      onChange={(selectedOption) => handleEdit("direct_report", selectedOption, selectedOption)}
+                      options={managers
+                        ?.filter(manager => manager.username)
+                        .map((manager) => ({
+                          value: manager.id,
+                          label: manager.username,
+                        }))}
+                      isEdit={isEdit} // Pass the isEdit prop
+                      isMulti={true}
+                    />
+                  </div>
                   {errors.direct_report && <span className="text-red-500 text-sm ">{errors.direct_report}</span>}
                 </div>
 
-                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                  <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium
-                      text-input text-base mb-1'>Indirect Report:</label>
-                  <div className='flex gap-2'>
-                    <div>
+
+
+                <div className='  mt-2 md:mt-5 md:w-1/2'>
+                  <div className='flex gap-x-3'>
+
+                    <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium text-input text-base mb-1'>
+                      Indirect Report:
+                    </label>
+
+                    <div className='flex items-center gap-2'>
                       <input
                         type="checkbox"
                         checked={showIndirectReport}
                         onChange={() => setShowIndirectReport(!showIndirectReport)}
                       />
+                      <span>Yes</span>
                     </div>
+                    <div className='flex items-center gap-2'>
+                      <input
+                        type="checkbox"
+                        checked={!showIndirectReport}
+                        onChange={() => setShowIndirectReport(!showIndirectReport)}
+                      />
+                      <span>No</span>
+                    </div>
+                  </div>
+
+                  <div className='flex flex-col gap-2 items-center'>
                     <div className='w-full'>
+
                       {showIndirectReport && (
                         <>
-                          <CustomSelect
-                            name='indirect_report'
-                            placeholder="Select Direct Report To..."
-                            value={managers.find(manager => manager.label === defaultData.indirect_report)}
-                            onChange={(selectedOption) => handleEdit("indirect_report", selectedOption, selectedOption)}
-                            options={managers
-                              ?.filter(manager => manager.username)
-                              .map((manager) => ({
-                                value: manager.id,
-                                label: manager.username,
-                              }))}
-                            isEdit={isEdit}
-                            isMulti={true}
-                          />
+                          <div onClick={() => setIsEdit(true)}>
+
+                            <CustomSelect
+                              name='indirect_report'
+                              placeholder="Select Direct Report To..."
+                              value={managers.find(manager => manager.label === defaultData.indirect_report)}
+                              onChange={(selectedOption) => handleEdit("indirect_report", selectedOption, selectedOption)}
+                              options={managers
+                                ?.filter(manager => manager.username)
+                                .map((manager) => ({
+                                  value: manager.id,
+                                  label: manager.username,
+                                }))}
+                              isEdit={isEdit}
+                              isMulti={true}
+                            />
+                          </div>
                           {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
                         </>
                       )}
                     </div>
+
                   </div>
                 </div>
+
 
               </div>
 
@@ -413,23 +441,25 @@ const Department = ({ errors, setErrors, prevstep, token,
                 </div> */}
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
                   <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
-                        text-input text-base mb-1'>Department Manager:</label>
-                  <Select
-                    isDisabled={isEdit ? false : true}
-                    menuPlacement="top"
-                    name='department_manager'
-                    value={HeadOfDepartment.find(manager => manager.label === defaultData.department_manager)}
-                    onChange={(selectedOption) => handleEdit("department_manager", selectedOption.value)}
-                    options={HeadOfDepartment}
-                  // options={managers
-                  //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
-                  //   .map((manager) => ({
-                  //     value: manager.id,
-                  //     label: manager.username,
-                  //   }))}
-                  />
+                        text-input text-base mb-1'>Department Head:</label>
+                  <div onClick={() => setIsEdit(true)}>
+                    <Select
+                      isDisabled={isEdit ? false : true}
+                      menuPlacement="top"
+                      name='department_manager'
+                      value={HeadOfDepartment.find(manager => manager.value === defaultData.department_manager)}
+                      onChange={(selectedOption) => handleEdit("department_manager", selectedOption.value)}
+                      options={HeadOfDepartment}
+                    // options={managers
+                    //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
+                    //   .map((manager) => ({
+                    //     value: manager.id,
+                    //     label: manager.username,
+                    //   }))}
+                    />
 
-                  {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
+                    {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
+                  </div>
                 </div>
 
                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
