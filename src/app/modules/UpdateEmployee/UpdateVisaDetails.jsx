@@ -29,6 +29,10 @@ const UpdateVisaDetails = ({ prevstep,
   const [visaDetailsFiles, setVisaDetailsFiles] = useState({})
   const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassport, setShowPassport] = useState(false);
+  const [showVisa, setShowVisa] = useState(false);
+  const [showInsurance, setShowInsurance] = useState(false);
+  const showId = true;
 
   const id = userProfile.id;
 
@@ -218,10 +222,10 @@ const UpdateVisaDetails = ({ prevstep,
     }
   };
 
-  const handleSave = () => {
-    updateDataOnServer();
-    // setIsEdit(false);
-  };
+  // const handleSave = () => {
+  //   updateDataOnServer();
+  //   // setIsEdit(false);
+  // };
 
 
   // enable edit on click
@@ -231,8 +235,110 @@ const UpdateVisaDetails = ({ prevstep,
   }
 
 
-  const handleNextStep = () => {
-    nextstep();
+  // const handleNextStep = () => {
+  //   nextstep();
+  //   if (showPassport) {
+  //     if (defaultData.passport_number && defaultData.Passport_Issuance_Country && defaultData.Passport_Issuance_Date && defaultData.Passport_Expiry_Date && visaDetailsFiles.passport_copy) {
+  //       nextstep();
+  //     } else {
+  //       toast.error("Please fill in all required fields!", {
+  //         position: "top-right",
+  //         autoClose: 1000,
+  //       });
+  //     }
+  //   } else if (showVisa)
+  //     if (defaultData.entry_permit_number && defaultData.country_of_visa_issuance && defaultData.uid_number && defaultData.visa_type && defaultData.visa_issuance_date && defaultData.visa_expiry_date && defaultData.visa_duration && defaultData.visa_country_entry_date && defaultData.visa_country_exit_date) {
+  //       nextstep();
+  //     } else {
+  //       toast.error("Please fill in all required fields!", {
+  //         position: "top-right",
+  //         autoClose: 1000,
+  //       });
+  //     }
+
+  //   else if (showInsurance) {
+  //     if (defaultData.dha_id && defaultData.card_number && defaultData.insurance_policy && defaultData.insurance_company && defaultData.insurance_active_date && defaultData.insurance_expiry_date) {
+  //       nextstep();
+  //     } else {
+  //       toast.error("Please fill in all required fields!", {
+  //         position: "top-right",
+  //         autoClose: 1000,
+  //       });
+  //     }
+  //   }
+
+  //   else if (showId) {
+  //     if (defaultData.living_country_id_no && defaultData.place_of_issuance && defaultData.id_issuance_date && defaultData.id_expiry_date && documents.id_front && documents.id_back) {
+  //       nextstep();
+  //     } else {
+  //       toast.error("Please fill all ID Details fields!", {
+  //         position: "top-right",
+  //         autoClose: 1000,
+  //       });
+  //     }
+  //   }
+
+  //   else {
+  //     nextstep();
+  //   }
+
+  // };
+
+  const handleSave = () => {
+    if (showPassport) {
+      if (
+        defaultData.passport_number &&
+        defaultData.Passport_Issuance_Country &&
+        defaultData.Passport_Issuance_Date &&
+        defaultData.Passport_Expiry_Date &&
+        documents.passport_copy
+      ) {
+        updateDataOnServer();
+      } else {
+        toast.error("Please fill all required passport fields!", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+      }
+    } else if (showVisa) {
+      if (
+        defaultData.entry_permit_number &&
+        defaultData.country_of_visa_issuance &&
+        defaultData.uid_number &&
+        defaultData.visa_type &&
+        defaultData.visa_issuance_date &&
+        defaultData.visa_expiry_date &&
+        defaultData.visa_duration &&
+        defaultData.visa_country_entry_date &&
+        defaultData.visa_country_exit_date
+      ) {
+        updateDataOnServer();
+      } else {
+        toast.error("Please fill all required visa fields!", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+      }
+    } else if (showInsurance) {
+      if (
+        defaultData.dha_id &&
+        defaultData.card_number &&
+        defaultData.insurance_policy &&
+        defaultData.insurance_company &&
+        defaultData.insurance_active_date &&
+        defaultData.insurance_expiry_date &&
+        documents.insurance_card
+      ) {
+        updateDataOnServer();
+      } else {
+        toast.error("Please fill all required insurance fields!", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+      }
+    } else {
+      updateDataOnServer();
+    }
   };
 
   return (
@@ -240,6 +346,15 @@ const UpdateVisaDetails = ({ prevstep,
       <div className="flex justify-between">
         <h2 className="tracking-wide mb-4 flex items-center gap-x-3">
           <p className='text-baseBlue lg:text-lg'>Passport Details</p>
+          <label className='text-sm text-gray-500'>Applicable:</label>
+          <div className='flex items-center gap-x-2'>
+            <p className='text-sm'>Yes</p>
+            <input type="checkbox" checked={showPassport} onChange={() => setShowPassport(!showPassport)} />
+          </div>
+          <div className='flex items-center gap-x-2'>
+            <p className='text-sm'>No</p>
+            <input type="checkbox" checked={!showPassport} onChange={() => setShowPassport(!showPassport)} />
+          </div>
         </h2>
         <div className="flex gap-2">
           {isEdit ? (
@@ -256,13 +371,13 @@ const UpdateVisaDetails = ({ prevstep,
           )}
         </div>
       </div>
-      <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
+      {showPassport && <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Passport Number:
+            Passport Number {showPassport && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="passport_number"
             readOnly={!isEdit}
@@ -273,12 +388,12 @@ const UpdateVisaDetails = ({ prevstep,
           />
         </div>
 
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[21%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Passport Issuance:
+            Passport Issuance Country {showPassport && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Select
@@ -301,7 +416,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Issuance Date:
+            Issuance Date {showPassport && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick} >
             <Datepicker
@@ -339,7 +454,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Expiry Date:
+            Expiry Date {showPassport && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick} >
 
@@ -377,7 +492,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Passport Copy:
+            Passport Copy {showPassport && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
@@ -391,19 +506,30 @@ const UpdateVisaDetails = ({ prevstep,
           )}
 
         </div>
-      </div>
+      </div>}
 
       {/* Visa */}
       <h2 className="mb-2 lg:mb-4 lg:mt-7 mt-2 flex items-center gap-x-3">
         <p className='text-baseBlue tracking-wide lg:text-lg'>Visa Details</p>
+        <label className='text-sm text-gray-500'>Applicable:</label>
+        <div className='flex items-center gap-x-2'>
+          <p className='text-sm'>Yes</p>
+          <input type="checkbox" checked={showVisa} onChange={() => setShowVisa(!showVisa)} />
+        </div>
+        <div className='flex items-center gap-x-2'>
+          <p className='text-sm'>No</p>
+          <input type="checkbox" checked={!showVisa} onChange={() => setShowVisa(!showVisa)} />
+        </div>
+
       </h2>
-      <div className='flex w-[100%] flex-wrap gap-3'>
+      {showVisa && <div className='flex w-[100%] flex-wrap gap-3'>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Entry Permit Number
+            Entry Permit Number{showVisa && <span className="text-red-500 text-2xl">*</span>}
+
           </label>
 
           <input type="text" name="entry_permit_number"
@@ -421,7 +547,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Issuance Country
+            Visa Issuance Country {showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Select
@@ -436,18 +562,14 @@ const UpdateVisaDetails = ({ prevstep,
             />
 
           </div>
-          {/* {errors.country_of_visa_issuance && (
-            <span className="text-red-500 text-sm ">
-              {errors.country_of_visa_issuance}
-            </span>
-          )} */}
+
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            UID Number
+            UID Number{showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="uid_number"
             value={defaultData.uid_number}
@@ -457,11 +579,6 @@ const UpdateVisaDetails = ({ prevstep,
             onChange={(e) => handleEdit(e.target.name, e.target.value)}
             onClick={handleFieldClick}
           />
-          {/* {errors.uid_number && (
-            <span className="text-red-500 text-sm ">
-              {errors.uid_number}
-            </span>
-          )} */}
         </div>
 
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -469,7 +586,8 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Type
+            Visa Type{showVisa && <span className="text-red-500 text-2xl">*</span>}
+
           </label>
           <div onClick={handleFieldClick}>
             <Select
@@ -483,18 +601,13 @@ const UpdateVisaDetails = ({ prevstep,
               isDisabled={!isEdit}
             />
           </div>
-          {/* {errors.visa_type && (
-            <span className="text-red-500 text-sm ">
-              {errors.visa_type}
-            </span>
-          )} */}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Issuance Date
+            Visa Issuance Date{showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker
@@ -525,21 +638,15 @@ const UpdateVisaDetails = ({ prevstep,
 
             />
           </div>
-          {/* {errors.visa_issuance_date && (
-            <span className="text-red-500 text-sm ">
-              {errors.visa_issuance_date}
-            </span>
-          )} */}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Expiry Date
+            Visa Expiry Date{showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
-
             <Datepicker
               day={
                 defaultData.visa_expiry_date
@@ -568,18 +675,13 @@ const UpdateVisaDetails = ({ prevstep,
 
             />
           </div>
-          {/* {errors.visa_expiry_date && (
-            <span className="text-red-500 text-sm ">
-              {errors.visa_expiry_date}
-            </span>
-          )} */}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Duration
+            Visa Duration{showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="visa_duration"
             value={defaultData.visa_duration}
@@ -589,21 +691,15 @@ const UpdateVisaDetails = ({ prevstep,
             disabled={!isEdit}
             onClick={handleFieldClick}
           />
-          {/* {errors.visa_duration && (
-            <span className="text-red-500 text-sm ">
-              {errors.visa_duration}
-            </span>
-          )} */}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Country Entry Date
+            Visa Country Entry Date{showVisa && <span className="text-red-500 text-2xl">*</span>}
+
           </label>
-
-
           <div onClick={handleFieldClick}>
             <Datepicker
               day={
@@ -633,18 +729,13 @@ const UpdateVisaDetails = ({ prevstep,
 
             />
           </div>
-          {/* {errors.visa_country_entry_date && (
-            <span className="text-red-500 text-sm ">
-              {errors.visa_country_entry_date}
-            </span>
-          )} */}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Country Exit Date
+            Visa Country Exit Date{showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker
@@ -675,18 +766,13 @@ const UpdateVisaDetails = ({ prevstep,
 
             />
           </div>
-          {/* {errors.visa_country_exit_date && (
-            <span className="text-red-500 text-sm ">
-              {errors.visa_country_exit_date}
-            </span>
-          )} */}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Entry Permit:
+            Entry Permit{showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
@@ -707,13 +793,11 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Page
+            Visa Page {showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
               <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} />
-              {/* {documents.visa_page ? documents.visa_page.document.name : "Not available"}
-                <WiCloudRefresh className="text-blue-600 text-xl" /> */}
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
@@ -730,7 +814,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Medical Result
+            Medical Result{showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
@@ -748,7 +832,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            ID Application
+            ID Application {showVisa && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
@@ -761,7 +845,7 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* ID Details */}
 
@@ -851,11 +935,7 @@ const UpdateVisaDetails = ({ prevstep,
               onChange={(date) => handleDateChange(date, "id_issuance_date")}
             />
           </div>
-          {errors.id_issuance_date && (
-            <span className="text-red-500 text-sm ">
-              {errors.id_issuance_date}
-            </span>
-          )}
+
         </div>
 
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -893,11 +973,6 @@ const UpdateVisaDetails = ({ prevstep,
               onChange={(date) => handleDateChange(date, "id_expiry_date")}
             />
           </div>
-          {errors.id_expiry_date && (
-            <span className="text-red-500 text-sm ">
-              {errors.id_expiry_date}
-            </span>
-          )}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -909,8 +984,6 @@ const UpdateVisaDetails = ({ prevstep,
           {isEdit ? (
             <div className="flex items-center gap-x-2">
               <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} />
-              {/* {documents.idFront ? documents.idFront.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" /> */}
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
@@ -918,11 +991,7 @@ const UpdateVisaDetails = ({ prevstep,
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
-          {errors.id_front && (
-            <span className="text-red-500 text-sm ">
-              {errors.id_front}
-            </span>
-          )}
+
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -935,8 +1004,6 @@ const UpdateVisaDetails = ({ prevstep,
           {isEdit ? (
             <div className="flex items-center gap-x-2">
               <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} />
-              {/* {documents.idBack ? documents.idBack.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" /> */}
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
@@ -944,25 +1011,30 @@ const UpdateVisaDetails = ({ prevstep,
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
-          {errors.id_back && (
-            <span className="text-red-500 text-sm ">
-              {errors.id_back}
-            </span>
-          )}
         </div>
       </div>
 
-      <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-2 lg:mt-7 lg:text-lg mt-2">
-        Insurance Details
+      <h2 className="mb-2 lg:mb-2 lg:mt-7 mt-2 flex items-center gap-x-3">
+        <p className='text-baseBlue tracking-wide lg:text-lg'>Insurance Details</p>
+        <label className='text-sm text-gray-500'>Applicable:</label>
+        <div className='flex items-center gap-x-2'>
+          <p className='text-sm'>Yes</p>
+          <input type="checkbox" checked={showInsurance} onChange={() => setShowInsurance(!showInsurance)} />
+        </div>
+        <div className='flex items-center gap-x-2'>
+          <p className='text-sm'>No</p>
+          <input type="checkbox" checked={!showInsurance} onChange={() => setShowInsurance(!showInsurance)} />
+        </div>
       </h2>
-      {/* test */}
-      <div className='flex w-[100%] flex-wrap items-center gap-3'>
+
+
+      {showInsurance && <div className='flex w-[100%] flex-wrap items-center gap-3'>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            DHA ID
+            DHA ID{showInsurance && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="dha_id"
             value={defaultData.dha_id}
@@ -972,12 +1044,6 @@ const UpdateVisaDetails = ({ prevstep,
             onChange={(e) => handleEdit(e.target.name, e.target.value)}
             onClick={handleFieldClick}
           />
-          {errors.dha_id && (
-            <span className="text-red-500 text-sm ">
-              {errors.dha_id}
-            </span>
-          )}
-
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -985,7 +1051,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Card Number
+            Card Number{showInsurance && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="card_number"
             value={defaultData.card_number}
@@ -995,11 +1061,6 @@ const UpdateVisaDetails = ({ prevstep,
             onChange={(e) => handleEdit(e.target.name, e.target.value)}
             onClick={handleFieldClick}
           />
-          {errors.card_number && (
-            <span className="text-red-500 text-sm ">
-              {errors.card_number}
-            </span>
-          )}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -1007,7 +1068,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Policy
+            Insurance Policy{showInsurance && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name='insurance_policy'
             value={defaultData.insurance_policy}
@@ -1017,12 +1078,6 @@ const UpdateVisaDetails = ({ prevstep,
             onChange={(e) => handleEdit(e.target.name, e.target.value)}
             onClick={handleFieldClick}
           />
-          {errors.insurance_policy && (
-            <span className="text-red-500 text-sm ">
-              {errors.insurance_policy}
-            </span>
-          )}
-
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -1030,7 +1085,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Company
+            Insurance Company{showInsurance && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name='insurance_company'
             value={defaultData.insurance_company}
@@ -1040,11 +1095,6 @@ const UpdateVisaDetails = ({ prevstep,
             onChange={(e) => handleEdit(e.target.name, e.target.value)}
             onClick={handleFieldClick}
           />
-          {errors.insurance_company && (
-            <span className="text-red-500 text-sm ">
-              {errors.insurance_company}
-            </span>
-          )}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -1052,7 +1102,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Active Date
+            Insurance Active Date{showInsurance && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker
@@ -1082,11 +1132,6 @@ const UpdateVisaDetails = ({ prevstep,
               onChange={(date) => handleDateChange(date, "insurance_active_date")}
             />
           </div>
-          {errors.insurance_active_date && (
-            <span className="text-red-500 text-sm ">
-              {errors.insurance_active_date}
-            </span>
-          )}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -1094,7 +1139,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Expiry Date
+            Insurance Expiry Date{showInsurance && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker
@@ -1124,24 +1169,17 @@ const UpdateVisaDetails = ({ prevstep,
               onChange={(date) => handleDateChange(date, "insurance_expiry_date")}
             />
           </div>
-          {errors.insurance_expiry_date && (
-            <span className="text-red-500 text-sm ">
-              {errors.insurance_expiry_date}
-            </span>
-          )}
         </div>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Card
+            Insurance Card{showInsurance && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
               <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} />
-              {/* {documents.insuranceCard ? documents.insuranceCard.document.name : "Not available"}
-                <WiCloudRefresh className="text-blue-600 text-xl" /> */}
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
@@ -1150,7 +1188,7 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           )}
         </div>
-      </div>
+      </div>}
 
       <div className="flex gap-x-5 mb-40 mt-5">
         {!isEdit && <Button onClick={prevstep} text={"Previous"} />}
@@ -1180,7 +1218,7 @@ const UpdateVisaDetails = ({ prevstep,
             )}
           </button>
         ) : (
-          <Button onClick={handleNextStep} text={"Next"} />
+          <Button onClick={handleSave} text={"Next"} />
         )}
       </div>
       {cancelBox && (
