@@ -85,7 +85,7 @@ const Department = ({ errors, setErrors, prevstep, token,
   const [managers, setManagers] = useState([]);
   const navigate = useNavigate()
   const [showIndirectReport, setShowIndirectReport] = useState(false);
-  
+
 
   const id = userProfile.id;
 
@@ -307,6 +307,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                     onClick={() => setIsEdit(true)}
                   >
                     <Select
+                      menuPlacement="top"
                       name="employee_type"
                       isDisabled={isEdit ? false : true}
                       value={jobRoles.find(option => option.label === defaultData.employee_type)}
@@ -314,6 +315,8 @@ const Department = ({ errors, setErrors, prevstep, token,
                       isSearchable={false}
                       className="focus:outline-none border-none"
                       onChange={selectedOption => handleEdit("employee_type", selectedOption)}
+                      menuPortalTarget={document.body}
+                      styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                     />
 
                   </div>
@@ -330,6 +333,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                   >
                     <div onClick={() => setIsEdit(true)}>
                       <Select
+                        menuPlacement="top"
                         isDisabled={isEdit ? false : true}
                         name="employee_status"
                         value={employeeStatus.find(option => option.label === defaultData.employee_status)}
@@ -337,6 +341,8 @@ const Department = ({ errors, setErrors, prevstep, token,
                         options={employeeStatus}
                         isSearchable={false}
                         className="focus:outline-none border-none"
+                        menuPortalTarget={document.body}
+                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                       />
                     </div>
                   </div>
@@ -349,8 +355,9 @@ const Department = ({ errors, setErrors, prevstep, token,
     text-input text-base mb-1'>Direct Report:</label>
                   <div onClick={() => setIsEdit(true)}>
                     <CustomSelect
+                      menuPlacement="top"
                       name='direct_report'
-                      placeholder="Select Direct Report To..."
+                      placeholder="Search Direct Report To..."
                       value={managers.find(manager => manager.label === defaultData.direct_report)}
                       onChange={(selectedOption) => handleEdit("direct_report", selectedOption, selectedOption)}
                       options={managers
@@ -401,9 +408,12 @@ const Department = ({ errors, setErrors, prevstep, token,
                           <div onClick={() => setIsEdit(true)}>
 
                             <CustomSelect
+                              menuPlacement="top"
                               name='indirect_report'
-                              placeholder="Select Direct Report To..."
-                              value={managers.find(manager => manager.label === defaultData.indirect_report)}
+                              placeholder="Search Indirect Report To..."
+                              value={managers
+                                .filter(manager => manager.username === defaultData.indirect_report)
+                                .map(manager => ({ value: manager.id, label: manager.username }))}
                               onChange={(selectedOption) => handleEdit("indirect_report", selectedOption, selectedOption)}
                               options={managers
                                 ?.filter(manager => manager.username)
@@ -450,12 +460,14 @@ const Department = ({ errors, setErrors, prevstep, token,
                       value={HeadOfDepartment.find(manager => manager.value === defaultData.department_manager)}
                       onChange={(selectedOption) => handleEdit("department_manager", selectedOption.value)}
                       options={HeadOfDepartment}
-                    // options={managers
-                    //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
-                    //   .map((manager) => ({
-                    //     value: manager.id,
-                    //     label: manager.username,
-                    //   }))}
+                      // options={managers
+                      //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
+                      //   .map((manager) => ({
+                      //     value: manager.id,
+                      //     label: manager.username,
+                      //   }))}
+                      menuPortalTarget={document.body}
+                      styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                     />
 
                     {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}

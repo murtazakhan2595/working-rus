@@ -213,6 +213,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                     // onClick={handleEditClick}
                                     >
                                         <Select
+                                            menuPlacement="top"
                                             name="employee_type"
                                             value={jobRoles.find(
                                                 (option) => option.label === departmentInfo.employee_type
@@ -223,6 +224,8 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                             onChange={(selectedOption) =>
                                                 handleChange("employee_type", selectedOption.value)
                                             }
+                                            menuPortalTarget={document.body}
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                         />
                                     </div>
                                 </div>
@@ -237,6 +240,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                     // onClick={handleEditClick}
                                     >
                                         <Select
+                                            menuPlacement="top"
                                             name="employee_status"
                                             // value={departmentInfo?.employee_status}
                                             value={employeeStatus.find(
@@ -246,6 +250,9 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                             isSearchable={false}
                                             className="focus:outline-none border-none"
                                             onChange={(selectedOption) => handleChange("employee_status", selectedOption.value)}
+                                            menuPortalTarget={document.body}
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+
                                         />
 
                                     </div>
@@ -258,8 +265,9 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                     <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
         text-input text-base mb-1'>Direct Report:</label>
                                     <CustomSelect
+                                        menuPlacement="top"
                                         name='direct_report'
-                                        placeholder="Select Direct Report To..."
+                                        placeholder="Search Direct Report To..."
                                         // value={managers.filter(manager => defaultDeparmentInfo.direct_report.includes(manager.label))}
                                         value={managers.find(manager => manager.label === defaultDeparmentInfo?.direct_report)}
                                         onChange={(selectedOption) => handleChange("direct_report", selectedOption, selectedOption)}
@@ -304,9 +312,9 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                         <>
 
                                             <CustomSelect
-                                                menuPlacement="auto"
+                                                menuPlacement="top"
                                                 name='indirect_report'
-                                                placeholder="Select Indirect Report To..."
+                                                placeholder="Search Indirect Report To..."
                                                 value={managers.find(manager => manager.label === defaultDeparmentInfo?.indirect_report)}
                                                 onChange={(selectedOption) => handleChange("indirect_report", selectedOption, selectedOption)}
                                                 // onChange={(selectedOptions) => handleEdit("indirect_report", selectedOptions.map(option => option.label))}
@@ -347,12 +355,14 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                         value={HeadOfDepartment.find(manager => manager.label === departmentInfo?.department_manager)}
                                         onChange={(selectedOption) => handleChange("department_manager", selectedOption.value)}
                                         options={HeadOfDepartment}
-                                    // options={managers
-                                    //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
-                                    //   .map((manager) => ({
-                                    //     value: manager.id,
-                                    //     label: manager.username,
-                                    //   }))}
+                                        // options={managers
+                                        //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
+                                        //   .map((manager) => ({
+                                        //     value: manager.id,
+                                        //     label: manager.username,
+                                        //   }))}
+                                        menuPortalTarget={document.body}
+                                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                     />
 
                                     {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
