@@ -112,7 +112,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                 });
             }
         } else if (showVisa)
-            if (visaDetails.entry_permit_number && visaDetails.country_of_visa_issuance && visaDetails.uid_number && visaDetails.visa_type && visaDetails.visa_issuance_date && visaDetails.visa_expiry_date && visaDetails.visa_duration && visaDetails.visa_country_entry_date && visaDetails.visa_country_exit_date) {
+            if (visaDetails.entry_permit_number && visaDetails.country_of_visa_issuance && visaDetails.uid_number && visaDetails.visa_type && visaDetails.visa_issuance_date && visaDetails.visa_expiry_date && visaDetails.visa_duration && visaDetails.visa_country_entry_date && visaDetails.visa_country_exit_date && visaDetailsFiles.enter_permit && visaDetailsFiles.visa_page && visaDetailsFiles.medical && visaDetailsFiles.id_application) {
                 nextstep();
             } else {
                 toast.error("Please fill in all required fields!", {
@@ -122,13 +122,13 @@ const VisaDetials = ({ prevstep, nextstep }) => {
             }
 
         else if (showInsurance) {
-            if (visaDetails.dha_id && visaDetails.card_number && visaDetails.insurance_policy && visaDetails.insurance_company && visaDetails.insurance_active_date && visaDetails.insurance_expiry_date) {
+            if (visaDetails.dha_id && visaDetails.card_number && visaDetails.insurance_policy && visaDetails.insurance_company && visaDetails.insurance_active_date && visaDetails.insurance_expiry_date && visaDetailsFiles.insurance_card) {
                 nextstep();
             } else {
                 toast.error("Please fill in all required fields!", {
                     position: "top-right",
                     autoClose: 1000,
-                  });
+                });
             }
         }
 
@@ -139,7 +139,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                 toast.error("Please fill all ID Details fields!", {
                     position: "top-right",
                     autoClose: 1000,
-                  });
+                });
             }
         }
 

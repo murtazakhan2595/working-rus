@@ -46,7 +46,34 @@ const UpdateVisaDetails = ({ prevstep,
       const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
         headers,
       });
-      setDefaultData(employeeResponse.data);
+      // setDefaultData(employeeResponse.data);
+      const employeeData = employeeResponse.data;
+      setDefaultData({
+        passport_number: employeeData.passport_number,
+        Passport_Issuance_Country: employeeData.Passport_Issuance_Country,
+        Passport_Issuance_Date: employeeData.Passport_Issuance_Date,
+        Passport_Expiry_Date: employeeData.Passport_Expiry_Date,
+        entry_permit_number: employeeData.entry_permit_number,
+        country_of_visa_issuance: employeeData.country_of_visa_issuance,
+        visa_duration: employeeData.visa_duration,
+        uid_number: employeeData.uid_number,
+        living_country_id_no: employeeData.living_country_id_no,
+        dha_id: employeeData.dha_id,
+        card_number: employeeData.card_number,
+        insurance_policy: employeeData.insurance_policy,
+        insurance_company: employeeData.insurance_company,
+        visa_expiry_date: employeeData.visa_expiry_date,
+        visa_issuance_date: employeeData.visa_issuance_date,
+        visa_country_entry_date: employeeData.visa_country_entry_date,
+        visa_country_exit_date: employeeData.visa_country_exit_date,
+        id_issuance_date: employeeData.id_issuance_date,
+        id_expiry_date: employeeData.id_expiry_date,
+        insurance_active_date: employeeData.insurance_active_date,
+        insurance_expiry_date: employeeData.insurance_expiry_date,
+        visa_type: employeeData.visa_type,
+        place_of_issuance: employeeData.place_of_issuance,
+      });
+
 
       // setDefaultData(employeeData)
     } catch (error) {
@@ -284,6 +311,87 @@ const UpdateVisaDetails = ({ prevstep,
 
   // };
 
+
+  // updated
+  // const handleSave = () => {
+  //   if (showPassport) {
+  //     if (
+  //       defaultData.passport_number &&
+  //       defaultData.Passport_Issuance_Country &&
+  //       defaultData.Passport_Issuance_Date &&
+  //       defaultData.Passport_Expiry_Date &&
+  //       (documents.passport_copy || visaDetailsFiles.passport_copy)
+  //     ) {
+  //       updateDataOnServer();
+  //     } else {
+  //       toast.error("Please fill all required passport fields!", {
+  //         position: "top-right",
+  //         autoClose: 1000,
+  //       });
+  //     }
+  //   } else if (showVisa) {
+  //     if (
+  //       defaultData.entry_permit_number &&
+  //       defaultData.country_of_visa_issuance &&
+  //       defaultData.uid_number &&
+  //       defaultData.visa_type &&
+  //       defaultData.visa_issuance_date &&
+  //       defaultData.visa_expiry_date &&
+  //       defaultData.visa_duration &&
+  //       defaultData.visa_country_entry_date &&
+  //       defaultData.visa_country_exit_date &&
+  //       (documents.enter_permit || visaDetailsFiles.enter_permit) &&
+  //       (documents.visa_page || visaDetailsFiles.enter_permit) &&
+  //       (documents.medical || visaDetailsFiles.medical) &&
+  //       (documents.id_application || visaDetailsFiles.id_application)
+  //     ) {
+  //       updateDataOnServer();
+  //     } else {
+  //       toast.error("Please fill all required visa fields!", {
+  //         position: "top-right",
+  //         autoClose: 1000,
+  //       });
+  //     }
+  //   } else if (showInsurance) {
+  //     if (
+  //       defaultData.dha_id &&
+  //       defaultData.card_number &&
+  //       defaultData.insurance_policy &&
+  //       defaultData.insurance_company &&
+  //       defaultData.insurance_active_date &&
+  //       defaultData.insurance_expiry_date &&
+  //       (documents.insurance_card || visaDetailsFiles.insurance_card)
+  //     ) {
+  //       updateDataOnServer();
+  //     } else {
+  //       toast.error("Please fill all required insurance fields!", {
+  //         position: "top-right",
+  //         autoClose: 1000,
+  //       });
+  //     }
+  //   } else if (showId) { // Added condition for ID fields
+  //     if (
+  //       defaultData.living_country_id_no &&
+  //       defaultData.place_of_issuance &&
+  //       defaultData.id_issuance_date &&
+  //       defaultData.id_expiry_date &&
+  //       defaultData.dha_id &&
+  //       (documents.id_front || visaDetailsFiles.id_front) &&
+  //       (documents.id_back || visaDetailsFiles.id_back)
+  //     ) {
+  //       updateDataOnServer();
+  //     } else {
+  //       toast.error("Please fill all required ID fields!", {
+  //         position: "top-right",
+  //         autoClose: 1000,
+  //       });
+  //     }
+  //   } else {
+  //     updateDataOnServer();
+  //   }
+  // };
+
+
   const handleSave = () => {
     if (showPassport) {
       if (
@@ -291,7 +399,7 @@ const UpdateVisaDetails = ({ prevstep,
         defaultData.Passport_Issuance_Country &&
         defaultData.Passport_Issuance_Date &&
         defaultData.Passport_Expiry_Date &&
-        documents.passport_copy
+        ((documents.passport_copy && !visaDetailsFiles.passport_copy) || visaDetailsFiles.passport_copy)
       ) {
         updateDataOnServer();
       } else {
@@ -310,7 +418,11 @@ const UpdateVisaDetails = ({ prevstep,
         defaultData.visa_expiry_date &&
         defaultData.visa_duration &&
         defaultData.visa_country_entry_date &&
-        defaultData.visa_country_exit_date
+        defaultData.visa_country_exit_date &&
+        ((documents.enter_permit && !visaDetailsFiles.enter_permit) || visaDetailsFiles.enter_permit) &&
+        ((documents.visa_page && !visaDetailsFiles.visa_page) || visaDetailsFiles.visa_page) &&
+        ((documents.medical && !visaDetailsFiles.medical) || visaDetailsFiles.medical) &&
+        ((documents.id_application && !visaDetailsFiles.id_application) || visaDetailsFiles.id_application)
       ) {
         updateDataOnServer();
       } else {
@@ -327,7 +439,7 @@ const UpdateVisaDetails = ({ prevstep,
         defaultData.insurance_company &&
         defaultData.insurance_active_date &&
         defaultData.insurance_expiry_date &&
-        documents.insurance_card
+        ((documents.insurance_card && !visaDetailsFiles.insurance_card) || visaDetailsFiles.insurance_card)
       ) {
         updateDataOnServer();
       } else {
@@ -336,10 +448,29 @@ const UpdateVisaDetails = ({ prevstep,
           autoClose: 1000,
         });
       }
+    } else if (showId) { // Added condition for ID fields
+      if (
+        defaultData.living_country_id_no &&
+        defaultData.place_of_issuance &&
+        defaultData.id_issuance_date &&
+        defaultData.id_expiry_date &&
+        defaultData.dha_id &&
+        ((documents.id_front && !visaDetailsFiles.id_front) || visaDetailsFiles.id_front) &&
+        ((documents.id_back && !visaDetailsFiles.id_back) || visaDetailsFiles.id_back)
+      ) {
+        updateDataOnServer();
+      } else {
+        toast.error("Please fill all required ID fields!", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+      }
     } else {
       updateDataOnServer();
     }
   };
+
+
 
   return (
     <div className="bg-[#F9F9F9] h-[76vh] overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">

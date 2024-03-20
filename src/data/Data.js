@@ -27,7 +27,7 @@ export const statusOptions = [
 
 export const visaOptions = [
   { value: "Visit", label: "Visit Visa" },
-  { value: "Tourist", label: "tourist visa" },
+  { value: "Tourist", label: "Tourist visa" },
   { value: "Residency", label: "Residency visa" },
   { value: "Golden", label: "Golden visa" },
   { value: "Green", label: "Green visa" },
