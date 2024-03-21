@@ -32,7 +32,7 @@ const CustomDatePicker = ({ selectedDate, onChange }) => {
             selected={selectedDate}
             onChange={onChange}
             disabled
-            dateFormat="MMMM-d-yyyy"
+            dateFormat="d-MMMM-yyyy"
             className='bg-transparent z-50 border-none outline-none'
         />
     );
@@ -46,47 +46,25 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
     const [formFilled, setFormFilled] = useState(true);
     const [submittedOnce, setSubmittedOnce] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        date: new Date(),
+        task: '',
+        status: '',
+        priorty: '',
+        task_start_date: '',
+        task_end_date: '',
+        totalTaskDays: '',
+        due_date: '',
+        assigne: '',
+        notes: ''
+    });
 
-    const validateForm = () => {
-        const { error } = schema.validate({ description: editorHtml }, { abortEarly: false });
-        
-        if (error) {
-            const errors = {};
-            error.details.forEach((item) => {
-                errors[item.path[0]] = item.message;
-            });
-            setValidationErrors(errors);
-            setFormFilled(false);
-            return false;
-        }
-    
-        if (editorHtml.trim() === '') {
-            setValidationErrors({ description: 'Please write something to save.' });
-            setFormFilled(false);
-            return false;
-        }
-    
-        setValidationErrors({});
-        setFormFilled(true);
-        return true;
+    const handleChange = (name, value) => {
+        setFormData({
+            ...formData,
+            [name]: value
+        });
     };
-    
-
-    const handleEditorChange = (content, delta, source, editor) => {
-        const htmlContent = editor.getHTML();
-    
-        setEditorHtml(htmlContent);
-    
-        const isValid = validateForm();
-        if (isValid) {
-            setFormFilled(true);
-        }
-    
-        if (validationErrors.description) {
-            setValidationErrors({ ...validationErrors, description: '' });
-        }
-    };
-    
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -96,78 +74,13 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
         setIsModalOpen(!isModalOpen);
     };
 
-    const handleSave = () => {
-        const isValid = validateForm();
-        const isEmpty = !editorHtml.trim(); 
-    
-        if (!isValid || isEmpty) {
-            setValidationErrors({
-                ...validationErrors,
-                description: 'Please write something to save.',
-            });
-            return;
-        }
-    
-        try {
-            closeModal();
-            toast.success('DTR saved successfully!', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
-    
-        } catch (error) {
-            toast.error('Error saving the data. Please try again.', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
-        }
-    };
-    
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (isLoading) {
-            return;
-        }
-    
-        setIsLoading(true);
-        const isValid = validateForm();
-        if (!isValid) {
-            setIsLoading(false); 
-            return;
-        }
-    
-        const data = {
-            description: editorHtml,
-        };
-    
-        const headers = {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        };
-    
-        try {
-            const response = await axios.post(`${baseUrl}/dtr/`, data, { headers });
-            if (response.status === 201) {
-                toast.success('DTR submitted successfully!', {
-                    position: toast.POSITION.TOP_RIGHT,
-                });
-            }
-    
-            setEditorHtml("");
-            closeModal();
-            localStorage.removeItem('dailyTaskData');
-        } catch (error) {
-            console.error('API Error:', error);
-    
-            // Show an error notification
-            toast.error('Error submitting the form. Please try again.', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
-        } finally {
-            setIsLoading(false); // Reset isLoading after API call completion
-        }
-        setSubmittedOnce(true);
+    const handleSubmit = (e) => {
+
     };
-    
+
+
+
     useEffect(() => {
         const savedData = localStorage.getItem('dailyTaskData');
         if (savedData) {
@@ -197,7 +110,7 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                 <>
                     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"></div>
                     <div className="fixed inset-0 flex items-center justify-center z-50">
-                        <div className="md:mx-auto w-full max-w-md relative">
+                        <div className="w-full">
                             <div className="space-y-3 my-2 bg-[#F8F8F8] lg:pt-8 lg:pb-4 py-6 rounded-3xl lg:p-6 md:p-5 p-3 lg:m-6 m-4 max-w-800 border border-gray-100 shadow-md relative">
                                 <div
                                     className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
@@ -207,35 +120,64 @@ const DailyTaskRpt = ({ token, baseUrl }) => {
                                 </div>
                                 <div className="flex justify-center px-4 py-0">
                                     <div className="flex items-center">
-                                        <span className="text-lg pl-16"><CustomDatePicker selectedDate={selectedDate} onChange={date => setSelectedDate(date)} /></span>
+                                        <span className="text-xl font-semibold">Today's DTR</span>
                                     </div>
                                 </div>
-                                <div className="h-72 mt-4 w-full resize-none overflow-y-auto outline-none roundScrollsm rounded-2xl border-none bg-white">
-                                    <ReactQuill
-                                        className='text-center h-[88%]'
-                                        required
-                                        value={editorHtml}
-                                        onChange={handleEditorChange}
-                                        modules={{
-                                            toolbar: {
-                                                container: [
-                                                    [{ 'header': '1' }, { 'header': '2' }],
-                                                    ["bold", "italic", "underline"],
-                                                    [{ list: "ordered" }, { list: "bullet" }],
-                                                    ["link", "image"],
-                                                    [{ align: '' }, { align: 'center' }, { align: 'right' }]
-                                                ],
-                                            },
-                                        }}
-                                    />
+                                <div className="overflow-x-auto">
+                                    <table className="w-full">
+                                        <thead>
+                                            <tr className='bg-[#EBEBEB] h-14 text-base'>
+                                                <th className='border-2 border-white'>Date</th>
+                                                <th className='border-2 border-white'>Task</th>
+                                                <th>Status</th>
+                                                <th className='border-2 border-white'>Priority</th>
+                                                <th className='border-2 border-white'>Task Start Date</th>
+                                                <th className='border-2 border-white'>Task End Date</th>
+                                                <th className='border-2 border-white'>Total Task Days</th>
+                                                <th className='border-2 border-white'>Due Date</th>
+                                                <th className='border-2 border-white'>Assignee</th>
+                                                <th className='border-2 border-white'>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr className='h-14'>
+                                                <div className="w-24 text-sm">
+                                                    <DatePicker
+                                                        name='date'
+                                                        selected={formData.date}
+                                                        onChange={date => handleChange('date', date)}
+                                                        dateFormat="d-MMM-yyyy"
+                                                        className='bg-transparent z-50 border-none outline-none'
+                                                    />
+                                                </div>
+                                                <td className='h-14'>
+                                                    <textarea name="task" className='h-full' value={formData.task} onChange={e => handleChange(e.target.name, e.target.value)} cols="30" rows="4"></textarea>
+                                                </td>
+                                                <td className='h-14'><input type="text" name="status" value={formData.status} onChange={e => handleChange(e.target.name, e.target.value)} className="w-full h-full" /></td>
+                                                <td className='h-14'><input type="text" name="priority" value={formData.priority} onChange={e => handleChange(e.target.name, e.target.value)} className="w-full h-full" /></td>
+                                                <td><input type="date" name="taskStartDate" value={formData.taskStartDate} onChange={handleChange} className="w-full" /></td>
+                                                <td><DatePicker
+                                                    selected={formData.date}
+                                                    onChange={date => handleChange('date', date)}
+                                                    dateFormat="d-MMM-yyyy"
+                                                    className='bg-transparent z-50 border-none outline-none'
+                                                /></td>
+                                                <td><input type="date" name="taskEndDate" value={formData.taskEndDate} onChange={handleChange} className="w-full" /></td>
+                                                <td><input type="number" name="totalTaskDays" value={formData.totalTaskDays} onChange={handleChange} className="w-full" /></td>
+                                                <td><input type="date" name="dueDate" value={formData.dueDate} onChange={handleChange} className="w-full" /></td>
+                                                <td><input type="text" name="assignee" value={formData.assignee} onChange={handleChange} className="w-full" /></td>
+                                                <td><input type="text" name="notes" value={formData.notes} onChange={handleChange} className="w-full" /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                {validationErrors.description && (
-                                    <div className="text-red-500 text-sm">{validationErrors.description}</div>
-                                )}
                                 {/* Buttons */}
                                 <div className="flex justify-center space-x-10">
-                                    <CustomButton text="Save" className="custom-class" onClick={handleSave} />
-                                    <CustomButton text="Submit" className="custom-class"   disabled={isLoading} onClick={handleSubmit} />
+                                    <CustomButton text="Save" className="custom-class"
+                                    // onClick={handleSave} 
+
+                                    />
+                                    <CustomButton text="Submit" className="custom-class" disabled={isLoading} onClick={handleSubmit} />
                                 </div>
                             </div>
                         </div>

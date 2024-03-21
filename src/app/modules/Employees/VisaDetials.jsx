@@ -46,12 +46,12 @@ const VisaDetials = ({ prevstep, nextstep }) => {
         insurance_company: storedData?.insurance_company ? storedData.insurance_company : "",
         insurance_active_date: storedData?.insurance_active_date ? storedData.insurance_active_date : null,
         insurance_expiry_date: storedData?.insurance_expiry_date ? storedData.insurance_expiry_date : null,
+        is_passport_applicable: storedData?.is_passport_applicable ? storedData.is_passport_applicable : null,
+        is_visa_applicable: storedData?.is_visa_applicable ? storedData.is_visa_applicable : null,
+        is_insurance_applicable: storedData?.is_insurance_applicable ? storedData.is_visa_applicable : null,
     })
 
     const [visaDetailsFiles, setVisaDetailsFiles] = useState(storedVisaDetailsFiles || {});
-    const [showPassport, setShowPassport] = useState(false);
-    const [showVisa, setShowVisa] = useState(false);
-    const [showInsurance, setShowInsurance] = useState(false);
     const showId = true;
 
     const handleChange = (name, value) => {
@@ -101,7 +101,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
     // Function to handle next step
     const handleNextStep = () => {
 
-        if (showPassport) {
+        if (visaDetails.is_passport_applicable) {
             // Check if fields are filled
             if (visaDetails.passport_number && visaDetails.Passport_Issuance_Country && visaDetails.Passport_Issuance_Date && visaDetails.Passport_Expiry_Date && visaDetailsFiles.passport_copy) {
                 nextstep();
@@ -111,7 +111,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     autoClose: 1000,
                 });
             }
-        } else if (showVisa)
+        } else if (visaDetails.is_visa_applicable)
             if (visaDetails.entry_permit_number && visaDetails.country_of_visa_issuance && visaDetails.uid_number && visaDetails.visa_type && visaDetails.visa_issuance_date && visaDetails.visa_expiry_date && visaDetails.visa_duration && visaDetails.visa_country_entry_date && visaDetails.visa_country_exit_date && visaDetailsFiles.enter_permit && visaDetailsFiles.visa_page && visaDetailsFiles.medical && visaDetailsFiles.id_application) {
                 nextstep();
             } else {
@@ -121,7 +121,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                 });
             }
 
-        else if (showInsurance) {
+        else if (visaDetails.is_insurance_applicable) {
             if (visaDetails.dha_id && visaDetails.card_number && visaDetails.insurance_policy && visaDetails.insurance_company && visaDetails.insurance_active_date && visaDetails.insurance_expiry_date && visaDetailsFiles.insurance_card) {
                 nextstep();
             } else {
@@ -164,21 +164,30 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     <label className='text-sm text-gray-500'>Applicable:</label>
                     <div className='flex items-center gap-x-2'>
                         <p className='text-sm'>Yes</p>
-                        <input type="checkbox" checked={showPassport} onChange={() => setShowPassport(!showPassport)} />
+                        <input type="checkbox"
+                            name='is_passport_applicable_yes'
+                            checked={visaDetails.is_passport_applicable}
+                            onChange={(e) => handleChange('is_passport_applicable', e.target.checked)}
+                        />
                     </div>
                     <div className='flex items-center gap-x-2'>
                         <p className='text-sm'>No</p>
-                        <input type="checkbox" checked={!showPassport} onChange={() => setShowPassport(!showPassport)} />
+                        <input type="checkbox"
+                            name='is_passport_applicable_no'
+                            checked={!visaDetails.is_passport_applicable}
+                            onChange={(e) => handleChange('is_passport_applicable', !e.target.checked)}
+                        />
                     </div>
+
                 </h2>
-                {showPassport &&
+                {visaDetails.is_passport_applicable &&
                     <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
                         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                             <label
                                 className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
                             >
-                                Passport Number{showPassport && <span className="text-red-500 text-2xl">*</span>}:
+                                Passport Number{visaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}:
                             </label>
                             <input type="text" name="passport_number" value={visaDetails.passport_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Passport Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
 
@@ -189,7 +198,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                                 className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
                             >
-                                Passport Issuance Country{showPassport && <span className="text-red-500 text-2xl">*</span>}:
+                                Passport Issuance Country{visaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}:
                             </label>
                             <Select
                                 className=""
@@ -210,7 +219,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                                 className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
                             >
-                                Issuance Date{showPassport && <span className="text-red-500 text-2xl">*</span>}:
+                                Issuance Date{visaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}:
                             </label>
                             <Datepicker
                                 selected={visaDetails.Passport_Issuance_Date ? moment(visaDetails.Passport_Issuance_Date, "YYYY-MM-DD").toDate() : null}
@@ -226,14 +235,14 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                                 className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
                             >
-                                Expiry Date{showPassport && <span className="text-red-500 text-2xl">*</span>}:
+                                Expiry Date{visaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}:
                             </label>
                             <Datepicker
                                 selected={visaDetails.Passport_Expiry_Date ? moment(visaDetails.Passport_Expiry_Date, "YYYY-MM-DD").toDate() : null}
                                 onChange={(date) => handleDateChange(date, "Passport_Expiry_Date")}
                                 dateFormat="yyyy-MM-dd"
                                 className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
-                                required={showPassport}
+                                required={visaDetails.is_passport_applicable}
                             />
                         </div>
 
@@ -243,7 +252,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                                 className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
                             >
-                                Passport Copy{showPassport && <span className="text-red-500 text-2xl">*</span>}:
+                                Passport Copy{visaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}:
                             </label>
                             <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} />
                         </div>
@@ -258,22 +267,30 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     <label className='text-sm text-gray-500'>Applicable:</label>
                     <div className='flex items-center gap-x-2'>
                         <p className='text-sm'>Yes</p>
-                        <input type="checkbox" checked={showVisa} onChange={() => setShowVisa(!showVisa)} />
+                        <input type="checkbox"
+                            name='is_visa_applicable_yes'
+                            checked={visaDetails.is_visa_applicable}
+                            onChange={(e) => handleChange('is_visa_applicable', e.target.checked)}
+                        />
                     </div>
                     <div className='flex items-center gap-x-2'>
                         <p className='text-sm'>No</p>
-                        <input type="checkbox" checked={!showVisa} onChange={() => setShowVisa(!showVisa)} />
+                        <input type="checkbox"
+                            name='is_visa_applicable_no'
+                            checked={!visaDetails.is_visa_applicable}
+                            onChange={(e) => handleChange('is_visa_applicable', !e.target.checked)}
+                        />
                     </div>
 
                 </h2>
-                {showVisa &&
+                {visaDetails.is_visa_applicable &&
                     <div className='flex w-[100%] flex-wrap gap-3'>
                         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                             <label
                                 className={`font-sfpro tracking-wide font-medium
                         text-input text-base mb-1`}
                             >
-                                Entry Permit Number {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Entry Permit Number {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
 
                             <input type="text" name="entry_permit_number" value={visaDetails.entry_permit_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Entry Permit Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
@@ -282,7 +299,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-medium text-input text-base mb-1 $`}
                             >
-                                Visa Issuance Country {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Visa Issuance Country {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <Select
                                 className=""
@@ -300,7 +317,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1 $`}
                             >
-                                UID Number {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                UID Number {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <input type="text" name="uid_number" value={visaDetails.uid_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="UID Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
                         </div>
@@ -308,7 +325,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Visa Type {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Visa Type {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <Select
                                 className=""
@@ -326,7 +343,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Visa Issuance Date {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Visa Issuance Date {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             {/* <input type="date" value={visaIssuanceDate} onChange={(e) => setVisaIssuanceDate(e.target.value)} placeholder="Visa Issuance Date" /> */}
                             <Datepicker
@@ -340,7 +357,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Visa Expiry Date {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Visa Expiry Date {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <Datepicker
                                 selected={visaDetails.visa_expiry_date ? moment(visaDetails.visa_expiry_date, "YYYY-MM-DD").toDate() : null}
@@ -354,7 +371,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Visa Duration {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Visa Duration {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <input type="text" name="visa_duration" value={visaDetails.visa_duration} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Visa Duration" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
                         </div>
@@ -362,7 +379,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Visa Country Entry Date {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Visa Country Entry Date {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             {/* <input type="date" value={visaCountryEntryDate} onChange={(e) => setVisaCountryEntryDate(e.target.value)} placeholder="Visa Country Entry Date" /> */}
                             <Datepicker
@@ -376,7 +393,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Visa Country Exit Date {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Visa Country Exit Date {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <Datepicker
                                 selected={visaDetails.visa_country_exit_date ? moment(visaDetails.visa_country_exit_date, "YYYY-MM-DD").toDate() : null}
@@ -390,7 +407,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Entry Permit {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Entry Permit {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <input type="file" onChange={(e) => handleFileChange('enter_permit', e.target.files)} />
                         </div>
@@ -399,7 +416,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Visa Page {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Visa Page {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} />
                         </div>
@@ -408,7 +425,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Medical Result {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                Medical Result {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <input type="file"
                                 onChange={(e) => handleFileChange('medical', e.target.files)}
@@ -419,7 +436,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                ID Application {showVisa && <span className="text-red-500 text-2xl">*</span>}
+                                ID Application {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)} />
                         </div>
@@ -431,7 +448,6 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                 ID Details <span className="text-red-500 text-2xl">*</span>
             </h2>
             <div className='flex w-[100%] flex-wrap items-center gap-3'>
-
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                     <label
                         className="font-sfpro tracking-wide font-medium
@@ -519,23 +535,31 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                 <label className='text-sm text-gray-500'>Applicable:</label>
                 <div className='flex items-center gap-x-2'>
                     <p className='text-sm'>Yes</p>
-                    <input type="checkbox" checked={showInsurance} onChange={() => setShowInsurance(!showInsurance)} />
+                    <input type="checkbox"
+                        name='is_insurance_applicable_yes'
+                        checked={visaDetails.is_insurance_applicable}
+                        onChange={(e) => handleChange('is_insurance_applicable', e.target.checked)}
+                    />
                 </div>
                 <div className='flex items-center gap-x-2'>
                     <p className='text-sm'>No</p>
-                    <input type="checkbox" checked={!showInsurance} onChange={() => setShowInsurance(!showInsurance)} />
+                    <input type="checkbox"
+                        name='is_insurance_applicable_no'
+                        checked={!visaDetails.is_insurance_applicable}
+                        onChange={(e) => handleChange('is_insurance_applicable', !e.target.checked)}
+                    />
                 </div>
             </h2>
 
 
-            {showInsurance &&
+            {visaDetails.is_insurance_applicable &&
                 <div className='flex w-[100%] flex-wrap items-center gap-3'>
                     <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
                         <label
                             className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1
                     `}
                         >
-                            DHA ID {showInsurance && <span className="text-red-500 text-2xl">*</span>}
+                            DHA ID {visaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
                         </label>
                         <input type="text" name="dha_id" value={visaDetails.dha_id}
                             onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -547,7 +571,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1
                     `}
                         >
-                            Card Number {showInsurance && <span className="text-red-500 text-2xl">*</span>}
+                            Card Number {visaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
                         </label>
                         <input type="text" name="card_number" value={visaDetails.card_number} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Card Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
                     </div>
@@ -556,7 +580,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                         <label className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1
                       `}
                         >
-                            Insurance Policy {showInsurance && <span className="text-red-500 text-2xl">*</span>}
+                            Insurance Policy {visaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
                         </label>
                         <input type="text" name='insurance_policy' value={visaDetails.insurance_policy} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Insurance Policy" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
 
@@ -566,7 +590,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                         <label className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1
                     `}
                         >
-                            Insurance Company {showInsurance && <span className="text-red-500 text-2xl">*</span>}
+                            Insurance Company {visaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
                         </label>
                         <input type="text" name='insurance_company' value={visaDetails.insurance_company} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Insurance Company" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
 
@@ -576,7 +600,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                         <label className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1
                     `}
                         >
-                            Insurance Active Date {showInsurance && <span className="text-red-500 text-2xl">*</span>}
+                            Insurance Active Date {visaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
                         </label>
 
                         <Datepicker
@@ -592,7 +616,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                         <label className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1
                     `}
                         >
-                            Insurance Expiry Date {showInsurance && <span className="text-red-500 text-2xl">*</span>}
+                            Insurance Expiry Date {visaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
                         </label>
                         <Datepicker
                             selected={visaDetails.insurance_expiry_date ? moment(visaDetails.insurance_expiry_date, "YYYY-MM-DD").toDate() : null}
@@ -606,7 +630,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
 
                         <label className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1
                     `}
-                        > Insurance Card {showInsurance && <span className="text-red-500 text-2xl">*</span>}
+                        > Insurance Card {visaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
 
                         </label>
                         <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} />
