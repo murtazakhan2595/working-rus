@@ -158,8 +158,94 @@ const VisaDetials = ({ prevstep, nextstep }) => {
 
     return (
         <div className="bg-[#F9F9F9] h-[76vh] overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
+            <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-2 lg:mt-7 lg:text-lg mt-2">
+                ID Details <span className="text-red-500 text-2xl">*</span>
+            </h2>
+            <div className='flex w-[100%] flex-wrap items-center gap-3'>
+                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+                    <label
+                        className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                    >
+                        Living Country ID No
+                    </label>
+                    <input type="text" name="living_country_id_no" value={visaDetails.living_country_id_no} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Living Country ID Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
+                </div>
+                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+                    <label
+                        className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                    >
+                        Place of Issuance
+                    </label>
+                    <Select
+                        className=""
+                        name="place_of_issuance"
+                        options={countryOptions}
+                        value={countryOptions.find(
+                            (option) => option.label === visaDetails.place_of_issuance
+                        )}
+                        onChange={(selectedOption) =>
+                            handleChange("place_of_issuance", selectedOption.label)
+                        }
+                    // required
+                    />
+                </div>
+                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+                    <label
+                        className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                    >
+                        ID issuance Date
+                    </label>
+                    <Datepicker
+                        selected={visaDetails.id_issuance_date ? moment(visaDetails.id_issuance_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "id_issuance_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
+                    {/* <input type="date" value={idIssuanceDate} onChange={(e) => setIdIssuanceDate(e.target.value)} placeholder="ID Issuance Date" /> */}
+                </div>
+                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+                    <label
+                        className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                    >
+                        ID Expiry Date
+                    </label>
+                    {/* <input type="date" value={idExpiryDate} onChange={(e) => setIdExpiryDate(e.target.value)} placeholder="ID Expiry Date" /> */}
+                    <Datepicker
+                        selected={visaDetails.id_expiry_date ? moment(visaDetails.id_expiry_date, "YYYY-MM-DD").toDate() : null}
+                        onChange={(date) => handleDateChange(date, "id_expiry_date")}
+                        dateFormat="yyyy-MM-dd"
+                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
+                    />
+                </div>
+                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+                    <label
+                        className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                    >
+                        ID Front
+                    </label>
+                    <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} />
+                </div>
+                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+                    <label
+                        className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                    >
+                        ID Back
+                    </label>
+                    <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} />
+                </div>
+            </div>
+
             <div>
-                <h2 className="mb-2 lg:mb-4 mt-2 flex items-center gap-x-3">
+                <h2 className="mb-2 lg:mb-4 mt-2 flex items-center gap-x-3 lg:mt-5">
                     <p className='text-baseBlue tracking-wide lg:text-lg'>Passport Details</p>
                     <label className='text-sm text-gray-500'>Applicable:</label>
                     <div className='flex items-center gap-x-2'>
@@ -444,91 +530,6 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                 }
             </div>
 
-            <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-2 lg:mt-7 lg:text-lg mt-2">
-                ID Details <span className="text-red-500 text-2xl">*</span>
-            </h2>
-            <div className='flex w-[100%] flex-wrap items-center gap-3'>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        Living Country ID No
-                    </label>
-                    <input type="text" name="living_country_id_no" value={visaDetails.living_country_id_no} onChange={(e) => handleChange(e.target.name, e.target.value)} placeholder="Living Country ID Number" className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]" />
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        Place of Issuance
-                    </label>
-                    <Select
-                        className=""
-                        name="place_of_issuance"
-                        options={countryOptions}
-                        value={countryOptions.find(
-                            (option) => option.value === visaDetails.place_of_issuance
-                        )}
-                        onChange={(selectedOption) =>
-                            handleChange("place_of_issuance", selectedOption.label)
-                        }
-                    // required
-                    />
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        ID issuance Date
-                    </label>
-                    <Datepicker
-                        selected={visaDetails.id_issuance_date ? moment(visaDetails.id_issuance_date, "YYYY-MM-DD").toDate() : null}
-                        onChange={(date) => handleDateChange(date, "id_issuance_date")}
-                        dateFormat="yyyy-MM-dd"
-                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
-                    />
-                    {/* <input type="date" value={idIssuanceDate} onChange={(e) => setIdIssuanceDate(e.target.value)} placeholder="ID Issuance Date" /> */}
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        ID Expiry Date
-                    </label>
-                    {/* <input type="date" value={idExpiryDate} onChange={(e) => setIdExpiryDate(e.target.value)} placeholder="ID Expiry Date" /> */}
-                    <Datepicker
-                        selected={visaDetails.id_expiry_date ? moment(visaDetails.id_expiry_date, "YYYY-MM-DD").toDate() : null}
-                        onChange={(date) => handleDateChange(date, "id_expiry_date")}
-                        dateFormat="yyyy-MM-dd"
-                        className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
-                    />
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        ID Front
-                    </label>
-                    <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} />
-                </div>
-                <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-                    <label
-                        className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                    >
-                        ID Back
-                    </label>
-                    <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} />
-                </div>
-            </div>
 
             <h2 className="mb-2 lg:mb-4 lg:mt-7 mt-2 flex items-center gap-x-3">
                 <p className='text-baseBlue tracking-wide lg:text-lg'>Insurance Details</p>

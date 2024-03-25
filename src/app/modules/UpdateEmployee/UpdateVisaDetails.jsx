@@ -161,7 +161,7 @@ const UpdateVisaDetails = ({ prevstep,
       .catch((error) => console.error("Error reading files:", error));
   };
 
- 
+
 
   const updateDataOnServer = async () => {
     setIsLoading(true);
@@ -376,7 +376,7 @@ const UpdateVisaDetails = ({ prevstep,
   //   }
   // };
 
-  
+
 
   // const handleSave = () => {
   //   if (defaultData.is_passport_applicable) {
@@ -517,12 +517,186 @@ const UpdateVisaDetails = ({ prevstep,
       }
     }
   };
-  
+
 
   return (
     <div className="bg-[#F9F9F9] h-[76vh] overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
       <div className="flex justify-between">
         <h2 className="tracking-wide mb-4 flex items-center gap-x-3">
+          <p className='text-baseBlue lg:text-lg'>ID Details</p>
+        </h2>
+        <div className="flex gap-2">
+          {isEdit ? (
+            null
+          ) : (
+            <button
+              onClick={() => {
+                setIsEdit(!isEdit);
+              }}
+              className="bg-baseBlue rounded-full text-white p-3"
+            >
+              <BiEdit className="text-xl" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className='flex w-[100%] flex-wrap items-center gap-3'>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+          >
+            Living Country ID No
+          </label>
+          <input type="text" name="living_country_id_no"
+            value={defaultData.living_country_id_no}
+            placeholder="Living Country ID Number"
+            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
+            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+            onChange={(e) => handleEdit(e.target.name, e.target.value)}
+            onClick={handleFieldClick}
+          />
+
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+          >
+            Place of Issuance
+          </label>
+          <div onClick={handleFieldClick}>
+
+            <Select
+              className={`${isEdit ? "text-black" : "text-gray-500"}`}
+              name="place_of_issuance"
+              options={countryOptions}
+              value={countryOptions.find(
+                (option) => option.label === defaultData.place_of_issuance
+              )}
+              onChange={(selectedOption) => handleEdit("place_of_issuance", selectedOption)}
+              isDisabled={!isEdit}
+            />
+          </div>
+
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+          >
+            ID issuance Date
+          </label>
+          <div onClick={handleFieldClick}>
+            <Datepicker
+              day={
+                defaultData.id_issuance_date
+                  ? defaultData.id_issuance_date.substr(8, 2)
+                  : null
+              }
+              month={
+                defaultData.id_issuance_date
+                  ? defaultData.id_issuance_date.substr(5, 2)
+                  : null
+              }
+              year={
+                defaultData.id_issuance_date
+                  ? defaultData.id_issuance_date.substr(0, 4)
+                  : null
+              }
+              name="id_issuance_date"
+              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
+            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+              selected={
+                defaultData.id_issuance_date
+                  ? moment(defaultData.id_issuance_date, "YYYY-MM-DD").toDate()
+                  : null
+              }
+              onChange={(date) => handleDateChange(date, "id_issuance_date")}
+            />
+          </div>
+
+        </div>
+
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <label
+            className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+          >
+            ID Expiry Date
+          </label>
+          <div onClick={handleFieldClick}>
+            <Datepicker
+              day={
+                defaultData.id_expiry_date
+                  ? defaultData.id_expiry_date.substr(8, 2)
+                  : null
+              }
+              month={
+                defaultData.id_expiry_date
+                  ? defaultData.id_expiry_date.substr(5, 2)
+                  : null
+              }
+              year={
+                defaultData.id_expiry_date
+                  ? defaultData.id_expiry_date.substr(0, 4)
+                  : null
+              }
+              name="id_expiry_date"
+              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+              selected={
+                defaultData.id_expiry_date
+                  ? moment(defaultData.id_expiry_date, "YYYY-MM-DD").toDate()
+                  : null
+              }
+              onChange={(date) => handleDateChange(date, "id_expiry_date")}
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+          <label
+            className="font-sfpro tracking-wide font-mediumtext-input text-base mb-1"
+          >
+            ID Front
+          </label>
+          {isEdit ? (
+            <div className="flex items-center gap-x-2">
+              <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} />
+            </div>
+          ) : (
+            <div className="flex items-center gap-x-2">
+              {documents.id_front ? documents.id_front.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+            </div>
+          )}
+
+        </div>
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+          <label
+            className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+          >
+            ID Back
+          </label>
+          {isEdit ? (
+            <div className="flex items-center gap-x-2">
+              <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} />
+            </div>
+          ) : (
+            <div className="flex items-center gap-x-2">
+              {documents.id_back ? documents.id_back.document.name : "Not available"}
+              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-between">
+        <h2 className="tracking-wide mb-4 flex items-center gap-x-3 mt-4">
           <p className='text-baseBlue lg:text-lg'>Passport Details</p>
           <label className='text-sm text-gray-500'>Applicable:</label>
           <div className='flex items-center gap-x-2'>
@@ -543,22 +717,6 @@ const UpdateVisaDetails = ({ prevstep,
           </div>
 
         </h2>
-
-
-        <div className="flex gap-2">
-          {isEdit ? (
-            null
-          ) : (
-            <button
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-              className="bg-baseBlue rounded-full text-white p-3"
-            >
-              <BiEdit className="text-xl" />
-            </button>
-          )}
-        </div>
       </div>
       {defaultData.is_passport_applicable && <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -1045,173 +1203,7 @@ const UpdateVisaDetails = ({ prevstep,
         </div>
       </div>}
 
-      {/* ID Details */}
-
-      <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-2 lg:mt-7 lg:text-lg mt-2">
-        ID Details
-      </h2>
-      <div className='flex w-[100%] flex-wrap items-center gap-3'>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Living Country ID No
-          </label>
-          <input type="text" name="living_country_id_no"
-            value={defaultData.living_country_id_no}
-            placeholder="Living Country ID Number"
-            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
-            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            onClick={handleFieldClick}
-          />
-          {errors.living_country_id_no && (
-            <span className="text-red-500 text-sm ">
-              {errors.living_country_id_no}
-            </span>
-          )}
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Place of Issuance
-          </label>
-          <div onClick={handleFieldClick}>
-
-            <Select
-              className={`${isEdit ? "text-black" : "text-gray-500"}`}
-              name="place_of_issuance"
-              options={countryOptions}
-              value={countryOptions.find(
-                (option) => option.label === defaultData.place_of_issuance
-              )}
-              onChange={(selectedOption) => handleEdit("place_of_issuance", selectedOption)}
-              isDisabled={!isEdit}
-            />
-          </div>
-          {errors.place_of_issuance && (
-            <span className="text-red-500 text-sm ">
-              {errors.place_of_issuance}
-            </span>
-          )}
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            ID issuance Date
-          </label>
-          <div onClick={handleFieldClick}>
-            <Datepicker
-              day={
-                defaultData.id_issuance_date
-                  ? defaultData.id_issuance_date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.id_issuance_date
-                  ? defaultData.id_issuance_date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.id_issuance_date
-                  ? defaultData.id_issuance_date.substr(0, 4)
-                  : null
-              }
-              name="id_issuance_date"
-              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
-            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.id_issuance_date
-                  ? moment(defaultData.id_issuance_date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "id_issuance_date")}
-            />
-          </div>
-
-        </div>
-
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            ID Expiry Date
-          </label>
-          <div onClick={handleFieldClick}>
-            <Datepicker
-              day={
-                defaultData.id_expiry_date
-                  ? defaultData.id_expiry_date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.id_expiry_date
-                  ? defaultData.id_expiry_date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.id_expiry_date
-                  ? defaultData.id_expiry_date.substr(0, 4)
-                  : null
-              }
-              name="id_expiry_date"
-              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
-             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.id_expiry_date
-                  ? moment(defaultData.id_expiry_date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "id_expiry_date")}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-          <label
-            className="font-sfpro tracking-wide font-mediumtext-input text-base mb-1"
-          >
-            ID Front
-          </label>
-          {isEdit ? (
-            <div className="flex items-center gap-x-2">
-              <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} />
-            </div>
-          ) : (
-            <div className="flex items-center gap-x-2">
-              {documents.id_front ? documents.id_front.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
-            </div>
-          )}
-
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            ID Back
-          </label>
-          {isEdit ? (
-            <div className="flex items-center gap-x-2">
-              <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} />
-            </div>
-          ) : (
-            <div className="flex items-center gap-x-2">
-              {documents.id_back ? documents.id_back.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
-            </div>
-          )}
-        </div>
-      </div>
-
+      {/* Insurance */}
       <h2 className="mb-2 lg:mb-2 lg:mt-7 mt-2 flex items-center gap-x-3">
         <p className='text-baseBlue tracking-wide lg:text-lg'>Insurance Details</p>
         <label className='text-sm text-gray-500'>Applicable:</label>
