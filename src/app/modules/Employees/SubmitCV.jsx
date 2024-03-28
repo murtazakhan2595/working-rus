@@ -68,7 +68,6 @@ const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep }) => {
               <input id="file-upload" type="file" name="cv" accept=".doc, .docx"
                 max-size="104857600" className='hidden' onChange={handleFileChange} />
             </label>
-            <br />
             {errors.cv && <small className='text-red-500'>{errors.cv}</small>}
             <br />
             <small className='text-gray-400'>Upload a doc or docx file and no larger than 100 MB.</small>

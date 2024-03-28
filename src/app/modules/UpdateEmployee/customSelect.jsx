@@ -8,7 +8,8 @@ const CustomSelect = ({ value, options, onChange, isEdit, placeholder, isMulti, 
   useEffect(() => {
     // Set initial inputValue to the label of the current value
     if (value) setInputValue(value.label || '');
-  }, []);
+}, [value]); // Update useEffect dependency to value
+
 
   const handleInputChange = (inputValue) => {
     setInputValue(inputValue);

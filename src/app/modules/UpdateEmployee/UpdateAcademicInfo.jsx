@@ -13,6 +13,7 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
+import { useParams } from "react-router-dom";
 
 const academicOptions = [
   { value: "Intermediate", label: "Intermediate" },
@@ -117,7 +118,8 @@ const AcademicRecords = ({
   };
 
 
-  const id = userProfile.id;
+  // const id = userProfile.id;
+  const { id } = useParams();
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -240,7 +242,7 @@ const AcademicRecords = ({
       try {
 
         let education = {
-          employee_id: userProfile.id,
+          employee_id: id,
           education_level: academicInfo.education_level,
           program: academicInfo.program,
           institute_name: academicInfo.institute_name,
@@ -258,13 +260,13 @@ const AcademicRecords = ({
         }
 
         let acadmicDoc = {
-          employee_id: userProfile.id,
+          employee_id: id,
           name: "acadmicDoc",
           description: "Acadmic Document",
           document: academicInfo.certificate.document
         }
 
-        
+
         if (academicInfo.certificate?.hasOwnProperty("id")) {
           let res = await axios.patch(`${baseUrl}/attachment/${academicInfo.certificate.id}`, acadmicDoc, {
             headers: {
@@ -285,7 +287,7 @@ const AcademicRecords = ({
         let updatedData = getDataFromSessionStorage("UpdatedCertifications");
         updatedData.map(async (crt) => {
           let myCertification = {
-            employee_id: userProfile.id,
+            employee_id: id,
             certification_name: crt.certification_name,
             certification_body: crt.certification_body,
             completion_date: moment(crt.completion_date, "DD-MM-YYYY").format(
@@ -323,7 +325,7 @@ const AcademicRecords = ({
           }
         });
 
-        
+
         deleteExp.map(async (delExp) => {
           let res = await axios.delete(`${baseUrl}/certification/${delExp}`, {
             headers: {

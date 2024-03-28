@@ -93,6 +93,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
         setDataInSessionStorage("visaDetailsFiles", visaDetailsFiles);
     }, [visaDetailsFiles]);
 
+
     // Function to handle previous step
     const handlePreviousStep = () => {
         prevstep();
@@ -112,7 +113,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                 });
             }
         } else if (visaDetails.is_visa_applicable)
-            if (visaDetails.entry_permit_number && visaDetails.country_of_visa_issuance && visaDetails.uid_number && visaDetails.visa_type && visaDetails.visa_issuance_date && visaDetails.visa_expiry_date && visaDetails.visa_duration && visaDetails.visa_country_entry_date && visaDetails.visa_country_exit_date && visaDetailsFiles.enter_permit && visaDetailsFiles.visa_page && visaDetailsFiles.medical && visaDetailsFiles.id_application) {
+            if (visaDetails.entry_permit_number && visaDetails.country_of_visa_issuance && visaDetails.uid_number && visaDetails.visa_type && visaDetails.visa_issuance_date && visaDetails.visa_expiry_date && visaDetails.visa_duration && visaDetails.visa_country_entry_date && visaDetailsFiles.enter_permit && visaDetailsFiles.visa_page && visaDetailsFiles.medical && visaDetailsFiles.id_application) {
                 nextstep();
             } else {
                 toast.error("Please fill in all required fields!", {
@@ -479,7 +480,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                             <label
                                 className={`font-sfpro tracking-wide font-mediumtext-input text-base mb-1`}
                             >
-                                Visa Country Exit Date {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+                                Visa Country Exit Date
                             </label>
                             <Datepicker
                                 selected={visaDetails.visa_country_exit_date ? moment(visaDetails.visa_country_exit_date, "YYYY-MM-DD").toDate() : null}

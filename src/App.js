@@ -36,6 +36,7 @@ import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
 import LeaveRequestHR from "./app/modules/LeaveApplication/LeaveRequestHR.jsx";
 import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestManager.jsx";
 import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
+import EditDataForm from "./app/modules/EmployeesData/EditDataForm.jsx";
 
 function App({
   setUserProfile,
@@ -168,7 +169,8 @@ function App({
                     path="/board/:id"
                     element={<Board isSidebarOpen={isSidebarOpen} />}
                   />
-                  <Route path="/profile" element={<UpdateEmpForm />} />
+                  {/* <Route path="/profile" element={<UpdateEmpForm />} /> */}
+                  <Route path="/profile/:id" element={<UpdateEmpForm />} />
                   <Route path="/project/:id" element={<BoardList />} />
                   {userProfile.role === 1 && (
                     <>
@@ -181,6 +183,10 @@ function App({
                         exact
                         path="/add-employee"
                         element={<EmpDataForm />}
+                      />
+                        <Route
+                        path="/edit-employee/:id"
+                        element={<EditDataForm />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
 

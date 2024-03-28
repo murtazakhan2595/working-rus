@@ -13,6 +13,7 @@ import { BiEdit } from 'react-icons/bi';
 import { WiCloudRefresh } from 'react-icons/wi';
 import Joi from "joi";
 import { RxCross2 } from 'react-icons/rx';
+import { useParams } from 'react-router-dom';
 
 
 const UpdateVisaDetails = ({ prevstep,
@@ -31,7 +32,8 @@ const UpdateVisaDetails = ({ prevstep,
   const [isLoading, setIsLoading] = useState(false);
   const showId = true;
 
-  const id = userProfile.id;
+  // const id = userProfile.id;
+  const { id } = useParams();
 
   console.log(documents);
 
@@ -467,7 +469,6 @@ const UpdateVisaDetails = ({ prevstep,
         defaultData.visa_expiry_date &&
         defaultData.visa_duration &&
         defaultData.visa_country_entry_date &&
-        defaultData.visa_country_exit_date &&
         ((documents.enter_permit && !visaDetailsFiles.enter_permit) || visaDetailsFiles.enter_permit) &&
         ((documents.visa_page && !visaDetailsFiles.visa_page) || visaDetailsFiles.visa_page) &&
         ((documents.medical && !visaDetailsFiles.medical) || visaDetailsFiles.medical) &&
@@ -1091,7 +1092,8 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Country Exit Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Visa Country Exit Date
+
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker

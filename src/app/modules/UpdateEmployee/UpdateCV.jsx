@@ -7,6 +7,7 @@ import SubStepsIndicator from "./UpdateSubSteps";
 import Button from "./Button";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
+import { useParams } from "react-router-dom";
 
 const SubmitCV = ({
   errors,
@@ -25,7 +26,9 @@ const SubmitCV = ({
   const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const id = userProfile.id;
+  // const id = userProfile.id;
+
+  const { id } = useParams();
 
   const headers = {
     Authorization: `Bearer ${token}`,

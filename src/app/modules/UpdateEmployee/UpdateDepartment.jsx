@@ -5,7 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CustomLoader from '../../../common/CustomLoader';
 import { BiEdit } from 'react-icons/bi';
 import moment from 'moment';
@@ -87,7 +87,9 @@ const Department = ({ errors, setErrors, prevstep, token,
   const [showIndirectReport, setShowIndirectReport] = useState(false);
 
 
-  const id = userProfile.id;
+  // const id = userProfile.id;
+  const { id } = useParams();
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -100,13 +102,13 @@ const Department = ({ errors, setErrors, prevstep, token,
         headers,
       });
       const employeeData = employeeResponse.data;
-      console.log('emplyee data', employeeData);
       if (employeeData) {
         const departmentObj = {
           department_name: employeeData.department_name,
           department_position: employeeData.department_position,
           direct_report: employeeData.direct_report,
           indirect_report: employeeData.indirect_report,
+          is_indirect_report_applicable: employeeData.is_indirect_report_applicable,
           department_manager: employeeData.department_manager,
           joining_date: employeeData.joining_date,
           employee_type: employeeData.employee_type,
@@ -115,11 +117,7 @@ const Department = ({ errors, setErrors, prevstep, token,
         setDefaultData(departmentObj);
 
         // Fetch managers
-        const response = await axios.get(`${baseUrl}/emp/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(`${baseUrl}/emp/`, { headers });
 
         if (response.status === 200) {
           setManagers(response.data);
@@ -164,7 +162,7 @@ const Department = ({ errors, setErrors, prevstep, token,
       try {
         setErrors({});
         let UpdatedDepartmentInfo = getDataFromSessionStorage('UpdatedDepartmentInfo');
-        let response = await axios.patch(`${baseUrl}/emp/${userProfile.id}`, UpdatedDepartmentInfo, { headers });
+        let response = await axios.patch(`${baseUrl}/emp/${id}`, UpdatedDepartmentInfo, { headers });
         if (response.status === 200) {
           setIsEdit(!isEdit);
           toast.success('Department Information Updated!', {
@@ -200,7 +198,6 @@ const Department = ({ errors, setErrors, prevstep, token,
     if (name === 'employee_type' || name === 'employee_status') {
       setDefaultData({ ...defaultData, [name]: value.value });
     } else if (name === "indirect_report" || name === "direct_report") {
-      console.log(`Selected ${name === "indirect_report" ? "In-Direct" : "Direct"} Managers:`, values);
       const updatedValues = values || []; // In case 'values' is null
       const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
       setDefaultData({
@@ -220,29 +217,6 @@ const Department = ({ errors, setErrors, prevstep, token,
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleEdit("joining_date", formattedDate);
   };
-
-  // useEffect(() => {
-  //   const fetchManagers = async () => {
-  //     try {
-  //       const response = await axios.get(`${baseUrl}/emp/`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       if (response.status === 200) {
-  //         setManagers(response.data);
-  //         console.log('managerssss', response.data);
-  //       }
-  //     } catch (error) {
-  //       toast.error("Error fetching managers. Please try again.", {
-  //         position: toast.POSITION.TOP_RIGHT,
-  //       });
-  //     }
-  //   };
-
-  //   fetchManagers();
-  // }, []);
 
 
   return (
@@ -382,7 +356,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                       Indirect Report:
                     </label>
 
-                    <div className='flex items-center gap-2'>
+                    {/* <div className='flex items-center gap-2'>
                       <input
                         type="checkbox"
                         checked={showIndirectReport}
@@ -397,13 +371,30 @@ const Department = ({ errors, setErrors, prevstep, token,
                         onChange={() => setShowIndirectReport(!showIndirectReport)}
                       />
                       <span>No</span>
+                    </div> */}
+
+                    <div className='flex items-center gap-x-2'>
+                      <p className='text-sm'>Yes</p>
+                      <input type="checkbox"
+                        checked={defaultData.is_indirect_report_applicable}
+                        name="is_indirect_report_applicable_yes"
+                        onChange={(e) => handleEdit('is_indirect_report_applicable', e.target.checked)}
+                      />
+                    </div>
+                    <div className='flex items-center gap-x-2'>
+                      <p className='text-sm'>No</p>
+                      <input type="checkbox"
+                        checked={!defaultData.is_indirect_report_applicable}
+                        name="is_indirect_report_applicable_no"
+                        onChange={(e) => handleEdit('is_indirect_report_applicable', !e.target.checked)}
+                      />
                     </div>
                   </div>
 
                   <div className='flex flex-col gap-2 items-center'>
                     <div className='w-full'>
 
-                      {showIndirectReport && (
+                      {defaultData.is_indirect_report_applicable && (
                         <>
                           <div onClick={() => setIsEdit(true)}>
 

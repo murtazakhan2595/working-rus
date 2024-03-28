@@ -10,6 +10,7 @@ import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
+import { useParams } from "react-router-dom";
 
 const validationSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
@@ -90,7 +91,10 @@ const PersonalInfo = ({
     return data;
   };
 
-  const id = userProfile.id;
+  // const id = userProfile.id;
+  const { id } = useParams();
+
+  console.log('i am new id from params', id);
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -156,7 +160,7 @@ const PersonalInfo = ({
   useEffect(() => {
     setDataInSessionStorage("UpdatedPersonalInfo", defaultData);
   }, [defaultData]);
-  
+
   useEffect(() => {
     setDataInSessionStorage("UpdatedDP", imagePreview);
   }, [imagePreview]);
@@ -202,9 +206,9 @@ const PersonalInfo = ({
         updatedData["passport_number"] = "000000000000000";
       }
       updatedData["profile_picture"] = updatedDP;
-      
+
       let response = await axios.patch(
-        `${baseUrl}/emp/${userProfile.id}`,
+        `${baseUrl}/emp/${id}`,
         updatedData,
         { headers }
       );

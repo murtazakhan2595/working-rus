@@ -7,6 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
+import { useParams } from "react-router-dom";
 
 const bankSchema = Joi.object({
   bank_name: Joi.string()
@@ -98,7 +99,9 @@ const BankDetails = ({
     sessionStorage.setItem(key, serializedData);
   };
 
-  const id = userProfile.id;
+  // const id = userProfile.id;
+  const { id } = useParams();
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -142,35 +145,7 @@ const BankDetails = ({
     setDataInSessionStorage("UpdatedBankInfo", defaultData);
   }, [defaultData]);
 
-  // const handleSave = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");
-  //     let response = await axios.patch(
-  //       `${baseUrl}/emp/${userProfile.id}`,
-  //       UpdatedBankInfo,
-  //       { headers }
-  //     );
-  //     if (response.status === 200) {
-  //       setDefaultData(UpdatedBankInfo);
-  //       sessionStorage.clear();
-  //       toast.success("Bank Details Updated!", {
-  //         position: "top-right",
-  //         autoClose: 3000,
-  //       });
-  //       nextstep();
-  //     }
-  //   } catch (error) {
-  //     console.error("Error saving data:", error);
-  //     toast.error("Form submission failed. Please try again.", {
-  //       position: "top-center",
-  //       autoClose: 3000,
-  //     });
-  //   } finally {
-  //     setIsLoading(false); // Set isLoading to false regardless of success or failure
-  //   }
-  // };
-
+  
   const handleSave = async () => {
     // Validate input data using the bankSchema
     const { error } = bankSchema.validate(defaultData, { abortEarly: false });
@@ -189,7 +164,7 @@ const BankDetails = ({
       // Save data to the server
       let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");
       let response = await axios.patch(
-        `${baseUrl}/emp/${userProfile.id}`,
+        `${baseUrl}/emp/${id}`,
         UpdatedBankInfo,
         { headers }
       );

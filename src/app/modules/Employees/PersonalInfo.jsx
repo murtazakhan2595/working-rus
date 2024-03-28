@@ -52,7 +52,7 @@ const validationSchema = Joi.object({
       "string.empty": `Emergency Phone Number is required`,
       "string.pattern.base": `Emergency Phone Number must be a valid phone number`,
     }),
-  relation: Joi.string()
+    emergency_relation: Joi.string()
     .regex(/^[a-zA-Z\s]+$/)
     .required()
     .label("Relation")
@@ -108,7 +108,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
     emergency_phone_no: storedData?.emergency_phone_no
       ? storedData.emergency_phone_no
       : "",
-    relation: storedData?.relation ? storedData.relation : "",
+      emergency_relation: storedData?.emergency_relation ? storedData.emergency_relation : "",
   });
 
   const handleChange = (name, value) => {
@@ -708,15 +708,15 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
               </label>
               <input
                 type="text"
-                value={personalInfo.relation}
-                name="relation"
+                value={personalInfo.emergency_relation}
+                name="emergency_relation"
 
                 placeholder="Relation Here"
                 className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               />
-              {errors.relation && (
-                <span className="text-red-500 text-sm ">{errors.relation}</span>
+              {errors.emergency_relation && (
+                <span className="text-red-500 text-sm ">{errors.emergency_relation}</span>
               )}
             </div>
           </div>

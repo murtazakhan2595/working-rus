@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
+import { useParams } from "react-router-dom";
 
 const ProfessionalExp = ({
   errors,
@@ -93,7 +94,8 @@ const ProfessionalExp = ({
       try {
         updatedData.map(async (exp) => {
           let experience = {
-            employee_id: userProfile.id,
+            // employee_id: userProfile.id,
+            employee_id: id,
             exp_organization: exp.exp_organization,
             exp_designation: exp.exp_designation,
             exp_letter: exp.exp_letter,
@@ -161,7 +163,9 @@ const ProfessionalExp = ({
   };
 
 
-  const id = userProfile.id;
+  // const id = userProfile.id;
+
+  const { id } = useParams();
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -172,25 +176,7 @@ const ProfessionalExp = ({
     setIsEdit(true);
   };
 
-  // const fetchData = async () => {
-  //   try {
-  //     const experiencesResponse = await axios.get(
-  //       `${baseUrl}/experience/?search={"employee_id":${id}}`,
-  //       { headers }
-  //     );
-  //     const experiencesData = experiencesResponse.data;
 
-  //     const formattedExperiencesData = experiencesData.map((experience) => ({
-  //       ...experience,
-  //       exp_start_date: moment(experience.exp_start_date).format("DD-MM-YYYY"),
-  //       exp_end_date: moment(experience.exp_end_date).format("DD-MM-YYYY"),
-  //     }));
-
-  //     setExperienceSections(formattedExperiencesData);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
 
 
   const fetchData = async () => {
