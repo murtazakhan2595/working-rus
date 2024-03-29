@@ -37,7 +37,7 @@ const LeaveHeader = ({ userProfile, post }) => {
           <div
             className="flex py-2 justify-end px-[.5rem] items-center gap-3 rounded-lg rounded-tl-full rounded-bl-full md:rounded-tl-md md:rounded-bl-md bg-gray-200 cursor-pointer"
           >
-            <FaBell className="text-[#259ED8] bg-[E9EAEA] rounded-full w-7 h-7" />
+            {/* <FaBell className="text-[#259ED8] bg-[E9EAEA] rounded-full w-7 h-7" />
             <div className="absolute top-5 right-5 bg-white rounded-md z-50">
               <div className="w-60 p-3">
                 <h1 className="text-base leading-none font-semibold tracking-wider">Notifications</h1>
@@ -92,7 +92,7 @@ const LeaveHeader = ({ userProfile, post }) => {
 
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="flex items-center gap-x-2" onClick={handleDropdownClick}>
               <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
               <div className="text-[#283b91] hidden md:block lg:block">

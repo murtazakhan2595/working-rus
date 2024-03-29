@@ -1,53 +1,62 @@
 import Joi from 'joi';
 import Button from './Button';
-import { useState ,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const bankSchema = Joi.object({
     bank_name: Joi.string()
-      .regex(/^[a-zA-Z\s]+$/) // Only alphabets and spaces allowed
-      .required()
-      .label("Bank Name")
-      .messages({
-        "string.empty": `Bank Name is required`,
-        "string.pattern.base": `Bank Name must contain only letters and spaces`,
-      }),
+        .regex(/^[a-zA-Z\s]+$/) // Only alphabets and spaces allowed
+        .required()
+        .label("Bank Name")
+        .messages({
+            "string.empty": `Bank Name is required`,
+            "string.pattern.base": `Bank Name must contain only letters and spaces`,
+        }),
     account_title: Joi.string()
-      .regex(/^[a-zA-Z\s]+$/)
-      .required()
-      .label("Account Title")
-      .messages({
-        "string.empty": `Account Title is required`,
-        "string.pattern.base": `Account Title must contain only letters and spaces`,
-      }),
+        .regex(/^[a-zA-Z\s]+$/)
+        .required()
+        .label("Account Title")
+        .messages({
+            "string.empty": `Account Title is required`,
+            "string.pattern.base": `Account Title must contain only letters and spaces`,
+        }),
     account_number: Joi.string()
-      .regex(/^\d+$/) // Only numbers allowed
-      .min(10) // Minimum length 10 digits
-      .required()
-      .label("Account Number")
-      .messages({
-        "string.empty": `Account Number is required`,
-        "string.pattern.base": `Account Number must contain only numbers`,
-        "string.min": `Account Number must be at least 10 digits long`,
-      }),
+        .regex(/^\d+$/) // Only numbers allowed
+        .min(10) // Minimum length 10 digits
+        .required()
+        .label("Account Number")
+        .messages({
+            "string.empty": `Account Number is required`,
+            "string.pattern.base": `Account Number must contain only numbers`,
+            "string.min": `Account Number must be at least 10 digits long`,
+        }),
     branch_address: Joi.string()
-      .min(10) // Minimum length 10 characters
-      .required()
-      .label("Branch Address")
-      .messages({
-        "string.empty": `Branch Address is required`,
-        "string.min": `Branch Address must be at least 10 characters long`,
-      }),
+        .min(10) // Minimum length 10 characters
+        .required()
+        .label("Branch Address")
+        .messages({
+            "string.empty": `Branch Address is required`,
+            "string.min": `Branch Address must be at least 10 characters long`,
+        }),
     branch_code: Joi.string()
-      .regex(/^\d+$/) // Only numbers allowed
-      .min(3) // Minimum length 3 digits
-      .required()
-      .label("Branch Code")
-      .messages({
-        "string.empty": `Branch Code is required`,
-        "string.pattern.base": `Branch Code must contain only numbers`,
-        "string.min": `Branch Code must be at least 3 digits long`,
-      }),
-  });
+        .regex(/^\d+$/) // Only numbers allowed
+        .min(3) // Minimum length 3 digits
+        .required()
+        .label("Branch Code")
+        .messages({
+            "string.empty": `Branch Code is required`,
+            "string.pattern.base": `Branch Code must contain only numbers`,
+            "string.min": `Branch Code must be at least 3 digits long`,
+        }),
+    swift_code: Joi.string()
+        .alphanum() // Allow alphanumeric characters
+        .min(4) // Assuming a minimum length for Swift code
+        .required()
+        .label("Swift Code")
+        .messages({
+            "string.empty": `Swift Code is required`,
+            "string.alphanum": `Swift Code must contain only letters and numbers`,
+        }),
+});
 
 
 const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
@@ -55,32 +64,32 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
         const serializedData = sessionStorage.getItem(key);
         const data = JSON.parse(serializedData);
         return data;
-      };
-      let defaultBankInfo = getDataFromSessionStorage("bankInfo")
-    const intialBankInfo = { 
-        bank_name: defaultBankInfo?.bank_name ? defaultBankInfo.bank_name :  '',
+    };
+    let defaultBankInfo = getDataFromSessionStorage("bankInfo")
+    const intialBankInfo = {
+        bank_name: defaultBankInfo?.bank_name ? defaultBankInfo.bank_name : '',
         account_title: defaultBankInfo?.account_title ? defaultBankInfo.account_title : '',
         account_number: defaultBankInfo?.account_number ? defaultBankInfo.account_number : '',
         account_iban: defaultBankInfo?.account_iban ? defaultBankInfo.account_iban : '',
         branch_address: defaultBankInfo?.branch_address ? defaultBankInfo.branch_address : '',
         branch_code: defaultBankInfo?.branch_code ? defaultBankInfo.branch_code : '',
         swift_code: defaultBankInfo?.swift_code ? defaultBankInfo.swift_code : ''
-         };
-    const [bankInfo , setBankInfo] = useState(intialBankInfo)
+    };
+    const [bankInfo, setBankInfo] = useState(intialBankInfo)
 
     const setDataInSessionStorage = (key, data) => {
-      const serializedData = JSON.stringify(data);
-      sessionStorage.setItem(key, serializedData);
+        const serializedData = JSON.stringify(data);
+        sessionStorage.setItem(key, serializedData);
     };
 
     const handleChange = (name, value) => {
-        setBankInfo({...bankInfo,[name]:value})
-            setErrors({ ...errors, [name]: null });
+        setBankInfo({ ...bankInfo, [name]: value })
+        setErrors({ ...errors, [name]: null });
     };
 
     useEffect(() => {
-        setDataInSessionStorage('bankInfo',bankInfo)
-      }, [bankInfo])
+        setDataInSessionStorage('bankInfo', bankInfo)
+    }, [bankInfo])
 
     const handleNextStep = () => {
         const { error } = bankSchema.validate(
@@ -90,6 +99,7 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
                 account_number: bankInfo.account_number,
                 branch_address: bankInfo.branch_address,
                 branch_code: bankInfo.branch_code,
+                swift_code: bankInfo.swift_code,
             },
             { abortEarly: false }
         );
@@ -101,8 +111,8 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
             });
             if (bankInfo.account_iban) {
                 if (bankInfo.account_iban.length < 10)
-                validationErrors.account_iban = "IBAN number must be at least 10 characters";
-              }
+                    validationErrors.account_iban = "IBAN number must be at least 10 characters";
+            }
             setErrors(validationErrors);
         } else {
             nextstep();
@@ -167,24 +177,24 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
                                 {errors.branch_address && <div className="text-red-500 text-sm">{errors.branch_address}</div>}
                             </div>
                             <div className='flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12'>
-                            <div className='flex flex-col  mt-2 md:mt-5 w-1/2 lg:w-1/3'>
-                                <label htmlFor="branch_code" className='font-sfpro tracking-wide font-medium
+                                <div className='flex flex-col  mt-2 md:mt-5 w-1/2 lg:w-1/3'>
+                                    <label htmlFor="branch_code" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Branch Code:</label>
-                                <input type="number" value={bankInfo.branch_code} name="branch_code" id="" placeholder='Branch Code Here'
-                                    className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                    onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                />
-                                {errors.branch_code && <div className="text-red-500 text-sm">{errors.branch_code}</div>}
-                            </div>
-                            <div className='flex flex-col mt-2 md:mt-5 w-1/2 lg:w-1/3'>
-                                <label htmlFor="swift_code" className='font-sfpro tracking-wide font-medium
+                                    <input type="number" value={bankInfo.branch_code} name="branch_code" id="" placeholder='Branch Code Here'
+                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
+                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
+                                    />
+                                    {errors.branch_code && <div className="text-red-500 text-sm">{errors.branch_code}</div>}
+                                </div>
+                                <div className='flex flex-col mt-2 md:mt-5 w-1/2 lg:w-1/3'>
+                                    <label htmlFor="swift_code" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Swift Code:</label>
-                                <input type="number" value={bankInfo.swift_code} name="swift_code" id="" placeholder='Swift Code Here'
-                                    className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                    onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                />
-                                {errors.swift_code && <div className="text-red-500 text-sm">{errors.swift_code}</div>}
-                            </div>
+                                    <input type="text" value={bankInfo.swift_code} name="swift_code" id="" placeholder='Swift Code Here'
+                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
+                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
+                                    />
+                                    {errors.swift_code && <div className="text-red-500 text-sm">{errors.swift_code}</div>}
+                                </div>
                             </div>
                         </div>
                     </div>

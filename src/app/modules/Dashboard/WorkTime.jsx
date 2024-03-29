@@ -546,7 +546,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
                     onClick={() => {
                       setModalOpen(true);
                     }}
-                    className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
+                    className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md cursor-pointer"
                   />
                 </div>
               </div>
@@ -592,7 +592,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
                 onClick={() => {
                   setModalOpen(true);
                 }}
-                className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md"
+                className="text-[#283b91] p-1 bg-[#e3e3e3] text-center text-xl rounded-md cursor-pointer"
               />
             </div>
           </div>

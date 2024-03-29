@@ -48,7 +48,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
         insurance_expiry_date: storedData?.insurance_expiry_date ? storedData.insurance_expiry_date : null,
         is_passport_applicable: storedData?.is_passport_applicable ? storedData.is_passport_applicable : null,
         is_visa_applicable: storedData?.is_visa_applicable ? storedData.is_visa_applicable : null,
-        is_insurance_applicable: storedData?.is_insurance_applicable ? storedData.is_visa_applicable : null,
+        is_insurance_applicable: storedData?.is_insurance_applicable ? storedData.is_insurance_applicable : null,
     })
 
     const [visaDetailsFiles, setVisaDetailsFiles] = useState(storedVisaDetailsFiles || {});

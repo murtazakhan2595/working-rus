@@ -230,7 +230,7 @@ const Dashboard = ({ token, baseUrl }) => {
             </div>
           ) : (
             <BiSolidPlusCircle
-              className="text-[#283b91] text-2xl"
+              className="text-[#283b91] text-2xl cursor-pointer"
               onClick={() => setShowAddInput(true)}
             />
           )}

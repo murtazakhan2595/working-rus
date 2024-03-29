@@ -53,8 +53,8 @@ const MobSidebar = ({
 
   const getProjects = async (
     url = `${baseUrl}/project/${userProfile.role === 1 || userProfile.role === 2
-        ? ""
-        : `?search={"project_members":[${userProfile.id}]}`
+      ? ""
+      : `?search={"project_members":[${userProfile.id}]}`
       }`
   ) => {
     try {
@@ -162,8 +162,8 @@ const MobSidebar = ({
                   <Link to="/leave-application">
                     <div
                       className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
-                          ? "bg-[#259ED8]"
-                          : ""
+                        ? "bg-[#259ED8]"
+                        : ""
                         }`}
                     >
                       <div className="text-white text-xl">
@@ -174,9 +174,14 @@ const MobSidebar = ({
                   </Link>
                 </li>
 
-                <div className="text-white bg-[#202F72] rounded-lg mb-2">
+                <div className="text-white rounded-lg mb-2">
                   <div
-                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 ${location.pathname === "/leave-list" ||
+                      location.pathname === "/leave-calender" ||
+                      location.pathname === "/leave-balance"
+                      ? "bg-[#25A8E0]"
+                      : ""
+                      } rounded-lg cursor-pointer`}
                     onClick={() => setIsLinksOpen(!isLinksOpen)}
                   >
                     <PiSuitcaseRollingBold className="text-4xl" />
@@ -187,8 +192,8 @@ const MobSidebar = ({
                       <Link to="/leave-list">
                         <div
                           className={`py-2 pl-10 ${location.pathname === "/leave-list"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
                             }`}
                         >
                           Leave Applications
@@ -197,8 +202,8 @@ const MobSidebar = ({
                       <Link to="/leave-calender">
                         <div
                           className={`py-2 pl-10 ${location.pathname === "/leave-calender"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
                             }`}
                         >
                           Leave Calender
@@ -207,8 +212,8 @@ const MobSidebar = ({
                       <Link to="/leave-balance">
                         <div
                           className={`py-2 pl-10 ${location.pathname === "/leave-balance"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
                             }`}
                         >
                           Leave Balance
@@ -274,9 +279,14 @@ const MobSidebar = ({
                   </Link>
                 </li>
 
-                <div className="text-white bg-[#202F72] rounded-lg mb-2">
+                <div className="text-white rounded-lg mb-2">
                   <div
-                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 ${location.pathname === "/leave-list" ||
+                      location.pathname === "/leave-calender" ||
+                      location.pathname === "/leave-balance"
+                      ? "bg-[#25A8E0]"
+                      : ""
+                      } rounded-lg cursor-pointer`}
                     onClick={() => setIsLinksOpen(!isLinksOpen)}
                   >
                     <PiSuitcaseRollingBold className="text-4xl" />
@@ -287,8 +297,8 @@ const MobSidebar = ({
                       <Link to="/leave-list">
                         <div
                           className={`py-2 pl-10 ${location.pathname === "/leave-list"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
                             }`}
                         >
                           Leave Applications
@@ -297,8 +307,8 @@ const MobSidebar = ({
                       <Link to="/leave-calender">
                         <div
                           className={`py-2 pl-10 ${location.pathname === "/leave-calender"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
                             }`}
                         >
                           Leave Calender
@@ -307,8 +317,8 @@ const MobSidebar = ({
                       <Link to="/leave-balance">
                         <div
                           className={`py-2 pl-10 ${location.pathname === "/leave-balance"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
                             }`}
                         >
                           Leave Balance
@@ -352,8 +362,8 @@ const MobSidebar = ({
                   <Link to="/leave-application">
                     <div
                       className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
-                          ? "bg-[#259ED8]"
-                          : ""
+                        ? "bg-[#259ED8]"
+                        : ""
                         }`}
                     >
                       <div className="text-white text-xl">
@@ -366,7 +376,12 @@ const MobSidebar = ({
 
                 <div className="text-white bg-[#202F72] rounded-lg mb-2">
                   <div
-                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 ${location.pathname === "/leave-list" ||
+                      location.pathname === "/leave-calender" ||
+                      location.pathname === "/leave-balance"
+                      ? "bg-[#25A8E0]"
+                      : ""
+                      } rounded-lg cursor-pointer`}
                     onClick={() => setIsLinksOpen(!isLinksOpen)}
                   >
                     <PiSuitcaseRollingBold className="text-4xl" />
@@ -377,8 +392,8 @@ const MobSidebar = ({
                       <Link to="/leave-list">
                         <div
                           className={`py-2 pl-10 ${location.pathname === "/leave-list"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
                             }`}
                         >
                           Leave Applications
@@ -387,8 +402,8 @@ const MobSidebar = ({
                       <Link to="/leave-balance">
                         <div
                           className={`py-2 pl-10 ${location.pathname === "/leave-balance"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
                             }`}
                         >
                           Leave Balance
@@ -432,8 +447,8 @@ const MobSidebar = ({
                   <Link to="/leave-application">
                     <div
                       className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
-                          ? "bg-[#259ED8]"
-                          : ""
+                        ? "bg-[#259ED8]"
+                        : ""
                         }`}
                     >
                       <div className="text-white text-xl">
@@ -446,7 +461,12 @@ const MobSidebar = ({
 
                 <div className="text-white bg-[#202F72] rounded-lg mb-2">
                   <div
-                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 ${location.pathname === "/leave-list" ||
+                      location.pathname === "/leave-calender" ||
+                      location.pathname === "/leave-balance"
+                      ? "bg-[#25A8E0]"
+                      : ""
+                      } rounded-lg cursor-pointer`}
                     onClick={() => setIsLinksOpen(!isLinksOpen)}
                   >
                     <PiSuitcaseRollingBold className="text-4xl" />
@@ -457,8 +477,8 @@ const MobSidebar = ({
                       <Link to="/leave-balance">
                         <div
                           className={`py-2 pl-10 ${location.pathname === "/leave-balance"
-                              ? "border-2 border-[#259ED8] rounded-lg my-1"
-                              : ""
+                            ? "border-2 border-[#259ED8] rounded-lg my-1"
+                            : ""
                             }`}
                         >
                           Leave Balance

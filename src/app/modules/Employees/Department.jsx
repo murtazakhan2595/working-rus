@@ -60,9 +60,35 @@ const departmentSchema = Joi.object({
             "string.empty": `Position is required`,
             "string.pattern.base": `Position must only contain letters and spaces`,
         }),
-    direct_report: Joi.string().required(),
-    // indirect_report: Joi.string().required(),
-    department_manager: Joi.string().required()
+    employee_status: Joi.string().required().label('Employee status')
+        .messages({
+            "string.empty": `Employee Status is required`,
+        }),
+    employee_type: Joi.string().required().label('Employee type')
+        .messages({
+            "string.empty": `Employee type is required`,
+        }),
+    direct_report: Joi.string().required().label('Direct Report')
+        .messages({
+            "string.empty": `Direct Report is required`,
+        }),
+    // indirect_report: Joi.string().required().label('Indirect Report'),
+    indirect_report: Joi.string().when('is_indirect_report_applicable', {
+        is: Joi.boolean().valid(true).required(),
+        then: Joi.required(),
+        otherwise: Joi.optional()
+    }),
+    department_manager: Joi.string().required().label('Department Manger').messages({
+        "string.empty": `Department Manger is required`,
+    }),
+    joining_date: Joi.string()
+        .regex(/^\d{2}-\d{2}-\d{4}$/) // Matches "DD-MM-YYYY" format
+        .required()
+        .label('Joining Date')
+        .messages({
+            'string.empty': 'Joining Date is required',
+            'string.pattern.base': 'Joining Date must be in "DD-MM-YYYY" format',
+        })
 });
 
 
@@ -70,10 +96,6 @@ const departmentSchema = Joi.object({
 const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
-    const [showIndirectReport, setShowIndirectReport] = useState(false);
-
-
-
 
     const getDataFromSessionStorage = (key) => {
         const serializedData = sessionStorage.getItem(key);
@@ -87,7 +109,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
         department_position: defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
         direct_report: defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
         indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
-        is_indirect_report_applicable: defaultDeparmentInfo?.is_indirect_report_applicable ? defaultDeparmentInfo.is_indirect_report_applicable : null,
+        is_indirect_report_applicable: defaultDeparmentInfo?.is_indirect_report_applicable ? defaultDeparmentInfo.is_indirect_report_applicable : false,
         department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : '',
         employee_type: defaultDeparmentInfo?.employee_type ? defaultDeparmentInfo.employee_type : '',
         employee_status: defaultDeparmentInfo?.employee_status ? defaultDeparmentInfo.employee_status : '',
@@ -127,6 +149,10 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                 department_position: departmentInfo.department_position,
                 direct_report: departmentInfo.direct_report,
                 department_manager: departmentInfo.department_manager,
+                employee_status: departmentInfo.employee_status,
+                employee_type: departmentInfo.employee_type,
+                indirect_report: departmentInfo.is_indirect_report_applicable ? departmentInfo.indirect_report : null,
+                joining_date: departmentInfo.joining_date,
             },
             { abortEarly: false }
         );
@@ -143,6 +169,8 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
             setIsLoading(false);
         }
     };
+
+  
     const setDataInSessionStorage = (key, data) => {
         const serializedData = JSON.stringify(data);
         sessionStorage.setItem(key, serializedData);
@@ -205,8 +233,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
         handleChange("joining_date", formattedDate);
     };
 
-
-
     return (
         <>
             <div className='bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10'>
@@ -263,6 +289,8 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                         />
                                     </div>
+                                    {errors.employee_type && <span className="text-red-500 text-sm ">{errors.employee_type}</span>}
+
                                 </div>
                                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                                     <label
@@ -287,8 +315,8 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                             onChange={(selectedOption) => handleChange("employee_status", selectedOption.value)}
                                             menuPortalTarget={document.body}
                                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
-
                                         />
+                                        {errors.employee_status && <span className="text-red-500 text-sm ">{errors.employee_status}</span>}
 
                                     </div>
                                 </div>
@@ -299,21 +327,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                                     <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
         text-input text-base mb-1'>Direct Report:</label>
-                                    {/* <CustomSelect
-                                        menuPlacement="top"
-                                        name='direct_report'
-                                        placeholder="Search Direct Report To..."
-                                        value={departmentInfo.direct_report.split(',').map(label => ({ label, value: label }))}
-                                        onChange={(selectedOptions) => handleChange("direct_report", selectedOptions, selectedOptions)}
-                                        options={managers
-                                            ?.filter(manager => manager.username)
-                                            .map((manager) => ({
-                                                value: manager.id,
-                                                label: manager.username,
-                                            }))}
-                                        isEdit={true}
-                                        isMulti={true}
-                                    /> */}
+                                   
                                     <CustomSelect
                                         menuPlacement="top"
                                         name='direct_report'
@@ -435,11 +449,11 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                         // onClick={handleFieldClick}
                                         onChange={handleJoiningDate}
                                     />
-                                    {/* {errors.joining_date && (
-                    <span className="text-red-500 text-sm ">
-                      {errors.joining_date}
-                    </span>
-                  )} */}
+                                    {errors.joining_date && (
+                                        <span className="text-red-500 text-sm ">
+                                            {errors.joining_date}
+                                        </span>
+                                    )}
                                 </div>
 
                             </div>
@@ -450,7 +464,20 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
 
                 <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40">
                     <Button onClick={prevstep} text={'Previous'} />
-                    <Button onClick={handleNextStep} text={isLoading ? <div className='flex items-center gap-x-2'><span>Submit </span><CustomLoader /></div> : 'Submit'} />
+                    {/* <Button onClick={handleNextStep} text={isLoading ? <div className='flex items-center gap-x-2'><span>Submit </span><CustomLoader /></div> : 'Submit'} /> */}
+                    <Button
+                        onClick={handleNextStep}
+                        text={
+                            isLoading ? (
+                                <div className='flex items-center gap-x-2'>
+                                    <span>Submit </span>
+                                    <CustomLoader />
+                                </div>
+                            ) : (
+                                'Submit'
+                            )
+                        }
+                    />
 
                 </div>
             </div >

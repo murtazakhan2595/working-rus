@@ -176,9 +176,14 @@ const Sidebar = ({
                   </Link>
                 </li>
 
-                <div className="text-white bg-[#202F72] rounded-lg mb-2">
+                <div className="text-white rounded-lg mb-2">
                   <div
-                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 ${location.pathname === "/leave-list" ||
+                      location.pathname === "/leave-calender" ||
+                      location.pathname === "/leave-balance"
+                      ? "bg-[#25A8E0]"
+                      : ""
+                      } rounded-lg cursor-pointer`}
                     onClick={() => setIsLinksOpen(!isLinksOpen)}
                   >
                     <PiSuitcaseRollingBold className="text-4xl" />
@@ -203,7 +208,7 @@ const Sidebar = ({
                             : ""
                             }`}
                         >
-                          Leave Calender
+                          Leave Calendar
                         </div>
                       </Link>
                       <Link to="/leave-balance">
@@ -219,6 +224,7 @@ const Sidebar = ({
                     </>
                   )}
                 </div>
+
               </>
             )}
             {userProfile.role === 3 && (
@@ -276,9 +282,14 @@ const Sidebar = ({
                   </Link>
                 </li>
 
-                <div className="text-white bg-[#202F72] rounded-lg mb-2">
+                <div className="text-white rounded-lg mb-2">
                   <div
-                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 ${location.pathname === "/leave-list" ||
+                      location.pathname === "/leave-calender" ||
+                      location.pathname === "/leave-balance"
+                      ? "bg-[#25A8E0]"
+                      : ""
+                      } rounded-lg cursor-pointer`}
                     onClick={() => setIsLinksOpen(!isLinksOpen)}
                   >
                     <PiSuitcaseRollingBold className="text-4xl" />
@@ -303,7 +314,7 @@ const Sidebar = ({
                             : ""
                             }`}
                         >
-                          Leave Calender
+                          Leave Calendar
                         </div>
                       </Link>
                       <Link to="/leave-balance">
@@ -366,9 +377,15 @@ const Sidebar = ({
                   </Link>
                 </li>
 
-                <div className="text-white bg-[#202F72] rounded-lg mb-2">
+                <div className="text-white rounded-lg mb-2">
                   <div
-                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
+                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 
+                    ${location.pathname === "/leave-list" ||
+                        location.pathname === "/leave-calender" ||
+                        location.pathname === "/leave-balance"
+                        ? "bg-[#25A8E0]"
+                        : ""
+                      } rounded-lg cursor-pointer`}
                     onClick={() => setIsLinksOpen(!isLinksOpen)}
                   >
                     <PiSuitcaseRollingBold className="text-4xl" />
