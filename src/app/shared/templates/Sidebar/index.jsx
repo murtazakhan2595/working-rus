@@ -2,7 +2,7 @@ import MobSidebar from "./MobSidebar";
 import Sidebar from "./Sidebar";
 const index = ({ isSidebarOpen, setIsSidebarOpen }) => {
   let width = window.screen.width;
-  let val = width <= 1280 ? false : true;
+  let val = width <= 1279 ? false : true;
 
   return (
     <>
