@@ -91,8 +91,8 @@ const PersonalInfo = ({
     return data;
   };
 
-  // const id = userProfile.id;
-  const { id } = useParams();
+  const id = userProfile.id;
+  // const { id } = useParams();
 
   console.log('i am new id from params', id);
 

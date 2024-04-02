@@ -12,6 +12,7 @@ import Cookies from "universal-cookie";
 import { connect } from "react-redux";
 import { setUserProfile, setToken } from "../../../state/actions/UserAction";
 import OfflinePopUp from "./OfflinePopUp";
+import CustomLoader from "../../../common/CustomLoader";
 
 function Login({ setUserProfile, baseUrl, setToken }) {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isPopupVisible, setPopupVisible] = useState(!navigator.onLine);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
 
   const handleUpdateProfile = (data) => {
     let updateProfile = { id: data.id, username: data.username };
@@ -54,17 +56,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
       return;
     }
 
-    // Clear any existing validation errors
-    // setErrors({});
-    // const { error } = loginSchema.validate(values, { abortEarly: false });
-    // if (error) {
-    //   const newErrors = {};
-    //   error.details.forEach((detail) => {
-    //     newErrors[detail.path[0]] = detail.message;
-    //   });
-    //   setErrors(newErrors);
-    //   return;
-    // }
+    setIsLoading(true); // Set loading state to true
 
     try {
       const response = await axios.post(`${baseUrl}/token/`, {
@@ -129,6 +121,8 @@ function Login({ setUserProfile, baseUrl, setToken }) {
       toast.error(error.response.data.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
+    } finally {
+      setIsLoading(false); // Reset loading state
     }
   };
 
@@ -144,19 +138,6 @@ function Login({ setUserProfile, baseUrl, setToken }) {
     }));
   };
 
-  // const loginSchema = Joi.object({
-  //   username: Joi.string()
-  //     .required("Username Required")
-  //     .label("UserName")
-  //     .messages({
-  //       "string.empty": `Enter Your Username`,
-  //     }),
-  //   password: Joi.string().required().label("Password").messages({
-  //     "string.empty": `Enter Your Password`,
-  //   }),
-  // });
-
-  // checking connection
   useEffect(() => {
     // Event listener for online/offline changes
     const handleConnectionChange = () => {
@@ -206,7 +187,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
               <div>
                 <div className="mt-2">
                   <input
-                  required
+                    required
                     name="username"
                     type="text"
                     autoComplete="username"
@@ -224,7 +205,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
               <div>
                 <div className="mt-4 relative">
                   <input
-                  required
+                    required
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
@@ -238,9 +219,8 @@ function Login({ setUserProfile, baseUrl, setToken }) {
                   <button
                     type="button"
                     onClick={handlePasswordVisibility}
-                    className={`absolute top-0 right-2 translate-y-[70%] ${
-                      showPassword ? "text-gray-400" : ""
-                    }`}
+                    className={`absolute top-0 right-2 translate-y-[70%] ${showPassword ? "text-gray-400" : ""
+                      }`}
                   >
                     {showPassword ? (
                       <BiShow className="text-gray-400" />
@@ -250,27 +230,25 @@ function Login({ setUserProfile, baseUrl, setToken }) {
                   </button>
                   <div className="text-sm text-rose-500">{errors.password}</div>
                 </div>
-
-                {/* <div className="text-sm text-right my-2">
-                  <a
-                    href="#"
-                    className="font-semibold text-[#1176BC] hover:text-cyan-900 no-underline text-sm font-montserrat tracking-tight"
-                  >
-                    Forgot password ?
-                  </a>
-                </div> */}
               </div>
 
-              <div>
+              <div className="flex items-center gap-x-4">
                 <button
                   type="submit"
-                  className="flex w-full mt-6 justify-center rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-sm md:text-lg font-semibold 
-                  leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
-                  focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat"
+                  className="flex justify-center items-center w-full mt-6 rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-sm md:text-lg font-semibold 
+    leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
+    focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat relative"
+                  disabled={isLoading} // Disable button when loading
                 >
-                  Login
+                  {isLoading ? (
+                    <span className="animate-pulse">Logging in...</span>
+                  ) : (
+                    <span>Login</span>
+                  )}
                 </button>
               </div>
+
+
               <div className="flex pb-2 items-center">
                 <input
                   id="keepSignedIn"
@@ -285,9 +263,8 @@ function Login({ setUserProfile, baseUrl, setToken }) {
                   className=" justify-start font-medium text-sm text-gray text-[#1176BC] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
                 >
                   <span
-                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${
-                      isChecked ? "bg-[#25A8E0]" : "bg-[#EBEBEB]"
-                    } transition-all duration-300`}
+                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${isChecked ? "bg-[#25A8E0]" : "bg-[#EBEBEB]"
+                      } transition-all duration-300`}
                     style={{
                       border: "none",
                     }}

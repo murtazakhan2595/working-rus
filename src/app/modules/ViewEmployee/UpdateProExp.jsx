@@ -94,8 +94,8 @@ const ProfessionalExp = ({
       try {
         updatedData.map(async (exp) => {
           let experience = {
-            // employee_id: userProfile.id,
-            employee_id: id,
+            employee_id: userProfile.id,
+            // employee_id: id,
             exp_organization: exp.exp_organization,
             exp_designation: exp.exp_designation,
             exp_letter: exp.exp_letter,
@@ -163,9 +163,9 @@ const ProfessionalExp = ({
   };
 
 
-  // const id = userProfile.id;
+  const id = userProfile.id;
 
-  const { id } = useParams();
+  // const { id } = useParams();
 
   const headers = {
     Authorization: `Bearer ${token}`,

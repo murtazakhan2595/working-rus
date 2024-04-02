@@ -1,6 +1,6 @@
 import SubStepsIndicator from './SubStepsIndicator';
 import Button from './Button';
-import { useState ,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 
 const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep }) => {
@@ -8,41 +8,41 @@ const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep }) => {
     const serializedData = sessionStorage.getItem(key);
     const data = JSON.parse(serializedData);
     return data;
-};
-  let getCV = getDataFromSessionStorage("cv") 
-  const [cv , setCv ] = useState(getCV)
-  const [cvName , setCvName ] = useState(getCV?.name ? getCV?.name : "No Chosen File")
-const setDataInSessionStorage = (key,data) => {
+  };
+  let getCV = getDataFromSessionStorage("cv")
+  const [cv, setCv] = useState(getCV)
+  const [cvName, setCvName] = useState(getCV?.name ? getCV?.name : "No Chosen File")
+  const setDataInSessionStorage = (key, data) => {
     const serializedData = JSON.stringify(data);
     sessionStorage.setItem(key, serializedData);
-};
+  };
 
-const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const cvData  = {
-      name: file.name,
-      type: file.type,
-      size: file.size,
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const cvData = {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCv({ "name": cvData.name, "file": e.target.result })
+        setCvName(cvData.name)
+      }
+      reader.readAsDataURL(file);
+      setErrors({ 'cv': "" });
+    } if (!file) {
+      const validationErrors = { cv: "Select Valid File" };
+      setErrors(validationErrors);
     }
-    const reader = new FileReader();
-            reader.onload = (e) => {
-              setCv({"name" : cvData.name ,"file" :e.target.result})
-              setCvName(cvData.name)
-            }
-            reader.readAsDataURL(file);
-    setErrors({'cv':""});
-  } if(!file) {
-    const validationErrors = { cv: "Select Valid File" };
-    setErrors(validationErrors);
   }
-}
 
-useEffect(() => {
-  setDataInSessionStorage('cv',cv)
-}, [cv]) 
+  useEffect(() => {
+    setDataInSessionStorage('cv', cv)
+  }, [cv])
 
-const handleNextStep = () => {
+  const handleNextStep = () => {
     if (!cvName) {
       const validationErrors = { cv: "CV is required" };
       setErrors(validationErrors);
@@ -62,13 +62,12 @@ const handleNextStep = () => {
             <label htmlFor="file-upload" className="cursor-pointer opacity-70 
             rounded-lg py-1 text-input">
               <div className='flex'>
-              <div className='bg-gray-200 border-gray-400 border py-1 px-3 rounded-l-md '>Upload CV</div> 
-              <div className='py-1 px-3 border-gray-200 border rounded-r-md'>{cvName}</div> 
+                <div className='bg-gray-200 border-gray-400 border py-1 px-3 rounded-l-md '>Upload CV</div>
+                <div className='py-1 px-3 border-gray-200 border rounded-r-md'>{cvName}</div>
               </div>
               <input id="file-upload" type="file" name="cv" accept=".doc, .docx"
                 max-size="104857600" className='hidden' onChange={handleFileChange} />
             </label>
-            <br />
             {errors.cv && <small className='text-red-500'>{errors.cv}</small>}
             <br />
             <small className='text-gray-400'>Upload a doc or docx file and no larger than 100 MB.</small>

@@ -16,7 +16,7 @@ import { connect } from "react-redux";
 import VisaDetails from "./UpdateVisaDetails";
 
 
-const EmpForm = ({ userProfile }) => {
+const ViewEmpForm = ({ userProfile }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [subStep, setSubStep] = useState(1);
   const [errors, setErrors] = useState({});
@@ -177,4 +177,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(EmpForm);
+export default connect(mapStateToProps)(ViewEmpForm);

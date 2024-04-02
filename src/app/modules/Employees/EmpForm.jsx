@@ -14,8 +14,8 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
-import { IoMdLogOut } from "react-icons/io";
 import { RiArrowDownSFill } from "react-icons/ri";
+import VisaDetials from "./VisaDetials";
 
 const EmpForm = ({ baseUrl, token, userProfile }) => {
   const cookies = new Cookies();
@@ -26,7 +26,8 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
 
-  const totalSteps = 5;
+  const totalSteps = 6;
+  const requestData = [];
 
   const handleFormChange = (name, value) => {
     setErrors({ ...errors, [name]: null });
@@ -39,6 +40,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
         return data;
       };
       let personalInfo = getDataFromSessionStorage("personalInfo");
+      let visaDetails = getDataFromSessionStorage("visaDetails");
       let bankInfo = getDataFromSessionStorage("bankInfo");
       let departmentInfo = getDataFromSessionStorage("departmentInfo");
       let academicInfo = getDataFromSessionStorage("academicInfo");
@@ -46,6 +48,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       let profilePhoto = getDataFromSessionStorage("profilePhoto");
       let proExp = getDataFromSessionStorage("proExp");
       let cv = getDataFromSessionStorage("cv");
+      let visaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
       if (personalInfo && personalInfo.country_code && personalInfo.mobile_no) {
         personalInfo.mobile_no =
           personalInfo.country_code + personalInfo.mobile_no;
@@ -71,6 +74,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       }
       let userDetials = {
         ...personalInfo,
+        ...visaDetails,
         ...bankInfo,
         ...departmentInfo,
         is_filled: true,
@@ -86,7 +90,39 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           },
         }
       );
+
       if (response.status === 200) {
+         for (const key in visaDetailsFiles) {
+          if (visaDetailsFiles.hasOwnProperty(key)) {
+            const files = visaDetailsFiles[key];
+            for (const file of files) {
+              let attachmentResponse = await axios.post(
+                `${baseUrl}/attachment/`,
+                {
+                  employee_id: userProfile.id,
+                  name: key,
+                  description: `${key} File`,
+                  document: {
+                    name:file.name,
+                    data:file.data,
+                  },
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              if (attachmentResponse.status !== 201) {
+                toast.error("Attachements submission Failed. Please try again.", {
+                  position: "top-center",
+                  autoClose: 3000,
+                });
+              }
+            }
+          }
+        }
         const cvResponse = await axios.post(
           `${baseUrl}/attachment/`,
           {
@@ -112,9 +148,9 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
               exp_start_date: moment(exp.exp_start_date, "DD-MM-YYYY").format(
                 "YYYY-MM-DD"
               ),
-              exp_end_date: moment(exp.exp_end_date, "DD-MM-YYYY").format(
-                "YYYY-MM-DD"
-              ),
+              exp_end_date: exp.exp_end_date
+                ? moment(exp.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD")
+                : null,
             };
             let res = await axios.post(`${baseUrl}/experience/`, experience, {
               headers: {
@@ -152,10 +188,10 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             },
           });
           if (resEdu.status !== 201) {
-            toast.error("Form submission failed. Please try again.", {
-              position: "top-center",
-              autoClose: 3000,
-            });
+            // toast.error("Form submission failed. Please try again.", {
+            //   position: "top-center",
+            //   autoClose: 3000,
+            // });
             return;
           }
 
@@ -201,10 +237,10 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
               }
             );
             if (res.status !== 201) {
-              toast.error("Form submission failed. Please try again.", {
-                position: "top-center",
-                autoClose: 3000,
-              });
+              // toast.error("Form submission failed. Please try again.", {
+              //   position: "top-center",
+              //   autoClose: 3000,
+              // });
               return;
             }
           });
@@ -217,20 +253,22 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           setTimeout(() => {
             navigate("/");
             sessionStorage.clear();
+            // return;
           }, 3000);
         } else {
-          toast.error("Form submission failed. Please try again.", {
-            position: "top-center",
-            autoClose: 3000,
-          });
+          // toast.error("Form submission failed. Please try again.", {
+          //   position: "top-center",
+          //   autoClose: 3000,
+          // });
           return;
         }
       } else {
-        toast.error("Form submission failed. Please try again.", {
-          position: "top-center",
-          autoClose: 3000, // Close after 3 seconds
-        });
+        // toast.error("Form submission failed. Please try again.", {
+        //   position: "top-center",
+        //   autoClose: 3000, // Close after 3 seconds
+        // });
       }
+
     } catch (error) {
       toast.error("Form submission failed. Please try again.", {
         position: "top-center",
@@ -240,7 +278,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
   };
 
   const nextStep = () => {
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       if (subStep < 2) {
         setSubStep(subStep + 1);
       } else {
@@ -253,7 +291,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
   };
 
   const prevStep = () => {
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       if (subStep > 1) {
         setSubStep(subStep - 1);
       } else {
@@ -264,6 +302,9 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       setSubStep(2);
     }
   };
+
+
+
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -282,13 +323,15 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           <h1 className="text-center font-bold font-sfpro text-lg tracking-wide lg:text-2xl md:mb-6">
             Employment Information
           </h1>
-          <div className="relative">
+          <div className="relative ">
             <div
-              className="flex py-2 justify-end px-5 items-center gap-3 rounded-lg bg-gray-200 cursor-pointer"
+              className="flex py-2 justify-end px-[.5rem] items-center gap-3 rounded-lg rounded-tl-full rounded-bl-full md:rounded-tl-md md:rounded-bl-md bg-gray-200 cursor-pointer"
               onClick={handleDropdownClick}
             >
               <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
-              <div className="text-[#283b91]">{userProfile.username}</div>
+              <div className="text-[#283b91] hidden md:block lg:block">
+                {userProfile.username}
+              </div>
               <div className="text-[#283b91]">
                 <RiArrowDownSFill />
               </div>
@@ -304,18 +347,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
               </div>
             )}
           </div>
-
-          {/* <div
-            className="flex justify-center items-center lg:mb-6 gap-x-3 border border-red-600 bg-red-600 text-white border-b px-3 md:px-4 lg:px-4 py-1 rounded-md cursor-pointer"
-            onClick={() => {
-              cookies.set("token", "", { path: "*" });
-              setUserLogout();
-              navigate("/");
-            }}
-          >
-            <button className="md:mb">Logout</button>
-            <IoMdLogOut className="md:mb" />
-          </div> */}
         </div>
 
         <FormIndicator
@@ -334,7 +365,15 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             setErrors={setErrors}
           />
         )}
-        {currentStep === 2 && subStep === 1 && (
+        {currentStep === 2 && (
+          <VisaDetials
+            prevstep={prevStep}
+            nextstep={nextStep}
+            errors={errors}
+            setErrors={setErrors}
+          />
+        )}
+        {currentStep === 3 && subStep === 1 && (
           <SubmitCV
             errors={errors}
             setErrors={setErrors}
@@ -343,7 +382,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             nextstep={nextStep}
           />
         )}
-        {currentStep === 2 && subStep === 2 && (
+        {currentStep === 3 && subStep === 2 && (
           <ProfessionalExp
             errors={errors}
             setErrors={setErrors}
@@ -352,7 +391,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             nextstep={nextStep}
           />
         )}
-        {currentStep === 3 && (
+        {currentStep === 4 && (
           <AcademicRecords
             errors={errors}
             setErrors={setErrors}
@@ -361,7 +400,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             handleChange={handleFormChange}
           />
         )}
-        {currentStep === 4 && (
+        {currentStep === 5 && (
           <BankDetails
             errors={errors}
             setErrors={setErrors}
@@ -369,7 +408,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             nextstep={nextStep}
           />
         )}
-        {currentStep === 5 && (
+        {currentStep === 6 && (
           <Department
             prevstep={prevStep}
             errors={errors}

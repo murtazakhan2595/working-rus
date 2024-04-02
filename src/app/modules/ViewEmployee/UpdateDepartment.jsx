@@ -87,8 +87,8 @@ const Department = ({ errors, setErrors, prevstep, token,
   const [showIndirectReport, setShowIndirectReport] = useState(false);
 
 
-  // const id = userProfile.id;
-  const { id } = useParams();
+  const id = userProfile.id;
+  // const { id } = useParams();
 
 
   const headers = {

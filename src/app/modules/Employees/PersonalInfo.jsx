@@ -52,7 +52,7 @@ const validationSchema = Joi.object({
       "string.empty": `Emergency Phone Number is required`,
       "string.pattern.base": `Emergency Phone Number must be a valid phone number`,
     }),
-  relation: Joi.string()
+    emergency_relation: Joi.string()
     .regex(/^[a-zA-Z\s]+$/)
     .required()
     .label("Relation")
@@ -68,6 +68,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
     const data = JSON.parse(serializedData);
     return data;
   };
+
   const setDataInSessionStorage = (key, data) => {
     const serializedData = JSON.stringify(data);
     sessionStorage.setItem(key, serializedData);
@@ -81,6 +82,8 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
     country_code: storedData?.mobile_no ? storedData.country_code : "",
     mobile_no: storedData?.mobile_no ? storedData.mobile_no : "",
     date_of_birth: storedData?.date_of_birth ? storedData.date_of_birth : "",
+    marital_status: storedData?.marital_status ? storedData.marital_status : "",
+    nationality: storedData?.nationality ? storedData.nationality : "",
     email: storedData?.email ? storedData.email : "",
     work_email: storedData?.work_email ? storedData.work_email : "",
     current_address: storedData?.current_address
@@ -90,9 +93,9 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
       ? storedData.residential_address
       : "",
     nic: storedData?.nic ? storedData.nic : "",
-    passport_number: storedData?.passport_number
-      ? storedData.passport_number
-      : "",
+    // passport_number: storedData?.passport_number
+    //   ? storedData.passport_number
+    //   : "",
     emergency_first_name: storedData?.emergency_first_name
       ? storedData.emergency_first_name
       : "",
@@ -105,7 +108,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
     emergency_phone_no: storedData?.emergency_phone_no
       ? storedData.emergency_phone_no
       : "",
-    relation: storedData?.relation ? storedData.relation : "",
+      emergency_relation: storedData?.emergency_relation ? storedData.emergency_relation : "",
   });
 
   const handleChange = (name, value) => {
@@ -190,7 +193,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   type="text"
                   value={personalInfo.first_name}
                   name="first_name"
-                  id=""
+
                   placeholder="First Name here"
                   className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -213,7 +216,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   type="text"
                   value={personalInfo.last_name}
                   name="last_name"
-                  id=""
+
                   placeholder="Last Name here"
                   className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -238,7 +241,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   type="text"
                   value={personalInfo.father_name}
                   name="father_name"
-                  id=""
+
                   placeholder="Father Name here"
                   className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -261,7 +264,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   type="text"
                   value={personalInfo.mother_name}
                   name="mother_name"
-                  id=""
+
                   placeholder="Mother Name here"
                   className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -287,7 +290,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   type="text"
                   value={personalInfo.marital_status}
                   name="marital_status"
-                  id=""
                   placeholder="Marital Status"
                   className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -310,7 +312,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   type="text"
                   value={personalInfo.nationality}
                   name="nationality"
-                  id=""
+
                   placeholder="Nationality here"
                   className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -338,7 +340,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                     value={personalInfo.country_code}
                     name="country_code"
                     maxLength={4}
-                    id=""
+
                     placeholder="+1"
                     className="pl-1 bg-white rounded-l h-8 w-[12%] text-sm placeholder-[#555657] placeholder-opacity-50"
                     onChange={(e) =>
@@ -350,7 +352,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                     type="number"
                     value={personalInfo.mobile_no}
                     name="mobile_no"
-                    id=""
+
                     placeholder="0000000000"
                     className="pl-2 bg-white rounded-r h-8 w-[87%] text-sm placeholder-[#555657] placeholder-opacity-50"
                     onChange={(e) =>
@@ -416,7 +418,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
               </div>
             </div>
 
-           
+
 
             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
               <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
@@ -451,7 +453,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   type="email"
                   value={personalInfo.work_email}
                   name="work_email"
-                  id=""
+
                   placeholder="Email Here"
                   className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -476,7 +478,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                 type="text"
                 value={personalInfo.current_address}
                 name="current_address"
-                id=""
+
                 placeholder="Current Address here"
                 className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -499,7 +501,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                 type="text"
                 value={personalInfo.residential_address}
                 name="residential_address"
-                id=""
+
                 placeholder="Permanent Address here"
                 className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -531,7 +533,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   <span className="text-red-500 text-sm ">{errors.nic}</span>
                 )}
               </div>
-              <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+              {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                 <label
                   htmlFor="passport_number"
                   className="font-sfpro tracking-wide font-medium
@@ -554,7 +556,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                     {errors.passport_number}
                   </span>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="order-1 md:order-2 md:w-[35%]">
@@ -616,7 +618,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                 type="text"
                 value={personalInfo.emergency_first_name}
                 name="emergency_first_name"
-                id=""
+
                 placeholder="First Name Here"
                 className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -639,7 +641,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                 type="text"
                 value={personalInfo.emergency_last_name}
                 name="emergency_last_name"
-                id=""
+
                 placeholder="Last Name Here"
                 className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -666,7 +668,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   value={personalInfo.emergency_country_code}
                   name="emergency_country_code"
                   maxLength={4}
-                  id=""
+
                   placeholder="+1"
                   className="pl-1 bg-white rounded-l h-8 w-[12%] text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -675,7 +677,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   type="number"
                   value={personalInfo.emergency_phone_no}
                   name="emergency_phone_no"
-                  id=""
+
                   placeholder="Phone Number here"
                   className="pl-2 bg-white rounded-r h-8 w-[87%] text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -706,15 +708,15 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
               </label>
               <input
                 type="text"
-                value={personalInfo.relation}
-                name="relation"
-                id=""
+                value={personalInfo.emergency_relation}
+                name="emergency_relation"
+
                 placeholder="Relation Here"
                 className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               />
-              {errors.relation && (
-                <span className="text-red-500 text-sm ">{errors.relation}</span>
+              {errors.emergency_relation && (
+                <span className="text-red-500 text-sm ">{errors.emergency_relation}</span>
               )}
             </div>
           </div>

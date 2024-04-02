@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { IoIosSearch } from "react-icons/io";
 import { BsPersonPlus, BsTable } from "react-icons/bs";
 import { FiSearch } from "react-icons/fi";
 
@@ -53,15 +52,7 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
           <h1 className="text-xl lg:text-3xl mr-2 items-center leading-none font-semibold opacity-80 tracking-widest">
             Employee Data
           </h1>
-          {/* <div className="relative">
-            <IoIosSearch className="absolute top-2 left-3 text-white" />
-            <input
-              type="search"
-              placeholder="Search"
-              className="focus:outline-none focus:border-non bg-[#D7D7D7] py-1 pl-8 pr-4 text-white placeholder-white border-none md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
-              onChange={handleSearchChange}
-            />
-          </div> */}
+
         </div>
         <div className="relative">
           <div

@@ -99,8 +99,8 @@ const BankDetails = ({
     sessionStorage.setItem(key, serializedData);
   };
 
-  // const id = userProfile.id;
-  const { id } = useParams();
+  const id = userProfile.id;
+  // const { id } = useParams();
 
 
   const headers = {

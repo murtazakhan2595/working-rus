@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Datepicker from "../Dashboard/Datepicker";
 import moment from "moment";
 import SubStepsIndicator from "./SubStepsIndicator";
@@ -18,14 +18,18 @@ const ProfessionalExp = ({
     const data = JSON.parse(serializedData);
     return data;
   };
+
   const setDataInSessionStorage = (key, data) => {
     const serializedData = JSON.stringify(data);
     sessionStorage.setItem(key, serializedData);
   };
+
   let defaultData = getDataFromSessionStorage("proExp");
   const [experienceSections, setExperienceSections] = useState(
     defaultData ? defaultData : [{}]
   );
+
+  const [disableEndDate, setDisableEndDate] = useState(false); // State for Till Date checkbox
 
   const addExperienceSection = () => {
     setExperienceSections([...experienceSections, {}]);
@@ -54,12 +58,12 @@ const ProfessionalExp = ({
       if (!experience.exp_start_date) {
         fieldErrors[`exp_start_date_${i}`] = "Start Date is required.";
       }
-      if (!experience.exp_end_date) {
+      if (!experience.disableEndDate && !experience.exp_end_date) { // Only validate end date if Till Date is not checked
         fieldErrors[`exp_end_date_${i}`] = "End Date is required.";
       }
-      // if (!experience.file?.hasOwnProperty("name")) {
-      //   fieldErrors[`file_${i}`] = "Experience Letter is required.";
-      // }
+      if (!experience.file?.hasOwnProperty("name")) {
+        fieldErrors[`file_${i}`] = "Experience Letter is required.";
+      }
     }
 
     if (Object.keys(fieldErrors).length > 0) {
@@ -70,9 +74,10 @@ const ProfessionalExp = ({
     }
   };
 
+
   useEffect(() => {
-    setDataInSessionStorage('proExp',experienceSections)
-  }, [experienceSections])
+    setDataInSessionStorage("proExp", experienceSections);
+  }, [experienceSections]);
 
   return (
     <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
@@ -84,7 +89,7 @@ const ProfessionalExp = ({
               <div className="flex items-center">
                 {index !== 0 && (
                   <AiOutlineCloseCircle
-                  className="text-red-500 mr-1 text-xl mb-2 lg:mb-4 mt-2"
+                    className="text-red-500 mr-1 text-xl mb-2 lg:mb-4 mt-2"
                     onClick={() => {
                       let copySections = [...experienceSections];
                       copySections.splice(index, 1);
@@ -101,19 +106,20 @@ const ProfessionalExp = ({
                 <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                   <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                     <label
-                      htmlFor="exp_organization"
+                      htmlFor={`exp_organization_${index}`}
                       className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
                     >
                       Organization:
                     </label>
                     <input
                       type="text"
-                      name="exp_organization"
+                      name={`exp_organization_${index}`}
                       placeholder="Organization"
-                      value={experience.exp_organization}
+                      value={experience.exp_organization || ""}
                       onChange={(e) => {
                         const updatedSections = [...experienceSections];
-                        updatedSections[index].exp_organization = e.target.value;
+                        updatedSections[index].exp_organization =
+                          e.target.value;
                         setExperienceSections(updatedSections);
                         clearError(`exp_organization_${index}`);
                       }}
@@ -127,20 +133,21 @@ const ProfessionalExp = ({
                   </div>
                   <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                     <label
-                      htmlFor="exp_designation"
+                      htmlFor={`exp_designation_${index}`}
                       className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
                     >
                       Designation:
                     </label>
                     <input
                       type="text"
-                      name="exp_designation"
+                      name={`exp_designation_${index}`}
                       placeholder="Designation"
                       className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
-                      value={experience.exp_designation}
+                      value={experience.exp_designation || ""}
                       onChange={(e) => {
                         const updatedSections = [...experienceSections];
-                        updatedSections[index].exp_designation = e.target.value;
+                        updatedSections[index].exp_designation =
+                          e.target.value;
                         setExperienceSections(updatedSections);
                         clearError(`exp_designation_${index}`);
                       }}
@@ -155,16 +162,28 @@ const ProfessionalExp = ({
                 <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                   <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                     <label
-                      htmlFor="exp_start_date"
+                      htmlFor={`exp_start_date_${index}`}
                       className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
                     >
                       Start Date:
                     </label>
                     <Datepicker
-                      day={experience?.exp_start_date  ? experience?.exp_start_date.substr(0, 2) : null}
-                      month={experience?.exp_start_date  ? experience?.exp_start_date.substr(3, 2) : null}
-                      year={experience?.exp_start_date  ? experience?.exp_start_date.substr(6, 4) : null}
-                      name="exp_start_date"
+                      day={
+                        experience?.exp_start_date
+                          ? experience?.exp_start_date.substr(0, 2)
+                          : null
+                      }
+                      month={
+                        experience?.exp_start_date
+                          ? experience?.exp_start_date.substr(3, 2)
+                          : null
+                      }
+                      year={
+                        experience?.exp_start_date
+                          ? experience?.exp_start_date.substr(6, 4)
+                          : null
+                      }
+                      name={`exp_start_date_${index}`}
                       selected={moment(
                         experience.exp_start_date,
                         "DD-MM-YYYY"
@@ -174,7 +193,8 @@ const ProfessionalExp = ({
                           .format("DD-MM-YYYY")
                           .toLowerCase();
                         const updatedSections = [...experienceSections];
-                        updatedSections[index].exp_start_date = formattedDate;
+                        updatedSections[index].exp_start_date =
+                          formattedDate;
                         setExperienceSections(updatedSections);
                         clearError(`exp_start_date_${index}`);
                       }}
@@ -185,38 +205,112 @@ const ProfessionalExp = ({
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                     <label
-                      htmlFor="exp_end_date"
+                      htmlFor={`exp_end_date_${index}`}
                       className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
                     >
                       End Date:
                     </label>
-                    <Datepicker
-                      name="exp_end_date"
-                      day={experience?.exp_end_date ? experience?.exp_end_date.substr(0, 2) : null}
-                      month={experience?.exp_end_date ? experience?.exp_end_date.substr(3, 2) : null}
-                      year={experience?.exp_end_date ? experience?.exp_end_date.substr(6, 4) : null}
-                      selected={moment(
-                        experience.exp_end_date,
-                        "DD-MM-YYYY"
-                      ).toDate()}
-                      onChange={(date) => {
-                        const formattedDate = moment(date)
-                          .format("DD-MM-YYYY")
-                          .toLowerCase();
-                        const updatedSections = [...experienceSections];
-                        updatedSections[index].exp_end_date = formattedDate;
-                        setExperienceSections(updatedSections);
-                        clearError(`exp_end_date_${index}`);
-                      }}
-                    />
-                    {errors[`exp_end_date_${index}`] && (
+                    <div className="flex items-center">
+                      <Datepicker
+                        name={`exp_end_date_${index}`}
+                        day={
+                          experience?.exp_end_date
+                            ? experience?.exp_end_date.substr(0, 2)
+                            : null
+                        }
+                        month={
+                          experience?.exp_end_date
+                            ? experience?.exp_end_date.substr(3, 2)
+                            : null
+                        }
+                        year={
+                          experience?.exp_end_date
+                            ? experience?.exp_end_date.substr(6, 4)
+                            : null
+                        }
+                        selected={
+                          experience.exp_end_date
+                            ? moment(
+                                experience.exp_end_date,
+                                "DD-MM-YYYY"
+                              ).toDate()
+                            : null
+                        }
+                        onChange={(date) => {
+                          const formattedDate = moment(date)
+                            .format("DD-MM-YYYY")
+                            .toLowerCase();
+                          const updatedSections = [...experienceSections];
+                          updatedSections[index].exp_end_date =
+                            disableEndDate ? null : formattedDate;
+                          setExperienceSections(updatedSections);
+                          clearError(`exp_end_date_${index}`);
+                        }}
+                        disabled={disableEndDate} // Disable the Datepicker if Till Date is checked
+                      />
+                      <input
+                        type="checkbox"
+                        checked={disableEndDate}
+                        onChange={(e) => setDisableEndDate(e.target.checked)}
+                        className="ml-2"
+                      />
+                      <label className="ml-1">Till Date</label>
+                    </div>
+                    {errors[`exp_end_date_${index}`] && !disableEndDate && (
+                      <div className="text-red-500 text-sm">
+                        {errors[`exp_end_date_${index}`]}
+                      </div>
+                    )}
+                  </div> */}
+                  <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                    <label
+                      htmlFor={`exp_end_date_${index}`}
+                      className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
+                    >
+                      End Date:
+                    </label>
+                    <div className="flex items-center">
+                      <Datepicker
+                        name={`exp_end_date_${index}`}
+                        day={experience.exp_end_date ? experience.exp_end_date.substr(0, 2) : null}
+                        month={experience.exp_end_date ? experience.exp_end_date.substr(3, 2) : null}
+                        year={experience.exp_end_date ? experience.exp_end_date.substr(6, 4) : null}
+                        selected={experience.exp_end_date ? moment(experience.exp_end_date, "DD-MM-YYYY").toDate() : null}
+                        onChange={(date) => {
+                          const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
+                          const updatedSections = [...experienceSections];
+                          updatedSections[index].exp_end_date = formattedDate;
+                          setExperienceSections(updatedSections);
+                          clearError(`exp_end_date_${index}`);
+                        }}
+                        disabled={experience.disableEndDate} // Disable the Datepicker if Till Date is checked
+                      />
+                      <input
+                        type="checkbox"
+                        checked={experience.disableEndDate}
+                        onChange={(e) => {
+                          const updatedSections = [...experienceSections];
+                          updatedSections[index].disableEndDate = e.target.checked;
+                          if (e.target.checked) {
+                            // updatedSections[index].exp_end_date = null; // Set end date to null if Till Date is checked
+                            updatedSections[index].exp_end_date = e.target.checked ? null : experience.exp_end_date;
+                          }
+                          setExperienceSections(updatedSections);
+                        }}
+                        className="ml-2"
+                      />
+                      <label className="ml-1">Till Date</label>
+                    </div>
+                    {errors[`exp_end_date_${index}`] && !experience.disableEndDate && (
                       <div className="text-red-500 text-sm">
                         {errors[`exp_end_date_${index}`]}
                       </div>
                     )}
                   </div>
+
+
                 </div>
                 <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                   <div className="flex flex-col mt-2 md:mt-4">
@@ -224,8 +318,10 @@ const ProfessionalExp = ({
                       Experience Letter:
                     </h2>
                     {experience.file ? (
-                      <div className="flex gap-1  items-center">
-                        <div className="opacity-50">{experience.file.name}</div>
+                      <div className="flex gap-1 items-center">
+                        <div className="opacity-50">
+                          {experience.file.name}
+                        </div>
                         <WiCloudRefresh
                           onClick={() => {
                             const updatedSections = [...experienceSections];
@@ -237,13 +333,13 @@ const ProfessionalExp = ({
                       </div>
                     ) : (
                       <label
-                        htmlFor="file-upload"
+                        htmlFor={`file-upload_${index}`}
                         className="cursor-pointer opacity-70 rounded-lg text-input"
                       >
                         <input
-                          id="file-upload"
+                          id={`file-upload_${index}`}
                           type="file"
-                          name="file"
+                          name={`file_${index}`}
                           accept=".pdf"
                           max-size="104857600"
                           onChange={(e) => {
@@ -261,7 +357,7 @@ const ProfessionalExp = ({
                                 setExperienceSections(updatedSections);
                               };
                               reader.readAsDataURL(file);
-                              setErrors(`file_${index}`)
+                              setErrors(`file_${index}`);
                             }
                           }}
                         />

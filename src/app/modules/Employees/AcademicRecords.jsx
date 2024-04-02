@@ -525,7 +525,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
 
         <button
             onClick={addCertificationSection}
-            className="mt-4 mb-3 rounded-lg w-52 border border-[#25A8E0] cursor-pointer text-[#555657] py-1"
+            className="mt-4 mb-3 rounded-lg w-52 border block border-[#25A8E0] cursor-pointer text-[#555657] py-1"
           >
             <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add New Certification
           </button>

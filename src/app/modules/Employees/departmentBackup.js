@@ -37,10 +37,10 @@ const HeadOfDepartment = [
     { label: 'Haris (Pre-Sales)', value: 'Haris' },
     { label: 'Sadia (Project Management)', value: 'Sadia' },
     { label: 'Asra (Front End Lead)', value: 'Asra' },
-    { label: 'Shujat ( Backend Lead)', value: 'Shujat' },
-    { label: 'Faisal( Operations )', value: 'Faisal' },
+    { label: 'Shujat (Backend Lead)', value: 'Shujat' },
+    { label: 'Faisal (Operations)', value: 'Faisal' },
     { label: 'Imran (Marketing)', value: 'Imran' },
-    { label: 'Prakash ( VP Sales)', value: 'Prakash' },
+    { label: 'Prakash (VP Sales)', value: 'Prakash' },
 ];
 
 const departmentSchema = Joi.object({
@@ -60,35 +60,9 @@ const departmentSchema = Joi.object({
             "string.empty": `Position is required`,
             "string.pattern.base": `Position must only contain letters and spaces`,
         }),
-    employee_status: Joi.string().required().label('Employee status')
-        .messages({
-            "string.empty": `Employee Status is required`,
-        }),
-    employee_type: Joi.string().required().label('Employee type')
-        .messages({
-            "string.empty": `Employee type is required`,
-        }),
-    direct_report: Joi.string().required().label('Direct Report')
-        .messages({
-            "string.empty": `Direct Report is required`,
-        }),
-    // indirect_report: Joi.string().required().label('Indirect Report'),
-    indirect_report: Joi.string().when('is_indirect_report_applicable', {
-        is: Joi.boolean().valid(true).required(),
-        then: Joi.required(),
-        otherwise: Joi.optional()
-    }),
-    department_manager: Joi.string().required().label('Department Manger').messages({
-        "string.empty": `Department Manger is required`,
-    }),
-    joining_date: Joi.string()
-        .regex(/^\d{2}-\d{2}-\d{4}$/) // Matches "DD-MM-YYYY" format
-        .required()
-        .label('Joining Date')
-        .messages({
-            'string.empty': 'Joining Date is required',
-            'string.pattern.base': 'Joining Date must be in "DD-MM-YYYY" format',
-        })
+    direct_report: Joi.string().required(),
+    // indirect_report: Joi.string().required(),
+    department_manager: Joi.string().required()
 });
 
 
@@ -96,20 +70,22 @@ const departmentSchema = Joi.object({
 const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
+    const [showIndirectReport, setShowIndirectReport] = useState(false);
+
+
+
 
     const getDataFromSessionStorage = (key) => {
         const serializedData = sessionStorage.getItem(key);
         const data = JSON.parse(serializedData);
         return data;
     };
-    // const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo")
-    const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo") ?? {};
+    const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo")
     const intialDepartmentInfo = {
         department_name: defaultDeparmentInfo?.department_name ? defaultDeparmentInfo.department_name : '',
         department_position: defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
         direct_report: defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
-        indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
-        is_indirect_report_applicable: defaultDeparmentInfo?.is_indirect_report_applicable ? defaultDeparmentInfo.is_indirect_report_applicable : false,
+        indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : null,
         department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : '',
         employee_type: defaultDeparmentInfo?.employee_type ? defaultDeparmentInfo.employee_type : '',
         employee_status: defaultDeparmentInfo?.employee_status ? defaultDeparmentInfo.employee_status : '',
@@ -142,96 +118,68 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
     }, []);
 
     const handleNextStep = async () => {
+        console.log('before')
         setIsLoading(true);
-        const { error } = departmentSchema.validate(
-            {
-                department_name: departmentInfo.department_name,
-                department_position: departmentInfo.department_position,
-                direct_report: departmentInfo.direct_report,
-                department_manager: departmentInfo.department_manager,
-                employee_status: departmentInfo.employee_status,
-                employee_type: departmentInfo.employee_type,
-                indirect_report: departmentInfo.is_indirect_report_applicable ? departmentInfo.indirect_report : null,
-                joining_date: departmentInfo.joining_date,
-            },
-            { abortEarly: false }
-        );
+        await submitForm();
+        setIsLoading(false);
+        console.log('before')
 
-        if (error) {
-            const validationErrors = {};
-            error.details.forEach((detail) => {
-                validationErrors[detail.path[0]] = detail.message;
-            });
-            setErrors(validationErrors);
-        } else {
-            console.log("Form validated. Calling submitForm...");
-            await submitForm();
-            setIsLoading(false);
-        }
+        // console.log("Submitting form..."); 
+        // const { error } = departmentSchema.validate(
+        //     {
+        //         department_name: departmentInfo.department_name,
+        //         department_position: departmentInfo.department_position,
+        //         direct_report: departmentInfo.direct_report,
+        //         indirect_report: departmentInfo.indirect_report,
+        //         department_manager: departmentInfo.department_manager,
+        //     },
+        //     { abortEarly: false }
+        // );
+
+        // if (error) {
+        //     const validationErrors = {};
+        //     error.details.forEach((detail) => {
+        //         validationErrors[detail.path[0]] = detail.message;
+        //     });
+        //     setErrors(validationErrors);
+        // } else {
+        //     console.log("Form validated. Calling submitForm..."); 
+        //     await submitForm(); 
+        //     setIsLoading(false);
+        // }
     };
 
-  
     const setDataInSessionStorage = (key, data) => {
         const serializedData = JSON.stringify(data);
         sessionStorage.setItem(key, serializedData);
     };
-    // const handleChange = (name, value, values) => {
-    //     // Check if the name is 'employee_type' or 'employee_status'
 
-    //     if (name === "indirect_report" || name === "direct_report") {
-    //         console.log(`Selected ${name === "indirect_report" ? "In-Direct" : "Direct"} Managers:`, values);
-    //         const updatedValues = values || []; // In case 'values' is null
-    //         const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
-    //         setDepartmentInfo({
-    //             ...departmentInfo,
-    //             [name]: uniqueValues.join(', '), // Convert array to string
-    //         });
-    //     } else {
-    //         setDepartmentInfo({ ...departmentInfo, [name]: value });
-    //     }
-    //     // Clear errors for the updated field
-    //     setErrors({ ...errors, [name]: null });
-    // };
-
-    // const handleChange = (name, value, values) => {
-    //     if (name === "indirect_report" || name === "direct_report") {
-    //         const updatedValues = values || [];
-    //         const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
-    //         setDepartmentInfo({
-    //             ...departmentInfo,
-    //             [name]: uniqueValues.join(', '),
-    //         });
-    //     } else {
-    //         setDepartmentInfo({ ...departmentInfo, [name]: value });
-    //     }
-    //     setErrors({ ...errors, [name]: null });
-    // };
 
     const handleChange = (name, value, values) => {
-        if (name === "is_indirect_report_applicable") {
-            // For the checkbox, value will be the boolean indicating whether it's checked or not
-            setDepartmentInfo({ ...departmentInfo, [name]: value });
+        // Check if the name is 'employee_type' or 'employee_status'
+        if (name === 'employee_type' || name === 'employee_status') {
+            setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+        } else if (name === "indirect_report" || name === "direct_report") {
+            console.log(`Selected ${name === "indirect_report" ? "In-Direct" : "Direct"} Managers:`, values);
+            const updatedValues = values || []; // In case 'values' is null
+            const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
+            setDepartmentInfo({
+                ...departmentInfo,
+                [name]: uniqueValues.join(', '), // Convert array to string
+            });
         } else {
-            // For other inputs, update the state as usual
-            if (name === "indirect_report" || name === "direct_report") {
-                const updatedValues = values || [];
-                const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
-                setDepartmentInfo({
-                    ...departmentInfo,
-                    [name]: uniqueValues.join(', '),
-                });
-            } else {
-                setDepartmentInfo({ ...departmentInfo, [name]: value });
-            }
+            setDepartmentInfo({ ...departmentInfo, [name]: value });
         }
+        // Clear errors for the updated field
         setErrors({ ...errors, [name]: null });
     };
-
 
     const handleJoiningDate = (date) => {
         const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
         handleChange("joining_date", formattedDate);
     };
+
+
 
     return (
         <>
@@ -289,8 +237,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                         />
                                     </div>
-                                    {errors.employee_type && <span className="text-red-500 text-sm ">{errors.employee_type}</span>}
-
                                 </div>
                                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                                     <label
@@ -315,8 +261,8 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                             onChange={(selectedOption) => handleChange("employee_status", selectedOption.value)}
                                             menuPortalTarget={document.body}
                                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+
                                         />
-                                        {errors.employee_status && <span className="text-red-500 text-sm ">{errors.employee_status}</span>}
 
                                     </div>
                                 </div>
@@ -327,24 +273,23 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                                     <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
         text-input text-base mb-1'>Direct Report:</label>
-                                   
                                     <CustomSelect
                                         menuPlacement="top"
                                         name='direct_report'
                                         placeholder="Search Direct Report To..."
-                                        value={departmentInfo.direct_report ? departmentInfo.direct_report.split(',').map(label => ({ label, value: label })) : null}
-                                        onChange={(selectedOptions) => handleChange("direct_report", selectedOptions, selectedOptions)}
+                                        // value={managers.filter(manager => defaultDeparmentInfo.direct_report.includes(manager.label))}
+                                        value={managers.find(manager => manager.label === defaultDeparmentInfo?.direct_report)}
+                                        onChange={(selectedOption) => handleChange("direct_report", selectedOption, selectedOption)}
+                                        // onChange={(selectedOptions) => handleEdit("direct_report", selectedOptions.map(option => option.label))}
                                         options={managers
-                                            ?.filter(manager => manager.username)
+                                            ?.filter(manager => manager.username) // Filter managers with user_role equal to 2
                                             .map((manager) => ({
                                                 value: manager.id,
                                                 label: manager.username,
                                             }))}
-                                        isEdit={true}
+                                        isEdit={true} // Pass down the isEdit prop
                                         isMulti={true}
                                     />
-
-
                                     {errors.direct_report && <span className="text-red-500 text-sm ">{errors.direct_report}</span>}
                                 </div>
 
@@ -355,42 +300,42 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                             Indirect Report:
                                         </label>
 
-                                        <div className='flex items-center gap-x-2'>
-                                            <p className='text-sm'>Yes</p>
-                                            <input type="checkbox"
-                                                name='is_indirect_report_applicable_yes'
-                                                checked={departmentInfo.is_indirect_report_applicable}
-                                                onChange={(e) => handleChange('is_indirect_report_applicable', e.target.checked)}
+                                        <div className='flex items-center gap-2'>
+                                            <input
+                                                type="checkbox"
+                                                checked={showIndirectReport}
+                                                onChange={() => setShowIndirectReport(!showIndirectReport)}
                                             />
+                                            <span>Yes</span>
                                         </div>
-                                        <div className='flex items-center gap-x-2'>
-                                            <p className='text-sm'>No</p>
-                                            <input type="checkbox"
-                                                name='is_indirect_report_applicable_no'
-                                                checked={!departmentInfo.is_indirect_report_applicable}
-                                                onChange={(e) => handleChange('is_indirect_report_applicable', !e.target.checked)}
+                                        <div className='flex items-center gap-2'>
+                                            <input
+                                                type="checkbox"
+                                                checked={!showIndirectReport}
+                                                onChange={() => setShowIndirectReport(!showIndirectReport)}
                                             />
+                                            <span>No</span>
                                         </div>
-
                                     </div>
-                                    {departmentInfo.is_indirect_report_applicable &&
+                                    {showIndirectReport &&
                                         <>
+
                                             <CustomSelect
                                                 menuPlacement="top"
                                                 name='indirect_report'
-                                                placeholder="Search Direct Report To..."
-                                                value={departmentInfo.indirect_report ? departmentInfo.indirect_report.split(',').map(label => ({ label, value: label })) : null}
-                                                onChange={(selectedOptions) => handleChange("indirect_report", selectedOptions, selectedOptions)}
+                                                placeholder="Search Indirect Report To..."
+                                                value={managers.find(manager => manager.label === defaultDeparmentInfo?.indirect_report)}
+                                                onChange={(selectedOption) => handleChange("indirect_report", selectedOption, selectedOption)}
+                                                // onChange={(selectedOptions) => handleEdit("indirect_report", selectedOptions.map(option => option.label))}
                                                 options={managers
-                                                    ?.filter(manager => manager.username)
+                                                    ?.filter(manager => manager.username) // Filter managers with user_role equal to 2
                                                     .map((manager) => ({
                                                         value: manager.id,
                                                         label: manager.username,
                                                     }))}
-                                                isEdit={true}
+                                                isEdit={true} // Pass down the isEdit prop
                                                 isMulti={true}
                                             />
-
                                             {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
                                         </>
                                     }
@@ -400,6 +345,15 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
 
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
 
+                                {/* <div className='flex flex-col mt-2 md:mt-5 md:w-1/2 lg:w-[45.5%]'>
+                                    <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
+                                   text-input text-base mb-1'>Department Manager:</label>
+                                    <input type="text" value={departmentInfo.department_manager} name="department_manager" id="" placeholder='Department Manager Here'
+                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
+                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
+                                    />
+                                    {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
+                                </div> */}
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
                                     <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
                         text-input text-base mb-1'>Department Head:</label>
@@ -407,9 +361,15 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                         // isDisabled={isEdit ? false : true}
                                         menuPlacement="top"
                                         name='department_manager'
-                                        value={HeadOfDepartment.find(manager => manager.value === departmentInfo?.department_manager)}
+                                        value={HeadOfDepartment.find(manager => manager.label === departmentInfo?.department_manager)}
                                         onChange={(selectedOption) => handleChange("department_manager", selectedOption.value)}
                                         options={HeadOfDepartment}
+                                        // options={managers
+                                        //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
+                                        //   .map((manager) => ({
+                                        //     value: manager.id,
+                                        //     label: manager.username,
+                                        //   }))}
                                         menuPortalTarget={document.body}
                                         styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                     />
@@ -449,11 +409,11 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                         // onClick={handleFieldClick}
                                         onChange={handleJoiningDate}
                                     />
-                                    {errors.joining_date && (
-                                        <span className="text-red-500 text-sm ">
-                                            {errors.joining_date}
-                                        </span>
-                                    )}
+                                    {/* {errors.joining_date && (
+                    <span className="text-red-500 text-sm ">
+                      {errors.joining_date}
+                    </span>
+                  )} */}
                                 </div>
 
                             </div>
@@ -464,20 +424,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
 
                 <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40">
                     <Button onClick={prevstep} text={'Previous'} />
-                    {/* <Button onClick={handleNextStep} text={isLoading ? <div className='flex items-center gap-x-2'><span>Submit </span><CustomLoader /></div> : 'Submit'} /> */}
-                    <Button
-                        onClick={handleNextStep}
-                        text={
-                            isLoading ? (
-                                <div className='flex items-center gap-x-2'>
-                                    <span>Submit </span>
-                                    <CustomLoader />
-                                </div>
-                            ) : (
-                                'Submit'
-                            )
-                        }
-                    />
+                    <Button onClick={handleNextStep} text={isLoading ? <div className='flex items-center gap-x-2'><span>Submit </span><CustomLoader /></div> : 'Submit'} />
 
                 </div>
             </div >

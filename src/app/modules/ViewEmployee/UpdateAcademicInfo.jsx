@@ -118,8 +118,8 @@ const AcademicRecords = ({
   };
 
 
-  // const id = userProfile.id;
-  const { id } = useParams();
+  const id = userProfile.id;
+  // const { id } = useParams();
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -242,7 +242,8 @@ const AcademicRecords = ({
       try {
 
         let education = {
-          employee_id: id,
+          // employee_id: id,
+          employee_id: userProfile.id,
           education_level: academicInfo.education_level,
           program: academicInfo.program,
           institute_name: academicInfo.institute_name,
@@ -260,7 +261,8 @@ const AcademicRecords = ({
         }
 
         let acadmicDoc = {
-          employee_id: id,
+          // employee_id: id,
+          employee_id: userProfile.id,
           name: "acadmicDoc",
           description: "Acadmic Document",
           document: academicInfo.certificate.document
@@ -287,7 +289,8 @@ const AcademicRecords = ({
         let updatedData = getDataFromSessionStorage("UpdatedCertifications");
         updatedData.map(async (crt) => {
           let myCertification = {
-            employee_id: id,
+            // employee_id: id,
+            employee_id: userProfile.id,
             certification_name: crt.certification_name,
             certification_body: crt.certification_body,
             completion_date: moment(crt.completion_date, "DD-MM-YYYY").format(
