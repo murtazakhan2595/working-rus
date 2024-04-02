@@ -11,14 +11,22 @@ import { toast, ToastContainer } from "react-toastify";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
+import { getAllCountries } from 'countries-and-timezones';
+import Select from "react-select";
+import { countryCodes } from "../../../data/CountryCode";
+
 
 const validationSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
   last_name: Joi.string().min(3).max(40).required().label("Last Name"),
   father_name: Joi.string().min(3).max(40).required().label("Father Name"),
   mother_name: Joi.string().min(3).max(40).required().label("Mother Name"),
+  country_code: Joi.string()
+    .pattern(/^\+\d+$/) // Allows for a plus sign followed by one or more digits
+    .required()
+    .label("Country Code"),
   mobile_no: Joi.string()
-    .pattern(/^\+?\d{10,15}$/) // Allows for optional '+' sign at the beginning followed by 10 to 15 digits
+    .pattern(/^\d{7,15}$/) // Allows for optional '+' sign at the beginning followed by 10 to 15 digits
     .required()
     .label("Phone Number")
     .messages({
@@ -49,8 +57,16 @@ const validationSchema = Joi.object({
     .max(20)
     .required()
     .label("Last Name"),
+  emergency_country_code: Joi.string()
+    .pattern(/^\+?\d+$/) // Allows for an optional plus sign followed by one or more digits
+    .required()
+    .label("Emergency Country Code")
+    .messages({
+      "string.empty": `Emergency Country Code is required`,
+      "string.pattern.base": `Emergency Country Code must be a valid country code`,
+    }),
   emergency_phone_no: Joi.string()
-    .pattern(/^\+?\d{10,15}$/) // Assuming phone numbers are between 10 and 15 digits long
+    .pattern(/^\d{7,15}$/) // Assuming phone numbers are between 10 and 15 digits long
     .required()
     .label("Emergency Phone Number")
     .messages({
@@ -171,6 +187,7 @@ const PersonalInfo = ({
       last_name: checkData.last_name,
       father_name: checkData.father_name,
       mother_name: checkData.mother_name,
+      country_code: checkData.country_code,
       mobile_no: checkData.mobile_no,
       date_of_birth: checkData.date_of_birth,
       marital_status: checkData.marital_status,
@@ -182,6 +199,7 @@ const PersonalInfo = ({
       nic: checkData.nic,
       emergency_first_name: checkData.emergency_first_name,
       emergency_last_name: checkData.emergency_last_name,
+      emergency_country_code: checkData.emergency_country_code,
       emergency_phone_no: checkData.emergency_phone_no,
       emergency_relation: checkData.emergency_relation,
     };
@@ -233,6 +251,13 @@ const PersonalInfo = ({
   const handleFieldClick = () => {
     setIsEdit(true);
   }
+
+  // Get country options for Select component
+  const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name
+  }));
+
 
   return (
     <>
@@ -380,6 +405,55 @@ const PersonalInfo = ({
                   Phone Number:
                 </label>
                 <div className="flex gap-1">
+                  <div className="flex flex-col gap-y-2" onClick={handleFieldClick}>
+                    <Select
+                      className={`${isEdit ? "text-black" : "text-gray-500"}`}
+                      isDisabled={!isEdit}
+                      options={countryCodes.map((country) => ({
+                        label: `${country.dial_code} ${country.name}`, // Display dial code and country name
+                        value: country.dial_code
+                      }))}
+                      value={countryCodes.find(option => option.dial_code === defaultData.country_code) ?
+                        {
+                          label: `${countryCodes.find(option => option.dial_code === defaultData.country_code).dial_code} 
+      ${countryCodes.find(option => option.dial_code === defaultData.country_code).name}`,
+                          value: defaultData.country_code
+                        } : null}
+                      onChange={(selectedOption) =>
+                        handleEdit("country_code", selectedOption.value)
+                      }
+                      isSearchable
+                      classNamePrefix="roundScroll"
+                      menuPlacement="top"
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: '160px',
+                          fontSize: '15px',
+                          height: '20px',
+                        }),
+                        input: (provided) => ({
+                          ...provided,
+                          margin: 0, // Remove input margin
+                        }),
+                        option: (provided) => ({
+                          ...provided,
+                          fontSize: '15px',
+                        }),
+                        menu: (provided) => ({
+                          ...provided,
+                          width: '100%', // Set menu width to 100%
+                        }),
+                      }}
+                    />
+
+                    {errors.country_code && (
+                      <span className="text-red-500 text-sm ">
+                        {errors.country_code}
+                      </span>
+                    )}
+                  </div>
+
                   <input
                     // disabled={isEdit ? false : true}
                     readOnly={!isEdit}
@@ -482,18 +556,23 @@ const PersonalInfo = ({
                 >
                   Nationality:
                 </label>
-                <input
-                  type="email"
-                  // disabled={isEdit ? false : true}
+
+                <Select
                   readOnly={!isEdit}
-                  value={defaultData.nationality}
+                  className={`${isEdit ? "text-black" : "text-gray-500"}`}
+                  isDisabled={!isEdit}
                   name="nationality"
-                  placeholder="Nationality Here"
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  options={countryOptions}
+                  value={countryOptions.find(
+                    (option) => option.label === defaultData.nationality
+                  )}
+                  onChange={(selectedOption) =>
+                    handleEdit("nationality", selectedOption.label)
+                  }
                   onClick={handleFieldClick}
-                  onChange={(e) => handleEdit(e.target.name, e.target.value)}
+                  menuPlacement="top"
                 />
+
                 {errors.nationality && (
                   <span className="text-red-500 text-sm ">
                     {errors.nationality}
@@ -634,34 +713,6 @@ const PersonalInfo = ({
                   <span className="text-red-500 text-sm ">{errors.nic}</span>
                 )}
               </div>
-              {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                <label
-                  htmlFor="passport_number"
-                  className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                >
-                  Passport Number:
-                </label>
-                <input
-                  type="text"
-                  // disabled={isEdit ? false : true}
-                  readOnly={!isEdit}
-                  value={defaultData.passport_number}
-                  data-inputmask="'mask': '99999-9999999-9'"
-                  placeholder="Passport Number (optional)"
-                  name="passport_number"
-                  required=""
-                  className={`${isEdit ? "text-black" : "text-gray-500"
-                    } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  onClick={handleFieldClick}
-                  onChange={(e) => handleEdit(e.target.name, e.target.value)}
-                />
-                {errors.passport_number && (
-                  <span className="text-red-500 text-sm ">
-                    {errors.passport_number}
-                  </span>
-                )}
-              </div> */}
             </div>
           </div>
           <div className="order-1 md:order-2 md:w-[35%]">
@@ -777,6 +828,56 @@ const PersonalInfo = ({
                 Phone Number:
               </label>
               <div className="flex gap-1">
+
+                <div className="flex flex-col gap-y-2" onClick={handleFieldClick}>
+                  <Select
+                    className={`${isEdit ? "text-black" : "text-gray-500"}`}
+                    isDisabled={!isEdit}
+                    options={countryCodes.map((country) => ({
+                      label: `${country.dial_code} ${country.name}`, // Display dial code and country name
+                      value: country.dial_code
+                    }))}
+                    value={countryCodes.find(option => option.dial_code === defaultData.emergency_country_code) ?
+                      {
+                        label: `${countryCodes.find(option => option.dial_code === defaultData.emergency_country_code).dial_code} 
+      ${countryCodes.find(option => option.dial_code === defaultData.emergency_country_code).name}`,
+                        value: defaultData.emergency_country_code
+                      } : null}
+                    onChange={(selectedOption) =>
+                      handleEdit("emergency_country_code", selectedOption.value)
+                    }
+                    isSearchable
+                    classNamePrefix="roundScroll"
+                    menuPlacement="top"
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        width: '160px',
+                        fontSize: '15px',
+                        height: '20px',
+                      }),
+                      input: (provided) => ({
+                        ...provided,
+                        margin: 0, // Remove input margin
+                      }),
+                      option: (provided) => ({
+                        ...provided,
+                        fontSize: '15px',
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        width: '100%', // Set menu width to 100%
+                      }),
+                    }}
+                  />
+
+                  {errors.emergency_country_code && (
+                    <span className="text-red-500 text-sm ">
+                      {errors.emergency_country_code}
+                    </span>
+                  )}
+                </div>
+
                 <input
                   type="text"
                   pattern="[+0-9]"

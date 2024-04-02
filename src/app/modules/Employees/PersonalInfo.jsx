@@ -4,6 +4,9 @@ import Datepicker from "../Dashboard/Datepicker";
 import upload from "../../../assets/images/upload.png";
 import Joi from "joi";
 import Button from "./Button";
+import { getAllCountries } from 'countries-and-timezones';
+import Select from "react-select";
+import { countryCodes } from "../../../data/CountryCode";
 
 const validationSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
@@ -52,7 +55,7 @@ const validationSchema = Joi.object({
       "string.empty": `Emergency Phone Number is required`,
       "string.pattern.base": `Emergency Phone Number must be a valid phone number`,
     }),
-    emergency_relation: Joi.string()
+  emergency_relation: Joi.string()
     .regex(/^[a-zA-Z\s]+$/)
     .required()
     .label("Relation")
@@ -79,7 +82,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
     last_name: storedData?.last_name ? storedData.last_name : "",
     father_name: storedData?.father_name ? storedData.father_name : "",
     mother_name: storedData?.mother_name ? storedData.mother_name : "",
-    country_code: storedData?.mobile_no ? storedData.country_code : "",
+    country_code: storedData?.country_code ? storedData.country_code : "",
     mobile_no: storedData?.mobile_no ? storedData.mobile_no : "",
     date_of_birth: storedData?.date_of_birth ? storedData.date_of_birth : "",
     marital_status: storedData?.marital_status ? storedData.marital_status : "",
@@ -108,12 +111,13 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
     emergency_phone_no: storedData?.emergency_phone_no
       ? storedData.emergency_phone_no
       : "",
-      emergency_relation: storedData?.emergency_relation ? storedData.emergency_relation : "",
+    emergency_relation: storedData?.emergency_relation ? storedData.emergency_relation : "",
   });
 
   const handleChange = (name, value) => {
     setPersonalInfo({ ...personalInfo, [name]: value });
     setErrors({ ...errors, [name]: null });
+    console.log(value);
   };
 
   const [imagePreview, setImagePreview] = useState(
@@ -123,6 +127,15 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
   const handleImageUpload = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      // Check file size
+      const maxSize = 1024 * 1024; // 1 MB in bytes
+      if (selectedFile.size > maxSize) {
+        // File size exceeds 1 MB, handle error
+        const imageError = { image: "Please upload a file smaller than 1 MB." };
+        setErrors(imageError);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview({
@@ -135,6 +148,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
       setErrors(imageError);
     }
   };
+
 
   useEffect(() => {
     setDataInSessionStorage("personalInfo", personalInfo);
@@ -171,6 +185,14 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
       nextstep();
     }
   };
+
+
+  // Get country options for Select component
+  const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name
+  }));
+
 
   return (
     <>
@@ -308,15 +330,31 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                 >
                   Nationality:
                 </label>
-                <input
-                  type="text"
-                  value={personalInfo.nationality}
+                <Select
+                  menuPlacement="top"
                   name="nationality"
-
-                  placeholder="Nationality here"
-                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
-                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                  options={countryOptions}
+                  value={countryOptions.find(
+                    (option) => option.label === personalInfo.nationality
+                  )}
+                  onChange={(selectedOption) =>
+                    handleChange("nationality", selectedOption.label)
+                  }
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      minHeight: '30px',
+                      height: '30x',
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      scrollbarWidth: 'roundScroll', // For Firefox
+                      scrollbarColor: '#888 #f4f4f4', // For Chrome, Edge, and Safari
+                    }),
+                  }}
                 />
+
+
                 {errors.nationality && (
                   <span className="text-red-500 text-sm ">
                     {errors.nationality}
@@ -335,19 +373,38 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   Phone Number:
                 </label>
                 <div className="flex gap-1">
-                  <input
-                    type="tel"
-                    value={personalInfo.country_code}
-                    name="country_code"
-                    maxLength={4}
-
-                    placeholder="+1"
-                    className="pl-1 bg-white rounded-l h-8 w-[12%] text-sm placeholder-[#555657] placeholder-opacity-50"
-                    onChange={(e) =>
-                      handleChange(e.target.name, e.target.value)
-                    }
+                  <Select
+                    options={countryCodes.map((country) => ({
+                      label: `${country.dial_code} ${country.name}`,
+                      value: country.dial_code
+                    }))}
+                    value={countryCodes.find((country) => country.dial_code === personalInfo.dial_code)}
+                    onChange={(selectedOption) => handleChange("country_code", selectedOption.value)}
+                    placeholder="Select"
+                    isSearchable
+                    classNamePrefix="roundScroll"
+                    menuPlacement="top"
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        width: '180px',
+                        fontSize: '15px',
+                        height: '20px',
+                      }),
+                      input: (provided) => ({
+                        ...provided,
+                        margin: 0, // Remove input margin
+                      }),
+                      option: (provided) => ({
+                        ...provided,
+                        fontSize: '15px',
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        width: '100%', // Set menu width to 100%
+                      }),
+                    }}
                   />
-
                   <input
                     type="number"
                     value={personalInfo.mobile_no}
@@ -533,30 +590,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                   <span className="text-red-500 text-sm ">{errors.nic}</span>
                 )}
               </div>
-              {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                <label
-                  htmlFor="passport_number"
-                  className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                >
-                  Passport Number:
-                </label>
-                <input
-                  type="text"
-                  value={personalInfo.passport_number}
-                  data-inputmask="'mask': '99999-9999999-9'"
-                  placeholder="Passport Number Here (optional)"
-                  name="passport_number"
-                  required=""
-                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
-                  onChange={(e) => handleChange(e.target.name, e.target.value)}
-                />
-                {errors.passport_number && (
-                  <span className="text-red-500 text-sm ">
-                    {errors.passport_number}
-                  </span>
-                )}
-              </div> */}
             </div>
           </div>
           <div className="order-1 md:order-2 md:w-[35%]">
@@ -663,21 +696,42 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                 Phone Number:
               </label>
               <div className="flex gap-1">
-                <input
-                  type="tel"
-                  value={personalInfo.emergency_country_code}
-                  name="emergency_country_code"
-                  maxLength={4}
-
-                  placeholder="+1"
-                  className="pl-1 bg-white rounded-l h-8 w-[12%] text-sm placeholder-[#555657] placeholder-opacity-50"
-                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                <Select
+                  options={countryCodes.map((country) => ({
+                    label: `${country.dial_code} ${country.name}`,
+                    value: country.dial_code
+                  }))}
+                  value={countryCodes.find((country) => country.dial_code === personalInfo.dial_code)}
+                  onChange={(selectedOption) => handleChange("emergency_country_code", selectedOption.value)}
+                  placeholder="Select"
+                  isSearchable
+                  classNamePrefix="roundScroll"
+                  menuPlacement="top"
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      width: '180px',
+                      fontSize: '15px',
+                      height: '20px',
+                    }),
+                    option: (provided) => ({
+                      ...provided,
+                      fontSize: '15px',
+                    }),
+                    input: (provided) => ({
+                      ...provided,
+                      margin: 0, // Remove input margin
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      width: '100%', // Set menu width to 100%
+                    }),
+                  }}
                 />
                 <input
                   type="number"
                   value={personalInfo.emergency_phone_no}
                   name="emergency_phone_no"
-
                   placeholder="Phone Number here"
                   className="pl-2 bg-white rounded-r h-8 w-[87%] text-sm placeholder-[#555657] placeholder-opacity-50"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
