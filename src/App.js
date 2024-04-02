@@ -48,7 +48,7 @@ function App({
   setUserLogout,
 }) {
   let width = window.screen.width;
-  let val = width <= 1280 ? false : true;
+  let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const navigate = useNavigate();
 
@@ -93,36 +93,6 @@ function App({
     }
   };
 
-  // const getProfile = async () => {
-  //   try {
-  //     if (isLogin) { // Only proceed if the user is logged in
-  //       let response = await axios.get(`${baseUrl}/user/`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       if (response.status === 200) {
-  //         handleUpdateProfile(response.data);
-  //         setToken(token);
-  //         cookies.set("token", token, { path: "*" });
-  //         return;
-  //       }
-  //     }
-  //   } catch (error) {
-  //     if (
-  //       error.response &&
-  //       (error.response.status === 401 || error.response.status === 403)
-  //     ) {
-  //       // Token expired or invalid
-  //       setUserLogout();
-  //       navigate("/");
-  //     } else {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   }
-  // };
-
-
   useEffect(() => {
     if (isLogin || isLogin === null) {
       getProfile();
@@ -131,15 +101,13 @@ function App({
 
   return (
     <>
-
       {(isLogin === null || userProfile.is_filled === undefined) && (
-        
-          <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
-              <p className="text-gray-600 mt-4">Loading...</p>
-            </div>
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
+            <p className="text-gray-600 mt-4">Loading...</p>
           </div>
+        </div>
       )}
 
       <Routes>
@@ -186,7 +154,7 @@ function App({
                         path="/add-employee"
                         element={<EmpDataForm />}
                       />
-                        <Route
+                      <Route
                         path="/edit-employee/:id"
                         element={<EditDataForm />}
                       />
