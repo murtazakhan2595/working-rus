@@ -410,7 +410,7 @@ const PersonalInfo = ({
                       className={`${isEdit ? "text-black" : "text-gray-500"}`}
                       isDisabled={!isEdit}
                       options={countryCodes.map((country) => ({
-                        label: `${country.dial_code} ${country.name}`, // Display dial code and country name
+                        label: `${country.dial_code}`, 
                         value: country.dial_code
                       }))}
                       value={countryCodes.find(option => option.dial_code === defaultData.country_code) ?
@@ -834,7 +834,7 @@ const PersonalInfo = ({
                     className={`${isEdit ? "text-black" : "text-gray-500"}`}
                     isDisabled={!isEdit}
                     options={countryCodes.map((country) => ({
-                      label: `${country.dial_code} ${country.name}`, // Display dial code and country name
+                      label: `${country.dial_code}`, 
                       value: country.dial_code
                     }))}
                     value={countryCodes.find(option => option.dial_code === defaultData.emergency_country_code) ?

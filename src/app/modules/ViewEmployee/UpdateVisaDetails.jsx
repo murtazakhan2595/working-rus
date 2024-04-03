@@ -14,6 +14,11 @@ import { WiCloudRefresh } from 'react-icons/wi';
 import Joi from "joi";
 import { RxCross2 } from 'react-icons/rx';
 import { useParams } from 'react-router-dom';
+import { downloadAttachment } from '../../../utils/fileUtils';
+import { LuExternalLink } from "react-icons/lu";
+import Tooltip from '@mui/material/Tooltip';
+import { downloadFile, downloadFiles } from '../../../utils/downUtils';
+import { BsDownload } from "react-icons/bs";
 
 
 const UpdateVisaDetails = ({ prevstep,
@@ -249,197 +254,6 @@ const UpdateVisaDetails = ({ prevstep,
   }
 
 
-  // const handleNextStep = () => {
-  //   nextstep();
-  //   if (defaultData.is_passport_applicable) {
-  //     if (defaultData.passport_number && defaultData.Passport_Issuance_Country && defaultData.Passport_Issuance_Date && defaultData.Passport_Expiry_Date && visaDetailsFiles.passport_copy) {
-  //       nextstep();
-  //     } else {
-  //       toast.error("Please fill in all required fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_visa_applicable)
-  //     if (defaultData.entry_permit_number && defaultData.country_of_visa_issuance && defaultData.uid_number && defaultData.visa_type && defaultData.visa_issuance_date && defaultData.visa_expiry_date && defaultData.visa_duration && defaultData.visa_country_entry_date && defaultData.visa_country_exit_date) {
-  //       nextstep();
-  //     } else {
-  //       toast.error("Please fill in all required fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-
-  //   else if (defaultData.is_insurance_applicable) {
-  //     if (defaultData.dha_id && defaultData.card_number && defaultData.insurance_policy && defaultData.insurance_company && defaultData.insurance_active_date && defaultData.insurance_expiry_date) {
-  //       nextstep();
-  //     } else {
-  //       toast.error("Please fill in all required fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   }
-
-  //   else if (showId) {
-  //     if (defaultData.living_country_id_no && defaultData.place_of_issuance && defaultData.id_issuance_date && defaultData.id_expiry_date && documents.id_front && documents.id_back) {
-  //       nextstep();
-  //     } else {
-  //       toast.error("Please fill all ID Details fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   }
-
-  //   else {
-  //     nextstep();
-  //   }
-
-  // };
-
-
-  // updated
-  // const handleSave = () => {
-  //   if (defaultData.is_passport_applicable) {
-  //     if (
-  //       defaultData.passport_number &&
-  //       defaultData.Passport_Issuance_Country &&
-  //       defaultData.Passport_Issuance_Date &&
-  //       defaultData.Passport_Expiry_Date &&
-  //       (documents.passport_copy || visaDetailsFiles.passport_copy)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required passport fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_visa_applicable) {
-  //     if (
-  //       defaultData.entry_permit_number &&
-  //       defaultData.country_of_visa_issuance &&
-  //       defaultData.uid_number &&
-  //       defaultData.visa_type &&
-  //       defaultData.visa_issuance_date &&
-  //       defaultData.visa_expiry_date &&
-  //       defaultData.visa_duration &&
-  //       defaultData.visa_country_entry_date &&
-  //       defaultData.visa_country_exit_date &&
-  //       (documents.enter_permit || visaDetailsFiles.enter_permit) &&
-  //       (documents.visa_page || visaDetailsFiles.enter_permit) &&
-  //       (documents.medical || visaDetailsFiles.medical) &&
-  //       (documents.id_application || visaDetailsFiles.id_application)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required visa fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_insurance_applicable) {
-  //     if (
-  //       defaultData.dha_id &&
-  //       defaultData.card_number &&
-  //       defaultData.insurance_policy &&
-  //       defaultData.insurance_company &&
-  //       defaultData.insurance_active_date &&
-  //       defaultData.insurance_expiry_date &&
-  //       (documents.insurance_card || visaDetailsFiles.insurance_card)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required insurance fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (showId) { // Added condition for ID fields
-  //     if (
-  //       defaultData.living_country_id_no &&
-  //       defaultData.place_of_issuance &&
-  //       defaultData.id_issuance_date &&
-  //       defaultData.id_expiry_date &&
-  //       defaultData.dha_id &&
-  //       (documents.id_front || visaDetailsFiles.id_front) &&
-  //       (documents.id_back || visaDetailsFiles.id_back)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required ID fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else {
-  //     updateDataOnServer();
-  //   }
-  // };
-
-
-
-  // const handleSave = () => {
-  //   if (defaultData.is_passport_applicable) {
-  //     if (
-  //       defaultData.passport_number &&
-  //       defaultData.Passport_Issuance_Country &&
-  //       defaultData.Passport_Issuance_Date &&
-  //       defaultData.Passport_Expiry_Date &&
-  //       ((documents.passport_copy && !visaDetailsFiles.passport_copy) || visaDetailsFiles.passport_copy)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required passport fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_visa_applicable) {
-  //     if (
-  //       defaultData.entry_permit_number &&
-  //       defaultData.country_of_visa_issuance &&
-  //       defaultData.uid_number &&
-  //       defaultData.visa_type &&
-  //       defaultData.visa_issuance_date &&
-  //       defaultData.visa_expiry_date &&
-  //       defaultData.visa_duration &&
-  //       defaultData.visa_country_entry_date &&
-  //       defaultData.visa_country_exit_date &&
-  //       ((documents.enter_permit && !visaDetailsFiles.enter_permit) || visaDetailsFiles.enter_permit) &&
-  //       ((documents.visa_page && !visaDetailsFiles.visa_page) || visaDetailsFiles.visa_page) &&
-  //       ((documents.medical && !visaDetailsFiles.medical) || visaDetailsFiles.medical) &&
-  //       ((documents.id_application && !visaDetailsFiles.id_application) || visaDetailsFiles.id_application)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required visa fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_insurance_applicable) {
-  //     if (
-  //       defaultData.dha_id &&
-  //       defaultData.card_number &&
-  //       defaultData.insurance_policy &&
-  //       defaultData.insurance_company &&
-  //       defaultData.insurance_active_date &&
-  //       defaultData.insurance_expiry_date &&
-  //       ((documents.insurance_card && !visaDetailsFiles.insurance_card) || visaDetailsFiles.insurance_card)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required insurance fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else {
-  //     updateDataOnServer();
-  //   }
-  // };
 
   const handleSave = () => {
     if (defaultData.is_passport_applicable) {
@@ -668,10 +482,53 @@ const UpdateVisaDetails = ({ prevstep,
               <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} />
             </div>
           ) : (
+
             <div className="flex items-center gap-x-2">
-              {documents.id_front ? documents.id_front.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.id_front.document.data,
+                    documents.id_front.document.name
+                  )
+                }
+              >
+                {documents.id_front ? documents.id_front.document.name : "Not available"}
+              </button> */}
+
+              <Tooltip
+                title="View Doc"
+              >
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.id_front.document.data,
+                      documents.id_front.document.name
+                    )
+                  }
+                >
+                  {documents.id_front ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="Download Doc"
+              >
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.id_front.document.data,
+                      documents.id_front.document.name
+                    )
+                  }
+                >
+                  {documents.id_front ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
+
           )}
 
         </div>
@@ -688,8 +545,51 @@ const UpdateVisaDetails = ({ prevstep,
               <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} />
             </div>
           ) : (
+
             <div className="flex items-center gap-x-2">
-              {documents.id_back ? documents.id_back.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.id_back.document.data,
+                    documents.id_back.document.name
+                  )
+                }
+              >
+                {documents.id_back ? documents.id_back.document.name : "Not available"}
+              </button> */}
+              <Tooltip
+                title="View Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.id_back.document.data,
+                      documents.id_back.document.name
+                    )
+                  }
+                >
+                  {documents.id_back ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="Download Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.id_back.document.data,
+                      documents.id_back.document.name
+                    )
+                  }
+                >
+                  {documents.id_back ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
@@ -719,142 +619,190 @@ const UpdateVisaDetails = ({ prevstep,
 
         </h2>
       </div>
-      {defaultData.is_passport_applicable && <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
+      {
+        defaultData.is_passport_applicable && <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-          >
-            Passport Number {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <input type="text" name="passport_number"
-            readOnly={!isEdit}
-            value={defaultData.passport_number}
-            onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            placeholder="Passport Number" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            onClick={handleFieldClick}
-          />
-        </div>
-
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[21%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Passport Issuance Country {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <div onClick={handleFieldClick}>
-            <Select
-              className={`${isEdit ? "text-black" : "text-gray-500"}`}
-              name="Passport_Issuance_Country"
-              options={countryOptions}
-              value={countryOptions.find(
-                (option) => option.label === defaultData.Passport_Issuance_Country
-              )}
-              onChange={(selectedOption) => handleEdit("Passport_Issuance_Country", selectedOption)}
+            >
+              Passport Number {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <input type="text" name="passport_number"
+              readOnly={!isEdit}
+              value={defaultData.passport_number}
+              onChange={(e) => handleEdit(e.target.name, e.target.value)}
+              placeholder="Passport Number" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               onClick={handleFieldClick}
-              isDisabled={!isEdit}
             />
           </div>
-        </div>
 
-
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[15%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[21%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-          >
-            Issuance Date {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <div onClick={handleFieldClick} >
-            <Datepicker
-              day={
-                defaultData.Passport_Issuance_Date
-                  ? defaultData.Passport_Issuance_Date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.Passport_Issuance_Date
-                  ? defaultData.Passport_Issuance_Date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.Passport_Issuance_Date
-                  ? defaultData.Passport_Issuance_Date.substr(0, 4)
-                  : null
-              }
-              name="Passport_Issuance_Date"
-              className={`pl-2 bg-white rounded h-8 text-sm
-             placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.Passport_Issuance_Date
-                  ? moment(defaultData.Passport_Issuance_Date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "Passport_Issuance_Date")}
-
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[14.2%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Expiry Date {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <div onClick={handleFieldClick} >
-
-            <Datepicker
-              day={
-                defaultData.Passport_Expiry_Date
-                  ? defaultData.Passport_Expiry_Date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.Passport_Expiry_Date
-                  ? defaultData.Passport_Expiry_Date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.Passport_Expiry_Date
-                  ? defaultData.Passport_Expiry_Date.substr(0, 4)
-                  : null
-              }
-              name="Passport_Expiry_Date"
-              className={`pl-2 bg-white rounded h-8 text-sm
-             placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.Passport_Expiry_Date
-                  ? moment(defaultData.Passport_Expiry_Date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "Passport_Expiry_Date")}
-
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[23%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Passport Copy {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          {isEdit ? (
-            <div className="flex items-center gap-x-2">
-              <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} />
+            >
+              Passport Issuance Country {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <div onClick={handleFieldClick}>
+              <Select
+                className={`${isEdit ? "text-black" : "text-gray-500"}`}
+                name="Passport_Issuance_Country"
+                options={countryOptions}
+                value={countryOptions.find(
+                  (option) => option.label === defaultData.Passport_Issuance_Country
+                )}
+                onChange={(selectedOption) => handleEdit("Passport_Issuance_Country", selectedOption)}
+                onClick={handleFieldClick}
+                isDisabled={!isEdit}
+              />
             </div>
-          ) : (
-            <div className="flex items-center gap-x-2">
-              {documents.passport_copy ? documents.passport_copy.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
-            </div>
-          )}
+          </div>
 
+
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[15%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              Issuance Date {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <div onClick={handleFieldClick} >
+              <Datepicker
+                day={
+                  defaultData.Passport_Issuance_Date
+                    ? defaultData.Passport_Issuance_Date.substr(8, 2)
+                    : null
+                }
+                month={
+                  defaultData.Passport_Issuance_Date
+                    ? defaultData.Passport_Issuance_Date.substr(5, 2)
+                    : null
+                }
+                year={
+                  defaultData.Passport_Issuance_Date
+                    ? defaultData.Passport_Issuance_Date.substr(0, 4)
+                    : null
+                }
+                name="Passport_Issuance_Date"
+                className={`pl-2 bg-white rounded h-8 text-sm
+             placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+                selected={
+                  defaultData.Passport_Issuance_Date
+                    ? moment(defaultData.Passport_Issuance_Date, "YYYY-MM-DD").toDate()
+                    : null
+                }
+                onChange={(date) => handleDateChange(date, "Passport_Issuance_Date")}
+
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[14.2%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              Expiry Date {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <div onClick={handleFieldClick} >
+
+              <Datepicker
+                day={
+                  defaultData.Passport_Expiry_Date
+                    ? defaultData.Passport_Expiry_Date.substr(8, 2)
+                    : null
+                }
+                month={
+                  defaultData.Passport_Expiry_Date
+                    ? defaultData.Passport_Expiry_Date.substr(5, 2)
+                    : null
+                }
+                year={
+                  defaultData.Passport_Expiry_Date
+                    ? defaultData.Passport_Expiry_Date.substr(0, 4)
+                    : null
+                }
+                name="Passport_Expiry_Date"
+                className={`pl-2 bg-white rounded h-8 text-sm
+             placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+                selected={
+                  defaultData.Passport_Expiry_Date
+                    ? moment(defaultData.Passport_Expiry_Date, "YYYY-MM-DD").toDate()
+                    : null
+                }
+                onChange={(date) => handleDateChange(date, "Passport_Expiry_Date")}
+
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[23%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              Passport Copy {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            {isEdit ? (
+              <div className="flex items-center gap-x-2">
+                <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} />
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-2">
+                {/* 
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.passport_copy.document.data,
+                      documents.passport_copy.document.name
+                    )
+                  }
+                >
+                  {documents.passport_copy ? documents.passport_copy.document.name : "Not available"}
+
+                </button> */}
+                <Tooltip
+                  title="View Doc"
+                >
+
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadAttachment(
+                        documents.passport_copy.document.data,
+                        documents.passport_copy.document.name
+                      )
+                    }
+                  >
+                    {documents.passport_copy ? <LuExternalLink /> : "Not available"}
+
+                  </button>
+                </Tooltip>
+                <Tooltip
+                  title="Download Doc"
+                >
+
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadFiles(
+                        documents.passport_copy.document.data,
+                        documents.passport_copy.document.name
+                      )
+                    }
+                  >
+                    {documents.passport_copy ? <BsDownload /> : "Not available"}
+
+                  </button>
+                </Tooltip>
+                <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+              </div>
+            )}
+
+          </div>
         </div>
-      </div>}
+      }
 
       {/* Visa */}
       <h2 className="mb-2 lg:mb-4 lg:mt-7 mt-2 flex items-center gap-x-3">
@@ -879,331 +827,495 @@ const UpdateVisaDetails = ({ prevstep,
 
 
       </h2>
-      {defaultData.is_visa_applicable && <div className='flex w-[100%] flex-wrap gap-3'>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
+      {
+        defaultData.is_visa_applicable && <div className='flex w-[100%] flex-wrap gap-3'>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-          >
-            Entry Permit Number{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            >
+              Entry Permit Number{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
 
-          </label>
+            </label>
 
-          <input type="text" name="entry_permit_number"
-            value={defaultData.entry_permit_number}
-            placeholder="Entry Permit Number"
-            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
-            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            onClick={handleFieldClick}
-          />
-
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Visa Issuance Country {defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <div onClick={handleFieldClick}>
-            <Select
-              className={`${isEdit ? "text-black" : "text-gray-500"}`}
-              name="country_of_visa_issuance"
-              options={countryOptions}
-              value={countryOptions.find(
-                (option) => option.label === defaultData.country_of_visa_issuance
-              )}
-              onChange={(selectedOption) => handleEdit("country_of_visa_issuance", selectedOption)}
-              isDisabled={!isEdit}
-            />
-
-          </div>
-
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            UID Number{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <input type="text" name="uid_number"
-            value={defaultData.uid_number}
-            placeholder="UID Number"
-            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
-             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            onClick={handleFieldClick}
-          />
-        </div>
-
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Visa Type{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-
-          </label>
-          <div onClick={handleFieldClick}>
-            <Select
-              className={`${isEdit ? "text-black" : "text-gray-500"}`}
-              name="visa_type"
-              options={visaOptions}
-              value={visaOptions.find(
-                (option) => option.value === defaultData.visa_type
-              )}
-              onChange={(selectedOption) => handleEdit("visa_type", selectedOption)}
-              isDisabled={!isEdit}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Visa Issuance Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <div onClick={handleFieldClick}>
-            <Datepicker
-              day={
-                defaultData.visa_issuance_date
-                  ? defaultData.visa_issuance_date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.visa_issuance_date
-                  ? defaultData.visa_issuance_date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.visa_issuance_date
-                  ? defaultData.visa_issuance_date.substr(0, 4)
-                  : null
-              }
-              name="visa_issuance_date"
-              className={`pl-2 bg-white rounded h-8 text-sm
-             placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.visa_issuance_date
-                  ? moment(defaultData.visa_issuance_date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "visa_issuance_date")}
-
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Visa Expiry Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <div onClick={handleFieldClick}>
-            <Datepicker
-              day={
-                defaultData.visa_expiry_date
-                  ? defaultData.visa_expiry_date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.visa_expiry_date
-                  ? defaultData.visa_expiry_date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.visa_expiry_date
-                  ? defaultData.visa_expiry_date.substr(0, 4)
-                  : null
-              }
-              name="visa_expiry_date"
-              className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
-             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.visa_expiry_date
-                  ? moment(defaultData.visa_expiry_date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "visa_expiry_date")}
-
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Visa Duration{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <input type="text" name="visa_duration"
-            value={defaultData.visa_duration}
-            placeholder="Visa Duration" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
-             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            disabled={!isEdit}
-            onClick={handleFieldClick}
-          />
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Visa Country Entry Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-
-          </label>
-          <div onClick={handleFieldClick}>
-            <Datepicker
-              day={
-                defaultData.visa_country_entry_date
-                  ? defaultData.visa_country_entry_date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.visa_country_entry_date
-                  ? defaultData.visa_country_entry_date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.visa_country_entry_date
-                  ? defaultData.visa_country_entry_date.substr(0, 4)
-                  : null
-              }
-              name="visa_country_entry_date"
+            <input type="text" name="entry_permit_number"
+              value={defaultData.entry_permit_number}
+              placeholder="Entry Permit Number"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.visa_country_entry_date
-                  ? moment(defaultData.visa_country_entry_date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "visa_country_entry_date")}
-
+              onChange={(e) => handleEdit(e.target.name, e.target.value)}
+              onClick={handleFieldClick}
             />
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
-            Visa Country Exit Date
 
-          </label>
-          <div onClick={handleFieldClick}>
-            <Datepicker
-              day={
-                defaultData.visa_country_exit_date
-                  ? defaultData.visa_country_exit_date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.visa_country_exit_date
-                  ? defaultData.visa_country_exit_date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.visa_country_exit_date
-                  ? defaultData.visa_country_exit_date.substr(0, 4)
-                  : null
-              }
-              name="visa_country_exit_date"
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              Visa Issuance Country {defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <div onClick={handleFieldClick}>
+              <Select
+                className={`${isEdit ? "text-black" : "text-gray-500"}`}
+                name="country_of_visa_issuance"
+                options={countryOptions}
+                value={countryOptions.find(
+                  (option) => option.label === defaultData.country_of_visa_issuance
+                )}
+                onChange={(selectedOption) => handleEdit("country_of_visa_issuance", selectedOption)}
+                isDisabled={!isEdit}
+              />
+
+            </div>
+
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              UID Number{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <input type="text" name="uid_number"
+              value={defaultData.uid_number}
+              placeholder="UID Number"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
              placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.visa_country_exit_date
-                  ? moment(defaultData.visa_country_exit_date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "visa_country_exit_date")}
-
+              onChange={(e) => handleEdit(e.target.name, e.target.value)}
+              onClick={handleFieldClick}
             />
           </div>
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
+
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-          >
-            Entry Permit{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          {isEdit ? (
-            <div className="flex items-center gap-x-2">
-              <input type="file" onChange={(e) => handleFileChange('enter_permit', e.target.files)} />
+            >
+              Visa Type{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+
+            </label>
+            <div onClick={handleFieldClick}>
+              <Select
+                className={`${isEdit ? "text-black" : "text-gray-500"}`}
+                name="visa_type"
+                options={visaOptions}
+                value={visaOptions.find(
+                  (option) => option.value === defaultData.visa_type
+                )}
+                onChange={(selectedOption) => handleEdit("visa_type", selectedOption)}
+                isDisabled={!isEdit}
+              />
             </div>
-          ) : (
-            <div className="flex items-center gap-x-2">
-              {documents.enter_permit ? documents.enter_permit.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
-            </div>
-          )}
-        </div>
-
-
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-          <label
-            className="font-sfpro tracking-wide font-medium
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-          >
-            Visa Page {defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          {isEdit ? (
-            <div className="flex items-center gap-x-2">
-              <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} />
+            >
+              Visa Issuance Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <div onClick={handleFieldClick}>
+              <Datepicker
+                day={
+                  defaultData.visa_issuance_date
+                    ? defaultData.visa_issuance_date.substr(8, 2)
+                    : null
+                }
+                month={
+                  defaultData.visa_issuance_date
+                    ? defaultData.visa_issuance_date.substr(5, 2)
+                    : null
+                }
+                year={
+                  defaultData.visa_issuance_date
+                    ? defaultData.visa_issuance_date.substr(0, 4)
+                    : null
+                }
+                name="visa_issuance_date"
+                className={`pl-2 bg-white rounded h-8 text-sm
+             placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+                selected={
+                  defaultData.visa_issuance_date
+                    ? moment(defaultData.visa_issuance_date, "YYYY-MM-DD").toDate()
+                    : null
+                }
+                onChange={(date) => handleDateChange(date, "visa_issuance_date")}
+
+              />
             </div>
-          ) : (
-            <div className="flex items-center gap-x-2">
-              {documents.visa_page ? documents.visa_page.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
-            </div>
-          )}
-        </div>
-
-
-
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-          >
-            Medical Result{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          {isEdit ? (
-            <div className="flex items-center gap-x-2">
-              <input type="file" onChange={(e) => handleFileChange('medical', e.target.files)} />
+            >
+              Visa Expiry Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <div onClick={handleFieldClick}>
+              <Datepicker
+                day={
+                  defaultData.visa_expiry_date
+                    ? defaultData.visa_expiry_date.substr(8, 2)
+                    : null
+                }
+                month={
+                  defaultData.visa_expiry_date
+                    ? defaultData.visa_expiry_date.substr(5, 2)
+                    : null
+                }
+                year={
+                  defaultData.visa_expiry_date
+                    ? defaultData.visa_expiry_date.substr(0, 4)
+                    : null
+                }
+                name="visa_expiry_date"
+                className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+                selected={
+                  defaultData.visa_expiry_date
+                    ? moment(defaultData.visa_expiry_date, "YYYY-MM-DD").toDate()
+                    : null
+                }
+                onChange={(date) => handleDateChange(date, "visa_expiry_date")}
+
+              />
             </div>
-          ) : (
-            <div className="flex items-center gap-x-2">
-              {documents.medical ? documents.medical.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
-          >
-            ID Application {defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          {isEdit ? (
-            <div className="flex items-center gap-x-2">
-              <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)} />
+            >
+              Visa Duration{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <input type="text" name="visa_duration"
+              value={defaultData.visa_duration}
+              placeholder="Visa Duration" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+              onChange={(e) => handleEdit(e.target.name, e.target.value)}
+              disabled={!isEdit}
+              onClick={handleFieldClick}
+            />
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              Visa Country Entry Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+
+            </label>
+            <div onClick={handleFieldClick}>
+              <Datepicker
+                day={
+                  defaultData.visa_country_entry_date
+                    ? defaultData.visa_country_entry_date.substr(8, 2)
+                    : null
+                }
+                month={
+                  defaultData.visa_country_entry_date
+                    ? defaultData.visa_country_entry_date.substr(5, 2)
+                    : null
+                }
+                year={
+                  defaultData.visa_country_entry_date
+                    ? defaultData.visa_country_entry_date.substr(0, 4)
+                    : null
+                }
+                name="visa_country_entry_date"
+                className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
+            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+                selected={
+                  defaultData.visa_country_entry_date
+                    ? moment(defaultData.visa_country_entry_date, "YYYY-MM-DD").toDate()
+                    : null
+                }
+                onChange={(date) => handleDateChange(date, "visa_country_entry_date")}
+
+              />
             </div>
-          ) : (
-            <div className="flex items-center gap-x-2">
-              {documents.id_application ? documents.id_application.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              Visa Country Exit Date
+
+            </label>
+            <div onClick={handleFieldClick}>
+              <Datepicker
+                day={
+                  defaultData.visa_country_exit_date
+                    ? defaultData.visa_country_exit_date.substr(8, 2)
+                    : null
+                }
+                month={
+                  defaultData.visa_country_exit_date
+                    ? defaultData.visa_country_exit_date.substr(5, 2)
+                    : null
+                }
+                year={
+                  defaultData.visa_country_exit_date
+                    ? defaultData.visa_country_exit_date.substr(0, 4)
+                    : null
+                }
+                name="visa_country_exit_date"
+                className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+                selected={
+                  defaultData.visa_country_exit_date
+                    ? moment(defaultData.visa_country_exit_date, "YYYY-MM-DD").toDate()
+                    : null
+                }
+                onChange={(date) => handleDateChange(date, "visa_country_exit_date")}
+
+              />
             </div>
-          )}
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              Entry Permit{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            {isEdit ? (
+              <div className="flex items-center gap-x-2">
+                <input type="file" onChange={(e) => handleFileChange('enter_permit', e.target.files)} />
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-2">
+                <Tooltip
+                  title="View Doc"
+                >
+
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadAttachment(
+                        documents.enter_permit.document.data,
+                        documents.enter_permit.document.name
+                      )
+                    }
+                  >
+                    {documents.enter_permit ? <LuExternalLink /> : "Not available"}
+                  </button>
+                </Tooltip>
+                <Tooltip
+                  title="Download Doc"
+                >
+
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadFiles(
+                        documents.enter_permit.document.data,
+                        documents.enter_permit.document.name
+                      )
+                    }
+                  >
+                    {documents.enter_permit ? <BsDownload /> : "Not available"}
+                  </button>
+                </Tooltip>
+                {/* <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.enter_permit.document.data,
+                      documents.enter_permit.document.name
+                    )
+                  }
+                >
+                  {documents.enter_permit ? documents.enter_permit.document.name : "Not available"}
+                </button> */}
+                <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+              </div>
+            )}
+          </div>
+
+
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              Visa Page {defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            {isEdit ? (
+              <div className="flex items-center gap-x-2">
+                <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} />
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-2">
+                {/* <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.visa_page.document.data,
+                      documents.visa_page.document.name
+                    )
+                  }
+                >
+                  {documents.visa_page ? documents.visa_page.document.name : "Not available"}
+                </button> */}
+                <Tooltip
+                  title="View Doc"
+                >
+
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadAttachment(
+                        documents.visa_page.document.data,
+                        documents.visa_page.document.name
+                      )
+                    }
+                  >
+                    {documents.visa_page ? <LuExternalLink /> : "Not available"}
+                  </button>
+                </Tooltip>
+                <Tooltip
+                  title="Download Doc"
+                >
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadFiles(
+                        documents.visa_page.document.data,
+                        documents.visa_page.document.name
+                      )
+                    }
+                  >
+                    {documents.visa_page ? <BsDownload /> : "Not available"}
+                  </button>
+                </Tooltip>
+                <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              Medical Result{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            {isEdit ? (
+              <div className="flex items-center gap-x-2">
+                <input type="file" onChange={(e) => handleFileChange('medical', e.target.files)} />
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-2">
+                {/* <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.medical.document.data,
+                      documents.medical.document.name
+                    )
+                  }
+                >
+                  {documents.medical ? documents.medical.document.name : "Not available"}
+                </button> */}
+                <Tooltip
+                  title="View Doc"
+                >
+
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadAttachment(
+                        documents.medical.document.data,
+                        documents.medical.document.name
+                      )
+                    }
+                  >
+                    {documents.medical ? <LuExternalLink /> : "Not available"}
+                  </button>
+                </Tooltip>
+                <Tooltip
+                  title="Download Doc"
+                >
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadFiles(
+                        documents.medical.document.data,
+                        documents.medical.document.name
+                      )
+                    }
+                  >
+                    {documents.medical ? <BsDownload /> : "Not available"}
+                  </button>
+                </Tooltip>
+                <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+            >
+              ID Application {defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            {isEdit ? (
+              <div className="flex items-center gap-x-2">
+                <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)} />
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-2">
+                {/* <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.id_application.document.data,
+                      documents.id_application.document.name
+                    )
+                  }
+                >
+                  {documents.id_application ? documents.id_application.document.name : "Not available"}
+                </button> */}
+                <Tooltip
+                  title="View Doc"
+                >
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadAttachment(
+                        documents.id_application.document.data,
+                        documents.id_application.document.name
+                      )
+                    }
+                  >
+                    {documents.id_application ? <LuExternalLink /> : "Not available"}
+                  </button>
+                </Tooltip>
+                <Tooltip
+                  title="Download Doc"
+                >
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadFiles(
+                        documents.id_application.document.data,
+                        documents.id_application.document.name
+                      )
+                    }
+                  >
+                    {documents.id_application ? <BsDownload /> : "Not available"}
+                  </button>
+                </Tooltip>
+                <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+              </div>
+            )}
+          </div>
         </div>
-      </div>}
+      }
 
       {/* Insurance */}
       <h2 className="mb-2 lg:mb-2 lg:mt-7 mt-2 flex items-center gap-x-3">
@@ -1229,167 +1341,211 @@ const UpdateVisaDetails = ({ prevstep,
       </h2>
 
 
-      {defaultData.is_insurance_applicable && <div className='flex w-[100%] flex-wrap items-center gap-3'>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
+      {
+        defaultData.is_insurance_applicable && <div className='flex w-[100%] flex-wrap items-center gap-3'>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
-          >
-            DHA ID{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <input type="text" name="dha_id"
-            value={defaultData.dha_id}
-            placeholder="DHA ID"
-            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
-           placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            onClick={handleFieldClick}
-          />
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-          <label
-            className="font-sfpro tracking-wide font-medium
-                          text-input text-base mb-1"
-          >
-            Card Number{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <input type="text" name="card_number"
-            value={defaultData.card_number}
-            placeholder="Card Number" className={`pl-2 bg-white rounded h-8 text-sm
-           placeholder-[#555657] placeholder-opacity-50 w-[100%] 
-           ${isEdit ? "text-black" : "text-gray-500"}`}
-            onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            onClick={handleFieldClick}
-          />
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-          <label
-            className="font-sfpro tracking-wide font-medium
-                          text-input text-base mb-1"
-          >
-            Insurance Policy{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <input type="text" name='insurance_policy'
-            value={defaultData.insurance_policy}
-            placeholder="Insurance Policy" className={`pl-2 bg-white rounded h-8 text-sm
-           placeholder-[#555657] placeholder-opacity-50 w-[100%] 
-           ${isEdit ? "text-black" : "text-gray-500"}`}
-            onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            onClick={handleFieldClick}
-          />
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-          <label
-            className="font-sfpro tracking-wide font-medium
-                          text-input text-base mb-1"
-          >
-            Insurance Company{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <input type="text" name='insurance_company'
-            value={defaultData.insurance_company}
-            placeholder="Insurance Company"
-            className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
-           placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-            onChange={(e) => handleEdit(e.target.name, e.target.value)}
-            onClick={handleFieldClick}
-          />
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
-          <label
-            className="font-sfpro tracking-wide font-medium
-                          text-input text-base mb-1"
-          >
-            Insurance Active Date{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <div onClick={handleFieldClick}>
-            <Datepicker
-              day={
-                defaultData.insurance_active_date
-                  ? defaultData.insurance_active_date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.insurance_active_date
-                  ? defaultData.insurance_active_date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.insurance_active_date
-                  ? defaultData.insurance_active_date.substr(0, 4)
-                  : null
-              }
-              name="insurance_active_date"
+            >
+              DHA ID{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <input type="text" name="dha_id"
+              value={defaultData.dha_id}
+              placeholder="DHA ID"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.insurance_active_date
-                  ? moment(defaultData.insurance_active_date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "insurance_active_date")}
+              onChange={(e) => handleEdit(e.target.name, e.target.value)}
+              onClick={handleFieldClick}
             />
           </div>
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
-          <label
-            className="font-sfpro tracking-wide font-medium
+            <label
+              className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
-          >
-            Insurance Expiry Date{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          <div onClick={handleFieldClick}>
-            <Datepicker
-              day={
-                defaultData.insurance_expiry_date
-                  ? defaultData.insurance_expiry_date.substr(8, 2)
-                  : null
-              }
-              month={
-                defaultData.insurance_expiry_date
-                  ? defaultData.insurance_expiry_date.substr(5, 2)
-                  : null
-              }
-              year={
-                defaultData.insurance_expiry_date
-                  ? defaultData.insurance_expiry_date.substr(0, 4)
-                  : null
-              }
-              name="insurance_expiry_date"
+            >
+              Card Number{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <input type="text" name="card_number"
+              value={defaultData.card_number}
+              placeholder="Card Number" className={`pl-2 bg-white rounded h-8 text-sm
+           placeholder-[#555657] placeholder-opacity-50 w-[100%] 
+           ${isEdit ? "text-black" : "text-gray-500"}`}
+              onChange={(e) => handleEdit(e.target.name, e.target.value)}
+              onClick={handleFieldClick}
+            />
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+            <label
+              className="font-sfpro tracking-wide font-medium
+                          text-input text-base mb-1"
+            >
+              Insurance Policy{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <input type="text" name='insurance_policy'
+              value={defaultData.insurance_policy}
+              placeholder="Insurance Policy" className={`pl-2 bg-white rounded h-8 text-sm
+           placeholder-[#555657] placeholder-opacity-50 w-[100%] 
+           ${isEdit ? "text-black" : "text-gray-500"}`}
+              onChange={(e) => handleEdit(e.target.name, e.target.value)}
+              onClick={handleFieldClick}
+            />
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+            <label
+              className="font-sfpro tracking-wide font-medium
+                          text-input text-base mb-1"
+            >
+              Insurance Company{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <input type="text" name='insurance_company'
+              value={defaultData.insurance_company}
+              placeholder="Insurance Company"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
-              selected={
-                defaultData.insurance_expiry_date
-                  ? moment(defaultData.insurance_expiry_date, "YYYY-MM-DD").toDate()
-                  : null
-              }
-              onChange={(date) => handleDateChange(date, "insurance_expiry_date")}
+              onChange={(e) => handleEdit(e.target.name, e.target.value)}
+              onClick={handleFieldClick}
             />
           </div>
-        </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+            <label
+              className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
-          >
-            Insurance Card{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
-          </label>
-          {isEdit ? (
-            <div className="flex items-center gap-x-2">
-              <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} />
+            >
+              Insurance Active Date{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <div onClick={handleFieldClick}>
+              <Datepicker
+                day={
+                  defaultData.insurance_active_date
+                    ? defaultData.insurance_active_date.substr(8, 2)
+                    : null
+                }
+                month={
+                  defaultData.insurance_active_date
+                    ? defaultData.insurance_active_date.substr(5, 2)
+                    : null
+                }
+                year={
+                  defaultData.insurance_active_date
+                    ? defaultData.insurance_active_date.substr(0, 4)
+                    : null
+                }
+                name="insurance_active_date"
+                className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+           placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+                selected={
+                  defaultData.insurance_active_date
+                    ? moment(defaultData.insurance_active_date, "YYYY-MM-DD").toDate()
+                    : null
+                }
+                onChange={(date) => handleDateChange(date, "insurance_active_date")}
+              />
             </div>
-          ) : (
-            <div className="flex items-center gap-x-2">
-              {documents.insurance_card ? documents.insurance_card.document.name : "Not available"}
-              <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+
+            <label
+              className="font-sfpro tracking-wide font-medium
+                          text-input text-base mb-1"
+            >
+              Insurance Expiry Date{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            <div onClick={handleFieldClick}>
+              <Datepicker
+                day={
+                  defaultData.insurance_expiry_date
+                    ? defaultData.insurance_expiry_date.substr(8, 2)
+                    : null
+                }
+                month={
+                  defaultData.insurance_expiry_date
+                    ? defaultData.insurance_expiry_date.substr(5, 2)
+                    : null
+                }
+                year={
+                  defaultData.insurance_expiry_date
+                    ? defaultData.insurance_expiry_date.substr(0, 4)
+                    : null
+                }
+                name="insurance_expiry_date"
+                className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
+           placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
+                selected={
+                  defaultData.insurance_expiry_date
+                    ? moment(defaultData.insurance_expiry_date, "YYYY-MM-DD").toDate()
+                    : null
+                }
+                onChange={(date) => handleDateChange(date, "insurance_expiry_date")}
+              />
             </div>
-          )}
+          </div>
+          <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+            <label
+              className="font-sfpro tracking-wide font-medium
+                          text-input text-base mb-1"
+            >
+              Insurance Card{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            </label>
+            {isEdit ? (
+              <div className="flex items-center gap-x-2">
+                <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} />
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-2">
+                {/* <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.insurance_card.document.data,
+                      documents.insurance_card.document.name
+                    )
+                  }
+                >
+                  {documents.insurance_card ? <LuExternalLink /> : "Not available"}
+                </button> */}
+                <Tooltip
+                  title="View Doc"
+                >
+
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadAttachment(
+                        documents.insurance_card.document.data,
+                        documents.insurance_card.document.name
+                      )
+                    }
+                  >
+                    {documents.insurance_card ? <LuExternalLink /> : "Not available"}
+                  </button>
+                </Tooltip>
+                <Tooltip
+                  title="Download Doc"
+                >
+
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() =>
+                      downloadFiles(
+                        documents.insurance_card.document.data,
+                        documents.insurance_card.document.name
+                      )
+                    }
+                  >
+                    {documents.insurance_card ? <BsDownload /> : "Not available"}
+                  </button>
+                </Tooltip>
+                <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
+              </div>
+            )}
+          </div>
         </div>
-      </div>}
+      }
 
       <div className="flex gap-x-5 mb-40 mt-5">
         {!isEdit && <Button onClick={prevstep} text={"Previous"} />}
@@ -1422,42 +1578,44 @@ const UpdateVisaDetails = ({ prevstep,
           <Button onClick={handleSave} text={"Next"} />
         )}
       </div>
-      {cancelBox && (
-        <div className="fixed inset-0 z-50 flex  items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-5 rounded-lg w-96 shadow-lg">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold">Discard Changes</h1>
-              <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer">
-                <RxCross2 onClick={() => setCancelBox(!cancelBox)} />
+      {
+        cancelBox && (
+          <div className="fixed inset-0 z-50 flex  items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white p-5 rounded-lg w-96 shadow-lg">
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Discard Changes</h1>
+                <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer">
+                  <RxCross2 onClick={() => setCancelBox(!cancelBox)} />
+                </div>
+              </div>
+              <p className="text-gray-700 mt-2">
+                If you have made changes, they will not be saved. Do you want to
+                proceed?
+              </p>
+              <div className="mt-4 flex justify-end">
+                <button
+                  className="px-4 py-1 mr-2 text-white bg-blue-500 rounded"
+                  onClick={() => {
+                    setCancelBox(!cancelBox);
+                  }}
+                >
+                  Keep
+                </button>
+                <button
+                  className="px-4 py-1 mr-2 text-white bg-red-500 rounded"
+                  onClick={() => {
+                    setIsEdit(!isEdit);
+                    setCancelBox(!cancelBox);
+                  }}
+                >
+                  Discard
+                </button>
               </div>
             </div>
-            <p className="text-gray-700 mt-2">
-              If you have made changes, they will not be saved. Do you want to
-              proceed?
-            </p>
-            <div className="mt-4 flex justify-end">
-              <button
-                className="px-4 py-1 mr-2 text-white bg-blue-500 rounded"
-                onClick={() => {
-                  setCancelBox(!cancelBox);
-                }}
-              >
-                Keep
-              </button>
-              <button
-                className="px-4 py-1 mr-2 text-white bg-red-500 rounded"
-                onClick={() => {
-                  setIsEdit(!isEdit);
-                  setCancelBox(!cancelBox);
-                }}
-              >
-                Discard
-              </button>
-            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   )
 }
 

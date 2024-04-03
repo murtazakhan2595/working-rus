@@ -14,6 +14,11 @@ import axios from "axios";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
+import { downloadAttachment } from "../../../utils/fileUtils";
+import { Tooltip } from "@mui/material";
+import { LuExternalLink } from "react-icons/lu";
+import { downloadFiles } from "../../../utils/downUtils";
+import { BsDownload } from "react-icons/bs";
 
 const academicOptions = [
   { value: "Intermediate", label: "Intermediate" },
@@ -583,9 +588,47 @@ const AcademicRecords = ({
                   <div onClick={handleEditClick}>
                     {academicInfo.certificate?.document?.hasOwnProperty("name") ? (
                       <div className="flex gap-1  items-center">
-                        <div className="opacity-50">
-                          {academicInfo.certificate?.document?.name}
-                        </div>
+                        {/* <button
+                          className="text-blue-600 underline"
+                          onClick={() =>
+                            downloadAttachment(
+                              academicInfo.certificate?.document?.file,
+                              academicInfo.certificate?.document?.name
+                            )
+                          }
+                        >
+                          {academicInfo.certificate?.document?.name ? academicInfo.certificate?.document?.name : "Not available"}
+                        </button> */}
+                        <Tooltip
+                          title="View Doc"
+                        >
+                          <button
+                            className="text-blue-600 underline"
+                            onClick={() =>
+                              downloadAttachment(
+                                academicInfo.certificate?.document?.file,
+                                academicInfo.certificate?.document?.name
+                              )
+                            }
+                          >
+                            {academicInfo.certificate?.document?.name ? <LuExternalLink /> : "Not available"}
+                          </button>
+                        </Tooltip>
+                        <Tooltip
+                          title="Download Doc"
+                        >
+                          <button
+                            className="text-blue-600 underline"
+                            onClick={() =>
+                              downloadFiles(
+                                academicInfo.certificate?.document?.file,
+                                academicInfo.certificate?.document?.name
+                              )
+                            }
+                          >
+                            {academicInfo.certificate?.document?.name ? <BsDownload /> : "Not available"}
+                          </button>
+                        </Tooltip>
                         <WiCloudRefresh
                           onClick={() => {
                             if (isEdit) {
@@ -791,9 +834,48 @@ const AcademicRecords = ({
                   <div onClick={handleEditClick}>
                     {certification.certification_body ? (
                       <div className="flex gap-1  items-center">
-                        <div className="opacity-50">
-                          {certification.certification_body.name}
-                        </div>
+                        {/* <button
+                          className="text-blue-600 underline"
+                          onClick={() =>
+                            downloadAttachment(
+                              certification?.certification_body?.file,
+                              certification?.certification_body?.name
+                            )
+                          }
+                        >
+                          {certification?.certification_body?.name ? certification?.certification_body?.name : "Not available"}
+                        </button> */}
+                        <Tooltip
+                          title="View Doc"
+                        >
+                          <button
+                            className="text-blue-600 underline"
+                            onClick={() =>
+                              downloadAttachment(
+                                certification?.certification_body?.file,
+                                certification?.certification_body?.name
+                              )
+                            }
+                          >
+                            {certification?.certification_body?.name ? <LuExternalLink /> : "Not available"}
+                          </button>
+                        </Tooltip>
+                        <Tooltip
+                          title="Download Doc"
+                        >
+                          <button
+                            className="text-blue-600 underline"
+                            onClick={() =>
+                              downloadFiles(
+                                certification?.certification_body?.file,
+                                certification?.certification_body?.name
+                              )
+                            }
+                          >
+                            {certification?.certification_body?.name ? <BsDownload /> : "Not available"}
+                          </button>
+                        </Tooltip>
+
                         <WiCloudRefresh
                           onClick={() => {
                             if (isEdit) {

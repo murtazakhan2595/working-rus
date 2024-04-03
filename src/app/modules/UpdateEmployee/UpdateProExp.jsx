@@ -12,6 +12,11 @@ import axios from "axios";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
+import { downloadAttachment } from "../../../utils/fileUtils";
+import { LuExternalLink } from "react-icons/lu";
+import { Tooltip } from "@mui/material";
+import { downloadFiles } from "../../../utils/downUtils";
+import { BsDownload } from "react-icons/bs";
 
 const ProfessionalExp = ({
   errors,
@@ -385,38 +390,6 @@ const ProfessionalExp = ({
                         End Date:
                       </label>
                       <div onClick={handleEditClick} className="flex items-center gap-x-2" >
-                        {/* <Datepicker
-                          disabled={disableEndDate} // Disable the Datepicker based on the disableEndDate state
-                          name="exp_end_date"
-                          day={
-                            experience?.exp_end_date
-                              ? experience?.exp_end_date.substr(0, 2)
-                              : null
-                          }
-                          month={
-                            experience?.exp_end_date
-                              ? experience?.exp_end_date.substr(3, 2)
-                              : null
-                          }
-                          year={
-                            experience?.exp_end_date
-                              ? experience?.exp_end_date.substr(6, 4)
-                              : null
-                          }
-                          selected={moment(
-                            experience.exp_end_date,
-                            "DD-MM-YYYY"
-                          ).toDate()}
-                          onChange={(date) => {
-                            const formattedDate = moment(date)
-                              .format("DD-MM-YYYY")
-                              .toLowerCase();
-                            const updatedSections = [...experienceSections];
-                            updatedSections[index].exp_end_date = formattedDate;
-                            setExperienceSections(updatedSections);
-                            clearError(`exp_end_date_${index}`);
-                          }}
-                        /> */}
                         <Datepicker
                           disabled={disableEndDate}
                           name="exp_end_date"
@@ -486,7 +459,47 @@ const ProfessionalExp = ({
                               className={`${isEdit ? "opacity-50" : "text-gray-500"
                                 }`}
                             >
-                              {experience.exp_letter.name}
+                              {/* <button
+                                className="text-blue-600 underline"
+                                onClick={() =>
+                                  downloadAttachment(
+                                    experience.exp_letter.file,
+                                    experience.exp_letter.name
+                                  )
+                                }
+                              >
+                                {experience.exp_letter.name ? experience.exp_letter.name : "Not available"}
+                              </button> */}
+                              <Tooltip
+                                title="View Doc"
+                              >
+                                <button
+                                  className="text-blue-600 underline"
+                                  onClick={() =>
+                                    downloadAttachment(
+                                      experience.exp_letter.file,
+                                      experience.exp_letter.name
+                                    )
+                                  }
+                                >
+                                  {experience.exp_letter.name ? <LuExternalLink /> : "Not available"}
+                                </button>
+                              </Tooltip>
+                              <Tooltip
+                                title="Download Doc"
+                              >
+                                <button
+                                  className="text-blue-600 underline"
+                                  onClick={() =>
+                                    downloadFiles(
+                                      experience.exp_letter.file,
+                                      experience.exp_letter.name
+                                    )
+                                  }
+                                >
+                                  {experience.exp_letter.name ? <BsDownload /> : "Not available"}
+                                </button>
+                              </Tooltip>
                             </div>
                             <WiCloudRefresh
                               onClick={() => {

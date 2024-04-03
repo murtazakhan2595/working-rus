@@ -252,7 +252,7 @@ const PersonalInfo = ({
             Personal Information:{" "}
           </h2>
           <div className="flex gap-2">
-            {/* {isEdit ? (
+            {isEdit ? (
               null
             ) : (
               <button
@@ -263,7 +263,7 @@ const PersonalInfo = ({
               >
                 <BiEdit className="text-xl" />
               </button>
-            )} */}
+            )}
           </div>
         </div>
 
@@ -287,7 +287,7 @@ const PersonalInfo = ({
                   placeholder="First Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.first_name && (
@@ -313,7 +313,7 @@ const PersonalInfo = ({
                   placeholder="Last Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.last_name && (
@@ -342,7 +342,7 @@ const PersonalInfo = ({
                   placeholder="Father Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.father_name && (
@@ -368,7 +368,7 @@ const PersonalInfo = ({
                   placeholder="Mother Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.mother_name && (
@@ -393,7 +393,7 @@ const PersonalInfo = ({
                     className={`${isEdit ? "text-black" : "text-gray-500"}`}
                     isDisabled={!isEdit}
                     options={countryCodes.map((country) => ({
-                      label: `${country.dial_code} ${country.name}`, // Display dial code and country name
+                      label: `${country.dial_code}`,
                       value: country.dial_code
                     }))}
                     value={countryCodes.find(option => option.dial_code === defaultData.country_code) ?
@@ -440,7 +440,7 @@ const PersonalInfo = ({
                     placeholder="0000000000"
                     className={`${isEdit ? "text-black" : "text-gray-500"
                       } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#55657] placeholder-opacity-50`}
-                    //   onClick={handleFieldClick}
+                   onClick={handleFieldClick}
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                 </div>
@@ -514,7 +514,7 @@ const PersonalInfo = ({
                   placeholder="Marital Status here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.marital_status && (
@@ -543,7 +543,7 @@ const PersonalInfo = ({
                   onChange={(selectedOption) =>
                     handleEdit("nationality", selectedOption.label)
                   }
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   menuPlacement="top"
                 />
 
@@ -573,7 +573,7 @@ const PersonalInfo = ({
                   placeholder="Email Here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.email && (
@@ -597,7 +597,7 @@ const PersonalInfo = ({
                   placeholder="Email Here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.work_email && (
@@ -625,7 +625,7 @@ const PersonalInfo = ({
                 placeholder="Current Address here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                //   onClick={handleFieldClick}
+               onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.current_address && (
@@ -652,7 +652,7 @@ const PersonalInfo = ({
                 placeholder="Permanent Address here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                //   onClick={handleFieldClick}
+               onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.residential_address && (
@@ -680,7 +680,7 @@ const PersonalInfo = ({
                   name="nic"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.nic && (
@@ -713,20 +713,20 @@ const PersonalInfo = ({
                       />
                     )}
                   </div>
-                  {/* <span className="text-base mt-3">
+                  <span className="text-base mt-3">
                     {imagePreview ? "Change" : "Upload"} your photo
-                  </span> */}
+                  </span>
                 </div>
-                {/* <input
+                <input
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   id="file-upload"
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
                   className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                /> */}
+                />
               </label>
               {errors.image && (
                 <p className="text-red-500 text-sm">{errors.image}</p>
@@ -756,7 +756,7 @@ const PersonalInfo = ({
                 placeholder="First Name Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                //   onClick={handleFieldClick}
+               onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_first_name && (
@@ -782,7 +782,7 @@ const PersonalInfo = ({
                 placeholder="Last Name Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                //   onClick={handleFieldClick}
+               onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_last_name && (
@@ -806,7 +806,7 @@ const PersonalInfo = ({
                   className={`${isEdit ? "text-black" : "text-gray-500"}`}
                   isDisabled={!isEdit}
                   options={countryCodes.map((country) => ({
-                    label: `${country.dial_code} ${country.name}`, // Display dial code and country name
+                    label: `${country.dial_code}`,
                     value: country.dial_code
                   }))}
                   value={countryCodes.find(option => option.dial_code === defaultData.emergency_country_code) ?
@@ -852,7 +852,7 @@ const PersonalInfo = ({
                   placeholder="Phone Number here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#555657] placeholder-opacity-50`}
-                  //   onClick={handleFieldClick}
+                 onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
               </div>
@@ -881,7 +881,7 @@ const PersonalInfo = ({
                 placeholder="emergency_relation Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                //   onClick={handleFieldClick}
+               onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_relation && (
