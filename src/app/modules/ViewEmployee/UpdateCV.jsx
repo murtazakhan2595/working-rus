@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { downloadAttachmentWord } from "../../../utils/wordFileUtils";
 import { LuExternalLink } from "react-icons/lu";
 import { Tooltip } from "@mui/material";
+import { BsDownload } from "react-icons/bs";
 
 const SubmitCV = ({
   errors,
@@ -242,7 +243,7 @@ const SubmitCV = ({
                   )
                 }
               >
-                {cvRes?.document?.name ? <LuExternalLink /> : "Not available"}
+                {cvRes?.document?.name ? <BsDownload /> : "Not available"}
               </button>
             </Tooltip>
             {errors.cv && (

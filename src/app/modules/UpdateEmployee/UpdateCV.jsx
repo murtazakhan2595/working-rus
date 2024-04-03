@@ -9,6 +9,8 @@ import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { downloadAttachmentWord } from "../../../utils/wordFileUtils";
+import { Tooltip } from "@mui/material";
+import { BsDownload } from "react-icons/bs";
 
 const SubmitCV = ({
   errors,
@@ -26,7 +28,7 @@ const SubmitCV = ({
   const [haveCV, setHaveCV] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [cvRes, setCvRes] = useState(null); 
+  const [cvRes, setCvRes] = useState(null);
 
   // const id = userProfile.id;
 
@@ -216,17 +218,22 @@ const SubmitCV = ({
                 onChange={handleFileChange}
               />
             </label>
-            <button
-              className="text-blue-600 underline block"
-              onClick={() =>
-                downloadAttachmentWord(
-                  cvRes?.document?.file,
-                  cvRes?.document?.name,
-                )
-              }
+            <Tooltip
+              title="Download Doc"
             >
-              {cvRes?.document?.name ? cvRes?.document?.name : "Not available"}
-            </button>
+
+              <button
+                className="text-blue-600 underline block"
+                onClick={() =>
+                  downloadAttachmentWord(
+                    cvRes?.document?.file,
+                    cvRes?.document?.name,
+                  )
+                }
+              >
+                {cvRes?.document?.name ? <BsDownload /> : "Not available"}
+              </button>
+            </Tooltip>
             {errors.cv && (
               <small className="text-red-500 block">{errors.cv}</small>
             )}

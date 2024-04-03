@@ -25,7 +25,10 @@ const downloadFile = (data, fileName) => {
 
     const link = document.createElement("a");
     link.href = url;
-    window.open(url, '_blank');
+    link.setAttribute("download", fileName); // Set the download attribute
+
+    // Programmatically trigger a click on the link to initiate the download
+    link.click();
 
     // Revoke the object URL to free up memory
     window.URL.revokeObjectURL(url);
