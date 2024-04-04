@@ -14,6 +14,11 @@ import { WiCloudRefresh } from 'react-icons/wi';
 import Joi from "joi";
 import { RxCross2 } from 'react-icons/rx';
 import { useParams } from 'react-router-dom';
+import { downloadAttachment } from '../../../utils/fileUtils';
+import { LuExternalLink } from 'react-icons/lu';
+import { Tooltip } from '@mui/material';
+import { downloadFiles } from '../../../utils/downUtils';
+import { BsDownload } from 'react-icons/bs';
 
 
 const UpdateVisaDetails = ({ prevstep,
@@ -669,7 +674,47 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.id_front ? documents.id_front.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.id_front.document.data,
+                    documents.id_front.document.name
+                  )
+                }
+              >
+                {documents.id_front ? documents.id_front.document.name : "Not available"}
+              </button> */}
+              <Tooltip
+                title="View Doc"
+              >
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.id_front.document.data,
+                      documents.id_front.document.name
+                    )
+                  }
+                >
+                  {documents.id_front ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="Download Doc"
+              >
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.id_front.document.data,
+                      documents.id_front.document.name
+                    )
+                  }
+                >
+                  {documents.id_front ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
@@ -689,7 +734,49 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.id_back ? documents.id_back.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.id_back.document.data,
+                    documents.id_back.document.name
+                  )
+                }
+              >
+                {documents.id_back ? documents.id_back.document.name : "Not available"}
+              </button> */}
+              <Tooltip
+                title="View Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.id_back.document.data,
+                      documents.id_back.document.name
+                    )
+                  }
+                >
+                  {documents.id_back ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="Download Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.id_back.document.data,
+                      documents.id_back.document.name
+                    )
+                  }
+                >
+                  {documents.id_back ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
@@ -848,7 +935,49 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.passport_copy ? documents.passport_copy.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.passport_copy.document.data,
+                    documents.passport_copy.document.name
+                  )
+                }
+              >
+                {documents.passport_copy ? documents.passport_copy.document.name : "Not available"}
+              </button> */}
+              <Tooltip
+                title="View Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.passport_copy.document.data,
+                      documents.passport_copy.document.name
+                    )
+                  }
+                >
+                  {documents.passport_copy ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="Download Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.passport_copy.document.data,
+                      documents.passport_copy.document.name
+                    )
+                  }
+                >
+                  {documents.passport_copy ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
@@ -1138,7 +1267,49 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.enter_permit ? documents.enter_permit.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.enter_permit.document.data,
+                    documents.enter_permit.document.name
+                  )
+                }
+              >
+                {documents.enter_permit ? documents.enter_permit.document.name : "Not available"}
+              </button> */}
+              <Tooltip
+                title="View Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.enter_permit.document.data,
+                      documents.enter_permit.document.name
+                    )
+                  }
+                >
+                  {documents.enter_permit ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="Download Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.enter_permit.document.data,
+                      documents.enter_permit.document.name
+                    )
+                  }
+                >
+                  {documents.enter_permit ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
@@ -1159,7 +1330,50 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.visa_page ? documents.visa_page.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.visa_page.document.data,
+                    documents.visa_page.document.name
+                  )
+                }
+              >
+                {documents.visa_page ? documents.visa_page.document.name : "Not available"}
+              </button> */}
+              <Tooltip
+                title="View Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.visa_page.document.data,
+                      documents.visa_page.document.name
+                    )
+                  }
+                >
+                  {documents.visa_page ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+
+              <Tooltip
+                title="Download Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.visa_page.document.data,
+                      documents.visa_page.document.name
+                    )
+                  }
+                >
+                  {documents.visa_page ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
@@ -1180,7 +1394,49 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.medical ? documents.medical.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.medical.document.data,
+                    documents.medical.document.name
+                  )
+                }
+              >
+                {documents.medical ? documents.medical.document.name : "Not available"}
+              </button> */}
+              <Tooltip
+                title="View Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.medical.document.data,
+                      documents.medical.document.name
+                    )
+                  }
+                >
+                  {documents.medical ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="Download Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.medical.document.data,
+                      documents.medical.document.name
+                    )
+                  }
+                >
+                  {documents.medical ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
@@ -1198,7 +1454,47 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.id_application ? documents.id_application.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.id_application.document.data,
+                    documents.id_application.document.name
+                  )
+                }
+              >
+                {documents.id_application ? documents.id_application.document.name : "Not available"}
+              </button> */}
+              <Tooltip
+                title="View Doc"
+              >
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.id_application.document.data,
+                      documents.id_application.document.name
+                    )
+                  }
+                >
+                  {documents.id_application ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="Download Doc"
+              >
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.id_application.document.data,
+                      documents.id_application.document.name
+                    )
+                  }
+                >
+                  {documents.id_application ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}
@@ -1384,7 +1680,49 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {documents.insurance_card ? documents.insurance_card.document.name : "Not available"}
+              {/* <button
+                className="text-blue-600 underline"
+                onClick={() =>
+                  downloadAttachment(
+                    documents.insurance_card.document.data,
+                    documents.insurance_card.document.name
+                  )
+                }
+              >
+                {documents.insurance_card ? documents.insurance_card.document.name : "Not available"}
+              </button> */}
+              <Tooltip
+                title="View Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachment(
+                      documents.insurance_card.document.data,
+                      documents.insurance_card.document.name
+                    )
+                  }
+                >
+                  {documents.insurance_card ? <LuExternalLink /> : "Not available"}
+                </button>
+              </Tooltip>
+              <Tooltip
+                title="Download Doc"
+              >
+
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadFiles(
+                      documents.insurance_card.document.data,
+                      documents.insurance_card.document.name
+                    )
+                  }
+                >
+                  {documents.insurance_card ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
               <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
             </div>
           )}

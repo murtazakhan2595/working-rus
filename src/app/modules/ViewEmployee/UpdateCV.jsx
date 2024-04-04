@@ -8,6 +8,10 @@ import Button from "./Button";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
+import { downloadAttachmentWord } from "../../../utils/wordFileUtils";
+import { LuExternalLink } from "react-icons/lu";
+import { Tooltip } from "@mui/material";
+import { BsDownload } from "react-icons/bs";
 
 const SubmitCV = ({
   errors,
@@ -25,6 +29,7 @@ const SubmitCV = ({
   const [haveCV, setHaveCV] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [cvRes, setCvRes] = useState(null);
 
   const id = userProfile.id;
 
@@ -44,6 +49,7 @@ const SubmitCV = ({
         }
       );
       const cvRes = cvResponse.data[0];
+      setCvRes(cvRes);
       if (cvRes) {
         setHaveCV(cvRes);
         setCvName(cvRes.document.name);
@@ -93,7 +99,7 @@ const SubmitCV = ({
       nextstep();
       return; // Exit early if not in edit mode or no new CV selected
     }
-  
+
     if (!cv) {
       const validationErrors = { cv: "CV is required" };
       setErrors(validationErrors);
@@ -146,7 +152,6 @@ const SubmitCV = ({
       setIsLoading(false); // Clear loading state after save operation
     }
   };
-  
 
   const handleNextStep = () => {
     sessionStorage.clear();
@@ -214,6 +219,33 @@ const SubmitCV = ({
                 onChange={handleFileChange}
               />
             </label>
+            {/* <button
+              className="text-blue-600 underline block"
+              onClick={() =>
+                downloadAttachmentWord(
+                  cvRes?.document?.file,
+                  cvRes?.document?.name,
+                )
+              }
+            >
+              {cvRes?.document?.name ? cvRes?.document?.name : "Not available"}
+            </button> */}
+
+            <Tooltip
+              title="Download Doc"
+            >
+              <button
+                className="text-blue-600 underline block"
+                onClick={() =>
+                  downloadAttachmentWord(
+                    cvRes?.document?.file,
+                    cvRes?.document?.name,
+                  )
+                }
+              >
+                {cvRes?.document?.name ? <BsDownload /> : "Not available"}
+              </button>
+            </Tooltip>
             {errors.cv && (
               <small className="text-red-500 block">{errors.cv}</small>
             )}

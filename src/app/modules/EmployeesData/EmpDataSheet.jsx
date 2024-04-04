@@ -181,25 +181,25 @@ const EmpDataSheet = ({ baseUrl, token }) => {
 
                           <Link
                             to={`/profile/${user.id}`}
-                            className='block px-2 py-1 text-sm border border-gray-300'
+                            className='block px-2 py-1 text-sm border border-gray-300 hover:bg-blue-100'
                           >
                             Edit Profile
                           </Link>
                           <Link
                             to={`/edit-employee/${user.id}`}
-                            className='block px-2 py-1 text-sm border border-gray-300'
+                            className='block px-2 py-1 text-sm border border-gray-300 hover:bg-blue-100'
                           >
                             Edit Employee
                           </Link>
                           <Link
                             to={`/user/${user.id}`}
-                            className='block px-2 py-1 text-sm border border-gray-300'
+                            className='block px-2 py-1 text-sm border border-gray-300 hover:bg-blue-100'
                           >
                             View Employee
                           </Link>
 
                           <button onClick={() => handleDelete(user.id)}
-                            className='block px-2 py-1 text-sm cursor-pointer border border-gray-300'
+                            className='block px-2 py-1 text-sm cursor-pointer border border-gray-300 hover:bg-blue-100'
                           >
                             Delete Employee
                           </button>

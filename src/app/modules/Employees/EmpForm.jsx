@@ -49,20 +49,20 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       let proExp = getDataFromSessionStorage("proExp");
       let cv = getDataFromSessionStorage("cv");
       let visaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
-      if (personalInfo && personalInfo.country_code && personalInfo.mobile_no) {
-        personalInfo.mobile_no =
-          personalInfo.country_code + personalInfo.mobile_no;
-        delete personalInfo.country_code;
-      }
-      if (
-        personalInfo &&
-        personalInfo.emergency_country_code &&
-        personalInfo.emergency_phone_no
-      ) {
-        personalInfo.emergency_phone_no =
-          personalInfo.emergency_country_code + personalInfo.emergency_phone_no;
-        delete personalInfo.emergency_country_code;
-      }
+      // if (personalInfo && personalInfo.country_code && personalInfo.mobile_no) {
+      //   personalInfo.mobile_no =
+      //     personalInfo.country_code + personalInfo.mobile_no;
+      //   delete personalInfo.country_code;
+      // }
+      // if (
+      //   personalInfo &&
+      //   personalInfo.emergency_country_code &&
+      //   personalInfo.emergency_phone_no
+      // ) {
+      //   personalInfo.emergency_phone_no =
+      //     personalInfo.emergency_country_code + personalInfo.emergency_phone_no;
+      //   delete personalInfo.emergency_country_code;
+      // }
       if (!personalInfo?.passport) {
         delete personalInfo.passport_number;
       }
