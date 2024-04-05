@@ -12,6 +12,7 @@ import moment from 'moment';
 import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 import CustomSelect from './customSelect';
+import { HeadOfDepartment } from '../../../data/Data';
 
 const jobRoles = [
   { label: 'Intern', value: 'Intern' },
@@ -31,20 +32,6 @@ const employeeStatus = [
   { label: 'Exit', value: 'Exit' },
   { label: 'Absconded', value: 'Absconded' },
   { label: 'Legal Case', value: 'Legal Case' }
-];
-
-const HeadOfDepartment = [
-  { label: 'Naveed (CEO)', value: 'Naveed' },
-  { label: 'Komal (Peoples Teams Head)', value: 'Komal' },
-  { label: 'Farhan (HR Manager)', value: 'Farhan' },
-  { label: 'Arshad Ali (Business Development & Sales)', value: 'Arshad Ali' },
-  { label: 'Haris (Pre-Sales)', value: 'Haris' },
-  { label: 'Sadia (Project Management)', value: 'Sadia' },
-  { label: 'Asra (Front End Lead)', value: 'Asra' },
-  { label: 'Shujat ( Backend Lead)', value: 'Shujat' },
-  { label: 'Faisal( Operations )', value: 'Faisal' },
-  { label: 'Imran (Marketing)', value: 'Imran' },
-  { label: 'Prakash ( VP Sales)', value: 'Prakash' },
 ];
 
 const departmentSchema = Joi.object({
@@ -84,8 +71,6 @@ const Department = ({ errors, setErrors, prevstep, token,
   const [isLoading, setIsLoading] = useState(false);
   const [managers, setManagers] = useState([]);
   const navigate = useNavigate()
-  const [showIndirectReport, setShowIndirectReport] = useState(false);
-
 
   const id = userProfile.id;
   // const { id } = useParams();
@@ -217,6 +202,18 @@ const Department = ({ errors, setErrors, prevstep, token,
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleEdit("joining_date", formattedDate);
   };
+
+
+  const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
+    label: (
+      <div>
+        <div style={{ fontWeight: 'bold', color: '#000' }}>{manager?.label?.split(' - ')[0]}</div>
+        <div style={{ fontSize: '13px', color: '#777', fontWeight: 'normal' }}>{manager?.label?.split(' - ')[1]}</div>
+      </div>
+    ),
+    value: manager.value
+  }));
+
 
 
   return (
@@ -356,23 +353,6 @@ const Department = ({ errors, setErrors, prevstep, token,
                       Indirect Report:
                     </label>
 
-                    {/* <div className='flex items-center gap-2'>
-                      <input
-                        type="checkbox"
-                        checked={showIndirectReport}
-                        onChange={() => setShowIndirectReport(!showIndirectReport)}
-                      />
-                      <span>Yes</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <input
-                        type="checkbox"
-                        checked={!showIndirectReport}
-                        onChange={() => setShowIndirectReport(!showIndirectReport)}
-                      />
-                      <span>No</span>
-                    </div> */}
-
                     <div className='flex items-center gap-x-2'>
                       <p className='text-sm'>Yes</p>
                       <input type="checkbox"
@@ -429,17 +409,6 @@ const Department = ({ errors, setErrors, prevstep, token,
 
 
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                {/* <div className='flex flex-col mt-2 md:mt-5 md:w-1/2 lg:w-[45.5%]'>
-                  <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Department Manager:</label>
-                  <input type="text" readOnly={!isEdit} value={defaultData.department_manager} name="department_manager" id="" placeholder='Department Manager Here'
-                    className={`${isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                    onClick={() => setIsEdit(true)}
-                    onChange={(e) => handleEdit(e.target.name, e.target.value)}
-                  />
-                  {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
-                </div> */}
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
                   <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
                         text-input text-base mb-1'>Department Head:</label>
@@ -447,20 +416,45 @@ const Department = ({ errors, setErrors, prevstep, token,
                     <Select
                       isDisabled={isEdit ? false : true}
                       menuPlacement="top"
-                      name='department_manager'
-                      value={HeadOfDepartment.find(manager => manager.value === defaultData.department_manager)}
-                      onChange={(selectedOption) => handleEdit("department_manager", selectedOption.value)}
-                      options={HeadOfDepartment}
-                      // options={managers
-                      //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
-                      //   .map((manager) => ({
-                      //     value: manager.id,
-                      //     label: manager.username,
-                      //   }))}
-                      menuPortalTarget={document.body}
-                      styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                      name="department_manager"
+                      value={HeadOfDepartmentOptions.find(
+                        (option) => option.value === defaultData.department_manager
+                      )}
+                      onChange={(selectedOption) =>
+                        handleEdit("department_manager", selectedOption.value)
+                      }
+                      options={HeadOfDepartmentOptions}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        control: (provided) => ({
+                          ...provided,
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
+                        }),
+                        option: (provided, state) => ({
+                          ...provided,
+                          fontSize: "16px",
+                          fontWeight: state.isSelected ? "bold" : "normal",
+                          color: state.isSelected ? "#000" : "#777",
+                          padding: "8px 12px",
+                          backgroundColor: state.isSelected ? '#E0F3FB' : 'transparent'
+                        }),
+                        menu: (provided) => ({
+                          ...provided,
+                          borderRadius: "8px",
+                          overflow: "hidden",
+                        }),
+                        scrollbarWidth: (base) => ({
+                          ...base,
+                          borderRadius: "8px",
+                          backgroundColor: "#ccc",
+                        }),
+                        dropdownIndicator: (provided) => ({
+                          ...provided,
+                          color: "#555",
+                        }),
+                      }}
                     />
-
                     {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
                   </div>
                 </div>

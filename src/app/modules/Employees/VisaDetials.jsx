@@ -18,6 +18,7 @@ const VisaDetials = ({ prevstep, nextstep }) => {
         const serializedData = JSON.stringify(data);
         sessionStorage.setItem(key, serializedData);
     };
+
     let storedData = getDataFromSessionStorage("visaDetails");
     const storedVisaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
 
@@ -66,18 +67,46 @@ const VisaDetials = ({ prevstep, nextstep }) => {
         console.log("Updated visaDetails:", { ...visaDetails, [name]: formattedDate });
     };
 
+    // const handleFileChange = (name, files) => {
+    //     Promise.all(
+    //         Array.from(files).map((file) => {
+    //             return new Promise((resolve, reject) => {
+    //                 const reader = new FileReader();
+    //                 reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
+    //                 reader.onerror = (error) => reject(error);
+    //                 reader.readAsDataURL(file);
+    //             });
+    //         })
+    //     )
+    //         .then((fileContents) => {
+    //             setVisaDetailsFiles({ ...visaDetailsFiles, [name]: fileContents });
+    //         })
+    //         .catch((error) => console.error("Error reading files:", error));
+    // };
+
     const handleFileChange = (name, files) => {
         Promise.all(
             Array.from(files).map((file) => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
-                    reader.onerror = (error) => reject(error);
-                    reader.readAsDataURL(file);
-                });
+                if (file.size <= 300 * 1024) { 
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
+                        reader.onerror = (error) => reject(error);
+                        reader.readAsDataURL(file);
+                    });
+                } else {
+                    // Display error message if file size exceeds 500 KB
+                    toast.error("File size should be less than or equal to 300 KB!", {
+                        position: "top-right",
+                        autoClose: 3000,
+                    });
+                    return null;
+                }
             })
         )
             .then((fileContents) => {
+                // Filter out null values (files with size > 500 KB)
+                fileContents = fileContents.filter(Boolean);
                 setVisaDetailsFiles({ ...visaDetailsFiles, [name]: fileContents });
             })
             .catch((error) => console.error("Error reading files:", error));
@@ -147,8 +176,6 @@ const VisaDetials = ({ prevstep, nextstep }) => {
         else {
             nextstep();
         }
-
-
     };
 
     // Get country options for Select component
@@ -205,7 +232,6 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                         dateFormat="yyyy-MM-dd"
                         className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
                     />
-                    {/* <input type="date" value={idIssuanceDate} onChange={(e) => setIdIssuanceDate(e.target.value)} placeholder="ID Issuance Date" /> */}
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -215,7 +241,6 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     >
                         ID Expiry Date
                     </label>
-                    {/* <input type="date" value={idExpiryDate} onChange={(e) => setIdExpiryDate(e.target.value)} placeholder="ID Expiry Date" /> */}
                     <Datepicker
                         selected={visaDetails.id_expiry_date ? moment(visaDetails.id_expiry_date, "YYYY-MM-DD").toDate() : null}
                         onChange={(date) => handleDateChange(date, "id_expiry_date")}

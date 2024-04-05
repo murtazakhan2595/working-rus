@@ -191,35 +191,36 @@ const SubmitCV = ({
             <h2 className="text-input opacity-70 tracking-wide text-base mt-3 mb-3 lg:mb-4 lg:text-base">
               Attach Your CV:
             </h2>
-            <label
-              htmlFor="file-upload"
-              className="cursor-pointer opacity-70 
+            <div className="flex items-center gap-x-2">
+              <label
+                htmlFor="file-upload"
+                className="cursor-pointer opacity-70 
             rounded-lg py-1 text-input"
-              onClick={handleFieldClick} // Add onClick to trigger edit mode
-            >
-              <div
-                className={`${isEdit ? "text-gray-700" : "text-gray-500"
-                  } flex mb-2`}
+                onClick={handleFieldClick} // Add onClick to trigger edit mode
               >
-                <div className="bg-gray-200 border-gray-400 border py-1 px-3 rounded-l-md ">
-                  {isEdit ? "Upload CV" : "CV"}{" "}
+                <div
+                  className={`${isEdit ? "text-gray-700" : "text-gray-500"
+                    } flex mb-2`}
+                >
+                  <div className="bg-gray-200 border-gray-400 border py-1 px-3 rounded-l-md ">
+                    {isEdit ? "Upload CV" : "CV"}{" "}
+                  </div>
+                  <div className="py-1 px-3 border-gray-200 border rounded-r-md">
+                    {cvName}
+                  </div>
                 </div>
-                <div className="py-1 px-3 border-gray-200 border rounded-r-md">
-                  {cvName}
-                </div>
-              </div>
-              <input
-                id="file-upload"
-                disabled={isEdit ? false : true}
-                type="file"
-                name="cv"
-                accept=".doc, .docx"
-                max-size="2097152"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </label>
-            {/* <button
+                <input
+                  id="file-upload"
+                  disabled={isEdit ? false : true}
+                  type="file"
+                  name="cv"
+                  accept=".doc, .docx"
+                  max-size="2097152"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </label>
+              {/* <button
               className="text-blue-600 underline block"
               onClick={() =>
                 downloadAttachmentWord(
@@ -231,21 +232,22 @@ const SubmitCV = ({
               {cvRes?.document?.name ? cvRes?.document?.name : "Not available"}
             </button> */}
 
-            <Tooltip
-              title="Download Doc"
-            >
-              <button
-                className="text-blue-600 underline block"
-                onClick={() =>
-                  downloadAttachmentWord(
-                    cvRes?.document?.file,
-                    cvRes?.document?.name,
-                  )
-                }
+              <Tooltip
+                title="Download CV"
               >
-                {cvRes?.document?.name ? <BsDownload /> : "Not available"}
-              </button>
-            </Tooltip>
+                <button
+                  className="text-blue-600 underline"
+                  onClick={() =>
+                    downloadAttachmentWord(
+                      cvRes?.document?.file,
+                      cvRes?.document?.name,
+                    )
+                  }
+                >
+                  {cvRes?.document?.name ? <BsDownload /> : "Not available"}
+                </button>
+              </Tooltip>
+            </div>
             {errors.cv && (
               <small className="text-red-500 block">{errors.cv}</small>
             )}

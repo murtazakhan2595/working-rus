@@ -378,7 +378,12 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                       label: `${country.dial_code} ${country.name}`,
                       value: country.dial_code
                     }))}
-                    value={countryCodes.find((country) => country.dial_code === personalInfo.dial_code)}
+                    value={countryCodes.find(option => option.dial_code === personalInfo.country_code) ?
+                      {
+                        label: `${countryCodes.find(option => option.dial_code === personalInfo.country_code).dial_code} 
+    ${countryCodes.find(option => option.dial_code === personalInfo.country_code).name}`,
+                        value: personalInfo.country_code
+                      } : null}
                     onChange={(selectedOption) => handleChange("country_code", selectedOption.value)}
                     placeholder="Select"
                     isSearchable
@@ -701,7 +706,13 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                     label: `${country.dial_code} ${country.name}`,
                     value: country.dial_code
                   }))}
-                  value={countryCodes.find((country) => country.dial_code === personalInfo.dial_code)}
+                  // value={countryCodes.find((country) => country.dial_code === personalInfo.dial_code)}
+                  value={countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code) ?
+                    {
+                      label: `${countryCodes.find(option => option.dial_code === personalInfo.country_code).dial_code} 
+  ${countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code).name}`,
+                      value: personalInfo.emergency_country_code
+                    } : null}
                   onChange={(selectedOption) => handleChange("emergency_country_code", selectedOption.value)}
                   placeholder="Select"
                   isSearchable

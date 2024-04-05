@@ -125,3 +125,17 @@ export const reportingManager = [
   { value: "manager4", label: "Manager 4" },
 ];
 
+export const HeadOfDepartment = [
+  { label: 'Naveed Rahman - CEO', value: 'Naveed' },
+  { label: 'Komal Zaman - Peoples Teams Head', value: 'Komal' },
+  { label: 'Farhan Hayder  - HR Manager', value: 'Farhan' },
+  { label: 'Arshad Ali - BD & Sales', value: 'Arshad Ali' },
+  { label: 'Haris Zaheer - Pre-Sales', value: 'Haris' },
+  { label: 'Sadia Sharafat - Project Management', value: 'Sadia' },
+  { label: 'Asra Fatima - Front End Lead', value: 'Asra' },
+  { label: 'Muhammad Shujat Hussain - Backend Lead', value: 'Shujat' },
+  { label: 'Faisal Iqbal - Operations', value: 'Faisal' },
+  { label: 'Imran Shafi - Marketing', value: 'Imran' },
+  { label: 'Prakash PV - VP Sales', value: 'Prakash' },
+];
+

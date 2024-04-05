@@ -585,9 +585,9 @@ const AcademicRecords = ({
                   <h2 className="text-input tracking-wide text-base mt-3 mb-3 lg:mb-0 lg:text-base">
                     Attach Certification:
                   </h2>
-                  <div onClick={handleEditClick}>
+                  <div>
                     {academicInfo.certificate?.document?.hasOwnProperty("name") ? (
-                      <div className="flex gap-1  items-center">
+                      <div className="flex gap-x-3 items-center">
                         {/* <button
                           className="text-blue-600 underline"
                           onClick={() =>
@@ -629,15 +629,17 @@ const AcademicRecords = ({
                             {academicInfo.certificate?.document?.name ? <BsDownload /> : "Not available"}
                           </button>
                         </Tooltip>
-                        <WiCloudRefresh
-                          onClick={() => {
-                            if (isEdit) {
-                              setAcademicInfo({ ...academicInfo, certificate: { ...academicInfo.certificate, document: {} } });
-                              setDataInSessionStorage("UpdatedAcademicInfo", academicInfo);
-                            }
-                          }}
-                          className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
-                        />
+                        <div onClick={handleEditClick}>
+                          <WiCloudRefresh
+                            onClick={() => {
+                              if (isEdit) {
+                                setAcademicInfo({ ...academicInfo, certificate: { ...academicInfo.certificate, document: {} } });
+                                setDataInSessionStorage("UpdatedAcademicInfo", academicInfo);
+                              }
+                            }}
+                            className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
+                          />
+                        </div>
                       </div>
                     ) : (
                       <label
@@ -831,9 +833,9 @@ const AcademicRecords = ({
                   <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
                     Certification Body:
                   </h2>
-                  <div onClick={handleEditClick}>
+                  <div>
                     {certification.certification_body ? (
-                      <div className="flex gap-1  items-center">
+                      <div className="flex gap-x-3 items-center">
                         {/* <button
                           className="text-blue-600 underline"
                           onClick={() =>
@@ -845,9 +847,7 @@ const AcademicRecords = ({
                         >
                           {certification?.certification_body?.name ? certification?.certification_body?.name : "Not available"}
                         </button> */}
-                        <Tooltip
-                          title="View Doc"
-                        >
+                        <Tooltip title="View Doc" >
                           <button
                             className="text-blue-600 underline"
                             onClick={() =>
@@ -860,9 +860,7 @@ const AcademicRecords = ({
                             {certification?.certification_body?.name ? <LuExternalLink /> : "Not available"}
                           </button>
                         </Tooltip>
-                        <Tooltip
-                          title="Download Doc"
-                        >
+                        <Tooltip title="Download Doc" >
                           <button
                             className="text-blue-600 underline"
                             onClick={() =>
@@ -876,16 +874,18 @@ const AcademicRecords = ({
                           </button>
                         </Tooltip>
 
-                        <WiCloudRefresh
-                          onClick={() => {
-                            if (isEdit) {
-                              const updatedSections = [...certificationSections];
-                              updatedSections[index].certification_body = "";
-                              setCertificationSections(updatedSections);
-                            }
-                          }}
-                          className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
-                        />
+                        <div onClick={handleEditClick}>
+                          <WiCloudRefresh
+                            onClick={() => {
+                              if (isEdit) {
+                                const updatedSections = [...certificationSections];
+                                updatedSections[index].certification_body = "";
+                                setCertificationSections(updatedSections);
+                              }
+                            }}
+                            className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
+                          />
+                        </div>
                       </div>
                     ) : (
                       <label
