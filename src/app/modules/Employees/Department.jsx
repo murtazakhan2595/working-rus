@@ -8,27 +8,7 @@ import Datepicker from '../Dashboard/Datepicker';
 import CustomSelect from '../UpdateEmployee/customSelect';
 import axios from "axios";
 import { connect } from 'react-redux';
-import { HeadOfDepartment } from '../../../data/Data';
-
-const jobRoles = [
-    { label: 'Intern', value: 'Intern' },
-    { label: 'Part-Time', value: 'Part-Time' },
-    { label: 'Full-Time', value: 'Full-Time' },
-    { label: 'Contract', value: 'Contract' },
-    { label: 'Freelancer', value: 'Freelancer' }
-];
-
-const employeeStatus = [
-    { label: 'Active', value: 'Active' },
-    { label: 'Terminated', value: 'Terminated' },
-    { label: 'Deceased', value: 'Deceased' },
-    { label: 'Resigned', value: 'Resigned' },
-    { label: 'Probation', value: 'Probation' },
-    { label: 'Notice Period', value: 'Notice Period' },
-    { label: 'Exit', value: 'Exit' },
-    { label: 'Absconded', value: 'Absconded' },
-    { label: 'Legal Case', value: 'Legal Case' }
-];
+import { HeadOfDepartment, employeeStatus, jobRoles } from '../../../data/Data';
 
 
 const departmentSchema = Joi.object({
@@ -195,18 +175,36 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
     //     setErrors({ ...errors, [name]: null });
     // };
 
+    // const handleChange = (name, value, values) => {
+    //     if (name === "is_indirect_report_applicable") {
+    //         // For the checkbox, value will be the boolean indicating whether it's checked or not
+    //         setDepartmentInfo({ ...departmentInfo, [name]: value });
+    //     } else {
+    //         // For other inputs, update the state as usual
+    //         if (name === "indirect_report" || name === "direct_report") {
+    //             const updatedValues = values || [];
+    //             const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
+    //             setDepartmentInfo({
+    //                 ...departmentInfo,
+    //                 [name]: uniqueValues.join(', '),
+    //             });
+    //         } else {
+    //             setDepartmentInfo({ ...departmentInfo, [name]: value });
+    //         }
+    //     }
+    //     setErrors({ ...errors, [name]: null });
+    // }; 
+
     const handleChange = (name, value, values) => {
         if (name === "is_indirect_report_applicable") {
-            // For the checkbox, value will be the boolean indicating whether it's checked or not
             setDepartmentInfo({ ...departmentInfo, [name]: value });
         } else {
-            // For other inputs, update the state as usual
             if (name === "indirect_report" || name === "direct_report") {
                 const updatedValues = values || [];
                 const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
                 setDepartmentInfo({
                     ...departmentInfo,
-                    [name]: uniqueValues.join(', '),
+                    [name]: uniqueValues.join(', '), // Convert array to string
                 });
             } else {
                 setDepartmentInfo({ ...departmentInfo, [name]: value });
@@ -214,7 +212,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
         }
         setErrors({ ...errors, [name]: null });
     };
-
 
     const handleJoiningDate = (date) => {
         const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
@@ -274,7 +271,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                         <Select
                                             menuPlacement="top"
                                             name="employee_type"
-                                            value={jobRoles.find(
+                                            value={jobRoles?.find(
                                                 (option) => option.label === departmentInfo.employee_type
                                             )}
                                             options={jobRoles}
@@ -304,7 +301,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                             menuPlacement="top"
                                             name="employee_status"
                                             // value={departmentInfo?.employee_status}
-                                            value={employeeStatus.find(
+                                            value={employeeStatus?.find(
                                                 (option) => option.label === departmentInfo?.employee_status
                                             )}
                                             options={employeeStatus}
@@ -401,46 +398,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
                                     <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
                         text-input text-base mb-1'>Department Head:</label>
-                                    {/* <Select
-                                        // isDisabled={isEdit ? false : true}
-                                        menuPlacement="top"
-                                        name='department_manager'
-                                        value={HeadOfDepartment.find(manager => manager.value === departmentInfo?.department_manager)}
-                                        onChange={(selectedOption) => handleChange("department_manager", selectedOption.value)}
-                                        options={HeadOfDepartment}
-                                        menuPortalTarget={document.body}
-                                        styles={{
-                                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                            control: (provided) => ({
-                                                ...provided,
-                                                border: "1px solid #ccc",
-                                                borderRadius: "8px",
-                                            }),
-                                            option: (provided, state) => ({
-                                                ...provided,
-                                                fontSize: "16px",
-                                                fontWeight: state.isSelected ? "bold" : "normal",
-                                                color: state.isSelected ? "#000" : "#777",
-                                                padding: "8px 12px",
-                                                backgroundColor: state.isSelected ? '#E0F3FB' : 'transparent'
-                                            }),
-                                            menu: (provided) => ({
-                                                ...provided,
-                                                borderRadius: "8px",
-                                                overflow: "hidden",
-                                            }),
-                                            scrollbarWidth: (base) => ({
-                                                ...base,
-                                                borderRadius: "8px",
-                                                backgroundColor: "#ccc",
-                                            }),
-                                            dropdownIndicator: (provided) => ({
-                                                ...provided,
-                                                color: "#555",
-                                            }),
-                                        }}
-                                    /> */}
-
                                     <Select
                                         menuPlacement="top"
                                         name="department_manager"
