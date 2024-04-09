@@ -3,7 +3,7 @@ import Button from './Button';
 import { useState, useEffect } from 'react';
 
 
-const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep }) => {
+const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep ,setCvProps}) => {
   const getDataFromSessionStorage = (key) => {
     const serializedData = sessionStorage.getItem(key);
     const data = JSON.parse(serializedData);
@@ -38,15 +38,16 @@ const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep }) => {
     }
   }
 
-  useEffect(() => {
-    setDataInSessionStorage('cv', cv)
-  }, [cv])
+  // useEffect(() => {
+  //   setDataInSessionStorage('cv', cv)
+  // }, [cv])
 
   const handleNextStep = () => {
     if (!cvName) {
       const validationErrors = { cv: "CV is required" };
       setErrors(validationErrors);
     } else {
+      setCvProps(cv);
       nextstep();
     }
   };

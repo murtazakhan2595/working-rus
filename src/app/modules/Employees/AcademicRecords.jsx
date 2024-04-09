@@ -22,7 +22,7 @@ const academicSchema = Joi.object({
   edu_end_date: Joi.string().required().label("End Date"),
 });
 
-const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
+const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfoProps,setCertificationsProps }) => {
   const getDataFromSessionStorage = (key) => {
     const serializedData = sessionStorage.getItem(key);
     const data = JSON.parse(serializedData);
@@ -82,9 +82,9 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
     handleChange("edu_end_date", formattedDate);
   };
 
-  useEffect(() => {
-    setDataInSessionStorage('academicInfo',academicInfo)
-  }, [academicInfo])
+  // useEffect(() => {
+  //   setDataInSessionStorage('academicInfo',academicInfo)
+  // }, [academicInfo])
 
   const handleNextStep = () => {
     const fieldErrors = {};
@@ -138,6 +138,8 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
       return;
     }
     else {
+      setAcademicInfoProps(academicInfo)
+      setCertificationsProps(certificationSections)
       nextstep();
     }
   };
@@ -153,9 +155,11 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep }) => {
       setCerErrors(updatedErrors);
     }
   };
-  useEffect(() => {
-    setDataInSessionStorage('certifications',certificationSections)
-  }, [certificationSections])
+
+  // useEffect(() => {
+  //   setDataInSessionStorage('certifications',certificationSections)
+  // }, [certificationSections])
+
   return (
     <>
       <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">

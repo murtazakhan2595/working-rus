@@ -81,7 +81,7 @@ const departmentSchema = Joi.object({
 
 
 
-const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token }) => {
+const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token ,setDepartmentInfoProps}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
 
@@ -105,9 +105,9 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
     };
     const [departmentInfo, setDepartmentInfo] = useState(intialDepartmentInfo)
 
-    useEffect(() => {
-        setDataInSessionStorage('departmentInfo', departmentInfo)
-    }, [departmentInfo])
+    // useEffect(() => {
+    //     setDataInSessionStorage('departmentInfo', departmentInfo)
+    // }, [departmentInfo])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -153,6 +153,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
             setErrors(validationErrors);
         } else {
             console.log("Form validated. Calling submitForm...");
+            setDepartmentInfoProps(departmentInfo)
             await submitForm();
             setIsLoading(false);
         }

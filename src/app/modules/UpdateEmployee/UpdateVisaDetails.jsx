@@ -19,6 +19,7 @@ import { LuExternalLink } from 'react-icons/lu';
 import { Tooltip } from '@mui/material';
 import { downloadFiles } from '../../../utils/downUtils';
 import { BsDownload } from 'react-icons/bs';
+import { getVisaDetails } from '../../utils/MappingObjects/mapEmployeeData'
 
 
 const UpdateVisaDetails = ({ prevstep,
@@ -30,7 +31,8 @@ const UpdateVisaDetails = ({ prevstep,
   baseUrl, }) => {
 
   let [isEdit, setIsEdit] = useState(false);
-  let [defaultData, setDefaultData] = useState({});
+  let [employeeVisaDetails, setEmployeeVisaDetails] = useState({});
+  const [employeeData, setEmployeeData] = useState({});
   const [documents, setDocuments] = useState({});
   const [visaDetailsFiles, setVisaDetailsFiles] = useState({})
   const [cancelBox, setCancelBox] = useState(false);
@@ -52,37 +54,11 @@ const UpdateVisaDetails = ({ prevstep,
       const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
         headers,
       });
-      setDefaultData(employeeResponse.data);
-      // const employeeData = employeeResponse.data;
-      // setDefaultData({
-      //   passport_number: employeeData.passport_number,
-      //   Passport_Issuance_Country: employeeData.Passport_Issuance_Country,
-      //   Passport_Issuance_Date: employeeData.Passport_Issuance_Date,
-      //   Passport_Expiry_Date: employeeData.Passport_Expiry_Date,
-      //   entry_permit_number: employeeData.entry_permit_number,
-      //   country_of_visa_issuance: employeeData.country_of_visa_issuance,
-      //   visa_duration: employeeData.visa_duration,
-      //   uid_number: employeeData.uid_number,
-      //   living_country_id_no: employeeData.living_country_id_no,
-      //   dha_id: employeeData.dha_id,
-      //   card_number: employeeData.card_number,
-      //   insurance_policy: employeeData.insurance_policy,
-      //   insurance_company: employeeData.insurance_company,
-      //   visa_expiry_date: employeeData.visa_expiry_date,
-      //   visa_issuance_date: employeeData.visa_issuance_date,
-      //   visa_country_entry_date: employeeData.visa_country_entry_date,
-      //   visa_country_exit_date: employeeData.visa_country_exit_date,
-      //   id_issuance_date: employeeData.id_issuance_date,
-      //   id_expiry_date: employeeData.id_expiry_date,
-      //   insurance_active_date: employeeData.insurance_active_date,
-      //   insurance_expiry_date: employeeData.insurance_expiry_date,
-      //   visa_type: employeeData.visa_type,
-      //   place_of_issuance: employeeData.place_of_issuance,
-      // });
+      const empVisaData = getVisaDetails(employeeResponse.data);
+      setEmployeeData(employeeResponse.data)
+      setEmployeeVisaDetails(empVisaData);
 
-
-      // setDefaultData(employeeData)
-    } catch (error) {
+} catch (error) {
       console.error("Error fetching data:", error);
     }
   };
@@ -134,8 +110,8 @@ const UpdateVisaDetails = ({ prevstep,
     } else if (name === "place_of_issuance" || name === "Passport_Issuance_Country" || name === "country_of_visa_issuance") {
       modifiedValue = value.label
     }
-    // Update defaultData state
-    setDefaultData({ ...defaultData, [name]: modifiedValue });
+    // Update employeeVisaDetails state
+    setEmployeeVisaDetails({ ...employeeVisaDetails, [name]: modifiedValue });
     setIsEdit(true);
   };
 
@@ -174,7 +150,7 @@ const UpdateVisaDetails = ({ prevstep,
     setIsLoading(true);
     try {
       // Make a copy of the updated data
-      const updatedDataCopy = { ...defaultData };
+      const updatedDataCopy = { ...employeeData,...employeeVisaDetails };
 
       // Update regular fields
       const response = await axios.patch(`${baseUrl}/emp/${id}`, updatedDataCopy, { headers });
@@ -241,219 +217,20 @@ const UpdateVisaDetails = ({ prevstep,
     }
   };
 
-  // const handleSave = () => {
-  //   updateDataOnServer();
-  //   // setIsEdit(false);
-  // };
-
-
   // enable edit on click
 
   const handleFieldClick = () => {
     setIsEdit(true);
   }
 
-
-  // const handleNextStep = () => {
-  //   nextstep();
-  //   if (defaultData.is_passport_applicable) {
-  //     if (defaultData.passport_number && defaultData.Passport_Issuance_Country && defaultData.Passport_Issuance_Date && defaultData.Passport_Expiry_Date && visaDetailsFiles.passport_copy) {
-  //       nextstep();
-  //     } else {
-  //       toast.error("Please fill in all required fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_visa_applicable)
-  //     if (defaultData.entry_permit_number && defaultData.country_of_visa_issuance && defaultData.uid_number && defaultData.visa_type && defaultData.visa_issuance_date && defaultData.visa_expiry_date && defaultData.visa_duration && defaultData.visa_country_entry_date && defaultData.visa_country_exit_date) {
-  //       nextstep();
-  //     } else {
-  //       toast.error("Please fill in all required fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-
-  //   else if (defaultData.is_insurance_applicable) {
-  //     if (defaultData.dha_id && defaultData.card_number && defaultData.insurance_policy && defaultData.insurance_company && defaultData.insurance_active_date && defaultData.insurance_expiry_date) {
-  //       nextstep();
-  //     } else {
-  //       toast.error("Please fill in all required fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   }
-
-  //   else if (showId) {
-  //     if (defaultData.living_country_id_no && defaultData.place_of_issuance && defaultData.id_issuance_date && defaultData.id_expiry_date && documents.id_front && documents.id_back) {
-  //       nextstep();
-  //     } else {
-  //       toast.error("Please fill all ID Details fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   }
-
-  //   else {
-  //     nextstep();
-  //   }
-
-  // };
-
-
-  // updated
-  // const handleSave = () => {
-  //   if (defaultData.is_passport_applicable) {
-  //     if (
-  //       defaultData.passport_number &&
-  //       defaultData.Passport_Issuance_Country &&
-  //       defaultData.Passport_Issuance_Date &&
-  //       defaultData.Passport_Expiry_Date &&
-  //       (documents.passport_copy || visaDetailsFiles.passport_copy)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required passport fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_visa_applicable) {
-  //     if (
-  //       defaultData.entry_permit_number &&
-  //       defaultData.country_of_visa_issuance &&
-  //       defaultData.uid_number &&
-  //       defaultData.visa_type &&
-  //       defaultData.visa_issuance_date &&
-  //       defaultData.visa_expiry_date &&
-  //       defaultData.visa_duration &&
-  //       defaultData.visa_country_entry_date &&
-  //       defaultData.visa_country_exit_date &&
-  //       (documents.enter_permit || visaDetailsFiles.enter_permit) &&
-  //       (documents.visa_page || visaDetailsFiles.enter_permit) &&
-  //       (documents.medical || visaDetailsFiles.medical) &&
-  //       (documents.id_application || visaDetailsFiles.id_application)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required visa fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_insurance_applicable) {
-  //     if (
-  //       defaultData.dha_id &&
-  //       defaultData.card_number &&
-  //       defaultData.insurance_policy &&
-  //       defaultData.insurance_company &&
-  //       defaultData.insurance_active_date &&
-  //       defaultData.insurance_expiry_date &&
-  //       (documents.insurance_card || visaDetailsFiles.insurance_card)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required insurance fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (showId) { // Added condition for ID fields
-  //     if (
-  //       defaultData.living_country_id_no &&
-  //       defaultData.place_of_issuance &&
-  //       defaultData.id_issuance_date &&
-  //       defaultData.id_expiry_date &&
-  //       defaultData.dha_id &&
-  //       (documents.id_front || visaDetailsFiles.id_front) &&
-  //       (documents.id_back || visaDetailsFiles.id_back)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required ID fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else {
-  //     updateDataOnServer();
-  //   }
-  // };
-
-
-
-  // const handleSave = () => {
-  //   if (defaultData.is_passport_applicable) {
-  //     if (
-  //       defaultData.passport_number &&
-  //       defaultData.Passport_Issuance_Country &&
-  //       defaultData.Passport_Issuance_Date &&
-  //       defaultData.Passport_Expiry_Date &&
-  //       ((documents.passport_copy && !visaDetailsFiles.passport_copy) || visaDetailsFiles.passport_copy)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required passport fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_visa_applicable) {
-  //     if (
-  //       defaultData.entry_permit_number &&
-  //       defaultData.country_of_visa_issuance &&
-  //       defaultData.uid_number &&
-  //       defaultData.visa_type &&
-  //       defaultData.visa_issuance_date &&
-  //       defaultData.visa_expiry_date &&
-  //       defaultData.visa_duration &&
-  //       defaultData.visa_country_entry_date &&
-  //       defaultData.visa_country_exit_date &&
-  //       ((documents.enter_permit && !visaDetailsFiles.enter_permit) || visaDetailsFiles.enter_permit) &&
-  //       ((documents.visa_page && !visaDetailsFiles.visa_page) || visaDetailsFiles.visa_page) &&
-  //       ((documents.medical && !visaDetailsFiles.medical) || visaDetailsFiles.medical) &&
-  //       ((documents.id_application && !visaDetailsFiles.id_application) || visaDetailsFiles.id_application)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required visa fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else if (defaultData.is_insurance_applicable) {
-  //     if (
-  //       defaultData.dha_id &&
-  //       defaultData.card_number &&
-  //       defaultData.insurance_policy &&
-  //       defaultData.insurance_company &&
-  //       defaultData.insurance_active_date &&
-  //       defaultData.insurance_expiry_date &&
-  //       ((documents.insurance_card && !visaDetailsFiles.insurance_card) || visaDetailsFiles.insurance_card)
-  //     ) {
-  //       updateDataOnServer();
-  //     } else {
-  //       toast.error("Please fill all required insurance fields!", {
-  //         position: "top-right",
-  //         autoClose: 1000,
-  //       });
-  //     }
-  //   } else {
-  //     updateDataOnServer();
-  //   }
-  // };
-
   const handleSave = () => {
-    if (defaultData.is_passport_applicable) {
+    if (employeeVisaDetails.is_passport_applicable) {
       // Check if all passport fields are filled
       if (
-        defaultData.passport_number &&
-        defaultData.Passport_Issuance_Country &&
-        defaultData.Passport_Issuance_Date &&
-        defaultData.Passport_Expiry_Date &&
+        employeeVisaDetails.passport_number &&
+        employeeVisaDetails.Passport_Issuance_Country &&
+        employeeVisaDetails.Passport_Issuance_Date &&
+        employeeVisaDetails.Passport_Expiry_Date &&
         ((documents.passport_copy && !visaDetailsFiles.passport_copy) || visaDetailsFiles.passport_copy)
       ) {
         updateDataOnServer();
@@ -463,17 +240,17 @@ const UpdateVisaDetails = ({ prevstep,
           autoClose: 1000,
         });
       }
-    } else if (defaultData.is_visa_applicable) {
+    } else if (employeeVisaDetails.is_visa_applicable) {
       // Check if all visa fields are filled
       if (
-        defaultData.entry_permit_number &&
-        defaultData.country_of_visa_issuance &&
-        defaultData.uid_number &&
-        defaultData.visa_type &&
-        defaultData.visa_issuance_date &&
-        defaultData.visa_expiry_date &&
-        defaultData.visa_duration &&
-        defaultData.visa_country_entry_date &&
+        employeeVisaDetails.entry_permit_number &&
+        employeeVisaDetails.country_of_visa_issuance &&
+        employeeVisaDetails.uid_number &&
+        employeeVisaDetails.visa_type &&
+        employeeVisaDetails.visa_issuance_date &&
+        employeeVisaDetails.visa_expiry_date &&
+        employeeVisaDetails.visa_duration &&
+        employeeVisaDetails.visa_country_entry_date &&
         ((documents.enter_permit && !visaDetailsFiles.enter_permit) || visaDetailsFiles.enter_permit) &&
         ((documents.visa_page && !visaDetailsFiles.visa_page) || visaDetailsFiles.visa_page) &&
         ((documents.medical && !visaDetailsFiles.medical) || visaDetailsFiles.medical) &&
@@ -486,15 +263,15 @@ const UpdateVisaDetails = ({ prevstep,
           autoClose: 1000,
         });
       }
-    } else if (defaultData.is_insurance_applicable) {
+    } else if (employeeVisaDetails.is_insurance_applicable) {
       // Check if all insurance fields are filled
       if (
-        defaultData.dha_id &&
-        defaultData.card_number &&
-        defaultData.insurance_policy &&
-        defaultData.insurance_company &&
-        defaultData.insurance_active_date &&
-        defaultData.insurance_expiry_date &&
+        employeeVisaDetails.dha_id &&
+        employeeVisaDetails.card_number &&
+        employeeVisaDetails.insurance_policy &&
+        employeeVisaDetails.insurance_company &&
+        employeeVisaDetails.insurance_active_date &&
+        employeeVisaDetails.insurance_expiry_date &&
         ((documents.insurance_card && !visaDetailsFiles.insurance_card) || visaDetailsFiles.insurance_card)
       ) {
         updateDataOnServer();
@@ -507,10 +284,10 @@ const UpdateVisaDetails = ({ prevstep,
     } else {
       // Check if ID fields are filled
       if (
-        defaultData.living_country_id_no &&
-        defaultData.place_of_issuance &&
-        defaultData.id_issuance_date &&
-        defaultData.id_expiry_date &&
+        employeeVisaDetails.living_country_id_no &&
+        employeeVisaDetails.place_of_issuance &&
+        employeeVisaDetails.id_issuance_date &&
+        employeeVisaDetails.id_expiry_date &&
         ((documents.id_front && !visaDetailsFiles.id_front) || visaDetailsFiles.id_front) &&
         ((documents.id_back && !visaDetailsFiles.id_back) || visaDetailsFiles.id_back)
       ) {
@@ -556,7 +333,7 @@ const UpdateVisaDetails = ({ prevstep,
             Living Country ID No
           </label>
           <input type="text" name="living_country_id_no"
-            value={defaultData.living_country_id_no}
+            value={employeeVisaDetails.living_country_id_no}
             placeholder="Living Country ID Number"
             className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
@@ -579,7 +356,7 @@ const UpdateVisaDetails = ({ prevstep,
               name="place_of_issuance"
               options={countryOptions}
               value={countryOptions.find(
-                (option) => option.label === defaultData.place_of_issuance
+                (option) => option.label === employeeVisaDetails.place_of_issuance
               )}
               onChange={(selectedOption) => handleEdit("place_of_issuance", selectedOption)}
               isDisabled={!isEdit}
@@ -597,26 +374,26 @@ const UpdateVisaDetails = ({ prevstep,
           <div onClick={handleFieldClick}>
             <Datepicker
               day={
-                defaultData.id_issuance_date
-                  ? defaultData.id_issuance_date.substr(8, 2)
+                employeeVisaDetails.id_issuance_date
+                  ? employeeVisaDetails.id_issuance_date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.id_issuance_date
-                  ? defaultData.id_issuance_date.substr(5, 2)
+                employeeVisaDetails.id_issuance_date
+                  ? employeeVisaDetails.id_issuance_date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.id_issuance_date
-                  ? defaultData.id_issuance_date.substr(0, 4)
+                employeeVisaDetails.id_issuance_date
+                  ? employeeVisaDetails.id_issuance_date.substr(0, 4)
                   : null
               }
               name="id_issuance_date"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.id_issuance_date
-                  ? moment(defaultData.id_issuance_date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.id_issuance_date
+                  ? moment(employeeVisaDetails.id_issuance_date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "id_issuance_date")}
@@ -635,26 +412,26 @@ const UpdateVisaDetails = ({ prevstep,
           <div onClick={handleFieldClick}>
             <Datepicker
               day={
-                defaultData.id_expiry_date
-                  ? defaultData.id_expiry_date.substr(8, 2)
+                employeeVisaDetails.id_expiry_date
+                  ? employeeVisaDetails.id_expiry_date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.id_expiry_date
-                  ? defaultData.id_expiry_date.substr(5, 2)
+                employeeVisaDetails.id_expiry_date
+                  ? employeeVisaDetails.id_expiry_date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.id_expiry_date
-                  ? defaultData.id_expiry_date.substr(0, 4)
+                employeeVisaDetails.id_expiry_date
+                  ? employeeVisaDetails.id_expiry_date.substr(0, 4)
                   : null
               }
               name="id_expiry_date"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
              placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.id_expiry_date
-                  ? moment(defaultData.id_expiry_date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.id_expiry_date
+                  ? moment(employeeVisaDetails.id_expiry_date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "id_expiry_date")}
@@ -790,7 +567,7 @@ const UpdateVisaDetails = ({ prevstep,
           <div className='flex items-center gap-x-2'>
             <p className='text-sm'>Yes</p>
             <input type="checkbox"
-              checked={defaultData.is_passport_applicable}
+              checked={employeeVisaDetails.is_passport_applicable}
               name="is_passport_applicable_yes"
               onChange={(e) => handleEdit('is_passport_applicable', e.target.checked)}
             />
@@ -798,7 +575,7 @@ const UpdateVisaDetails = ({ prevstep,
           <div className='flex items-center gap-x-2'>
             <p className='text-sm'>No</p>
             <input type="checkbox"
-              checked={!defaultData.is_passport_applicable}
+              checked={!employeeVisaDetails.is_passport_applicable}
               name="is_passport_applicable_no"
               onChange={(e) => handleEdit('is_passport_applicable', !e.target.checked)}
             />
@@ -806,17 +583,17 @@ const UpdateVisaDetails = ({ prevstep,
 
         </h2>
       </div>
-      {defaultData.is_passport_applicable && <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
+      {employeeVisaDetails.is_passport_applicable && <div className='flex w-[100%] flex-wrap items-center gap-x-5'>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Passport Number {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Passport Number {employeeVisaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="passport_number"
             readOnly={!isEdit}
-            value={defaultData.passport_number}
+            value={employeeVisaDetails.passport_number}
             onChange={(e) => handleEdit(e.target.name, e.target.value)}
             placeholder="Passport Number" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
             onClick={handleFieldClick}
@@ -828,7 +605,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Passport Issuance Country {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Passport Issuance Country {employeeVisaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Select
@@ -836,7 +613,7 @@ const UpdateVisaDetails = ({ prevstep,
               name="Passport_Issuance_Country"
               options={countryOptions}
               value={countryOptions.find(
-                (option) => option.label === defaultData.Passport_Issuance_Country
+                (option) => option.label === employeeVisaDetails.Passport_Issuance_Country
               )}
               onChange={(selectedOption) => handleEdit("Passport_Issuance_Country", selectedOption)}
               onClick={handleFieldClick}
@@ -851,31 +628,31 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Issuance Date {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Issuance Date {employeeVisaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick} >
             <Datepicker
               day={
-                defaultData.Passport_Issuance_Date
-                  ? defaultData.Passport_Issuance_Date.substr(8, 2)
+                employeeVisaDetails.Passport_Issuance_Date
+                  ? employeeVisaDetails.Passport_Issuance_Date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.Passport_Issuance_Date
-                  ? defaultData.Passport_Issuance_Date.substr(5, 2)
+                employeeVisaDetails.Passport_Issuance_Date
+                  ? employeeVisaDetails.Passport_Issuance_Date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.Passport_Issuance_Date
-                  ? defaultData.Passport_Issuance_Date.substr(0, 4)
+                employeeVisaDetails.Passport_Issuance_Date
+                  ? employeeVisaDetails.Passport_Issuance_Date.substr(0, 4)
                   : null
               }
               name="Passport_Issuance_Date"
               className={`pl-2 bg-white rounded h-8 text-sm
              placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.Passport_Issuance_Date
-                  ? moment(defaultData.Passport_Issuance_Date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.Passport_Issuance_Date
+                  ? moment(employeeVisaDetails.Passport_Issuance_Date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "Passport_Issuance_Date")}
@@ -889,32 +666,32 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Expiry Date {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Expiry Date {employeeVisaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick} >
 
             <Datepicker
               day={
-                defaultData.Passport_Expiry_Date
-                  ? defaultData.Passport_Expiry_Date.substr(8, 2)
+                employeeVisaDetails.Passport_Expiry_Date
+                  ? employeeVisaDetails.Passport_Expiry_Date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.Passport_Expiry_Date
-                  ? defaultData.Passport_Expiry_Date.substr(5, 2)
+                employeeVisaDetails.Passport_Expiry_Date
+                  ? employeeVisaDetails.Passport_Expiry_Date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.Passport_Expiry_Date
-                  ? defaultData.Passport_Expiry_Date.substr(0, 4)
+                employeeVisaDetails.Passport_Expiry_Date
+                  ? employeeVisaDetails.Passport_Expiry_Date.substr(0, 4)
                   : null
               }
               name="Passport_Expiry_Date"
               className={`pl-2 bg-white rounded h-8 text-sm
              placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.Passport_Expiry_Date
-                  ? moment(defaultData.Passport_Expiry_Date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.Passport_Expiry_Date
+                  ? moment(employeeVisaDetails.Passport_Expiry_Date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "Passport_Expiry_Date")}
@@ -927,7 +704,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Passport Copy {defaultData.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Passport Copy {employeeVisaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
@@ -993,7 +770,7 @@ const UpdateVisaDetails = ({ prevstep,
           <p className='text-sm'>Yes</p>
           <input type="checkbox"
             name='is_visa_applicable_yes'
-            checked={defaultData.is_visa_applicable}
+            checked={employeeVisaDetails.is_visa_applicable}
             onChange={(e) => handleEdit('is_visa_applicable', e.target.checked)}
           />
         </div>
@@ -1001,25 +778,25 @@ const UpdateVisaDetails = ({ prevstep,
           <p className='text-sm'>No</p>
           <input type="checkbox"
             name='is_visa_applicable_no'
-            checked={!defaultData.is_visa_applicable}
+            checked={!employeeVisaDetails.is_visa_applicable}
             onChange={(e) => handleEdit('is_visa_applicable', !e.target.checked)}
           />
         </div>
 
 
       </h2>
-      {defaultData.is_visa_applicable && <div className='flex w-[100%] flex-wrap gap-3'>
+      {employeeVisaDetails.is_visa_applicable && <div className='flex w-[100%] flex-wrap gap-3'>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Entry Permit Number{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Entry Permit Number{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
 
           </label>
 
           <input type="text" name="entry_permit_number"
-            value={defaultData.entry_permit_number}
+            value={employeeVisaDetails.entry_permit_number}
             placeholder="Entry Permit Number"
             className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
@@ -1033,7 +810,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Issuance Country {defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Visa Issuance Country {employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Select
@@ -1041,7 +818,7 @@ const UpdateVisaDetails = ({ prevstep,
               name="country_of_visa_issuance"
               options={countryOptions}
               value={countryOptions.find(
-                (option) => option.label === defaultData.country_of_visa_issuance
+                (option) => option.label === employeeVisaDetails.country_of_visa_issuance
               )}
               onChange={(selectedOption) => handleEdit("country_of_visa_issuance", selectedOption)}
               isDisabled={!isEdit}
@@ -1055,10 +832,10 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            UID Number{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            UID Number{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="uid_number"
-            value={defaultData.uid_number}
+            value={employeeVisaDetails.uid_number}
             placeholder="UID Number"
             className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
              placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
@@ -1072,7 +849,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Type{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Visa Type{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
 
           </label>
           <div onClick={handleFieldClick}>
@@ -1081,7 +858,7 @@ const UpdateVisaDetails = ({ prevstep,
               name="visa_type"
               options={visaOptions}
               value={visaOptions.find(
-                (option) => option.value === defaultData.visa_type
+                (option) => option.value === employeeVisaDetails.visa_type
               )}
               onChange={(selectedOption) => handleEdit("visa_type", selectedOption)}
               isDisabled={!isEdit}
@@ -1093,31 +870,31 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Issuance Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Visa Issuance Date{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker
               day={
-                defaultData.visa_issuance_date
-                  ? defaultData.visa_issuance_date.substr(8, 2)
+                employeeVisaDetails.visa_issuance_date
+                  ? employeeVisaDetails.visa_issuance_date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.visa_issuance_date
-                  ? defaultData.visa_issuance_date.substr(5, 2)
+                employeeVisaDetails.visa_issuance_date
+                  ? employeeVisaDetails.visa_issuance_date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.visa_issuance_date
-                  ? defaultData.visa_issuance_date.substr(0, 4)
+                employeeVisaDetails.visa_issuance_date
+                  ? employeeVisaDetails.visa_issuance_date.substr(0, 4)
                   : null
               }
               name="visa_issuance_date"
               className={`pl-2 bg-white rounded h-8 text-sm
              placeholder-[#555657] placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.visa_issuance_date
-                  ? moment(defaultData.visa_issuance_date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.visa_issuance_date
+                  ? moment(employeeVisaDetails.visa_issuance_date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "visa_issuance_date")}
@@ -1130,31 +907,31 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Expiry Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Visa Expiry Date{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker
               day={
-                defaultData.visa_expiry_date
-                  ? defaultData.visa_expiry_date.substr(8, 2)
+                employeeVisaDetails.visa_expiry_date
+                  ? employeeVisaDetails.visa_expiry_date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.visa_expiry_date
-                  ? defaultData.visa_expiry_date.substr(5, 2)
+                employeeVisaDetails.visa_expiry_date
+                  ? employeeVisaDetails.visa_expiry_date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.visa_expiry_date
-                  ? defaultData.visa_expiry_date.substr(0, 4)
+                employeeVisaDetails.visa_expiry_date
+                  ? employeeVisaDetails.visa_expiry_date.substr(0, 4)
                   : null
               }
               name="visa_expiry_date"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
              placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.visa_expiry_date
-                  ? moment(defaultData.visa_expiry_date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.visa_expiry_date
+                  ? moment(employeeVisaDetails.visa_expiry_date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "visa_expiry_date")}
@@ -1167,10 +944,10 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Duration{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Visa Duration{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="visa_duration"
-            value={defaultData.visa_duration}
+            value={employeeVisaDetails.visa_duration}
             placeholder="Visa Duration" className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
              placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
             onChange={(e) => handleEdit(e.target.name, e.target.value)}
@@ -1183,32 +960,32 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Country Entry Date{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Visa Country Entry Date{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
 
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker
               day={
-                defaultData.visa_country_entry_date
-                  ? defaultData.visa_country_entry_date.substr(8, 2)
+                employeeVisaDetails.visa_country_entry_date
+                  ? employeeVisaDetails.visa_country_entry_date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.visa_country_entry_date
-                  ? defaultData.visa_country_entry_date.substr(5, 2)
+                employeeVisaDetails.visa_country_entry_date
+                  ? employeeVisaDetails.visa_country_entry_date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.visa_country_entry_date
-                  ? defaultData.visa_country_entry_date.substr(0, 4)
+                employeeVisaDetails.visa_country_entry_date
+                  ? employeeVisaDetails.visa_country_entry_date.substr(0, 4)
                   : null
               }
               name="visa_country_entry_date"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.visa_country_entry_date
-                  ? moment(defaultData.visa_country_entry_date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.visa_country_entry_date
+                  ? moment(employeeVisaDetails.visa_country_entry_date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "visa_country_entry_date")}
@@ -1227,26 +1004,26 @@ const UpdateVisaDetails = ({ prevstep,
           <div onClick={handleFieldClick}>
             <Datepicker
               day={
-                defaultData.visa_country_exit_date
-                  ? defaultData.visa_country_exit_date.substr(8, 2)
+                employeeVisaDetails.visa_country_exit_date
+                  ? employeeVisaDetails.visa_country_exit_date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.visa_country_exit_date
-                  ? defaultData.visa_country_exit_date.substr(5, 2)
+                employeeVisaDetails.visa_country_exit_date
+                  ? employeeVisaDetails.visa_country_exit_date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.visa_country_exit_date
-                  ? defaultData.visa_country_exit_date.substr(0, 4)
+                employeeVisaDetails.visa_country_exit_date
+                  ? employeeVisaDetails.visa_country_exit_date.substr(0, 4)
                   : null
               }
               name="visa_country_exit_date"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
              placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.visa_country_exit_date
-                  ? moment(defaultData.visa_country_exit_date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.visa_country_exit_date
+                  ? moment(employeeVisaDetails.visa_country_exit_date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "visa_country_exit_date")}
@@ -1259,7 +1036,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Entry Permit{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Entry Permit{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
@@ -1322,7 +1099,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Visa Page {defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Visa Page {employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
@@ -1386,7 +1163,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            Medical Result{defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Medical Result{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
@@ -1446,7 +1223,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
           >
-            ID Application {defaultData.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
+            ID Application {employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">
@@ -1508,7 +1285,7 @@ const UpdateVisaDetails = ({ prevstep,
         <div className='flex items-center gap-x-2'>
           <p className='text-sm'>Yes</p>
           <input type="checkbox"
-            checked={defaultData.is_insurance_applicable}
+            checked={employeeVisaDetails.is_insurance_applicable}
             name='is_insurance_applicable_yes'
             onChange={(e) => handleEdit('is_insurance_applicable', e.target.checked)}
           />
@@ -1516,7 +1293,7 @@ const UpdateVisaDetails = ({ prevstep,
         <div className='flex items-center gap-x-2'>
           <p className='text-sm'>No</p>
           <input type="checkbox"
-            checked={!defaultData.is_insurance_applicable}
+            checked={!employeeVisaDetails.is_insurance_applicable}
             name='is_insurance_applicable_no'
             onChange={(e) => handleEdit('is_insurance_applicable', !e.target.checked)}
           />
@@ -1525,16 +1302,16 @@ const UpdateVisaDetails = ({ prevstep,
       </h2>
 
 
-      {defaultData.is_insurance_applicable && <div className='flex w-[100%] flex-wrap items-center gap-3'>
+      {employeeVisaDetails.is_insurance_applicable && <div className='flex w-[100%] flex-wrap items-center gap-3'>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            DHA ID{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            DHA ID{employeeVisaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="dha_id"
-            value={defaultData.dha_id}
+            value={employeeVisaDetails.dha_id}
             placeholder="DHA ID"
             className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
@@ -1548,10 +1325,10 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Card Number{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Card Number{employeeVisaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name="card_number"
-            value={defaultData.card_number}
+            value={employeeVisaDetails.card_number}
             placeholder="Card Number" className={`pl-2 bg-white rounded h-8 text-sm
            placeholder-[#555657] placeholder-opacity-50 w-[100%] 
            ${isEdit ? "text-black" : "text-gray-500"}`}
@@ -1565,10 +1342,10 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Policy{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Insurance Policy{employeeVisaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name='insurance_policy'
-            value={defaultData.insurance_policy}
+            value={employeeVisaDetails.insurance_policy}
             placeholder="Insurance Policy" className={`pl-2 bg-white rounded h-8 text-sm
            placeholder-[#555657] placeholder-opacity-50 w-[100%] 
            ${isEdit ? "text-black" : "text-gray-500"}`}
@@ -1582,10 +1359,10 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Company{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Insurance Company{employeeVisaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <input type="text" name='insurance_company'
-            value={defaultData.insurance_company}
+            value={employeeVisaDetails.insurance_company}
             placeholder="Insurance Company"
             className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
@@ -1599,31 +1376,31 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Active Date{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Insurance Active Date{employeeVisaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker
               day={
-                defaultData.insurance_active_date
-                  ? defaultData.insurance_active_date.substr(8, 2)
+                employeeVisaDetails.insurance_active_date
+                  ? employeeVisaDetails.insurance_active_date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.insurance_active_date
-                  ? defaultData.insurance_active_date.substr(5, 2)
+                employeeVisaDetails.insurance_active_date
+                  ? employeeVisaDetails.insurance_active_date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.insurance_active_date
-                  ? defaultData.insurance_active_date.substr(0, 4)
+                employeeVisaDetails.insurance_active_date
+                  ? employeeVisaDetails.insurance_active_date.substr(0, 4)
                   : null
               }
               name="insurance_active_date"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.insurance_active_date
-                  ? moment(defaultData.insurance_active_date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.insurance_active_date
+                  ? moment(employeeVisaDetails.insurance_active_date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "insurance_active_date")}
@@ -1636,31 +1413,31 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Expiry Date{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Insurance Expiry Date{employeeVisaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           <div onClick={handleFieldClick}>
             <Datepicker
               day={
-                defaultData.insurance_expiry_date
-                  ? defaultData.insurance_expiry_date.substr(8, 2)
+                employeeVisaDetails.insurance_expiry_date
+                  ? employeeVisaDetails.insurance_expiry_date.substr(8, 2)
                   : null
               }
               month={
-                defaultData.insurance_expiry_date
-                  ? defaultData.insurance_expiry_date.substr(5, 2)
+                employeeVisaDetails.insurance_expiry_date
+                  ? employeeVisaDetails.insurance_expiry_date.substr(5, 2)
                   : null
               }
               year={
-                defaultData.insurance_expiry_date
-                  ? defaultData.insurance_expiry_date.substr(0, 4)
+                employeeVisaDetails.insurance_expiry_date
+                  ? employeeVisaDetails.insurance_expiry_date.substr(0, 4)
                   : null
               }
               name="insurance_expiry_date"
               className={`pl-2 bg-white rounded h-8 text-sm placeholder-[#555657]
            placeholder-opacity-50 w-[100%] ${isEdit ? "text-black" : "text-gray-500"}`}
               selected={
-                defaultData.insurance_expiry_date
-                  ? moment(defaultData.insurance_expiry_date, "YYYY-MM-DD").toDate()
+                employeeVisaDetails.insurance_expiry_date
+                  ? moment(employeeVisaDetails.insurance_expiry_date, "YYYY-MM-DD").toDate()
                   : null
               }
               onChange={(date) => handleDateChange(date, "insurance_expiry_date")}
@@ -1672,7 +1449,7 @@ const UpdateVisaDetails = ({ prevstep,
             className="font-sfpro tracking-wide font-medium
                           text-input text-base mb-1"
           >
-            Insurance Card{defaultData.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
+            Insurance Card{employeeVisaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
           </label>
           {isEdit ? (
             <div className="flex items-center gap-x-2">

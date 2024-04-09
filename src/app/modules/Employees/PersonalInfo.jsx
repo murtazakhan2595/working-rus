@@ -65,7 +65,7 @@ const validationSchema = Joi.object({
     }),
 });
 
-const PersonalInfo = ({ nextstep, errors, setErrors }) => {
+const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProfilePhotoProps }) => {
   const getDataFromSessionStorage = (key) => {
     const serializedData = sessionStorage.getItem(key);
     const data = JSON.parse(serializedData);
@@ -96,9 +96,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
       ? storedData.residential_address
       : "",
     nic: storedData?.nic ? storedData.nic : "",
-    // passport_number: storedData?.passport_number
-    //   ? storedData.passport_number
-    //   : "",
     emergency_first_name: storedData?.emergency_first_name
       ? storedData.emergency_first_name
       : "",
@@ -150,12 +147,12 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
   };
 
 
-  useEffect(() => {
-    setDataInSessionStorage("personalInfo", personalInfo);
-  }, [personalInfo]);
-  useEffect(() => {
-    setDataInSessionStorage("profilePhoto", imagePreview);
-  }, [imagePreview]);
+  // useEffect(() => {
+  //   setDataInSessionStorage("personalInfo", personalInfo);
+  // }, [personalInfo]);
+  // useEffect(() => {
+  //   setDataInSessionStorage("profilePhoto", imagePreview);
+  // }, [imagePreview]);
 
   const handledate_of_birthChange = (date) => {
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
@@ -181,6 +178,8 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
       const imageError = { image: "Please upload an image." };
       setErrors(imageError);
     } else {
+      setPersonalInfoProps(personalInfo);
+      setProfilePhotoProps(imagePreview)
       setErrors({});
       nextstep();
     }

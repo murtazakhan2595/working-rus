@@ -59,7 +59,7 @@ const bankSchema = Joi.object({
 });
 
 
-const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
+const BankDetails = ({ errors, setErrors, prevstep, nextstep,setBankInfoProps }) => {
     const getDataFromSessionStorage = (key) => {
         const serializedData = sessionStorage.getItem(key);
         const data = JSON.parse(serializedData);
@@ -87,9 +87,9 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
         setErrors({ ...errors, [name]: null });
     };
 
-    useEffect(() => {
-        setDataInSessionStorage('bankInfo', bankInfo)
-    }, [bankInfo])
+    // useEffect(() => {
+    //     setDataInSessionStorage('bankInfo', bankInfo)
+    // }, [bankInfo])
 
     const handleNextStep = () => {
         const { error } = bankSchema.validate(
@@ -115,6 +115,7 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep }) => {
             }
             setErrors(validationErrors);
         } else {
+            setBankInfoProps(setBankInfo)
             nextstep();
         }
     };

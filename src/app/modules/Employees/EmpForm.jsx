@@ -15,7 +15,7 @@ import moment from "moment";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import { RiArrowDownSFill } from "react-icons/ri";
-import VisaDetials from "./VisaDetials";
+import VisaDetails from "./VisaDetails";
 
 const EmpForm = ({ baseUrl, token, userProfile }) => {
   const cookies = new Cookies();
@@ -24,6 +24,16 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
   const [subStep, setSubStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [personalInfo, setPersonalInfo] = useState({});
+  const [visaDetails, setVisaDetails] = useState({});
+  const [bankInfo, setBankInfo] = useState({});
+  const [departmentInfo, setDepartmentInfo] = useState({});
+  const [academicInfo, setAcademicInfo] = useState({});
+  const [certifications, setCertifications] = useState({});
+  const [profilePhoto, setProfilePhoto] = useState({});
+  const [professionalExperiance, setProfessionalExperiance] = useState({});
+  const [visaDetailsFiles, setVisaDetailsFiles] = useState({});
+  const [cv, setCv] = useState({});
 
 
   const totalSteps = 6;
@@ -33,22 +43,23 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
     setErrors({ ...errors, [name]: null });
   };
   const submitForm = async () => {
+    debugger
     try {
       const getDataFromSessionStorage = (key) => {
         const serializedData = sessionStorage.getItem(key);
         const data = JSON.parse(serializedData);
         return data;
       };
-      let personalInfo = getDataFromSessionStorage("personalInfo");
-      let visaDetails = getDataFromSessionStorage("visaDetails");
-      let bankInfo = getDataFromSessionStorage("bankInfo");
-      let departmentInfo = getDataFromSessionStorage("departmentInfo");
-      let academicInfo = getDataFromSessionStorage("academicInfo");
-      let certifications = getDataFromSessionStorage("certifications");
-      let profilePhoto = getDataFromSessionStorage("profilePhoto");
-      let proExp = getDataFromSessionStorage("proExp");
-      let cv = getDataFromSessionStorage("cv");
-      let visaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
+     // let personalInfo = getDataFromSessionStorage("personalInfo");
+     // let visaDetails = getDataFromSessionStorage("visaDetails");
+     // let bankInfo = getDataFromSessionStorage("bankInfo");
+     // let departmentInfo = getDataFromSessionStorage("departmentInfo");
+     // let academicInfo = getDataFromSessionStorage("academicInfo");
+     // let certifications = getDataFromSessionStorage("certifications");
+     // let profilePhoto = getDataFromSessionStorage("profilePhoto");
+     // let proExp = getDataFromSessionStorage("proExp");
+     // let cv = getDataFromSessionStorage("cv");
+     // let visaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
       // if (personalInfo && personalInfo.country_code && personalInfo.mobile_no) {
       //   personalInfo.mobile_no =
       //     personalInfo.country_code + personalInfo.mobile_no;
@@ -92,7 +103,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       );
 
       if (response.status === 200) {
-         for (const key in visaDetailsFiles) {
+        for (const key in visaDetailsFiles) {
           if (visaDetailsFiles.hasOwnProperty(key)) {
             const files = visaDetailsFiles[key];
             for (const file of files) {
@@ -103,8 +114,8 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
                   name: key,
                   description: `${key} File`,
                   document: {
-                    name:file.name,
-                    data:file.data,
+                    name: file.name,
+                    data: file.data,
                   },
                 },
                 {
@@ -139,7 +150,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
           }
         );
         if (cvResponse.status === 201) {
-          proExp.map(async (exp) => {
+          professionalExperiance.map(async (exp) => {
             let experience = {
               employee_id: userProfile.id,
               exp_organization: exp.exp_organization,
@@ -315,6 +326,8 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
     navigate("/");
   };
 
+  console.log(personalInfo,"personalInfp");
+
   return (
     <>
       <div className="py-6 bg-[#F9F9F9] lg:w-full">
@@ -363,14 +376,18 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             nextstep={nextStep}
             errors={errors}
             setErrors={setErrors}
+            setPersonalInfoProps={setPersonalInfo}
+            setProfilePhotoProps={setProfilePhoto}
           />
         )}
         {currentStep === 2 && (
-          <VisaDetials
+          <VisaDetails
             prevstep={prevStep}
             nextstep={nextStep}
             errors={errors}
             setErrors={setErrors}
+            setVisaDetailsProps={setVisaDetails}
+            setVisaDetailsFilesProps={setVisaDetailsFiles}
           />
         )}
         {currentStep === 3 && subStep === 1 && (
@@ -380,6 +397,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             substep={subStep}
             prevstep={prevStep}
             nextstep={nextStep}
+            setCvProps={setCv}
           />
         )}
         {currentStep === 3 && subStep === 2 && (
@@ -389,6 +407,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             substep={subStep}
             prevstep={prevStep}
             nextstep={nextStep}
+            setProfessionalExperianceProps={setProfessionalExperiance}
           />
         )}
         {currentStep === 4 && (
@@ -398,6 +417,8 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             prevstep={prevStep}
             nextstep={nextStep}
             handleChange={handleFormChange}
+            setAcademicInfoProps={setAcademicInfo}
+            setCertificationsProps={setCertifications}
           />
         )}
         {currentStep === 5 && (
@@ -406,6 +427,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             setErrors={setErrors}
             prevstep={prevStep}
             nextstep={nextStep}
+            setBankInfoProps={setBankInfo}
           />
         )}
         {currentStep === 6 && (
@@ -415,6 +437,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             setErrors={setErrors}
             handleChange={handleFormChange}
             submitForm={submitForm}
+            setDepartmentInfoProps={setDepartmentInfo}
           />
         )}
       </div>

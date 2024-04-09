@@ -12,6 +12,7 @@ const ProfessionalExp = ({
   substep,
   prevstep,
   nextstep,
+  setProfessionalExperianceProps,
 }) => {
   const getDataFromSessionStorage = (key) => {
     const serializedData = sessionStorage.getItem(key);
@@ -69,15 +70,16 @@ const ProfessionalExp = ({
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
     } else {
+      setProfessionalExperianceProps(experienceSections)
       setErrors({});
       nextstep();
     }
   };
 
 
-  useEffect(() => {
-    setDataInSessionStorage("proExp", experienceSections);
-  }, [experienceSections]);
+  // useEffect(() => {
+  //   setDataInSessionStorage("proExp", experienceSections);
+  // }, [experienceSections]);
 
   return (
     <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
