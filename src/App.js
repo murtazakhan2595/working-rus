@@ -38,6 +38,7 @@ import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestMana
 import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
 import EditDataForm from "./app/modules/EmployeesData/EditDataForm.jsx";
 import ViewEmpForm from "./app/modules/ViewEmployee/ViewEmpForm.jsx";
+import Test from "./app/modules/Profile/Test.jsx";
 
 function App({
   setUserProfile,
@@ -148,6 +149,11 @@ function App({
                         exact
                         path="/employees"
                         element={<EmpDataSheet />}
+                      />
+                      <Route
+                        exact
+                        path="/test"
+                        element={<Test />}
                       />
                       <Route
                         exact

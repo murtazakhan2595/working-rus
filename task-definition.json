@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:807410046616:task-definition/harms-frontend-td:3",
+    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:807410046616:task-definition/harms-frontend-td:96",
     "containerDefinitions": [
         {
             "name": "hrms-frontend",
@@ -16,10 +16,8 @@
             ],
             "essential": true,
             "environment": [],
-            "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
-            "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -29,14 +27,15 @@
                     "awslogs-stream-prefix": "ecs"
                 },
                 "secretOptions": []
-            }
+            },
+            "systemControls": []
         }
     ],
     "family": "harms-frontend-td",
     "taskRoleArn": "arn:aws:iam::807410046616:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::807410046616:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 3,
+    "revision": 96,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -76,13 +75,13 @@
     "requiresCompatibilities": [
         "FARGATE"
     ],
-    "cpu": "1024",
-    "memory": "2048",
+    "cpu": "2048",
+    "memory": "4096",
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2023-10-05T11:43:09.134Z",
-    "registeredBy": "arn:aws:sts::807410046616:assumed-role/aws-training-account-admin/mnaushad@keplerworx.com",
+    "registeredAt": "2024-04-09T06:35:47.927Z",
+    "registeredBy": "arn:aws:sts::807410046616:assumed-role/aws-training-account-admin/naushad@tecbrix.com",
     "tags": []
 }

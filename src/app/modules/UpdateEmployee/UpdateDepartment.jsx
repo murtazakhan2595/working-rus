@@ -12,27 +12,7 @@ import moment from 'moment';
 import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 import CustomSelect from './customSelect';
-import { HeadOfDepartment } from '../../../data/Data';
-
-const jobRoles = [
-  { label: 'Intern', value: 'Intern' },
-  { label: 'Part-Time', value: 'Part-Time' },
-  { label: 'Full-Time', value: 'Full-Time' },
-  { label: 'Contract', value: 'Contract' },
-  { label: 'Freelancer', value: 'Freelancer' }
-];
-
-const employeeStatus = [
-  { label: 'Active', value: 'Active' },
-  { label: 'Terminated', value: 'Terminated' },
-  { label: 'Deceased', value: 'Deceased' },
-  { label: 'Resigned', value: 'Resigned' },
-  { label: 'Probation', value: 'Probation' },
-  { label: 'Notice Period', value: 'Notice Period' },
-  { label: 'Exit', value: 'Exit' },
-  { label: 'Absconded', value: 'Absconded' },
-  { label: 'Legal Case', value: 'Legal Case' }
-];
+import { HeadOfDepartment, employeeStatus, jobRoles } from '../../../data/Data';
 
 
 const departmentSchema = Joi.object({
@@ -307,7 +287,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                         menuPlacement="top"
                         isDisabled={isEdit ? false : true}
                         name="employee_status"
-                        value={employeeStatus.find(option => option.label === defaultData.employee_status)}
+                        value={employeeStatus?.find(option => option.label === defaultData.employee_status)}
                         onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
                         options={employeeStatus}
                         isSearchable={false}

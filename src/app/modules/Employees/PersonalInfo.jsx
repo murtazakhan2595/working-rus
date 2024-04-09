@@ -708,7 +708,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
                   // value={countryCodes.find((country) => country.dial_code === personalInfo.dial_code)}
                   value={countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code) ?
                     {
-                      label: `${countryCodes.find(option => option.dial_code === personalInfo.country_code).dial_code} 
+                      label: `${countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code).dial_code} 
   ${countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code).name}`,
                       value: personalInfo.emergency_country_code
                     } : null}

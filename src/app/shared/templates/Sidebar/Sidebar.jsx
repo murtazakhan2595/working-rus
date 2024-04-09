@@ -1,22 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
-import { MdLock, MdOutlinePayment, MdOutlineTimeToLeave } from "react-icons/md";
+import { MdExitToApp, MdLock, MdOutlineAccountTree, MdOutlineCalendarMonth, MdOutlineLogout, MdOutlinePayment, MdOutlineTimeToLeave, MdSettings } from "react-icons/md";
 import { PiSuitcaseRollingBold } from "react-icons/pi";
 import {
-  AiOutlineCaretDown,
-  AiOutlineCaretUp,
   AiOutlinePlus,
 } from "react-icons/ai";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleUp, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaAngleDown } from "react-icons/fa6";
 import { GoProjectSymlink } from "react-icons/go";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
-import {
-  TbLayoutSidebarRightCollapse,
-  TbLayoutSidebarLeftCollapse,
-} from "react-icons/tb";
 import logo from "../../../../assets/images/logo.png";
+import hrdb from "../../../../assets/images/hrdb.svg";
+import leavemgt from "../../../../assets/images/leavemgt.svg";
+import taskmgt from "../../../../assets/images/taskmgt.svg";
+import recruit from "../../../../assets/images/recruit.svg";
 import { setUserLogout } from "../../../../state/actions/UserAction";
 import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
@@ -25,6 +24,9 @@ import axios from "axios";
 import { LiaHomeSolid } from "react-icons/lia";
 import { RiProfileLine } from "react-icons/ri";
 import { BiSpreadsheet } from "react-icons/bi";
+import { BsPersonFillGear, BsPersonGear } from "react-icons/bs";
+import { LuFolderCog2 } from "react-icons/lu";
+import { GrTree } from "react-icons/gr";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -37,13 +39,54 @@ const Sidebar = ({
   const location = useLocation();
   const navigate = useNavigate();
   const cookies = new Cookies();
-  const [isProjectOpen, setisProjectOpen] = useState(false);
+  const [isProjectOpen, setIsProjectOpen] = useState(false);
   const [isModelOpen, setisModelOpen] = useState(false);
   const [isLinksOpen, setIsLinksOpen] = useState(false);
+  const [isDbOpen, setIsDbOpen] = useState(false);
+  const [isRecruitmentOpen, setIsRecruitmentOpen] = useState(false);
+  const [isLeaveOpen, setIsLeaveOpen] = useState(false);
   const [projects, setProjects] = useState({});
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
   const [projectsCount, setProjectCount] = useState(0);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [employee, setEmployee] = useState(null);
+  const [expanded, setExpanded] = useState(true);
+
+  const toggleDropdown = (dropdownName) => {
+    if (dropdownName === "HRDatabase") {
+      setIsDbOpen((prev) => !prev);
+      setIsRecruitmentOpen(false);
+      setIsLeaveOpen(false);
+      setIsProjectOpen(false);
+      setIsProfileOpen(false);
+    } else if (dropdownName === "Recruitment") {
+      setIsRecruitmentOpen((prev) => !prev);
+      setIsDbOpen(false);
+      setIsLeaveOpen(false);
+      setIsProjectOpen(false);
+      setIsProfileOpen(false);
+    } else if (dropdownName === "LeaveManagement") {
+      setIsLeaveOpen((prev) => !prev);
+      setIsDbOpen(false);
+      setIsRecruitmentOpen(false);
+      setIsProjectOpen(false);
+      setIsProfileOpen(false);
+    } else if (dropdownName === "Projects") {
+      setIsProjectOpen((prev) => !prev);
+      setIsProfileOpen(false);
+      setIsDbOpen(false);
+      setIsRecruitmentOpen(false);
+      setIsLeaveOpen(false);
+    } else if (dropdownName === "Profile") {
+      setIsProfileOpen((prev) => !prev);
+      setIsProjectOpen(false);
+      setIsDbOpen(false);
+      setIsRecruitmentOpen(false);
+      setIsLeaveOpen(false);
+    }
+  };
 
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -81,152 +124,308 @@ const Sidebar = ({
     getProjects();
   }, [isModelOpen, sidebarRefresh]);
 
+
+  const fetchData = async () => {
+    const employeeResponse = await axios.get(`${baseUrl}/emp/${userProfile.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    console.log('employee', employeeResponse)
+    const employeeData = employeeResponse.data;
+    setEmployee(employeeData)
+    setProfileImage(employeeResponse.data?.profile_picture.file || employeeResponse.data?.profile_picture);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  console.log('i am sidebar condtion', isSidebarOpen)
+
   return (
     <>
       <div className="flex">
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`h-screen bg-cover bg-[100%] bg-[#283b91]  w-56  p-4  ${isSidebarOpen ? "" : "hidden"
+          className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-lg  ${isSidebarOpen ? "w-[14.2rem]" : "w-24"
             }`}
+
         >
-          <div className="text-xl z-10 bg-white py-3 px-7 flex flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 rounded-md relative">
+          <div className="text-xl z-10 py-3 px-7 flex border-b border-gray-300 flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 relative">
             <img src={logo} className="inline-block w-12" alt="logo" />
-            <h1 className="inline-block">TECBRIX</h1>
+            <h1 className={`inline-block overflow-hidden transition-all ${isSidebarOpen ? 'w-28' : 'w-0'}`}>TECBRIX</h1>
           </div>
-          <ul className="overflow-y-auto max-h-[calc(98vh-100px)] hideScroll -mt-10">
+          <ul className="overflow-y-auto overflow-x-hidden max-h-[calc(98vh-100px)] hideScroll -mt-10 m-4">
             <li>
               <div className="relative invisible">
                 <IoIosSearch className="absolute top-3 left-3 text-white" />
                 <input
                   type="search"
                   placeholder="Search"
-                  className="focus:outline-none focus:border-non bg-[#8292e2] py-2 pl-10 pr-4 text-white placeholder-white border-none w-48 rounded-md"
+                  className="focus:outline-none focus:border-non bg-[#8292e2] py-2 pl-10 pr-4  placeholder-white border-none w-48 rounded-md"
                 />
               </div>
             </li>
 
             {userProfile.role === 1 && (
               <>
-                <li>
+                <li className="group">
                   <Link to="/">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
+                    <div className={`flex mb-3 mt-5 rounded-md py-2 t px-2 items-center gap-1 hover:bg-[#DAEFF8] ${location.pathname === "/" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
+                      }`}>
+                      <div className={`text-xl ${!isSidebarOpen ? 'ml-[10px]' : ''}`}>
                         <LiaHomeSolid />
                       </div>
-                      <p className="text-white">Home</p>
+                      <p className={`overflow-hidden transition-all ${isSidebarOpen ? 'w-28' : 'w-0'}`}>Home</p>
                     </div>
                   </Link>
-                </li>
-                <li>
-                  <Link to="/profile">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <RiProfileLine />
-                      </div>
-                      <p className="text-white">Profile</p>
+
+                  {!isSidebarOpen && (
+                    <div className="absolute rounded-md top-24 ml-20
+          bg-white w-24 text-sm
+          invisible opacity-20 -translate-x-3 transition-all
+          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+
+                      <p className="m-1 px-2 py-1 rounded-lg text-[#5C5E64] hover:bg-[#DAEFF8] hover:text-[#0D2282]"><Link to="/">Home</Link></p>
                     </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/employees">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/employees" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <BiSpreadsheet />
-                      </div>
-                      <p className="text-white">Employee Sheet</p>
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/jobs">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <MdOutlinePayment />
-                      </div>
-                      <p className="text-white">Recruitment</p>
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/leave-application">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
-                        ? "bg-[#259ED8]"
-                        : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <MdOutlineTimeToLeave />
-                      </div>
-                      <p className="text-white">Leave Application</p>
-                    </div>
-                  </Link>
+                  )}
                 </li>
 
-                <div className="text-white rounded-lg mb-2">
+                <li className="group">
                   <div
-                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 ${location.pathname === "/leave-list" ||
-                      location.pathname === "/leave-calender" ||
-                      location.pathname === "/leave-balance"
-                      ? "bg-[#25A8E0]"
-                      : ""
-                      } rounded-lg cursor-pointer`}
-                    onClick={() => setIsLinksOpen(!isLinksOpen)}
+                    onClick={() => toggleDropdown("HRDatabase")}
+                    className={`flex items-center justify-between py-2 px-2 my-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isDbOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
+                      } rounded-lg cursor-pointer `}
                   >
-                    <PiSuitcaseRollingBold className="text-4xl" />
-                    Leave Application and Data
+                    <LuFolderCog2 className={`text-xl mr-2 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+                    <span className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
+                      <p className="flex-grow">People Team</p>
+                      <FaAngleDown className={`text-xs transition-transform duration-300 ${isDbOpen ? 'transform rotate-180' : ''}`} />
+                    </span>
                   </div>
-                  {isLinksOpen && (
-                    <>
-                      <Link to="/leave-list">
+
+                  {!isSidebarOpen && (
+                    <div className="absolute rounded-md top-40 ml-20
+          bg-white w-32 text-base
+          invisible opacity-20 -translate-x-3 transition-all
+          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+
+                      <div className="flex flex-col bg-white rounded-lg">
+                        <li>
+                          <Link to="/employees">
+                            <div
+                              className={`flex rounded-md mx-1 my-1 py-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/employees" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                }`}
+                            >
+                              <p className="text-sm px-2">Employee Sheet</p>
+                            </div>
+                          </Link>
+                          <Link to="/add-employee">
+                            <div
+                              className={`flex rounded-md mx-1 my-1 py-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/add-employee" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                }`}
+                            >
+                              <p className="text-sm px-2">Add Employee</p>
+                            </div>
+                          </Link>
+                        </li>
+                      </div>
+                    </div>
+                  )}
+                </li>
+                {(isDbOpen && isSidebarOpen) &&
+                  <div className="flex flex-col mt-2 bg-[#F7F8FA]">
+                    <li>
+                      <Link to="/employees">
                         <div
-                          className={`py-2 pl-10 ${location.pathname === "/leave-list"
-                            ? "border-2 border-[#259ED8] rounded-lg my-1"
-                            : ""
+                          className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/employees" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
-                          Leave Applications
+                          <p className="text-sm">Employee Sheet</p>
+                        </div>
+                      </Link>
+                      <Link to="/add-employee">
+                        <div
+                          className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/add-employee" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                            }`}
+                        >
+                          <p className="text-sm">Add Employee</p>
+                        </div>
+                      </Link>
+                    </li>
+
+                  </div>
+                }
+                <li className="group">
+                  <div
+                    onClick={() => toggleDropdown("Recruitment")}
+                    className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isRecruitmentOpen ? "bg-[#DAEFF8] text-[#0D2282]" : " text-[#5C5E64]"
+                      } rounded-lg cursor-pointer`}
+                  >
+                    <BsPersonFillGear className={`text-xl mr-2 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+                    <div className={`flex items-center gap-x-2 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
+                      <p className="flex-grow">Recruitment</p>
+                      <FaAngleDown className={`text-xs transition-transform duration-300 ${isRecruitmentOpen ? 'transform rotate-180' : ''}`} />
+                    </div>
+                  </div>
+                  {!isSidebarOpen && (
+                    <div className="absolute rounded-md top-52 ml-20
+          bg-white w-32 text-base
+          invisible opacity-20 -translate-x-3 transition-all
+          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+
+                      <div className="flex flex-col rounded-lg bg-white">
+                        <li>
+                          <Link to="/jobs">
+                            <div
+                              className={`flex rounded-md mx-1 my-2 py-2 px-2 items-center hover:bg-[#DAEFF8] hover:text-[#0D2282] gap-x-1 ${location.pathname === "/jobs" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                }`}
+                            >
+                              <p className="text-sm">Jobs</p>
+                            </div>
+                          </Link>
+                          <Link to="/job-post">
+                            <div
+                              className={`flex rounded-md mx-1 my-2 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282]  ${location.pathname === "/job-post" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                }`}
+                            >
+                              <p className="text-sm">Post a Job</p>
+                            </div>
+                          </Link>
+                        </li>
+
+                      </div>
+                    </div>
+                  )}
+                </li>
+
+                {(isRecruitmentOpen && isSidebarOpen) &&
+                  <div className="flex flex-col mt-2 bg-[#F7F8FA]">
+                    <li>
+                      <Link to="/jobs">
+                        <div
+                          className={`flex rounded-md my-2 py-2 px-4 items-center hover:bg-[#DAEFF8] hover:text-[#0D2282] gap-x-1 ${location.pathname === "/jobs" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                            }`}
+                        >
+                          <p className="text-sm">Jobs</p>
+                        </div>
+                      </Link>
+                      <Link to="/job-post">
+                        <div
+                          className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282]  ${location.pathname === "/job-post" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                            }`}
+                        >
+                          <p className="text-sm">Post a Job</p>
+                        </div>
+                      </Link>
+                    </li>
+
+                  </div>
+                }
+                <li className="group">
+                  <div
+                    onClick={() => toggleDropdown("LeaveManagement")}
+                    className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
+                      } rounded-lg cursor-pointer`}
+                  >
+                    <GrTree className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+                    <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
+                      <p className="flex-grow">Leave Management</p>
+                      <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />
+                    </div>
+                  </div>
+                  {!isSidebarOpen && (
+                    <div className="absolute rounded-md top-56 ml-20
+          bg-white w-32 text-base
+          invisible opacity-20 -translate-x-3 transition-all
+          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+
+                      <div className="flex flex-col rounded-lg bg-white">
+                        <li>
+                          <Link to="/leave-application">
+                            <div
+                              className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                }`}
+                            >
+                              <p className="text-sm">Leave Application</p>
+                            </div>
+                          </Link>
+                          <Link to="/leave-calender">
+                            <div
+                              className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                }`}
+                            >
+                              <p className="text-sm">Leave Calender</p>
+                            </div>
+                          </Link>
+                          <Link to="/leave-list">
+                            <div
+                              className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                }`}
+                            >
+                              <p className="text-sm">Leave List</p>
+                            </div>
+                          </Link>
+                          <Link to="/leave-balance">
+                            <div
+                              className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                }`}
+                            >
+                              <p className="text-sm">Leave Balance</p>
+                            </div>
+                          </Link>
+                        </li>
+
+                      </div>
+                    </div>
+                  )}
+                </li>
+
+                {(isLeaveOpen && isSidebarOpen) &&
+                  <div className="flex flex-col mt-2 bg-[#F7F8FA]">
+                    <li>
+                      <Link to="/leave-application">
+                        <div
+                          className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                            }`}
+                        >
+                          <p className="text-sm">Leave Application</p>
                         </div>
                       </Link>
                       <Link to="/leave-calender">
                         <div
-                          className={`py-2 pl-10 ${location.pathname === "/leave-calender"
-                            ? "border-2 border-[#259ED8] rounded-lg my-1"
-                            : ""
+                          className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
-                          Leave Calendar
+                          <p className="text-sm">Leave Calender</p>
+                        </div>
+                      </Link>
+                      <Link to="/leave-list">
+                        <div
+                          className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                            }`}
+                        >
+                          <p className="text-sm">Leave List</p>
                         </div>
                       </Link>
                       <Link to="/leave-balance">
                         <div
-                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
-                            ? "border-2 border-[#259ED8] rounded-lg my-1"
-                            : ""
+                          className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
-                          Leave Balance
+                          <p className="text-sm">Leave Balance</p>
                         </div>
                       </Link>
-                    </>
-                  )}
-                </div>
+                    </li>
+
+                  </div>
+                }
 
               </>
             )}
+
             {userProfile.role === 3 && (
               <>
                 <li>
@@ -494,24 +693,42 @@ const Sidebar = ({
                 <hr className="opacity-40" />
 
                 <li
-                  onClick={() => {
-                    setisProjectOpen(!isProjectOpen);
-                  }}
-                  className="flex mb-1 mt-3 justify-between rounded-md py-2 px-4 items-center gap-1"
+                  onClick={() => toggleDropdown("Projects")}
+                  className={`flex group mb-1 mt-3 justify-between hover:bg-[#DAEFF8] hover:text-[#0D2282] rounded-md py-2 px-2 items-center gap-1 cursor-pointer ${isProjectOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
+                    }`}
                 >
                   <div className="flex gap-1">
-                    <GoProjectSymlink className="text-white text-xl" />{" "}
-                    <p className="text-white">Projects</p>
+                    <GoProjectSymlink className={`text-xl ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />{" "}
+                    <p className={`${isSidebarOpen ? 'block' : 'hidden'}`}>Projects</p>
                   </div>
-                  {isProjectOpen ? (
-                    <AiOutlineCaretUp className="text-white text-xs" />
-                  ) : (
-                    <AiOutlineCaretDown className="text-white text-xs" />
-                  )}
+                  <FaAngleDown
+                    className={`text-xs transform transition-transform ${isProjectOpen ? 'rotate-180' : ''
+                      } ${isSidebarOpen ? 'block' : 'hidden'}`}
+                  />
+                  {!isSidebarOpen && <div className="absolute rounded-md top-60 ml-20
+          bg-white w-32 text-base
+          invisible opacity-20 -translate-x-3 transition-all
+          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
+                    <div className="max-h-[20vh] overflow-y-auto hideScroll p-1">
+                      {projects?.map((project, index) => (
+                        <div key={index} className="flex flex-col gap-2">
+                          <div
+                            onClick={() => {
+                              navigate(`/project/${project.id}`);
+                            }}
+                            className="flex items-center rounded-md gap-3 mb-1 cursor-pointer hover:bg-[#DAEFF8] text-[#616366] hover:text-[#0D2282]"
+                          >
+                            <div className="bg-[#616366] rounded-md w-[22px] h-[22px]"></div>
+                            <div className="text-sm">{project.name}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>}
                 </li>
-                {isProjectOpen && (
+                {(isProjectOpen && isSidebarOpen) && (
                   <>
-                    <div className="flex flex-col rounded-xl mb-4 p-2 bg-[#202F72]">
+                    <div className="flex flex-col rounded-xl mb-4 p-2 bg-[#F0F1F2] ">
                       <div className="flex justify-between mb-1 items-center">
                         <div className="flex gap-1">
                           {projectsCount > 10 && (
@@ -520,13 +737,13 @@ const Sidebar = ({
                                 onClick={() => {
                                   getProjects(previousPage);
                                 }}
-                                className="text-white text-[0.65rem] text-xs opacity-60"
+                                className="text-[#616366] text-[0.65rem] text-xs opacity-60"
                               />
                               <FaChevronRight
                                 onClick={() => {
                                   getProjects(nextPage);
                                 }}
-                                className="text-white text-[0.65rem] opacity-60"
+                                className="text-[#616366] text-[0.65rem] opacity-60"
                               />
                             </>
                           )}
@@ -535,10 +752,11 @@ const Sidebar = ({
                           <div className="text-xs">{projectsCount}</div>
                           {userProfile.role !== 4 && (
                             <AiOutlinePlus
+                              title="Add Project"
                               onClick={() => {
                                 setisModelOpen(true);
                               }}
-                              className="text-white text-sm hover:cursor-pointer"
+                              className="text-[#616366] text-base hover:cursor-pointer"
                             />
                           )}
                         </div>
@@ -550,10 +768,10 @@ const Sidebar = ({
                               onClick={() => {
                                 navigate(`/project/${project.id}`);
                               }}
-                              className="flex gap-3 mb-1 cursor-pointer"
+                              className="flex items-center rounded-md gap-3 mb-1 cursor-pointer hover:bg-[#DAEFF8] text-[#616366] hover:text-[#0D2282]"
                             >
-                              <div className="bg-blue-950 rounded-md w-[25px] h-[25px]"></div>
-                              <div className="text-white">{project.name}</div>
+                              <div className="bg-[#616366] rounded-md w-[25px] h-[25px]"></div>
+                              <div className="text-sm">{project.name}</div>
                             </div>
                           </div>
                         ))}
@@ -566,37 +784,116 @@ const Sidebar = ({
 
             <hr className="opacity-40" />
 
-            <li
-              onClick={() => {
-                cookies.set("token", "", { path: "*" });
-                setUserLogout();
-                navigate("/");
-              }}
-              className="flex mb-1 mt-1  rounded-md py-2 px-4 items-center gap-1"
-            >
-              <MdLock className="text-white text-xl" />{" "}
-              <p className="text-white cursor-pointer">Logout</p>
+            <li className={`${isSidebarOpen ? 'bg-white py-2 px-2 rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1' : ''}`}>
+
+              <div className={`flex group items-center gap-x-2 py-3 ${isSidebarOpen ? 'bg-[#F0F1F2]' : 'borderr border--[#5C5E64]'} px-2 rounded-lg cursor-pointer`}>
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt={`${employee?.first_name} ${employee?.last_name}'s Picture`}
+                    style={{ width: "45px", height: "45px", borderRadius: "50%" }}
+                  />
+                ) : (
+                  <>
+                    {employee?.first_name?.toUpperCase().slice(0, 1)}
+                    {employee?.last_name?.toUpperCase().slice(0, 1)}
+                  </>
+                )}
+
+                {!isSidebarOpen && (
+                  <div className="absolute rounded-md top-80 ml-20
+          bg-white w-40 text-sm
+          invisible opacity-20 -translate-x-3 transition-all
+          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+
+                    <div className="flex items-center bg-[#F0F1F2] rounded-lg m-1">
+                      <div className={`flex group items-center gap-x-2 py-3 px-2 rounded-lg cursor-pointer`}>
+                        {profileImage ? (
+                          <img
+                            src={profileImage}
+                            alt={`${employee?.first_name} ${employee?.last_name}'s Picture`}
+                            style={{ width: "45px", height: "45px", borderRadius: "50%" }}
+                          />
+                        ) : (
+                          <>
+                            {employee?.first_name?.toUpperCase().slice(0, 1)}
+                            {employee?.last_name?.toUpperCase().slice(0, 1)}
+                          </>
+                        )}
+                      </div>
+                      <div className={`flex flex-col text-[#5C5E64]`} >
+                        <div className="flex items-center gap-x-2">
+                          <div className="font-semibold">{employee?.username}</div>
+                        </div>
+                        <div className="text-xs">{employee?.email}</div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-y-2 mt-2 mx-1">
+                      <Link to="/profile" className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]">
+                        <p>Profile Settings</p>
+                        <BsPersonGear />
+                      </Link>
+                      <div className="flex items-center justify-between px-3 py-1 mb-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+                        onClick={() => {
+                          cookies.set("token", "", { path: "*" });
+                          setUserLogout();
+                          navigate("/");
+                        }}>
+                        <p>Logout</p>
+                        <MdOutlineLogout />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className={`flex flex-col text-[#5C5E64] ${isSidebarOpen ? 'block' : 'hidden'}`} onClick={() => toggleDropdown("Profile")}>
+                  <div className="flex items-center gap-x-2">
+                    <div className="font-semibold">{employee?.username}</div>
+                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isProfileOpen ? 'transform rotate-180' : ''}`} />
+                  </div>
+                  <div className="text-xs">{employee?.email}</div>
+                </div>
+              </div>
+              {(isProfileOpen && isSidebarOpen) && (
+                <div className="flex flex-col gap-y-2 mt-2">
+                  <Link to="/profile" className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]">
+                    <p>Profile Settings</p>
+                    <BsPersonGear />
+                  </Link>
+                  <div className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+                    onClick={() => {
+                      cookies.set("token", "", { path: "*" });
+                      setUserLogout();
+                      navigate("/");
+                    }}>
+                    <p>Logout</p>
+                    <MdOutlineLogout />
+                  </div>
+                </div>
+              )}
             </li>
-          </ul>
-        </div>
+          </ul >
+        </div >
 
         {/* Sidebar collapse button */}
-        <button
-          className={`bg-[#283b91] text-white p-1.5 absolute ${isSidebarOpen ? "left-[13.5rem]" : "left-0"
-            } rounded-e-lg top-3 mt-4 mr-4`}
+        <button button
+          className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${isSidebarOpen ? "left-[13rem] top-10" : "left-20 top-8"
+            } rounded-lg  mt-4 mr-4 z-10`}
           onClick={handleSidebarToggle}
         >
-          {isSidebarOpen ? (
-            <TbLayoutSidebarLeftCollapse className="text-xl" />
-          ) : (
-            <TbLayoutSidebarRightCollapse className="text-xl" />
-          )}
-        </button>
+          {
+            isSidebarOpen ? (
+              <FaAngleDoubleLeft className="text-xl" />
+            ) : (
+              <FaAngleDoubleRight className="text-xl" />
+            )}
+        </button >
 
         <Outlet isSidebarOpen={isSidebarOpen} />
-      </div>
+      </div >
 
-      {isModelOpen && <ProjectModel onClose={closeProjectModal} />}
+      {isModelOpen && <ProjectModel onClose={closeProjectModal} />
+      }
     </>
   );
 };
