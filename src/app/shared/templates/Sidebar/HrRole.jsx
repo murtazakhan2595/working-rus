@@ -9,7 +9,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { setUserLogout } from "../../../../state/actions/UserAction";
 import { LiaHomeSolid } from "react-icons/lia";
 import { BsPersonFillGear } from "react-icons/bs";
-import { LuFolderCog2 } from "react-icons/lu";
+import { LuCalendarDays, LuFolderCog2 } from "react-icons/lu";
 import { GrTree } from "react-icons/gr";
 
 const HrRole = ({ isSidebarOpen }) => {
@@ -204,7 +204,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
           className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
             } rounded-lg cursor-pointer`}
         >
-          <MdOutlineAccountTree className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+          <LuCalendarDays  className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
           <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
             <p className="flex-grow">Leave Management</p>
             <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />

@@ -19,7 +19,7 @@ import Cookies from "universal-cookie";
 import axios from "axios";
 import { LiaHomeSolid } from "react-icons/lia";
 import { BsPersonFillGear, BsPersonGear } from "react-icons/bs";
-import { LuFolderCog2 } from "react-icons/lu";
+import { LuCalendarDays, LuFolderCog2 } from "react-icons/lu";
 import { GrTree } from "react-icons/gr";
 import HrRole from "./HrRole";
 import ManagerRole from "./ManagerRole";
@@ -327,7 +327,7 @@ const Sidebar = ({
                     className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                       } rounded-lg cursor-pointer`}
                   >
-                    <MdOutlineAccountTree  className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+                    <LuCalendarDays  className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
                     <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
                       <p className="flex-grow">Leave Management</p>
                       <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />
@@ -443,8 +443,8 @@ const Sidebar = ({
                     }`}
                 >
                   <div className="flex gap-1">
-                    <GoProjectSymlink className={`text-xl ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />{" "}
-                    <p className={`${isSidebarOpen ? 'block' : 'hidden'}`}>Projects</p>
+                    <MdOutlineAccountTree className={`text-xl ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />{" "}
+                    <p className={`${isSidebarOpen ? 'block' : 'hidden'}`}>Task Management</p>
                   </div>
                   <FaAngleDown
                     className={`text-xs transform transition-transform ${isProjectOpen ? 'rotate-180' : ''

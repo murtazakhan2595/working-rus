@@ -14,6 +14,7 @@ import Cookies from "universal-cookie";
 import { LiaHomeSolid } from "react-icons/lia";
 import { BsPersonFillGear, BsPersonGear } from "react-icons/bs";
 import { GrTree } from "react-icons/gr";
+import { LuCalendarDays } from "react-icons/lu";
 
 
 const EmployeeRole = ({isSidebarOpen }) => {
@@ -74,7 +75,7 @@ const EmployeeRole = ({isSidebarOpen }) => {
                     className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                         } rounded-lg cursor-pointer`}
                 >
-                    <MdOutlineAccountTree className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+                    <LuCalendarDays  className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
                     <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
                         <p className="flex-grow">Leave Management</p>
                         <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />
