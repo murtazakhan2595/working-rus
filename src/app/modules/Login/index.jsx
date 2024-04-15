@@ -3,7 +3,6 @@ import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
 import loginBg from "../.././../assets/images/login-bg.png";
 import logo from "../.././../assets/images/tecbrix-logo.png";
-import Joi from "joi";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,7 +11,6 @@ import Cookies from "universal-cookie";
 import { connect } from "react-redux";
 import { setUserProfile, setToken } from "../../../state/actions/UserAction";
 import OfflinePopUp from "./OfflinePopUp";
-import CustomLoader from "../../../common/CustomLoader";
 
 function Login({ setUserProfile, baseUrl, setToken }) {
   const navigate = useNavigate();

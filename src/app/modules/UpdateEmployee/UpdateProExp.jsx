@@ -85,9 +85,9 @@ const ProfessionalExp = ({
       if (!disableEndDate && !experience.exp_end_date) {
         fieldErrors[`exp_end_date_${i}`] = "End Date is required.";
       }
-      // if (!experience.exp_letter?.hasOwnProperty("name")) {
-      //   fieldErrors[`exp_letter_${i}`] = "Experience Letter is required.";
-      // }
+      if (!experience.exp_letter?.hasOwnProperty("name")) {
+        fieldErrors[`exp_letter_${i}`] = "Experience Letter is required.";
+      }
     }
 
     if (Object.keys(fieldErrors).length > 0) {
@@ -459,22 +459,12 @@ const ProfessionalExp = ({
                               className={`flex items-center gap-x-2 ${isEdit ? "opacity-50" : "text-gray-500"
                                 }`}
                             >
-                              {/* <button
-                                className="text-blue-600 underline"
-                                onClick={() =>
-                                  downloadAttachment(
-                                    experience.exp_letter.file,
-                                    experience.exp_letter.name
-                                  )
-                                }
-                              >
+                              <p className="text-blue-600">
                                 {experience.exp_letter.name ? experience.exp_letter.name : "Not available"}
-                              </button> */}
-                              <Tooltip
-                                title="View Doc"
-                              >
+                              </p>
+                              <Tooltip title="View Doc">
                                 <button
-                                  className="text-blue-600 underline"
+                                  className="text-blue-600"
                                   onClick={() =>
                                     downloadAttachment(
                                       experience.exp_letter.file,
@@ -485,11 +475,9 @@ const ProfessionalExp = ({
                                   {experience.exp_letter.name ? <LuExternalLink /> : "Not available"}
                                 </button>
                               </Tooltip>
-                              <Tooltip
-                                title="Download Doc"
-                              >
+                              <Tooltip title="Download Doc">
                                 <button
-                                  className="text-blue-600 underline"
+                                  className="text-blue-600"
                                   onClick={() =>
                                     downloadFiles(
                                       experience.exp_letter.file,

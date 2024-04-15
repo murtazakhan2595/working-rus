@@ -7,9 +7,6 @@ import EmpDataHeader from "./EmpDataHeader";
 import EmpSheetLoader from "../../../common/EmpSheetLoad";
 import { toast } from "react-toastify";
 
-
-import { IoIosArrowDropdownCircle } from "react-icons/io";
-
 const userRoles = [
   { value: 3, label: "HR" },
   { value: 1, label: "Super Admin" },
@@ -32,6 +29,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   const [filter, setFilter] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
+  const [DeletePopup, setDeletePopup] = useState(false);
 
   // Functions for calling the API
   const headers = {
@@ -71,6 +69,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         });
         // Update state after deletion
         setUsers(users.filter(user => user.id !== employeeId));
+        setDeletePopup(false);
       } else {
         toast.error("Unexpected response status:", response.status);
       }
@@ -83,7 +82,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
       setLoading(false);
     }
   };
-  
+
 
   // Filter users locally based on search input
   useEffect(() => {
@@ -128,7 +127,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   return (
     <div className="flex w-full flex-col bg-[#F9F9F9] h-[100vh]">
       <EmpDataHeader
-        title="Employee Data Sheet"
+        title="Employee Profile Data"
         onSearch={(term) => setFilter(term)}
       />
 
@@ -152,7 +151,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
               {currentUsers.map((user) => (
                 <React.Fragment key={user.id}>
                   <tr
-                    className="whitespace-nowrap border-b-2 hover:bg-gray-100"
+                    className="whitespace-nowrap border-b-2 hover:text-[#0D2282] hover:bg-[#25A8E026]"
                   >
                     <td className="px-6 py-1 text-left">
                       TXB-{user.id.toString().padStart(4, "0")}
@@ -172,9 +171,8 @@ const EmpDataSheet = ({ baseUrl, token }) => {
                     <td className="px-6 py-1 text-left gap-x-2 relative">
                       <button
                         onClick={() => toggleDropdown(user.id)}
-                        className="border-2 text-baseBlue border-blue-500 px-2 py-[2px] rounded flex gap-x-3 items-center"
-                      >Actions
-                        <IoIosArrowDropdownCircle />
+                        className="text-baseBlue px-2 py-[2px] rounded flex gap-x-3 items-center"
+                      >action to taken
                       </button>
                       {openDropdownRow === user.id && (
                         <div className="absolute right-12 top-[34px] bg-white border text-baseBlue font-semibold border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
@@ -198,7 +196,10 @@ const EmpDataSheet = ({ baseUrl, token }) => {
                             View Employee
                           </Link>
 
-                          <button onClick={() => handleDelete(user.id)}
+                          <button
+                            onClick={() => {
+                              setDeletePopup(true);
+                            }}
                             className='block px-2 py-1 text-sm cursor-pointer border border-gray-300 hover:bg-blue-100'
                           >
                             Delete Employee
@@ -208,6 +209,35 @@ const EmpDataSheet = ({ baseUrl, token }) => {
                       )}
                     </td>
                   </tr>
+                  {DeletePopup && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                      <div className="modal-overlay absolute w-full h-full backdrop-blur-sm"></div>
+                      <div className="modal-container bg-white w-1.5/5 mx-auto rounded shadow-lg z-50">
+                        <div className="modal-content py-4 px-6">
+                          <h2 className="text-xl font-semibold mb-2">Confirm Delete</h2>
+                          <p className="mb-2">
+                            Are you sure you want to delete this board?
+                          </p>
+                          <div className="flex justify-end">
+                            <button
+                              className="text-sm text-white bg-red-500 hover:bg-red-600 rounded px-4 py-2 mr-2"
+                              onClick={() => {
+                                setDeletePopup(false);
+                              }}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              className="text-sm text-white bg-blue-500 hover:bg-blue-600 rounded px-4 py-2"
+                              onClick={() => handleDelete(user.id)}
+                            >
+                              Confirm
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </React.Fragment>
               ))}
             </tbody>
@@ -232,6 +262,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
           <BsArrowRightShort className="text-white text-2xl" title="Next" />
         </button>
       </div>
+
     </div>
   );
 };

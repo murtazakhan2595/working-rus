@@ -586,21 +586,10 @@ const AcademicRecords = ({
                     {academicInfo.certificate?.document?.hasOwnProperty("name") ? (
                       <div className="flex gap-x-2  items-center">
                         <div className="flex items-center gap-x-2">
-                          {/* <button
-                            className="text-blue-600 underline"
-                            onClick={() =>
-                              downloadAttachment(
-                                academicInfo.certificate?.document?.file,
-                                academicInfo.certificate?.document?.name
-                              )
-                            }
-                          >
-                            {academicInfo.certificate?.document?.name ? academicInfo.certificate?.document?.name : "Not available"}
-                          </button> */}
-                          <Tooltip
-                            title="View Doc"
-                          >
-
+                          <p className="text-blue-600">
+                            {academicInfo.certificate?.document?.name ? academicInfo.certificate?.document?.name : ""}
+                          </p>
+                          <Tooltip title="View Doc">
                             <button
                               className="text-blue-600 underline"
                               onClick={() =>
@@ -613,10 +602,7 @@ const AcademicRecords = ({
                               {academicInfo.certificate?.document?.name ? <LuExternalLink /> : "Not available"}
                             </button>
                           </Tooltip>
-                          <Tooltip
-                            title="Download Doc"
-                          >
-
+                          <Tooltip title="Download Doc">
                             <button
                               className="text-blue-600 underline"
                               onClick={() =>
@@ -838,20 +824,11 @@ const AcademicRecords = ({
                     {certification.certification_body ? (
                       <div className="flex gap-x-2 items-center">
                         <div className="flex items-center gap-x-2">
-                          {/* <button
-                            className="text-blue-600 underline"
-                            onClick={() =>
-                              downloadAttachment(
-                                certification?.certification_body?.file,
-                                certification?.certification_body?.name
-                              )
-                            }
-                          >
-                            {certification?.certification_body?.name ? certification?.certification_body?.name : "Not available"}
-                          </button> */}
-                          <Tooltip
-                            title="View Doc"
-                          ><button
+                          <button className="text-blue-600">
+                            {certification?.certification_body?.name ? certification?.certification_body?.name : ""}
+                          </button>
+                          <Tooltip title="View Doc">
+                            <p
                             className="text-blue-600 underline"
                             onClick={() =>
                               downloadAttachment(
@@ -861,7 +838,7 @@ const AcademicRecords = ({
                             }
                           >
                               {certification?.certification_body?.name ? <LuExternalLink /> : "Not available"}
-                            </button>
+                            </p>
                           </Tooltip>
                           <Tooltip
                             title="Download Doc"

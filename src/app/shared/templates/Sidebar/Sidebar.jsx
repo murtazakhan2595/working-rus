@@ -1,32 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
-import { MdExitToApp, MdLock, MdOutlineAccountTree, MdOutlineCalendarMonth, MdOutlineLogout, MdOutlinePayment, MdOutlineTimeToLeave, MdSettings } from "react-icons/md";
+import { MdOutlineAccountTree, MdOutlineLogout } from "react-icons/md";
 import { PiSuitcaseRollingBold } from "react-icons/pi";
 import {
   AiOutlinePlus,
 } from "react-icons/ai";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleUp, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
 import { GoProjectSymlink } from "react-icons/go";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
 import logo from "../../../../assets/images/logo.png";
-import hrdb from "../../../../assets/images/hrdb.svg";
-import leavemgt from "../../../../assets/images/leavemgt.svg";
-import taskmgt from "../../../../assets/images/taskmgt.svg";
-import recruit from "../../../../assets/images/recruit.svg";
 import { setUserLogout } from "../../../../state/actions/UserAction";
 import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { LiaHomeSolid } from "react-icons/lia";
-import { RiProfileLine } from "react-icons/ri";
-import { BiSpreadsheet } from "react-icons/bi";
 import { BsPersonFillGear, BsPersonGear } from "react-icons/bs";
 import { LuFolderCog2 } from "react-icons/lu";
 import { GrTree } from "react-icons/gr";
+import HrRole from "./HrRole";
+import ManagerRole from "./ManagerRole";
+import EmployeeRole from "./EmployeeRole";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -45,7 +42,7 @@ const Sidebar = ({
   const [isDbOpen, setIsDbOpen] = useState(false);
   const [isRecruitmentOpen, setIsRecruitmentOpen] = useState(false);
   const [isLeaveOpen, setIsLeaveOpen] = useState(false);
-  const [projects, setProjects] = useState({});
+  const [projects, setProjects] = useState([]);
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
   const [projectsCount, setProjectCount] = useState(0);
@@ -141,7 +138,7 @@ const Sidebar = ({
     fetchData();
   }, []);
 
-  console.log('i am sidebar condtion', isSidebarOpen)
+
 
   return (
     <>
@@ -330,7 +327,7 @@ const Sidebar = ({
                     className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                       } rounded-lg cursor-pointer`}
                   >
-                    <GrTree className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+                    <MdOutlineAccountTree  className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
                     <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
                       <p className="flex-grow">Leave Management</p>
                       <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />
@@ -427,265 +424,13 @@ const Sidebar = ({
             )}
 
             {userProfile.role === 3 && (
-              <>
-                <li>
-                  <Link to="/">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <LiaHomeSolid />
-                      </div>
-                      <p className="text-white">Home</p>
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/profile">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <RiProfileLine />
-                      </div>
-                      <p className="text-white">Profile</p>
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/employees">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/employees" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <BiSpreadsheet />
-                      </div>
-                      <p className="text-white">Employee Sheet</p>
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/jobs">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/jobs" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <MdOutlinePayment />
-                      </div>
-                      <p className="text-white">Recruitment</p>
-                    </div>
-                  </Link>
-                </li>
-
-                <div className="text-white rounded-lg mb-2">
-                  <div
-                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 ${location.pathname === "/leave-list" ||
-                      location.pathname === "/leave-calender" ||
-                      location.pathname === "/leave-balance"
-                      ? "bg-[#25A8E0]"
-                      : ""
-                      } rounded-lg cursor-pointer`}
-                    onClick={() => setIsLinksOpen(!isLinksOpen)}
-                  >
-                    <PiSuitcaseRollingBold className="text-4xl" />
-                    Leave Application and Data
-                  </div>
-                  {isLinksOpen && (
-                    <>
-                      <Link to="/leave-list">
-                        <div
-                          className={`py-2 pl-10 ${location.pathname === "/leave-list"
-                            ? "border-2 border-[#259ED8] rounded-lg my-1"
-                            : ""
-                            }`}
-                        >
-                          Leave Applications
-                        </div>
-                      </Link>
-                      <Link to="/leave-calender">
-                        <div
-                          className={`py-2 pl-10 ${location.pathname === "/leave-calender"
-                            ? "border-2 border-[#259ED8] rounded-lg my-1"
-                            : ""
-                            }`}
-                        >
-                          Leave Calendar
-                        </div>
-                      </Link>
-                      <Link to="/leave-balance">
-                        <div
-                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
-                            ? "border-2 border-[#259ED8] rounded-lg my-1"
-                            : ""
-                            }`}
-                        >
-                          Leave Balance
-                        </div>
-                      </Link>
-                    </>
-                  )}
-                </div>
-              </>
+              <HrRole isSidebarOpen={isSidebarOpen} />
             )}
             {(userProfile.role === 2) && (
-              <>
-                <li>
-                  <Link to="/">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <LiaHomeSolid />
-                      </div>
-                      <p className="text-white">Home</p>
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/profile">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <RiProfileLine />
-                      </div>
-                      <p className="text-white">Profile</p>
-                    </div>
-                  </Link>
-                </li>
-
-                <li>
-                  <Link to="/leave-application">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
-                        ? "bg-[#259ED8]"
-                        : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <MdOutlineTimeToLeave />
-                      </div>
-                      <p className="text-white">Leave Application</p>
-                    </div>
-                  </Link>
-                </li>
-
-                <div className="text-white rounded-lg mb-2">
-                  <div
-                    className={`flex items-center gap-x-2 py-2 px-4 hover:bg-blue-900 
-                    ${location.pathname === "/leave-list" ||
-                        location.pathname === "/leave-calender" ||
-                        location.pathname === "/leave-balance"
-                        ? "bg-[#25A8E0]"
-                        : ""
-                      } rounded-lg cursor-pointer`}
-                    onClick={() => setIsLinksOpen(!isLinksOpen)}
-                  >
-                    <PiSuitcaseRollingBold className="text-4xl" />
-                    Leave Application and Data
-                  </div>
-                  {isLinksOpen && (
-                    <>
-                      <Link to="/leave-list">
-                        <div
-                          className={`py-2 pl-10 ${location.pathname === "/leave-list"
-                            ? "border-2 border-[#259ED8] rounded-lg my-1"
-                            : ""
-                            }`}
-                        >
-                          Leave Applications
-                        </div>
-                      </Link>
-                      <Link to="/leave-balance">
-                        <div
-                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
-                            ? "border-2 border-[#259ED8] rounded-lg my-1"
-                            : ""
-                            }`}
-                        >
-                          Leave Balance
-                        </div>
-                      </Link>
-                    </>
-                  )}
-                </div>
-              </>
+              <ManagerRole isSidebarOpen={isSidebarOpen} />
             )}
             {(userProfile.role === 4) && (
-              <>
-                <li>
-                  <Link to="/">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <LiaHomeSolid />
-                      </div>
-                      <p className="text-white">Home</p>
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/profile">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/profile" ? "bg-[#259ED8]" : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <RiProfileLine />
-                      </div>
-                      <p className="text-white">Profile</p>
-                    </div>
-                  </Link>
-                </li>
-
-                <li>
-                  <Link to="/leave-application">
-                    <div
-                      className={`flex mb-3 mt-5 rounded-md py-2 px-4 items-center gap-1 hover:bg-blue-900 ${location.pathname === "/leave-application"
-                        ? "bg-[#259ED8]"
-                        : ""
-                        }`}
-                    >
-                      <div className="text-white text-xl">
-                        <MdOutlineTimeToLeave />
-                      </div>
-                      <p className="text-white">Leave Application</p>
-                    </div>
-                  </Link>
-                </li>
-
-                <div className="text-white bg-[#202F72] rounded-lg mb-2">
-                  <div
-                    className="flex items-center gap-x-2 py-2 px-4 bg-[#25A8E0] rounded-lg cursor-pointer"
-                    onClick={() => setIsLinksOpen(!isLinksOpen)}
-                  >
-                    <PiSuitcaseRollingBold className="text-4xl" />
-                    Leave Application and Data
-                  </div>
-                  {isLinksOpen && (
-                    <>
-                      <Link to="/leave-balance">
-                        <div
-                          className={`py-2 pl-10 ${location.pathname === "/leave-balance"
-                            ? "border-2 border-[#259ED8] rounded-lg my-1"
-                            : ""
-                            }`}
-                        >
-                          Leave Balance
-                        </div>
-                      </Link>
-                    </>
-                  )}
-                </div>
-              </>
+              <EmployeeRole isSidebarOpen={isSidebarOpen} />
             )}
 
             {userProfile.role !== 3 && (

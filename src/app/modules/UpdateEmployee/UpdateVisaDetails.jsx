@@ -202,10 +202,10 @@ const UpdateVisaDetails = ({ prevstep,
       ]);
 
       // Notify user
-      toast.success("Visa page updated successfully!", {
-        position: "top-right",
-        autoClose: 1000,
-      });
+      // toast.success("Visa page updated successfully!", {
+      //   position: "top-right",
+      //   autoClose: 1000,
+      // });
 
       // Move to the next step
       nextstep();
@@ -438,7 +438,7 @@ const UpdateVisaDetails = ({ prevstep,
             />
           </div>
         </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[41.5%]">
 
           <label
             className="font-sfpro tracking-wide font-mediumtext-input text-base mb-1"
@@ -451,22 +451,12 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {/* <button
-                className="text-blue-600 underline"
-                onClick={() =>
-                  downloadAttachment(
-                    documents.id_front.document.data,
-                    documents.id_front.document.name
-                  )
-                }
-              >
+              <button className="text-blue-600">
                 {documents.id_front ? documents.id_front.document.name : "Not available"}
-              </button> */}
-              <Tooltip
-                title="View Doc"
-              >
+              </button>
+              <Tooltip title="View Doc">
                 <button
-                  className="text-blue-600 underline"
+                  className="text-blue-600"
                   onClick={() =>
                     downloadAttachment(
                       documents.id_front.document.data,
@@ -497,7 +487,7 @@ const UpdateVisaDetails = ({ prevstep,
           )}
 
         </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[41.5%]">
 
           <label
             className="font-sfpro tracking-wide font-medium
@@ -511,21 +501,10 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {/* <button
-                className="text-blue-600 underline"
-                onClick={() =>
-                  downloadAttachment(
-                    documents.id_back.document.data,
-                    documents.id_back.document.name
-                  )
-                }
-              >
+              <button className="text-blue-600">
                 {documents.id_back ? documents.id_back.document.name : "Not available"}
-              </button> */}
-              <Tooltip
-                title="View Doc"
-              >
-
+              </button>
+              <Tooltip title="View Doc">
                 <button
                   className="text-blue-600 underline"
                   onClick={() =>
@@ -538,8 +517,7 @@ const UpdateVisaDetails = ({ prevstep,
                   {documents.id_back ? <LuExternalLink /> : "Not available"}
                 </button>
               </Tooltip>
-              <Tooltip
-                title="Download Doc"
+              <Tooltip title="Download Doc"
               >
 
                 <button
@@ -656,7 +634,6 @@ const UpdateVisaDetails = ({ prevstep,
                   : null
               }
               onChange={(date) => handleDateChange(date, "Passport_Issuance_Date")}
-
             />
           </div>
         </div>
@@ -695,11 +672,10 @@ const UpdateVisaDetails = ({ prevstep,
                   : null
               }
               onChange={(date) => handleDateChange(date, "Passport_Expiry_Date")}
-
             />
           </div>
         </div>
-        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[23%]">
+        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[26%]">
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
@@ -712,21 +688,10 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {/* <button
-                className="text-blue-600 underline"
-                onClick={() =>
-                  downloadAttachment(
-                    documents.passport_copy.document.data,
-                    documents.passport_copy.document.name
-                  )
-                }
-              >
+              <button className="text-blue-600">
                 {documents.passport_copy ? documents.passport_copy.document.name : "Not available"}
-              </button> */}
-              <Tooltip
-                title="View Doc"
-              >
-
+              </button>
+              <Tooltip title="View Doc">
                 <button
                   className="text-blue-600 underline"
                   onClick={() =>
@@ -739,10 +704,7 @@ const UpdateVisaDetails = ({ prevstep,
                   {documents.passport_copy ? <LuExternalLink /> : "Not available"}
                 </button>
               </Tooltip>
-              <Tooltip
-                title="Download Doc"
-              >
-
+              <Tooltip title="Download Doc">
                 <button
                   className="text-blue-600 underline"
                   onClick={() =>
@@ -787,12 +749,8 @@ const UpdateVisaDetails = ({ prevstep,
       </h2>
       {employeeVisaDetails.is_visa_applicable && <div className='flex w-[100%] flex-wrap gap-3'>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-          <label
-            className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-          >
+          <label className="font-sfpro tracking-wide font-medium text-input text-base mb-1">
             Entry Permit Number{employeeVisaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
-
           </label>
 
           <input type="text" name="entry_permit_number"
@@ -1044,21 +1002,10 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {/* <button
-                className="text-blue-600 underline"
-                onClick={() =>
-                  downloadAttachment(
-                    documents.enter_permit.document.data,
-                    documents.enter_permit.document.name
-                  )
-                }
-              >
+              <button className="text-blue-600">
                 {documents.enter_permit ? documents.enter_permit.document.name : "Not available"}
-              </button> */}
-              <Tooltip
-                title="View Doc"
-              >
-
+              </button>
+              <Tooltip title="View Doc">
                 <button
                   className="text-blue-600 underline"
                   onClick={() =>
@@ -1071,10 +1018,7 @@ const UpdateVisaDetails = ({ prevstep,
                   {documents.enter_permit ? <LuExternalLink /> : "Not available"}
                 </button>
               </Tooltip>
-              <Tooltip
-                title="Download Doc"
-              >
-
+              <Tooltip title="Download Doc">
                 <button
                   className="text-blue-600 underline"
                   onClick={() =>
@@ -1094,7 +1038,6 @@ const UpdateVisaDetails = ({ prevstep,
 
 
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
-
           <label
             className="font-sfpro tracking-wide font-medium
                             text-input text-base mb-1"
@@ -1107,21 +1050,10 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {/* <button
-                className="text-blue-600 underline"
-                onClick={() =>
-                  downloadAttachment(
-                    documents.visa_page.document.data,
-                    documents.visa_page.document.name
-                  )
-                }
-              >
+              <button className="text-blue-600">
                 {documents.visa_page ? documents.visa_page.document.name : "Not available"}
-              </button> */}
-              <Tooltip
-                title="View Doc"
-              >
-
+              </button>
+              <Tooltip title="View Doc">
                 <button
                   className="text-blue-600 underline"
                   onClick={() =>
@@ -1135,10 +1067,7 @@ const UpdateVisaDetails = ({ prevstep,
                 </button>
               </Tooltip>
 
-              <Tooltip
-                title="Download Doc"
-              >
-
+              <Tooltip title="Download Doc">
                 <button
                   className="text-blue-600 underline"
                   onClick={() =>
@@ -1156,8 +1085,6 @@ const UpdateVisaDetails = ({ prevstep,
           )}
         </div>
 
-
-
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
           <label
             className="font-sfpro tracking-wide font-medium
@@ -1171,23 +1098,12 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {/* <button
-                className="text-blue-600 underline"
-                onClick={() =>
-                  downloadAttachment(
-                    documents.medical.document.data,
-                    documents.medical.document.name
-                  )
-                }
-              >
+              <button className="text-blue-600">
                 {documents.medical ? documents.medical.document.name : "Not available"}
-              </button> */}
-              <Tooltip
-                title="View Doc"
-              >
-
+              </button>
+              <Tooltip title="View Doc">
                 <button
-                  className="text-blue-600 underline"
+                  className="text-blue-600"
                   onClick={() =>
                     downloadAttachment(
                       documents.medical.document.data,
@@ -1198,12 +1114,9 @@ const UpdateVisaDetails = ({ prevstep,
                   {documents.medical ? <LuExternalLink /> : "Not available"}
                 </button>
               </Tooltip>
-              <Tooltip
-                title="Download Doc"
-              >
-
+              <Tooltip title="Download Doc">
                 <button
-                  className="text-blue-600 underline"
+                  className="text-blue-600"
                   onClick={() =>
                     downloadFiles(
                       documents.medical.document.data,
@@ -1231,22 +1144,12 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {/* <button
-                className="text-blue-600 underline"
-                onClick={() =>
-                  downloadAttachment(
-                    documents.id_application.document.data,
-                    documents.id_application.document.name
-                  )
-                }
-              >
+              <button className="text-blue-600">
                 {documents.id_application ? documents.id_application.document.name : "Not available"}
-              </button> */}
-              <Tooltip
-                title="View Doc"
-              >
+              </button>
+              <Tooltip title="View Doc">
                 <button
-                  className="text-blue-600 underline"
+                  className="text-blue-600"
                   onClick={() =>
                     downloadAttachment(
                       documents.id_application.document.data,
@@ -1257,11 +1160,9 @@ const UpdateVisaDetails = ({ prevstep,
                   {documents.id_application ? <LuExternalLink /> : "Not available"}
                 </button>
               </Tooltip>
-              <Tooltip
-                title="Download Doc"
-              >
+              <Tooltip title="Download Doc">
                 <button
-                  className="text-blue-600 underline"
+                  className="text-blue-600"
                   onClick={() =>
                     downloadFiles(
                       documents.id_application.document.data,
@@ -1298,9 +1199,7 @@ const UpdateVisaDetails = ({ prevstep,
             onChange={(e) => handleEdit('is_insurance_applicable', !e.target.checked)}
           />
         </div>
-
       </h2>
-
 
       {employeeVisaDetails.is_insurance_applicable && <div className='flex w-[100%] flex-wrap items-center gap-3'>
         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
@@ -1457,21 +1356,10 @@ const UpdateVisaDetails = ({ prevstep,
             </div>
           ) : (
             <div className="flex items-center gap-x-2">
-              {/* <button
-                className="text-blue-600 underline"
-                onClick={() =>
-                  downloadAttachment(
-                    documents.insurance_card.document.data,
-                    documents.insurance_card.document.name
-                  )
-                }
-              >
+              <button className="text-blue-600">
                 {documents.insurance_card ? documents.insurance_card.document.name : "Not available"}
-              </button> */}
-              <Tooltip
-                title="View Doc"
-              >
-
+              </button>
+              <Tooltip title="View Doc">
                 <button
                   className="text-blue-600 underline"
                   onClick={() =>
@@ -1484,12 +1372,9 @@ const UpdateVisaDetails = ({ prevstep,
                   {documents.insurance_card ? <LuExternalLink /> : "Not available"}
                 </button>
               </Tooltip>
-              <Tooltip
-                title="Download Doc"
-              >
-
+              <Tooltip title="Download Doc">
                 <button
-                  className="text-blue-600 underline"
+                  className="text-blue-600"
                   onClick={() =>
                     downloadFiles(
                       documents.insurance_card.document.data,
