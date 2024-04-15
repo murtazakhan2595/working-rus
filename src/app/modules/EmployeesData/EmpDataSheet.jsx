@@ -216,7 +216,7 @@ const EmpDataSheet = ({ baseUrl, token }) => {
                         <div className="modal-content py-4 px-6">
                           <h2 className="text-xl font-semibold mb-2">Confirm Delete</h2>
                           <p className="mb-2">
-                            Are you sure you want to delete this board?
+                            Are you sure you want to delete this user?
                           </p>
                           <div className="flex justify-end">
                             <button

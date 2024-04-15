@@ -435,11 +435,9 @@ const Sidebar = ({
 
             {userProfile.role !== 3 && (
               <>
-                <hr className="opacity-40" />
-
                 <li
                   onClick={() => toggleDropdown("Projects")}
-                  className={`flex group mb-1 mt-3 justify-between hover:bg-[#DAEFF8] hover:text-[#0D2282] rounded-md py-2 px-2 items-center gap-1 cursor-pointer ${isProjectOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
+                  className={`flex group mb-1 mt-2 mb-2 justify-between hover:bg-[#DAEFF8] hover:text-[#0D2282] rounded-md py-2 px-2 items-center gap-1 cursor-pointer ${isProjectOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                     }`}
                 >
                   <div className="flex gap-1">
@@ -526,8 +524,6 @@ const Sidebar = ({
                 )}
               </>
             )}
-
-            <hr className="opacity-40" />
 
             <li className={`${isSidebarOpen ? 'bg-white py-2 px-2 rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1' : ''}`}>
 
@@ -628,9 +624,9 @@ const Sidebar = ({
         >
           {
             isSidebarOpen ? (
-              <FaAngleDoubleLeft className="text-xl" />
+              <FaAngleDoubleLeft title="Close" className="text-xl" />
             ) : (
-              <FaAngleDoubleRight className="text-xl" />
+              <FaAngleDoubleRight title="Open" className="text-xl" />
             )}
         </button >
 
