@@ -74,8 +74,6 @@ const DailyTaskRpt = ({ userProfile, token, baseUrl }) => {
         notes: '',
     }]);
 
-
-
     // const handleChange = (index, name, value) => {
     //     const newTasks = [...formData]
     //     newTasks[index][name] = value;

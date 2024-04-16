@@ -19,6 +19,7 @@ const HrRole = ({ isSidebarOpen }) => {
   const [isLeaveOpen, setIsLeaveOpen] = useState(false);
 
 
+
   const toggleDropdown = (dropdownName) => {
     if (dropdownName === "HRDatabase") {
       setIsDbOpen((prev) => !prev);
@@ -29,6 +30,7 @@ const HrRole = ({ isSidebarOpen }) => {
       setIsDbOpen(false);
       setIsLeaveOpen(false);
     } else if (dropdownName === "LeaveManagement") {
+      setIsLeaveOpen((prev) => !prev);
       setIsDbOpen(false);
       setIsRecruitmentOpen(false);
     } else if (dropdownName === "Projects") {
