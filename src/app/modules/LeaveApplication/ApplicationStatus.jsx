@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
+const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
   console.log(userProfile);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
   useEffect(() => {
     const fetchLeaveList = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/leave`, { headers });
+        const response = await axios.get(`${baseUrl}/leave?search={"employee_id":${userProfile.id}}`, { headers });
         if (response.status == 200) {
           setLeavesList(response.data);
           //   console.log(response);
@@ -33,15 +33,6 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
     fetchLeaveList();
   }, []);
 
-  const handleClick = (employeeId) => {
-    if (userProfile.role === 2) {
-      navigate(`/leave-request/${employeeId}`);
-    } else if (userProfile.role === 3) {
-      navigate(`/leave-request-hr/${employeeId}`);
-    } else {
-      navigate(`/leave-request/${employeeId}`);
-    }
-  };
 
   return (
     <div className="bg-[#F9F9F9] w-full">
@@ -59,21 +50,21 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
+                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Approval</th>
+                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Approval</th>
+                  {/* <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">End Date</th> */}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {leavesList.map((employee) => (
-                  <tr key={employee.id} className="cursor-pointer hover:text-[#0D2282] hover:bg-[#25A8E026]" onClick={() => handleClick(employee.id)}>
-                    <td className="px-4 py-2 whitespace-nowrap">{employee.name}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{employee.department}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{employee.position}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{employee.start_date}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{employee.end_date}</td>
+                {leavesList.map((leave) => (
+                  <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026]">
+                    <td className="px-4 py-2 whitespace-nowrap">{leave.date}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{leave.leave_type}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{leave.status_manager}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{leave.status_hr}</td>
+                    {/* <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td> */}
                   </tr>
                 ))}
               </tbody>
@@ -96,4 +87,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(LeaveApplicationList);
+export default connect(mapStateToProps)(ApplicationStatus);

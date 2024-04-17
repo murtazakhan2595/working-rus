@@ -327,7 +327,7 @@ const Sidebar = ({
                     className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                       } rounded-lg cursor-pointer`}
                   >
-                    <LuCalendarDays  className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+                    <LuCalendarDays className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
                     <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
                       <p className="flex-grow">Leave Management</p>
                       <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />
@@ -347,6 +347,14 @@ const Sidebar = ({
                                 }`}
                             >
                               <p className="text-sm">Leave Application</p>
+                            </div>
+                          </Link>
+                          <Link to="/leave-application-status">
+                            <div
+                              className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                }`}
+                            >
+                              <p className="text-sm">Application Status</p>
                             </div>
                           </Link>
                           <Link to="/leave-calender">
@@ -391,6 +399,14 @@ const Sidebar = ({
                           <p className="text-sm">Leave Application</p>
                         </div>
                       </Link>
+                      <Link to="/leave-application-status">
+                        <div
+                          className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                            }`}
+                        >
+                          <p className="text-sm">Application Status</p>
+                        </div>
+                      </Link>
                       <Link to="/leave-calender">
                         <div
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
@@ -399,6 +415,7 @@ const Sidebar = ({
                           <p className="text-sm">Leave Calender</p>
                         </div>
                       </Link>
+
                       <Link to="/leave-list">
                         <div
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
@@ -437,7 +454,7 @@ const Sidebar = ({
               <>
                 <li
                   onClick={() => toggleDropdown("Projects")}
-                  className={`flex group mb-1 mt-2 mb-2 justify-between hover:bg-[#DAEFF8] hover:text-[#0D2282] rounded-md py-2 px-2 items-center gap-1 cursor-pointer ${isProjectOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
+                  className={`flex group mt-2 mb-2 justify-between hover:bg-[#DAEFF8] hover:text-[#0D2282] rounded-md py-2 px-2 items-center gap-1 cursor-pointer ${isProjectOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                     }`}
                 >
                   <div className="flex gap-1">

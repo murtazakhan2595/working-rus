@@ -92,9 +92,11 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
           contact_no: application.contact_no,
           address_during_leave: application.address_during_leave,
           report_to: application.report_to,
+          indirect_report_to: application.indirect_report_to,
           manager_comment: application.manager_comment,
           hr_comment: formFields.hrComments,
           status_manager: application.status_manager,
+          total_alloted_leave: application.total_alloted_leave,
           status_hr,
         },
         { headers }
@@ -128,14 +130,14 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
     try {
       event.preventDefault();
 
-      // Check if the comments field is empty
-      if (!formFields.hrComments.trim()) {
-        toast.error("HR Comments are required!", {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 1000,
-        });
-        return; // Return early if comments field is empty
-      }
+      // // Check if the comments field is empty
+      // if (!formFields.hrComments.trim()) {
+      //   toast.error("HR Comments are required!", {
+      //     position: toast.POSITION.TOP_RIGHT,
+      //     autoClose: 1000,
+      //   });
+      //   return; // Return early if comments field is empty
+      // }
 
       await handleLeaveAction(action);
     } catch (error) {
@@ -173,7 +175,6 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
               name="hrComments"
               onChange={handleChange}
               value={hrComments}
-              required
             />
           </div>
 

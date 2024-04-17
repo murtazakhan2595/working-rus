@@ -17,7 +17,7 @@ import { GrTree } from "react-icons/gr";
 import { LuCalendarDays } from "react-icons/lu";
 
 
-const EmployeeRole = ({isSidebarOpen }) => {
+const EmployeeRole = ({ isSidebarOpen }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const cookies = new Cookies();
@@ -75,7 +75,7 @@ const EmployeeRole = ({isSidebarOpen }) => {
                     className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                         } rounded-lg cursor-pointer`}
                 >
-                    <LuCalendarDays  className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+                    <LuCalendarDays className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
                     <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
                         <p className="flex-grow">Leave Management</p>
                         <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />
@@ -97,23 +97,31 @@ const EmployeeRole = ({isSidebarOpen }) => {
                                         <p className="text-sm">Leave Application</p>
                                     </div>
                                 </Link>
-                                <Link to="/leave-calender">
+                                <Link to="/leave-application-status">
+                                    <div
+                                        className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                            }`}
+                                    >
+                                        <p className="text-sm">Application Status</p>
+                                    </div>
+                                </Link>
+                                {/* <Link to="/leave-calender">
                                     <div
                                         className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                             }`}
                                     >
                                         <p className="text-sm">Leave Calender</p>
                                     </div>
-                                </Link>
-                                <Link to="/leave-list">
+                                </Link> */}
+                                {/* <Link to="/leave-list">
                                     <div
                                         className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                             }`}
                                     >
                                         <p className="text-sm">Leave List</p>
                                     </div>
-                                </Link>
-                                <Link to="/leave-balance">
+                                </Link> */}
+                                <Link to="/leave-balance-employee">
                                     <div
                                         className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                             }`}
@@ -139,25 +147,33 @@ const EmployeeRole = ({isSidebarOpen }) => {
                                 <p className="text-sm">Leave Application</p>
                             </div>
                         </Link>
-                        <Link to="/leave-calender">
+                        <Link to="/leave-application-status">
+                            <div
+                                className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                    }`}
+                            >
+                                <p className="text-sm">Application Status</p>
+                            </div>
+                        </Link>
+                        {/* <Link to="/leave-calender">
                             <div
                                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                     }`}
                             >
                                 <p className="text-sm">Leave Calender</p>
                             </div>
-                        </Link>
-                        <Link to="/leave-list">
+                        </Link> */}
+                        {/* <Link to="/leave-list">
                             <div
                                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                     }`}
                             >
                                 <p className="text-sm">Leave List</p>
                             </div>
-                        </Link>
-                        <Link to="/leave-balance">
+                        </Link> */}
+                        <Link to="/leave-balance-employee">
                             <div
-                                className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance-employee" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                     }`}
                             >
                                 <p className="text-sm">Leave Balance</p>

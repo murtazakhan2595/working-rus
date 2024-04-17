@@ -206,7 +206,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 className="h-8 ml-[-5px] pl-2 md:mr-[66px] w-[60%] md:w-44 rounded-md lg:w-24"
                 type="text"
                 name="employee_id"
-                value={`TXB-00${formData.employee_id}`}
+                value={`TXB-${formData.employee_id?.toString().padStart(4, "0")}`}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               />
             </div>
@@ -349,7 +349,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     onChange={() => handleChange("leave_type", "EMERGENCY")}
                   />
                   <label>Emergency</label>
-
                   <input
                     type="checkbox"
                     name="ANNUAL"
@@ -364,6 +363,35 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     onChange={() => handleChange("leave_type", "SICK")}
                   />
                   <label>Sick</label>
+                  <input
+                    type="checkbox"
+                    name="COMPENSATORY"
+                    checked={formData.leave_type === "COMPENSATORY"}
+                    onChange={() => handleChange("leave_type", "COMPENSATORY")}
+                  />
+                  <label>Compensatory</label>
+                  <input
+                    type="checkbox"
+                    name="PATERNAL"
+                    checked={formData.leave_type === "PATERNAL"}
+                    onChange={() => handleChange("leave_type", "PATERNAL")}
+                  />
+                  <label>Paternal</label>
+                  <input
+                    type="checkbox"
+                    name="BEREAVEMENT"
+                    checked={formData.leave_type === "BEREAVEMENT"}
+                    onChange={() => handleChange("leave_type", "BEREAVEMENT")}
+                  />
+                  <label>Bereavement</label>
+                  <input
+                    type="checkbox"
+                    name="SPECIAL"
+                    checked={formData.leave_type === "SPECIAL"}
+                    onChange={() => handleChange("leave_type", "SPECIAL")}
+                  />
+                  <label>Special</label>
+
                 </div>
                 <div className="flex items-center md:gap-2.5 gap-[4px]">
                   <input

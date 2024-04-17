@@ -121,14 +121,14 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
     try {
       event.preventDefault(); 
 
-      // Check if the comments field is empty
-      if (!formFields.comments.trim()) {
-        toast.error("Comments are required!", {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 1000,
-        });
-        return; // Return early if comments field is empty
-      }
+      // // Check if the comments field is empty
+      // if (!formFields.comments.trim()) {
+      //   toast.error("Comments are required!", {
+      //     position: toast.POSITION.TOP_RIGHT,
+      //     autoClose: 1000,
+      //   });
+      //   return; // Return early if comments field is empty
+      // }
 
       // Call handleLeaveAction with the appropriate action
       await handleLeaveAction(action);
@@ -153,7 +153,7 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
             <textarea
               className="rounded-md pl-2 w-full md:w-[77.5%] lg:w-[75%]"
               name="comments"
-              required
+              // required
               onChange={handleChange}
               value={comments}
             />

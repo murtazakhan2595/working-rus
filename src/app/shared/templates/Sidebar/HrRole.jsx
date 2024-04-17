@@ -206,7 +206,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
           className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
             } rounded-lg cursor-pointer`}
         >
-          <LuCalendarDays  className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+          <LuCalendarDays className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
           <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
             <p className="flex-grow">Leave Management</p>
             <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />
@@ -226,6 +226,14 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                       }`}
                   >
                     <p className="text-sm">Leave Application</p>
+                  </div>
+                </Link>
+                <Link to="/leave-application-status">
+                  <div
+                    className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                      }`}
+                  >
+                    <p className="text-sm">Application Status</p>
                   </div>
                 </Link>
                 <Link to="/leave-calender">
@@ -268,6 +276,14 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                   }`}
               >
                 <p className="text-sm">Leave Application</p>
+              </div>
+            </Link>
+            <Link to="/leave-application-status">
+              <div
+                className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                  }`}
+              >
+                <p className="text-sm">Application Status</p>
               </div>
             </Link>
             <Link to="/leave-calender">

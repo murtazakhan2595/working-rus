@@ -18,7 +18,7 @@ const userRoles = [
 ];
 
 
-const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
+const LeaveBalanceManager = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
 
   const [leaves, setLeaves] = useState([])
   const [managers, setManagers] = useState([])
@@ -31,8 +31,9 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
 
   const fetchLeaves = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/leave`, { headers });
-      setLeaves(response.data);
+      const response = await axios.get(`${baseUrl}/leaveManager`, { headers });
+      console.log(response)
+      setLeaves(response.data.results);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching leaves:", error);
@@ -154,12 +155,12 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
                   className="whitespace-nowrap border-b-2 hover:bg-gray-100"
                   key={leave.employee_id}
                 >
-                  <td className="px-6 py-2 text-left">{`TXB-${leave.employee_id?.toString().padStart(4, "0")}`}</td>
-                  <td className="px-6 py-2 text-left">{leave.name}</td>
-                  <td className="px-6 py-2 text-left">{leave.department}</td>
-                  <td className="px-6 py-2 text-left">{leave.position}</td>
+                  <td className="px-6 py-2 text-left">{`TXB-${leave?.employee_id?.toString().padStart(4, "0")}`}</td>
+                  <td className="px-6 py-2 text-left">{leave?.name}</td>
+                  <td className="px-6 py-2 text-left">{leave?.department}</td>
+                  <td className="px-6 py-2 text-left">{leave?.position}</td>
                   <td className="px-3 py-2 text-left">{getReportingManger(leave?.report_to)}</td>
-                  <td className="px-3 py-2 text-left">{leave.leave_type}</td>
+                  <td className="px-3 py-2 text-left">{leave?.leave_type}</td>
                   <td className="px-2 py-2 text-left">
                     {/* <div className="text-sm">&#9664;</div> */}
                     {leave.total_alloted_leave}
@@ -186,4 +187,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(LeaveBalance);
+export default connect(mapStateToProps)(LeaveBalanceManager);
