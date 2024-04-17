@@ -68,7 +68,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {leavesList.map((employee) => (
-                  <tr key={employee.id} className="cursor-pointer hover:text-[#0D2282] hover:bg-[#25A8E026]" onClick={() => handleClick(employee.id)}>
+                  <tr key={employee.id} className="cursor-pointer hover:text-[#0D2282] hover:bg-[#25A8E026] text-gray-500" onClick={() => handleClick(employee.id)}>
                     <td className="px-4 py-2 whitespace-nowrap">{employee.name}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{employee.department}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{employee.position}</td>

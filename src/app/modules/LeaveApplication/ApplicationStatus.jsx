@@ -48,9 +48,12 @@ const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
         ) : leavesList.length !== 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 text-sm">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th scope="col" className="px-2 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Total Leaves</th>
+                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">From</th>
+                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">To</th>
                   <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
                   <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Approval</th>
                   <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Approval</th>
@@ -59,8 +62,11 @@ const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {leavesList.map((leave) => (
-                  <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026]">
+                  <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026] text-sm text-gray-500">
                     <td className="px-4 py-2 whitespace-nowrap">{leave.date}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{leave.total_leave}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{leave.start_date}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{leave.leave_type}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{leave.status_manager}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{leave.status_hr}</td>
