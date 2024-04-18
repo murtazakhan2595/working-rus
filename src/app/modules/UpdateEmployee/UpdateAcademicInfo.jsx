@@ -138,7 +138,6 @@ const AcademicRecords = ({
         `${baseUrl}/education/?search={"employee_id":${id}}`,
         { headers }
       );
-      console.log('education response');
       const educationData = educationResponse.data[0];
 
       const formattedEducationData = {

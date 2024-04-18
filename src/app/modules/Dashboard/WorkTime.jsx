@@ -32,7 +32,6 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
  
   // ******************** Stop Watch Start And Reset Functions ************************ //
  
-  // console.log(userProfile);
  
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -70,7 +69,6 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           closeOnClick: true,
           pauseOnHover: true,
         });
-        console.log(response.data);
         setClockId(response.data.id);
         setTotalWorkedHoursFormatted(
           response.data.total_worked_hours_formatted
@@ -118,7 +116,6 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           closeOnClick: true,
           pauseOnHover: true,
         });
-        console.log(response.data);
         setClockId(response.data.id);
         setTotalWorkedHoursFormatted(
           response.data.total_worked_hours_formatted
@@ -164,7 +161,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           closeOnClick: true,
           pauseOnHover: true,
         });
-        console.log(response.data);
+        
         setClockId(response.data.id);
         setTotalWorkedHoursFormatted(
           response.data.total_worked_hours_formatted
@@ -210,7 +207,7 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
           closeOnClick: true,
           pauseOnHover: true,
         });
-        console.log(response.data);
+        
         setClockId(response.data.id);
         setTotalWorkedHoursFormatted(
           response.data.total_worked_hours_formatted
@@ -257,10 +254,8 @@ const WorkTime = ({ baseUrl, token, userProfile }) => {
         // setIsRunning(responseData.status === "resume");
         if (response.data.status === 'resume') {
           setIsRunning(true); // Set isRunning to true if the status is 'resume'
-          console.log('is running status',response.data.status);
         } else {
           setIsRunning(false); // Set isRunning to false for any other status
-          console.log('isrunning status',response.data.status);
         }
       }
     } catch (error) {

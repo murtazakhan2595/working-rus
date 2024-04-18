@@ -118,13 +118,10 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
     }, []);
 
     const handleNextStep = async () => {
-        console.log('before')
         setIsLoading(true);
         await submitForm();
         setIsLoading(false);
-        console.log('before')
 
-        // console.log("Submitting form..."); 
         // const { error } = departmentSchema.validate(
         //     {
         //         department_name: departmentInfo.department_name,
@@ -143,7 +140,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
         //     });
         //     setErrors(validationErrors);
         // } else {
-        //     console.log("Form validated. Calling submitForm..."); 
         //     await submitForm(); 
         //     setIsLoading(false);
         // }
@@ -160,7 +156,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token })
         if (name === 'employee_type' || name === 'employee_status') {
             setDepartmentInfo({ ...departmentInfo, [name]: value.value });
         } else if (name === "indirect_report" || name === "direct_report") {
-            console.log(`Selected ${name === "indirect_report" ? "In-Direct" : "Direct"} Managers:`, values);
             const updatedValues = values || []; // In case 'values' is null
             const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
             setDepartmentInfo({

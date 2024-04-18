@@ -51,7 +51,6 @@ const LeaveBalanceEmployee = ({ baseUrl, token, userProfile, isSidebarOpen }) =>
     //             setManagers(response.data);
     //         }
     //     } catch (error) {
-    //         console.log(error);
     //     }
     // };
 
@@ -62,7 +61,6 @@ const LeaveBalanceEmployee = ({ baseUrl, token, userProfile, isSidebarOpen }) =>
 
     const getReportingManger = (userId) => {
         const reportingManger = managers?.find((user) => user.id === userId);
-        console.log("heoollo", reportingManger?.department_manager)
         return reportingManger ? reportingManger.department_manager : null;
     };
 

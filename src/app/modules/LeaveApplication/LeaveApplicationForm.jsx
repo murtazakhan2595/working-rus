@@ -55,7 +55,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
 
         if (response.status === 200) {
           setManagers(response.data);
-          console.log('managerssss', response.data);
         }
       } catch (error) {
         toast.error("Error fetching managers. Please try again.", {
@@ -70,7 +69,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   const handleChange = (name, value, values) => {
     setFormData((prevData) => {
       if (name === "indirect_report_to") {
-        console.log("Selected In-Direct Managers:", values);
         const updatedValues = values || []; // In case 'values' is null
         const uniqueValues = [...new Set(updatedValues)];
         return {
@@ -101,7 +99,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       }
 
       // Regular input fields
-      console.log("Updated Form Data:", { ...prevData, [name]: value });
       return {
         ...prevData,
         [name]: value,
@@ -161,7 +158,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       indirect_report_to: formData.indirect_report_to
     };
 
-      console.log(data);
 
     try {
       const response = await axios.post(`${baseUrl}/leave/`, data, {

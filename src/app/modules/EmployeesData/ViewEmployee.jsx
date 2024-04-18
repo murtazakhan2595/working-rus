@@ -26,7 +26,6 @@ const ViewEmployee = ({ token, baseUrl }) => {
     "Content-Type": "application/json",
   };
 
-  console.log(educations, "loged education");
 
   const fetchData = async () => {
     try {
@@ -34,7 +33,6 @@ const ViewEmployee = ({ token, baseUrl }) => {
       const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
         headers,
       });
-      console.log('employee', employeeResponse)
       const employeeData = employeeResponse.data;
       setData(employeeData);
       setProfileImage(employeeResponse.data?.profile_picture.file || employeeResponse.data?.profile_picture);
@@ -154,7 +152,6 @@ const ViewEmployee = ({ token, baseUrl }) => {
       acadamicDocument,
     }));
 
-    // console.log(combinedData, "combine data");
     setEducations(educationAndAcadDocs);
   };
 
@@ -170,7 +167,6 @@ const ViewEmployee = ({ token, baseUrl }) => {
   //     const blob = new Blob([response.data], { type: "application/pdf" });
 
   //     const url = window.URL.createObjectURL(blob);
-  //     console.log("Content-Type:", response.headers["content-type"]);
 
   //     // Create a temporary link element
   //     const link = document.createElement("a");
@@ -202,10 +198,8 @@ const ViewEmployee = ({ token, baseUrl }) => {
 
       // Check if the content type indicates a PDF
       if (contentType === 'application/pdf') {
-        console.log("Downloading PDF...");
         downloadFile(response.data, `${name}.pdf`);
       } else if (contentType.startsWith('image')) {
-        console.log("Downloading image...");
         downloadFile(response.data, `${name}.${getImageExtension(contentType)}`);
       } else {
         console.error("Unsupported file type.");

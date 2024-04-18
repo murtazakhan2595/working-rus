@@ -20,19 +20,56 @@ import VisaDetails from "./VisaDetails";
 const EmpForm = ({ baseUrl, token, userProfile }) => {
   const cookies = new Cookies();
   const navigate = useNavigate();
+
+  const getDataFromSessionStorage = (key) => {
+    const serializedData = sessionStorage.getItem(key);
+    const data = JSON.parse(serializedData);
+    return data;
+  };
+
+  let storedData = getDataFromSessionStorage("visaDetails");
+  const storedVisaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
+
   const [currentStep, setCurrentStep] = useState(1);
   const [subStep, setSubStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [personalInfo, setPersonalInfo] = useState({});
-  const [visaDetails, setVisaDetails] = useState({});
+  const [visaDetails, setVisaDetails] = useState({
+    passport_number: storedData?.passport_number ? storedData.passport_number : null,
+    Passport_Issuance_Country: storedData?.Passport_Issuance_Country ? storedData.Passport_Issuance_Country : null,
+    Passport_Issuance_Date: storedData?.Passport_Issuance_Date ? storedData.Passport_Issuance_Date : null,
+    Passport_Expiry_Date: storedData?.Passport_Expiry_Date ? storedData.Passport_Expiry_Date : null,
+    entry_permit_number: storedData?.entry_permit_number ? storedData.entry_permit_number : "",
+    country_of_visa_issuance: storedData?.country_of_visa_issuance ? storedData.country_of_visa_issuance : "",
+    uid_number: storedData?.uid_number ? storedData.uid_number : "",
+    visa_type: storedData?.visa_type ? storedData.visa_type : "",
+    visa_issuance_date: storedData?.visa_issuance_date ? storedData.visa_issuance_date : null,
+    visa_expiry_date: storedData?.visa_expiry_date ? storedData.visa_expiry_date : null,
+    visa_duration: storedData?.visa_duration ? storedData.visa_duration : "",
+    visa_country_entry_date: storedData?.visa_country_entry_date ? storedData.visa_country_entry_date : null,
+    visa_country_exit_date: storedData?.visa_country_exit_date ? storedData.visa_country_exit_date : null,
+    living_country_id_no: storedData?.living_country_id_no ? storedData.living_country_id_no : "",
+    place_of_issuance: storedData?.place_of_issuance ? storedData.place_of_issuance : "",
+    id_issuance_date: storedData?.id_issuance_date ? storedData.id_issuance_date : null,
+    id_expiry_date: storedData?.id_expiry_date ? storedData.id_expiry_date : null,
+    dha_id: storedData?.dha_id ? storedData.dha_id : "",
+    card_number: storedData?.card_number ? storedData.card_number : "",
+    insurance_policy: storedData?.insurance_policy ? storedData.insurance_policy : "",
+    insurance_company: storedData?.insurance_company ? storedData.insurance_company : "",
+    insurance_active_date: storedData?.insurance_active_date ? storedData.insurance_active_date : null,
+    insurance_expiry_date: storedData?.insurance_expiry_date ? storedData.insurance_expiry_date : null,
+    is_passport_applicable: storedData?.is_passport_applicable ? storedData.is_passport_applicable : null,
+    is_visa_applicable: storedData?.is_visa_applicable ? storedData.is_visa_applicable : null,
+    is_insurance_applicable: storedData?.is_insurance_applicable ? storedData.is_insurance_applicable : null,
+  });
   const [bankInfo, setBankInfo] = useState({});
   const [departmentInfo, setDepartmentInfo] = useState({});
   const [academicInfo, setAcademicInfo] = useState({});
   const [certifications, setCertifications] = useState({});
   const [profilePhoto, setProfilePhoto] = useState({});
   const [professionalExperiance, setProfessionalExperiance] = useState({});
-  const [visaDetailsFiles, setVisaDetailsFiles] = useState({});
+  const [visaDetailsFiles, setVisaDetailsFiles] = useState(storedVisaDetailsFiles || {});
   const [cv, setCv] = useState({});
 
 
@@ -43,23 +80,18 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
     setErrors({ ...errors, [name]: null });
   };
   const submitForm = async () => {
-    debugger
     try {
-      const getDataFromSessionStorage = (key) => {
-        const serializedData = sessionStorage.getItem(key);
-        const data = JSON.parse(serializedData);
-        return data;
-      };
-     // let personalInfo = getDataFromSessionStorage("personalInfo");
-     // let visaDetails = getDataFromSessionStorage("visaDetails");
-     // let bankInfo = getDataFromSessionStorage("bankInfo");
-     // let departmentInfo = getDataFromSessionStorage("departmentInfo");
-     // let academicInfo = getDataFromSessionStorage("academicInfo");
-     // let certifications = getDataFromSessionStorage("certifications");
-     // let profilePhoto = getDataFromSessionStorage("profilePhoto");
-     // let proExp = getDataFromSessionStorage("proExp");
-     // let cv = getDataFromSessionStorage("cv");
-     // let visaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
+
+      // let personalInfo = getDataFromSessionStorage("personalInfo");
+      // let visaDetails = getDataFromSessionStorage("visaDetails");
+      // let bankInfo = getDataFromSessionStorage("bankInfo");
+      // let departmentInfo = getDataFromSessionStorage("departmentInfo");
+      // let academicInfo = getDataFromSessionStorage("academicInfo");
+      // let certifications = getDataFromSessionStorage("certifications");
+      // let profilePhoto = getDataFromSessionStorage("profilePhoto");
+      // let proExp = getDataFromSessionStorage("proExp");
+      // let cv = getDataFromSessionStorage("cv");
+      // let visaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
       // if (personalInfo && personalInfo.country_code && personalInfo.mobile_no) {
       //   personalInfo.mobile_no =
       //     personalInfo.country_code + personalInfo.mobile_no;
@@ -326,7 +358,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
     navigate("/");
   };
 
-  console.log(personalInfo,"personalInfp");
 
   return (
     <>
@@ -388,6 +419,8 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             setErrors={setErrors}
             setVisaDetailsProps={setVisaDetails}
             setVisaDetailsFilesProps={setVisaDetailsFiles}
+            visaDetailsProps={visaDetails}
+            visaDetailsFilesProps={visaDetailsFiles}
           />
         )}
         {currentStep === 3 && subStep === 1 && (

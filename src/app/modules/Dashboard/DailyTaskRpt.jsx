@@ -158,7 +158,6 @@ const DailyTaskRpt = ({ userProfile, token, baseUrl }) => {
                 const response = await axios.post(`${baseUrl}/dtr`, task, { headers });
 
                 // Handle the response
-                console.log('API response:', response.data);
             }
 
             // Optionally, reset the form data after successful submission
@@ -193,7 +192,6 @@ const DailyTaskRpt = ({ userProfile, token, baseUrl }) => {
 
     // const handleSubmit = async (e) => {
     //     e.preventDefault();
-    //    console.log('form data', formData);
     // };
 
     useEffect(() => {

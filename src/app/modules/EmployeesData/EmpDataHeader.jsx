@@ -20,7 +20,6 @@ const EmpDataHeader = ({ userProfile, title, onSearch }) => {
   // logout dropdown
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
-    console.log('name', userProfile.username);
 
   };
 

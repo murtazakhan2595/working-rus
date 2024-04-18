@@ -139,7 +139,6 @@ const JobsDataTable = ({ baseUrl, token }) => {
         headers,
       });
       if (response.status === 204) {
-        console.log("Job deleted successfully");
         toast.success("Job deleted Successfully", {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 1000,

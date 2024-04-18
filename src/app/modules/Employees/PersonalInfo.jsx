@@ -114,7 +114,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
   const handleChange = (name, value) => {
     setPersonalInfo({ ...personalInfo, [name]: value });
     setErrors({ ...errors, [name]: null });
-    console.log(value);
   };
 
   const [imagePreview, setImagePreview] = useState(
@@ -160,7 +159,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
   };
 
   const handleNextStep = () => {
-    console.log('clicked');
     let checkData = getDataFromSessionStorage("personalInfo");
     const copyCheckData = { ...checkData };
     const removePassportValidity = "passport_number";

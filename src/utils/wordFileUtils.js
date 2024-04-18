@@ -10,7 +10,6 @@ export const downloadAttachmentWord = async (file, name) => {
 
         // Check if the content type indicates a Word file
         if (contentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-            console.log("Downloading Word file...");
             downloadFile(response.data, `${name}.docx`);
         } else {
             console.error("Unsupported file type.");

@@ -98,8 +98,6 @@ const JobApplicationForm = ({ token, baseUrl }) => {
       job_id: defaultFormFields.job_id,
     };
 
-    console.log(data);
-
     try {
       const response = await axios.post(`${baseUrl}/candidate/`, data);
 

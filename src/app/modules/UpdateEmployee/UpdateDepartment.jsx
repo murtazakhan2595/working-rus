@@ -158,7 +158,6 @@ const Department = ({ errors, setErrors, prevstep, token,
   //   setDefaultData({ ...defaultData, [name]: value });
   //   setErrors({ ...errors, [name]: null });
   // };
-
   const handleEdit = (name, value, values) => {
     // Check if the name is 'employee_type' or 'employee_status'
     if (name === 'employee_type' || name === 'employee_status') {
@@ -332,23 +331,6 @@ const Department = ({ errors, setErrors, prevstep, token,
                     <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium text-input text-base mb-1'>
                       Indirect Report:
                     </label>
-
-                    {/* <div className='flex items-center gap-2'>
-                      <input
-                        type="checkbox"
-                        checked={showIndirectReport}
-                        onChange={() => setShowIndirectReport(!showIndirectReport)}
-                      />
-                      <span>Yes</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <input
-                        type="checkbox"
-                        checked={!showIndirectReport}
-                        onChange={() => setShowIndirectReport(!showIndirectReport)}
-                      />
-                      <span>No</span>
-                    </div> */}
 
                     <div className='flex items-center gap-x-2'>
                       <p className='text-sm'>Yes</p>

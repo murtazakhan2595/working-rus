@@ -10,10 +10,8 @@ export const downloadFiles = async (file, name) => {
 
         // Check if the content type indicates a PDF
         if (contentType === 'application/pdf') {
-            console.log("Downloading PDF...");
             downloadFile(response.data, `${name}.pdf`);
         } else if (contentType.startsWith('image')) {
-            console.log("Downloading image...");
             downloadFile(response.data, `${name}.${getImageExtension(contentType)}`);
         } else {
             console.error("Unsupported file type.");

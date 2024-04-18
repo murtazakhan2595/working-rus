@@ -55,7 +55,6 @@ const ViewEmpForm = ({ userProfile }) => {
 
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
-    console.log('name', userProfile.username);
   };
 
   const handleLogout = () => {

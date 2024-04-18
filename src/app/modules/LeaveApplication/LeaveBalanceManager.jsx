@@ -32,7 +32,6 @@ const LeaveBalanceManager = ({ baseUrl, token, userProfile, isSidebarOpen }) => 
   const fetchLeaves = async () => {
     try {
       const response = await axios.get(`${baseUrl}/leaveManager`, { headers });
-      console.log(response)
       setLeaves(response.data.results);
       setLoading(false);
     } catch (error) {
@@ -52,7 +51,6 @@ const LeaveBalanceManager = ({ baseUrl, token, userProfile, isSidebarOpen }) => 
         setManagers(response.data);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 

@@ -42,8 +42,6 @@ const UpdateVisaDetails = ({ prevstep,
   // const id = userProfile.id;
   const { id } = useParams();
 
-  console.log(documents);
-
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
