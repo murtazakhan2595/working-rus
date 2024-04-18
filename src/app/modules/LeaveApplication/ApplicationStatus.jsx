@@ -2,14 +2,13 @@ import React, { useState, useEffect } from "react";
 import LeaveHeader from "./LeaveHeader";
 import { connect } from "react-redux";
 import axios from "axios";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
-  console.log(userProfile);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [leavesList, setLeavesList] = useState([]);
+  const [newApplications, setNewApplications] = useState([]);
+  const [oldApplications, setOldApplications] = useState([]);
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -20,9 +19,12 @@ const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
     const fetchLeaveList = async () => {
       try {
         const response = await axios.get(`${baseUrl}/leave?search={"employee_id":${userProfile.id}}`, { headers });
-        if (response.status == 200) {
-          setLeavesList(response.data);
-          //   console.log(response);
+        if (response.status === 200) {
+          const applications = response.data;
+          const newApps = applications.filter(app => app.status_manager === "Pending" || app.status_hr === "Pending");
+          const oldApps = applications.filter(app => app.status_manager !== "Pending" && app.status_hr !== "Pending");
+          setNewApplications(newApps);
+          setOldApplications(oldApps);
           setLoading(false);
         }
       } catch (error) {
@@ -32,7 +34,6 @@ const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
 
     fetchLeaveList();
   }, []);
-
 
   return (
     <div className="bg-[#F9F9F9] w-full">
@@ -45,42 +46,60 @@ const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
             <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
             <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
           </div>
-        ) : leavesList.length !== 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50 text-sm">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th scope="col" className="px-2 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Total Leaves</th>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">From</th>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">To</th>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Approval</th>
-                  <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Approval</th>
-                  {/* <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">End Date</th> */}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {leavesList.map((leave) => (
-                  <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026] text-sm text-gray-500">
-                    <td className="px-4 py-2 whitespace-nowrap">{leave.date}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{leave.total_leave}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{leave.start_date}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{leave.leave_type}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{leave.status_manager}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{leave.status_hr}</td>
-                    {/* <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td> */}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         ) : (
-          <div className="text-center">There's no leave request today.</div>
+          <div className="overflow-x-auto">
+            {(newApplications.length === 0 && oldApplications.length === 0) ? (
+              <div className="text-center">There are no leave applications.</div>
+            ) : (
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 text-sm">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th scope="col" className="px-2 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Total Leaves</th>
+                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">From</th>
+                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">To</th>
+                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
+                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Approval</th>
+                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Approval</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  <h2 className="text-lg font-semibold py-2 bg-[#F9F9F9]">New Applications</h2>
+                  {newApplications.length === 0 ? <h2 className="bg-[#F9F9F9]">No new applications for today</h2> :
+                    newApplications.map((leave) => (
+                      <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026] text-sm text-gray-500">
+                        <td className="px-4 py-2 whitespace-nowrap">{leave.date}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{leave.total_leave}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{leave.start_date}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{leave.leave_type}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{leave.status_manager}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{leave.status_hr}</td>
+                      </tr>
+                    ))}
+
+                  <h2 className="text-lg font-semibold py-2 bg-[#F9F9F9]">Old Applications</h2>
+                  {
+                    oldApplications.length === 0 ? <h2>NO old applications found</h2>
+                      :
+                      oldApplications.map((leave) => (
+                        <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026] text-sm text-gray-500">
+                          <td className="px-4 py-2 whitespace-nowrap">{leave.date}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{leave.total_leave}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{leave.start_date}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{leave.leave_type}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{leave.status_manager}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">{leave.status_hr}</td>
+                        </tr>
+                      ))
+                  }
+                </tbody>
+              </table>
+            )}
+          </div>
         )}
       </div>
-
     </div>
   );
 };

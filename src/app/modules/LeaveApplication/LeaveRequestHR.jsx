@@ -18,6 +18,11 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { managerComments, hrComments } = formFields;
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const hr_status = searchParams.get("status_hr");
+
+  console.log("iam the manager status", hr_status);
+
   const navigate = useNavigate();
 
   const handleChange = (event) => {
@@ -155,7 +160,7 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
       <div className="px-3 lg:px-7 h-[76vh] md:h-[76vh] lg:h-[80vh] overflow-y-scroll scroll">
         <LeaveRequestData application={application} managers={managers} />
 
-        <form className="w-full" onSubmit={(event) => handleSubmit("accept", event)}>
+        {hr_status === "Pending" ? <form className="w-full" onSubmit={(event) => handleSubmit("accept", event)}>
           <div className="flex flex-col md:flex-row items-center justify-between md:justify-normal md:gap-x-11 lg:gap-x-16">
             <h1 className="text-baseBlue text-base tracking-wider font-semibold md:my-6 lg:w-20">
               Manager Comments
@@ -194,7 +199,8 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
               Reject
             </button>
           </div>
-        </form>
+        </form> : null}
+
       </div>
     </div>
   );

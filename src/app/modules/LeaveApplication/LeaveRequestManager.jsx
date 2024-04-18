@@ -16,6 +16,10 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
   const [managers, setManagers] = useState([]);
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { comments } = formFields;
+  const searchParams = new URLSearchParams(window.location.search);
+  const manager_status = searchParams.get("status_manager");
+
+  console.log("iam the manager status", manager_status);
 
   const navigate = useNavigate();
 
@@ -120,7 +124,7 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
 
   const handleSubmit = async (action, event) => {
     try {
-      event.preventDefault(); 
+      event.preventDefault();
 
       // // Check if the comments field is empty
       // if (!formFields.comments.trim()) {
@@ -146,7 +150,7 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
         <LeaveRequestData application={application} managers={managers} />
 
         {/* comments */}
-        <form className="w-full" onSubmit={(event) => handleSubmit("accept", event)}>
+        {manager_status === 'Pending' ? <form className="w-full" onSubmit={(event) => handleSubmit("accept", event)}>
           <div className="flex flex-col md:flex-row items-center justify-between md:justify-normal md:gap-x-11 lg:gap-x-14">
             <h1 className="text-baseBlue text-base tracking-wider font-semibold md:my-6">
               Comments
@@ -175,7 +179,8 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
               Reject
             </button>
           </div>
-        </form>
+        </form> : null}
+
       </div>
     </div>
   );

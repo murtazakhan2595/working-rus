@@ -9,14 +9,7 @@ import Select from "react-select";
 import Datepicker from "../Dashboard/Datepicker";
 import moment from "moment";
 import LeavesLoader from "../../../common/LeavesLoader";
-
-const userRoles = [
-  { value: 1, label: "Super Admin" },
-  { value: 2, label: "Manager" },
-  { value: 3, label: "HR" },
-  { value: 4, label: "Employee" },
-];
-
+import { getAllCountries } from 'countries-and-timezones';
 
 const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
 
@@ -66,6 +59,12 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
   };
 
 
+  // Get country options for Select component
+  const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name
+  }));
+
   return (
     <div className="bg-[#F9F9F9] w-full">
       <LeaveHeader post="Leave Balance" />
@@ -81,7 +80,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
               />
             </div>
           </div>
-          <Select
+          {/* <Select
             name="userrole"
             className="w-36 mx-2 lg:mx-0 md:w-44"
             value=""
@@ -90,16 +89,18 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
           //   onChange={(selectedOption) =>
           //     handleChange("userrole", selectedOption)
           //   }
-          />
+          /> */}
           <Select
-            name="userrole"
+            name="nationality"
             className="w-36 mx-2 lg:mx-0 md:w-44"
-            value=""
-            options={userRoles}
-            required
-          //   onChange={(selectedOption) =>
-          //     handleChange("userrole", selectedOption)
-          //   }
+            options={countryOptions}
+            // value={countryOptions.find(
+            //   (option) => option.label === formData.nationality
+            // )}
+            // onChange={(selectedOption) =>
+            //   handleChange("nationality", selectedOption.label)
+            // }
+            menuPlacement="bottom"
           />
           <div className="flex items-center gap-x-1 lg:gap-x-4 border-[2px] border-[#29BAFF] px-2 mt-2 lg:mt-0 py-3 rounded-lg">
             <Datepicker
