@@ -70,7 +70,8 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
       const response = await axios.put(
         `${baseUrl}/leaveManager/${id}`,
         {
-          employee_id: userProfile.id,
+          // employee_id: userProfile.id,
+          employee_id: application.employee_id,
           name: application.name,
           date: application.date,
           department: application.department,

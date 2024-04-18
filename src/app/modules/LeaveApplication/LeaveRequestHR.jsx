@@ -75,7 +75,8 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
       const response = await axios.put(
         `${baseUrl}/leaveHr/${id}`,
         {
-          employee_id: userProfile.id,
+          // employee_id: userProfile.id,
+          employee_id: application.employee_id,
           name: application.name,
           date: application.date,
           department: application.department,

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { connect } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
+import { getAllCountries } from 'countries-and-timezones';
 
 const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   const newDate = new Date();
@@ -100,6 +101,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       }
 
       // Regular input fields
+      console.log("Updated Form Data:", { ...prevData, [name]: value });
       return {
         ...prevData,
         [name]: value,
@@ -159,7 +161,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       indirect_report_to: formData.indirect_report_to
     };
 
-    console.log(data);
+      console.log(data);
 
     try {
       const response = await axios.post(`${baseUrl}/leave/`, data, {
@@ -183,6 +185,12 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       setIsButtonDisabled(false); // Re-enable the button
     }
   };
+
+  // Get country options for Select component
+  const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name
+  }));
 
   return (
     <div className="bg-[#F9F9F9] w-full">
@@ -319,7 +327,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Nationality:
                   </label>
-                  <input
+                  {/* <input
                     placeholder="Enter Nationality Here"
                     required
                     className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
@@ -329,6 +337,19 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
+                  /> */}
+                  <Select
+                    name="nationality"
+                    className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
+                    options={countryOptions}
+                    value={countryOptions.find(
+                      (option) => option.label === formData.nationality
+                    )}
+                    onChange={(selectedOption) =>
+                      handleChange("nationality", selectedOption.label)
+                    }
+                    menuPlacement="top"
+                    required
                   />
                 </div>
               </div>
@@ -363,35 +384,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     onChange={() => handleChange("leave_type", "SICK")}
                   />
                   <label>Sick</label>
-                  <input
-                    type="checkbox"
-                    name="COMPENSATORY"
-                    checked={formData.leave_type === "COMPENSATORY"}
-                    onChange={() => handleChange("leave_type", "COMPENSATORY")}
-                  />
-                  <label>Compensatory</label>
-                  <input
-                    type="checkbox"
-                    name="PATERNAL"
-                    checked={formData.leave_type === "PATERNAL"}
-                    onChange={() => handleChange("leave_type", "PATERNAL")}
-                  />
-                  <label>Paternal</label>
-                  <input
-                    type="checkbox"
-                    name="BEREAVEMENT"
-                    checked={formData.leave_type === "BEREAVEMENT"}
-                    onChange={() => handleChange("leave_type", "BEREAVEMENT")}
-                  />
-                  <label>Bereavement</label>
-                  <input
-                    type="checkbox"
-                    name="SPECIAL"
-                    checked={formData.leave_type === "SPECIAL"}
-                    onChange={() => handleChange("leave_type", "SPECIAL")}
-                  />
-                  <label>Special</label>
-
                 </div>
                 <div className="flex items-center md:gap-2.5 gap-[4px]">
                   <input
