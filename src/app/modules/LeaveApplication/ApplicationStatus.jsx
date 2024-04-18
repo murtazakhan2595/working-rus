@@ -78,7 +78,7 @@ const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
                       </tr>
                     ))}
 
-                  <h2 className="text-lg font-semibold py-2 bg-[#F9F9F9]">Old applications</h2>
+                  <h2 className="text-lg font-semibold py-2 bg-[#F9F9F9]">Old Applications</h2>
                   {
                     oldApplications.length === 0 ? <h2>NO old applications found</h2>
                       :
