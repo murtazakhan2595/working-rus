@@ -74,7 +74,7 @@ const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
             </tbody>
           </table>
 
-          <h2 className="text-lg font-semibold mb-2">Leaves History</h2>
+          <h2 className="text-lg font-semibold mb-2">Leave History</h2>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50 text-sm">
               <tr>

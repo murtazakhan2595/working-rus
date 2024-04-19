@@ -73,7 +73,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
         {/* Display new applications if available */}
         {!loading && newApplications.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold mb-2">New Leaves Request</h2>
+            <h2 className="text-lg font-semibold mb-2">New Leave Request</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 text-sm">
@@ -115,7 +115,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
         {/* Display old applications if available */}
         {oldApplications.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold mt-2 mb-2">Leaves History</h2>
+            <h2 className="text-lg font-semibold mt-2 mb-2">Leave History</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 text-sm">
