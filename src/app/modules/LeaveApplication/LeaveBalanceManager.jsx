@@ -61,7 +61,7 @@ const LeaveBalanceManager = ({ baseUrl, token, userProfile, isSidebarOpen }) => 
 
   const getReportingManger = (userId) => {
     const reportingManger = managers?.find((user) => user.id === userId);
-    return reportingManger ? reportingManger.department_manager : null;
+    return reportingManger ? reportingManger.username : null;
   };
 
 

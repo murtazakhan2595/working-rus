@@ -131,7 +131,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
           Leave Data
         </h2>
       </div>
-      <div className={`px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-1 overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[58vh] roundScroll ${isSidebarOpen ? 'w-[1120px]' : 'w-[1240px]'}`}>
+      <div className={`px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-1 overflow-x-auto overflow-y-auto min-h-[62%] max-h-[62%] md:max-h-[75.5vh] lg:max-h-[58vh] roundScroll`}>
         <table className="min-w-full">
           <thead>
             <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
