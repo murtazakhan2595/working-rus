@@ -4,7 +4,8 @@ const LeaveRequestData = ({ application, managers }) => {
   //   reporting manager logic
   const getReportingManger = (userId) => {
     const reportingManger = managers?.find((user) => user.id === userId);
-    return reportingManger ? reportingManger.department_manager : null;
+    console.log(reportingManger, 'i ma reporting manager')
+    return reportingManger ? reportingManger.username : null;
   };
 
   // date formatting

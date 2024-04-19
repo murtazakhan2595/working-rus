@@ -41,11 +41,11 @@ const departmentSchema = Joi.object({
             "string.empty": `Direct Report is required`,
         }),
     // indirect_report: Joi.string().required().label('Indirect Report'),
-    indirect_report: Joi.string().when('is_indirect_report_applicable', {
-        is: Joi.boolean().valid(true).required(),
-        then: Joi.required(),
-        otherwise: Joi.optional()
-    }),
+    // indirect_report: Joi.string().when('is_indirect_report_applicable', {
+    //     is: Joi.boolean().valid(true).required(),
+    //     then: Joi.required(),
+    //     otherwise: Joi.optional()
+    // }),
     department_manager: Joi.string().required().label('Department Manger').messages({
         "string.empty": `Department Manger is required`,
     }),
@@ -77,7 +77,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
         department_position: defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
         direct_report: defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
         indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
-        is_indirect_report_applicable: defaultDeparmentInfo?.is_indirect_report_applicable ? defaultDeparmentInfo.is_indirect_report_applicable : false,
+        // is_indirect_report_applicable: defaultDeparmentInfo?.is_indirect_report_applicable ? defaultDeparmentInfo.is_indirect_report_applicable : false,
         department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : '',
         employee_type: defaultDeparmentInfo?.employee_type ? defaultDeparmentInfo.employee_type : '',
         employee_status: defaultDeparmentInfo?.employee_status ? defaultDeparmentInfo.employee_status : '',

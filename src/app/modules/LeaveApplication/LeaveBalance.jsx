@@ -24,7 +24,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
 
   const fetchLeaves = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/leave`, { headers });
+      const response = await axios.get(`${baseUrl}/leave?search={}`, { headers });
       setLeaves(response.data);
       setLoading(false);
     } catch (error) {
@@ -44,6 +44,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
         setManagers(response.data);
       }
     } catch (error) {
+      console.log(error);
     }
   };
 
@@ -54,7 +55,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
 
   const getReportingManger = (userId) => {
     const reportingManger = managers?.find((user) => user.id === userId);
-    return reportingManger ? reportingManger.department_manager : null;
+    return reportingManger ? reportingManger.username : null;
   };
 
 
@@ -71,7 +72,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
         <div className="flex flex-wrap justify-between md:justify-center lg:justify-between md:gap-x-14 lg:gap-x-0 items-center bg-[#F2F2F2] rounded-md">
           <div className="p-2 lg:p-3 block">
             <div className="relative">
-              <IoIosSearch className="absolute top-2 left-3 text-black" />
+              <IoIosSearch className="absolute top-2 left-2 text-black" />
               <input
                 type="search"
                 placeholder="Search by Name"
@@ -130,7 +131,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
           Leave Data
         </h2>
       </div>
-      <div className={`px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-1 overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[58vh] roundScroll ${isSidebarOpen ? 'w-[1120px]' : 'w-[1240px]'}`}>
+      <div className={`px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-1 overflow-x-auto overflow-y-auto min-h-[62%] max-h-[62%] md:max-h-[75.5vh] lg:max-h-[58vh] roundScroll`}>
         <table className="min-w-full">
           <thead>
             <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">

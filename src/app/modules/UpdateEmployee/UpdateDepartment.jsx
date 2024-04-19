@@ -33,7 +33,7 @@ const departmentSchema = Joi.object({
       "string.pattern.base": `Position must only contain letters and spaces`,
     }),
   direct_report: Joi.string().required(),
-  indirect_report: Joi.string().required(),
+  // indirect_report: Joi.string().required(),
   department_manager: Joi.string().required()
 });
 
@@ -130,7 +130,7 @@ const Department = ({ errors, setErrors, prevstep, token,
         department_name: defaultData.department_name,
         department_position: defaultData.department_position,
         direct_report: defaultData.direct_report,
-        indirect_report: defaultData.indirect_report,
+        // indirect_report: defaultData.indirect_report,
         department_manager: defaultData.department_manager,
         // joining_date: defaultData.joining_date,
       },

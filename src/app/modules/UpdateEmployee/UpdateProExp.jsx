@@ -85,9 +85,9 @@ const ProfessionalExp = ({
       if (!disableEndDate && !experience.exp_end_date) {
         fieldErrors[`exp_end_date_${i}`] = "End Date is required.";
       }
-      if (!experience.exp_letter?.hasOwnProperty("name")) {
-        fieldErrors[`exp_letter_${i}`] = "Experience Letter is required.";
-      }
+      // if (!experience.exp_letter?.hasOwnProperty("name")) {
+      //   fieldErrors[`exp_letter_${i}`] = "Experience Letter is required.";
+      // }
     }
 
     if (Object.keys(fieldErrors).length > 0) {

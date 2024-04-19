@@ -8,6 +8,7 @@ import axios from "axios";
 import { connect } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { getAllCountries } from 'countries-and-timezones';
+import { department } from "../../../data/Data";
 
 const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   const newDate = new Date();
@@ -158,6 +159,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       indirect_report_to: formData.indirect_report_to
     };
 
+      console.log(data);
 
     try {
       const response = await axios.post(`${baseUrl}/leave/`, data, {
@@ -303,7 +305,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Department:
                   </label>
-                  <input
+                  {/* <input
                     placeholder="Enter Department Here"
                     required
                     className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
@@ -313,6 +315,18 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
+                  /> */}
+                  <Select
+                    name="department"
+                    className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
+                    options={department}
+                    value={department.find(
+                      (option) => option.label === formData.department
+                    )}
+                    onChange={(selectedOption) =>
+                      handleChange("department", selectedOption.value)
+                    }
+                    required
                   />
                 </div>
 
@@ -323,17 +337,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Nationality:
                   </label>
-                  {/* <input
-                    placeholder="Enter Nationality Here"
-                    required
-                    className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
-                    type="text"
-                    name="nationality"
-                    value={formData.nationality}
-                    onChange={(e) =>
-                      handleChange(e.target.name, e.target.value)
-                    }
-                  /> */}
                   <Select
                     name="nationality"
                     className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
@@ -344,7 +347,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     onChange={(selectedOption) =>
                       handleChange("nationality", selectedOption.label)
                     }
-                    menuPlacement="top"
                     required
                   />
                 </div>
@@ -595,7 +597,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 />
               </div>
 
-              <div className="py-2 flex md:items-center justify-between md:justify-normal lg:gap-x-[18px]">
+              {/* <div className="py-2 flex md:items-center justify-between md:justify-normal lg:gap-x-[18px]">
                 <div
                   className="font-sfpro flex gap-x-1 tracking-wide font-semibold
                             text-input text-base md:w-[15rem] lg:w-[18rem]"
@@ -607,8 +609,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     onChange={handleCheckboxChange}
                   />
                 </div>
-
-                {/* <Select
+                {showIndirectReport && <Select
                   isMulti={true} // Enable multi-select
                   isClearable={true}
                   menuPlacement="auto"
@@ -630,28 +631,8 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     const selectedValues = selectedOptions.map(option => option.value);
                     handleChange("indirect_report_to", null, selectedValues);
                   }}
-                /> */}
-                {showIndirectReport && <Select
-                  isMulti={true} // Enable multi-select
-                  isClearable={true}
-                  menuPlacement="auto"
-                  className="w-full md:w-[80%] lg:w-full"
-                  name="indirect_report_to"
-                  options={managers.map((manager) => ({
-                    value: manager.id,
-                    label: manager.username,
-                  }))}
-                  value={formData.indirect_report_to.map((managerId, index) => ({
-                    value: managerId,
-                    label: managers.find(manager => manager.id === managerId)?.username || '',
-                    key: `${managerId}-${index}` // Ensure each key is unique
-                  }))}
-                  onChange={(selectedOptions) => {
-                    const selectedValues = selectedOptions.map(option => option.value);
-                    handleChange("indirect_report_to", null, selectedValues);
-                  }}
                 />}
-              </div>
+              </div> */}
             </div>
             <button
               disabled={isButtonDisabled}
