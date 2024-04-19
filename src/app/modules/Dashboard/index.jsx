@@ -19,7 +19,6 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
 
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
-    console.log('name', userProfile.username);
 
   };
 

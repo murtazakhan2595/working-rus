@@ -97,8 +97,6 @@ const PersonalInfo = ({
   const id = userProfile.id;
   // const { id } = useParams();
 
-  console.log('i am new id from params', id);
-
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
@@ -121,8 +119,6 @@ const PersonalInfo = ({
       const imageError = { image: "" };
       setErrors(imageError);
     }
-    console.log("Selected File:", selectedFile);
-    console.log("Image Data:", e.target.result);
   };
 
   const fetchData = async () => {

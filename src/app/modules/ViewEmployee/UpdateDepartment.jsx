@@ -12,40 +12,8 @@ import moment from 'moment';
 import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 import CustomSelect from './customSelect';
+import { HeadOfDepartment, employeeStatus, jobRoles } from '../../../data/Data';
 
-const jobRoles = [
-  { label: 'Intern', value: 'Intern' },
-  { label: 'Part-Time', value: 'Part-Time' },
-  { label: 'Full-Time', value: 'Full-Time' },
-  { label: 'Contract', value: 'Contract' },
-  { label: 'Freelancer', value: 'Freelancer' }
-];
-
-const employeeStatus = [
-  { label: 'Active', value: 'Active' },
-  { label: 'Terminated', value: 'Terminated' },
-  { label: 'Deceased', value: 'Deceased' },
-  { label: 'Resigned', value: 'Resigned' },
-  { label: 'Probation', value: 'Probation' },
-  { label: 'Notice Period', value: 'Notice Period' },
-  { label: 'Exit', value: 'Exit' },
-  { label: 'Absconded', value: 'Absconded' },
-  { label: 'Legal Case', value: 'Legal Case' }
-];
-
-const HeadOfDepartment = [
-  { label: 'Naveed (CEO)', value: 'Naveed' },
-  { label: 'Komal (Peoples Teams Head)', value: 'Komal' },
-  { label: 'Farhan (HR Manager)', value: 'Farhan' },
-  { label: 'Arshad Ali (Business Development & Sales)', value: 'Arshad Ali' },
-  { label: 'Haris (Pre-Sales)', value: 'Haris' },
-  { label: 'Sadia (Project Management)', value: 'Sadia' },
-  { label: 'Asra (Front End Lead)', value: 'Asra' },
-  { label: 'Shujat ( Backend Lead)', value: 'Shujat' },
-  { label: 'Faisal( Operations )', value: 'Faisal' },
-  { label: 'Imran (Marketing)', value: 'Imran' },
-  { label: 'Prakash ( VP Sales)', value: 'Prakash' },
-];
 
 const departmentSchema = Joi.object({
   department_name: Joi.string()
@@ -84,8 +52,6 @@ const Department = ({ errors, setErrors, prevstep, token,
   const [isLoading, setIsLoading] = useState(false);
   const [managers, setManagers] = useState([]);
   const navigate = useNavigate()
-  const [showIndirectReport, setShowIndirectReport] = useState(false);
-
 
   const id = userProfile.id;
   // const { id } = useParams();
@@ -172,7 +138,6 @@ const Department = ({ errors, setErrors, prevstep, token,
           sessionStorage.clear(); // Remove the redundant sessionStorage.clear() here
         }
       } catch (error) {
-        console.error('Error saving data:', error);
         toast.error('Failed to update department information. Please try again.', {
           position: 'top-center',
           autoClose: 3000,
@@ -192,7 +157,6 @@ const Department = ({ errors, setErrors, prevstep, token,
   //   setDefaultData({ ...defaultData, [name]: value });
   //   setErrors({ ...errors, [name]: null });
   // };
-
   const handleEdit = (name, value, values) => {
     // Check if the name is 'employee_type' or 'employee_status'
     if (name === 'employee_type' || name === 'employee_status') {
@@ -217,6 +181,18 @@ const Department = ({ errors, setErrors, prevstep, token,
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleEdit("joining_date", formattedDate);
   };
+
+
+  const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
+    label: (
+      <div>
+        <div style={{ fontWeight: 'bold', color: '#000' }}>{manager?.label?.split(' - ')[0]}</div>
+        <div style={{ fontSize: '13px', color: '#777', fontWeight: 'normal' }}>{manager?.label?.split(' - ')[1]}</div>
+      </div>
+    ),
+    value: manager.value
+  }));
+
 
 
   return (
@@ -310,7 +286,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                         menuPlacement="top"
                         isDisabled={isEdit ? false : true}
                         name="employee_status"
-                        value={employeeStatus.find(option => option.label === defaultData.employee_status)}
+                        value={employeeStatus?.find(option => option.label === defaultData.employee_status)}
                         onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
                         options={employeeStatus}
                         isSearchable={false}
@@ -356,23 +332,6 @@ const Department = ({ errors, setErrors, prevstep, token,
                       Indirect Report:
                     </label>
 
-                    {/* <div className='flex items-center gap-2'>
-                      <input
-                        type="checkbox"
-                        checked={showIndirectReport}
-                        onChange={() => setShowIndirectReport(!showIndirectReport)}
-                      />
-                      <span>Yes</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <input
-                        type="checkbox"
-                        checked={!showIndirectReport}
-                        onChange={() => setShowIndirectReport(!showIndirectReport)}
-                      />
-                      <span>No</span>
-                    </div> */}
-
                     <div className='flex items-center gap-x-2'>
                       <p className='text-sm'>Yes</p>
                       <input type="checkbox"
@@ -402,9 +361,10 @@ const Department = ({ errors, setErrors, prevstep, token,
                               menuPlacement="top"
                               name='indirect_report'
                               placeholder="Search Indirect Report To..."
-                              value={managers
-                                .filter(manager => manager.username === defaultData.indirect_report)
-                                .map(manager => ({ value: manager.id, label: manager.username }))}
+                      value={managers.find(manager => manager.label === defaultData.direct_report)}
+                      // value={managers
+                      //           .filter(manager => manager.username === defaultData.indirect_report)
+                      //           .map(manager => ({ value: manager.id, label: manager.username }))}
                               onChange={(selectedOption) => handleEdit("indirect_report", selectedOption, selectedOption)}
                               options={managers
                                 ?.filter(manager => manager.username)
@@ -429,17 +389,6 @@ const Department = ({ errors, setErrors, prevstep, token,
 
 
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                {/* <div className='flex flex-col mt-2 md:mt-5 md:w-1/2 lg:w-[45.5%]'>
-                  <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Department Manager:</label>
-                  <input type="text" readOnly={!isEdit} value={defaultData.department_manager} name="department_manager" id="" placeholder='Department Manager Here'
-                    className={`${isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                    onClick={() => setIsEdit(true)}
-                    onChange={(e) => handleEdit(e.target.name, e.target.value)}
-                  />
-                  {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
-                </div> */}
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
                   <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
                         text-input text-base mb-1'>Department Head:</label>
@@ -447,20 +396,45 @@ const Department = ({ errors, setErrors, prevstep, token,
                     <Select
                       isDisabled={isEdit ? false : true}
                       menuPlacement="top"
-                      name='department_manager'
-                      value={HeadOfDepartment.find(manager => manager.value === defaultData.department_manager)}
-                      onChange={(selectedOption) => handleEdit("department_manager", selectedOption.value)}
-                      options={HeadOfDepartment}
-                      // options={managers
-                      //   ?.filter(manager => manager.user_role === 2) // Filter managers with user_role equal to 2
-                      //   .map((manager) => ({
-                      //     value: manager.id,
-                      //     label: manager.username,
-                      //   }))}
-                      menuPortalTarget={document.body}
-                      styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                      name="department_manager"
+                      value={HeadOfDepartmentOptions.find(
+                        (option) => option.value === defaultData.department_manager
+                      )}
+                      onChange={(selectedOption) =>
+                        handleEdit("department_manager", selectedOption.value)
+                      }
+                      options={HeadOfDepartmentOptions}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        control: (provided) => ({
+                          ...provided,
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
+                        }),
+                        option: (provided, state) => ({
+                          ...provided,
+                          fontSize: "16px",
+                          fontWeight: state.isSelected ? "bold" : "normal",
+                          color: state.isSelected ? "#000" : "#777",
+                          padding: "8px 12px",
+                          backgroundColor: state.isSelected ? '#E0F3FB' : 'transparent'
+                        }),
+                        menu: (provided) => ({
+                          ...provided,
+                          borderRadius: "8px",
+                          overflow: "hidden",
+                        }),
+                        scrollbarWidth: (base) => ({
+                          ...base,
+                          borderRadius: "8px",
+                          backgroundColor: "#ccc",
+                        }),
+                        dropdownIndicator: (provided) => ({
+                          ...provided,
+                          color: "#555",
+                        }),
+                      }}
                     />
-
                     {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
                   </div>
                 </div>

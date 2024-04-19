@@ -138,7 +138,6 @@ const AcademicRecords = ({
         `${baseUrl}/education/?search={"employee_id":${id}}`,
         { headers }
       );
-      console.log('education response');
       const educationData = educationResponse.data[0];
 
       const formattedEducationData = {
@@ -582,25 +581,14 @@ const AcademicRecords = ({
                   <h2 className="text-input tracking-wide text-base mt-3 mb-3 lg:mb-0 lg:text-base">
                     Attach Certification:
                   </h2>
-                  <div onClick={handleEditClick}>
+                  <div>
                     {academicInfo.certificate?.document?.hasOwnProperty("name") ? (
-                      <div className="flex gap-1  items-center">
-                        <div className="">
-                          {/* <button
-                            className="text-blue-600 underline"
-                            onClick={() =>
-                              downloadAttachment(
-                                academicInfo.certificate?.document?.file,
-                                academicInfo.certificate?.document?.name
-                              )
-                            }
-                          >
-                            {academicInfo.certificate?.document?.name ? academicInfo.certificate?.document?.name : "Not available"}
-                          </button> */}
-                          <Tooltip
-                            title="View Doc"
-                          >
-
+                      <div className="flex gap-x-2  items-center">
+                        <div className="flex items-center gap-x-2">
+                          <p className="text-blue-600">
+                            {academicInfo.certificate?.document?.name ? academicInfo.certificate?.document?.name : ""}
+                          </p>
+                          <Tooltip title="View Doc">
                             <button
                               className="text-blue-600 underline"
                               onClick={() =>
@@ -613,10 +601,7 @@ const AcademicRecords = ({
                               {academicInfo.certificate?.document?.name ? <LuExternalLink /> : "Not available"}
                             </button>
                           </Tooltip>
-                          <Tooltip
-                            title="Download Doc"
-                          >
-
+                          <Tooltip title="Download Doc">
                             <button
                               className="text-blue-600 underline"
                               onClick={() =>
@@ -630,15 +615,17 @@ const AcademicRecords = ({
                             </button>
                           </Tooltip>
                         </div>
-                        <WiCloudRefresh
-                          onClick={() => {
-                            if (isEdit) {
-                              setAcademicInfo({ ...academicInfo, certificate: { ...academicInfo.certificate, document: {} } });
-                              setDataInSessionStorage("UpdatedAcademicInfo", academicInfo);
-                            }
-                          }}
-                          className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
-                        />
+                        <div onClick={handleEditClick}>
+                          <WiCloudRefresh
+                            onClick={() => {
+                              if (isEdit) {
+                                setAcademicInfo({ ...academicInfo, certificate: { ...academicInfo.certificate, document: {} } });
+                                setDataInSessionStorage("UpdatedAcademicInfo", academicInfo);
+                              }
+                            }}
+                            className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
+                          />
+                        </div>
                       </div>
                     ) : (
                       <label
@@ -832,24 +819,15 @@ const AcademicRecords = ({
                   <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
                     Certification Body:
                   </h2>
-                  <div onClick={handleEditClick}>
+                  <div>
                     {certification.certification_body ? (
-                      <div className="flex gap-1  items-center">
-                        <div className="">
-                          {/* <button
-                            className="text-blue-600 underline"
-                            onClick={() =>
-                              downloadAttachment(
-                                certification?.certification_body?.file,
-                                certification?.certification_body?.name
-                              )
-                            }
-                          >
-                            {certification?.certification_body?.name ? certification?.certification_body?.name : "Not available"}
-                          </button> */}
-                          <Tooltip
-                            title="View Doc"
-                          ><button
+                      <div className="flex gap-x-2 items-center">
+                        <div className="flex items-center gap-x-2">
+                          <button className="text-blue-600">
+                            {certification?.certification_body?.name ? certification?.certification_body?.name : ""}
+                          </button>
+                          <Tooltip title="View Doc">
+                            <p
                             className="text-blue-600 underline"
                             onClick={() =>
                               downloadAttachment(
@@ -859,7 +837,7 @@ const AcademicRecords = ({
                             }
                           >
                               {certification?.certification_body?.name ? <LuExternalLink /> : "Not available"}
-                            </button>
+                            </p>
                           </Tooltip>
                           <Tooltip
                             title="Download Doc"
@@ -876,16 +854,18 @@ const AcademicRecords = ({
                             </button>
                           </Tooltip>
                         </div>
-                        <WiCloudRefresh
-                          onClick={() => {
-                            if (isEdit) {
-                              const updatedSections = [...certificationSections];
-                              updatedSections[index].certification_body = "";
-                              setCertificationSections(updatedSections);
-                            }
-                          }}
-                          className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
-                        />
+                        <div onClick={handleEditClick}>
+                          <WiCloudRefresh
+                            onClick={() => {
+                              if (isEdit) {
+                                const updatedSections = [...certificationSections];
+                                updatedSections[index].certification_body = "";
+                                setCertificationSections(updatedSections);
+                              }
+                            }}
+                            className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
+                          />
+                        </div>
                       </div>
                     ) : (
                       <label

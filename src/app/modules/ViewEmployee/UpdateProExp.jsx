@@ -452,7 +452,7 @@ const ProfessionalExp = ({
                       <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
                         Experience Letter:
                       </h2>
-                      <div onClick={handleEditClick}>
+                      <div>
                         {experience.exp_letter ? (
                           <div className="flex gap-x-2 items-center">
                             <div
@@ -504,16 +504,18 @@ const ProfessionalExp = ({
                                 </button>
                               </Tooltip>
                             </div>
-                            <WiCloudRefresh
-                              onClick={() => {
-                                if (isEdit) {
-                                  const updatedSections = [...experienceSections];
-                                  updatedSections[index].exp_letter = "";
-                                  setExperienceSections(updatedSections);
-                                }
-                              }}
-                              className={`${isEdit ? "text-blue-600" : "text-gray-500"}text-xl`}
-                            />
+                            <div onClick={handleEditClick}>
+                              <WiCloudRefresh
+                                onClick={() => {
+                                  if (isEdit) {
+                                    const updatedSections = [...experienceSections];
+                                    updatedSections[index].exp_letter = "";
+                                    setExperienceSections(updatedSections);
+                                  }
+                                }}
+                                className={`${isEdit ? "text-blue-600" : "text-gray-500"}text-xl`}
+                              />
+                            </div>
                           </div>
                         ) : (
                           <label

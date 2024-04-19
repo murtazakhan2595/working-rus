@@ -46,7 +46,6 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
             project_id: project_id,
           };
           tasksWithBardName.push(taskWithname);
-          console.log(tasksWithBardName, "task with ");
         }
         setTasks(tasksWithBardName);
       } else {

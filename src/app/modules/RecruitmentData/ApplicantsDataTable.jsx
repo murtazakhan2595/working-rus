@@ -44,7 +44,6 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
       const blob = new Blob([response.data], { type: "application/pdf" });
 
       const url = window.URL.createObjectURL(blob);
-      console.log("Content-Type:", response.headers["content-type"]);
 
       // Create a temporary link element
       const link = document.createElement("a");
@@ -117,7 +116,6 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
       );
 
       if (selectedApplicant) {
-        console.log(selectedApplicant);
         const response = await axios.patch(
           `${baseUrl}/candidate/${selectedApplicant.id}`,
           {

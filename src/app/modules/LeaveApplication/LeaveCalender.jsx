@@ -4,6 +4,8 @@ import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 import { IoIosSearch } from "react-icons/io";
 import moment from "moment";
+import { connect } from "react-redux";
+import axios from "axios";
 
 const userRoles = [
   { value: 1, label: "Super Admin" },
@@ -12,9 +14,16 @@ const userRoles = [
   { value: 4, label: "Employee" },
 ];
 
-export const LeaveCalender = () => {
+const LeaveCalender = ({ baseUrl, token, userProfile }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [daysInMonth, setDaysInMonth] = useState([]);
+  const [leaves, setLeaves] = useState([]);
+
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
 
   const updateCalendar = (newDate) => {
     setCurrentDate(newDate);
@@ -46,6 +55,24 @@ export const LeaveCalender = () => {
     updateCalendar(currentDate);
   }, [currentDate]);
 
+
+  useEffect(() => {
+    const fetchLeaveList = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/leave?ordering=date`, { headers });
+        if (response.status === 200) {
+          setLeaves(response.data);
+          // setLoading(false);
+          console.log(leaves);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchLeaveList();
+  }, []);
+
   return (
     <div className="w-full bg-[#f9f9f9]">
       <LeaveHeader post="Leave Calender" />
@@ -68,9 +95,9 @@ export const LeaveCalender = () => {
             value=""
             options={userRoles}
             required
-            //   onChange={(selectedOption) =>
-            //     handleChange("userrole", selectedOption)
-            //   }
+          //   onChange={(selectedOption) =>
+          //     handleChange("userrole", selectedOption)
+          //   }
           />
           <Select
             name="userrole"
@@ -78,9 +105,9 @@ export const LeaveCalender = () => {
             value=""
             options={userRoles}
             required
-            //   onChange={(selectedOption) =>
-            //     handleChange("userrole", selectedOption)
-            //   }
+          //   onChange={(selectedOption) =>
+          //     handleChange("userrole", selectedOption)
+          //   }
           />
           <div className="flex items-center gap-x-1 lg:gap-x-4 border-[2px] border-[#29BAFF] px-2 mt-2 lg:mt-0 py-3 rounded-lg">
             <Datepicker
@@ -157,17 +184,17 @@ export const LeaveCalender = () => {
               Next
             </button>
           </div>
-          <div className="flex flex-wrap overflow-x-auto">
-            {daysInMonth.map((day, index) => (
+          <div className="">
+            <div className="flex flex-wrap overflow-x-auto">{daysInMonth.map((day, index) => (
               <React.Fragment key={day}>
                 {index === 0 && (
-                  <div className="w-12 h-12 text-center leading-12 border border-white bg-[#F2F2F2] rounded-sm">
+                  <div className="w-24 h-12 text-center leading-12 border border-white bg-[#F2F2F2] rounded-sm">
                     <div className="text-sm font-semibold text-[#838D91]">
-                      Person
+                      Employee
                     </div>
                   </div>
                 )}
-                <div className="w-8 h-12 text-center leading-12 border border-white bg-[#F2F2F2] rounded-sm">
+                <div className="w-9 h-12 text-center leading-12 border border-white bg-[#F2F2F2] rounded-sm">
                   <div className="text-sm font-semibold text-[#838D91]">
                     {getDayName(
                       new Date(
@@ -180,7 +207,46 @@ export const LeaveCalender = () => {
                   <div className="font-bold text-[#249CD5] text-sm">{day}</div>
                 </div>
               </React.Fragment>
-            ))}
+            ))}</div>
+            <div className="h-[350px] overflow-y-scroll">
+              {leaves.map((leave) => (
+                <div key={leave.id} className="flex flex-wrap overflow-x-auto my-1">
+                  {daysInMonth.map((day, index) => (
+                    <React.Fragment key={day}>
+                      {index === 0 && (
+                        <div className="w-24 h-auto text-center leading-12 border border-white bg-[#F2F2F2] rounded-tl-sm rounded-bl-sm">
+                          <div className="text-sm text-baseBlue font-semibold">
+                            {leave.name}
+                          </div>
+                        </div>
+                      )}
+                      <div
+                        className={`w-9 h-5 text-center leading-12 ${
+                          // Add conditional class based on leave type
+                          (day >= new Date(leave.start_date).getDate() &&
+                            day <= new Date(leave.end_date).getDate()) &&
+                          (leave.leave_type === "ANNUAL" ? "bg-[#FFCD07]" :
+                            leave.leave_type === "CASUAL" ? "bg-[#6EFF00]" :
+                              leave.leave_type === "EMERGENCY" ? "bg-[#00FFDC]" :
+                                leave.leave_type === "MATERNITY" ? "bg-[#2900FF]" :
+                                  leave.leave_type === "UNPAID" ? "bg-[#FF00E6]" :
+                                    leave.leave_type === "SICK" ? "bg-[#F26A01]" : "")
+                          } ${
+                          // Add conditional classes for rounded corners
+                          day === new Date(leave.start_date).getDate() ? "rounded-tl-full rounded-bl-full" : "" // Rounded corners for start date
+                          } ${day === new Date(leave.end_date).getDate() ? "rounded-tr-full rounded-br-full" : "" // Rounded corners for end date
+                          }`}
+                      >
+                        <div className="text-sm font-semibold text-[#838D91]">
+                          {/* Display nothing in the cell */}
+                        </div>
+                        {/* <div className="font-bold text-[#249CD5] text-sm">{day}</div> */}
+                      </div>
+                    </React.Fragment>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -188,4 +254,12 @@ export const LeaveCalender = () => {
   );
 };
 
-export default LeaveCalender;
+const mapStateToProps = (state) => {
+  return {
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+    userProfile: state.user.userProfile,
+  };
+};
+
+export default connect(mapStateToProps)(LeaveCalender);

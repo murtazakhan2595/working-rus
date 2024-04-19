@@ -98,7 +98,6 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         user.email.toLowerCase().includes(lowerCaseFilter)
       );
     });
-    console.log("Filtered users:", filtered); // Add this line
     setFilteredUsers(filtered);
   }, [filter, users]);
 

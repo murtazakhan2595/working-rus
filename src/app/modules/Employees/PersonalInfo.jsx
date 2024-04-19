@@ -65,7 +65,7 @@ const validationSchema = Joi.object({
     }),
 });
 
-const PersonalInfo = ({ nextstep, errors, setErrors }) => {
+const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProfilePhotoProps }) => {
   const getDataFromSessionStorage = (key) => {
     const serializedData = sessionStorage.getItem(key);
     const data = JSON.parse(serializedData);
@@ -96,9 +96,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
       ? storedData.residential_address
       : "",
     nic: storedData?.nic ? storedData.nic : "",
-    // passport_number: storedData?.passport_number
-    //   ? storedData.passport_number
-    //   : "",
     emergency_first_name: storedData?.emergency_first_name
       ? storedData.emergency_first_name
       : "",
@@ -117,7 +114,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
   const handleChange = (name, value) => {
     setPersonalInfo({ ...personalInfo, [name]: value });
     setErrors({ ...errors, [name]: null });
-    console.log(value);
   };
 
   const [imagePreview, setImagePreview] = useState(
@@ -149,22 +145,13 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
     }
   };
 
-
-  useEffect(() => {
-    setDataInSessionStorage("personalInfo", personalInfo);
-  }, [personalInfo]);
-  useEffect(() => {
-    setDataInSessionStorage("profilePhoto", imagePreview);
-  }, [imagePreview]);
-
   const handledate_of_birthChange = (date) => {
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleChange("date_of_birth", formattedDate);
   };
 
   const handleNextStep = () => {
-    console.log('clicked');
-    let checkData = getDataFromSessionStorage("personalInfo");
+    let checkData = personalInfo;
     const copyCheckData = { ...checkData };
     const removePassportValidity = "passport_number";
     delete copyCheckData[removePassportValidity];
@@ -181,6 +168,8 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
       const imageError = { image: "Please upload an image." };
       setErrors(imageError);
     } else {
+      setPersonalInfoProps(personalInfo);
+      setProfilePhotoProps(imagePreview)
       setErrors({});
       nextstep();
     }
@@ -378,7 +367,12 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                       label: `${country.dial_code} ${country.name}`,
                       value: country.dial_code
                     }))}
-                    value={countryCodes.find((country) => country.dial_code === personalInfo.dial_code)}
+                    value={countryCodes.find(option => option.dial_code === personalInfo.country_code) ?
+                      {
+                        label: `${countryCodes.find(option => option.dial_code === personalInfo.country_code).dial_code} 
+    ${countryCodes.find(option => option.dial_code === personalInfo.country_code).name}`,
+                        value: personalInfo.country_code
+                      } : null}
                     onChange={(selectedOption) => handleChange("country_code", selectedOption.value)}
                     placeholder="Select"
                     isSearchable
@@ -701,7 +695,13 @@ const PersonalInfo = ({ nextstep, errors, setErrors }) => {
                     label: `${country.dial_code} ${country.name}`,
                     value: country.dial_code
                   }))}
-                  value={countryCodes.find((country) => country.dial_code === personalInfo.dial_code)}
+                  // value={countryCodes.find((country) => country.dial_code === personalInfo.dial_code)}
+                  value={countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code) ?
+                    {
+                      label: `${countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code).dial_code} 
+  ${countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code).name}`,
+                      value: personalInfo.emergency_country_code
+                    } : null}
                   onChange={(selectedOption) => handleChange("emergency_country_code", selectedOption.value)}
                   placeholder="Select"
                   isSearchable

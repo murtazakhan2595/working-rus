@@ -38,6 +38,10 @@ import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestMana
 import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
 import EditDataForm from "./app/modules/EmployeesData/EditDataForm.jsx";
 import ViewEmpForm from "./app/modules/ViewEmployee/ViewEmpForm.jsx";
+import Test from "./app/modules/Profile/Test.jsx";
+import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
+import LeaveBalanceManager from "./app/modules/LeaveApplication/LeaveBalanceManager.jsx";
+import ApplicationStatus from "./app/modules/LeaveApplication/ApplicationStatus.jsx";
 
 function App({
   setUserProfile,
@@ -151,6 +155,11 @@ function App({
                       />
                       <Route
                         exact
+                        path="/test"
+                        element={<Test />}
+                      />
+                      <Route
+                        exact
                         path="/add-employee"
                         element={<EmpDataForm />}
                       />
@@ -195,6 +204,10 @@ function App({
                         element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
                       />
                       <Route
+                        path="/leave-application-status"
+                        element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
                         path="/leave-request-hr/:id"
                         element={
                           <LeaveRequestHR isSidebarOpen={isSidebarOpen} />
@@ -224,6 +237,18 @@ function App({
                       <Route
                         path="/leave-balance"
                         element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
+                        path="/leave-balance-manager"
+                        element={<LeaveBalanceManager isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
+                        path="/leave-balance-employee"
+                        element={<LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
+                        path="/leave-application-status"
+                        element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
                       />
                       <Route
                         path="/leave-request/:id"
@@ -271,6 +296,10 @@ function App({
                       <Route
                         path="/leave-balance"
                         element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
+                        path="/leave-application-status"
+                        element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
                       />
                       <Route
                         path="/leave-calender"

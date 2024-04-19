@@ -7,91 +7,59 @@ import { visaOptions } from '../../../data/Data';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 
-const VisaDetials = ({ prevstep, nextstep }) => {
+const VisaDetails = ({ prevstep, nextstep, visaDetailsProps, visaDetailsFilesProps, setVisaDetailsProps, setVisaDetailsFilesProps }) => {
     const getDataFromSessionStorage = (key) => {
         const serializedData = sessionStorage.getItem(key);
         const data = JSON.parse(serializedData);
         return data;
     };
 
-    const setDataInSessionStorage = (key, data) => {
-        const serializedData = JSON.stringify(data);
-        sessionStorage.setItem(key, serializedData);
-    };
     let storedData = getDataFromSessionStorage("visaDetails");
     const storedVisaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
 
 
-    let [visaDetails, setVisaDetails] = useState({
-        passport_number: storedData?.passport_number ? storedData.passport_number : null,
-        Passport_Issuance_Country: storedData?.Passport_Issuance_Country ? storedData.Passport_Issuance_Country : null,
-        Passport_Issuance_Date: storedData?.Passport_Issuance_Date ? storedData.Passport_Issuance_Date : null,
-        Passport_Expiry_Date: storedData?.Passport_Expiry_Date ? storedData.Passport_Expiry_Date : null,
-        entry_permit_number: storedData?.entry_permit_number ? storedData.entry_permit_number : "",
-        country_of_visa_issuance: storedData?.country_of_visa_issuance ? storedData.country_of_visa_issuance : "",
-        uid_number: storedData?.uid_number ? storedData.uid_number : "",
-        visa_type: storedData?.visa_type ? storedData.visa_type : "",
-        visa_issuance_date: storedData?.visa_issuance_date ? storedData.visa_issuance_date : null,
-        visa_expiry_date: storedData?.visa_expiry_date ? storedData.visa_expiry_date : null,
-        visa_duration: storedData?.visa_duration ? storedData.visa_duration : "",
-        visa_country_entry_date: storedData?.visa_country_entry_date ? storedData.visa_country_entry_date : null,
-        visa_country_exit_date: storedData?.visa_country_exit_date ? storedData.visa_country_exit_date : null,
-        living_country_id_no: storedData?.living_country_id_no ? storedData.living_country_id_no : "",
-        place_of_issuance: storedData?.place_of_issuance ? storedData.place_of_issuance : "",
-        id_issuance_date: storedData?.id_issuance_date ? storedData.id_issuance_date : null,
-        id_expiry_date: storedData?.id_expiry_date ? storedData.id_expiry_date : null,
-        dha_id: storedData?.dha_id ? storedData.dha_id : "",
-        card_number: storedData?.card_number ? storedData.card_number : "",
-        insurance_policy: storedData?.insurance_policy ? storedData.insurance_policy : "",
-        insurance_company: storedData?.insurance_company ? storedData.insurance_company : "",
-        insurance_active_date: storedData?.insurance_active_date ? storedData.insurance_active_date : null,
-        insurance_expiry_date: storedData?.insurance_expiry_date ? storedData.insurance_expiry_date : null,
-        is_passport_applicable: storedData?.is_passport_applicable ? storedData.is_passport_applicable : null,
-        is_visa_applicable: storedData?.is_visa_applicable ? storedData.is_visa_applicable : null,
-        is_insurance_applicable: storedData?.is_insurance_applicable ? storedData.is_insurance_applicable : null,
-    })
+    let [visaDetails, setVisaDetails] = useState(visaDetailsProps);
 
-    const [visaDetailsFiles, setVisaDetailsFiles] = useState(storedVisaDetailsFiles || {});
+    const [visaDetailsFiles, setVisaDetailsFiles] = useState(visaDetailsFilesProps);
     const showId = true;
 
     const handleChange = (name, value) => {
         setVisaDetails({ ...visaDetails, [name]: value });
-        console.log("Updated visaDetails:", { ...visaDetails, [name]: value });
     };
 
     // Handle change for date inputs
     const handleDateChange = (date, name) => {
         const formattedDate = moment(date).format("YYYY-MM-DD"); // Format the date as "YYYY-MM-DD"
         setVisaDetails({ ...visaDetails, [name]: formattedDate });
-        console.log("Updated visaDetails:", { ...visaDetails, [name]: formattedDate });
     };
 
     const handleFileChange = (name, files) => {
         Promise.all(
             Array.from(files).map((file) => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
-                    reader.onerror = (error) => reject(error);
-                    reader.readAsDataURL(file);
-                });
+                if (file.size <= 300 * 1024) {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
+                        reader.onerror = (error) => reject(error);
+                        reader.readAsDataURL(file);
+                    });
+                } else {
+                    // Display error message if file size exceeds 500 KB
+                    toast.error("File size should be less than or equal to 300 KB!", {
+                        position: "top-right",
+                        autoClose: 3000,
+                    });
+                    return null;
+                }
             })
         )
             .then((fileContents) => {
+                // Filter out null values (files with size > 500 KB)
+                fileContents = fileContents.filter(Boolean);
                 setVisaDetailsFiles({ ...visaDetailsFiles, [name]: fileContents });
             })
             .catch((error) => console.error("Error reading files:", error));
     };
-
-    useEffect(() => {
-        // Save visa details to session storage
-        setDataInSessionStorage("visaDetails", visaDetails);
-    }, [visaDetails]);
-
-    useEffect(() => {
-        // Save visa files to session storage
-        setDataInSessionStorage("visaDetailsFiles", visaDetailsFiles);
-    }, [visaDetailsFiles]);
 
 
     // Function to handle previous step
@@ -101,10 +69,11 @@ const VisaDetials = ({ prevstep, nextstep }) => {
 
     // Function to handle next step
     const handleNextStep = () => {
-
         if (visaDetails.is_passport_applicable) {
             // Check if fields are filled
             if (visaDetails.passport_number && visaDetails.Passport_Issuance_Country && visaDetails.Passport_Issuance_Date && visaDetails.Passport_Expiry_Date && visaDetailsFiles.passport_copy) {
+                setVisaDetailsProps(visaDetails);
+                setVisaDetailsFilesProps(visaDetailsFiles)
                 nextstep();
             } else {
                 toast.error("Please fill in all required fields!", {
@@ -114,6 +83,8 @@ const VisaDetials = ({ prevstep, nextstep }) => {
             }
         } else if (visaDetails.is_visa_applicable)
             if (visaDetails.entry_permit_number && visaDetails.country_of_visa_issuance && visaDetails.uid_number && visaDetails.visa_type && visaDetails.visa_issuance_date && visaDetails.visa_expiry_date && visaDetails.visa_duration && visaDetails.visa_country_entry_date && visaDetailsFiles.enter_permit && visaDetailsFiles.visa_page && visaDetailsFiles.medical && visaDetailsFiles.id_application) {
+                setVisaDetailsProps(visaDetails);
+                setVisaDetailsFilesProps(visaDetailsFiles)
                 nextstep();
             } else {
                 toast.error("Please fill in all required fields!", {
@@ -124,6 +95,8 @@ const VisaDetials = ({ prevstep, nextstep }) => {
 
         else if (visaDetails.is_insurance_applicable) {
             if (visaDetails.dha_id && visaDetails.card_number && visaDetails.insurance_policy && visaDetails.insurance_company && visaDetails.insurance_active_date && visaDetails.insurance_expiry_date && visaDetailsFiles.insurance_card) {
+                setVisaDetailsProps(visaDetails);
+                setVisaDetailsFilesProps(visaDetailsFiles)
                 nextstep();
             } else {
                 toast.error("Please fill in all required fields!", {
@@ -135,6 +108,8 @@ const VisaDetials = ({ prevstep, nextstep }) => {
 
         else if (showId) {
             if (visaDetails.living_country_id_no && visaDetails.place_of_issuance && visaDetails.id_issuance_date && visaDetails.id_expiry_date && visaDetailsFiles.id_front && visaDetailsFiles.id_back) {
+                setVisaDetailsProps(visaDetails);
+                setVisaDetailsFilesProps(visaDetailsFiles)
                 nextstep();
             } else {
                 toast.error("Please fill all ID Details fields!", {
@@ -145,10 +120,10 @@ const VisaDetials = ({ prevstep, nextstep }) => {
         }
 
         else {
+            setVisaDetailsProps(visaDetails);
+            setVisaDetailsFilesProps(visaDetailsFiles)
             nextstep();
         }
-
-
     };
 
     // Get country options for Select component
@@ -205,7 +180,6 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                         dateFormat="yyyy-MM-dd"
                         className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
                     />
-                    {/* <input type="date" value={idIssuanceDate} onChange={(e) => setIdIssuanceDate(e.target.value)} placeholder="ID Issuance Date" /> */}
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -215,7 +189,6 @@ const VisaDetials = ({ prevstep, nextstep }) => {
                     >
                         ID Expiry Date
                     </label>
-                    {/* <input type="date" value={idExpiryDate} onChange={(e) => setIdExpiryDate(e.target.value)} placeholder="ID Expiry Date" /> */}
                     <Datepicker
                         selected={visaDetails.id_expiry_date ? moment(visaDetails.id_expiry_date, "YYYY-MM-DD").toDate() : null}
                         onChange={(date) => handleDateChange(date, "id_expiry_date")}
@@ -653,4 +626,4 @@ const VisaDetials = ({ prevstep, nextstep }) => {
     );
 }
 
-export default VisaDetials;
+export default VisaDetails;

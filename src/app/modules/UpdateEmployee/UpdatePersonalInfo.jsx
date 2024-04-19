@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { getAllCountries } from 'countries-and-timezones';
 import Select from "react-select";
 import { countryCodes } from "../../../data/CountryCode";
+import { getPersonalInfo } from '../../utils/MappingObjects/mapEmployeeData'
 
 
 const validationSchema = Joi.object({
@@ -92,25 +93,16 @@ const PersonalInfo = ({
   userProfile,
   baseUrl,
 }) => {
-  let [defaultData, setDefaultData] = useState({});
-  let [isEdit, setIsEdit] = useState(false);
-  let [cancelBox, setCancelBox] = useState(false);
+  const [employeeProfileInfo, setEmployeeProfileInfo] = useState({});
+  const [employeeData, setEmployeeData] = useState({});
+  const [isEdit, setIsEdit] = useState(false);
+  const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
 
   // const id = userProfile.id;
   const { id } = useParams();
 
-  console.log('i am new id from params', id);
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -124,18 +116,12 @@ const PersonalInfo = ({
     if (selectedFile) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setDataInSessionStorage("UpdatedDP", {
-          name: selectedFile.name,
-          // file: e.target.result,
-        });
         setImagePreview(e.target.result);
       };
       reader.readAsDataURL(selectedFile);
       const imageError = { image: "" };
       setErrors(imageError);
     }
-    console.log("Selected File:", selectedFile);
-    console.log("Image Data:", e.target.result);
   };
 
   const fetchData = async () => {
@@ -143,16 +129,15 @@ const PersonalInfo = ({
       const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
         headers,
       });
-      const employeeData = employeeResponse.data;
-      setDefaultData(employeeData);
+      const empData = getPersonalInfo(employeeResponse.data);
+      setEmployeeData(employeeResponse.data)
+      setEmployeeProfileInfo(empData);
 
-      // Check session storage first, then fallback to local state
-      // const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
       setImagePreview(
-        // updatedDP.file ||
-        employeeData.profile_picture?.file ||
-        employeeData.profile_picture
+        empData.profile_picture?.file ||
+        empData.profile_picture
       );
+
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -163,7 +148,7 @@ const PersonalInfo = ({
   }, [isEdit]);
 
   const handleEdit = (name, value) => {
-    setDefaultData({ ...defaultData, [name]: value });
+    setEmployeeProfileInfo({ ...employeeProfileInfo, [name]: value });
     setErrors({ ...errors, [name]: null });
     setIsEdit(true);
   };
@@ -173,66 +158,37 @@ const PersonalInfo = ({
     handleEdit("date_of_birth", formattedDate);
   };
 
-  useEffect(() => {
-    setDataInSessionStorage("UpdatedPersonalInfo", defaultData);
-  }, [defaultData]);
 
-  useEffect(() => {
-    setDataInSessionStorage("UpdatedDP", imagePreview);
-  }, [imagePreview]);
   const handleSave = async () => {
-    let checkData = getDataFromSessionStorage("UpdatedPersonalInfo");
-    const copyCheckData = {
-      first_name: checkData.first_name,
-      last_name: checkData.last_name,
-      father_name: checkData.father_name,
-      mother_name: checkData.mother_name,
-      country_code: checkData.country_code,
-      mobile_no: checkData.mobile_no,
-      date_of_birth: checkData.date_of_birth,
-      marital_status: checkData.marital_status,
-      nationality: checkData.nationality,
-      email: checkData.email,
-      work_email: checkData.work_email,
-      current_address: checkData.current_address,
-      residential_address: checkData.residential_address,
-      nic: checkData.nic,
-      emergency_first_name: checkData.emergency_first_name,
-      emergency_last_name: checkData.emergency_last_name,
-      emergency_country_code: checkData.emergency_country_code,
-      emergency_phone_no: checkData.emergency_phone_no,
-      emergency_relation: checkData.emergency_relation,
-    };
-    const { error } = validationSchema.validate(copyCheckData, {
+    const { error } = validationSchema.validate(employeeProfileInfo, {
       abortEarly: false,
     });
-    let updatedDP = getDataFromSessionStorage("UpdatedDP");
     if (error) {
       const validationErrors = {};
       error.details.forEach((detail) => {
         validationErrors[detail.path[0]] = detail.message;
       });
       setErrors(validationErrors);
-    } else if (!updatedDP) {
+    } else if (!imagePreview) {
       const imageError = { image: "Please upload an image." };
       setErrors(imageError);
-    } else {
+    }
+    {
+      const payloadProfileInfo = employeeProfileInfo;
       setIsLoading(true); // Set isLoading to true only when there are no validation errors
       setErrors({});
-      let updatedData = getDataFromSessionStorage("UpdatedPersonalInfo");
-      if (updatedData.passport_number === "") {
-        updatedData["passport_number"] = "000000000000000";
+      if (payloadProfileInfo.passport_number === "") {
+        payloadProfileInfo["passport_number"] = "000000000000000";
       }
-      updatedData["profile_picture"] = updatedDP;
+      payloadProfileInfo["profile_picture"] = imagePreview;
 
       let response = await axios.patch(
         `${baseUrl}/emp/${id}`,
-        updatedData,
+        { ...employeeData, ...payloadProfileInfo },
         { headers }
       );
       if (response.status === 200) {
         setIsEdit(!isEdit);
-        sessionStorage.clear();
         toast.success("Personal Information Updated!", {
           position: "top-right",
           autoClose: 3000,
@@ -243,7 +199,6 @@ const PersonalInfo = ({
   };
 
   const handleNextStep = () => {
-    sessionStorage.clear();
     nextstep();
   };
 
@@ -298,7 +253,7 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.first_name}
+                  value={employeeProfileInfo.first_name}
                   name="first_name"
                   placeholder="First Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
@@ -324,7 +279,7 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.last_name}
+                  value={employeeProfileInfo.last_name}
                   name="last_name"
                   placeholder="Last Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
@@ -353,7 +308,7 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.father_name}
+                  value={employeeProfileInfo.father_name}
                   name="father_name"
                   placeholder="Father Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
@@ -379,7 +334,7 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.mother_name}
+                  value={employeeProfileInfo.mother_name}
                   name="mother_name"
                   placeholder="Mother Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
@@ -410,14 +365,14 @@ const PersonalInfo = ({
                       className={`${isEdit ? "text-black" : "text-gray-500"}`}
                       isDisabled={!isEdit}
                       options={countryCodes.map((country) => ({
-                        label: `${country.dial_code}`, 
+                        label: `${country.dial_code}`,
                         value: country.dial_code
                       }))}
-                      value={countryCodes.find(option => option.dial_code === defaultData.country_code) ?
+                      value={countryCodes.find(option => option.dial_code === employeeProfileInfo.country_code) ?
                         {
-                          label: `${countryCodes.find(option => option.dial_code === defaultData.country_code).dial_code} 
-      ${countryCodes.find(option => option.dial_code === defaultData.country_code).name}`,
-                          value: defaultData.country_code
+                          label: `${countryCodes.find(option => option.dial_code === employeeProfileInfo.country_code).dial_code} 
+      ${countryCodes.find(option => option.dial_code === employeeProfileInfo.country_code).name}`,
+                          value: employeeProfileInfo.country_code
                         } : null}
                       onChange={(selectedOption) =>
                         handleEdit("country_code", selectedOption.value)
@@ -460,7 +415,7 @@ const PersonalInfo = ({
                     type="text"
                     inputMode="decimal"
                     pattern="[+0-9]"
-                    value={defaultData.mobile_no}
+                    value={employeeProfileInfo.mobile_no}
                     name="mobile_no"
                     placeholder="0000000000"
                     className={`${isEdit ? "text-black" : "text-gray-500"
@@ -490,24 +445,24 @@ const PersonalInfo = ({
                   disabled={isEdit ? false : true}
                   // readOnly={!isEdit}
                   day={
-                    defaultData.date_of_birth
-                      ? defaultData.date_of_birth.substr(0, 2)
+                    employeeProfileInfo.date_of_birth
+                      ? employeeProfileInfo.date_of_birth.substr(0, 2)
                       : null
                   }
                   month={
-                    defaultData.date_of_birth
-                      ? defaultData.date_of_birth.substr(3, 2)
+                    employeeProfileInfo.date_of_birth
+                      ? employeeProfileInfo.date_of_birth.substr(3, 2)
                       : null
                   }
                   year={
-                    defaultData.date_of_birth
-                      ? defaultData.date_of_birth.substr(6, 4)
+                    employeeProfileInfo.date_of_birth
+                      ? employeeProfileInfo.date_of_birth.substr(6, 4)
                       : null
                   }
                   name="date_of_birth"
                   className="z-50"
                   selected={moment(
-                    defaultData.date_of_birth,
+                    employeeProfileInfo.date_of_birth,
                     "DD-MM-YYYY"
                   ).toDate()}
                   // onClick={handleFieldClick}
@@ -534,7 +489,7 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.marital_status}
+                  value={employeeProfileInfo.marital_status}
                   name="marital_status"
                   placeholder="Marital Status here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
@@ -564,7 +519,7 @@ const PersonalInfo = ({
                   name="nationality"
                   options={countryOptions}
                   value={countryOptions.find(
-                    (option) => option.label === defaultData.nationality
+                    (option) => option.label === employeeProfileInfo.nationality
                   )}
                   onChange={(selectedOption) =>
                     handleEdit("nationality", selectedOption.label)
@@ -594,7 +549,7 @@ const PersonalInfo = ({
                   type="email"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.email}
+                  value={employeeProfileInfo.email}
                   name="email"
                   placeholder="Email Here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
@@ -618,7 +573,7 @@ const PersonalInfo = ({
                   type="email"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.work_email}
+                  value={employeeProfileInfo.work_email}
                   name="work_email"
                   placeholder="Email Here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
@@ -646,7 +601,7 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.current_address}
+                value={employeeProfileInfo.current_address}
                 name="current_address"
                 placeholder="Current Address here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
@@ -673,7 +628,7 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.residential_address}
+                value={employeeProfileInfo.residential_address}
                 name="residential_address"
                 placeholder="Permanent Address here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
@@ -701,7 +656,7 @@ const PersonalInfo = ({
                   type="number"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.nic}
+                  value={employeeProfileInfo.nic}
                   placeholder="NIC Here"
                   name="nic"
                   className={`${isEdit ? "text-black" : "text-gray-500"
@@ -777,7 +732,7 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.emergency_first_name}
+                value={employeeProfileInfo.emergency_first_name}
                 name="emergency_first_name"
                 placeholder="First Name Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
@@ -803,7 +758,7 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.emergency_last_name}
+                value={employeeProfileInfo.emergency_last_name}
                 name="emergency_last_name"
                 placeholder="Last Name Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
@@ -834,14 +789,14 @@ const PersonalInfo = ({
                     className={`${isEdit ? "text-black" : "text-gray-500"}`}
                     isDisabled={!isEdit}
                     options={countryCodes.map((country) => ({
-                      label: `${country.dial_code}`, 
+                      label: `${country.dial_code}`,
                       value: country.dial_code
                     }))}
-                    value={countryCodes.find(option => option.dial_code === defaultData.emergency_country_code) ?
+                    value={countryCodes.find(option => option.dial_code === employeeProfileInfo.emergency_country_code) ?
                       {
-                        label: `${countryCodes.find(option => option.dial_code === defaultData.emergency_country_code).dial_code} 
-      ${countryCodes.find(option => option.dial_code === defaultData.emergency_country_code).name}`,
-                        value: defaultData.emergency_country_code
+                        label: `${countryCodes.find(option => option.dial_code === employeeProfileInfo.emergency_country_code).dial_code} 
+      ${countryCodes.find(option => option.dial_code === employeeProfileInfo.emergency_country_code).name}`,
+                        value: employeeProfileInfo.emergency_country_code
                       } : null}
                     onChange={(selectedOption) =>
                       handleEdit("emergency_country_code", selectedOption.value)
@@ -883,7 +838,7 @@ const PersonalInfo = ({
                   pattern="[+0-9]"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.emergency_phone_no}
+                  value={employeeProfileInfo.emergency_phone_no}
                   name="emergency_phone_no"
                   placeholder="Phone Number here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
@@ -912,7 +867,7 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.emergency_relation}
+                value={employeeProfileInfo.emergency_relation}
                 name="emergency_relation"
                 placeholder="emergency_relation Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"

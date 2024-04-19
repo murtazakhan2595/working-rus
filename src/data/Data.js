@@ -118,10 +118,53 @@ export const jobsStatusOptions = [
   { label: "Expired", value: "expired" },
 ];
 
-export const reportingManager = [
-  { value: "manager1", label: "Manager 1" },
-  { value: "manager2", label: "Manager 2" },
-  { value: "manager3", label: "Manager 3" },
-  { value: "manager4", label: "Manager 4" },
+
+export const HeadOfDepartment = [
+  { label: 'Naveed Rahman - CEO', value: 'Naveed' },
+  { label: 'Komal Zaman - Peoples Teams Head', value: 'Komal' },
+  { label: 'Farhan Hayder  - HR Manager', value: 'Farhan' },
+  { label: 'Arshad Ali - BD & Sales', value: 'Arshad Ali' },
+  { label: 'Haris Zaheer - Pre-Sales', value: 'Haris' },
+  { label: 'Sadia Sharafat - Project Management', value: 'Sadia' },
+  { label: 'Asra Fatima - Front End Lead', value: 'Asra' },
+  { label: 'Muhammad Shujat Hussain - Backend Lead', value: 'Shujat' },
+  { label: 'Faisal Iqbal - Operations', value: 'Faisal' },
+  { label: 'Imran Shafi - Marketing', value: 'Imran' },
+  { label: 'Prakash PV - VP Sales', value: 'Prakash' },
 ];
 
+
+export const employeeStatus = [
+  { label: 'Active', value: 'Active' },
+  { label: 'Terminated', value: 'Terminated' },
+  { label: 'Deceased', value: 'Deceased' },
+  { label: 'Resigned', value: 'Resigned' },
+  { label: 'Probation', value: 'Probation' },
+  { label: 'Notice Period', value: 'Notice Period' },
+  { label: 'Exit', value: 'Exit' },
+  { label: 'Absconded', value: 'Absconded' },
+  { label: 'Legal Case', value: 'Legal Case' }
+];
+
+
+export const jobRoles = [
+  { label: 'Intern', value: 'Intern' },
+  { label: 'Part-Time', value: 'Part-Time' },
+  { label: 'Full-Time', value: 'Full-Time' },
+  { label: 'Contract', value: 'Contract' },
+  { label: 'Freelancer', value: 'Freelancer' }
+];
+
+
+export const department = [
+  { label: 'Project_management', value: 'Project_management' },
+  { label: 'Sales', value: 'Sales' },
+  { label: 'Operations', value: 'Operations' },
+  { label: 'Design', value: 'Design' },
+  { label: 'Marketing', value: 'Marketing' },
+  { label: 'Frontend', value: 'Frontend' },
+  { label: 'Backend', value: 'Backend' },
+  { label: 'Presales', value: 'Presales' },
+  { label: 'HR', value: 'HR' },
+  { label: 'Accounts', value: 'Accounts' }
+]

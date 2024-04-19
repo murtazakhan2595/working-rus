@@ -6,6 +6,9 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { connect } from "react-redux";
+import { RxCross2 } from "react-icons/rx";
+import { getAllCountries } from 'countries-and-timezones';
+import { department } from "../../../data/Data";
 
 const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   const newDate = new Date();
@@ -34,9 +37,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   const [formData, setFormData] = useState(initialData);
   const [managers, setManagers] = useState([]);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showIndirectReport, setShowIndirectReport] = useState(false);
+
+  const handleCheckboxChange = (e) => {
+    setShowIndirectReport(e.target.checked);
+  };
 
   // fetch managers
-
   useEffect(() => {
     const fetchManagers = async () => {
       try {
@@ -48,7 +56,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
 
         if (response.status === 200) {
           setManagers(response.data);
-          console.log('managerssss', response.data);
         }
       } catch (error) {
         toast.error("Error fetching managers. Please try again.", {
@@ -63,7 +70,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
   const handleChange = (name, value, values) => {
     setFormData((prevData) => {
       if (name === "indirect_report_to") {
-        console.log("Selected In-Direct Managers:", values);
         const updatedValues = values || []; // In case 'values' is null
         const uniqueValues = [...new Set(updatedValues)];
         return {
@@ -71,14 +77,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
           indirect_report_to: uniqueValues,
         };
       }
-  
+
       if (name === "report_to") {
         return {
           ...prevData,
           [name]: value,
         };
       }
-  
+
       if (name.includes("leave_type.")) {
         // Checkbox handling
         const leaveType = name.split(".")[1];
@@ -86,13 +92,13 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
           ...prevData.leave_type,
           [leaveType]: !prevData.leave_type[leaveType],
         };
-  
+
         return {
           ...prevData,
           leave_type: updatedLeaveType,
         };
       }
-  
+
       // Regular input fields
       return {
         ...prevData,
@@ -100,7 +106,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       };
     });
   };
-  
+
 
 
   const headers = {
@@ -118,6 +124,14 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
 
     if (!isLeaveTypeSelected) {
       toast.error("Please select at least one leave type.", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setIsButtonDisabled(false); // Re-enable the button
+      return;
+    }
+
+    if (showIndirectReport && formData.indirect_report_to.length === 0) {
+      toast.error('Please select at least one indirect manager.', {
         position: toast.POSITION.TOP_RIGHT,
       });
       setIsButtonDisabled(false); // Re-enable the button
@@ -145,29 +159,36 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
       indirect_report_to: formData.indirect_report_to
     };
 
-    console.log(data);
+      console.log(data);
 
     try {
       const response = await axios.post(`${baseUrl}/leave/`, data, {
         headers,
       });
 
-      if (response.status === 201) {
-        toast.success("Leave application posted successfully!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+      if (response.status === 200) {
+        // toast.success("Leave application posted successfully!", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
+        setShowSuccessModal(true)
 
         // Reset the form
         setFormData(initialData);
       }
     } catch (error) {
-      toast.error("Error submitting the form. Please try again.", {
+      toast.error(error, {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
       setIsButtonDisabled(false); // Re-enable the button
     }
   };
+
+  // Get country options for Select component
+  const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name
+  }));
 
   return (
     <div className="bg-[#F9F9F9] w-full">
@@ -191,7 +212,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                 className="h-8 ml-[-5px] pl-2 md:mr-[66px] w-[60%] md:w-44 rounded-md lg:w-24"
                 type="text"
                 name="employee_id"
-                value={`TXB-00${formData.employee_id}`}
+                value={`TXB-${formData.employee_id?.toString().padStart(4, "0")}`}
                 onChange={(e) => handleChange(e.target.name, e.target.value)}
               />
             </div>
@@ -284,7 +305,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Department:
                   </label>
-                  <input
+                  {/* <input
                     placeholder="Enter Department Here"
                     required
                     className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
@@ -294,6 +315,18 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     onChange={(e) =>
                       handleChange(e.target.name, e.target.value)
                     }
+                  /> */}
+                  <Select
+                    name="department"
+                    className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
+                    options={department}
+                    value={department.find(
+                      (option) => option.label === formData.department
+                    )}
+                    onChange={(selectedOption) =>
+                      handleChange("department", selectedOption.value)
+                    }
+                    required
                   />
                 </div>
 
@@ -304,16 +337,17 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Nationality:
                   </label>
-                  <input
-                    placeholder="Enter Nationality Here"
-                    required
-                    className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
-                    type="text"
+                  <Select
                     name="nationality"
-                    value={formData.nationality}
-                    onChange={(e) =>
-                      handleChange(e.target.name, e.target.value)
+                    className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
+                    options={countryOptions}
+                    value={countryOptions.find(
+                      (option) => option.label === formData.nationality
+                    )}
+                    onChange={(selectedOption) =>
+                      handleChange("nationality", selectedOption.label)
                     }
+                    required
                   />
                 </div>
               </div>
@@ -334,7 +368,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     onChange={() => handleChange("leave_type", "EMERGENCY")}
                   />
                   <label>Emergency</label>
-
                   <input
                     type="checkbox"
                     name="ANNUAL"
@@ -560,16 +593,23 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   onChange={(selectedOption) =>
                     handleChange("report_to", selectedOption.value)
                   }
+                  required
                 />
               </div>
-              <div className="py-2 flex md:items-center justify-between md:justify-normal lg:gap-x-[18px]">
-                <label
-                  className="font-sfpro tracking-wide font-semibold
+
+              {/* <div className="py-2 flex md:items-center justify-between md:justify-normal lg:gap-x-[18px]">
+                <div
+                  className="font-sfpro flex gap-x-1 tracking-wide font-semibold
                             text-input text-base md:w-[15rem] lg:w-[18rem]"
                 >
-                  In-Direct Manager:
-                </label>
-                <Select
+                  <div>In-Direct Manager:</div>
+                  <input
+                    type="checkbox"
+                    checked={showIndirectReport}
+                    onChange={handleCheckboxChange}
+                  />
+                </div>
+                {showIndirectReport && <Select
                   isMulti={true} // Enable multi-select
                   isClearable={true}
                   menuPlacement="auto"
@@ -580,7 +620,8 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     .map((manager) => ({
                       value: manager.id,
                       label: manager.username,
-                    }))}
+                    }))
+                  }
                   value={formData.indirect_report_to.map((managerId, index) => ({
                     value: managerId,
                     label: managers.find(manager => manager.id === managerId)?.username || '',
@@ -590,8 +631,8 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                     const selectedValues = selectedOptions.map(option => option.value);
                     handleChange("indirect_report_to", null, selectedValues);
                   }}
-                />
-              </div>
+                />}
+              </div> */}
             </div>
             <button
               disabled={isButtonDisabled}
@@ -603,6 +644,22 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
           </div>
         </form>
       </div>
+      {showSuccessModal && <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div
+          className="bg-white shadow-md rounded-3xl lg:px-14 lg:py-16 w-[82%] px-10 py-12 flex
+           justify-center items-center absolute md:w-[40%] lg:w-[26%] lg:h-[24%]"
+        >
+          <p className="text-base text-center text-gray-400">
+            Leave application has been successfully submitted!
+          </p>
+          <div
+            className="absolute top-4 right-4 text-white bg-[#ECECEC] rounded-full p-[2px] cursor-pointer"
+            onClick={() => setShowSuccessModal(false)}
+          >
+            <RxCross2 className="text-sm" />
+          </div>
+        </div>
+      </div>}
     </div>
   );
 };

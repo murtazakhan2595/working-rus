@@ -12,6 +12,7 @@ const ProfessionalExp = ({
   substep,
   prevstep,
   nextstep,
+  setProfessionalExperianceProps,
 }) => {
   const getDataFromSessionStorage = (key) => {
     const serializedData = sessionStorage.getItem(key);
@@ -61,23 +62,24 @@ const ProfessionalExp = ({
       if (!experience.disableEndDate && !experience.exp_end_date) { // Only validate end date if Till Date is not checked
         fieldErrors[`exp_end_date_${i}`] = "End Date is required.";
       }
-      if (!experience.file?.hasOwnProperty("name")) {
-        fieldErrors[`file_${i}`] = "Experience Letter is required.";
-      }
+      // if (!experience.file?.hasOwnProperty("name")) {
+      //   fieldErrors[`file_${i}`] = "Experience Letter is required.";
+      // }
     }
 
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
     } else {
+      setProfessionalExperianceProps(experienceSections)
       setErrors({});
       nextstep();
     }
   };
 
 
-  useEffect(() => {
-    setDataInSessionStorage("proExp", experienceSections);
-  }, [experienceSections]);
+  // useEffect(() => {
+  //   setDataInSessionStorage("proExp", experienceSections);
+  // }, [experienceSections]);
 
   return (
     <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
