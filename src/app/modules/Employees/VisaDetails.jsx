@@ -69,7 +69,6 @@ const VisaDetails = ({ prevstep, nextstep, visaDetailsProps, visaDetailsFilesPro
 
     // Function to handle next step
     const handleNextStep = () => {
-
         if (visaDetails.is_passport_applicable) {
             // Check if fields are filled
             if (visaDetails.passport_number && visaDetails.Passport_Issuance_Country && visaDetails.Passport_Issuance_Date && visaDetails.Passport_Expiry_Date && visaDetailsFiles.passport_copy) {

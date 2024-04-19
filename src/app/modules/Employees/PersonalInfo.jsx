@@ -145,21 +145,14 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
     }
   };
 
-
-  // useEffect(() => {
-  //   setDataInSessionStorage("personalInfo", personalInfo);
-  // }, [personalInfo]);
-  // useEffect(() => {
-  //   setDataInSessionStorage("profilePhoto", imagePreview);
-  // }, [imagePreview]);
-
   const handledate_of_birthChange = (date) => {
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleChange("date_of_birth", formattedDate);
   };
 
   const handleNextStep = () => {
-    let checkData = getDataFromSessionStorage("personalInfo");
+    debugger;
+    let checkData = personalInfo;
     const copyCheckData = { ...checkData };
     const removePassportValidity = "passport_number";
     delete copyCheckData[removePassportValidity];
