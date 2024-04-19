@@ -39,66 +39,75 @@ const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
     <div className="bg-[#F9F9F9] w-full">
       <LeaveHeader post="Leave" />
       <div className="overflow-y-auto max-h-[80vh] roundScroll px-8 py-3">
-        {loading ? (
-          <div className="mt-2">
-            <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
-            <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
-            <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
-            <div className="bg-gray-300 h-8 mb-1 w-full animate-pulse rounded"></div>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            {(newApplications.length === 0 && oldApplications.length === 0) ? (
-              <div className="text-center">There are no leave applications.</div>
-            ) : (
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50 text-sm">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th scope="col" className="px-2 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Total Leaves</th>
-                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">From</th>
-                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">To</th>
-                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
-                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Approval</th>
-                    <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Approval</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <h2 className="text-lg font-semibold py-2 bg-[#F9F9F9]">New Applications</h2>
-                  {newApplications.length === 0 ? <h2 className="bg-[#F9F9F9]">No new applications for today</h2> :
-                    newApplications.map((leave) => (
-                      <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026] text-sm text-gray-500">
-                        <td className="px-4 py-2 whitespace-nowrap">{leave.date}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">{leave.total_leave}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">{leave.start_date}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">{leave.leave_type}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">{leave.status_manager}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">{leave.status_hr}</td>
-                      </tr>
-                    ))}
+        <div className="overflow-x-auto">
+          <h2 className="text-lg font-semibold mb-2">New Leave Request</h2>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50 text-sm">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th scope="col" className="px-2 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Total Leaves</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">From</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">To</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Approval</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Approval</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {newApplications.map((leave) => (
+                <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026] text-sm text-gray-500"
+                >
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.date}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.total_leave}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.start_date}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.leave_type}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.status_manager}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.status_hr}</td>
+                </tr>
+              ))}
+              {newApplications.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="text-center">No new leave requests.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
 
-                  <h2 className="text-lg font-semibold py-2 bg-[#F9F9F9]">Old Applications</h2>
-                  {
-                    oldApplications.length === 0 ? <h2>NO old applications found</h2>
-                      :
-                      oldApplications.map((leave) => (
-                        <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026] text-sm text-gray-500">
-                          <td className="px-4 py-2 whitespace-nowrap">{leave.date}</td>
-                          <td className="px-4 py-2 whitespace-nowrap">{leave.total_leave}</td>
-                          <td className="px-4 py-2 whitespace-nowrap">{leave.start_date}</td>
-                          <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td>
-                          <td className="px-4 py-2 whitespace-nowrap">{leave.leave_type}</td>
-                          <td className="px-4 py-2 whitespace-nowrap">{leave.status_manager}</td>
-                          <td className="px-4 py-2 whitespace-nowrap">{leave.status_hr}</td>
-                        </tr>
-                      ))
-                  }
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
+          <h2 className="text-lg font-semibold mb-2">Leaves History</h2>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50 text-sm">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th scope="col" className="px-2 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Total Leaves</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">From</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">To</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Approval</th>
+                <th scope="col" className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Approval</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {oldApplications.map((leave) => (
+                <tr key={leave.id} className="hover:text-[#0D2282] hover:bg-[#25A8E026] text-sm text-gray-500"
+                >
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.date}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.total_leave}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.start_date}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.end_date}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.leave_type}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.status_manager}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">{leave.status_hr}</td>
+                </tr>
+              ))}
+              {oldApplications.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="text-center">No leave history.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

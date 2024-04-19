@@ -16,6 +16,12 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
   const [leaves, setLeaves] = useState([])
   const [managers, setManagers] = useState([])
   const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useState({
+    employeeId: null,
+    department: "",
+    dateRange: ""
+  });
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -24,7 +30,12 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
 
   const fetchLeaves = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/leave`, { headers });
+      const searchQuery = {
+        employee_id: searchParams.employeeId,
+        department: searchParams.department,
+        date_range: searchParams.dateRange
+      };
+      const response = await axios.get(`${baseUrl}/leave?search={"empoyee_id":${""},"department": ${""} ,"date_range":""}`, { headers });
       setLeaves(response.data);
       setLoading(false);
     } catch (error) {
