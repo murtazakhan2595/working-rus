@@ -19,7 +19,6 @@ const LeaveRequestManager = ({ baseUrl, token, userProfile }) => {
   const searchParams = new URLSearchParams(window.location.search);
   const manager_status = searchParams.get("status_manager");
 
-  console.log("iam the manager status", manager_status);
 
   const navigate = useNavigate();
 

@@ -12,7 +12,6 @@ import Select from "react-select";
 import { priorityOptions, statusOptions } from "../../../data/Data";
  
 const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }) => {
-  console.log('task modal board status id', boardStatusId);
   const newDate = new Date();
   const defaultDate = moment(newDate).format("YYYY-MM-DD");  
  

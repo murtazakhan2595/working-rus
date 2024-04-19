@@ -116,7 +116,7 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
         },
       });
 
-      console.log(response.data);
+      
       if (response.status === 200) {
         // setFilterUsers(response.data);
         setUsers(response.data);
@@ -144,7 +144,6 @@ const ProjectModal = ({ baseUrl, token, onClose }) => {
   };
 
   const handleSearchChange = (e) => {
-    console.log("Search query:", e.target.value);
     setSearchQuery(e.target.value);
   };
 

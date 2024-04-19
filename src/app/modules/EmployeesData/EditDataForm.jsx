@@ -96,6 +96,7 @@ const EditDataForm = ({ token, baseUrl }) => {
       last_name: formData.lastname,
       email: formData.email,
       user_role: formData.userrole.value,
+      password:formData.password,
     };
 
     try {

@@ -12,7 +12,6 @@ import { priorityOptions, statusOptions } from "../../../data/Data";
 import Select from "react-select";
 
 const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks, taskViewBoardStatusId }) => {
-  console.log('task view board status id', taskViewBoardStatusId);
 
   const [assignToOpen, setAssignToOpen] = useState(false);
   const [assignByOpen, setAssignByOpen] = useState(false);
@@ -318,9 +317,6 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks, taskViewBo
     // Prevent propagation to parent elements
     e.stopPropagation();
     onClose();
-    // console.log(taskData.id, "task id");
-    // console.log(id, "id");
-    // // console.log(boardStatusId, "board status id");
   };
 
   

@@ -7,7 +7,7 @@ import { visaOptions } from '../../../data/Data';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 
-const VisaDetails = ({ prevstep, nextstep, setVisaDetailsProps, setVisaDetailsFilesProps }) => {
+const VisaDetails = ({ prevstep, nextstep, visaDetailsProps, visaDetailsFilesProps, setVisaDetailsProps, setVisaDetailsFilesProps }) => {
     const getDataFromSessionStorage = (key) => {
         const serializedData = sessionStorage.getItem(key);
         const data = JSON.parse(serializedData);
@@ -18,66 +18,20 @@ const VisaDetails = ({ prevstep, nextstep, setVisaDetailsProps, setVisaDetailsFi
     const storedVisaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
 
 
-    let [visaDetails, setVisaDetails] = useState({
-        passport_number: storedData?.passport_number ? storedData.passport_number : null,
-        Passport_Issuance_Country: storedData?.Passport_Issuance_Country ? storedData.Passport_Issuance_Country : null,
-        Passport_Issuance_Date: storedData?.Passport_Issuance_Date ? storedData.Passport_Issuance_Date : null,
-        Passport_Expiry_Date: storedData?.Passport_Expiry_Date ? storedData.Passport_Expiry_Date : null,
-        entry_permit_number: storedData?.entry_permit_number ? storedData.entry_permit_number : "",
-        country_of_visa_issuance: storedData?.country_of_visa_issuance ? storedData.country_of_visa_issuance : "",
-        uid_number: storedData?.uid_number ? storedData.uid_number : "",
-        visa_type: storedData?.visa_type ? storedData.visa_type : "",
-        visa_issuance_date: storedData?.visa_issuance_date ? storedData.visa_issuance_date : null,
-        visa_expiry_date: storedData?.visa_expiry_date ? storedData.visa_expiry_date : null,
-        visa_duration: storedData?.visa_duration ? storedData.visa_duration : "",
-        visa_country_entry_date: storedData?.visa_country_entry_date ? storedData.visa_country_entry_date : null,
-        visa_country_exit_date: storedData?.visa_country_exit_date ? storedData.visa_country_exit_date : null,
-        living_country_id_no: storedData?.living_country_id_no ? storedData.living_country_id_no : "",
-        place_of_issuance: storedData?.place_of_issuance ? storedData.place_of_issuance : "",
-        id_issuance_date: storedData?.id_issuance_date ? storedData.id_issuance_date : null,
-        id_expiry_date: storedData?.id_expiry_date ? storedData.id_expiry_date : null,
-        dha_id: storedData?.dha_id ? storedData.dha_id : "",
-        card_number: storedData?.card_number ? storedData.card_number : "",
-        insurance_policy: storedData?.insurance_policy ? storedData.insurance_policy : "",
-        insurance_company: storedData?.insurance_company ? storedData.insurance_company : "",
-        insurance_active_date: storedData?.insurance_active_date ? storedData.insurance_active_date : null,
-        insurance_expiry_date: storedData?.insurance_expiry_date ? storedData.insurance_expiry_date : null,
-        is_passport_applicable: storedData?.is_passport_applicable ? storedData.is_passport_applicable : null,
-        is_visa_applicable: storedData?.is_visa_applicable ? storedData.is_visa_applicable : null,
-        is_insurance_applicable: storedData?.is_insurance_applicable ? storedData.is_insurance_applicable : null,
-    })
+    let [visaDetails, setVisaDetails] = useState(visaDetailsProps);
 
-    const [visaDetailsFiles, setVisaDetailsFiles] = useState(storedVisaDetailsFiles || {});
+    const [visaDetailsFiles, setVisaDetailsFiles] = useState(visaDetailsFilesProps);
     const showId = true;
 
     const handleChange = (name, value) => {
         setVisaDetails({ ...visaDetails, [name]: value });
-        console.log("Updated visaDetails:", { ...visaDetails, [name]: value });
     };
 
     // Handle change for date inputs
     const handleDateChange = (date, name) => {
         const formattedDate = moment(date).format("YYYY-MM-DD"); // Format the date as "YYYY-MM-DD"
         setVisaDetails({ ...visaDetails, [name]: formattedDate });
-        console.log("Updated visaDetails:", { ...visaDetails, [name]: formattedDate });
     };
-
-    // const handleFileChange = (name, files) => {
-    //     Promise.all(
-    //         Array.from(files).map((file) => {
-    //             return new Promise((resolve, reject) => {
-    //                 const reader = new FileReader();
-    //                 reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
-    //                 reader.onerror = (error) => reject(error);
-    //                 reader.readAsDataURL(file);
-    //             });
-    //         })
-    //     )
-    //         .then((fileContents) => {
-    //             setVisaDetailsFiles({ ...visaDetailsFiles, [name]: fileContents });
-    //         })
-    //         .catch((error) => console.error("Error reading files:", error));
-    // };
 
     const handleFileChange = (name, files) => {
         Promise.all(
@@ -115,7 +69,6 @@ const VisaDetails = ({ prevstep, nextstep, setVisaDetailsProps, setVisaDetailsFi
 
     // Function to handle next step
     const handleNextStep = () => {
-
         if (visaDetails.is_passport_applicable) {
             // Check if fields are filled
             if (visaDetails.passport_number && visaDetails.Passport_Issuance_Country && visaDetails.Passport_Issuance_Date && visaDetails.Passport_Expiry_Date && visaDetailsFiles.passport_copy) {

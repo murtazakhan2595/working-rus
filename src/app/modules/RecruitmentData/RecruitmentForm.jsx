@@ -139,7 +139,6 @@ const RecruitmentForm = ({ token, baseUrl }) => {
       Deadline: formData.Deadline,
     };
 
-    console.log(data);
 
     try {
       if (id) {

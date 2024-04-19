@@ -55,7 +55,6 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
         setManagers(response.data);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 

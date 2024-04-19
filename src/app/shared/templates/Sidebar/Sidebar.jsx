@@ -128,7 +128,6 @@ const Sidebar = ({
         Authorization: `Bearer ${token}`,
       }
     });
-    console.log('employee', employeeResponse)
     const employeeData = employeeResponse.data;
     setEmployee(employeeData)
     setProfileImage(employeeResponse.data?.profile_picture.file || employeeResponse.data?.profile_picture);

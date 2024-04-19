@@ -71,7 +71,6 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
         .then((response) => {
           if (response.status === 200) {  
             setBoard(response.data)
-            console.log('response of boards', response.data);
           }
         });
     } catch (error) {}

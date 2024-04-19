@@ -114,7 +114,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
   const handleChange = (name, value) => {
     setPersonalInfo({ ...personalInfo, [name]: value });
     setErrors({ ...errors, [name]: null });
-    console.log(value);
   };
 
   const [imagePreview, setImagePreview] = useState(
@@ -146,22 +145,13 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
     }
   };
 
-
-  // useEffect(() => {
-  //   setDataInSessionStorage("personalInfo", personalInfo);
-  // }, [personalInfo]);
-  // useEffect(() => {
-  //   setDataInSessionStorage("profilePhoto", imagePreview);
-  // }, [imagePreview]);
-
   const handledate_of_birthChange = (date) => {
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleChange("date_of_birth", formattedDate);
   };
 
   const handleNextStep = () => {
-    console.log('clicked');
-    let checkData = getDataFromSessionStorage("personalInfo");
+    let checkData = personalInfo;
     const copyCheckData = { ...checkData };
     const removePassportValidity = "passport_number";
     delete copyCheckData[removePassportValidity];

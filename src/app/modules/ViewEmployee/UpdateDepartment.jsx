@@ -138,7 +138,6 @@ const Department = ({ errors, setErrors, prevstep, token,
           sessionStorage.clear(); // Remove the redundant sessionStorage.clear() here
         }
       } catch (error) {
-        console.error('Error saving data:', error);
         toast.error('Failed to update department information. Please try again.', {
           position: 'top-center',
           autoClose: 3000,
@@ -158,7 +157,6 @@ const Department = ({ errors, setErrors, prevstep, token,
   //   setDefaultData({ ...defaultData, [name]: value });
   //   setErrors({ ...errors, [name]: null });
   // };
-
   const handleEdit = (name, value, values) => {
     // Check if the name is 'employee_type' or 'employee_status'
     if (name === 'employee_type' || name === 'employee_status') {
@@ -363,9 +361,10 @@ const Department = ({ errors, setErrors, prevstep, token,
                               menuPlacement="top"
                               name='indirect_report'
                               placeholder="Search Indirect Report To..."
-                              value={managers
-                                .filter(manager => manager.username === defaultData.indirect_report)
-                                .map(manager => ({ value: manager.id, label: manager.username }))}
+                      value={managers.find(manager => manager.label === defaultData.direct_report)}
+                      // value={managers
+                      //           .filter(manager => manager.username === defaultData.indirect_report)
+                      //           .map(manager => ({ value: manager.id, label: manager.username }))}
                               onChange={(selectedOption) => handleEdit("indirect_report", selectedOption, selectedOption)}
                               options={managers
                                 ?.filter(manager => manager.username)

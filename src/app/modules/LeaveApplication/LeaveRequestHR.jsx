@@ -21,7 +21,6 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
   const searchParams = new URLSearchParams(window.location.search);
   const hr_status = searchParams.get("status_hr");
 
-  console.log("iam the manager status", hr_status);
 
   const navigate = useNavigate();
 
@@ -45,7 +44,6 @@ const LeaveRequestHR = ({ baseUrl, token, userProfile }) => {
         setApplication(response.data);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 

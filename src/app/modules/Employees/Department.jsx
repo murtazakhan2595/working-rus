@@ -61,7 +61,7 @@ const departmentSchema = Joi.object({
 
 
 
-const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token ,setDepartmentInfoProps}) => {
+const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, setDepartmentInfoProps }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
 
@@ -132,7 +132,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token ,s
             });
             setErrors(validationErrors);
         } else {
-            console.log("Form validated. Calling submitForm...");
             setDepartmentInfoProps(departmentInfo)
             await submitForm();
             setIsLoading(false);
@@ -144,57 +143,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token ,s
         const serializedData = JSON.stringify(data);
         sessionStorage.setItem(key, serializedData);
     };
-    // const handleChange = (name, value, values) => {
-    //     // Check if the name is 'employee_type' or 'employee_status'
-
-    //     if (name === "indirect_report" || name === "direct_report") {
-    //         console.log(`Selected ${name === "indirect_report" ? "In-Direct" : "Direct"} Managers:`, values);
-    //         const updatedValues = values || []; // In case 'values' is null
-    //         const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
-    //         setDepartmentInfo({
-    //             ...departmentInfo,
-    //             [name]: uniqueValues.join(', '), // Convert array to string
-    //         });
-    //     } else {
-    //         setDepartmentInfo({ ...departmentInfo, [name]: value });
-    //     }
-    //     // Clear errors for the updated field
-    //     setErrors({ ...errors, [name]: null });
-    // };
-
-    // const handleChange = (name, value, values) => {
-    //     if (name === "indirect_report" || name === "direct_report") {
-    //         const updatedValues = values || [];
-    //         const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
-    //         setDepartmentInfo({
-    //             ...departmentInfo,
-    //             [name]: uniqueValues.join(', '),
-    //         });
-    //     } else {
-    //         setDepartmentInfo({ ...departmentInfo, [name]: value });
-    //     }
-    //     setErrors({ ...errors, [name]: null });
-    // };
-
-    // const handleChange = (name, value, values) => {
-    //     if (name === "is_indirect_report_applicable") {
-    //         // For the checkbox, value will be the boolean indicating whether it's checked or not
-    //         setDepartmentInfo({ ...departmentInfo, [name]: value });
-    //     } else {
-    //         // For other inputs, update the state as usual
-    //         if (name === "indirect_report" || name === "direct_report") {
-    //             const updatedValues = values || [];
-    //             const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
-    //             setDepartmentInfo({
-    //                 ...departmentInfo,
-    //                 [name]: uniqueValues.join(', '),
-    //             });
-    //         } else {
-    //             setDepartmentInfo({ ...departmentInfo, [name]: value });
-    //         }
-    //     }
-    //     setErrors({ ...errors, [name]: null });
-    // }; 
 
     const handleChange = (name, value, values) => {
         if (name === "is_indirect_report_applicable") {
@@ -321,8 +269,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token ,s
 
                             <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                                 <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                                    <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
-        text-input text-base mb-1'>Direct Report:</label>
+                                    <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium text-input text-base mb-1'>Direct Report:</label>
 
                                     <CustomSelect
                                         menuPlacement="top"
