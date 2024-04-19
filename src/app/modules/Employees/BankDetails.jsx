@@ -115,7 +115,7 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep,setBankInfoProps })
             }
             setErrors(validationErrors);
         } else {
-            setBankInfoProps(setBankInfo)
+            setBankInfoProps(bankInfo)
             nextstep();
         }
     };

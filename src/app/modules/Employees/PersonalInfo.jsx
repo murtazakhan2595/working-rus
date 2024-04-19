@@ -151,7 +151,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
   };
 
   const handleNextStep = () => {
-    debugger;
     let checkData = personalInfo;
     const copyCheckData = { ...checkData };
     const removePassportValidity = "passport_number";

@@ -81,17 +81,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
   };
   const submitForm = async () => {
     try {
-
-      // let personalInfo = getDataFromSessionStorage("personalInfo");
-      // let visaDetails = getDataFromSessionStorage("visaDetails");
-      // let bankInfo = getDataFromSessionStorage("bankInfo");
-      // let departmentInfo = getDataFromSessionStorage("departmentInfo");
-      // let academicInfo = getDataFromSessionStorage("academicInfo");
-      // let certifications = getDataFromSessionStorage("certifications");
-      // let profilePhoto = getDataFromSessionStorage("profilePhoto");
-      // let proExp = getDataFromSessionStorage("proExp");
-      // let cv = getDataFromSessionStorage("cv");
-      // let visaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
       // if (personalInfo && personalInfo.country_code && personalInfo.mobile_no) {
       //   personalInfo.mobile_no =
       //     personalInfo.country_code + personalInfo.mobile_no;
@@ -106,13 +95,13 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
       //     personalInfo.emergency_country_code + personalInfo.emergency_phone_no;
       //   delete personalInfo.emergency_country_code;
       // }
-      if (!personalInfo?.passport) {
+      if (personalInfo && !personalInfo?.passport) {
         delete personalInfo.passport_number;
       }
-      if (!bankInfo?.account_iban) {
+      if (bankInfo && !bankInfo?.account_iban) {
         delete bankInfo.account_iban;
       }
-      if (!bankInfo?.swift_code) {
+      if (bankInfo && !bankInfo?.swift_code) {
         delete bankInfo.swift_code;
       }
       let userDetials = {
