@@ -72,7 +72,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
         <div className="flex flex-wrap justify-between md:justify-center lg:justify-between md:gap-x-14 lg:gap-x-0 items-center bg-[#F2F2F2] rounded-md">
           <div className="p-2 lg:p-3 block">
             <div className="relative">
-              <IoIosSearch className="absolute top-2 left-3 text-black" />
+              <IoIosSearch className="absolute top-2 left-2 text-black" />
               <input
                 type="search"
                 placeholder="Search by Name"
