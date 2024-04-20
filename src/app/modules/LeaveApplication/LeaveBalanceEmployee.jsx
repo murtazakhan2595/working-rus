@@ -126,6 +126,7 @@ const LeaveBalanceEmployee = ({ baseUrl, token, userProfile, isSidebarOpen }) =>
                     </div>
                 </div>
             </div>
+            
             <div className="flex items-center mx-1 md:mx-2 lg:mx-8 gap-x-2">
                 {/* <h2 className="text-[#343434] font-semibold w-[70%] md:w-[87%] lg:w-[71%] rounded-tl-md rounded-bl-lg py-1 bg-[#F2F2F2] text-lg text-center">
                     Employee Data
