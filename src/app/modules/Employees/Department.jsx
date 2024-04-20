@@ -36,10 +36,10 @@ const departmentSchema = Joi.object({
         .messages({
             "string.empty": `Employee type is required`,
         }),
-    direct_report: Joi.string().required().label('Direct Report')
-        .messages({
-            "string.empty": `Direct Report is required`,
-        }),
+    // direct_report: Joi.string().required().label('Direct Report')
+    //     .messages({
+    //         "string.empty": `Direct Report is required`,
+    //     }),
     // indirect_report: Joi.string().required().label('Indirect Report'),
     // indirect_report: Joi.string().when('is_indirect_report_applicable', {
     //     is: Joi.boolean().valid(true).required(),
