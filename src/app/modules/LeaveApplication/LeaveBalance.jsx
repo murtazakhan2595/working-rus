@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import LeaveHeader from "./LeaveHeader";
 import { connect } from "react-redux";
@@ -10,35 +11,62 @@ import Datepicker from "../Dashboard/Datepicker";
 import moment from "moment";
 import LeavesLoader from "../../../common/LeavesLoader";
 import { getAllCountries } from 'countries-and-timezones';
+import { FaAngleDown } from "react-icons/fa";
+import { department } from "../../../data/Data";
 
 const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
-
-  const [leaves, setLeaves] = useState([])
-  const [managers, setManagers] = useState([])
+  const [leaves, setLeaves] = useState([]);
+  const [managers, setManagers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedRow, setExpandedRow] = useState(null); // State to track expanded row
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 
-  const fetchLeaves = async () => {
+  useEffect(() => {
+    fetchLeaves();
+    if (fromDate && toDate) {
+      const dateRange = `${fromDate},${toDate}`;
+      fetchLeaves(dateRange);
+    }
+  }, [fromDate, toDate]);
+
+  const fetchLeaves = async (dateRange) => {
     try {
-      const response = await axios.get(`${baseUrl}/leave?search={}`, { headers });
+      let apiUrl = `${baseUrl}/leave?search={`;
+  
+      // Add date_range parameter if provided
+      if (dateRange) {
+        apiUrl += `"date_range":"${dateRange}"`;
+      }
+  
+      apiUrl += '}';
+  
+      setLoading(true); // Set loading state to true before fetching
+  
+      const response = await axios.get(apiUrl, { headers });
       setLeaves(response.data);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching leaves:", error);
     } finally {
-      // setLoading(false);
+      setLoading(false); // Set loading state to false after fetching
     }
   };
+  
+
+  const handleReset = () => {
+    setFromDate("");
+    setToDate("");
+  };
+
 
   const fetchManagers = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/emp/`, {
-        headers,
-      });
+      const response = await axios.get(`${baseUrl}/emp/`, { headers });
 
       if (response.status === 200) {
         setManagers(response.data);
@@ -49,20 +77,22 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
   };
 
   useEffect(() => {
-    fetchLeaves();
-    fetchManagers()
   }, []);
 
-  const getReportingManger = (userId) => {
-    const reportingManger = managers?.find((user) => user.id === userId);
-    return reportingManger ? reportingManger.username : null;
+  const getReportingManager = (userId) => {
+    const reportingManager = managers.find((user) => user.id === userId);
+    return reportingManager ? reportingManager.username : null;
   };
 
+  // Function to toggle expanded row
+  const toggleRow = (employeeId) => {
+    setExpandedRow(expandedRow === employeeId ? null : employeeId);
+  };
 
   // Get country options for Select component
   const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
     value: countryCode,
-    label: getAllCountries()[countryCode].name
+    label: getAllCountries()[countryCode].name,
   }));
 
   return (
@@ -93,7 +123,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
           <Select
             name="nationality"
             className="w-36 mx-2 lg:mx-0 md:w-44"
-            options={countryOptions}
+            options={department}
             // value={countryOptions.find(
             //   (option) => option.label === formData.nationality
             // )}
@@ -107,8 +137,8 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
               className="z-50"
               required
               onChange={(date) => {
-                let formattedDate = moment(date).format("YYYY-MM-DD");
-                //   handleChange("Deadline", formattedDate);
+                const formattedDate = moment(date).format("YYYY-MM-DD");
+                setFromDate(formattedDate);
               }}
             />
             -
@@ -116,63 +146,97 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
               className="z-50"
               required
               onChange={(date) => {
-                let formattedDate = moment(date).format("YYYY-MM-DD");
-                //   handleChange("Deadline", formattedDate);
+                const formattedDate = moment(date).format("YYYY-MM-DD");
+                setToDate(formattedDate);
               }}
             />
+            {(fromDate || toDate) && <button className="bg-baseBlue text-white px-4 py-2 rounded-lg" onClick={handleReset}>Reset</button>}
+
           </div>
         </div>
       </div>
+
       <div className="flex items-center justify-center mx-1 md:mx-2 lg:mx-8 gap-x-2">
-        <h2 className="text-[#343434] font-semibold w-[70%] md:w-[87%] lg:w-[71%] rounded-tl-md rounded-bl-lg py-1 bg-[#F2F2F2] text-lg text-center">
+        <h2 className="text-[#343434] font-semibold w-[100%] rounded-tl-md rounded-bl-lg py-1 bg-[#F2F2F2] text-lg text-center">
           Employee Data
         </h2>
-        <h2 className="text-[#343434] font-semibold w-[30%] md:w-[13%] lg:w-[29%] rounded-tr-md rounded-br-lg py-1 bg-[#F2F2F2] text-lg text-center">
+        {/* <h2 className="text-[#343434] font-semibold w-[30%] md:w-[13%] lg:w-[29%] rounded-tr-md rounded-br-lg py-1 bg-[#F2F2F2] text-lg text-center">
           Leave Data
-        </h2>
+        </h2> */}
       </div>
       <div className={`px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-1 overflow-x-auto overflow-y-auto min-h-[62%] max-h-[62%] md:max-h-[75.5vh] lg:max-h-[58vh] roundScroll`}>
         <table className="min-w-full">
           <thead>
             <tr className="text-baseBlue bg-[#F2F2F2] whitespace-nowrap">
-              <th className="px-6 py-3 text-left rounded-tl-lg">Employee ID</th>
-              <th className="px-6 py-3 text-left">Name</th>
-              <th className="px-6 py-3 text-left">Department</th>
-              <th className="px-6 py-3 text-left">Designation</th>
-              <th className="px-2 py-3 text-left border-r-8 border-white rounded">
+              <th className="px-4 py-3 text-left rounded-tl-lg"></th>
+              <th className="px-4 py-3 text-left">Employee ID</th>
+              <th className="px-4 py-3 text-left">Name</th>
+              <th className="px-4 py-3 text-left">Department</th>
+              <th className="px-4 py-3 text-left">Designation</th>
+              <th className="px-4 py-3 text-left">From</th>
+              <th className="px-4 py-3 text-left">To</th>
+              <th className="px-4 py-3 text-lef">
                 Reporting Manger
               </th>
-              <th className="px-2 py-3 text-left">Type</th>
+              {/* <th className="px-2 py-3 text-left">Type</th>
               <th className="px-2 py-3 text-left">Alloted</th>
               <th className="px-2 py-3 text-left">Used</th>
-              <th className="px-2 py-3 text-left rounded-tr-lg">Left</th>
+              <th className="px-2 py-3 text-left rounded-tr-lg">Left</th> */}
             </tr>
           </thead>
-          {loading ? (<LeavesLoader />) : (
-            <tbody className="bg-white text-gray-500">
-              {leaves?.map((leave) => (
-                <tr
-                  className="whitespace-nowrap border-b-2 hover:bg-gray-100"
-                  key={leave.employee_id}
-                >
-                  <td className="px-6 py-2 text-left">{`TXB-${leave.employee_id?.toString().padStart(4, "0")}`}</td>
-                  <td className="px-6 py-2 text-left">{leave.name}</td>
-                  <td className="px-6 py-2 text-left">{leave.department}</td>
-                  <td className="px-6 py-2 text-left">{leave.position}</td>
-                  <td className="px-3 py-2 text-left">{getReportingManger(leave?.report_to)}</td>
-                  <td className="px-3 py-2 text-left">{leave.leave_type}</td>
-                  <td className="px-2 py-2 text-left">
-                    {/* <div className="text-sm">&#9664;</div> */}
-                    {leave.total_alloted_leave}
-                    {/* <div className="text-sm">&#9654;</div> */}
-                  </td>
-                  <td className="px-2 py-2 text-left">{leave.used_leave}</td>
-                  <td className="px-2 py-2 text-left">{leave.left_leave}</td>
-                </tr>
+          <tbody className="bg-white text-gray-500">
+            {loading ? (
+              <LeavesLoader />
+            ) : (
+              leaves.map((leave, index) => (
+                <React.Fragment key={leave.employee_id}>
+                  <tr
+                    className="whitespace-nowrap border-b-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => toggleRow(leave.employee_id)}
+                  >
+                    <td className="text-white text-sm flex rounded-full justify-center items-center plus-icon w-9 h-9 bg-baseBlue">
+                      {leave?.name
+                        ?.split(' ')
+                        .map(word => word[0].toUpperCase())
+                        .join('')
+                        .slice(0, 2)}
+                    </td>
+                    <td className="px-4 py-2 text-left">{`TXB-${leave.employee_id?.toString().padStart(4, "0")}`}</td>
+                    <td className="px-4 py-2 text-left">{leave.name}</td>
+                    <td className="px-4 py-2 text-left">{leave.department}</td>
+                    <td className="px-4 py-2 text-left">{leave.position}</td>
+                    <td className="px-4 py-2 text-left">{leave.start_date}</td>
+                    <td className="px-4 py-2 text-left">{leave.end_date}</td>
+                    <td className="px-4 py-2 text-left flex items-center gap-x-3">{getReportingManager(leave?.report_to)} <FaAngleDown className={`transition-transform duration-300 ${expandedRow === leave.employee_id ? 'transform rotate-180' : ''}`} /></td>
+                  </tr>
+                  {expandedRow === leave.employee_id && (
+                    <tr>
+                      <td colSpan="5">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="bg-gray-200">
+                              <th className="px-3 py-2 text-left">Leave Type</th>
+                              <th className="px-2 py-2 text-left">Allotted</th>
+                              <th className="px-2 py-2 text-left">Used</th>
+                              <th className="px-2 py-2 text-left">Left</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="px-3 py-2 text-left">{leave.leave_type}</td>
+                              <td className="px-2 py-2 text-left">{leave.total_alloted_leave}</td>
+                              <td className="px-2 py-2 text-left">{leave.used_leave}</td>
+                              <td className="px-2 py-2 text-left">{leave.left_leave}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
-              }
-            </tbody>
-          )}
+            )}
+          </tbody>
         </table>
       </div>
     </div>

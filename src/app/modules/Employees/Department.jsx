@@ -36,10 +36,10 @@ const departmentSchema = Joi.object({
         .messages({
             "string.empty": `Employee type is required`,
         }),
-    direct_report: Joi.string().required().label('Direct Report')
-        .messages({
-            "string.empty": `Direct Report is required`,
-        }),
+    // direct_report: Joi.string().required().label('Direct Report')
+    //     .messages({
+    //         "string.empty": `Direct Report is required`,
+    //     }),
     // indirect_report: Joi.string().required().label('Indirect Report'),
     // indirect_report: Joi.string().when('is_indirect_report_applicable', {
     //     is: Joi.boolean().valid(true).required(),
@@ -115,11 +115,11 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
             {
                 department_name: departmentInfo.department_name,
                 department_position: departmentInfo.department_position,
-                direct_report: departmentInfo.direct_report,
+                // direct_report: departmentInfo.direct_report,
                 department_manager: departmentInfo.department_manager,
                 employee_status: departmentInfo.employee_status,
                 employee_type: departmentInfo.employee_type,
-                indirect_report: departmentInfo.is_indirect_report_applicable ? departmentInfo.indirect_report : null,
+                // indirect_report: departmentInfo.is_indirect_report_applicable ? departmentInfo.indirect_report : null,
                 joining_date: departmentInfo.joining_date,
             },
             { abortEarly: false }

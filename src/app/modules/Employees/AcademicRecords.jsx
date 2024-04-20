@@ -101,10 +101,10 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
       if (!certification.expiry_date) {
         fieldErrors[`expiry_date_${i}`] = "Expiry Date is required.";
       }
-      if (!certification.certification_body?.hasOwnProperty("name")) {
-        fieldErrors[`certification_body_${i}`] =
-          "Certification Body is required.";
-      }
+      // if (!certification.certification_body?.hasOwnProperty("name")) {
+      //   fieldErrors[`certification_body_${i}`] =
+      //     "Certification Body is required.";
+      // }
     }
     const { error } = academicSchema.validate(
       {
@@ -119,16 +119,16 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
 
     const validationErrors = {};
     if (Object.keys(fieldErrors).length > 0 || error || !academicInfo.certificate?.hasOwnProperty("name")) {
-      if(!academicInfo.certificate?.hasOwnProperty("name")){
-          setErrors({...errors , certificate : "Certification is required"});
-        }
+      // if(!academicInfo.certificate?.hasOwnProperty("name")){
+      //     setErrors({...errors , certificate : "Certification is required"});
+      //   }
       if (error) {
         error.details.forEach((detail) => {
           validationErrors[detail.path[0]] = detail.message;
         });
-        if (!academicInfo.certificate?.hasOwnProperty("name")) {
-          validationErrors.certificate = "Certification is required";
-        }
+        // if (!academicInfo.certificate?.hasOwnProperty("name")) {
+        //   validationErrors.certificate = "Certification is required";
+        // }
         setErrors(validationErrors);
       }
       if (Object.keys(fieldErrors).length > 0) {

@@ -23,15 +23,35 @@ const LeaveBalanceEmployee = ({ baseUrl, token, userProfile, isSidebarOpen }) =>
     const [leaves, setLeaves] = useState([])
     const [managers, setManagers] = useState([])
     const [loading, setLoading] = useState(true);
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
 
     const headers = {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
     };
 
-    const fetchLeaves = async () => {
+    useEffect(() => {
+        fetchLeaves();
+
+        if (fromDate && toDate) {
+            const dateRange = `${fromDate},${toDate}`;
+            fetchLeaves(dateRange);
+        }
+    }, [fromDate, toDate]);
+
+    const fetchLeaves = async (dateRange) => {
         try {
-            const response = await axios.get(`${baseUrl}/leave?search={"employee_id":${userProfile.id}}`, { headers });
+            let apiUrl = `${baseUrl}/leave?search={"employee_id":${userProfile.id}`;
+
+            // Add date_range parameter if provided
+            if (dateRange) {
+                apiUrl += `,"date_range":"${dateRange}"`;
+            }
+
+            apiUrl += '}';
+
+            const response = await axios.get(apiUrl, { headers });
             setLeaves(response.data);
             setLoading(false);
         } catch (error) {
@@ -41,29 +61,10 @@ const LeaveBalanceEmployee = ({ baseUrl, token, userProfile, isSidebarOpen }) =>
         }
     };
 
-    // const fetchManagers = async () => {
-    //     try {
-    //         const response = await axios.get(`${baseUrl}/emp/`, {
-    //             headers,
-    //         });
-
-    //         if (response.status === 200) {
-    //             setManagers(response.data);
-    //         }
-    //     } catch (error) {
-    //     }
-    // };
-
-    useEffect(() => {
-        fetchLeaves();
-        // fetchManagers()
-    }, []);
-
-    const getReportingManger = (userId) => {
-        const reportingManger = managers?.find((user) => user.id === userId);
-        return reportingManger ? reportingManger.username : null;
+    const handleReset = () => {
+        setFromDate("");
+        setToDate("");
     };
-
 
     return (
         <div className="bg-[#F9F9F9] w-full">
@@ -108,8 +109,8 @@ const LeaveBalanceEmployee = ({ baseUrl, token, userProfile, isSidebarOpen }) =>
                             className="z-50"
                             required
                             onChange={(date) => {
-                                let formattedDate = moment(date).format("YYYY-MM-DD");
-                                //   handleChange("Deadline", formattedDate);
+                                const formattedDate = moment(date).format("YYYY-MM-DD");
+                                setFromDate(formattedDate);
                             }}
                         />
                         -
@@ -117,13 +118,15 @@ const LeaveBalanceEmployee = ({ baseUrl, token, userProfile, isSidebarOpen }) =>
                             className="z-50"
                             required
                             onChange={(date) => {
-                                let formattedDate = moment(date).format("YYYY-MM-DD");
-                                //   handleChange("Deadline", formattedDate);
+                                const formattedDate = moment(date).format("YYYY-MM-DD");
+                                setToDate(formattedDate);
                             }}
                         />
+                        {(fromDate || toDate) && <button className="bg-baseBlue text-white px-4 py-2 rounded-lg" onClick={handleReset}>Reset</button>}
                     </div>
                 </div>
             </div>
+            
             <div className="flex items-center mx-1 md:mx-2 lg:mx-8 gap-x-2">
                 {/* <h2 className="text-[#343434] font-semibold w-[70%] md:w-[87%] lg:w-[71%] rounded-tl-md rounded-bl-lg py-1 bg-[#F2F2F2] text-lg text-center">
                     Employee Data

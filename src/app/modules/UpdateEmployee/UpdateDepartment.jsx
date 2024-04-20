@@ -37,6 +37,26 @@ const departmentSchema = Joi.object({
   department_manager: Joi.string().required()
 });
 
+function getManagerSelected(managers, managersList) {
+  if (managers) {
+    managers = managers.split(', ') || [];
+    managersList = managersList
+      ?.filter(manager => manager.username)
+      .map((manager) => ({
+        value: manager.id,
+        label: manager.username,
+      }))
+    const matchingObjects = managersList.filter(obj => {
+      return managers.find(element => obj.label === element);
+    });
+
+    return matchingObjects;
+  }
+
+  return [];
+
+}
+
 const Department = ({ errors, setErrors, prevstep, token,
   userProfile,
   baseUrl,
@@ -138,7 +158,6 @@ const Department = ({ errors, setErrors, prevstep, token,
           sessionStorage.clear(); // Remove the redundant sessionStorage.clear() here
         }
       } catch (error) {
-        console.error('Error saving data:', error);
         toast.error('Failed to update department information. Please try again.', {
           position: 'top-center',
           autoClose: 3000,
@@ -163,6 +182,7 @@ const Department = ({ errors, setErrors, prevstep, token,
     if (name === 'employee_type' || name === 'employee_status') {
       setDefaultData({ ...defaultData, [name]: value.value });
     } else if (name === "indirect_report" || name === "direct_report") {
+
       const updatedValues = values || []; // In case 'values' is null
       const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
       setDefaultData({
@@ -192,8 +212,6 @@ const Department = ({ errors, setErrors, prevstep, token,
     ),
     value: manager.value
   }));
-
-
 
   return (
     <>
@@ -308,7 +326,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                       menuPlacement="top"
                       name='direct_report'
                       placeholder="Search Direct Report To..."
-                      value={managers.find(manager => manager.label === defaultData.direct_report)}
+                      value={getManagerSelected(defaultData.direct_report, managers)}
                       onChange={(selectedOption) => handleEdit("direct_report", selectedOption, selectedOption)}
                       options={managers
                         ?.filter(manager => manager.username)
@@ -361,9 +379,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                               menuPlacement="top"
                               name='indirect_report'
                               placeholder="Search Indirect Report To..."
-                              value={managers
-                                .filter(manager => manager.username === defaultData.indirect_report)
-                                .map(manager => ({ value: manager.id, label: manager.username }))}
+                              value={getManagerSelected(defaultData.indirect_report, managers)}
                               onChange={(selectedOption) => handleEdit("indirect_report", selectedOption, selectedOption)}
                               options={managers
                                 ?.filter(manager => manager.username)
