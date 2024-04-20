@@ -115,11 +115,11 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
             {
                 department_name: departmentInfo.department_name,
                 department_position: departmentInfo.department_position,
-                direct_report: departmentInfo.direct_report,
+                // direct_report: departmentInfo.direct_report,
                 department_manager: departmentInfo.department_manager,
                 employee_status: departmentInfo.employee_status,
                 employee_type: departmentInfo.employee_type,
-                indirect_report: departmentInfo.is_indirect_report_applicable ? departmentInfo.indirect_report : null,
+                // indirect_report: departmentInfo.is_indirect_report_applicable ? departmentInfo.indirect_report : null,
                 joining_date: departmentInfo.joining_date,
             },
             { abortEarly: false }
