@@ -21,7 +21,7 @@ const validationSchema = Joi.object({
   father_name: Joi.string().min(3).max(40).required().label("Father Name"),
   mother_name: Joi.string().min(3).max(40).required().label("Mother Name"),
   mobile_no: Joi.string()
-    .pattern(/^\+?\d{10,15}$/) // Allows for optional '+' sign at the beginning followed by 10 to 15 digits
+    .pattern(/^\+?\d{7,15}$/) // Allows for optional '+' sign at the beginning followed by 10 to 15 digits
     .required()
     .label("Phone Number")
     .messages({
