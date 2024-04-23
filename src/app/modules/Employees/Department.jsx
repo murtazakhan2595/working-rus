@@ -59,7 +59,25 @@ const departmentSchema = Joi.object({
         })
 });
 
-
+function getManagerSelected(managers, managersList) {
+    if (managers) {
+      managers = managers.split(', ') || [];
+      managersList = managersList
+        ?.filter(manager => manager.username)
+        .map((manager) => ({
+          value: manager.id,
+          label: manager.username,
+        }))
+      const matchingObjects = managersList.filter(obj => {
+        return managers.find(element => obj.label === element);
+      });
+  
+      return matchingObjects;
+    }
+  
+    return [];
+  
+  }
 
 const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, setDepartmentInfoProps }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -275,7 +293,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
                                         menuPlacement="top"
                                         name='direct_report'
                                         placeholder="Search Direct Report To..."
-                                        value={departmentInfo.direct_report ? departmentInfo.direct_report.split(',').map(label => ({ label, value: label })) : null}
+                                        value={getManagerSelected(departmentInfo.direct_report, managers)}
                                         onChange={(selectedOptions) => handleChange("direct_report", selectedOptions, selectedOptions)}
                                         options={managers
                                             ?.filter(manager => manager.username)
@@ -322,7 +340,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
                                                 menuPlacement="top"
                                                 name='indirect_report'
                                                 placeholder="Search Direct Report To..."
-                                                value={departmentInfo.indirect_report ? departmentInfo.indirect_report.split(',').map(label => ({ label, value: label })) : null}
+                                                value={getManagerSelected(departmentInfo.indirect_report, managers)}
                                                 onChange={(selectedOptions) => handleChange("indirect_report", selectedOptions, selectedOptions)}
                                                 options={managers
                                                     ?.filter(manager => manager.username)

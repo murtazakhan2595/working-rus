@@ -56,6 +56,7 @@ const AcademicRecords = ({
   let defaultData = getDataFromSessionStorage("UpdatedAcademicInfo");
   let defaultCertifications = getDataFromSessionStorage("UpdatedCertifications");
   const intialAcadmicRecords = {
+    id: defaultData?.id ?? '',
     education_level: defaultData?.education_level
       ? defaultData.education_level
       : "",
@@ -87,14 +88,6 @@ const AcademicRecords = ({
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      // if (selectedFile.size > 10){
-      //   const certificateError = { ...errors, certificate: "Upload File no larger than 1 MB" };
-      //   setErrors(certificateError);
-      //   setAcademicInfo({
-      //     ...academicInfo,
-      //     certificate: { ...academicInfo.certificate ,document:{} },
-      //   });      }
-      // else{
       let fileData = {
         name: selectedFile.name,
       };
@@ -187,6 +180,7 @@ const AcademicRecords = ({
 
 
   const handleSave = async () => {
+    debugger
     const fieldErrors = {};
     for (let i = 0; i < certificationSections.length; i++) {
       const certification = certificationSections[i];
