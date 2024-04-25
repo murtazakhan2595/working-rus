@@ -157,7 +157,7 @@ export const jobRoles = [
 
 
 export const department = [
-  { label: 'Project_management', value: 'Project_management' },
+  { label: 'Project Management', value: 'Project_management' },
   { label: 'Sales', value: 'Sales' },
   { label: 'Operations', value: 'Operations' },
   { label: 'Design', value: 'Design' },
