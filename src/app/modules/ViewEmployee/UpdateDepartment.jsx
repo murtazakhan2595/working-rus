@@ -12,7 +12,7 @@ import moment from 'moment';
 import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 import CustomSelect from './customSelect';
-import { HeadOfDepartment, employeeStatus, jobRoles } from '../../../data/Data';
+import { HeadOfDepartment, department, employeeStatus, jobRoles } from '../../../data/Data';
 
 
 const departmentSchema = Joi.object({
@@ -180,7 +180,7 @@ const Department = ({ errors, setErrors, prevstep, token,
   // };
   const handleEdit = (name, value, values) => {
     // Check if the name is 'employee_type' or 'employee_status'
-    if (name === 'employee_type' || name === 'employee_status') {
+    if (name === 'employee_type' || name === 'employee_status' || name === "department_name") {
       setDefaultData({ ...defaultData, [name]: value.value });
     } else if (name === "indirect_report" || name === "direct_report") {
       const updatedValues = values || []; // In case 'values' is null
@@ -246,12 +246,26 @@ const Department = ({ errors, setErrors, prevstep, token,
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                   <label htmlFor="department_name" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Department Name:</label>
-                  <input type="text" readOnly={!isEdit} value={defaultData.department_name} name="department_name" id="" placeholder='Department Name Here'
+                  {/* <input type="text" readOnly={!isEdit} value={defaultData.department_name} name="department_name" id="" placeholder='Department Name Here'
                     className={`${isEdit ? "text-black" : "text-gray-500"
                       } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                     onClick={() => setIsEdit(true)}
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
-                  />
+                  /> */}
+                   <div
+                    onClick={() => setIsEdit(true)}
+                  >
+                    <Select
+                      name="department_name"
+                      isDisabled={isEdit ? false : true}
+                      className="focus:outline-none border-none"
+                      options={department}
+                      value={department.find(
+                        (option) => option.label === defaultData.department_name
+                      )}
+                      onChange={selectedOption => handleEdit("department_name", selectedOption)}
+                    />
+                  </div>
                   {errors.department_name && <span className="text-red-500 text-sm ">{errors.department_name}</span>}
                 </div>
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>

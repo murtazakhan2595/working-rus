@@ -8,7 +8,7 @@ import Datepicker from '../Dashboard/Datepicker';
 import CustomSelect from '../UpdateEmployee/customSelect';
 import axios from "axios";
 import { connect } from 'react-redux';
-import { HeadOfDepartment, employeeStatus, jobRoles } from '../../../data/Data';
+import { HeadOfDepartment, department, employeeStatus, jobRoles } from '../../../data/Data';
 
 
 const departmentSchema = Joi.object({
@@ -61,23 +61,23 @@ const departmentSchema = Joi.object({
 
 function getManagerSelected(managers, managersList) {
     if (managers) {
-      managers = managers.split(', ') || [];
-      managersList = managersList
-        ?.filter(manager => manager.username)
-        .map((manager) => ({
-          value: manager.id,
-          label: manager.username,
-        }))
-      const matchingObjects = managersList.filter(obj => {
-        return managers.find(element => obj.label === element);
-      });
-  
-      return matchingObjects;
+        managers = managers.split(', ') || [];
+        managersList = managersList
+            ?.filter(manager => manager.username)
+            .map((manager) => ({
+                value: manager.id,
+                label: manager.username,
+            }))
+        const matchingObjects = managersList.filter(obj => {
+            return managers.find(element => obj.label === element);
+        });
+
+        return matchingObjects;
     }
-  
+
     return [];
-  
-  }
+
+}
 
 const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, setDepartmentInfoProps }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -206,9 +206,21 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                     <label htmlFor="department_name" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Department Name:</label>
-                                    <input type="text" value={departmentInfo.department_name} name="department_name" id="" placeholder='Department Name Here'
+                                    {/* <input type="text" value={departmentInfo.department_name} name="department_name" id="" placeholder='Department Name Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
+                                    /> */}
+
+                                    <Select
+                                        name="department_name"
+                                        className="focus:outline-none border-none"
+                                        options={department}
+                                        value={department.find(
+                                            (option) => option.label === departmentInfo.department_name
+                                        )}
+                                        onChange={(selectedOption) =>
+                                            handleChange("department_name", selectedOption.value)
+                                        }
                                     />
                                     {errors.department_name && <span className="text-red-500 text-sm ">{errors.department_name}</span>}
 

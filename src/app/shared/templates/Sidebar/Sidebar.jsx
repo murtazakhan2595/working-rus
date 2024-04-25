@@ -145,7 +145,7 @@ const Sidebar = ({
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-lg  ${isSidebarOpen ? "w-[14.2rem]" : "w-24"
+          className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-e-lg ${isSidebarOpen ? "w-[14.2rem]" : "w-24"
             }`}
 
         >
@@ -590,7 +590,7 @@ const Sidebar = ({
                         <p>Profile Settings</p>
                         <BsPersonGear />
                       </Link>
-                      <div className="flex items-center justify-between px-3 py-1 mb-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+                      <div className="flex items-center cursor-pointer justify-between px-3 py-1 mb-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
                         onClick={() => {
                           cookies.set("token", "", { path: "*" });
                           setUserLogout();
@@ -608,7 +608,7 @@ const Sidebar = ({
                     <div className="font-semibold">{employee?.username}</div>
                     <FaAngleDown className={`text-xs transition-transform duration-300 ${isProfileOpen ? 'transform rotate-180' : ''}`} />
                   </div>
-                  <div className="text-xs">{employee?.email}</div>
+                  <div className="text-xs overflow-hidden text-ellipsis lg:w-[117px]">{employee?.work_email}</div>
                 </div>
               </div>
               {(isProfileOpen && isSidebarOpen) && (
@@ -617,7 +617,7 @@ const Sidebar = ({
                     <p>Profile Settings</p>
                     <BsPersonGear />
                   </Link>
-                  <div className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+                  <div className="flex items-center cursor-pointer justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
                     onClick={() => {
                       cookies.set("token", "", { path: "*" });
                       setUserLogout();

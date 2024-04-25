@@ -959,7 +959,7 @@ const AcademicRecords = ({
         </div>
       </div>
       {cancelBox && (
-        <div className="fixed inset-0 z-40 flex  items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex  items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-5 rounded-lg w-96 shadow-lg">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold">Discard Changes</h1>
