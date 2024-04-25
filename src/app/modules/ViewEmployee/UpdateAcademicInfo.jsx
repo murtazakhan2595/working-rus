@@ -16,7 +16,7 @@ import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { downloadAttachment } from "../../../utils/fileUtils";
 import { Tooltip } from "@mui/material";
-import { LuExternalLink } from "react-icons/lu";
+import { LuExternalLink } from "react-icons/lu"; 
 import { downloadFiles } from "../../../utils/downUtils";
 import { BsDownload } from "react-icons/bs";
 
@@ -180,7 +180,6 @@ const AcademicRecords = ({
 
 
   const handleSave = async () => {
-    debugger
     const fieldErrors = {};
     for (let i = 0; i < certificationSections.length; i++) {
       const certification = certificationSections[i];
@@ -195,10 +194,10 @@ const AcademicRecords = ({
       if (!certification.expiry_date) {
         fieldErrors[`expiry_date_${i}`] = "Expiry Date is required.";
       }
-      if (!certification.certification_body?.hasOwnProperty("name")) {
-        fieldErrors[`certification_body_${i}`] =
-          "Certification Body is required.";
-      }
+      // if (!certification.certification_body?.hasOwnProperty("name")) {
+      //   fieldErrors[`certification_body_${i}`] =
+      //     "Certification Body is required.";
+      // }
     }
     const { error } = academicSchema.validate(
       {
