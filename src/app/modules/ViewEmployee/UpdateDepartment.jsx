@@ -17,7 +17,7 @@ import { HeadOfDepartment, department, employeeStatus, jobRoles } from '../../..
 
 const departmentSchema = Joi.object({
   department_name: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
+    // .regex(/^[a-zA-Z\s]+$/)
     .required()
     .label('Department Name')
     .messages({
