@@ -53,7 +53,7 @@ const validationSchema = Joi.object({
     .required()
     .label("Last Name"),
   emergency_phone_no: Joi.string()
-    .pattern(/^\+?\d{10,15}$/) // Assuming phone numbers are between 10 and 15 digits long
+    .pattern(/^\+?\d{7,15}$/) // Assuming phone numbers are between 10 and 15 digits long
     .required()
     .label("Emergency Phone Number")
     .messages({
