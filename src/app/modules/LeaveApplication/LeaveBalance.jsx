@@ -18,7 +18,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
   const [leaves, setLeaves] = useState([]);
   const [managers, setManagers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedRow, setExpandedRow] = useState(null); // State to track expanded row
+  const [expandedRow, setExpandedRow] = useState(null); 
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
@@ -29,6 +29,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
 
   useEffect(() => {
     fetchLeaves();
+    fetchManagers()
     if (fromDate && toDate) {
       const dateRange = `${fromDate},${toDate}`;
       fetchLeaves(dateRange);
@@ -77,10 +78,12 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
   };
 
   useEffect(() => {
+    
   }, []);
 
   const getReportingManager = (userId) => {
     const reportingManager = managers.find((user) => user.id === userId);
+    console.log(' i am RPT Mnger', reportingManager);
     return reportingManager ? reportingManager.username : null;
   };
 
@@ -97,7 +100,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
 
   return (
     <div className="bg-[#F9F9F9] w-full">
-      <LeaveHeader post="Leave Balance" />
+      <LeaveHeader post="Team Leave Balance" />
       <div className="md:my-3 lg:mx-8 lg:my-5 my-2">
         <div className="flex flex-wrap justify-between md:justify-center lg:justify-between md:gap-x-14 lg:gap-x-0 items-center bg-[#F2F2F2] rounded-md">
           <div className="p-2 lg:p-3 block">
@@ -208,7 +211,7 @@ const LeaveBalance = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
                     <td className="px-4 py-2 text-left">{leave.start_date}</td>
                     <td className="px-4 py-2 text-left">{leave.end_date}</td>
                     <td className="px-4 py-2 text-left flex items-center gap-x-3">{getReportingManager(leave?.report_to)} <FaAngleDown className={`transition-transform duration-300 ${expandedRow === leave.employee_id ? 'transform rotate-180' : ''}`} /></td>
-                  </tr>
+                    </tr>
                   {expandedRow === leave.employee_id && (
                     <tr>
                       <td colSpan="5">

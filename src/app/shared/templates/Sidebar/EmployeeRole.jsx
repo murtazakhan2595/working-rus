@@ -82,7 +82,7 @@ const EmployeeRole = ({ isSidebarOpen }) => {
                     </div>
                 </div>
                 {!isSidebarOpen && (
-                    <div className="absolute rounded-md top-56 ml-20
+                    <div className="absolute rounded-md top-40 ml-20
           bg-white w-32 text-base
           invisible opacity-20 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
@@ -102,7 +102,7 @@ const EmployeeRole = ({ isSidebarOpen }) => {
                                         className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                             }`}
                                     >
-                                        <p className="text-sm">Application Status</p>
+                                        <p className="text-sm">My Application Status</p>
                                     </div>
                                 </Link>
                                 {/* <Link to="/leave-calender">
@@ -152,7 +152,7 @@ const EmployeeRole = ({ isSidebarOpen }) => {
                                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                     }`}
                             >
-                                <p className="text-sm">Application Status</p>
+                                <p className="text-sm">My Application Status</p>
                             </div>
                         </Link>
                         {/* <Link to="/leave-calender">

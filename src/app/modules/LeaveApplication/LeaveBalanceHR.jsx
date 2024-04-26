@@ -18,7 +18,7 @@ const userRoles = [
 ];
 
 
-const LeaveBalanceEmployee = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
+const LeaveBalanceHR = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
 
     console.log('i am userprofile from leave bal employee', userProfile);
 
@@ -197,4 +197,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(LeaveBalanceEmployee);
+export default connect(mapStateToProps)(LeaveBalanceHR);

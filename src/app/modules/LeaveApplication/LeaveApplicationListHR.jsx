@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
+const LeaveApplicationListHR = ({ baseUrl, token, userProfile }) => {
   // Initialize state variables
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -57,7 +57,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
 
   return (
     <div className="bg-[#F9F9F9] w-full">
-      <LeaveHeader post="Leave" />
+      <LeaveHeader post="Team Application Status" />
       <div className="overflow-y-auto max-h-[80vh] roundScroll px-8 py-3">
 
         {loading && (
@@ -172,4 +172,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(LeaveApplicationList);
+export default connect(mapStateToProps)(LeaveApplicationListHR);

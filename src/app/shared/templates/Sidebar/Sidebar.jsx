@@ -348,14 +348,14 @@ const Sidebar = ({
                               <p className="text-sm">Leave Application</p>
                             </div>
                           </Link>
-                          <Link to="/leave-application-status">
+                          {/* <Link to="/leave-application-status">
                             <div
                               className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                 }`}
                             >
                               <p className="text-sm">Application Status</p>
                             </div>
-                          </Link>
+                          </Link> */}
                           <Link to="/leave-calender">
                             <div
                               className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
@@ -369,7 +369,7 @@ const Sidebar = ({
                               className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                 }`}
                             >
-                              <p className="text-sm">Leave List</p>
+                              <p className="text-sm">Team Application Status</p>
                             </div>
                           </Link>
                           <Link to="/leave-balance">
@@ -377,7 +377,7 @@ const Sidebar = ({
                               className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                 }`}
                             >
-                              <p className="text-sm">Leave Balance</p>
+                              <p className="text-sm">Team Leave Balance</p>
                             </div>
                           </Link>
                         </li>
@@ -398,20 +398,20 @@ const Sidebar = ({
                           <p className="text-sm">Leave Application</p>
                         </div>
                       </Link>
-                      <Link to="/leave-application-status">
+                      {/* <Link to="/leave-application-status">
                         <div
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
                           <p className="text-sm">Application Status</p>
                         </div>
-                      </Link>
+                      </Link> */}
                       <Link to="/leave-calender">
                         <div
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
-                          <p className="text-sm">Leave Calender</p>
+                          <p className="text-sm">Team Leave Calender</p>
                         </div>
                       </Link>
 
@@ -420,7 +420,7 @@ const Sidebar = ({
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
-                          <p className="text-sm">Leave List</p>
+                          <p className="text-sm">Team Application Status</p>
                         </div>
                       </Link>
                       <Link to="/leave-balance">
@@ -428,7 +428,7 @@ const Sidebar = ({
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
-                          <p className="text-sm">Leave Balance</p>
+                          <p className="text-sm">Team Leave Balance</p>
                         </div>
                       </Link>
                     </li>
@@ -582,7 +582,7 @@ const Sidebar = ({
                         <div className="flex items-center gap-x-2">
                           <div className="font-semibold">{employee?.username}</div>
                         </div>
-                        <div className="text-xs">{employee?.email}</div>
+                        <div className="text-xs">{employee?.work_email}</div>
                       </div>
                     </div>
                     <div className="flex flex-col gap-y-2 mt-2 mx-1">

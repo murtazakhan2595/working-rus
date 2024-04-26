@@ -78,7 +78,7 @@ const ManagerRole = ({
                     </div>
                 </div>
                 {!isSidebarOpen && (
-                    <div className="absolute rounded-md top-56 ml-20
+                    <div className="absolute rounded-md top-40 ml-20
           bg-white w-32 text-base
           invisible opacity-20 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
@@ -98,7 +98,7 @@ const ManagerRole = ({
                                         className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                             }`}
                                     >
-                                        <p className="text-sm">Application Status</p>
+                                        <p className="text-sm">My Application Status</p>
                                     </div>
                                 </Link>
                                 {/* <Link to="/leave-calender">
@@ -109,20 +109,20 @@ const ManagerRole = ({
                                         <p className="text-sm">Leave Calender</p>
                                     </div>
                                 </Link> */}
-                                <Link to="/leave-list">
+                                {/* <Link to="/leave-list">
                                     <div
                                         className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                             }`}
                                     >
                                         <p className="text-sm">Leave List</p>
                                     </div>
-                                </Link>
-                                <Link to="/leave-balance-manager">
+                                </Link> */}
+                                <Link to="/leave-balance-employee">
                                     <div
-                                        className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                        className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance-manager" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                             }`}
                                     >
-                                        <p className="text-sm">Leave Balance</p>
+                                        <p className="text-sm">My Leave Balance</p>
                                     </div>
                                 </Link>
                             </li>
@@ -148,7 +148,7 @@ const ManagerRole = ({
                                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                     }`}
                             >
-                                <p className="text-sm">Application Status</p>
+                                <p className="text-sm">My Application Status</p>
                             </div>
                         </Link>
                         {/* <Link to="/leave-calender">
@@ -159,20 +159,21 @@ const ManagerRole = ({
                                 <p className="text-sm">Leave Calender</p>
                             </div>
                         </Link> */}
-                        <Link to="/leave-list">
+                        {/* <Link to="/leave-list">
                             <div
                                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                     }`}
                             >
                                 <p className="text-sm">Leave List</p>
                             </div>
-                        </Link>
-                        <Link to="/leave-balance-manager">
+                        </Link> */}
+                        
+                        <Link to="/leave-balance-employee">
                             <div
                                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                     }`}
                             >
-                                <p className="text-sm">Leave Balance</p>
+                                <p className="text-sm">My Leave Balance</p>
                             </div>
                         </Link>
                     </li>

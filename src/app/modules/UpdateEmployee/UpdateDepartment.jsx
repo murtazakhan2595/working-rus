@@ -257,7 +257,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                       className="focus:outline-none border-none"
                       options={department}
                       value={department.find(
-                        (option) => option.label === defaultData.department_name
+                        (option) => option.value === defaultData.department_name
                       )}
                       onChange={selectedOption => handleEdit("department_name", selectedOption)}
                     />
