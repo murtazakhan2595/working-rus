@@ -104,7 +104,7 @@ const LeaveBalanceHR = ({ baseUrl, token, userProfile, isSidebarOpen }) => {
                     //   }
                     /> */}
                     <h2 className="text-[#343434] font-semibold w-[30%] md:w-[13%] lg:w-[29%] rounded-tr-md rounded-br-lg py-1 bg-[#F2F2F2] text-lg text-center">
-                        Leave Balance
+                        {/* Leave Balance */}
                     </h2>
                     <div className="flex items-center gap-x-1 lg:gap-x-4 border-[2px] border-[#29BAFF] px-2 mt-2 lg:mt-0 py-3 rounded-lg">
                         <Datepicker

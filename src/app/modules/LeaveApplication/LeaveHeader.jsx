@@ -4,9 +4,7 @@ import { connect } from "react-redux";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaBell } from "react-icons/fa";
 import { Link } from "react-router-dom";
-
 
 const LeaveHeader = ({ userProfile, post }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -91,13 +89,12 @@ const LeaveHeader = ({ userProfile, post }) => {
                       <div className="text-xs text-gray-400">3 days ago</div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div> */}
             <div className="flex items-center gap-x-2" onClick={handleDropdownClick}>
               <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
-              <div className="text-[#283b91] hidden md:block lg:block">
+              <div className="text-[#283b91] hidden md:block">
                 {userProfile.username}
               </div>
               <div className="text-[#283b91]">
@@ -124,35 +121,18 @@ const LeaveHeader = ({ userProfile, post }) => {
           {post}
         </h2>
         <div className="flex flex-col md:flex-row lg:flex-row gap-y-2 gap-x-3">
-          <div className="flex gap-x-4 text-baseBlue underline justify-end">
-{/* 
-            {(location.pathname === "/leave-application-status" && userProfile.role === 3) && <Link to="/leave-list">
-              Team Application Status
-            </Link>}
-            {(location.pathname === "/leave-balance-hr" && userProfile.role === 3) && <Link to="/leave-balance">
-              Team Leave Balance
-            </Link>}
-
-            {(location.pathname === "/leave-application-status" && userProfile.role === 2) && <Link to="/leave-list">
-              Team Application Status
-            </Link>}
-            {(location.pathname === "/leave-balance-employee" && userProfile.role === 2) && <Link to="/leave-balance-manager">
-              Team Leave Balance
-            </Link>} */}
-
-          </div>
         </div>
       </div>
 
       {/*  leave applicat status hr */}
       {((location.pathname === "/leave-application-status" || location.pathname === "/leave-list") && userProfile.role === 3) && <ul className="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex dark:divide-gray-700 dark:text-gray-400">
-        <li className="w-full focus-within:z-10">
-          {(location.pathname === "/leave-application-status" || location.pathname === "/leave-list" && userProfile.role === 3) && <Link className="inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 dark:border-gray-700 rounded-s-lg focus:ring-4 focus:ring-blue-300 active focus:outline-none dark:bg-gray-700 dark:text-white" aria-current="page" to="/leave-application-status">
+        <li className="w-full focus-within:z-10 text-lg font-semibold">
+          {((location.pathname === "/leave-application-status" || location.pathname === "/leave-list") && userProfile.role === 3) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" aria-current="page" to="/leave-application-status">
             My Application Status
           </Link>}
         </li>
-        <li className="w-full focus-within:z-10">
-          {(location.pathname === "/leave-list" || location.pathname === "/leave-application-status" && userProfile.role === 3) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-list">
+        <li className="w-full focus-within:z-10 text-lg font-semibold">
+          {((location.pathname === "/leave-list" || location.pathname === "/leave-application-status") && userProfile.role === 3) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-list">
             Team Application Status
           </Link>}
         </li>
@@ -163,13 +143,13 @@ const LeaveHeader = ({ userProfile, post }) => {
       
       {((location.pathname === "/leave-balance-hr" || location.pathname === "/leave-balance") && userProfile.role === 3) &&
       <ul className="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex dark:divide-gray-700 dark:text-gray-400">
-        <li className="w-full focus-within:z-10">
-          {(location.pathname === "/leave-balance-hr" || location.pathname === "/leave-balance" && userProfile.role === 3) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-balance-hr">
+        <li className="w-full focus-within:z-10 text-lg font-semibold">
+          {((location.pathname === "/leave-balance-hr" || location.pathname === "/leave-balance") && userProfile.role === 3) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-balance-hr">
             My Leave Balance
           </Link>}
         </li>
-        <li className="w-full focus-within:z-10">
-          {(location.pathname === "/leave-balance" || location.pathname === "/leave-balance-hr" && userProfile.role === 3) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-balance">
+        <li className="w-full focus-within:z-10 text-lg font-semibold">
+          {((location.pathname === "/leave-balance" || location.pathname === "/leave-balance-hr") && userProfile.role === 3) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-balance">
             Team Leave Balance
           </Link>}
         </li> 
@@ -178,12 +158,12 @@ const LeaveHeader = ({ userProfile, post }) => {
 
           {/*  leave applicaton status manager */}
       {((location.pathname === "/leave-application-status" || location.pathname === "/leave-list") && userProfile.role === 2) && <ul className="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex dark:divide-gray-700 dark:text-gray-400">
-        <li className="w-full focus-within:z-10">
+        <li className="w-full focus-within:z-10 text-lg font-semibold">
           {((location.pathname === "/leave-application-status" || location.pathname === "/leave-list") && userProfile.role === 2) && <Link className="inline-block w-full p-4 text-gray-900 bg-gray-100 border-r border-gray-200 dark:border-gray-700 rounded-s-lg focus:ring-4 focus:ring-blue-300 active focus:outline-none dark:bg-gray-700 dark:text-white" aria-current="page" to="/leave-application-status">
             My Application Status
           </Link>}
         </li>
-        <li className="w-full focus-within:z-10">
+        <li className="w-full focus-within:z-10 text-lg font-semibold">
           {((location.pathname === "/leave-list" || location.pathname === "/leave-application-status") && userProfile.role === 2) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-list">
             Team Application Status
           </Link>}
@@ -191,15 +171,16 @@ const LeaveHeader = ({ userProfile, post }) => {
       </ul>}
 
          
+         {/* leave balance manager */}
       {((location.pathname === "/leave-balance-employee" || location.pathname === "/leave-balance-manager") && userProfile.role === 2) &&
       <ul className="hidden text-sm font-medium text-center text-gray-500 rounded-lg shadow sm:flex dark:divide-gray-700 dark:text-gray-400">
-        <li className="w-full focus-within:z-10">
-          {(location.pathname === "/leave-balance-employee" || location.pathname === "/leave-balance-manager" && userProfile.role === 2) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-balance-employee">
+        <li className="w-full focus-within:z-10 text-lg font-semibold">
+          {((location.pathname === "/leave-balance-employee" || location.pathname === "/leave-balance-manager") && userProfile.role === 2) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-balance-employee">
             My Leave Balance
           </Link>}
         </li>
-        <li className="w-full focus-within:z-10">
-          {(location.pathname === "/leave-balance-employee" || location.pathname === "/leave-balance-manager" && userProfile.role === 2) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-balance-manager">
+        <li className="w-full focus-within:z-10 text-lg font-semibold">
+          {((location.pathname === "/leave-balance-employee" || location.pathname === "/leave-balance-manager") && userProfile.role === 2) && <Link className="inline-block w-full p-4 bg-white border-r border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" to="/leave-balance-manager">
             Team Leave Balance
           </Link>}
         </li> 

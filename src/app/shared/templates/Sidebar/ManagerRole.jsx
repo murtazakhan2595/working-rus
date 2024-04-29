@@ -1,48 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
-import { IoIosSearch } from "react-icons/io";
-import { MdExitToApp, MdLock, MdOutlineAccountTree, MdOutlineCalendarMonth, MdOutlineLogout, MdOutlinePayment, MdOutlineTimeToLeave, MdSettings } from "react-icons/md";
-import { PiSuitcaseRollingBold } from "react-icons/pi";
 import { FaAngleDown } from "react-icons/fa6";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { setUserLogout } from "../../../../state/actions/UserAction";
-import { connect } from "react-redux";
-import ProjectModel from "./ProjectModel";
-import Cookies from "universal-cookie";
-import axios from "axios";
+import { Link,  useLocation } from "react-router-dom";
 import { LiaHomeSolid } from "react-icons/lia";
-import { RiProfileLine } from "react-icons/ri";
-import { BiSpreadsheet } from "react-icons/bi";
-import { BsPersonFillGear, BsPersonGear } from "react-icons/bs";
-import { LuCalendarDays, LuFolderCog2 } from "react-icons/lu";
-import { GrTree } from "react-icons/gr";
-import HrRole from "./HrRole";
+import { LuCalendarDays } from "react-icons/lu";
+import { toggleDropdown, isLeaveOpen } from "../../../../state/slices/DropdownSlice";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const ManagerRole = ({
     isSidebarOpen,
 }) => {
     const location = useLocation();
-    const navigate = useNavigate();
-    const cookies = new Cookies();
-    const [isProjectOpen, setIsProjectOpen] = useState(false);
-    const [isModelOpen, setisModelOpen] = useState(false);
-    const [isLinksOpen, setIsLinksOpen] = useState(false);
-    const [isRecruitmentOpen, setIsRecruitmentOpen] = useState(false);
-    const [isLeaveOpen, setIsLeaveOpen] = useState(false);
 
-
-    const toggleDropdown = (dropdownName) => {
-        if (dropdownName === "LeaveManagement") {
-            setIsLeaveOpen((prev) => !prev);
-            setIsProjectOpen(false);
-        } else if (dropdownName === "Projects") {
-            setIsProjectOpen((prev) => !prev);
-            setIsLeaveOpen(false);
-        }
+    const { isLeaveOpen } = useSelector(state => state.dropdown);
+    const dispatch = useDispatch();
+  
+    const handleToggleDropdown = (dropdownName) => {
+      dispatch(toggleDropdown(dropdownName));
     };
 
-
-    return (
+     return (
         <>
             <li className="group">
                 <Link to="/">
@@ -67,7 +44,7 @@ const ManagerRole = ({
             </li>
             <li className="group">
                 <div
-                    onClick={() => toggleDropdown("LeaveManagement")}
+                    onClick={() => handleToggleDropdown("LeaveManagement")}
                     className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                         } rounded-lg cursor-pointer`}
                 >

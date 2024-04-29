@@ -22,7 +22,7 @@ import {
   setUserLogout,
   setUserProfile,
   setToken,
-} from "./state/actions/UserAction";
+} from "./state/slices/UserSlice.js";
 import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/modules/Employees/EmpForm";
 import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
@@ -44,22 +44,32 @@ import LeaveBalanceManager from "./app/modules/LeaveApplication/LeaveBalanceMana
 import ApplicationStatus from "./app/modules/LeaveApplication/ApplicationStatus.jsx";
 import LeaveBalanceHR from "./app/modules/LeaveApplication/LeaveBalanceHR.jsx";
 import LeaveApplicationListManager from "./app/modules/LeaveApplication/LeaveApplicationListManager.jsx";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-function App({
-  setUserProfile,
-  userProfile,
-  baseUrl,
-  isLogin,
-  setToken,
-  setUserLogout,
-}) {
+// function App({
+//   setUserProfile,
+//   userProfile,
+//   baseUrl,
+//   isLogin,
+//   setToken,
+//   setUserLogout,
+// })
+function App() {
+
+  let userProfile = useSelector(state => state.user.userProfile);
+  let isLogin = useSelector(state => state.user.isLogin);
+  let token = useSelector(state => state.user.token);
+  let baseUrl = useSelector(state => state.user.baseUrl);
+  let dispatch = useDispatch();
+
   let width = window.screen.width;
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const navigate = useNavigate();
 
   const cookies = new Cookies();
-  let token = cookies.get("token");
+  token = cookies.get("token");
   const location = useLocation();
 
   const handleUpdateProfile = (data) => {
@@ -69,7 +79,8 @@ function App({
       is_filled: data.is_filled,
       role: data.user_role,
     };
-    setUserProfile(updateProfile);
+    // setUserProfile(updateProfile);
+    dispatch(setUserProfile(updateProfile));
   };
 
   const getProfile = async () => {
@@ -81,7 +92,7 @@ function App({
       });
       if (response.status === 200) {
         handleUpdateProfile(response.data);
-        setToken(token);
+        dispatch(setToken(token));
         cookies.set("token", token, { path: "*" });
         return;
       }
@@ -91,7 +102,7 @@ function App({
         (error.response.status === 401 || error.response.status === 403)
       ) {
         // Token expired or invalid
-        setUserLogout();
+        dispatch(setUserLogout());
         navigate("/");
       } else {
         console.error("Error fetching data:", error);
@@ -374,8 +385,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, {
-  setUserLogout,
-  setUserProfile,
-  setToken,
-})(App);
+// export default connect(mapStateToProps, {
+//   setUserLogout,
+//   setUserProfile,
+//   setToken,
+// })(App);
+export default App;

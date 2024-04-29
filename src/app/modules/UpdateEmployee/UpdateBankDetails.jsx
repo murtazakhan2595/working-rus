@@ -46,7 +46,7 @@ const bankSchema = Joi.object({
       "string.alphanum": `IBAN must contain only letters and numbers`,
     }),
   branch_address: Joi.string()
-    .min(10) // Minimum length 10 characters
+    // .min(10) // Minimum length 10 characters
     .required()
     .label("Branch Address")
     .messages({

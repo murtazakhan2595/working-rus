@@ -30,7 +30,7 @@ const bankSchema = Joi.object({
             "string.min": `Account Number must be at least 10 digits long`,
         }),
     branch_address: Joi.string()
-        .min(10) // Minimum length 10 characters
+        // .min(10) // Minimum length 10 characters
         .required()
         .label("Branch Address")
         .messages({

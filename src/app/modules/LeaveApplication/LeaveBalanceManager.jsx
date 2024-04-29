@@ -126,9 +126,9 @@ const LeaveBalanceManager = ({ baseUrl, token, userProfile, isSidebarOpen }) => 
         </div>
       </div>
       <div className="flex items-center justify-center mx-1 md:mx-2 lg:mx-8 gap-x-2">
-        <h2 className="text-[#343434] font-semibold w-[100%] rounded-tl-md rounded-bl-lg py-1 bg-[#F2F2F2] text-lg text-center">
+        {/* <h2 className="text-[#343434] font-semibold w-[100%] rounded-tl-md rounded-bl-lg py-1 bg-[#F2F2F2] text-lg text-center">
           Employee Data
-        </h2>
+        </h2> */}
         {/* <h2 className="text-[#343434] font-semibold w-[30%] md:w-[13%] lg:w-[29%] rounded-tr-md rounded-br-lg py-1 bg-[#F2F2F2] text-lg text-center">
           Leave Data
         </h2> */}

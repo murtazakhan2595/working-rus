@@ -1,49 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
-import { IoIosSearch } from "react-icons/io";
-import { MdExitToApp, MdLock, MdOutlineAccountTree, MdOutlineCalendarMonth, MdOutlineLogout, MdOutlinePayment, MdOutlineTimeToLeave, MdSettings } from "react-icons/md";
-import { PiSuitcaseRollingBold } from "react-icons/pi";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleUp, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { setUserLogout } from "../../../../state/actions/UserAction";
+import { Link, useLocation } from "react-router-dom";
 import { LiaHomeSolid } from "react-icons/lia";
 import { BsPersonFillGear } from "react-icons/bs";
 import { LuCalendarDays, LuFolderCog2 } from "react-icons/lu";
-import { GrTree } from "react-icons/gr";
+import { toggleDropdown, isDbOpen, isRecruitmentOpen, isLeaveOpen } from "../../../../state/slices/DropdownSlice";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const HrRole = ({ isSidebarOpen }) => {
   const location = useLocation();
-  const [isDbOpen, setIsDbOpen] = useState(false);
-  const [isRecruitmentOpen, setIsRecruitmentOpen] = useState(false);
-  const [isLeaveOpen, setIsLeaveOpen] = useState(false);
+  
+  const { isDbOpen, isRecruitmentOpen, isLeaveOpen } = useSelector(state => state.dropdown);
+  const dispatch = useDispatch();
 
-
-
-  const toggleDropdown = (dropdownName) => {
-    if (dropdownName === "HRDatabase") {
-      setIsDbOpen((prev) => !prev);
-      setIsRecruitmentOpen(false);
-      setIsLeaveOpen(false);
-    } else if (dropdownName === "Recruitment") {
-      setIsRecruitmentOpen((prev) => !prev);
-      setIsDbOpen(false);
-      setIsLeaveOpen(false);
-    } else if (dropdownName === "LeaveManagement") {
-      setIsLeaveOpen((prev) => !prev);
-      setIsDbOpen(false);
-      setIsRecruitmentOpen(false);
-    } else if (dropdownName === "Projects") {
-      setIsDbOpen(false);
-      setIsRecruitmentOpen(false);
-      setIsLeaveOpen(false);
-    } else if (dropdownName === "Profile") {
-      setIsDbOpen(false);
-      setIsRecruitmentOpen(false);
-      setIsLeaveOpen(false);
-    }
+  const handleToggleDropdown = (dropdownName) => {
+    dispatch(toggleDropdown(dropdownName));
   };
-
 
   return (
     <>
@@ -71,7 +44,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
 
       <li className="group">
         <div
-          onClick={() => toggleDropdown("HRDatabase")}
+          onClick={() => handleToggleDropdown("HRDatabase")}
           className={`flex items-center justify-between py-2 px-2 my-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isDbOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
             } rounded-lg cursor-pointer `}
         >
@@ -136,7 +109,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
       }
       <li className="group">
         <div
-          onClick={() => toggleDropdown("Recruitment")}
+          onClick={() => handleToggleDropdown("Recruitment")}
           className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isRecruitmentOpen ? "bg-[#DAEFF8] text-[#0D2282]" : " text-[#5C5E64]"
             } rounded-lg cursor-pointer`}
         >
@@ -202,7 +175,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
       }
       <li className="group">
         <div
-          onClick={() => toggleDropdown("LeaveManagement")}
+          onClick={() => handleToggleDropdown("LeaveManagement")}
           className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
             } rounded-lg cursor-pointer`}
         >

@@ -88,7 +88,7 @@ const LeaveApplicationListManager = ({ baseUrl, token, userProfile }) => {
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">End Date</th>
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Status</th>
-                    <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Status</th>
+                    {/* <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Status</th> */}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -104,7 +104,7 @@ const LeaveApplicationListManager = ({ baseUrl, token, userProfile }) => {
                       <td className="px-3 py-2 whitespace-nowrap">{employee.start_date}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{employee.end_date}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{employee.status_manager}</td>
-                      <td className="px-3 py-2 whitespace-nowrap">{employee.status_hr}</td>
+                      {/* <td className="px-3 py-2 whitespace-nowrap">{employee.status_hr}</td> */}
                     </tr>
                   ))}
                 </tbody>
@@ -130,7 +130,7 @@ const LeaveApplicationListManager = ({ baseUrl, token, userProfile }) => {
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">End Date</th>
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Status</th>
-                    <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Status</th>
+                    {/* <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Status</th> */}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -146,7 +146,7 @@ const LeaveApplicationListManager = ({ baseUrl, token, userProfile }) => {
                       <td className="px-3 py-2 whitespace-nowrap">{employee.start_date}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{employee.end_date}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{employee.status_manager}</td>
-                      <td className="px-3 py-2 whitespace-nowrap">{employee.status_hr}</td>
+                      {/* <td className="px-3 py-2 whitespace-nowrap">{employee.status_hr}</td> */}
                     </tr>
                   ))}
                 </tbody>
