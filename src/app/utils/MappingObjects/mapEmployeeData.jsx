@@ -48,29 +48,34 @@ function getPersonalInfo(data) {
 
 function getVisaDetails(data) {
     const visaDetails = EmployeeVisaDetails;
-    visaDetails.passport_number = data.passport_number;
-    visaDetails.Passport_Issuance_Country = data.Passport_Issuance_Country;
-    visaDetails.Passport_Issuance_Date = data.Passport_Issuance_Date;
-    visaDetails.Passport_Expiry_Date = data.Passport_Expiry_Date;
-    visaDetails.entry_permit_number = data.entry_permit_number;
-    visaDetails.country_of_visa_issuance = data.country_of_visa_issuance;
-    visaDetails.visa_duration = data.visa_duration;
-    visaDetails.uid_number = data.uid_number;
-    visaDetails.living_country_id_no = data.living_country_id_no;
-    visaDetails.dha_id = data.dha_id;
-    visaDetails.card_number = data.card_number;
-    visaDetails.insurance_policy = data.insurance_policy;
-    visaDetails.insurance_company = data.insurance_company;
-    visaDetails.visa_expiry_date = data.visa_expiry_date;
-    visaDetails.visa_issuance_date = data.visa_issuance_date;
-    visaDetails.visa_country_entry_date = data.visa_country_entry_date;
-    visaDetails.visa_country_exit_date = data.visa_country_exit_date;
-    visaDetails.id_issuance_date = data.id_issuance_date;
-    visaDetails.id_expiry_date = data.id_expiry_date;
-    visaDetails.insurance_active_date = data.insurance_active_date;
-    visaDetails.insurance_expiry_date = data.insurance_expiry_date;
-    visaDetails.visa_type = data.visa_type;
-    visaDetails.place_of_issuance = data.place_of_issuance;
+    visaDetails.id = data.id ?? null;
+    visaDetails.is_passport_applicable = data.is_passport_applicable ?? false;
+    visaDetails.is_insurance_applicable = data.is_insurance_applicable ?? false;
+    visaDetails.is_visa_applicable = data.is_visa_applicable ?? false;
+    visaDetails.employee_id = data.employee_id ?? null;
+    visaDetails.passport_number = data.passport_number ?? null;
+    visaDetails.Passport_Issuance_Country = data.Passport_Issuance_Country ?? null;
+    visaDetails.Passport_Issuance_Date = data.Passport_Issuance_Date ?? null;
+    visaDetails.Passport_Expiry_Date = data.Passport_Expiry_Date ?? null;
+    visaDetails.entry_permit_number = data.entry_permit_number ?? null;
+    visaDetails.country_of_visa_issuance = data.country_of_visa_issuance ?? null;
+    visaDetails.visa_duration = data.visa_duration ?? null;
+    visaDetails.uid_number = data.uid_number ?? null;
+    visaDetails.living_country_id_no = data.living_country_id_no ?? null;
+    visaDetails.dha_id = data.dha_id ?? null;
+    visaDetails.card_number = data.card_number ?? null;
+    visaDetails.insurance_policy = data.insurance_policy ?? null;
+    visaDetails.insurance_company = data.insurance_company ?? null;
+    visaDetails.visa_expiry_date = data.visa_expiry_date ?? null;
+    visaDetails.visa_issuance_date = data.visa_issuance_date ?? null;
+    visaDetails.visa_country_entry_date = data.visa_country_entry_date ?? null;
+    visaDetails.visa_country_exit_date = data.visa_country_exit_date ?? null;
+    visaDetails.id_issuance_date = data.id_issuance_date ?? null;
+    visaDetails.id_expiry_date = data.id_expiry_date ?? null;
+    visaDetails.insurance_active_date = data.insurance_active_date ?? null;
+    visaDetails.insurance_expiry_date = data.insurance_expiry_date ?? null;
+    visaDetails.visa_type = data.visa_type ?? null;
+    visaDetails.place_of_issuance = data.place_of_issuance ?? null;
 
     return visaDetails;
 }
@@ -116,8 +121,8 @@ function getAcademicRecord(data) {
     academicRecord.education_level = data?.education_level ?? '';
     academicRecord.program = data?.program ?? '';
     academicRecord.institute_name = data?.institute_name ?? '';
-    academicRecord.edu_start_date = data?.edu_start_date ?moment(data.edu_start_date).format("DD-MM-YYYY") : '';
-    academicRecord.edu_end_date = data?.edu_end_date ?moment(data.edu_end_date).format("DD-MM-YYYY"): '';
+    academicRecord.edu_start_date = data?.edu_start_date ? moment(data.edu_start_date).format("DD-MM-YYYY") : '';
+    academicRecord.edu_end_date = data?.edu_end_date ? moment(data.edu_end_date).format("DD-MM-YYYY") : '';
     academicRecord.certificate = data.certificate?.document ?? null;
 
     return academicRecord;

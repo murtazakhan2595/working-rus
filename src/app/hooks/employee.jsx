@@ -55,15 +55,45 @@ const saveEmployeePersonalInfoData = async (baseUrl, employeeid, token, personal
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then(() => {
-                return true;
+            }).then((response) => {
+                return response.status;
             });
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
+            return false;
         }
     }
-    return false;
+}
+const getEmployeeVisaDetailsFiles = async (baseUrl, id, token) => {
+    const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+    };
+    const responseArray = await Promise.all([
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"passport_copy"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"enter_permit"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"visa_page"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"medical"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_application"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_front"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_back"}`, { headers }),
+        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"insurance_card"}`, { headers })
+    ]);
+
+    // Construct an object mapping document names to their responses
+    const documents = {
+        passport_copy: responseArray[0].data[0],
+        enter_permit: responseArray[1].data[0],
+        visa_page: responseArray[2].data[0],
+        medical: responseArray[3].data[0],
+        id_application: responseArray[4].data[0],
+        id_front: responseArray[5].data[0],
+        id_back: responseArray[6].data[0],
+        insurance_card: responseArray[7].data[0]
+    };
+
+    return documents;
 }
 
 const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
@@ -74,11 +104,10 @@ const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then((response) => {
+            }).then(async (response) => {
                 if (response.status === 200) {
-                    if (response.data && response.data.result && response.data.result[0]) {
-                        const employeeData = getVisaDetails(response.data.result[0]);
-                        console.log(employeeData);
+                    if (response.data && response.data.results && response.data.results.length > 0) {
+                        const employeeData = getVisaDetails(response.data.results[0]);
                         return employeeData;
                     }
                 }
@@ -92,37 +121,39 @@ const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
 }
 
 const saveEmployeeVisaDetailData = async (baseUrl, employeeid, token, visaDetail, visaDetailsFiles) => {
+    const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+    };
     if (employeeid) {
         try {
-            await axios.patch(`${baseUrl}/emp/${employeeid}`, visaDetail, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then(() => {
-                return true;
-            });
+            if (visaDetail.id) {
+                await axios.patch(`${baseUrl}/employeevisadetail/${visaDetail.id}`, visaDetail, { headers })
+            } else {
+                await axios.post(`${baseUrl}/employeevisadetail/`, visaDetail, { headers, })
+            }
 
             for (const key in visaDetailsFiles) {
                 if (visaDetailsFiles.hasOwnProperty(key)) {
-                    const files = visaDetailsFiles[key];
-                    for (const file of files) {
+                    const file = visaDetailsFiles[key];
+                    if (file?.id) {
+                        await axios.patch(`${baseUrl}/attachment/${file?.id}`, {
+                            employee_id: employeeid,
+                            name: file.name,
+                            description: `${file.name} file`,
+                            document: {
+                                name: file.document.name,
+                                data: file.document.data,
+                            },
+                        }, { headers });
+                    } else {
+                        // Otherwise, post a new attachment
                         await axios.post(`${baseUrl}/attachment/`, {
                             employee_id: employeeid,
-                            name: key,
-                            description: `${key} File`,
-                            document: {
-                                name: file.name,
-                                data: file.data,
-                            },
-                        }, {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                "Content-Type": "application/json",
-                            },
-                        }).then(() => {
-                            return true;
-                        });
+                            name: file.name,
+                            description: `${file.name} file`,
+                            document: file,
+                        }, { headers });
                     }
 
                 }
@@ -145,7 +176,7 @@ const getEmployeeCVDetailData = async (baseUrl, employeeid, token) => {
                 },
             }).then((response) => {
                 if (response.status === 200 && response.data && response.data.length > 0) {
-                    const employeeData = getCVDetails(response.data[1]);
+                    const employeeData = getCVDetails(response.data[0]);
                     console.log(employeeData);
                     return employeeData;
                 }
@@ -159,6 +190,7 @@ const getEmployeeCVDetailData = async (baseUrl, employeeid, token) => {
 }
 
 const saveEmployeeCVDetailData = async (baseUrl, employeeid, token, payload) => {
+    debugger
     if (employeeid) {
         const cv = payload.cv;
         const existingCVId = payload.existingCVId
@@ -353,7 +385,7 @@ const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payload
     if (employeeid) {
         try {
             payloadAttachment.map(async (certification) => {
-                certification.employee_id=employeeid
+                certification.employee_id = employeeid
                 if (certification.hasOwnProperty("id")) {
                     await axios.patch(
                         `${baseUrl}/certification/${certification.id}`,
@@ -365,7 +397,7 @@ const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payload
                             },
                         }
                     );
-                   
+
                 } else {
                     await axios.post(`${baseUrl}/certification/`, certification, {
                         headers: {
@@ -483,4 +515,5 @@ export {
     saveEmployeeBankDetailsData,
     getEmployeeCerficationData,
     saveEmployeeCertificationData,
+    getEmployeeVisaDetailsFiles,
 }
