@@ -294,6 +294,24 @@ const deleteEmployeeProfessionalExperianceData = async (baseUrl, employeeid, tok
     return false;
 }
 
+const deleteEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payload) => {
+    if (employeeid && payload && payload.length > 0) {
+        try {
+            payload.map(async (certification) => {
+                await axios.delete(`${baseUrl}/certification/${certification}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+            });
+        } catch (error) {
+            console.error("Error fetching Personal Info data :", error);
+        }
+    }
+    return false;
+}
+
 const getEmployeeAcademicRecordData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
@@ -377,18 +395,17 @@ const saveEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payloa
 const getEmployeeCerficationData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            await axios.get(`${baseUrl}/certification/?search={\"employee_id\":${employeeid}}`, {
+            const response = await axios.get(`${baseUrl}/certification/?search={\"employee_id\":${employeeid}}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then((response) => {
-                if (response.status === 200) {
-                    const employeeData = getCertifications(response.data);
-                    console.log(employeeData);
-                    return employeeData;
-                }
             });
+            if (response.status === 200) {
+                const employeeData = getCertifications(response.data);
+                console.log(employeeData);
+                return employeeData;
+            }
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
@@ -533,4 +550,5 @@ export {
     saveEmployeeCertificationData,
     getEmployeeVisaDetailsFiles,
     deleteEmployeeProfessionalExperianceData,
+    deleteEmployeeAcademicRecordData,
 }

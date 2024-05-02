@@ -16,9 +16,14 @@ import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { downloadAttachment } from "../../../utils/fileUtils";
 import { Tooltip } from "@mui/material";
-import { LuExternalLink } from "react-icons/lu"; 
+import { LuExternalLink } from "react-icons/lu";
 import { downloadFiles } from "../../../utils/downUtils";
 import { BsDownload } from "react-icons/bs";
+
+import { saveEmployeeAcademicRecordData, getEmployeeAcademicRecordData, deleteEmployeeAcademicRecordData, saveEmployeeCertificationData, getEmployeeCerficationData } from '../../hooks/employee';
+import { EmployeeAcademicRecord, EmployeeCertifiation } from '../../utils/Types/Employee'
+import { validationAcademicRecordSchema } from '../../utils/FormSchema/employeeFormSchema'
+
 
 const academicOptions = [
   { value: "Intermediate", label: "Intermediate" },
@@ -26,13 +31,6 @@ const academicOptions = [
   { value: "Master", label: "Master" },
 ];
 
-const academicSchema = Joi.object({
-  education_level: Joi.string().required().label("Education Level"),
-  program: Joi.string().required().label("Program"),
-  institute_name: Joi.string().required().label("Institute Name"),
-  edu_start_date: Joi.string().required().label("Start Date"),
-  edu_end_date: Joi.string().required().label("End Date"),
-});
 
 const AcademicRecords = ({
   errors,
@@ -52,29 +50,28 @@ const AcademicRecords = ({
   const [isEdit, setIsEdit] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  let defaultData = getDataFromSessionStorage("UpdatedAcademicInfo");
-  let defaultCertifications = getDataFromSessionStorage("UpdatedCertifications");
-  const intialAcadmicRecords = {
-    id: defaultData?.id ?? '',
-    education_level: defaultData?.education_level
-      ? defaultData.education_level
-      : "",
-    program: defaultData?.program ? defaultData.program : "",
-    institute_name: defaultData?.institute_name
-      ? defaultData.institute_name
-      : "",
-    edu_start_date: defaultData?.edu_start_date
-      ? defaultData.edu_start_date
-      : "",
-    edu_end_date: defaultData?.edu_end_date ? defaultData.edu_end_date : "",
-    certificate: defaultData?.certificate ? defaultData.certificate : {},
-  };
-  const [academicInfo, setAcademicInfo] = useState(intialAcadmicRecords);
-  const [certificationSections, setCertificationSections] = useState(
-    defaultCertifications ? defaultCertifications : [{}]
-  );
   const [cerErrors, setCerErrors] = useState({});
+  const [academicInfo, setAcademicInfo] = useState(EmployeeAcademicRecord);
+  const [certificationSections, setCertificationSections] = useState([EmployeeCertifiation]);
+
+  useEffect(() => {
+    getEmployeeAcademicRecordData(baseUrl, userProfile?.id, token).then(response => {
+      setAcademicInfo(response);
+
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
+  useEffect(() => {
+    getEmployeeCerficationData(baseUrl, userProfile?.id, token).then(response => {
+      setCertificationSections(response);
+
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
 
   const addCertificationSection = () => {
     setCertificationSections([...certificationSections, {}]);
@@ -115,70 +112,6 @@ const AcademicRecords = ({
     handleChange("edu_end_date", formattedDate);
   };
 
-
-  const id = userProfile.id;
-  // const { id } = useParams();
-
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
-  const fetchData = async () => {
-    try {
-      // Get Academic Info
-      const educationResponse = await axios.get(
-        `${baseUrl}/education/?search={"employee_id":${id}}`,
-        { headers }
-      );
-      const educationData = educationResponse.data[0];
-
-      const formattedEducationData = {
-        ...educationData,
-        edu_start_date: moment(educationData.edu_start_date).format("DD-MM-YYYY"),
-        edu_end_date: moment(educationData.edu_end_date).format("DD-MM-YYYY"),
-      };
-      // Get Academic Document
-      const docResponse = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"acadmicDoc"}`, {
-        headers,
-      });
-      const docRes = docResponse.data[0];
-      let acadamicDocument = docRes
-      let docObj = { certificate: acadamicDocument }
-      setAcademicInfo({ ...formattedEducationData, ...docObj })
-
-      // Get Certifications
-      const certificationResponse = await axios.get(
-        `${baseUrl}/certification/?search={"employee_id":${id}}`,
-        { headers }
-      );
-      const certificationData = certificationResponse.data;
-
-      const formattedCertificationData = certificationData.map((cer) => ({
-        ...cer,
-        completion_date: moment(cer.completion_date).format("DD-MM-YYYY"),
-        expiry_date: moment(cer.expiry_date).format("DD-MM-YYYY"),
-      }));
-
-      setCertificationSections(formattedCertificationData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [isEdit]);
-
-  useEffect(() => {
-    setDataInSessionStorage("UpdatedAcademicInfo", academicInfo);
-  }, [academicInfo]);
-
-  useEffect(() => {
-    setDataInSessionStorage("UpdatedCertifications", certificationSections);
-  }, [certificationSections]);
-
-
   const handleSave = async () => {
     const fieldErrors = {};
     for (let i = 0; i < certificationSections.length; i++) {
@@ -194,12 +127,8 @@ const AcademicRecords = ({
       if (!certification.expiry_date) {
         fieldErrors[`expiry_date_${i}`] = "Expiry Date is required.";
       }
-      // if (!certification.certification_body?.hasOwnProperty("name")) {
-      //   fieldErrors[`certification_body_${i}`] =
-      //     "Certification Body is required.";
-      // }
     }
-    const { error } = academicSchema.validate(
+    const { error } = validationAcademicRecordSchema.validate(
       {
         education_level: academicInfo.education_level,
         program: academicInfo.program,
@@ -211,19 +140,15 @@ const AcademicRecords = ({
     );
 
     const validationErrors = {};
-    if (
-      Object.keys(fieldErrors).length > 0 ||
-      error ||
-      !academicInfo.certificate?.document?.hasOwnProperty("name")
-    ) {
-      if (!academicInfo.certificate?.document?.hasOwnProperty("name")) {
+    if (Object.keys(fieldErrors).length > 0 || error || !academicInfo.certificate?.hasOwnProperty("name")) {
+      if (!academicInfo.certificate?.hasOwnProperty("name")) {
         setErrors({ ...errors, certificate: "Certification is required" });
       }
       if (error) {
         error.details.forEach((detail) => {
           validationErrors[detail.path[0]] = detail.message;
         });
-        if (!academicInfo.certificate?.document?.hasOwnProperty("name")) {
+        if (!academicInfo.certificate?.hasOwnProperty("name")) {
           validationErrors.certificate = "Certification is required";
         }
         setErrors(validationErrors);
@@ -235,105 +160,22 @@ const AcademicRecords = ({
       return;
     } else {
       setIsLoading(true);
-
       try {
 
-        let education = {
-          // employee_id: id,
-          employee_id: userProfile.id,
-          education_level: academicInfo.education_level,
-          program: academicInfo.program,
-          institute_name: academicInfo.institute_name,
-          edu_start_date: moment(academicInfo.edu_start_date, "DD-MM-YYYY").format("YYYY-MM-DD"),
-          edu_end_date: moment(academicInfo.edu_end_date, "DD-MM-YYYY").format("YYYY-MM-DD")
-        };
-        let resEdu = await axios.patch(`${baseUrl}/education/${academicInfo.id}`, education, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (resEdu.status !== 200) {
-          return
-        }
-
-        let acadmicDoc = {
-          // employee_id: id,
+        const academicDoc = {
           employee_id: userProfile.id,
           name: "acadmicDoc",
           description: "Acadmic Document",
-          document: academicInfo.certificate.document
+          document: academicInfo.certificate,
         }
+        academicInfo.employee_id = userProfile.id
+        academicInfo.edu_start_date = moment(academicInfo.edu_start_date, "DD-MM-YYYY").format("YYYY-MM-DD");
+        academicInfo.edu_end_date = moment(academicInfo.edu_end_date, "DD-MM-YYYY").format("YYYY-MM-DD");
 
-
-        if (academicInfo.certificate?.hasOwnProperty("id")) {
-          let res = await axios.patch(`${baseUrl}/attachment/${academicInfo.certificate.id}`, acadmicDoc, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-        }
-        else {
-          let res = await axios.post(`${baseUrl}/attachment/`, acadmicDoc, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-
-        }
-        let updatedData = getDataFromSessionStorage("UpdatedCertifications");
-        updatedData.map(async (crt) => {
-          let myCertification = {
-            // employee_id: id,
-            employee_id: userProfile.id,
-            certification_name: crt.certification_name,
-            certification_body: crt.certification_body,
-            completion_date: moment(crt.completion_date, "DD-MM-YYYY").format(
-              "YYYY-MM-DD"
-            ),
-            expiry_date: moment(crt.expiry_date, "DD-MM-YYYY").format(
-              "YYYY-MM-DD"
-            ),
-          };
-          if (crt.hasOwnProperty("id")) {
-            let res = await axios.patch(
-              `${baseUrl}/certification/${crt.id}`,
-              myCertification,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-            if (res.status !== 200) {
-              toast.error("Form submission failed. Please try again.", {
-                position: "top-center",
-                autoClose: 3000,
-              });
-              return;
-            }
-          } else {
-            let res = await axios.post(`${baseUrl}/certification/`, myCertification, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          }
-        });
-
-
-        deleteExp.map(async (delExp) => {
-          let res = await axios.delete(`${baseUrl}/certification/${delExp}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-        });
+        delete academicInfo.certificate
+        saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo, academicDoc);
+        saveEmployeeCertificationData(baseUrl, userProfile?.id, token, academicDoc);
+        deleteEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, deleteExp);
       }
       catch (error) {
         toast.error("Form submission failed. Please try again.", {
@@ -578,18 +420,18 @@ const AcademicRecords = ({
                     Attach Certification:
                   </h2>
                   <div>
-                    {academicInfo.certificate?.document?.hasOwnProperty("name") ? (
+                    {academicInfo.certificate?.hasOwnProperty("name") ? (
                       <div className="flex gap-x-3 items-center">
                         {/* <button
                           className="text-blue-600 underline"
                           onClick={() =>
                             downloadAttachment(
-                              academicInfo.certificate?.document?.file,
-                              academicInfo.certificate?.document?.name
+                              academicInfo.certificate?.file,
+                              academicInfo.certificate?.name
                             )
                           }
                         >
-                          {academicInfo.certificate?.document?.name ? academicInfo.certificate?.document?.name : "Not available"}
+                          {academicInfo.certificate?.name ? academicInfo.certificate?.name : "Not available"}
                         </button> */}
                         <Tooltip
                           title="View Doc"
@@ -598,12 +440,12 @@ const AcademicRecords = ({
                             className="text-blue-600 underline"
                             onClick={() =>
                               downloadAttachment(
-                                academicInfo.certificate?.document?.file,
-                                academicInfo.certificate?.document?.name
+                                academicInfo.certificate?.file,
+                                academicInfo.certificate?.name
                               )
                             }
                           >
-                            {academicInfo.certificate?.document?.name ? <LuExternalLink /> : "Not available"}
+                            {academicInfo.certificate?.name ? <LuExternalLink /> : "Not available"}
                           </button>
                         </Tooltip>
                         <Tooltip
@@ -613,12 +455,12 @@ const AcademicRecords = ({
                             className="text-blue-600 underline"
                             onClick={() =>
                               downloadFiles(
-                                academicInfo.certificate?.document?.file,
-                                academicInfo.certificate?.document?.name
+                                academicInfo.certificate?.file,
+                                academicInfo.certificate?.name
                               )
                             }
                           >
-                            {academicInfo.certificate?.document?.name ? <BsDownload /> : "Not available"}
+                            {academicInfo.certificate?.name ? <BsDownload /> : "Not available"}
                           </button>
                         </Tooltip>
                         <div onClick={handleEditClick}>
