@@ -5,15 +5,17 @@ import { connect } from "react-redux";
 import { getEmployeeCVDetailData, saveEmployeeCVDetailData } from '../../hooks/employee';
 import { EmployeeCVDetails } from '../../utils/Types/Employee'
 
-const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep ,userProfile, baseUrl, token }) => {
+const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep, userProfile, baseUrl, token }) => {
 
   const [cv, setCv] = useState(EmployeeCVDetails)
   const [cvName, setCvName] = useState(EmployeeCVDetails.cvName ?? "No Chosen File")
+  const [existingCVId, setExistingCVId] = useState(null)
 
   useEffect(() => {
     getEmployeeCVDetailData(baseUrl, userProfile?.id, token).then(response => {
-      setCv(response);
+      setCv(response.cv);
       setCvName(response.cvName);
+      setExistingCVId(response.existingCVId)
     }).catch(error => {
       console.log(error);
     });
@@ -45,7 +47,11 @@ const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep ,userProfile,
       const validationErrors = { cv: "CV is required" };
       setErrors(validationErrors);
     } else {
-      saveEmployeeCVDetailData(baseUrl, userProfile?.id, token, cv);
+      const payload={
+        cv:cv,
+        existingCVId:existingCVId,
+      }
+      saveEmployeeCVDetailData(baseUrl, userProfile?.id, token, payload);
       nextstep();
     }
   };

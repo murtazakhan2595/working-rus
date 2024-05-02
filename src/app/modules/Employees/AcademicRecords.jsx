@@ -9,8 +9,8 @@ import Button from "./Button";
 import { WiCloudRefresh } from "react-icons/wi";
 
 import { connect } from "react-redux";
-import { saveEmployeeAcademicRecordData, getEmployeeAcademicRecordData } from '../../hooks/employee';
-import { EmployeeAcademicRecord } from '../../utils/Types/Employee'
+import { saveEmployeeAcademicRecordData, getEmployeeAcademicRecordData, saveEmployeeCertificationData, getEmployeeCerficationData } from '../../hooks/employee';
+import { EmployeeAcademicRecord, EmployeeCertifiation } from '../../utils/Types/Employee'
 import { validationAcademicRecordSchema } from '../../utils/FormSchema/employeeFormSchema'
 
 
@@ -25,16 +25,25 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
 
   const [academicInfo, setAcademicInfo] = useState(EmployeeAcademicRecord);
 
-  const [certificationSections, setCertificationSections] = useState(EmployeeAcademicRecord.certificate);
+  const [certificationSections, setCertificationSections] = useState([EmployeeCertifiation]);
   useEffect(() => {
     getEmployeeAcademicRecordData(baseUrl, userProfile?.id, token).then(response => {
       setAcademicInfo(response);
-      setCertificationSections(response.certificate);
 
     }).catch(error => {
       console.log(error);
     });
   }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
+  useEffect(() => {
+    getEmployeeCerficationData(baseUrl, userProfile?.id, token).then(response => {
+      setCertificationSections(response);
+
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
 
   const [cerErrors, setCerErrors] = useState({});
 
@@ -88,7 +97,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
       if (!certification.expiry_date) {
         fieldErrors[`expiry_date_${i}`] = "Expiry Date is required.";
       }
-      
+
     }
 
     const { error } = validationAcademicRecordSchema.validate(
@@ -117,7 +126,19 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
       return;
     }
     else {
-      saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo ,certificationSections);
+      const academicDoc = {
+        employee_id: userProfile.id,
+        name: "acadmicDoc",
+        description: "Acadmic Document",
+        document: academicInfo.certificate,
+      }
+      academicInfo.employee_id = userProfile.id
+      academicInfo.edu_start_date = moment(academicInfo.edu_start_date, "DD-MM-YYYY").format("YYYY-MM-DD");
+      academicInfo.edu_end_date = moment(academicInfo.edu_end_date, "DD-MM-YYYY").format("YYYY-MM-DD");
+
+      delete academicInfo.certificate
+      saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo, academicDoc);
+      saveEmployeeCertificationData(baseUrl, userProfile?.id, token, academicDoc);
       nextstep();
     }
   };
@@ -272,7 +293,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                   <h2 className="text-input tracking-wide text-base mt-3 mb-3 lg:mb-0 lg:text-base">
                     Attach Certification:
                   </h2>
-                  {academicInfo.certificate.hasOwnProperty("name") ? (
+                  {academicInfo.certificate?.hasOwnProperty("name") ? (
                     <div className="flex gap-1  items-center">
                       <div className="opacity-50">
                         {academicInfo.certificate.name}
@@ -497,9 +518,6 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
           </div>
         ))}
 
-
-
-
         <button
           onClick={addCertificationSection}
           className="mt-4 mb-3 rounded-lg w-52 border block border-[#25A8E0] cursor-pointer text-[#555657] py-1"
@@ -514,8 +532,6 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
     </>
   );
 };
-
-
 
 const mapStateToProps = (state) => {
   return {

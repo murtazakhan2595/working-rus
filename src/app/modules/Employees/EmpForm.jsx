@@ -30,38 +30,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
 
   const submitForm = async () => {
     try {
-      for (const key in visaDetailsFiles) {
-        if (visaDetailsFiles.hasOwnProperty(key)) {
-          const files = visaDetailsFiles[key];
-          for (const file of files) {
-            let attachmentResponse = await axios.post(
-              `${baseUrl}/attachment/`,
-              {
-                employee_id: userProfile.id,
-                name: key,
-                description: `${key} File`,
-                document: {
-                  name: file.name,
-                  data: file.data,
-                },
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-            if (attachmentResponse.status !== 201) {
-              toast.error("Attachements submission Failed. Please try again.", {
-                position: "top-center",
-                autoClose: 3000,
-              });
-            }
-          }
-        }
-      }
-
       toast.success("Form submitted successfully!", {
         position: "top-center",
         autoClose: 3000,

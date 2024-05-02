@@ -53,9 +53,11 @@ const EmployeeVisaDetails = {
 const EmployeeCVDetails = {
     cv: null,
     cvName: null,
+    existingCVId: null,
 }
 
 const EmployeeProfessionalExperiance = {
+    id: null,
     employee_id: null,
     exp_organization: null,
     exp_designation: null,
@@ -65,13 +67,23 @@ const EmployeeProfessionalExperiance = {
 }
 
 const EmployeeAcademicRecord = {
+    id: null,
     employee_id: null,
     education_level: null,
     program: null,
     institute_name: null,
     edu_start_date: null,
     edu_end_date: null,
-    certificate: [{}],
+    certificate: null,
+}
+
+const EmployeeCertifiation = {
+    id: null,
+    employee_id: null,
+    certification_name: null,
+    completion_date: null,
+    expiry_date: null,
+    certification_body: null,
 }
 
 const EmployeeDepartmentInfo = {
@@ -103,7 +115,8 @@ const Employee = {
     cv: EmployeeCVDetails,
     professionalExperiance: [EmployeeProfessionalExperiance],
     department: EmployeeDepartmentInfo,
-    bankDetails:EmployeeBankDetails,
+    bankDetails: EmployeeBankDetails,
+    certifications: EmployeeCertifiation,
 }
 
 export {
@@ -111,4 +124,5 @@ export {
     EmployeeProfessionalExperiance,
     EmployeeDepartmentInfo,
     EmployeeBankDetails,
+    EmployeeCertifiation,
 }

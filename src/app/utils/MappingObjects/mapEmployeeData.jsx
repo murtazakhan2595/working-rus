@@ -3,11 +3,11 @@ import {
     EmployeeCVDetails,
     EmployeeProfessionalExperiance,
     EmployeeBankDetails,
+    EmployeeCertifiation,
 } from '../Types/Employee'
 import moment from "moment";
 
 function mapEmployeeData(data) {
-    debugger
     const employee = Employee;
     employee.id = data.id;
     employee.personalInformation = getPersonalInfo(data);
@@ -77,8 +77,9 @@ function getVisaDetails(data) {
 
 function getCVDetails(data) {
     const cvDetails = EmployeeCVDetails;
-    cvDetails.cv = data.passport_number;
-    cvDetails.cvName = data.Passport_Issuance_Country;
+    cvDetails.cv = data.document;
+    cvDetails.cvName = data.document.name;
+    cvDetails.existingCVId = data.id ?? '';
 
     return cvDetails;
 }
@@ -86,12 +87,13 @@ function getCVDetails(data) {
 function getProfessionalExperiance(data) {
     const experience = [];
     if (data && data.length > 0) {
-        data.map(profExperience => {
+        data.map((profExperience) => {
             const professionalExperiance = EmployeeProfessionalExperiance;
-            professionalExperiance.employee_id = profExperience?.id ?? '';
+            professionalExperiance.id = profExperience?.id ?? '';
+            professionalExperiance.employee_id = profExperience?.employee_id ?? '';
             professionalExperiance.exp_organization = profExperience?.exp_organization ?? '';
             professionalExperiance.exp_designation = profExperience?.exp_designation ?? '';
-            professionalExperiance.exp_letter = profExperience?.file ?? '';
+            professionalExperiance.exp_letter = profExperience?.exp_letter ?? '';
             professionalExperiance.exp_start_date = profExperience.exp_start_date ? moment(profExperience.exp_start_date, "DD-MM-YYYY").format(
                 "YYYY-MM-DD"
             ) : null;
@@ -109,15 +111,36 @@ function getProfessionalExperiance(data) {
 
 function getAcademicRecord(data) {
     const academicRecord = EmployeeAcademicRecord;
-    academicRecord.employee_id = data.id;
+    academicRecord.id = data.id;
+    academicRecord.employee_id = data.employee_id;
     academicRecord.education_level = data?.education_level ?? '';
     academicRecord.program = data?.program ?? '';
     academicRecord.institute_name = data?.institute_name ?? '';
-    academicRecord.edu_start_date = data?.edu_start_date ?? '';
-    academicRecord.edu_end_date = data?.edu_end_date ?? '';
-    academicRecord.certificate = data?.certificate ?? [];
+    academicRecord.edu_start_date = data?.edu_start_date ?moment(data.edu_start_date).format("DD-MM-YYYY") : '';
+    academicRecord.edu_end_date = data?.edu_end_date ?moment(data.edu_end_date).format("DD-MM-YYYY"): '';
+    academicRecord.certificate = data.certificate?.document ?? null;
 
     return academicRecord;
+}
+
+function getCertifications(data) {
+    const cerfications = [];
+    if (data && data.length > 0) {
+        data.map((record) => {
+            const empCerficate = {
+                id: record.id,
+                employee_id: record.employee_id,
+                certification_name: record?.certification_name ?? '',
+                completion_date: record?.completion_date ?? '',
+                expiry_date: record?.expiry_date ?? '',
+                certification_body: record?.certification_body ?? '',
+            };
+            cerfications.push(empCerficate)
+        })
+
+        return cerfications;
+    }
+    return [EmployeeCertifiation];
 }
 
 function getDepartmentInfo(data) {
@@ -157,4 +180,5 @@ export {
     getProfessionalExperiance,
     getDepartmentInfo,
     getBankDetails,
+    getCertifications,
 }

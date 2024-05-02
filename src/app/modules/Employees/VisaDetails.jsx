@@ -73,7 +73,6 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
 
     // Function to handle next step
     const handleNextStep = () => {
-        debugger
         if (visaDetails.is_passport_applicable) {
             // Check if fields are filled
             if (!visaDetails.passport_number || !visaDetails.Passport_Issuance_Country || !visaDetails.Passport_Issuance_Date || !visaDetails.Passport_Expiry_Date || !visaDetailsFiles.passport_copy) {
@@ -107,7 +106,7 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
             });
 
         } else {
-            saveEmployeeVisaDetailData(baseUrl, userProfile?.id, token, visaDetails);
+            saveEmployeeVisaDetailData(baseUrl, userProfile?.id, token, visaDetails,visaDetailsFiles);
             setVisaDetailsFilesProps(visaDetailsFiles)
             nextstep();
         }
