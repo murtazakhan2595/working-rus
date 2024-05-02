@@ -17,6 +17,8 @@ import { LuExternalLink } from "react-icons/lu";
 import { Tooltip } from "@mui/material";
 import { BsDownload } from "react-icons/bs";
 import { downloadFiles } from "../../../utils/downUtils";
+import { getEmployeeProfessionalExperianceData, saveEmployeeProfessionalExperianceData,deleteEmployeeProfessionalExperianceData } from '../../hooks/employee';
+import { EmployeeProfessionalExperiance } from '../../utils/Types/Employee'
 
 const ProfessionalExp = ({
   errors,
@@ -28,27 +30,30 @@ const ProfessionalExp = ({
   userProfile,
   baseUrl,
 }) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
-  let defaultData = getDataFromSessionStorage("UpdatedProExp");
-  const [experienceSections, setExperienceSections] = useState(
-    defaultData ? defaultData : [{}]
-  );
+  
+  const [experienceSections, setExperienceSections] = useState([EmployeeProfessionalExperiance]  );
   const [deleteExp, setDeleteExp] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
   const [loading, setLoading] = useState(false);
   const [disableEndDate, setDisableEndDate] = useState(false);
 
+  useEffect(() => {
+    getEmployeeProfessionalExperianceData(baseUrl, userProfile?.id, token).then(response => {
+      setExperienceSections(response);
+      const hasNullEndDate = response.some(
+        (experience) => experience.exp_end_date === null
+      );
+      setDisableEndDate(hasNullEndDate); // Set disableEndDate state based on null exp_end_date
+
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
+
   const addExperienceSection = () => {
-    setExperienceSections([...experienceSections, {}]);
+    setExperienceSections([...experienceSections, EmployeeProfessionalExperiance]);
   };
 
   const clearError = (fieldName) => {
@@ -61,13 +66,11 @@ const ProfessionalExp = ({
 
   const handleNextStep = () => {
     setErrors({});
-    sessionStorage.clear();
     nextstep();
   };
 
   const handleSave = async () => {
     setLoading(true);
-
     const fieldErrors = {};
 
     // Validate the experienceSections and store specific errors
@@ -95,62 +98,11 @@ const ProfessionalExp = ({
       setLoading(false);
     } else {
       setErrors({});
-      let updatedData = getDataFromSessionStorage("UpdatedProExp");
       try {
-        updatedData.map(async (exp) => {
-          let experience = {
-            employee_id: userProfile.id,
-            // employee_id: id,
-            exp_organization: exp.exp_organization,
-            exp_designation: exp.exp_designation,
-            exp_letter: exp.exp_letter,
-            exp_start_date: moment(exp.exp_start_date, "DD-MM-YYYY").format(
-              "YYYY-MM-DD"
-            ),
-            // exp_end_date: moment(exp.exp_end_date, "DD-MM-YYYY").format(
-            //   "YYYY-MM-DD"
-            // ),
-            exp_end_date: disableEndDate ? null : moment(exp.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD"),
-          };
+        saveEmployeeProfessionalExperianceData(baseUrl, userProfile?.id, token, experienceSections);
+        deleteEmployeeProfessionalExperianceData(baseUrl, userProfile?.id, token, deleteExp);
 
-          if (exp.hasOwnProperty("id")) {
-            let res = await axios.patch(
-              `${baseUrl}/experience/${exp.id}`,
-              experience,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-            if (res.status !== 200) {
-              toast.error("Form submission failed. Please try again.", {
-                position: "top-center",
-                autoClose: 3000,
-              });
-              setLoading(false);
-              return;
-            }
-          } else {
-            let res = await axios.post(`${baseUrl}/experience/`, experience, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-          }
-        });
-        deleteExp.map(async (delExp) => {
-          let res = await axios.delete(`${baseUrl}/experience/${delExp}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-        });
         setIsEdit(!isEdit);
-        sessionStorage.clear();
         toast.success("Professional Experiences Updated!", {
           position: "top-right",
           autoClose: 3000,
@@ -168,59 +120,9 @@ const ProfessionalExp = ({
   };
 
 
-  const id = userProfile.id;
-
-  // const { id } = useParams();
-
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
   const handleEditClick = () => {
     setIsEdit(true);
   };
-
-
-
-
-  const fetchData = async () => {
-    try {
-      const experiencesResponse = await axios.get(
-        `${baseUrl}/experience/?search={"employee_id":${id}}`,
-        { headers }
-      );
-      const experiencesData = experiencesResponse.data;
-
-      // Check if any experience has null exp_end_date
-      const hasNullEndDate = experiencesData.some(
-        (experience) => experience.exp_end_date === null
-      );
-
-      const formattedExperiencesData = experiencesData.map((experience) => ({
-        ...experience,
-        exp_start_date: moment(experience.exp_start_date).format("DD-MM-YYYY"),
-        exp_end_date: moment(experience.exp_end_date).format("DD-MM-YYYY"),
-      }));
-
-      setExperienceSections(formattedExperiencesData);
-      setDisableEndDate(hasNullEndDate); // Set disableEndDate state based on null exp_end_date
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [isEdit]);
-
-  useEffect(() => {
-    setDeleteExp(deleteExp);
-  }, [deleteExp]);
-
-  useEffect(() => {
-    setDataInSessionStorage("UpdatedProExp", experienceSections);
-  }, [experienceSections]);
 
   return (
     <>
@@ -347,17 +249,17 @@ const ProfessionalExp = ({
                           // disabled={isEdit ? false : true}
                           day={
                             experience?.exp_start_date
-                              ? experience?.exp_start_date.substr(0, 2)
+                              ? experience?.exp_start_date.substr(8, 2)
                               : null
                           }
                           month={
                             experience?.exp_start_date
-                              ? experience?.exp_start_date.substr(3, 2)
+                              ? experience?.exp_start_date.substr(5, 2)
                               : null
                           }
                           year={
                             experience?.exp_start_date
-                              ? experience?.exp_start_date.substr(6, 4)
+                              ? experience?.exp_start_date.substr(0, 4)
                               : null
                           }
                           name="exp_start_date"
@@ -395,17 +297,17 @@ const ProfessionalExp = ({
                           name="exp_end_date"
                           day={
                             experience?.exp_end_date && !disableEndDate
-                              ? experience?.exp_end_date.substr(0, 2)
+                              ? experience?.exp_end_date.substr(8, 2)
                               : null
                           }
                           month={
                             experience?.exp_end_date && !disableEndDate
-                              ? experience?.exp_end_date.substr(3, 2)
+                              ? experience?.exp_end_date.substr(5, 2)
                               : null
                           }
                           year={
                             experience?.exp_end_date && !disableEndDate
-                              ? experience?.exp_end_date.substr(6, 4)
+                              ? experience?.exp_end_date.substr(0, 4)
                               : null
                           }
                           selected={

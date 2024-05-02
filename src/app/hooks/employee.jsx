@@ -190,7 +190,6 @@ const getEmployeeCVDetailData = async (baseUrl, employeeid, token) => {
 }
 
 const saveEmployeeCVDetailData = async (baseUrl, employeeid, token, payload) => {
-    debugger
     if (employeeid) {
         const cv = payload.cv;
         const existingCVId = payload.existingCVId
@@ -230,18 +229,17 @@ const saveEmployeeCVDetailData = async (baseUrl, employeeid, token, payload) => 
 const getEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            await axios.get(`${baseUrl}/experience/?search={\"employee_id\":${employeeid}}`, {
+            const response = await axios.get(`${baseUrl}/experience/?search={\"employee_id\":${employeeid}}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then((response) => {
-                if (response.status === 200) {
-                    const employeeData = getProfessionalExperiance(response.data);
-                    console.log(employeeData);
-                    return employeeData;
-                }
-            });
+            })
+            if (response.status === 200) {
+                const employeeData = await getProfessionalExperiance(response.data);
+                console.log(employeeData);
+                return employeeData;
+            }
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
@@ -270,6 +268,24 @@ const saveEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token
                         },
                     });
                 }
+            });
+        } catch (error) {
+            console.error("Error fetching Personal Info data :", error);
+        }
+    }
+    return false;
+}
+
+const deleteEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token, payload) => {
+    if (employeeid && payload && payload.length > 0) {
+        try {
+            payload.map(async (experience) => {
+                await axios.delete(`${baseUrl}/experience/${experience}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                });
             });
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
@@ -516,4 +532,5 @@ export {
     getEmployeeCerficationData,
     saveEmployeeCertificationData,
     getEmployeeVisaDetailsFiles,
+    deleteEmployeeProfessionalExperianceData,
 }

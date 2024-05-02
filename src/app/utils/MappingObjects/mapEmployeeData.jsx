@@ -89,26 +89,21 @@ function getCVDetails(data) {
     return cvDetails;
 }
 
-function getProfessionalExperiance(data) {
+async function getProfessionalExperiance(data) {
     const experience = [];
     if (data && data.length > 0) {
-        data.map((profExperience) => {
-            const professionalExperiance = EmployeeProfessionalExperiance;
-            professionalExperiance.id = profExperience?.id ?? '';
-            professionalExperiance.employee_id = profExperience?.employee_id ?? '';
-            professionalExperiance.exp_organization = profExperience?.exp_organization ?? '';
-            professionalExperiance.exp_designation = profExperience?.exp_designation ?? '';
-            professionalExperiance.exp_letter = profExperience?.exp_letter ?? '';
-            professionalExperiance.exp_start_date = profExperience.exp_start_date ? moment(profExperience.exp_start_date, "DD-MM-YYYY").format(
-                "YYYY-MM-DD"
-            ) : null;
-            professionalExperiance.exp_end_date = profExperience.exp_end_date
-                ? moment(profExperience.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD")
-                : null;
-
-            experience.push(professionalExperiance);
+        await data.forEach((profExperience) => {
+            const professionalExperience = {
+                id: profExperience?.id ?? '',
+                employee_id: profExperience?.employee_id ?? '',
+                exp_organization: profExperience?.exp_organization ?? '',
+                exp_designation: profExperience?.exp_designation ?? '',
+                exp_letter: profExperience?.exp_letter ?? '',
+                exp_start_date: profExperience.exp_start_date ? profExperience.exp_start_date : null,
+                exp_end_date: profExperience.exp_end_date ? profExperience.exp_end_date : null
+            };
+            experience.push(professionalExperience);
         })
-
         return experience;
     }
     return [EmployeeProfessionalExperiance];
@@ -124,7 +119,6 @@ function getAcademicRecord(data) {
     academicRecord.edu_start_date = data?.edu_start_date ? moment(data.edu_start_date).format("DD-MM-YYYY") : '';
     academicRecord.edu_end_date = data?.edu_end_date ? moment(data.edu_end_date).format("DD-MM-YYYY") : '';
     academicRecord.certificate = data.certificate?.document ?? null;
-
     return academicRecord;
 }
 
