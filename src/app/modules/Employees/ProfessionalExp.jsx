@@ -5,6 +5,9 @@ import SubStepsIndicator from "./SubStepsIndicator";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { WiCloudRefresh } from "react-icons/wi";
 import Button from "./Button";
+import { connect } from "react-redux";
+import { getEmployeeProfessionalExperianceData, saveEmployeeProfessionalExperianceData } from '../../hooks/employee';
+import { EmployeeProfessionalExperiance } from '../../utils/Types/Employee'
 
 const ProfessionalExp = ({
   errors,
@@ -12,8 +15,21 @@ const ProfessionalExp = ({
   substep,
   prevstep,
   nextstep,
-  setProfessionalExperianceProps,
+  userProfile,
+  baseUrl, 
+  token,
 }) => {
+  const [experienceSections, setExperienceSections] = useState([EmployeeProfessionalExperiance]);
+
+  useEffect(() => {
+    getEmployeeProfessionalExperianceData(baseUrl, userProfile?.id, token).then(response => {
+      setExperienceSections(response);
+
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
   const getDataFromSessionStorage = (key) => {
     const serializedData = sessionStorage.getItem(key);
     const data = JSON.parse(serializedData);
@@ -26,9 +42,7 @@ const ProfessionalExp = ({
   };
 
   let defaultData = getDataFromSessionStorage("proExp");
-  const [experienceSections, setExperienceSections] = useState(
-    defaultData ? defaultData : [{}]
-  );
+  
 
   const [disableEndDate, setDisableEndDate] = useState(false); // State for Till Date checkbox
 
@@ -70,16 +84,11 @@ const ProfessionalExp = ({
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
     } else {
-      setProfessionalExperianceProps(experienceSections)
+      saveEmployeeProfessionalExperianceData(baseUrl, userProfile?.id, token, experienceSections);
       setErrors({});
       nextstep();
     }
   };
-
-
-  // useEffect(() => {
-  //   setDataInSessionStorage("proExp", experienceSections);
-  // }, [experienceSections]);
 
   return (
     <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
@@ -100,7 +109,7 @@ const ProfessionalExp = ({
                   />
                 )}
                 <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
-                  Professional Experience {index + 1}:
+                  Experience {index + 1}:
                 </h2>
               </div>
 
@@ -396,4 +405,12 @@ const ProfessionalExp = ({
   );
 };
 
-export default ProfessionalExp;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
+
+export default connect(mapStateToProps)(ProfessionalExp);

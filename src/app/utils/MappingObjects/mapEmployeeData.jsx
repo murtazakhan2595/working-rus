@@ -1,16 +1,26 @@
-import { Employee, EmployeePersonalInformation, EmployeeVisaDetails } from '../Types/Employee'
+import {
+    Employee, EmployeePersonalInformation, EmployeeDepartmentInfo, EmployeeVisaDetails, EmployeeAcademicRecord,
+    EmployeeCVDetails,
+    EmployeeProfessionalExperiance,
+    EmployeeBankDetails,
+} from '../Types/Employee'
+import moment from "moment";
 
-export function mapdata(data) {
+function mapEmployeeData(data) {
+    debugger
     const employee = Employee;
-    const personalInfo = getPersonalInfo(data);
     employee.id = data.id;
-    employee.personalInformation = personalInfo;
+    employee.personalInformation = getPersonalInfo(data);
+    employee.visaDetails = getVisaDetails(data)
+    employee.academicRecord = getAcademicRecord(data);
+    employee.cv = getCVDetails(data);
+    employee.professionalExperiance = getProfessionalExperiance(data);
 
+    console.log(employee)
     return employee;
-
 }
 
-export function getPersonalInfo(data) {
+function getPersonalInfo(data) {
     const personalInfo = EmployeePersonalInformation;
     personalInfo.first_name = data.first_name;
     personalInfo.last_name = data.last_name;
@@ -36,7 +46,7 @@ export function getPersonalInfo(data) {
     return personalInfo;
 }
 
-export function getVisaDetails(data) {
+function getVisaDetails(data) {
     const visaDetails = EmployeeVisaDetails;
     visaDetails.passport_number = data.passport_number;
     visaDetails.Passport_Issuance_Country = data.Passport_Issuance_Country;
@@ -63,4 +73,88 @@ export function getVisaDetails(data) {
     visaDetails.place_of_issuance = data.place_of_issuance;
 
     return visaDetails;
+}
+
+function getCVDetails(data) {
+    const cvDetails = EmployeeCVDetails;
+    cvDetails.cv = data.passport_number;
+    cvDetails.cvName = data.Passport_Issuance_Country;
+
+    return cvDetails;
+}
+
+function getProfessionalExperiance(data) {
+    const experience = [];
+    if (data && data.length > 0) {
+        data.map(profExperience => {
+            const professionalExperiance = EmployeeProfessionalExperiance;
+            professionalExperiance.employee_id = profExperience?.id ?? '';
+            professionalExperiance.exp_organization = profExperience?.exp_organization ?? '';
+            professionalExperiance.exp_designation = profExperience?.exp_designation ?? '';
+            professionalExperiance.exp_letter = profExperience?.file ?? '';
+            professionalExperiance.exp_start_date = profExperience.exp_start_date ? moment(profExperience.exp_start_date, "DD-MM-YYYY").format(
+                "YYYY-MM-DD"
+            ) : null;
+            professionalExperiance.exp_end_date = profExperience.exp_end_date
+                ? moment(profExperience.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD")
+                : null;
+
+            experience.push(professionalExperiance);
+        })
+
+        return experience;
+    }
+    return [EmployeeProfessionalExperiance];
+}
+
+function getAcademicRecord(data) {
+    const academicRecord = EmployeeAcademicRecord;
+    academicRecord.employee_id = data.id;
+    academicRecord.education_level = data?.education_level ?? '';
+    academicRecord.program = data?.program ?? '';
+    academicRecord.institute_name = data?.institute_name ?? '';
+    academicRecord.edu_start_date = data?.edu_start_date ?? '';
+    academicRecord.edu_end_date = data?.edu_end_date ?? '';
+    academicRecord.certificate = data?.certificate ?? [];
+
+    return academicRecord;
+}
+
+function getDepartmentInfo(data) {
+    const department = EmployeeDepartmentInfo;
+    department.department_name = data?.department_name ?? '';
+    department.department_position = data?.department_position ?? '';
+    department.direct_report = data?.direct_report ?? '';
+    department.indirect_report = data?.indirect_report ?? '';
+    department.department_manager = data?.department_manager ?? '';
+    department.employee_type = data?.employee_type ?? '';
+    department.employee_status = data?.employee_status ?? '';
+    department.joining_date = data?.joining_date ?? null;
+
+    return department;
+}
+
+function getBankDetails(data) {
+    const bankDetail = EmployeeBankDetails;
+    bankDetail.bank_name = data?.bank_name ?? '';
+    bankDetail.account_title = data?.account_title ?? '';
+    bankDetail.account_number = data?.account_number ?? '';
+    bankDetail.account_iban = data?.account_iban ?? '';
+    bankDetail.branch_address = data?.branch_address ?? '';
+    bankDetail.branch_code = data?.branch_code ?? '';
+    bankDetail.swift_code = data?.swift_code ?? '';
+
+    return bankDetail;
+}
+
+
+export {
+    mapEmployeeData,
+    getVisaDetails,
+    getPersonalInfo,
+    getAcademicRecord,
+    getCVDetails,
+    getProfessionalExperiance,
+    getDepartmentInfo,
+    getBankDetails,
 }

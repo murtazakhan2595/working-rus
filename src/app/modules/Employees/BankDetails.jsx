@@ -2,97 +2,29 @@ import Joi from 'joi';
 import Button from './Button';
 import { useState, useEffect } from 'react';
 
-const bankSchema = Joi.object({
-    bank_name: Joi.string()
-        .regex(/^[a-zA-Z\s]+$/) // Only alphabets and spaces allowed
-        .required()
-        .label("Bank Name")
-        .messages({
-            "string.empty": `Bank Name is required`,
-            "string.pattern.base": `Bank Name must contain only letters and spaces`,
-        }),
-    account_title: Joi.string()
-        .regex(/^[a-zA-Z\s]+$/)
-        .required()
-        .label("Account Title")
-        .messages({
-            "string.empty": `Account Title is required`,
-            "string.pattern.base": `Account Title must contain only letters and spaces`,
-        }),
-    account_number: Joi.string()
-        .regex(/^\d+$/) // Only numbers allowed
-        .min(10) // Minimum length 10 digits
-        .required()
-        .label("Account Number")
-        .messages({
-            "string.empty": `Account Number is required`,
-            "string.pattern.base": `Account Number must contain only numbers`,
-            "string.min": `Account Number must be at least 10 digits long`,
-        }),
-    branch_address: Joi.string()
-        // .min(10) // Minimum length 10 characters
-        .required()
-        .label("Branch Address")
-        .messages({
-            "string.empty": `Branch Address is required`,
-            "string.min": `Branch Address must be at least 10 characters long`,
-        }),
-    branch_code: Joi.string()
-        .regex(/^\d+$/) // Only numbers allowed
-        .min(3) // Minimum length 3 digits
-        .required()
-        .label("Branch Code")
-        .messages({
-            "string.empty": `Branch Code is required`,
-            "string.pattern.base": `Branch Code must contain only numbers`,
-            "string.min": `Branch Code must be at least 3 digits long`,
-        }),
-    swift_code: Joi.string()
-        .alphanum() // Allow alphanumeric characters
-        .min(4) // Assuming a minimum length for Swift code
-        .required()
-        .label("Swift Code")
-        .messages({
-            "string.empty": `Swift Code is required`,
-            "string.alphanum": `Swift Code must contain only letters and numbers`,
-        }),
-});
+import { connect } from "react-redux";
+import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../hooks/employee';
+import { EmployeeBankDetails } from '../../utils/Types/Employee'
+import { validationBankDetailsFormSchema } from '../../utils/FormSchema/employeeFormSchema'
 
+const BankDetails = ({ errors, setErrors, prevstep, nextstep, userProfile, baseUrl, token }) => {
 
-const BankDetails = ({ errors, setErrors, prevstep, nextstep,setBankInfoProps }) => {
-    const getDataFromSessionStorage = (key) => {
-        const serializedData = sessionStorage.getItem(key);
-        const data = JSON.parse(serializedData);
-        return data;
-    };
-    let defaultBankInfo = getDataFromSessionStorage("bankInfo")
-    const intialBankInfo = {
-        bank_name: defaultBankInfo?.bank_name ? defaultBankInfo.bank_name : '',
-        account_title: defaultBankInfo?.account_title ? defaultBankInfo.account_title : '',
-        account_number: defaultBankInfo?.account_number ? defaultBankInfo.account_number : '',
-        account_iban: defaultBankInfo?.account_iban ? defaultBankInfo.account_iban : '',
-        branch_address: defaultBankInfo?.branch_address ? defaultBankInfo.branch_address : '',
-        branch_code: defaultBankInfo?.branch_code ? defaultBankInfo.branch_code : '',
-        swift_code: defaultBankInfo?.swift_code ? defaultBankInfo.swift_code : ''
-    };
-    const [bankInfo, setBankInfo] = useState(intialBankInfo)
-
-    const setDataInSessionStorage = (key, data) => {
-        const serializedData = JSON.stringify(data);
-        sessionStorage.setItem(key, serializedData);
-    };
+    const [bankInfo, setBankInfo] = useState(EmployeeBankDetails)
+    useEffect(() => {
+        getEmployeeBankDetailsData(baseUrl, userProfile?.id, token).then(response => {
+            setBankInfo(response);
+        }).catch(error => {
+            console.log(error);
+        });
+    }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
     const handleChange = (name, value) => {
         setBankInfo({ ...bankInfo, [name]: value })
         setErrors({ ...errors, [name]: null });
     };
 
-    // useEffect(() => {
-    //     setDataInSessionStorage('bankInfo', bankInfo)
-    // }, [bankInfo])
-
     const handleNextStep = () => {
-        const { error } = bankSchema.validate(
+        const { error } = validationBankDetailsFormSchema.validate(
             {
                 bank_name: bankInfo.bank_name,
                 account_title: bankInfo.account_title,
@@ -115,7 +47,13 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep,setBankInfoProps })
             }
             setErrors(validationErrors);
         } else {
-            setBankInfoProps(bankInfo)
+            if (bankInfo && !bankInfo?.account_iban) {
+                delete bankInfo.account_iban;
+            }
+            if (bankInfo && !bankInfo?.swift_code) {
+                delete bankInfo.swift_code;
+            }
+            saveEmployeeBankDetailsData(baseUrl, userProfile?.id, token, bankInfo);
             nextstep();
         }
     };
@@ -210,4 +148,14 @@ const BankDetails = ({ errors, setErrors, prevstep, nextstep,setBankInfoProps })
     )
 }
 
-export default BankDetails
+
+
+const mapStateToProps = (state) => {
+    return {
+        userProfile: state.user.userProfile,
+        token: state.user.token,
+        baseUrl: state.user.baseUrl,
+    };
+};
+
+export default connect(mapStateToProps)(BankDetails);

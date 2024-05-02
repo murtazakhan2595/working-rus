@@ -9,55 +9,9 @@ import CustomSelect from '../UpdateEmployee/customSelect';
 import axios from "axios";
 import { connect } from 'react-redux';
 import { HeadOfDepartment, department, employeeStatus, jobRoles } from '../../../data/Data';
-
-
-const departmentSchema = Joi.object({
-    department_name: Joi.string()
-        .regex(/^[a-zA-Z\s]+$/)
-        .required()
-        .label('Department Name')
-        .messages({
-            "string.empty": `Department Name is required`,
-            "string.pattern.base": `Department Name must only contain letters and spaces`,
-        }),
-    department_position: Joi.string()
-        .regex(/^[a-zA-Z\s]+$/)
-        .required()
-        .label('Position')
-        .messages({
-            "string.empty": `Position is required`,
-            "string.pattern.base": `Position must only contain letters and spaces`,
-        }),
-    employee_status: Joi.string().required().label('Employee status')
-        .messages({
-            "string.empty": `Employee Status is required`,
-        }),
-    employee_type: Joi.string().required().label('Employee type')
-        .messages({
-            "string.empty": `Employee type is required`,
-        }),
-    // direct_report: Joi.string().required().label('Direct Report')
-    //     .messages({
-    //         "string.empty": `Direct Report is required`,
-    //     }),
-    // indirect_report: Joi.string().required().label('Indirect Report'),
-    // indirect_report: Joi.string().when('is_indirect_report_applicable', {
-    //     is: Joi.boolean().valid(true).required(),
-    //     then: Joi.required(),
-    //     otherwise: Joi.optional()
-    // }),
-    department_manager: Joi.string().required().label('Department Manger').messages({
-        "string.empty": `Department Manger is required`,
-    }),
-    joining_date: Joi.string()
-        .regex(/^\d{2}-\d{2}-\d{4}$/) // Matches "DD-MM-YYYY" format
-        .required()
-        .label('Joining Date')
-        .messages({
-            'string.empty': 'Joining Date is required',
-            'string.pattern.base': 'Joining Date must be in "DD-MM-YYYY" format',
-        })
-});
+import { getEmployeeDepartemtInfoData, saveEmployeeDepartemtInfoData } from '../../hooks/employee';
+import { EmployeeDepartmentInfo } from '../../utils/Types/Employee'
+import { validationDepartmentInfoFormSchema } from '../../utils/FormSchema/employeeFormSchema'
 
 function getManagerSelected(managers, managersList) {
     if (managers) {
@@ -79,38 +33,24 @@ function getManagerSelected(managers, managersList) {
 
 }
 
-const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, setDepartmentInfoProps }) => {
+const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
+    const [departmentInfo, setDepartmentInfo] = useState(EmployeeDepartmentInfo)
 
-    const getDataFromSessionStorage = (key) => {
-        const serializedData = sessionStorage.getItem(key);
-        const data = JSON.parse(serializedData);
-        return data;
-    };
-    // const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo")
-    const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo") ?? {};
-    const intialDepartmentInfo = {
-        department_name: defaultDeparmentInfo?.department_name ? defaultDeparmentInfo.department_name : '',
-        department_position: defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
-        direct_report: defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
-        indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
-        // is_indirect_report_applicable: defaultDeparmentInfo?.is_indirect_report_applicable ? defaultDeparmentInfo.is_indirect_report_applicable : false,
-        department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : '',
-        employee_type: defaultDeparmentInfo?.employee_type ? defaultDeparmentInfo.employee_type : '',
-        employee_status: defaultDeparmentInfo?.employee_status ? defaultDeparmentInfo.employee_status : '',
-        joining_date: defaultDeparmentInfo?.joining_date ? defaultDeparmentInfo.joining_date : null,
-    };
-    const [departmentInfo, setDepartmentInfo] = useState(intialDepartmentInfo)
+    useEffect(() => {
+        getEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token).then(response => {
+            setDepartmentInfo(response);
+        }).catch(error => {
+            console.log(error);
+        });
+    }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
-    // useEffect(() => {
-    //     setDataInSessionStorage('departmentInfo', departmentInfo)
-    // }, [departmentInfo])
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${baseUrl}/emp/`, {
+                const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -129,15 +69,13 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
 
     const handleNextStep = async () => {
         setIsLoading(true);
-        const { error } = departmentSchema.validate(
+        const { error } = validationDepartmentInfoFormSchema.validate(
             {
                 department_name: departmentInfo.department_name,
                 department_position: departmentInfo.department_position,
-                // direct_report: departmentInfo.direct_report,
                 department_manager: departmentInfo.department_manager,
                 employee_status: departmentInfo.employee_status,
                 employee_type: departmentInfo.employee_type,
-                // indirect_report: departmentInfo.is_indirect_report_applicable ? departmentInfo.indirect_report : null,
                 joining_date: departmentInfo.joining_date,
             },
             { abortEarly: false }
@@ -150,16 +88,11 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
             });
             setErrors(validationErrors);
         } else {
-            setDepartmentInfoProps(departmentInfo)
+            departmentInfo.is_filled = true;
+            saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
             await submitForm();
             setIsLoading(false);
         }
-    };
-
-
-    const setDataInSessionStorage = (key, data) => {
-        const serializedData = JSON.stringify(data);
-        sessionStorage.setItem(key, serializedData);
     };
 
     const handleChange = (name, value, values) => {

@@ -6,22 +6,26 @@ import Select from "react-select";
 import { visaOptions } from '../../../data/Data';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import { getEmployeeVisaDetailData, saveEmployeeVisaDetailData } from '../../hooks/employee';
+import { EmployeeVisaDetails } from '../../utils/Types/Employee'
+import { connect } from "react-redux";
 
-const VisaDetails = ({ prevstep, nextstep, visaDetailsProps, visaDetailsFilesProps, setVisaDetailsProps, setVisaDetailsFilesProps }) => {
-    const getDataFromSessionStorage = (key) => {
-        const serializedData = sessionStorage.getItem(key);
-        const data = JSON.parse(serializedData);
-        return data;
-    };
+const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDetailsFilesProps, setVisaDetailsFilesProps }) => {
 
-    let storedData = getDataFromSessionStorage("visaDetails");
-    const storedVisaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
-
-
-    let [visaDetails, setVisaDetails] = useState(visaDetailsProps);
-
+    const [visaDetails, setVisaDetails] = useState(EmployeeVisaDetails);
     const [visaDetailsFiles, setVisaDetailsFiles] = useState(visaDetailsFilesProps);
-    const showId = true;
+
+    useEffect(() => {
+        getEmployeeVisaDetailData(baseUrl, userProfile?.id, token).then(responseEmpPersonalInformation => {
+            setVisaDetails(responseEmpPersonalInformation);
+            // setImagePreview(responseEmpPersonalInformation.profile_picture);
+
+        }).catch(error => {
+            console.log(error);
+        });
+    }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
+    console.log(visaDetails);
 
     const handleChange = (name, value) => {
         setVisaDetails({ ...visaDetails, [name]: value });
@@ -69,58 +73,41 @@ const VisaDetails = ({ prevstep, nextstep, visaDetailsProps, visaDetailsFilesPro
 
     // Function to handle next step
     const handleNextStep = () => {
+        debugger
         if (visaDetails.is_passport_applicable) {
             // Check if fields are filled
-            if (visaDetails.passport_number && visaDetails.Passport_Issuance_Country && visaDetails.Passport_Issuance_Date && visaDetails.Passport_Expiry_Date && visaDetailsFiles.passport_copy) {
-                setVisaDetailsProps(visaDetails);
-                setVisaDetailsFilesProps(visaDetailsFiles)
-                nextstep();
-            } else {
+            if (!visaDetails.passport_number || !visaDetails.Passport_Issuance_Country || !visaDetails.Passport_Issuance_Date || !visaDetails.Passport_Expiry_Date || !visaDetailsFiles.passport_copy) {
                 toast.error("Please fill in all required fields!", {
                     position: "top-right",
                     autoClose: 1000,
                 });
+                return false;
             }
-        } else if (visaDetails.is_visa_applicable)
-            if (visaDetails.entry_permit_number && visaDetails.country_of_visa_issuance && visaDetails.uid_number && visaDetails.visa_type && visaDetails.visa_issuance_date && visaDetails.visa_expiry_date && visaDetails.visa_duration && visaDetails.visa_country_entry_date && visaDetailsFiles.enter_permit && visaDetailsFiles.visa_page && visaDetailsFiles.medical && visaDetailsFiles.id_application) {
-                setVisaDetailsProps(visaDetails);
-                setVisaDetailsFilesProps(visaDetailsFiles)
-                nextstep();
-            } else {
+        } else if (visaDetails.is_visa_applicable) {
+            if (!visaDetails.entry_permit_number || !visaDetails.country_of_visa_issuance || !visaDetails.uid_number || !visaDetails.visa_type || !visaDetails.visa_issuance_date || !visaDetails.visa_expiry_date || !visaDetails.visa_duration || !visaDetails.visa_country_entry_date || !visaDetailsFiles.enter_permit || !visaDetailsFiles.visa_page || !visaDetailsFiles.medical || !visaDetailsFiles.id_application) {
                 toast.error("Please fill in all required fields!", {
                     position: "top-right",
                     autoClose: 1000,
                 });
+                return false;
             }
-
+        }
         else if (visaDetails.is_insurance_applicable) {
-            if (visaDetails.dha_id && visaDetails.card_number && visaDetails.insurance_policy && visaDetails.insurance_company && visaDetails.insurance_active_date && visaDetails.insurance_expiry_date && visaDetailsFiles.insurance_card) {
-                setVisaDetailsProps(visaDetails);
-                setVisaDetailsFilesProps(visaDetailsFiles)
-                nextstep();
-            } else {
+            if (!visaDetails.dha_id || !visaDetails.card_number || !visaDetails.insurance_policy || !visaDetails.insurance_company || !visaDetails.insurance_active_date || !visaDetails.insurance_expiry_date || !visaDetailsFiles.insurance_card) {
                 toast.error("Please fill in all required fields!", {
                     position: "top-right",
                     autoClose: 1000,
                 });
+                return false;
             }
-        }
+        } else if (!visaDetails.living_country_id_no || !visaDetails.place_of_issuance || !visaDetails.id_issuance_date || !visaDetails.id_expiry_date || !visaDetailsFiles.id_front || !visaDetailsFiles.id_back) {
+            toast.error("Please fill all ID Details fields!", {
+                position: "top-right",
+                autoClose: 1000,
+            });
 
-        else if (showId) {
-            if (visaDetails.living_country_id_no && visaDetails.place_of_issuance && visaDetails.id_issuance_date && visaDetails.id_expiry_date && visaDetailsFiles.id_front && visaDetailsFiles.id_back) {
-                setVisaDetailsProps(visaDetails);
-                setVisaDetailsFilesProps(visaDetailsFiles)
-                nextstep();
-            } else {
-                toast.error("Please fill all ID Details fields!", {
-                    position: "top-right",
-                    autoClose: 1000,
-                });
-            }
-        }
-
-        else {
-            setVisaDetailsProps(visaDetails);
+        } else {
+            saveEmployeeVisaDetailData(baseUrl, userProfile?.id, token, visaDetails);
             setVisaDetailsFilesProps(visaDetailsFiles)
             nextstep();
         }
@@ -625,5 +612,12 @@ const VisaDetails = ({ prevstep, nextstep, visaDetailsProps, visaDetailsFilesPro
         </div>
     );
 }
+const mapStateToProps = (state) => {
+    return {
+        userProfile: state.user.userProfile,
+        token: state.user.token,
+        baseUrl: state.user.baseUrl,
+    };
+};
 
-export default VisaDetails;
+export default connect(mapStateToProps)(VisaDetails);

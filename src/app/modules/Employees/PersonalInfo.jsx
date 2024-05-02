@@ -2,123 +2,34 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import Datepicker from "../Dashboard/Datepicker";
 import upload from "../../../assets/images/upload.png";
-import Joi from "joi";
 import Button from "./Button";
 import { getAllCountries } from 'countries-and-timezones';
 import Select from "react-select";
 import { countryCodes } from "../../../data/CountryCode";
+import { connect } from "react-redux";
+import { getEmployeePersonalInfoData, saveEmployeePersonalInfoData } from '../../hooks/employee';
+import { EmployeePersonalInformation } from '../../utils/Types/Employee'
+import { validationPersonalInfoFormSchema } from '../../utils/FormSchema/employeeFormSchema'
 
-const validationSchema = Joi.object({
-  first_name: Joi.string().min(3).max(40).required().label("First Name"),
-  last_name: Joi.string().min(3).max(40).required().label("Last Name"),
-  father_name: Joi.string().min(3).max(40).required().label("Father Name"),
-  mother_name: Joi.string().min(3).max(40).required().label("Mother Name"),
-  country_code: Joi.string().max(6).required().label("Country Code"),
-  mobile_no: Joi.string().required().label("Phone Number"),
-  date_of_birth: Joi.string().required().label("DOB"),
-  marital_status: Joi.string().min(3).max(20).required().label("Marital Status"),
-  nationality: Joi.string().min(3).max(20).required().label("Nationality"),
-  email: Joi.string()
-    .email({ tlds: { allow: false } })
-    .required()
-    .label("Personal Email"),
-  work_email: Joi.string()
-    .email({ tlds: { allow: false } })
-    .required()
-    .label("Work Email"),
-  current_address: Joi.string().required().label("Current Address"),
-  residential_address: Joi.string().required().label("Permanent Address"),
-  nic: Joi.string().required().label("NIC"),
-  emergency_first_name: Joi.string()
-    .min(3)
-    .max(40)
-    .required()
-    .label("First Name"),
-  emergency_last_name: Joi.string()
-    .min(3)
-    .max(40)
-    .required()
-    .label("Last Name"),
-  emergency_country_code: Joi.string()
-    .pattern(/^\+\d{1,4}$/) // Assuming country codes start with '+' followed by 1 to 4 digits
-    .required()
-    .label("Country Code")
-    .messages({
-      "string.empty": `Country Code is required`,
-      "string.pattern.base": `Country Code must be a valid country code`,
-    }),
-  emergency_phone_no: Joi.string()
-    .pattern(/^\d{8,15}$/) // Assuming phone numbers are between 10 and 15 digits long
-    .required()
-    .label("Emergency Phone Number")
-    .messages({
-      "string.empty": `Emergency Phone Number is required`,
-      "string.pattern.base": `Emergency Phone Number must be a valid phone number`,
-    }),
-  emergency_relation: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
-    .required()
-    .label("Relation")
-    .messages({
-      "string.empty": `Emergency Relation is required`,
-      "string.pattern.base": `Emergency Relation must only contain letters and spaces`,
-    }),
-});
+const PersonalInfo = ({ nextstep, errors, setErrors, userProfile, baseUrl, token }) => {
 
-const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProfilePhotoProps }) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
+  const [personalInfo, setPersonalInfo] = useState(EmployeePersonalInformation);
+  const [imagePreview, setImagePreview] = useState(EmployeePersonalInformation.profile_picture);
 
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
-  let storedData = getDataFromSessionStorage("personalInfo");
-  let [personalInfo, setPersonalInfo] = useState({
-    first_name: storedData?.first_name ? storedData.first_name : "",
-    last_name: storedData?.last_name ? storedData.last_name : "",
-    father_name: storedData?.father_name ? storedData.father_name : "",
-    mother_name: storedData?.mother_name ? storedData.mother_name : "",
-    country_code: storedData?.country_code ? storedData.country_code : "",
-    mobile_no: storedData?.mobile_no ? storedData.mobile_no : "",
-    date_of_birth: storedData?.date_of_birth ? storedData.date_of_birth : "",
-    marital_status: storedData?.marital_status ? storedData.marital_status : "",
-    nationality: storedData?.nationality ? storedData.nationality : "",
-    email: storedData?.email ? storedData.email : "",
-    work_email: storedData?.work_email ? storedData.work_email : "",
-    current_address: storedData?.current_address
-      ? storedData.current_address
-      : "",
-    residential_address: storedData?.residential_address
-      ? storedData.residential_address
-      : "",
-    nic: storedData?.nic ? storedData.nic : "",
-    emergency_first_name: storedData?.emergency_first_name
-      ? storedData.emergency_first_name
-      : "",
-    emergency_last_name: storedData?.emergency_last_name
-      ? storedData.emergency_last_name
-      : "",
-    emergency_country_code: storedData?.emergency_country_code
-      ? storedData.emergency_country_code
-      : "",
-    emergency_phone_no: storedData?.emergency_phone_no
-      ? storedData.emergency_phone_no
-      : "",
-    emergency_relation: storedData?.emergency_relation ? storedData.emergency_relation : "",
-  });
+  useEffect(() => {
+    getEmployeePersonalInfoData(baseUrl, userProfile?.id, token).then(response => {
+      setPersonalInfo(response);
+      setImagePreview(response.profile_picture);
+
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
   const handleChange = (name, value) => {
     setPersonalInfo({ ...personalInfo, [name]: value });
     setErrors({ ...errors, [name]: null });
   };
-
-  const [imagePreview, setImagePreview] = useState(
-    getDataFromSessionStorage("profilePhoto")
-  );
 
   const handleImageUpload = (e) => {
     const selectedFile = e.target.files[0];
@@ -151,11 +62,12 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
   };
 
   const handleNextStep = () => {
-    let checkData = personalInfo;
-    const copyCheckData = { ...checkData };
+    const personalInfrmation = personalInfo;
+    delete personalInfrmation.profile_picture;
+    const copyCheckData = { ...personalInfrmation };
     const removePassportValidity = "passport_number";
     delete copyCheckData[removePassportValidity];
-    const { error } = validationSchema.validate(copyCheckData, {
+    const { error } = validationPersonalInfoFormSchema.validate(copyCheckData, {
       abortEarly: false,
     });
     if (error) {
@@ -168,8 +80,11 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
       const imageError = { image: "Please upload an image." };
       setErrors(imageError);
     } else {
-      setPersonalInfoProps(personalInfo);
-      setProfilePhotoProps(imagePreview)
+      personalInfrmation.profile_picture = imagePreview;
+      if (personalInfo && !personalInfo?.passport) {
+        delete personalInfo.passport_number;
+      }
+      saveEmployeePersonalInfoData(baseUrl, userProfile?.id, token, personalInfrmation);
       setErrors({});
       nextstep();
     }
@@ -775,7 +690,7 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
             </div>
           </div>
         </div>
-        <div className="mt-6 lg:mt-10 md:mt-0 mb-40">
+        <div className="mt-6 lg:mt-10 md:mt-0 mb-40 mt-3">
           <Button onClick={handleNextStep} text={"Next"} />
         </div>
       </div>
@@ -783,4 +698,13 @@ const PersonalInfo = ({ nextstep, errors, setErrors,setPersonalInfoProps,setProf
   );
 };
 
-export default PersonalInfo;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
+
+export default connect(mapStateToProps)(PersonalInfo);
+

@@ -1,4 +1,4 @@
-import {useEffect} from "react"
+import { useEffect } from "react"
 import moment from "moment";
 import React, { useState } from "react";
 import Datepicker from "../Dashboard/Datepicker";
@@ -8,50 +8,41 @@ import { AiOutlineCloseCircle } from "react-icons/ai";
 import Button from "./Button";
 import { WiCloudRefresh } from "react-icons/wi";
 
+import { connect } from "react-redux";
+import { saveEmployeeAcademicRecordData, getEmployeeAcademicRecordData } from '../../hooks/employee';
+import { EmployeeAcademicRecord } from '../../utils/Types/Employee'
+import { validationAcademicRecordSchema } from '../../utils/FormSchema/employeeFormSchema'
+
+
 const academicOptions = [
   { value: "Intermediate", label: "Intermediate" },
   { value: "Bachelor", label: "Bachelor" },
   { value: "Master", label: "Master" },
 ];
 
-const academicSchema = Joi.object({
-  education_level: Joi.string().required().label("Education Level"),
-  program: Joi.string().required().label("Program"),
-  institute_name: Joi.string().required().label("Institute Name"),
-  edu_start_date: Joi.string().required().label("Start Date"),
-  edu_end_date: Joi.string().required().label("End Date"),
-});
 
-const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfoProps,setCertificationsProps }) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
-  let defaultData = getDataFromSessionStorage("academicInfo")
-  let defaultCertifications = getDataFromSessionStorage("certifications")
-  const intialAcadmicRecords = {
-    education_level: defaultData?.education_level ? defaultData.education_level : "",
-    program: defaultData?.program ? defaultData.program : "",
-    institute_name: defaultData?.institute_name ? defaultData.institute_name : "",
-    edu_start_date: defaultData?.edu_start_date ? defaultData.edu_start_date : "",
-    edu_end_date: defaultData?.edu_end_date ? defaultData.edu_end_date : "",
-    certificate: defaultData?.certificate ? defaultData.certificate : {},
-  };
-  const [academicInfo, setAcademicInfo] = useState(intialAcadmicRecords);
-  const [certificationSections, setCertificationSections] = useState(
-    defaultCertifications? defaultCertifications : [{}]);
-    const [cerErrors, setCerErrors] = useState({});
+const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, baseUrl, token }) => {
+
+  const [academicInfo, setAcademicInfo] = useState(EmployeeAcademicRecord);
+
+  const [certificationSections, setCertificationSections] = useState(EmployeeAcademicRecord.certificate);
+  useEffect(() => {
+    getEmployeeAcademicRecordData(baseUrl, userProfile?.id, token).then(response => {
+      setAcademicInfo(response);
+      setCertificationSections(response.certificate);
+
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
+  const [cerErrors, setCerErrors] = useState({});
 
 
   const addCertificationSection = () => {
     setCertificationSections([...certificationSections, {}]);
   };
 
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
   // Handle file input change
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -76,15 +67,11 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleChange("edu_start_date", formattedDate);
   };
-  
+
   const handleEndDate = (date) => {
     const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
     handleChange("edu_end_date", formattedDate);
   };
-
-  // useEffect(() => {
-  //   setDataInSessionStorage('academicInfo',academicInfo)
-  // }, [academicInfo])
 
   const handleNextStep = () => {
     const fieldErrors = {};
@@ -101,12 +88,10 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
       if (!certification.expiry_date) {
         fieldErrors[`expiry_date_${i}`] = "Expiry Date is required.";
       }
-      // if (!certification.certification_body?.hasOwnProperty("name")) {
-      //   fieldErrors[`certification_body_${i}`] =
-      //     "Certification Body is required.";
-      // }
+      
     }
-    const { error } = academicSchema.validate(
+
+    const { error } = validationAcademicRecordSchema.validate(
       {
         education_level: academicInfo.education_level,
         program: academicInfo.program,
@@ -119,16 +104,10 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
 
     const validationErrors = {};
     if (Object.keys(fieldErrors).length > 0 || error || !academicInfo.certificate?.hasOwnProperty("name")) {
-      // if(!academicInfo.certificate?.hasOwnProperty("name")){
-      //     setErrors({...errors , certificate : "Certification is required"});
-      //   }
       if (error) {
         error.details.forEach((detail) => {
           validationErrors[detail.path[0]] = detail.message;
         });
-        // if (!academicInfo.certificate?.hasOwnProperty("name")) {
-        //   validationErrors.certificate = "Certification is required";
-        // }
         setErrors(validationErrors);
       }
       if (Object.keys(fieldErrors).length > 0) {
@@ -138,8 +117,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
       return;
     }
     else {
-      setAcademicInfoProps(academicInfo)
-      setCertificationsProps(certificationSections)
+      saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo ,certificationSections);
       nextstep();
     }
   };
@@ -155,10 +133,6 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
       setCerErrors(updatedErrors);
     }
   };
-
-  // useEffect(() => {
-  //   setDataInSessionStorage('certifications',certificationSections)
-  // }, [certificationSections])
 
   return (
     <>
@@ -306,7 +280,6 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
                       <WiCloudRefresh
                         onClick={() => {
                           setAcademicInfo({ ...academicInfo, certificate: {} });
-                          setDataInSessionStorage("academicInfo", academicInfo);
                         }}
                         className="text-blue-600 text-xl"
                       />
@@ -350,189 +323,189 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
 
 
         {certificationSections.map((experience, index) => (
-            <div key={index}>
-              <div className="flex items-center">
-                  <AiOutlineCloseCircle
-                  className="text-red-500 mr-1 text-lg mb-2 lg:mb-4 mt-2"
-                    onClick={() => {
-                      let copySections = [...certificationSections];
-                      copySections.splice(index, 1);
-                      setCertificationSections(copySections);
+          <div key={index}>
+            <div className="flex items-center">
+              <AiOutlineCloseCircle
+                className="text-red-500 mr-1 text-lg mb-2 lg:mb-4 mt-2"
+                onClick={() => {
+                  let copySections = [...certificationSections];
+                  copySections.splice(index, 1);
+                  setCertificationSections(copySections);
+                }}
+              />
+              <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
+                Professional Certification {index + 1}:
+              </h2>
+            </div>
+
+            <div className="flex flex-col">
+              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    htmlFor="certification_name"
+                    className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
+                  >
+                    Certification Name:
+                  </label>
+                  <input
+                    type="text"
+                    name="certification_name"
+                    placeholder="Certification Name"
+                    value={experience.certification_name}
+                    onChange={(e) => {
+                      const updatedSections = [...certificationSections];
+                      updatedSections[index].certification_name = e.target.value;
+                      setCertificationSections(updatedSections);
+                      clearCerError(`certification_name_${index}`);
+                    }}
+                    className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
+                  />
+                  {cerErrors[`certification_name_${index}`] && (
+                    <div className="text-red-500 text-sm">
+                      {cerErrors[`certification_name_${index}`]}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12 md:w-[55%]">
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    htmlFor="exp_start_date"
+                    className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
+                  >
+                    Completion Date:
+                  </label>
+                  <Datepicker
+                    day={experience?.completion_date ? experience?.completion_date.substr(0, 2) : null}
+                    month={experience?.completion_date ? experience?.completion_date.substr(3, 2) : null}
+                    year={experience?.completion_date ? experience?.completion_date.substr(6, 4) : null}
+                    name="completion_date"
+                    selected={moment(
+                      experience.completion_date,
+                      "DD-MM-YYYY"
+                    ).toDate()}
+                    onChange={(date) => {
+                      const formattedDate = moment(date)
+                        .format("DD-MM-YYYY")
+                        .toLowerCase();
+                      const updatedSections = [...certificationSections];
+                      updatedSections[index].completion_date = formattedDate;
+                      setCertificationSections(updatedSections);
+                      clearCerError(`completion_date_${index}`);
                     }}
                   />
-                <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
-                  Professional Certification {index + 1}:
-                </h2>
+                  {cerErrors[`completion_date_${index}`] && (
+                    <div className="text-red-500 text-sm">
+                      {cerErrors[`completion_date_${index}`]}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    htmlFor="exp_end_date"
+                    className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
+                  >
+                    Expiry Date:
+                  </label>
+                  <Datepicker
+                    name="expiry_date"
+                    day={experience?.expiry_date ? experience?.expiry_date.substr(0, 2) : null}
+                    month={experience?.expiry_date ? experience?.expiry_date.substr(3, 2) : null}
+                    year={experience?.expiry_date ? experience?.expiry_date.substr(6, 4) : null}
+                    selected={moment(
+                      experience.expiry_date,
+                      "DD-MM-YYYY"
+                    ).toDate()}
+                    onChange={(date) => {
+                      const formattedDate = moment(date)
+                        .format("DD-MM-YYYY")
+                        .toLowerCase();
+                      const updatedSections = [...certificationSections];
+                      updatedSections[index].expiry_date = formattedDate;
+                      setCertificationSections(updatedSections);
+                      clearCerError(`expiry_date_${index}`);
+                    }}
+                  />
+                  {cerErrors[`expiry_date_${index}`] && (
+                    <div className="text-red-500 text-sm">
+                      {cerErrors[`expiry_date_${index}`]}
+                    </div>
+                  )}
+                </div>
               </div>
-
-              <div className="flex flex-col">
-                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                  <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                    <label
-                      htmlFor="certification_name"
-                      className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
-                    >
-                      Certification Name:
-                    </label>
-                    <input
-                      type="text"
-                      name="certification_name"
-                      placeholder="Certification Name"
-                      value={experience.certification_name}
-                      onChange={(e) => {
-                        const updatedSections = [...certificationSections];
-                        updatedSections[index].certification_name = e.target.value;
-                        setCertificationSections(updatedSections);
-                        clearCerError(`certification_name_${index}`);
-                      }}
-                      className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
-                    />
-                    {cerErrors[`certification_name_${index}`] && (
-                      <div className="text-red-500 text-sm">
-                        {cerErrors[`certification_name_${index}`]}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12 md:w-[55%]">
-                  <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                    <label
-                      htmlFor="exp_start_date"
-                      className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
-                    >
-                      Completion Date:
-                    </label>
-                    <Datepicker
-                      day={experience?.completion_date  ? experience?.completion_date.substr(0, 2) : null}
-                      month={experience?.completion_date  ? experience?.completion_date.substr(3, 2) : null}
-                      year={experience?.completion_date  ? experience?.completion_date.substr(6, 4) : null}
-                      name="completion_date"
-                      selected={moment(
-                        experience.completion_date,
-                        "DD-MM-YYYY"
-                      ).toDate()}
-                      onChange={(date) => {
-                        const formattedDate = moment(date)
-                          .format("DD-MM-YYYY")
-                          .toLowerCase();
-                        const updatedSections = [...certificationSections];
-                        updatedSections[index].completion_date = formattedDate;
-                        setCertificationSections(updatedSections);
-                        clearCerError(`completion_date_${index}`);
-                      }}
-                    />
-                    {cerErrors[`completion_date_${index}`] && (
-                      <div className="text-red-500 text-sm">
-                        {cerErrors[`completion_date_${index}`]}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                    <label
-                      htmlFor="exp_end_date"
-                      className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
-                    >
-                      Expiry Date:
-                    </label>
-                    <Datepicker
-                      name="expiry_date"
-                      day={experience?.expiry_date ? experience?.expiry_date.substr(0, 2) : null}
-                      month={experience?.expiry_date ? experience?.expiry_date.substr(3, 2) : null}
-                      year={experience?.expiry_date ? experience?.expiry_date.substr(6, 4) : null}
-                      selected={moment(
-                        experience.expiry_date,
-                        "DD-MM-YYYY"
-                      ).toDate()}
-                      onChange={(date) => {
-                        const formattedDate = moment(date)
-                          .format("DD-MM-YYYY")
-                          .toLowerCase();
-                        const updatedSections = [...certificationSections];
-                        updatedSections[index].expiry_date = formattedDate;
-                        setCertificationSections(updatedSections);
-                        clearCerError(`expiry_date_${index}`);
-                      }}
-                    />
-                    {cerErrors[`expiry_date_${index}`] && (
-                      <div className="text-red-500 text-sm">
-                        {cerErrors[`expiry_date_${index}`]}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                  <div className="flex flex-col mt-2 md:mt-4">
-                    <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
+              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                <div className="flex flex-col mt-2 md:mt-4">
+                  <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
                     Certification Body:
-                    </h2>
-                    {experience.certification_body ? (
-                      <div className="flex gap-1  items-center">
-                        <div className="opacity-50">{experience.certification_body.name}</div>
-                        <WiCloudRefresh
-                          onClick={() => {
-                            const updatedSections = [...certificationSections];
-                            updatedSections[index].certification_body = "";
-                            setCertificationSections(updatedSections);
-                          }}
-                          className="text-blue-600 text-xl"
-                        />
-                      </div>
-                    ) : (
-                      <label
-                        htmlFor="file-upload"
-                        className="cursor-pointer opacity-70 rounded-lg text-input"
-                      >
-                        <input
-                          id="file-upload"
-                          type="file"
-                          name="certification_body"
-                          accept=".pdf"
-                          max-size="104857600"
-                          onChange={(e) => {
-                            let file = e.target.files[0];
-                            const updatedSections = [...certificationSections];
-                            const fileData = { name: file.name };
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (e) => {
-                                let i = index;
-                                updatedSections[i].certification_body = {
-                                  name: fileData.name,
-                                  file: e.target.result,
-                                };
-                                setCertificationSections(updatedSections);
+                  </h2>
+                  {experience.certification_body ? (
+                    <div className="flex gap-1  items-center">
+                      <div className="opacity-50">{experience.certification_body.name}</div>
+                      <WiCloudRefresh
+                        onClick={() => {
+                          const updatedSections = [...certificationSections];
+                          updatedSections[index].certification_body = "";
+                          setCertificationSections(updatedSections);
+                        }}
+                        className="text-blue-600 text-xl"
+                      />
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="file-upload"
+                      className="cursor-pointer opacity-70 rounded-lg text-input"
+                    >
+                      <input
+                        id="file-upload"
+                        type="file"
+                        name="certification_body"
+                        accept=".pdf"
+                        max-size="104857600"
+                        onChange={(e) => {
+                          let file = e.target.files[0];
+                          const updatedSections = [...certificationSections];
+                          const fileData = { name: file.name };
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                              let i = index;
+                              updatedSections[i].certification_body = {
+                                name: fileData.name,
+                                file: e.target.result,
                               };
-                              reader.readAsDataURL(file);
-                              setErrors(`certification_body_${index}`)
-                            }
-                          }}
-                        />
-                      </label>
-                    )}
-                    <br />
-                    {cerErrors[`certification_body_${index}`] && (
-                      <div className="text-red-500 text-sm">
-                        {cerErrors[`certification_body_${index}`]}
-                      </div>
-                    )}
-                    <small className="text-gray-400">
-                      Upload a pdf no larger than 100 MB.
-                    </small>
-                  </div>
+                              setCertificationSections(updatedSections);
+                            };
+                            reader.readAsDataURL(file);
+                            setErrors(`certification_body_${index}`)
+                          }
+                        }}
+                      />
+                    </label>
+                  )}
+                  <br />
+                  {cerErrors[`certification_body_${index}`] && (
+                    <div className="text-red-500 text-sm">
+                      {cerErrors[`certification_body_${index}`]}
+                    </div>
+                  )}
+                  <small className="text-gray-400">
+                    Upload a pdf no larger than 100 MB.
+                  </small>
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+        ))}
 
 
 
 
         <button
-            onClick={addCertificationSection}
-            className="mt-4 mb-3 rounded-lg w-52 border block border-[#25A8E0] cursor-pointer text-[#555657] py-1"
-          >
-            <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add New Certification
-          </button>
+          onClick={addCertificationSection}
+          className="mt-4 mb-3 rounded-lg w-52 border block border-[#25A8E0] cursor-pointer text-[#555657] py-1"
+        >
+          <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add New Certification
+        </button>
         <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40 lg:mb-40">
           <Button onClick={prevstep} text={"Previous"} />
           <Button onClick={handleNextStep} text={"Next"} />
@@ -542,4 +515,14 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep,setAcademicInfo
   );
 };
 
-export default AcademicRecords;
+
+
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
+
+export default connect(mapStateToProps)(AcademicRecords);

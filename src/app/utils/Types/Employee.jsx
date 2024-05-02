@@ -1,8 +1,3 @@
-const Employee = {
-    id: null,
-    personalInformation: null,
-}
-
 
 const EmployeePersonalInformation = {
     first_name: null,
@@ -19,6 +14,7 @@ const EmployeePersonalInformation = {
     current_address: null,
     residential_address: null,
     nic: null,
+    emergency_first_name: null,
     emergency_last_name: null,
     emergency_country_code: null,
     emergency_phone_no: null,
@@ -54,4 +50,65 @@ const EmployeeVisaDetails = {
 
 }
 
-export { Employee, EmployeePersonalInformation, EmployeeVisaDetails }
+const EmployeeCVDetails = {
+    cv: null,
+    cvName: null,
+}
+
+const EmployeeProfessionalExperiance = {
+    employee_id: null,
+    exp_organization: null,
+    exp_designation: null,
+    exp_letter: null,
+    exp_start_date: null,
+    exp_end_date: null,
+}
+
+const EmployeeAcademicRecord = {
+    employee_id: null,
+    education_level: null,
+    program: null,
+    institute_name: null,
+    edu_start_date: null,
+    edu_end_date: null,
+    certificate: [{}],
+}
+
+const EmployeeDepartmentInfo = {
+    department_name: null,
+    department_position: null,
+    direct_report: null,
+    indirect_report: null,
+    department_manager: null,
+    employee_type: null,
+    employee_status: null,
+    joining_date: null,
+}
+
+const EmployeeBankDetails = {
+    bank_name: null,
+    account_title: null,
+    account_number: null,
+    account_iban: null,
+    branch_address: null,
+    branch_code: null,
+    swift_code: null,
+}
+
+const Employee = {
+    id: null,
+    personalInformation: EmployeePersonalInformation,
+    visaDetails: EmployeeVisaDetails,
+    academicRecord: EmployeeAcademicRecord,
+    cv: EmployeeCVDetails,
+    professionalExperiance: [EmployeeProfessionalExperiance],
+    department: EmployeeDepartmentInfo,
+    bankDetails:EmployeeBankDetails,
+}
+
+export {
+    Employee, EmployeePersonalInformation, EmployeeVisaDetails, EmployeeAcademicRecord, EmployeeCVDetails,
+    EmployeeProfessionalExperiance,
+    EmployeeDepartmentInfo,
+    EmployeeBankDetails,
+}
