@@ -415,7 +415,7 @@ const getEmployeeCerficationData = async (baseUrl, employeeid, token) => {
 }
 
 const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payloadAttachment) => {
-    if (employeeid) {
+    if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
         try {
             payloadAttachment.map(async (certification) => {
                 certification.employee_id = employeeid
