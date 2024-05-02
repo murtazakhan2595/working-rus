@@ -95,6 +95,7 @@ const EmployeeDepartmentInfo = {
     employee_type: null,
     employee_status: null,
     joining_date: null,
+    is_indirect_report_applicable:false,
 }
 
 const EmployeeBankDetails = {

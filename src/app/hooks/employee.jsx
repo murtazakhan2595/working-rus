@@ -453,7 +453,7 @@ const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payload
 const getEmployeeDepartemtInfoData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            await axios.get(`${baseUrl}/employeeInformationlist/${employeeid}`, {
+            await axios.get(`${baseUrl}/employeeDepartmentlist/${employeeid}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",

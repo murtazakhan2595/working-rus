@@ -152,6 +152,7 @@ function getDepartmentInfo(data) {
     department.employee_type = data?.employee_type ?? '';
     department.employee_status = data?.employee_status ?? '';
     department.joining_date = data?.joining_date ?? null;
+    department.is_indirect_report_applicable=data.indirect_report ? true : false;
 
     return department;
 }
