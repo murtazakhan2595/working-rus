@@ -6,6 +6,7 @@ module.exports = {
     fontFamily: {
       montserrat: ["Montserrat", "sans-serif"],
       sfpro: ["SF Pro Display", "sans-serif"],
+      lato: ['Lato']
     },
     extend: {
       boxShadow: {
@@ -14,10 +15,14 @@ module.exports = {
       textColor: {
         baseBlue: "#283B91",
         input: "#555657",
+        baseGray: "#5C5E64"
       },
       backgroundColor: {
         baseBlue: "#283B91",
       },
+      borderColor: {
+        baseGray: "#5C5E64"
+      }
     },
     screens: {
       xs: "300px",

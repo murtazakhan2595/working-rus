@@ -46,6 +46,8 @@ import LeaveBalanceHR from "./app/modules/LeaveApplication/LeaveBalanceHR.jsx";
 import LeaveApplicationListManager from "./app/modules/LeaveApplication/LeaveApplicationListManager.jsx";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import MyDtr from "./app/modules/DTR/MyDtr.jsx";
+import CreateTask from "./app/modules/DTR/CreateTask.jsx";
 
 // function App({
 //   setUserProfile,
@@ -268,6 +270,14 @@ function App() {
                         element={
                           <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
                         }
+                      />
+                      <Route
+                        path="/my-dtr"
+                        element={<MyDtr />}
+                      />
+                      <Route
+                        path="/create-task"
+                        element={<CreateTask />}
                       />
                     </>
                   )}
