@@ -126,6 +126,7 @@ const saveEmployeeVisaDetailData = async (baseUrl, employeeid, token, visaDetail
         "Content-Type": "application/json",
     };
     if (employeeid) {
+        visaDetail.employee_id = employeeid;
         try {
             if (visaDetail.id) {
                 await axios.patch(`${baseUrl}/employeevisadetail/${visaDetail.id}`, visaDetail, { headers })
@@ -136,28 +137,31 @@ const saveEmployeeVisaDetailData = async (baseUrl, employeeid, token, visaDetail
             for (const key in visaDetailsFiles) {
                 if (visaDetailsFiles.hasOwnProperty(key)) {
                     const file = visaDetailsFiles[key];
-                    if (file?.id) {
-                        await axios.patch(`${baseUrl}/attachment/${file?.id}`, {
-                            employee_id: employeeid,
-                            name: file.name,
-                            description: `${file.name} file`,
-                            document: {
-                                name: file.document.name,
-                                data: file.document.data,
-                            },
-                        }, { headers });
-                    } else {
-                        // Otherwise, post a new attachment
-                        await axios.post(`${baseUrl}/attachment/`, {
-                            employee_id: employeeid,
-                            name: file.name,
-                            description: `${file.name} file`,
-                            document: file,
-                        }, { headers });
+                    if (file) {
+                        if (file?.id) {
+                            await axios.patch(`${baseUrl}/attachment/${file?.id}`, {
+                                employee_id: employeeid,
+                                name: key,
+                                description: `${file.name} file`,
+                                document: {
+                                    name: file.document.name,
+                                    data: file.document.data,
+                                },
+                            }, { headers });
+                        } else {
+                            // Otherwise, post a new attachment
+                            await axios.post(`${baseUrl}/attachment/`, {
+                                employee_id: employeeid,
+                                name: key,
+                                description: `${file.name} file`,
+                                document: file,
+                            }, { headers });
+                        }
                     }
 
                 }
             }
+            return true;
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);

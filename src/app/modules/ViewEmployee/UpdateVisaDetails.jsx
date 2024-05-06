@@ -5,7 +5,6 @@ import { getAllCountries } from 'countries-and-timezones';
 import Select from "react-select";
 import { visaOptions } from '../../../data/Data';
 import moment from 'moment';
-import axios from "axios";
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import CustomLoader from '../../../common/CustomLoader';
@@ -15,7 +14,7 @@ import { RxCross2 } from 'react-icons/rx';
 import { downloadAttachment } from '../../../utils/fileUtils';
 import { LuExternalLink } from "react-icons/lu";
 import Tooltip from '@mui/material/Tooltip';
-import { downloadFile, downloadFiles } from '../../../utils/downUtils';
+import { downloadFiles } from '../../../utils/downUtils';
 import { BsDownload } from "react-icons/bs";
 import { getEmployeeVisaDetailData, saveEmployeeVisaDetailData, getEmployeeVisaDetailsFiles } from '../../hooks/employee';
 import { EmployeeVisaDetails } from '../../utils/Types/Employee'
@@ -84,7 +83,6 @@ const UpdateVisaDetails = ({ prevstep,
       })
     )
       .then((fileContents) => {
-        debugger
         const updatedFiles = { ...visaDetailsFiles };
         updatedFiles[name] = fileContents && fileContents.length > 0 ? fileContents[0]: { };
         setVisaDetailsFiles(updatedFiles);
@@ -299,8 +297,8 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadAttachment(
-                      visaDetailsFiles.id_front.document.data,
-                      visaDetailsFiles.id_front.document.name
+                      visaDetailsFiles.id_front?.document?.data,
+                      visaDetailsFiles.id_front?.document?.name
                     )
                   }
                 >
@@ -314,8 +312,8 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadFiles(
-                      visaDetailsFiles.id_front.document.data,
-                      visaDetailsFiles.id_front.document.name
+                      visaDetailsFiles.id_front?.document?.data,
+                      visaDetailsFiles.id_front?.document?.name
                     )
                   }
                 >
@@ -347,12 +345,12 @@ const UpdateVisaDetails = ({ prevstep,
                 className="text-blue-600 underline"
                 onClick={() =>
                   downloadAttachment(
-                    visaDetailsFiles.id_back.document.data,
-                    visaDetailsFiles.id_back.document.name
+                    visaDetailsFiles.id_back?.document?.data,
+                    visaDetailsFiles.id_back?.document?.name
                   )
                 }
               >
-                {visaDetailsFiles.id_back ? visaDetailsFiles.id_back.document.name : "Not available"}
+                {visaDetailsFiles.id_back ? visaDetailsFiles.id_back?.document?.name : "Not available"}
               </button> */}
               <Tooltip
                 title="View Doc"
@@ -362,8 +360,8 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadAttachment(
-                      visaDetailsFiles.id_back.document.data,
-                      visaDetailsFiles.id_back.document.name
+                      visaDetailsFiles.id_back?.document?.data,
+                      visaDetailsFiles.id_back?.document?.name
                     )
                   }
                 >
@@ -378,8 +376,8 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadFiles(
-                      visaDetailsFiles.id_back.document.data,
-                      visaDetailsFiles.id_back.document.name
+                      visaDetailsFiles.id_back?.document?.data,
+                      visaDetailsFiles.id_back?.document?.name
                     )
                   }
                 >
@@ -550,12 +548,12 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadAttachment(
-                      visaDetailsFiles.passport_copy.document.data,
-                      visaDetailsFiles.passport_copy.document.name
+                      visaDetailsFiles.passport_copy?.document?.data,
+                      visaDetailsFiles.passport_copy?.document?.name
                     )
                   }
                 >
-                  {visaDetailsFiles.passport_copy ? visaDetailsFiles.passport_copy.document.name : "Not available"}
+                  {visaDetailsFiles.passport_copy ? visaDetailsFiles.passport_copy?.document?.name : "Not available"}
 
                 </button> */}
                 <Tooltip
@@ -566,8 +564,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadAttachment(
-                        visaDetailsFiles.passport_copy.document.data,
-                        visaDetailsFiles.passport_copy.document.name
+                        visaDetailsFiles.passport_copy?.document?.data,
+                        visaDetailsFiles.passport_copy?.document?.name
                       )
                     }
                   >
@@ -583,8 +581,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadFiles(
-                        visaDetailsFiles.passport_copy.document.data,
-                        visaDetailsFiles.passport_copy.document.name
+                        visaDetailsFiles.passport_copy?.document?.data,
+                        visaDetailsFiles.passport_copy?.document?.name
                       )
                     }
                   >
@@ -891,8 +889,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadAttachment(
-                        visaDetailsFiles.enter_permit.document.data,
-                        visaDetailsFiles.enter_permit.document.name
+                        visaDetailsFiles.enter_permit?.document?.data,
+                        visaDetailsFiles.enter_permit?.document?.name
                       )
                     }
                   >
@@ -907,8 +905,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadFiles(
-                        visaDetailsFiles.enter_permit.document.data,
-                        visaDetailsFiles.enter_permit.document.name
+                        visaDetailsFiles.enter_permit?.document?.data,
+                        visaDetailsFiles.enter_permit?.document?.name
                       )
                     }
                   >
@@ -919,12 +917,12 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadAttachment(
-                      visaDetailsFiles.enter_permit.document.data,
-                      visaDetailsFiles.enter_permit.document.name
+                      visaDetailsFiles.enter_permit?.document?.data,
+                      visaDetailsFiles.enter_permit?.document?.name
                     )
                   }
                 >
-                  {visaDetailsFiles.enter_permit ? visaDetailsFiles.enter_permit.document.name : "Not available"}
+                  {visaDetailsFiles.enter_permit ? visaDetailsFiles.enter_permit?.document?.name : "Not available"}
                 </button> */}
                 <WiCloudRefresh className="text-blue-600 text-xl" onClick={handleFieldClick} />
               </div>
@@ -950,12 +948,12 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadAttachment(
-                      visaDetailsFiles.visa_page.document.data,
-                      visaDetailsFiles.visa_page.document.name
+                      visaDetailsFiles.visa_page?.document?.data,
+                      visaDetailsFiles.visa_page?.document?.name
                     )
                   }
                 >
-                  {visaDetailsFiles.visa_page ? visaDetailsFiles.visa_page.document.name : "Not available"}
+                  {visaDetailsFiles.visa_page ? visaDetailsFiles.visa_page?.document?.name : "Not available"}
                 </button> */}
                 <Tooltip
                   title="View Doc"
@@ -965,8 +963,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadAttachment(
-                        visaDetailsFiles.visa_page.document.data,
-                        visaDetailsFiles.visa_page.document.name
+                        visaDetailsFiles.visa_page?.document?.data,
+                        visaDetailsFiles.visa_page?.document?.name
                       )
                     }
                   >
@@ -980,8 +978,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadFiles(
-                        visaDetailsFiles.visa_page.document.data,
-                        visaDetailsFiles.visa_page.document.name
+                        visaDetailsFiles.visa_page?.document?.data,
+                        visaDetailsFiles.visa_page?.document?.name
                       )
                     }
                   >
@@ -1010,12 +1008,12 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadAttachment(
-                      visaDetailsFiles.medical.document.data,
-                      visaDetailsFiles.medical.document.name
+                      visaDetailsFiles.medical?.document?.data,
+                      visaDetailsFiles.medical?.document?.name
                     )
                   }
                 >
-                  {visaDetailsFiles.medical ? visaDetailsFiles.medical.document.name : "Not available"}
+                  {visaDetailsFiles.medical ? visaDetailsFiles.medical?.document?.name : "Not available"}
                 </button> */}
                 <Tooltip
                   title="View Doc"
@@ -1025,8 +1023,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadAttachment(
-                        visaDetailsFiles.medical.document.data,
-                        visaDetailsFiles.medical.document.name
+                        visaDetailsFiles.medical?.document?.data,
+                        visaDetailsFiles.medical?.document?.name
                       )
                     }
                   >
@@ -1040,8 +1038,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadFiles(
-                        visaDetailsFiles.medical.document.data,
-                        visaDetailsFiles.medical.document.name
+                        visaDetailsFiles.medical?.document?.data,
+                        visaDetailsFiles.medical?.document?.name
                       )
                     }
                   >
@@ -1069,12 +1067,12 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadAttachment(
-                      visaDetailsFiles.id_application.document.data,
-                      visaDetailsFiles.id_application.document.name
+                      visaDetailsFiles.id_application?.document?.data,
+                      visaDetailsFiles.id_application?.document?.name
                     )
                   }
                 >
-                  {visaDetailsFiles.id_application ? visaDetailsFiles.id_application.document.name : "Not available"}
+                  {visaDetailsFiles.id_application ? visaDetailsFiles.id_application?.document?.name : "Not available"}
                 </button> */}
                 <Tooltip
                   title="View Doc"
@@ -1083,8 +1081,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadAttachment(
-                        visaDetailsFiles.id_application.document.data,
-                        visaDetailsFiles.id_application.document.name
+                        visaDetailsFiles.id_application?.document?.data,
+                        visaDetailsFiles.id_application?.document?.name
                       )
                     }
                   >
@@ -1098,8 +1096,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadFiles(
-                        visaDetailsFiles.id_application.document.data,
-                        visaDetailsFiles.id_application.document.name
+                        visaDetailsFiles.id_application?.document?.data,
+                        visaDetailsFiles.id_application?.document?.name
                       )
                     }
                   >
@@ -1297,8 +1295,8 @@ const UpdateVisaDetails = ({ prevstep,
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadAttachment(
-                      visaDetailsFiles.insurance_card.document.data,
-                      visaDetailsFiles.insurance_card.document.name
+                      visaDetailsFiles.insurance_card?.document?.data,
+                      visaDetailsFiles.insurance_card?.document?.name
                     )
                   }
                 >
@@ -1312,8 +1310,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadAttachment(
-                        visaDetailsFiles.insurance_card.document.data,
-                        visaDetailsFiles.insurance_card.document.name
+                        visaDetailsFiles.insurance_card?.document?.data,
+                        visaDetailsFiles.insurance_card?.document?.name
                       )
                     }
                   >
@@ -1328,8 +1326,8 @@ const UpdateVisaDetails = ({ prevstep,
                     className="text-blue-600 underline"
                     onClick={() =>
                       downloadFiles(
-                        visaDetailsFiles.insurance_card.document.data,
-                        visaDetailsFiles.insurance_card.document.name
+                        visaDetailsFiles.insurance_card?.document?.data,
+                        visaDetailsFiles.insurance_card?.document?.name
                       )
                     }
                   >

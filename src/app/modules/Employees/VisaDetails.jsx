@@ -6,14 +6,22 @@ import Select from "react-select";
 import { visaOptions } from '../../../data/Data';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { getEmployeeVisaDetailData, saveEmployeeVisaDetailData } from '../../hooks/employee';
+import { getEmployeeVisaDetailData, saveEmployeeVisaDetailData, getEmployeeVisaDetailsFiles } from '../../hooks/employee';
 import { EmployeeVisaDetails } from '../../utils/Types/Employee'
 import { connect } from "react-redux";
+import { BiEdit } from 'react-icons/bi';
+import { WiCloudRefresh } from 'react-icons/wi';
+import { RxCross2 } from 'react-icons/rx';
+import { downloadAttachment } from '../../../utils/fileUtils';
+import { LuExternalLink } from "react-icons/lu";
+import Tooltip from '@mui/material/Tooltip';
+import { downloadFiles } from '../../../utils/downUtils';
+import { BsDownload } from "react-icons/bs";
 
-const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDetailsFilesProps, setVisaDetailsFilesProps }) => {
+const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
 
-    const [visaDetails, setVisaDetails] = useState(EmployeeVisaDetails);
-    const [visaDetailsFiles, setVisaDetailsFiles] = useState(visaDetailsFilesProps);
+    const [visaDetails, setVisaDetails] = useState({});
+    const [visaDetailsFiles, setVisaDetailsFiles] = useState({});
 
     useEffect(() => {
         getEmployeeVisaDetailData(baseUrl, userProfile?.id, token).then(responseEmpPersonalInformation => {
@@ -25,7 +33,17 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
         });
     }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
-    console.log(visaDetails);
+
+    useEffect(() => {
+        getEmployeeVisaDetailsFiles(baseUrl, userProfile?.id, token).then(response => {
+            setVisaDetailsFiles(response);
+        }).catch(error => {
+            console.log(error);
+        });
+    }, [baseUrl, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
+
+    console.log(visaDetails, visaDetailsFiles);
 
     const handleChange = (name, value) => {
         setVisaDetails({ ...visaDetails, [name]: value });
@@ -58,9 +76,9 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
             })
         )
             .then((fileContents) => {
-                // Filter out null values (files with size > 500 KB)
-                fileContents = fileContents.filter(Boolean);
-                setVisaDetailsFiles({ ...visaDetailsFiles, [name]: fileContents });
+                const updatedFiles = { ...visaDetailsFiles };
+                updatedFiles[name] = fileContents && fileContents.length > 0 ? fileContents[0] : {};
+                setVisaDetailsFiles(updatedFiles);
             })
             .catch((error) => console.error("Error reading files:", error));
     };
@@ -105,11 +123,11 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
                 autoClose: 1000,
             });
 
-        } else {
-            saveEmployeeVisaDetailData(baseUrl, userProfile?.id, token, visaDetails,visaDetailsFiles);
-            setVisaDetailsFilesProps(visaDetailsFiles)
-            nextstep();
         }
+
+        saveEmployeeVisaDetailData(baseUrl, userProfile?.id, token, visaDetails, visaDetailsFiles);
+        nextstep();
+
     };
 
     // Get country options for Select component
@@ -191,6 +209,42 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
                         ID Front
                     </label>
                     <input type="file" onChange={(e) => handleFileChange('id_front', e.target.files)} />
+                    {visaDetailsFiles.id_front?.document &&
+                        <div className="flex items-center gap-x-2">
+                            <Tooltip
+                                title="View Doc"
+                            >
+                                <button
+                                    className="text-blue-600 underline"
+                                    onClick={() =>
+                                        downloadAttachment(
+                                            visaDetailsFiles.id_front?.document?.data,
+                                            visaDetailsFiles.id_front?.document?.name
+                                        )
+                                    }
+                                >
+                                    {visaDetailsFiles.id_front ? <LuExternalLink /> : "Not available"}
+                                </button>
+                            </Tooltip>
+                            <Tooltip
+                                title="Download Doc"
+                            >
+                                <button
+                                    className="text-blue-600 underline"
+                                    onClick={() =>
+                                        downloadFiles(
+                                            visaDetailsFiles.id_front?.document?.data,
+                                            visaDetailsFiles.id_front?.document?.name
+                                        )
+                                    }
+                                >
+                                    {visaDetailsFiles.id_front ? <BsDownload /> : "Not available"}
+                                </button>
+                            </Tooltip>
+                            <div className='py-1 px-3'>{visaDetailsFiles.id_front?.document?.name}</div>
+
+                        </div>
+                    }
                 </div>
                 <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -201,6 +255,42 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
                         ID Back
                     </label>
                     <input type="file" onChange={(e) => handleFileChange('id_back', e.target.files)} />
+                    {visaDetailsFiles.id_back?.document &&
+                        <div className="flex items-center gap-x-2">
+                            <Tooltip
+                                title="View Doc"
+                            >
+                                <button
+                                    className="text-blue-600 underline"
+                                    onClick={() =>
+                                        downloadAttachment(
+                                            visaDetailsFiles.id_back?.document?.data,
+                                            visaDetailsFiles.id_back?.document?.name
+                                        )
+                                    }
+                                >
+                                    {visaDetailsFiles.id_back ? <LuExternalLink /> : "Not available"}
+                                </button>
+                            </Tooltip>
+                            <Tooltip
+                                title="Download Doc"
+                            >
+                                <button
+                                    className="text-blue-600 underline"
+                                    onClick={() =>
+                                        downloadFiles(
+                                            visaDetailsFiles.id_back?.document?.data,
+                                            visaDetailsFiles.id_back?.document?.name
+                                        )
+                                    }
+                                >
+                                    {visaDetailsFiles.id_back ? <BsDownload /> : "Not available"}
+                                </button>
+                            </Tooltip>
+                            <div className='py-1 px-3'>{visaDetailsFiles.id_back?.document?.name}</div>
+
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -292,7 +382,7 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
                             />
                         </div>
 
-                        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[23%]">
+                        <div className="flex flex-col gap-y-1 w-[100%] lg:w-[25%]">
 
                             <label
                                 className="font-sfpro tracking-wide font-medium
@@ -301,9 +391,44 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
                                 Passport Copy{visaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}:
                             </label>
                             <input type="file" onChange={(e) => handleFileChange('passport_copy', e.target.files)} />
+                            {visaDetailsFiles.passport_copy?.document &&
+                                <div className="flex items-center gap-x-2">
+                                    <Tooltip
+                                        title="View Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadAttachment(
+                                                    visaDetailsFiles.passport_copy?.document?.data,
+                                                    visaDetailsFiles.passport_copy?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.passport_copy ? <LuExternalLink /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title="Download Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadFiles(
+                                                    visaDetailsFiles.passport_copy?.document?.data,
+                                                    visaDetailsFiles.passport_copy?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.passport_copy ? <BsDownload /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <div className='py-1 px-3'>{visaDetailsFiles.passport_copy?.document?.name}</div>
+                                </div>
+                            }
                         </div>
-
-                    </div>}
+                    </div>
+                }
             </div>
 
             {/* visa details */}
@@ -456,6 +581,42 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
                                 Entry Permit {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <input type="file" onChange={(e) => handleFileChange('enter_permit', e.target.files)} />
+                            {visaDetailsFiles.enter_permit?.document &&
+                                <div className="flex items-center gap-x-2">
+                                    <Tooltip
+                                        title="View Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadAttachment(
+                                                    visaDetailsFiles.enter_permit?.document?.data,
+                                                    visaDetailsFiles.enter_permit?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.enter_permit ? <LuExternalLink /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title="Download Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadFiles(
+                                                    visaDetailsFiles.enter_permit?.document?.data,
+                                                    visaDetailsFiles.enter_permit?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.enter_permit ? <BsDownload /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <div className='py-1 px-3'>{visaDetailsFiles.enter_permit?.document?.name}</div>
+
+                                </div>
+                            }
                         </div>
                         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -465,6 +626,41 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
                                 Visa Page {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <input type="file" onChange={(e) => handleFileChange('visa_page', e.target.files)} />
+                            {visaDetailsFiles.visa_page?.document &&
+                                <div className="flex items-center gap-x-2">
+                                    <Tooltip
+                                        title="View Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadAttachment(
+                                                    visaDetailsFiles.visa_page?.document?.data,
+                                                    visaDetailsFiles.visa_page?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.visa_page ? <LuExternalLink /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title="Download Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadFiles(
+                                                    visaDetailsFiles.visa_page?.document?.data,
+                                                    visaDetailsFiles.visa_page?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.visa_page ? <BsDownload /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <div className='py-1 px-3'>{visaDetailsFiles.visa_page?.document?.name}</div>
+
+                                </div>}
                         </div>
                         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -476,6 +672,42 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
                             <input type="file"
                                 onChange={(e) => handleFileChange('medical', e.target.files)}
                             />
+                            {visaDetailsFiles.medical?.document &&
+                                <div className="flex items-center gap-x-2">
+                                    <Tooltip
+                                        title="View Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadAttachment(
+                                                    visaDetailsFiles.medical?.document?.data,
+                                                    visaDetailsFiles.medical?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.medical ? <LuExternalLink /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title="Download Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadFiles(
+                                                    visaDetailsFiles.medical?.document?.data,
+                                                    visaDetailsFiles.medical?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.medical ? <BsDownload /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <div className='py-1 px-3'>{visaDetailsFiles.medical?.document?.name}</div>
+
+                                </div>
+                            }
                         </div>
                         <div className="flex flex-col gap-y-1 w-[100%] lg:w-[20%]">
 
@@ -485,6 +717,42 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
                                 ID Application {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <input type="file" onChange={(e) => handleFileChange('id_application', e.target.files)} />
+                            {visaDetailsFiles.id_application?.document &&
+                                <div className="flex items-center gap-x-2">
+                                    <Tooltip
+                                        title="View Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadAttachment(
+                                                    visaDetailsFiles.id_application?.document?.data,
+                                                    visaDetailsFiles.id_application?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.id_application ? <LuExternalLink /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title="Download Doc"
+                                    >
+                                        <button
+                                            className="text-blue-600 underline"
+                                            onClick={() =>
+                                                downloadFiles(
+                                                    visaDetailsFiles.id_application?.document?.data,
+                                                    visaDetailsFiles.id_application?.document?.name
+                                                )
+                                            }
+                                        >
+                                            {visaDetailsFiles.id_application ? <BsDownload /> : "Not available"}
+                                        </button>
+                                    </Tooltip>
+                                    <div className='py-1 px-3'>{visaDetailsFiles.id_application?.document?.name}</div>
+
+                                </div>
+                            }
                         </div>
                     </div>
                 }
@@ -595,6 +863,42 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token, visaDeta
 
                         </label>
                         <input type="file" onChange={(e) => handleFileChange('insurance_card', e.target.files)} />
+                        {visaDetailsFiles.insurance_card?.document &&
+                            <div className="flex items-center gap-x-2">
+                                <Tooltip
+                                    title="View Doc"
+                                >
+                                    <button
+                                        className="text-blue-600 underline"
+                                        onClick={() =>
+                                            downloadAttachment(
+                                                visaDetailsFiles.insurance_card?.document?.data,
+                                                visaDetailsFiles.insurance_card?.document?.name
+                                            )
+                                        }
+                                    >
+                                        {visaDetailsFiles.insurance_card ? <LuExternalLink /> : "Not available"}
+                                    </button>
+                                </Tooltip>
+                                <Tooltip
+                                    title="Download Doc"
+                                >
+                                    <button
+                                        className="text-blue-600 underline"
+                                        onClick={() =>
+                                            downloadFiles(
+                                                visaDetailsFiles.insurance_card?.document?.data,
+                                                visaDetailsFiles.insurance_card?.document?.name
+                                            )
+                                        }
+                                    >
+                                        {visaDetailsFiles.insurance_card ? <BsDownload /> : "Not available"}
+                                    </button>
+                                </Tooltip>
+                                <div className='py-1 px-3'>{visaDetailsFiles.insurance_card?.document?.name}</div>
+
+                            </div>
+                        }
                     </div>
                 </div>
             }
