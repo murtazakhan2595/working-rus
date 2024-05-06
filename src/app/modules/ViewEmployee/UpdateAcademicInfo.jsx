@@ -174,7 +174,7 @@ const AcademicRecords = ({
 
         delete academicInfo.certificate
         saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo, academicDoc);
-        saveEmployeeCertificationData(baseUrl, userProfile?.id, token, academicDoc);
+        saveEmployeeCertificationData(baseUrl, userProfile?.id, token, certificationSections);
         deleteEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, deleteExp);
       }
       catch (error) {
@@ -420,7 +420,7 @@ const AcademicRecords = ({
                     Attach Certification:
                   </h2>
                   <div>
-                    {academicInfo.certificate?.hasOwnProperty("name") ? (
+                    {academicInfo.certificate?.name ? (
                       <div className="flex gap-x-3 items-center">
                         {/* <button
                           className="text-blue-600 underline"

@@ -138,7 +138,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
 
       delete academicInfo.certificate
       saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo, academicDoc);
-      saveEmployeeCertificationData(baseUrl, userProfile?.id, token, academicDoc);
+      saveEmployeeCertificationData(baseUrl, userProfile?.id, token, certificationSections);
       nextstep();
     }
   };

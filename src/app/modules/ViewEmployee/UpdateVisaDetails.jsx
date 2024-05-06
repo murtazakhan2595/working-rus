@@ -84,7 +84,7 @@ const UpdateVisaDetails = ({ prevstep,
     )
       .then((fileContents) => {
         const updatedFiles = { ...visaDetailsFiles };
-        updatedFiles[name] = fileContents && fileContents.length > 0 ? fileContents[0]: { };
+        updatedFiles[name] = fileContents && fileContents.length > 0 ? fileContents[0] : {};
         setVisaDetailsFiles(updatedFiles);
       })
       .catch((error) => console.error("Error reading files:", error));
@@ -99,6 +99,7 @@ const UpdateVisaDetails = ({ prevstep,
 
 
   const handleSave = () => {
+    debugger
     setIsLoading(true);
     if (visaDetails.is_passport_applicable) {
       // Check if fields are filled
@@ -109,7 +110,8 @@ const UpdateVisaDetails = ({ prevstep,
         });
         return false;
       }
-    } else if (visaDetails.is_visa_applicable) {
+    }
+    if (visaDetails.is_visa_applicable) {
       if (!visaDetails.entry_permit_number || !visaDetails.country_of_visa_issuance || !visaDetails.uid_number || !visaDetails.visa_type || !visaDetails.visa_issuance_date || !visaDetails.visa_expiry_date || !visaDetails.visa_duration || !visaDetails.visa_country_entry_date || !visaDetailsFiles.enter_permit || !visaDetailsFiles.visa_page || !visaDetailsFiles.medical || !visaDetailsFiles.id_application) {
         toast.error("Please fill in all required fields!", {
           position: "top-right",
@@ -118,7 +120,7 @@ const UpdateVisaDetails = ({ prevstep,
         return false;
       }
     }
-    else if (visaDetails.is_insurance_applicable) {
+    if (visaDetails.is_insurance_applicable) {
       if (!visaDetails.dha_id || !visaDetails.card_number || !visaDetails.insurance_policy || !visaDetails.insurance_company || !visaDetails.insurance_active_date || !visaDetails.insurance_expiry_date || !visaDetailsFiles.insurance_card) {
         toast.error("Please fill in all required fields!", {
           position: "top-right",
@@ -126,17 +128,18 @@ const UpdateVisaDetails = ({ prevstep,
         });
         return false;
       }
-    } else if (!visaDetails.living_country_id_no || !visaDetails.place_of_issuance || !visaDetails.id_issuance_date || !visaDetails.id_expiry_date || !visaDetailsFiles.id_front || !visaDetailsFiles.id_back) {
+    }
+    if (!visaDetails.living_country_id_no || !visaDetails.place_of_issuance || !visaDetails.id_issuance_date || !visaDetails.id_expiry_date || !visaDetailsFiles.id_front || !visaDetailsFiles.id_back) {
       toast.error("Please fill all ID Details fields!", {
         position: "top-right",
         autoClose: 1000,
       });
 
-    } else {
-      saveEmployeeVisaDetailData(baseUrl, userProfile?.id, token, visaDetails, visaDetailsFiles);
-      nextstep();
-      setIsLoading(false);
     }
+
+    saveEmployeeVisaDetailData(baseUrl, userProfile?.id, token, visaDetails, visaDetailsFiles);
+    nextstep();
+    setIsLoading(false);
   };
 
 

@@ -11,6 +11,7 @@ import {
     EmployeeBankDetails,
     EmployeeCertifiation,
 } from '../utils/Types/Employee'
+import moment from "moment";
 
 
 const getEmployeeData = async (baseUrl, employeeid, headers) => {
@@ -256,7 +257,10 @@ const saveEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token
     if (employeeid && payload && payload.length > 0) {
         try {
             payload.map(async (experience) => {
-                if (experience.hasOwnProperty("id")) {
+                experience.employee_id = employeeid;
+                experience.exp_start_date = experience.exp_start_date ? moment(experience.exp_start_date, "DD-MM-YYYY").format("YYYY-MM-DD") : null;
+                experience.exp_end_date = experience.exp_end_date ? moment(experience.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD") : null;
+                if (experience?.ids) {
                     await axios.patch(`${baseUrl}/experience/${experience.id}`, experience, {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -332,6 +336,7 @@ const getEmployeeAcademicRecordData = async (baseUrl, employeeid, token) => {
                             "Content-Type": "application/json",
                         },
                     }).then(res => {
+                        debugger
                         const academicRecord = response.data[0]
                         if (res.status === 200 && res.data && res.data.length > 0)
                             academicRecord.certificate = res.data[0]
@@ -422,8 +427,9 @@ const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payload
     if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
         try {
             payloadAttachment.map(async (certification) => {
+                debugger
                 certification.employee_id = employeeid
-                if (certification.hasOwnProperty("id")) {
+                if (certification?.id) {
                     await axios.patch(
                         `${baseUrl}/certification/${certification.id}`,
                         certification,
