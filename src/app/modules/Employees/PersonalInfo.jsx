@@ -13,8 +13,8 @@ import { validationPersonalInfoFormSchema } from '../../utils/FormSchema/employe
 
 const PersonalInfo = ({ nextstep, errors, setErrors, userProfile, baseUrl, token }) => {
 
-  const [personalInfo, setPersonalInfo] = useState(EmployeePersonalInformation);
-  const [imagePreview, setImagePreview] = useState(EmployeePersonalInformation.profile_picture);
+  const [personalInfo, setPersonalInfo] = useState({});
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     getEmployeePersonalInfoData(baseUrl, userProfile?.id, token).then(response => {
