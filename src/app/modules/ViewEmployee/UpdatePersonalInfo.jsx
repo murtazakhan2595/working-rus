@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import Datepicker from "../Dashboard/Datepicker";
 import upload from "../../../assets/images/upload.png";
-import Joi from "joi";
 import { connect } from "react-redux";
 import Button from "./Button";
 import axios from "axios";
@@ -10,66 +9,12 @@ import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
-import { useParams } from "react-router-dom";
 import { countryCodes } from "../../../data/CountryCode";
 import { getAllCountries } from 'countries-and-timezones';
 import Select from "react-select";
-
-const validationSchema = Joi.object({
-  first_name: Joi.string().min(3).max(40).required().label("First Name"),
-  last_name: Joi.string().min(3).max(40).required().label("Last Name"),
-  father_name: Joi.string().min(3).max(40).required().label("Father Name"),
-  mother_name: Joi.string().min(3).max(40).required().label("Mother Name"),
-  mobile_no: Joi.string()
-    .pattern(/^\+?\d{10,15}$/) // Allows for optional '+' sign at the beginning followed by 10 to 15 digits
-    .required()
-    .label("Phone Number")
-    .messages({
-      "string.empty": `Phone Number is required`,
-      "string.pattern.base": `Phone Number must be a valid mobile number`,
-    }),
-  date_of_birth: Joi.string().required().label("DOB"),
-  marital_status: Joi.string().min(3).max(20).required().label("Marital Status"),
-  nationality: Joi.string().min(3).max(40).required().label("Nationality"),
-  email: Joi.string()
-    .email({ tlds: { allow: false } })
-    .required()
-    .label("Personal Email"),
-  work_email: Joi.string()
-    .email({ tlds: { allow: false } })
-    .required()
-    .label("Work Email"),
-  current_address: Joi.string().required().label("Current Address"),
-  residential_address: Joi.string().required().label("Permanent Address"),
-  nic: Joi.string().required().label("NIC"),
-  emergency_first_name: Joi.string()
-    .min(3)
-    .max(20)
-    .required()
-    .label("First Name"),
-  emergency_last_name: Joi.string()
-    .min(3)
-    .max(20)
-    .required()
-    .label("Last Name"),
-  emergency_phone_no: Joi.string()
-    .pattern(/^\+?\d{10,15}$/) // Assuming phone numbers are between 10 and 15 digits long
-    .required()
-    .label("Emergency Phone Number")
-    .messages({
-      "string.empty": `Emergency Phone Number is required`,
-      "string.pattern.base": `Emergency Phone Number must be a valid phone number`,
-    }),
-
-  emergency_relation: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
-    .required()
-    .label("emergency_relation")
-    .messages({
-      "string.empty": `Emergency Relation is required`,
-      "string.pattern.base": `Emergency Relation must only contain letters and spaces`,
-    }),
-});
+import { getEmployeePersonalInfoData, saveEmployeePersonalInfoData } from '../../hooks/employee';
+import { EmployeePersonalInformation } from '../../utils/Types/Employee'
+import { validationPersonalInfoFormSchema } from '../../utils/FormSchema/employeeFormSchema'
 
 const PersonalInfo = ({
   nextstep,
@@ -79,40 +24,30 @@ const PersonalInfo = ({
   userProfile,
   baseUrl,
 }) => {
-  let [defaultData, setDefaultData] = useState({});
-  let [isEdit, setIsEdit] = useState(false);
-  let [cancelBox, setCancelBox] = useState(false);
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
-
+  const [personalInfo, setPersonalInfo] = useState({});
+  const [imagePreview, setImagePreview] = useState(null);
   const id = userProfile.id;
-  // const { id } = useParams();
 
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
+  useEffect(() => {
+    getEmployeePersonalInfoData(baseUrl, id, token).then(response => {
+      setPersonalInfo(response);
+      setImagePreview(response.profile_picture);
 
-  const [imagePreview, setImagePreview] = useState("");
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+
   //   profile_picture
   const handleImageUpload = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setDataInSessionStorage("UpdatedDP", {
-          name: selectedFile.name,
-          // file: e.target.result,
-        });
         setImagePreview(e.target.result);
       };
       reader.readAsDataURL(selectedFile);
@@ -121,32 +56,8 @@ const PersonalInfo = ({
     }
   };
 
-  const fetchData = async () => {
-    try {
-      const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
-        headers,
-      });
-      const employeeData = employeeResponse.data;
-      setDefaultData(employeeData);
-
-      // Check session storage first, then fallback to local state
-      // const updatedDP = getDataFromSessionStorage("UpdatedDP") || {};
-      setImagePreview(
-        // updatedDP.file ||
-        employeeData.profile_picture?.file ||
-        employeeData.profile_picture
-      );
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [isEdit]);
-
   const handleEdit = (name, value) => {
-    setDefaultData({ ...defaultData, [name]: value });
+    setPersonalInfo({ ...personalInfo, [name]: value });
     setErrors({ ...errors, [name]: null });
     setIsEdit(true);
   };
@@ -156,75 +67,45 @@ const PersonalInfo = ({
     handleEdit("date_of_birth", formattedDate);
   };
 
-  useEffect(() => {
-    setDataInSessionStorage("UpdatedPersonalInfo", defaultData);
-  }, [defaultData]);
-
-  useEffect(() => {
-    setDataInSessionStorage("UpdatedDP", imagePreview);
-  }, [imagePreview]);
   const handleSave = async () => {
-    let checkData = getDataFromSessionStorage("UpdatedPersonalInfo");
-    const copyCheckData = {
-      first_name: checkData.first_name,
-      last_name: checkData.last_name,
-      father_name: checkData.father_name,
-      mother_name: checkData.mother_name,
-      mobile_no: checkData.mobile_no,
-      date_of_birth: checkData.date_of_birth,
-      marital_status: checkData.marital_status,
-      nationality: checkData.nationality,
-      email: checkData.email,
-      work_email: checkData.work_email,
-      current_address: checkData.current_address,
-      residential_address: checkData.residential_address,
-      nic: checkData.nic,
-      emergency_first_name: checkData.emergency_first_name,
-      emergency_last_name: checkData.emergency_last_name,
-      emergency_phone_no: checkData.emergency_phone_no,
-      emergency_relation: checkData.emergency_relation,
-    };
-    const { error } = validationSchema.validate(copyCheckData, {
+    const personalInfrmation = personalInfo;
+    delete personalInfrmation.profile_picture;
+    const copyCheckData = { ...personalInfrmation };
+    delete copyCheckData["passport_number"];
+
+    const { error } = validationPersonalInfoFormSchema.validate(copyCheckData, {
       abortEarly: false,
     });
-    let updatedDP = getDataFromSessionStorage("UpdatedDP");
     if (error) {
       const validationErrors = {};
       error.details.forEach((detail) => {
         validationErrors[detail.path[0]] = detail.message;
       });
       setErrors(validationErrors);
-    } else if (!updatedDP) {
+    } else if (!imagePreview) {
       const imageError = { image: "Please upload an image." };
       setErrors(imageError);
     } else {
       setIsLoading(true); // Set isLoading to true only when there are no validation errors
       setErrors({});
-      let updatedData = getDataFromSessionStorage("UpdatedPersonalInfo");
-      if (updatedData.passport_number === "") {
-        updatedData["passport_number"] = "000000000000000";
+      personalInfrmation.profile_picture = imagePreview;
+      if (personalInfo && !personalInfo?.passport) {
+        delete personalInfo.passport_number;
       }
-      updatedData["profile_picture"] = updatedDP;
-
-      let response = await axios.patch(
-        `${baseUrl}/emp/${id}`,
-        updatedData,
-        { headers }
-      );
-      if (response.status === 200) {
+      personalInfrmation.other_email = personalInfrmation.email;
+      saveEmployeePersonalInfoData(baseUrl, id, token, personalInfrmation).then(() => {
         setIsEdit(!isEdit);
-        sessionStorage.clear();
         toast.success("Personal Information Updated!", {
           position: "top-right",
           autoClose: 3000,
         });
         nextstep();
-      }
+      });
     }
-  };
+  }
+
 
   const handleNextStep = () => {
-    sessionStorage.clear();
     nextstep();
   };
 
@@ -278,12 +159,12 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.first_name}
+                  value={personalInfo.first_name}
                   name="first_name"
                   placeholder="First Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.first_name && (
@@ -304,12 +185,12 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.last_name}
+                  value={personalInfo.last_name}
                   name="last_name"
                   placeholder="Last Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.last_name && (
@@ -333,12 +214,12 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.father_name}
+                  value={personalInfo.father_name}
                   name="father_name"
                   placeholder="Father Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.father_name && (
@@ -359,12 +240,12 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.mother_name}
+                  value={personalInfo.mother_name}
                   name="mother_name"
                   placeholder="Mother Name here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.mother_name && (
@@ -392,11 +273,11 @@ const PersonalInfo = ({
                       label: `${country.dial_code}`,
                       value: country.dial_code
                     }))}
-                    value={countryCodes.find(option => option.dial_code === defaultData.country_code) ?
+                    value={countryCodes.find(option => option.dial_code === personalInfo.country_code) ?
                       {
-                        label: `${countryCodes.find(option => option.dial_code === defaultData.country_code).dial_code} 
-      ${countryCodes.find(option => option.dial_code === defaultData.country_code).name}`,
-                        value: defaultData.country_code
+                        label: `${countryCodes.find(option => option.dial_code === personalInfo.country_code).dial_code} 
+      ${countryCodes.find(option => option.dial_code === personalInfo.country_code).name}`,
+                        value: personalInfo.country_code
                       } : null}
                     onChange={(selectedOption) =>
                       handleEdit("country_code", selectedOption.value)
@@ -431,12 +312,12 @@ const PersonalInfo = ({
                     type="text"
                     inputMode="decimal"
                     pattern="[+0-9]"
-                    value={defaultData.mobile_no}
+                    value={personalInfo.mobile_no}
                     name="mobile_no"
                     placeholder="0000000000"
                     className={`${isEdit ? "text-black" : "text-gray-500"
                       } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#55657] placeholder-opacity-50`}
-                   onClick={handleFieldClick}
+                    onClick={handleFieldClick}
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                 </div>
@@ -461,24 +342,24 @@ const PersonalInfo = ({
                   disabled={isEdit ? false : true}
                   // readOnly={!isEdit}
                   day={
-                    defaultData.date_of_birth
-                      ? defaultData.date_of_birth.substr(0, 2)
+                    personalInfo.date_of_birth
+                      ? personalInfo.date_of_birth.substr(0, 2)
                       : null
                   }
                   month={
-                    defaultData.date_of_birth
-                      ? defaultData.date_of_birth.substr(3, 2)
+                    personalInfo.date_of_birth
+                      ? personalInfo.date_of_birth.substr(3, 2)
                       : null
                   }
                   year={
-                    defaultData.date_of_birth
-                      ? defaultData.date_of_birth.substr(6, 4)
+                    personalInfo.date_of_birth
+                      ? personalInfo.date_of_birth.substr(6, 4)
                       : null
                   }
                   name="date_of_birth"
                   className="z-50"
                   selected={moment(
-                    defaultData.date_of_birth,
+                    personalInfo.date_of_birth,
                     "DD-MM-YYYY"
                   ).toDate()}
                   // onClick={handleFieldClick}
@@ -505,12 +386,12 @@ const PersonalInfo = ({
                   type="text"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.marital_status}
+                  value={personalInfo.marital_status}
                   name="marital_status"
                   placeholder="Marital Status here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.marital_status && (
@@ -534,12 +415,12 @@ const PersonalInfo = ({
                   name="nationality"
                   options={countryOptions}
                   value={countryOptions.find(
-                    (option) => option.label === defaultData.nationality
+                    (option) => option.label === personalInfo.nationality
                   )}
                   onChange={(selectedOption) =>
                     handleEdit("nationality", selectedOption.label)
                   }
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   menuPlacement="top"
                 />
 
@@ -564,12 +445,12 @@ const PersonalInfo = ({
                   type="email"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.email}
+                  value={personalInfo.email}
                   name="email"
                   placeholder="Email Here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.email && (
@@ -588,12 +469,12 @@ const PersonalInfo = ({
                   type="email"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.work_email}
+                  value={personalInfo.work_email}
                   name="work_email"
                   placeholder="Email Here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.work_email && (
@@ -616,12 +497,12 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.current_address}
+                value={personalInfo.current_address}
                 name="current_address"
                 placeholder="Current Address here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-               onClick={handleFieldClick}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.current_address && (
@@ -643,12 +524,12 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.residential_address}
+                value={personalInfo.residential_address}
                 name="residential_address"
                 placeholder="Permanent Address here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-               onClick={handleFieldClick}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.residential_address && (
@@ -671,12 +552,12 @@ const PersonalInfo = ({
                   type="number"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.nic}
+                  value={personalInfo.nic}
                   placeholder="NIC Here"
                   name="nic"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
                 {errors.nic && (
@@ -695,9 +576,9 @@ const PersonalInfo = ({
               >
                 <div className="w-full h-full flex flex-col justify-center items-center border-solid bg-[#EFEFEF] rounded-3xl relative">
                   <div className="relative w-32 h-32 border-2 border-gray-400 rounded-full overflow-hidden">
-                    {imagePreview ? (
+                    {imagePreview?.file ? (
                       <img
-                        src={imagePreview}
+                        src={imagePreview.file}
                         alt="Preview"
                         className="w-full h-full object-cover"
                       />
@@ -710,13 +591,13 @@ const PersonalInfo = ({
                     )}
                   </div>
                   <span className="text-base mt-3">
-                    {imagePreview ? "Change" : "Upload"} your photo
+                    {imagePreview?.file ? "Change" : "Upload"} your photo
                   </span>
                 </div>
                 <input
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   id="file-upload"
                   type="file"
                   accept="image/*"
@@ -747,12 +628,12 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.emergency_first_name}
+                value={personalInfo.emergency_first_name}
                 name="emergency_first_name"
                 placeholder="First Name Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-               onClick={handleFieldClick}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_first_name && (
@@ -773,12 +654,12 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.emergency_last_name}
+                value={personalInfo.emergency_last_name}
                 name="emergency_last_name"
                 placeholder="Last Name Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-               onClick={handleFieldClick}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_last_name && (
@@ -805,11 +686,11 @@ const PersonalInfo = ({
                     label: `${country.dial_code}`,
                     value: country.dial_code
                   }))}
-                  value={countryCodes.find(option => option.dial_code === defaultData.emergency_country_code) ?
+                  value={countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code) ?
                     {
-                      label: `${countryCodes.find(option => option.dial_code === defaultData.emergency_country_code).dial_code} 
-      ${countryCodes.find(option => option.dial_code === defaultData.emergency_country_code).name}`,
-                      value: defaultData.emergency_country_code
+                      label: `${countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code).dial_code} 
+      ${countryCodes.find(option => option.dial_code === personalInfo.emergency_country_code).name}`,
+                      value: personalInfo.emergency_country_code
                     } : null}
                   onChange={(selectedOption) =>
                     handleEdit("emergency_country_code", selectedOption.value)
@@ -843,12 +724,12 @@ const PersonalInfo = ({
                   pattern="[+0-9]"
                   // disabled={isEdit ? false : true}
                   readOnly={!isEdit}
-                  value={defaultData.emergency_phone_no}
+                  value={personalInfo.emergency_phone_no}
                   name="emergency_phone_no"
                   placeholder="Phone Number here"
                   className={`${isEdit ? "text-black" : "text-gray-500"
                     } pl-2 bg-white rounded-r h-8 w-full text-sm placeholder-[#555657] placeholder-opacity-50`}
-                 onClick={handleFieldClick}
+                  onClick={handleFieldClick}
                   onChange={(e) => handleEdit(e.target.name, e.target.value)}
                 />
               </div>
@@ -872,12 +753,12 @@ const PersonalInfo = ({
                 type="text"
                 // disabled={isEdit ? false : true}
                 readOnly={!isEdit}
-                value={defaultData.emergency_relation}
+                value={personalInfo.emergency_relation}
                 name="emergency_relation"
                 placeholder="emergency_relation Here"
                 className={`${isEdit ? "text-black" : "text-gray-500"
                   } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-               onClick={handleFieldClick}
+                onClick={handleFieldClick}
                 onChange={(e) => handleEdit(e.target.name, e.target.value)}
               />
               {errors.emergency_relation && (

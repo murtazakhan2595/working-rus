@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { connect } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
@@ -7,11 +6,12 @@ import SubStepsIndicator from "./UpdateSubSteps";
 import Button from "./Button";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
-import { useParams } from "react-router-dom";
 import { downloadAttachmentWord } from "../../../utils/wordFileUtils";
-import { LuExternalLink } from "react-icons/lu";
 import { Tooltip } from "@mui/material";
 import { BsDownload } from "react-icons/bs";
+import { getEmployeeCVDetailData, saveEmployeeCVDetailData } from '../../hooks/employee';
+import { EmployeeCVDetails } from '../../utils/Types/Employee'
+
 
 const SubmitCV = ({
   errors,
@@ -23,45 +23,23 @@ const SubmitCV = ({
   userProfile,
   baseUrl,
 }) => {
-  const [cv, setCv] = useState(null);
+  const [cv, setCv] = useState(EmployeeCVDetails);
   const [cvName, setCvName] = useState("No Chosen File");
   const [isEdit, setIsEdit] = useState(false);
-  const [haveCV, setHaveCV] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [cvRes, setCvRes] = useState(null);
-
   const id = userProfile.id;
-
-  // const { id } = useParams();
-
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
-  const fetchData = async () => {
-    try {
-      const cvResponse = await axios.get(
-        `${baseUrl}/attachment/?search={"employee_id":${id},"name":"cv"}`,
-        {
-          headers,
-        }
-      );
-      const cvRes = cvResponse.data[0];
-      setCvRes(cvRes);
-      if (cvRes) {
-        setHaveCV(cvRes);
-        setCvName(cvRes.document.name);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  const [existingCVId, setExistingCVId] = useState(null)
 
   useEffect(() => {
-    fetchData();
-  }, [isEdit]);
+    getEmployeeCVDetailData(baseUrl, id, token).then(response => {
+      setCv(response.cv);
+      setCvName(response.cvName);
+      setExistingCVId(response.existingCVId)
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -90,12 +68,8 @@ const SubmitCV = ({
     }
   };
 
-  useEffect(() => {
-    sessionStorage.setItem("UpdatedCV", JSON.stringify(cv));
-  }, [cv]);
-
   const handleSave = async () => {
-    if (!isEdit || (isEdit && !cv)) {
+    if (!isEdit) {
       nextstep();
       return; // Exit early if not in edit mode or no new CV selected
     }
@@ -106,42 +80,11 @@ const SubmitCV = ({
     } else {
       setIsLoading(true); // Set loading state to true before save operation
       try {
-        if (haveCV) {
-          const cvResponse = await axios.patch(
-            `${baseUrl}/attachment/${haveCV.id}`,
-            {
-              document: cv,
-            },
-            {
-              headers,
-            }
-          );
-          if (cvResponse.status === 200) {
-            toast.success("CV Updated!", {
-              position: "top-right",
-              autoClose: 3000,
-            });
-          }
-        } else {
-          const cvResponse = await axios.post(
-            `${baseUrl}/attachment/`,
-            {
-              employee_id: id,
-              name: "cv",
-              description: "Curriculum Vitae",
-              document: cv,
-            },
-            {
-              headers,
-            }
-          );
-          if (cvResponse.status === 201) {
-            toast.success("CV Updated!", {
-              position: "top-right",
-              autoClose: 3000,
-            });
-          }
+        const payload={
+          cv:cv,
+          existingCVId:existingCVId,
         }
+        saveEmployeeCVDetailData(baseUrl, id, token, payload);
         nextstep();
       } catch (error) {
         toast.error("Could not update the cv, Please try again later!", {
@@ -154,7 +97,6 @@ const SubmitCV = ({
   };
 
   const handleNextStep = () => {
-    sessionStorage.clear();
     nextstep();
   };
 
@@ -220,18 +162,7 @@ const SubmitCV = ({
                   onChange={handleFileChange}
                 />
               </label>
-              {/* <button
-              className="text-blue-600 underline block"
-              onClick={() =>
-                downloadAttachmentWord(
-                  cvRes?.document?.file,
-                  cvRes?.document?.name,
-                )
-              }
-            >
-              {cvRes?.document?.name ? cvRes?.document?.name : "Not available"}
-            </button> */}
-
+  
               <Tooltip
                 title="Download CV"
               >
@@ -239,12 +170,12 @@ const SubmitCV = ({
                   className="text-blue-600 underline"
                   onClick={() =>
                     downloadAttachmentWord(
-                      cvRes?.document?.file,
-                      cvRes?.document?.name,
+                      cv?.file,
+                      cv?.name,
                     )
                   }
                 >
-                  {cvRes?.document?.name ? <BsDownload /> : "Not available"}
+                  {cv?.name ? <BsDownload /> : "Not available"}
                 </button>
               </Tooltip>
             </div>

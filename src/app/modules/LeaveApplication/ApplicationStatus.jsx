@@ -37,7 +37,7 @@ const ApplicationStatus = ({ baseUrl, token, userProfile }) => {
 
   return (
     <div className="bg-[#F9F9F9] w-full">
-      <LeaveHeader post="Leave" />
+      <LeaveHeader post="My Application Status" />
       <div className="overflow-y-auto max-h-[80vh] roundScroll px-8 py-3">
         <div className="overflow-x-auto">
           <h2 className="text-lg font-semibold mb-2">New Leave Request</h2>

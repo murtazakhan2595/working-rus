@@ -25,3 +25,9 @@ export const setSidebarRefresh = (val) => {
     payload : val
   };
 };  
+export const setManagerList = (val) => {
+  return {
+    type: 'SET_MANAGER_LIST',
+    payload : val
+  };
+};  

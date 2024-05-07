@@ -9,10 +9,16 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { connect } from "react-redux";
-import { setUserProfile, setToken } from "../../../state/actions/UserAction";
+import { setUserProfile, setToken } from "../../../state/slices/UserSlice";
 import OfflinePopUp from "./OfflinePopUp";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-function Login({ setUserProfile, baseUrl, setToken }) {
+// function Login({ setUserProfile, baseUrl, setToken }) {
+function Login() {
+  let baseUrl = useSelector(state => state.user.baseUrl);
+  let dispatch = useDispatch();
+
   const navigate = useNavigate();
   const cookies = new Cookies();
   const currentUname = cookies.get("uname");
@@ -29,7 +35,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
 
   const handleUpdateProfile = (data) => {
     let updateProfile = { id: data.id, username: data.username };
-    setUserProfile(updateProfile);
+    dispatch(setUserProfile(updateProfile));
   };
 
   const handleCheckboxChange = (e) => {
@@ -85,7 +91,7 @@ function Login({ setUserProfile, baseUrl, setToken }) {
           handleUpdateProfile(userProfile);
 
           // Update the token in the Redux store
-          setToken(token);
+          dispatch(setToken(token));
 
           // Clear form values
           setValues({
@@ -296,12 +302,14 @@ function Login({ setUserProfile, baseUrl, setToken }) {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    token: state.user.token,
-    baseUrl: state.user.baseUrl,
-  };
-};
+// const mapStateToProps = (state) => {
+//   return {
+//     userProfile: state.user.userProfile,
+//     token: state.user.token,
+//     baseUrl: state.user.baseUrl,
+//   };
+// };
 
-export default connect(mapStateToProps, { setUserProfile, setToken })(Login);
+// export default connect(mapStateToProps, { setUserProfile, setToken })(Login);
+
+export default Login;

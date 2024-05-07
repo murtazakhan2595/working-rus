@@ -1,21 +1,25 @@
 import SubStepsIndicator from './SubStepsIndicator';
 import Button from './Button';
 import { useState, useEffect } from 'react';
+import { connect } from "react-redux";
+import { getEmployeeCVDetailData, saveEmployeeCVDetailData } from '../../hooks/employee';
+import { EmployeeCVDetails } from '../../utils/Types/Employee'
 
+const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep, userProfile, baseUrl, token }) => {
 
-const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep ,setCvProps}) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
-  let getCV = getDataFromSessionStorage("cv")
-  const [cv, setCv] = useState(getCV)
-  const [cvName, setCvName] = useState(getCV?.name ? getCV?.name : "No Chosen File")
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
+  const [cv, setCv] = useState(EmployeeCVDetails)
+  const [cvName, setCvName] = useState(EmployeeCVDetails.cvName ?? "No Chosen File")
+  const [existingCVId, setExistingCVId] = useState(null)
+
+  useEffect(() => {
+    getEmployeeCVDetailData(baseUrl, userProfile?.id, token).then(response => {
+      setCv(response.cv);
+      setCvName(response.cvName);
+      setExistingCVId(response.existingCVId)
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -38,16 +42,16 @@ const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep ,setCvProps})
     }
   }
 
-  // useEffect(() => {
-  //   setDataInSessionStorage('cv', cv)
-  // }, [cv])
-
   const handleNextStep = () => {
     if (!cvName) {
       const validationErrors = { cv: "CV is required" };
       setErrors(validationErrors);
     } else {
-      setCvProps(cv);
+      const payload={
+        cv:cv,
+        existingCVId:existingCVId,
+      }
+      saveEmployeeCVDetailData(baseUrl, userProfile?.id, token, payload);
       nextstep();
     }
   };
@@ -83,4 +87,12 @@ const SubmitCV = ({ errors, setErrors, prevstep, nextstep, substep ,setCvProps})
   )
 }
 
-export default SubmitCV;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
+};
+
+export default connect(mapStateToProps)(SubmitCV);

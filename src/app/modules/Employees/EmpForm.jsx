@@ -11,7 +11,6 @@ import BankDetails from "./BankDetails";
 import Department from "./Department";
 import FormIndicator from "./FormIndicator";
 import { useNavigate } from "react-router-dom";
-import moment from "moment";
 import Cookies from "universal-cookie";
 import { setUserLogout } from "../../../state/actions/UserAction";
 import { RiArrowDownSFill } from "react-icons/ri";
@@ -21,285 +20,26 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
   const cookies = new Cookies();
   const navigate = useNavigate();
 
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
-
-  let storedData = getDataFromSessionStorage("visaDetails");
-  const storedVisaDetailsFiles = getDataFromSessionStorage("visaDetailsFiles");
-
   const [currentStep, setCurrentStep] = useState(1);
   const [subStep, setSubStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [personalInfo, setPersonalInfo] = useState({});
-  const [visaDetails, setVisaDetails] = useState({
-    passport_number: storedData?.passport_number ? storedData.passport_number : null,
-    Passport_Issuance_Country: storedData?.Passport_Issuance_Country ? storedData.Passport_Issuance_Country : null,
-    Passport_Issuance_Date: storedData?.Passport_Issuance_Date ? storedData.Passport_Issuance_Date : null,
-    Passport_Expiry_Date: storedData?.Passport_Expiry_Date ? storedData.Passport_Expiry_Date : null,
-    entry_permit_number: storedData?.entry_permit_number ? storedData.entry_permit_number : "",
-    country_of_visa_issuance: storedData?.country_of_visa_issuance ? storedData.country_of_visa_issuance : "",
-    uid_number: storedData?.uid_number ? storedData.uid_number : "",
-    visa_type: storedData?.visa_type ? storedData.visa_type : "",
-    visa_issuance_date: storedData?.visa_issuance_date ? storedData.visa_issuance_date : null,
-    visa_expiry_date: storedData?.visa_expiry_date ? storedData.visa_expiry_date : null,
-    visa_duration: storedData?.visa_duration ? storedData.visa_duration : "",
-    visa_country_entry_date: storedData?.visa_country_entry_date ? storedData.visa_country_entry_date : null,
-    visa_country_exit_date: storedData?.visa_country_exit_date ? storedData.visa_country_exit_date : null,
-    living_country_id_no: storedData?.living_country_id_no ? storedData.living_country_id_no : "",
-    place_of_issuance: storedData?.place_of_issuance ? storedData.place_of_issuance : "",
-    id_issuance_date: storedData?.id_issuance_date ? storedData.id_issuance_date : null,
-    id_expiry_date: storedData?.id_expiry_date ? storedData.id_expiry_date : null,
-    dha_id: storedData?.dha_id ? storedData.dha_id : "",
-    card_number: storedData?.card_number ? storedData.card_number : "",
-    insurance_policy: storedData?.insurance_policy ? storedData.insurance_policy : "",
-    insurance_company: storedData?.insurance_company ? storedData.insurance_company : "",
-    insurance_active_date: storedData?.insurance_active_date ? storedData.insurance_active_date : null,
-    insurance_expiry_date: storedData?.insurance_expiry_date ? storedData.insurance_expiry_date : null,
-    is_passport_applicable: storedData?.is_passport_applicable ? storedData.is_passport_applicable : null,
-    is_visa_applicable: storedData?.is_visa_applicable ? storedData.is_visa_applicable : null,
-    is_insurance_applicable: storedData?.is_insurance_applicable ? storedData.is_insurance_applicable : null,
-  });
-  const [bankInfo, setBankInfo] = useState({});
-  const [departmentInfo, setDepartmentInfo] = useState({});
-  const [academicInfo, setAcademicInfo] = useState({});
-  const [certifications, setCertifications] = useState({});
-  const [profilePhoto, setProfilePhoto] = useState({});
-  const [professionalExperiance, setProfessionalExperiance] = useState({});
-  const [visaDetailsFiles, setVisaDetailsFiles] = useState(storedVisaDetailsFiles || {});
-  const [cv, setCv] = useState({});
-
+  const [visaDetailsFiles, setVisaDetailsFiles] = useState({});
 
   const totalSteps = 6;
-  const requestData = [];
 
-  const handleFormChange = (name, value) => {
-    setErrors({ ...errors, [name]: null });
-  };
   const submitForm = async () => {
     try {
-      // if (personalInfo && personalInfo.country_code && personalInfo.mobile_no) {
-      //   personalInfo.mobile_no =
-      //     personalInfo.country_code + personalInfo.mobile_no;
-      //   delete personalInfo.country_code;
-      // }
-      // if (
-      //   personalInfo &&
-      //   personalInfo.emergency_country_code &&
-      //   personalInfo.emergency_phone_no
-      // ) {
-      //   personalInfo.emergency_phone_no =
-      //     personalInfo.emergency_country_code + personalInfo.emergency_phone_no;
-      //   delete personalInfo.emergency_country_code;
-      // }
-      if (personalInfo && !personalInfo?.passport) {
-        delete personalInfo.passport_number;
-      }
-      if (bankInfo && !bankInfo?.account_iban) {
-        delete bankInfo.account_iban;
-      }
-      if (bankInfo && !bankInfo?.swift_code) {
-        delete bankInfo.swift_code;
-      }
-      let userDetials = {
-        ...personalInfo,
-        ...visaDetails,
-        ...bankInfo,
-        ...departmentInfo,
-        is_filled: true,
-      };
-      userDetials["profile_picture"] = profilePhoto;
-      let response = await axios.patch(
-        `${baseUrl}/emp/${userProfile.id}`,
-        userDetials,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        for (const key in visaDetailsFiles) {
-          if (visaDetailsFiles.hasOwnProperty(key)) {
-            const files = visaDetailsFiles[key];
-            for (const file of files) {
-              let attachmentResponse = await axios.post(
-                `${baseUrl}/attachment/`,
-                {
-                  employee_id: userProfile.id,
-                  name: key,
-                  description: `${key} File`,
-                  document: {
-                    name: file.name,
-                    data: file.data,
-                  },
-                },
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-              if (attachmentResponse.status !== 201) {
-                toast.error("Attachements submission Failed. Please try again.", {
-                  position: "top-center",
-                  autoClose: 3000,
-                });
-              }
-            }
-          }
-        }
-        const cvResponse = await axios.post(
-          `${baseUrl}/attachment/`,
-          {
-            employee_id: userProfile.id,
-            name: "cv",
-            description: "Curriculum Vitae",
-            document: cv,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (cvResponse.status === 201) {
-          professionalExperiance.map(async (exp) => {
-            let experience = {
-              employee_id: userProfile.id,
-              exp_organization: exp.exp_organization,
-              exp_designation: exp.exp_designation,
-              exp_letter: exp.file,
-              exp_start_date: moment(exp.exp_start_date, "DD-MM-YYYY").format(
-                "YYYY-MM-DD"
-              ),
-              exp_end_date: exp.exp_end_date
-                ? moment(exp.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD")
-                : null,
-            };
-            let res = await axios.post(`${baseUrl}/experience/`, experience, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-            if (res.status !== 201) {
-              toast.error("Form submission failed. Please try again.", {
-                position: "top-center",
-                autoClose: 3000,
-              });
-              return;
-            }
-          });
-
-          let education = {
-            employee_id: userProfile.id,
-            education_level: academicInfo.education_level,
-            program: academicInfo.program,
-            institute_name: academicInfo.institute_name,
-            edu_start_date: moment(
-              academicInfo.edu_start_date,
-              "DD-MM-YYYY"
-            ).format("YYYY-MM-DD"),
-            edu_end_date: moment(
-              academicInfo.edu_end_date,
-              "DD-MM-YYYY"
-            ).format("YYYY-MM-DD"),
-          };
-          let resEdu = await axios.post(`${baseUrl}/education/`, education, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-          if (resEdu.status !== 201) {
-            // toast.error("Form submission failed. Please try again.", {
-            //   position: "top-center",
-            //   autoClose: 3000,
-            // });
-            return;
-          }
-
-          let acadmicDoc = {
-            employee_id: userProfile.id,
-            name: "acadmicDoc",
-            description: "Acadmic Document",
-            document: academicInfo.certificate,
-          };
-          let resAcademicDoc = await axios.post(
-            `${baseUrl}/attachment/`,
-            acadmicDoc,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (resAcademicDoc.status !== 201) {
-            toast.error("Form submission failed. Please try again.", {
-              position: "top-center",
-              autoClose: 3000,
-            });
-            return;
-          }
-          certifications.map(async (crt) => {
-            let certification = {
-              employee_id: userProfile.id,
-              certification_name: crt.certification_name,
-              completion_date: crt.completion_date,
-              certification_body: crt.certification_body,
-              expiry_date: crt.expiry_date,
-            };
-            let res = await axios.post(
-              `${baseUrl}/certification/`,
-              certification,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-            if (res.status !== 201) {
-              // toast.error("Form submission failed. Please try again.", {
-              //   position: "top-center",
-              //   autoClose: 3000,
-              // });
-              return;
-            }
-          });
-
-          toast.success("Form submitted successfully!", {
-            position: "top-center",
-            autoClose: 3000,
-          });
-          sessionStorage.clear();
-          setTimeout(() => {
-            navigate("/");
-            sessionStorage.clear();
-            // return;
-          }, 3000);
-        } else {
-          // toast.error("Form submission failed. Please try again.", {
-          //   position: "top-center",
-          //   autoClose: 3000,
-          // });
-          return;
-        }
-      } else {
-        // toast.error("Form submission failed. Please try again.", {
-        //   position: "top-center",
-        //   autoClose: 3000, // Close after 3 seconds
-        // });
-      }
+      toast.success("Form submitted successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+      sessionStorage.clear();
+      setTimeout(() => {
+        navigate("/");
+        sessionStorage.clear();
+        // return;
+      }, 3000);
 
     } catch (error) {
       toast.error("Form submission failed. Please try again.", {
@@ -396,8 +136,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             nextstep={nextStep}
             errors={errors}
             setErrors={setErrors}
-            setPersonalInfoProps={setPersonalInfo}
-            setProfilePhotoProps={setProfilePhoto}
           />
         )}
         {currentStep === 2 && (
@@ -406,9 +144,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             nextstep={nextStep}
             errors={errors}
             setErrors={setErrors}
-            setVisaDetailsProps={setVisaDetails}
             setVisaDetailsFilesProps={setVisaDetailsFiles}
-            visaDetailsProps={visaDetails}
             visaDetailsFilesProps={visaDetailsFiles}
           />
         )}
@@ -419,7 +155,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             substep={subStep}
             prevstep={prevStep}
             nextstep={nextStep}
-            setCvProps={setCv}
           />
         )}
         {currentStep === 3 && subStep === 2 && (
@@ -429,7 +164,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             substep={subStep}
             prevstep={prevStep}
             nextstep={nextStep}
-            setProfessionalExperianceProps={setProfessionalExperiance}
           />
         )}
         {currentStep === 4 && (
@@ -438,9 +172,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             setErrors={setErrors}
             prevstep={prevStep}
             nextstep={nextStep}
-            handleChange={handleFormChange}
-            setAcademicInfoProps={setAcademicInfo}
-            setCertificationsProps={setCertifications}
           />
         )}
         {currentStep === 5 && (
@@ -449,7 +180,6 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             setErrors={setErrors}
             prevstep={prevStep}
             nextstep={nextStep}
-            setBankInfoProps={setBankInfo}
           />
         )}
         {currentStep === 6 && (
@@ -457,9 +187,7 @@ const EmpForm = ({ baseUrl, token, userProfile }) => {
             prevstep={prevStep}
             errors={errors}
             setErrors={setErrors}
-            handleChange={handleFormChange}
             submitForm={submitForm}
-            setDepartmentInfoProps={setDepartmentInfo}
           />
         )}
       </div>

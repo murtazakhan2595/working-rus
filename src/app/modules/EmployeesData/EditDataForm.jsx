@@ -34,35 +34,37 @@ const EditDataForm = ({ token, baseUrl }) => {
   const { id } = useParams(); // Get the ID from URL params
 
   // Fetch employee data based on ID
-  useEffect(() => {
-    const fetchEmployeeData = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/emp/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const employeeData = response.data;
-        // Populate form fields with employee data
-        setFormData({
-          employeeId: employeeData.id,
-          username: employeeData.username,
-          firstname: employeeData.first_name,
-          lastname: employeeData.last_name,
-          email: employeeData.email,
-          password: "", // Assuming you don't want to show password in edit mode
-          userrole: userRoles.find((role) => role.value === employeeData.user_role),
-        });
-        setempId(employeeData.id)
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching employee data:", error);
-        setIsLoading(false);
-      }
-    };
 
+  const fetchEmployeeData = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/emp/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const employeeData = response.data;
+      // Populate form fields with employee data
+      setFormData({
+        employeeId: employeeData.id,
+        username: employeeData.username,
+        firstname: employeeData.first_name,
+        lastname: employeeData.last_name,
+        email: employeeData.email,
+        password: "", // Assuming you don't want to show password in edit mode
+        userrole: userRoles.find((role) => role.value === employeeData.user_role),
+      });
+      setempId(employeeData.id)
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching employee data:", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+   
     fetchEmployeeData();
-  }, [id, baseUrl, token]);
+  }, [id]);
 
   const handleChange = (name, value) => {
     setFormData({

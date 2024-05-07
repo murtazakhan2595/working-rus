@@ -22,7 +22,7 @@ import {
   setUserLogout,
   setUserProfile,
   setToken,
-} from "./state/actions/UserAction";
+} from "./state/slices/UserSlice.js";
 import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/modules/Employees/EmpForm";
 import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
@@ -31,7 +31,7 @@ import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
 import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
 import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
 
-import LeaveApplicationList from "./app/modules/LeaveApplication/LeaveApplicationList.jsx";
+import LeaveApplicationListHR from "./app/modules/LeaveApplication/LeaveApplicationListHR.jsx";
 import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
 import LeaveRequestHR from "./app/modules/LeaveApplication/LeaveRequestHR.jsx";
 import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestManager.jsx";
@@ -42,22 +42,36 @@ import Test from "./app/modules/Profile/Test.jsx";
 import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
 import LeaveBalanceManager from "./app/modules/LeaveApplication/LeaveBalanceManager.jsx";
 import ApplicationStatus from "./app/modules/LeaveApplication/ApplicationStatus.jsx";
+import LeaveBalanceHR from "./app/modules/LeaveApplication/LeaveBalanceHR.jsx";
+import LeaveApplicationListManager from "./app/modules/LeaveApplication/LeaveApplicationListManager.jsx";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import MyDtr from "./app/modules/DTR/MyDtr.jsx";
+import CreateTask from "./app/modules/DTR/CreateTask.jsx";
 
-function App({
-  setUserProfile,
-  userProfile,
-  baseUrl,
-  isLogin,
-  setToken,
-  setUserLogout,
-}) {
+// function App({
+//   setUserProfile,
+//   userProfile,
+//   baseUrl,
+//   isLogin,
+//   setToken,
+//   setUserLogout,
+// })
+function App() {
+
+  let userProfile = useSelector(state => state.user.userProfile);
+  let isLogin = useSelector(state => state.user.isLogin);
+  let token = useSelector(state => state.user.token);
+  let baseUrl = useSelector(state => state.user.baseUrl);
+  let dispatch = useDispatch();
+
   let width = window.screen.width;
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const navigate = useNavigate();
 
   const cookies = new Cookies();
-  let token = cookies.get("token");
+  token = cookies.get("token");
   const location = useLocation();
 
   const handleUpdateProfile = (data) => {
@@ -67,7 +81,8 @@ function App({
       is_filled: data.is_filled,
       role: data.user_role,
     };
-    setUserProfile(updateProfile);
+    // setUserProfile(updateProfile);
+    dispatch(setUserProfile(updateProfile));
   };
 
   const getProfile = async () => {
@@ -79,7 +94,7 @@ function App({
       });
       if (response.status === 200) {
         handleUpdateProfile(response.data);
-        setToken(token);
+        dispatch(setToken(token));
         cookies.set("token", token, { path: "*" });
         return;
       }
@@ -89,7 +104,7 @@ function App({
         (error.response.status === 401 || error.response.status === 403)
       ) {
         // Token expired or invalid
-        setUserLogout();
+        dispatch(setUserLogout());
         navigate("/");
       } else {
         console.error("Error fetching data:", error);
@@ -190,7 +205,7 @@ function App({
                       <Route
                         path="/leave-list"
                         element={
-                          <LeaveApplicationList isSidebarOpen={isSidebarOpen} />
+                          <LeaveApplicationListHR isSidebarOpen={isSidebarOpen} />
                         }
                       />
                       <Route
@@ -231,7 +246,7 @@ function App({
                       <Route
                         path="/leave-list"
                         element={
-                          <LeaveApplicationList isSidebarOpen={isSidebarOpen} />
+                          <LeaveApplicationListManager isSidebarOpen={isSidebarOpen} />
                         }
                       />
                       <Route
@@ -255,6 +270,14 @@ function App({
                         element={
                           <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
                         }
+                      />
+                      <Route
+                        path="/my-dtr"
+                        element={<MyDtr />}
+                      />
+                      <Route
+                        path="/create-task"
+                        element={<CreateTask />}
                       />
                     </>
                   )}
@@ -290,12 +313,16 @@ function App({
                       <Route
                         path="/leave-list"
                         element={
-                          <LeaveApplicationList isSidebarOpen={isSidebarOpen} />
+                          <LeaveApplicationListHR isSidebarOpen={isSidebarOpen} />
                         }
                       />
                       <Route
                         path="/leave-balance"
                         element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
+                      />
+                      <Route
+                        path="/leave-balance-hr"
+                        element={<LeaveBalanceHR isSidebarOpen={isSidebarOpen} />}
                       />
                       <Route
                         path="/leave-application-status"
@@ -368,8 +395,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, {
-  setUserLogout,
-  setUserProfile,
-  setToken,
-})(App);
+// export default connect(mapStateToProps, {
+//   setUserLogout,
+//   setUserProfile,
+//   setToken,
+// })(App);
+export default App;

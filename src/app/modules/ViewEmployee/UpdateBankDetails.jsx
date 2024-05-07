@@ -7,72 +7,75 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
+import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../hooks/employee';
+import { EmployeeBankDetails } from '../../utils/Types/Employee';
+import { validationBankDetailsFormSchema } from '../../utils/FormSchema/employeeFormSchema';
 import { useParams } from "react-router-dom";
 
-const bankSchema = Joi.object({
-  bank_name: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
-    .required()
-    .label("Bank Name")
-    .messages({
-      "string.empty": `Bank Name is required`,
-      "string.pattern.base": `Bank Name must contain only letters and spaces`,
-    }),
-  account_title: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
-    .required()
-    .label("Account Title")
-    .messages({
-      "string.empty": `Account Title is required`,
-      "string.pattern.base": `Account Title must contain only letters and spaces`,
-    }),
-  account_number: Joi.string()
-    .regex(/^\d+$/) // Only numbers allowed
-    .min(10) // Minimum length 10 digits
-    .required()
-    .label("Account Number")
-    .messages({
-      "string.empty": `Account Number is required`,
-      "string.pattern.base": `Account Number must contain only numbers`,
-      "string.min": `Account Number must be at least 10 digits long`,
-    }),
-  account_iban: Joi.string()
-    .alphanum() // Allow alphanumeric characters
-    .min(10) // Assuming a minimum length for IBAN
-    .required()
-    .label("IBAN")
-    .messages({
-      "string.empty": `IBAN is required`,
-      "string.alphanum": `IBAN must contain only letters and numbers`,
-    }),
-  branch_address: Joi.string()
-    .min(10) // Minimum length 10 characters
-    .required()
-    .label("Branch Address")
-    .messages({
-      "string.empty": `Branch Address is required`,
-      "string.min": `Branch Address must be at least 10 characters long`,
-    }),
-  branch_code: Joi.string()
-    .regex(/^\d+$/) // Only numbers allowed
-    .min(3) // Minimum length 3 digits
-    .required()
-    .label("Branch Code")
-    .messages({
-      "string.empty": `Branch Code is required`,
-      "string.pattern.base": `Branch Code must contain only numbers`,
-      "string.min": `Branch Code must be at least 3 digits long`,
-    }),
-  swift_code: Joi.string()
-    .alphanum() // Allow alphanumeric characters
-    .min(4) // Assuming a minimum length for Swift code
-    .required()
-    .label("Swift Code")
-    .messages({
-      "string.empty": `Swift Code is required`,
-      "string.alphanum": `Swift Code must contain only letters and numbers`,
-    }),
-});
+// const bankSchema = Joi.object({
+//   bank_name: Joi.string()
+//     .regex(/^[a-zA-Z\s]+$/)
+//     .required()
+//     .label("Bank Name")
+//     .messages({
+//       "string.empty": `Bank Name is required`,
+//       "string.pattern.base": `Bank Name must contain only letters and spaces`,
+//     }),
+//   account_title: Joi.string()
+//     .regex(/^[a-zA-Z\s]+$/)
+//     .required()
+//     .label("Account Title")
+//     .messages({
+//       "string.empty": `Account Title is required`,
+//       "string.pattern.base": `Account Title must contain only letters and spaces`,
+//     }),
+//   account_number: Joi.string()
+//     .regex(/^\d+$/) // Only numbers allowed
+//     .min(10) // Minimum length 10 digits
+//     .required()
+//     .label("Account Number")
+//     .messages({
+//       "string.empty": `Account Number is required`,
+//       "string.pattern.base": `Account Number must contain only numbers`,
+//       "string.min": `Account Number must be at least 10 digits long`,
+//     }),
+//   account_iban: Joi.string()
+//     .alphanum() // Allow alphanumeric characters
+//     .min(10) // Assuming a minimum length for IBAN
+//     .required()
+//     .label("IBAN")
+//     .messages({
+//       "string.empty": `IBAN is required`,
+//       "string.alphanum": `IBAN must contain only letters and numbers`,
+//     }),
+//   branch_address: Joi.string()
+//     // .min(10) // Minimum length 10 characters
+//     .required()
+//     .label("Branch Address")
+//     .messages({
+//       "string.empty": `Branch Address is required`,
+//       "string.min": `Branch Address must be at least 10 characters long`,
+//     }),
+//   branch_code: Joi.string()
+//     .regex(/^\d+$/) // Only numbers allowed
+//     .min(3) // Minimum length 3 digits
+//     .required()
+//     .label("Branch Code")
+//     .messages({
+//       "string.empty": `Branch Code is required`,
+//       "string.pattern.base": `Branch Code must contain only numbers`,
+//       "string.min": `Branch Code must be at least 3 digits long`,
+//     }),
+//   swift_code: Joi.string()
+//     .alphanum() // Allow alphanumeric characters
+//     .min(4) // Assuming a minimum length for Swift code
+//     .required()
+//     .label("Swift Code")
+//     .messages({
+//       "string.empty": `Swift Code is required`,
+//       "string.alphanum": `Swift Code must contain only letters and numbers`,
+//     }),
+// });
 
 
 const BankDetails = ({
@@ -84,99 +87,67 @@ const BankDetails = ({
   userProfile,
   baseUrl,
 }) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
+ 
   let [isEdit, setIsEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   let [cancelBox, setCancelBox] = useState(false);
-  let [defaultData, setDefaultData] = useState({});
-
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
-
-  const id = userProfile.id;
-  // const { id } = useParams();
-
-
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
-  const fetchData = async () => {
-    try {
-      const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
-        headers,
-      });
-      const employeeData = employeeResponse.data;
-      if (employeeData) {
-        let bankObj = {
-          account_iban: employeeData.account_iban,
-          account_number: employeeData.account_number,
-          account_title: employeeData.account_title,
-          bank_name: employeeData.bank_name,
-          branch_address: employeeData.branch_address,
-          branch_code: employeeData.branch_code,
-          swift_code: employeeData.swift_code,
-        };
-        setDefaultData(bankObj);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  const [bankInfo, setBankInfo] = useState({})
 
   useEffect(() => {
-    fetchData();
-  }, [isEdit]);
+    getEmployeeBankDetailsData(baseUrl, userProfile?.id, token).then(response => {
+      setBankInfo(response);
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
   const handleEdit = (name, value) => {
-    setDefaultData({ ...defaultData, [name]: value });
+    setBankInfo({ ...bankInfo, [name]: value });
     setErrors({ ...errors, [name]: null });
     setIsEdit(true); // Set isEdit to true when any field is clicked
   };
 
-  useEffect(() => {
-    setDataInSessionStorage("UpdatedBankInfo", defaultData);
-  }, [defaultData]);
-
-  
   const handleSave = async () => {
-    // Validate input data using the bankSchema
-    const { error } = bankSchema.validate(defaultData, { abortEarly: false });
+    // Validate input data using the validationBankDetailsFormSchema
+    const { error } = validationBankDetailsFormSchema.validate(
+      {
+        bank_name: bankInfo.bank_name,
+        account_title: bankInfo.account_title,
+        account_number: bankInfo.account_number,
+        branch_address: bankInfo.branch_address,
+        branch_code: bankInfo.branch_code,
+        swift_code: bankInfo.swift_code,
+      },
+      { abortEarly: false }
+    );
     if (error) {
       // If validation fails, set errors state accordingly
       const validationErrors = {};
       error.details.forEach((errorDetail) => {
         validationErrors[errorDetail.path[0]] = errorDetail.message;
       });
+      if (bankInfo.account_iban) {
+        if (bankInfo.account_iban.length < 10)
+          validationErrors.account_iban = "IBAN number must be at least 10 characters";
+      }
       setErrors(validationErrors);
       return; // Exit the function without saving if there are validation errors
     }
-
     setIsLoading(true);
     try {
       // Save data to the server
-      let UpdatedBankInfo = getDataFromSessionStorage("UpdatedBankInfo");
-      let response = await axios.patch(
-        `${baseUrl}/emp/${id}`,
-        UpdatedBankInfo,
-        { headers }
-      );
-      if (response.status === 200) {
-        setDefaultData(UpdatedBankInfo);
-        sessionStorage.clear();
-        toast.success("Bank Details Updated!", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-        nextstep();
+      if (bankInfo && !bankInfo?.account_iban) {
+        delete bankInfo.account_iban;
       }
+      if (bankInfo && !bankInfo?.swift_code) {
+        delete bankInfo.swift_code;
+      }
+      saveEmployeeBankDetailsData(baseUrl, userProfile?.id, token, bankInfo);
+      toast.success("Bank Details Updated!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      nextstep();
     } catch (error) {
       console.error("Error saving data:", error);
       toast.error("Form submission failed. Please try again.", {
@@ -189,7 +160,6 @@ const BankDetails = ({
   };
 
   const handleNextStep = () => {
-    sessionStorage.clear();
     nextstep();
   };
 
@@ -232,7 +202,7 @@ const BankDetails = ({
                     <input
                       type="text"
                       readOnly={!isEdit} // Use readOnly instead of disabled
-                      value={defaultData.bank_name}
+                      value={bankInfo.bank_name}
                       name="bank_name"
                       placeholder="Bank Name Here"
                       className={`${isEdit ? "text-black" : "text-gray-500"
@@ -259,9 +229,9 @@ const BankDetails = ({
                     <input
                       type="text"
                       readOnly={!isEdit} // Use readOnly instead of disabled
-                      value={defaultData.account_title}
+                      value={bankInfo.account_title}
                       name="account_title"
-                      
+
                       placeholder="Account Title Here"
                       className={`${isEdit ? "text-black" : "text-gray-500"
                         } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
@@ -289,9 +259,9 @@ const BankDetails = ({
                     <input
                       type="number"
                       readOnly={!isEdit} // Use readOnly instead of disabled
-                      value={defaultData.account_number}
+                      value={bankInfo.account_number}
                       name="account_number"
-                      
+
                       placeholder="Account Number Here"
                       className={`${isEdit ? "text-black" : "text-gray-500"
                         } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
@@ -317,9 +287,9 @@ const BankDetails = ({
                     <input
                       type="text"
                       readOnly={!isEdit} // Use readOnly instead of disabled
-                      value={defaultData.account_iban}
+                      value={bankInfo.account_iban}
                       name="account_iban"
-                      
+
                       placeholder="IBAN Here"
                       className={`${isEdit ? "text-black" : "text-gray-500"
                         }  pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
@@ -346,9 +316,9 @@ const BankDetails = ({
                   <input
                     type="text"
                     readOnly={!isEdit} // Use readOnly instead of disabled
-                    value={defaultData.branch_address}
+                    value={bankInfo.branch_address}
                     name="branch_address"
-                    
+
                     placeholder="Branch Address Here"
                     className={`${isEdit ? "text-black" : "text-gray-500"
                       } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
@@ -373,9 +343,9 @@ const BankDetails = ({
                     <input
                       type="number"
                       readOnly={!isEdit} // Use readOnly instead of disabled
-                      value={defaultData.branch_code}
+                      value={bankInfo.branch_code}
                       name="branch_code"
-                      
+
                       placeholder="Branch Code Here"
                       className={`${isEdit ? "text-black" : "text-gray-500"
                         } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
@@ -401,9 +371,9 @@ const BankDetails = ({
                     <input
                       type="text"
                       readOnly={!isEdit}
-                      value={defaultData.swift_code}
+                      value={bankInfo.swift_code}
                       name="swift_code"
-                      
+
                       placeholder="Swift Code Here"
                       className={`${isEdit ? "text-black" : "text-gray-500"
                         } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}

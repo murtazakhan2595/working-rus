@@ -12,107 +12,87 @@ import moment from 'moment';
 import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 import CustomSelect from './customSelect';
-import { HeadOfDepartment, employeeStatus, jobRoles } from '../../../data/Data';
+import { HeadOfDepartment, department, employeeStatus, jobRoles } from '../../../data/Data';
+
+import { getEmployeeDepartemtInfoData, saveEmployeeDepartemtInfoData } from '../../hooks/employee';
+import { EmployeeDepartmentInfo } from '../../utils/Types/Employee'
+import { validationDepartmentInfoFormSchema } from '../../utils/FormSchema/employeeFormSchema'
 
 
-const departmentSchema = Joi.object({
-  department_name: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
-    .required()
-    .label('Department Name')
-    .messages({
-      "string.empty": `Department Name is required`,
-      "string.pattern.base": `Department Name must only contain letters and spaces`,
-    }),
-  department_position: Joi.string()
-    .regex(/^[a-zA-Z\s]+$/)
-    .required()
-    .label('Position')
-    .messages({
-      "string.empty": `Position is required`,
-      "string.pattern.base": `Position must only contain letters and spaces`,
-    }),
-  direct_report: Joi.string().required(),
-  indirect_report: Joi.string().required(),
-  department_manager: Joi.string().required()
-});
+function getManagerSelected(managers, managersList) {
+
+  if (managers) {
+    managers = managers.split(', ') || [];
+    const matchingObjects = managersList.filter(obj => {
+      return managers.find(element => obj.label === element);
+    });
+    return matchingObjects;
+  }
+
+  return [];
+
+}
 
 const Department = ({ errors, setErrors, prevstep, token,
   userProfile,
   baseUrl,
 }) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
+
   let [isEdit, setIsEdit] = useState(false);
   let [cancelBox, setCancelBox] = useState(false);
-  let [defaultData, setDefaultData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [managers, setManagers] = useState([]);
   const navigate = useNavigate()
+  const [departmentInfo, setDepartmentInfo] = useState(EmployeeDepartmentInfo)
 
-  const id = userProfile.id;
-  // const { id } = useParams();
+  useEffect(() => {
+    getEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token).then(response => {
+      setDepartmentInfo(response);
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
 
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
-  const fetchData = async () => {
-    try {
-      const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
-        headers,
-      });
-      const employeeData = employeeResponse.data;
-      if (employeeData) {
-        const departmentObj = {
-          department_name: employeeData.department_name,
-          department_position: employeeData.department_position,
-          direct_report: employeeData.direct_report,
-          indirect_report: employeeData.indirect_report,
-          is_indirect_report_applicable: employeeData.is_indirect_report_applicable,
-          department_manager: employeeData.department_manager,
-          joining_date: employeeData.joining_date,
-          employee_type: employeeData.employee_type,
-          employee_status: employeeData.employee_status
-        };
-        setDefaultData(departmentObj);
-
-        // Fetch managers
-        const response = await axios.get(`${baseUrl}/emp/`, { headers });
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (response.status === 200) {
-          setManagers(response.data);
+          let managersList = response.data;
+          managersList = managersList
+            ?.filter(manager => manager.username)
+            .map((manager) => ({
+              value: manager.id,
+              label: manager.username,
+            }))
+          setManagers(managersList);
         }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        // Handle errors here if needed
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+    };
 
-
-  useEffect(() => {
-    fetchData();
-  }, [isEdit]);
-
-  useEffect(() => {
-    setDataInSessionStorage('UpdatedDepartmentInfo', defaultData)
-  }, [defaultData])
+    fetchData(); // Call the async function to fetch data
+  }, []);
 
   const handleSave = async () => {
     setIsLoading(true);
-    const { error } = departmentSchema.validate(
+    const { error } = validationDepartmentInfoFormSchema.validate(
       {
-        department_name: defaultData.department_name,
-        department_position: defaultData.department_position,
-        direct_report: defaultData.direct_report,
-        indirect_report: defaultData.indirect_report,
-        department_manager: defaultData.department_manager,
-        // joining_date: defaultData.joining_date,
+        department_name: departmentInfo.department_name,
+        department_position: departmentInfo.department_position,
+        direct_report: departmentInfo.direct_report,
+        indirect_report: departmentInfo.indirect_report,
+        department_manager: departmentInfo.department_manager,
+        employee_type: departmentInfo.employee_type,
+        employee_status: departmentInfo.employee_status,
+        joining_date: departmentInfo.joining_date,
       },
       { abortEarly: false }
     );
@@ -127,16 +107,13 @@ const Department = ({ errors, setErrors, prevstep, token,
     } else {
       try {
         setErrors({});
-        let UpdatedDepartmentInfo = getDataFromSessionStorage('UpdatedDepartmentInfo');
-        let response = await axios.patch(`${baseUrl}/emp/${id}`, UpdatedDepartmentInfo, { headers });
-        if (response.status === 200) {
-          setIsEdit(!isEdit);
-          toast.success('Department Information Updated!', {
-            position: 'top-right',
-            autoClose: 3000,
-          });
-          sessionStorage.clear(); // Remove the redundant sessionStorage.clear() here
-        }
+        saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
+        setIsEdit(!isEdit);
+        toast.success('Department Information Updated!', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+
       } catch (error) {
         toast.error('Failed to update department information. Please try again.', {
           position: 'top-center',
@@ -148,28 +125,22 @@ const Department = ({ errors, setErrors, prevstep, token,
     }
   };
 
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
-
-  // const handleEdit = (name, value) => {
-  //   setDefaultData({ ...defaultData, [name]: value });
-  //   setErrors({ ...errors, [name]: null });
-  // };
   const handleEdit = (name, value, values) => {
     // Check if the name is 'employee_type' or 'employee_status'
     if (name === 'employee_type' || name === 'employee_status') {
-      setDefaultData({ ...defaultData, [name]: value.value });
-    } else if (name === "indirect_report" || name === "direct_report") {
+      setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+    } else if (name === "department_name") {
+      setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+    }
+    else if (name === "indirect_report" || name === "direct_report") {
       const updatedValues = values || []; // In case 'values' is null
       const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
-      setDefaultData({
-        ...defaultData,
+      setDepartmentInfo({
+        ...departmentInfo,
         [name]: uniqueValues.join(', '), // Convert array to string
       });
     } else {
-      setDefaultData({ ...defaultData, [name]: value });
+      setDepartmentInfo({ ...departmentInfo, [name]: value });
     }
     // Clear errors for the updated field
     setErrors({ ...errors, [name]: null });
@@ -192,7 +163,6 @@ const Department = ({ errors, setErrors, prevstep, token,
     ),
     value: manager.value
   }));
-
 
 
   return (
@@ -224,18 +194,26 @@ const Department = ({ errors, setErrors, prevstep, token,
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                   <label htmlFor="department_name" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Department Name:</label>
-                  <input type="text" readOnly={!isEdit} value={defaultData.department_name} name="department_name" id="" placeholder='Department Name Here'
-                    className={`${isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
+                  <div
                     onClick={() => setIsEdit(true)}
-                    onChange={(e) => handleEdit(e.target.name, e.target.value)}
-                  />
+                  >
+                    <Select
+                      name="department_name"
+                      isDisabled={isEdit ? false : true}
+                      className="focus:outline-none border-none"
+                      options={department}
+                      value={department.find(
+                        (option) => option.value === departmentInfo.department_name
+                      )}
+                      onChange={selectedOption => handleEdit("department_name", selectedOption)}
+                    />
+                  </div>
                   {errors.department_name && <span className="text-red-500 text-sm ">{errors.department_name}</span>}
                 </div>
                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                   <label htmlFor="department_position" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Position:</label>
-                  <input type="text" readOnly={!isEdit} value={defaultData.department_position} name="department_position" id="" placeholder='Position Here'
+                  <input type="text" readOnly={!isEdit} value={departmentInfo.department_position} name="department_position" id="" placeholder='Position Here'
                     className={`${isEdit ? "text-black" : "text-gray-500"
                       } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
                     onClick={() => setIsEdit(true)}
@@ -260,7 +238,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                       menuPlacement="top"
                       name="employee_type"
                       isDisabled={isEdit ? false : true}
-                      value={jobRoles.find(option => option.label === defaultData.employee_type)}
+                      value={jobRoles.find(option => option.label === departmentInfo.employee_type)}
                       options={jobRoles}
                       isSearchable={false}
                       className="focus:outline-none border-none"
@@ -286,7 +264,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                         menuPlacement="top"
                         isDisabled={isEdit ? false : true}
                         name="employee_status"
-                        value={employeeStatus?.find(option => option.label === defaultData.employee_status)}
+                        value={employeeStatus?.find(option => option.label === departmentInfo.employee_status)}
                         onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
                         options={employeeStatus}
                         isSearchable={false}
@@ -308,14 +286,9 @@ const Department = ({ errors, setErrors, prevstep, token,
                       menuPlacement="top"
                       name='direct_report'
                       placeholder="Search Direct Report To..."
-                      value={managers.find(manager => manager.label === defaultData.direct_report)}
+                      value={getManagerSelected(departmentInfo.direct_report, managers)}
                       onChange={(selectedOption) => handleEdit("direct_report", selectedOption, selectedOption)}
-                      options={managers
-                        ?.filter(manager => manager.username)
-                        .map((manager) => ({
-                          value: manager.id,
-                          label: manager.username,
-                        }))}
+                      options={managers}
                       isEdit={isEdit} // Pass the isEdit prop
                       isMulti={true}
                     />
@@ -335,7 +308,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                     <div className='flex items-center gap-x-2'>
                       <p className='text-sm'>Yes</p>
                       <input type="checkbox"
-                        checked={defaultData.is_indirect_report_applicable}
+                        checked={departmentInfo.is_indirect_report_applicable}
                         name="is_indirect_report_applicable_yes"
                         onChange={(e) => handleEdit('is_indirect_report_applicable', e.target.checked)}
                       />
@@ -343,7 +316,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                     <div className='flex items-center gap-x-2'>
                       <p className='text-sm'>No</p>
                       <input type="checkbox"
-                        checked={!defaultData.is_indirect_report_applicable}
+                        checked={!departmentInfo.is_indirect_report_applicable}
                         name="is_indirect_report_applicable_no"
                         onChange={(e) => handleEdit('is_indirect_report_applicable', !e.target.checked)}
                       />
@@ -353,7 +326,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                   <div className='flex flex-col gap-2 items-center'>
                     <div className='w-full'>
 
-                      {defaultData.is_indirect_report_applicable && (
+                      {departmentInfo.is_indirect_report_applicable && (
                         <>
                           <div onClick={() => setIsEdit(true)}>
 
@@ -361,17 +334,9 @@ const Department = ({ errors, setErrors, prevstep, token,
                               menuPlacement="top"
                               name='indirect_report'
                               placeholder="Search Indirect Report To..."
-                      value={managers.find(manager => manager.label === defaultData.direct_report)}
-                      // value={managers
-                      //           .filter(manager => manager.username === defaultData.indirect_report)
-                      //           .map(manager => ({ value: manager.id, label: manager.username }))}
+                              value={getManagerSelected(departmentInfo.indirect_report, managers)}
                               onChange={(selectedOption) => handleEdit("indirect_report", selectedOption, selectedOption)}
-                              options={managers
-                                ?.filter(manager => manager.username)
-                                .map((manager) => ({
-                                  value: manager.id,
-                                  label: manager.username,
-                                }))}
+                              options={managers}
                               isEdit={isEdit}
                               isMulti={true}
                             />
@@ -398,7 +363,7 @@ const Department = ({ errors, setErrors, prevstep, token,
                       menuPlacement="top"
                       name="department_manager"
                       value={HeadOfDepartmentOptions.find(
-                        (option) => option.value === defaultData.department_manager
+                        (option) => option.value === departmentInfo.department_manager
                       )}
                       onChange={(selectedOption) =>
                         handleEdit("department_manager", selectedOption.value)
@@ -451,24 +416,24 @@ const Department = ({ errors, setErrors, prevstep, token,
                     disabled={isEdit ? false : true}
                     // readOnly={!isEdit}
                     day={
-                      defaultData.joining_date
-                        ? defaultData.joining_date.substr(0, 2)
+                      departmentInfo.joining_date
+                        ? departmentInfo.joining_date.substr(0, 2)
                         : null
                     }
                     month={
-                      defaultData.joining_date
-                        ? defaultData.joining_date.substr(3, 2)
+                      departmentInfo.joining_date
+                        ? departmentInfo.joining_date.substr(3, 2)
                         : null
                     }
                     year={
-                      defaultData.joining_date
-                        ? defaultData.joining_date.substr(6, 4)
+                      departmentInfo.joining_date
+                        ? departmentInfo.joining_date.substr(6, 4)
                         : null
                     }
                     name="joining_date"
                     className="z-50"
                     selected={moment(
-                      defaultData.joining_date,
+                      departmentInfo.joining_date,
                       "DD-MM-YYYY"
                     ).toDate()}
                     // onClick={handleFieldClick}

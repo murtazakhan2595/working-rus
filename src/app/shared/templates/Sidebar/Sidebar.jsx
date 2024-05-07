@@ -2,13 +2,11 @@
 import { useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { MdOutlineAccountTree, MdOutlineLogout } from "react-icons/md";
-import { PiSuitcaseRollingBold } from "react-icons/pi";
 import {
   AiOutlinePlus,
 } from "react-icons/ai";
 import { FaAngleDoubleLeft, FaAngleDoubleRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
-import { GoProjectSymlink } from "react-icons/go";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
 import logo from "../../../../assets/images/logo.png";
@@ -20,10 +18,12 @@ import axios from "axios";
 import { LiaHomeSolid } from "react-icons/lia";
 import { BsPersonFillGear, BsPersonGear } from "react-icons/bs";
 import { LuCalendarDays, LuFolderCog2 } from "react-icons/lu";
-import { GrTree } from "react-icons/gr";
 import HrRole from "./HrRole";
 import ManagerRole from "./ManagerRole";
 import EmployeeRole from "./EmployeeRole";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { toggleDropdown, isDbOpen, isRecruitmentOpen, isLeaveOpen, isProjectOpen, isProfileOpen } from "../../../../state/slices/DropdownSlice";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -36,53 +36,21 @@ const Sidebar = ({
   const location = useLocation();
   const navigate = useNavigate();
   const cookies = new Cookies();
-  const [isProjectOpen, setIsProjectOpen] = useState(false);
   const [isModelOpen, setisModelOpen] = useState(false);
   const [isLinksOpen, setIsLinksOpen] = useState(false);
-  const [isDbOpen, setIsDbOpen] = useState(false);
-  const [isRecruitmentOpen, setIsRecruitmentOpen] = useState(false);
-  const [isLeaveOpen, setIsLeaveOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [nextPage, setNextPage] = useState("");
   const [previousPage, setPreviousPage] = useState("");
   const [projectsCount, setProjectCount] = useState(0);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [employee, setEmployee] = useState(null);
   const [expanded, setExpanded] = useState(true);
 
-  const toggleDropdown = (dropdownName) => {
-    if (dropdownName === "HRDatabase") {
-      setIsDbOpen((prev) => !prev);
-      setIsRecruitmentOpen(false);
-      setIsLeaveOpen(false);
-      setIsProjectOpen(false);
-      setIsProfileOpen(false);
-    } else if (dropdownName === "Recruitment") {
-      setIsRecruitmentOpen((prev) => !prev);
-      setIsDbOpen(false);
-      setIsLeaveOpen(false);
-      setIsProjectOpen(false);
-      setIsProfileOpen(false);
-    } else if (dropdownName === "LeaveManagement") {
-      setIsLeaveOpen((prev) => !prev);
-      setIsDbOpen(false);
-      setIsRecruitmentOpen(false);
-      setIsProjectOpen(false);
-      setIsProfileOpen(false);
-    } else if (dropdownName === "Projects") {
-      setIsProjectOpen((prev) => !prev);
-      setIsProfileOpen(false);
-      setIsDbOpen(false);
-      setIsRecruitmentOpen(false);
-      setIsLeaveOpen(false);
-    } else if (dropdownName === "Profile") {
-      setIsProfileOpen((prev) => !prev);
-      setIsProjectOpen(false);
-      setIsDbOpen(false);
-      setIsRecruitmentOpen(false);
-      setIsLeaveOpen(false);
-    }
+  const { isDbOpen, isRecruitmentOpen, isLeaveOpen, isProjectOpen, isProfileOpen } = useSelector(state => state.dropdown);
+  const dispatch = useDispatch();
+
+  const handleToggleDropdown = (dropdownName) => {
+    dispatch(toggleDropdown(dropdownName));
   };
 
   const handleSidebarToggle = () => {
@@ -145,7 +113,7 @@ const Sidebar = ({
         {/* Sidebar content goes here */}
         <div
           style={{ backgroundImage: `url(${sidebg})` }}
-          className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-lg  ${isSidebarOpen ? "w-[14.2rem]" : "w-24"
+          className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-e-lg ${isSidebarOpen ? "w-[14.2rem]" : "w-24"
             }`}
 
         >
@@ -191,7 +159,7 @@ const Sidebar = ({
 
                 <li className="group">
                   <div
-                    onClick={() => toggleDropdown("HRDatabase")}
+                    onClick={() => handleToggleDropdown("HRDatabase")}
                     className={`flex items-center justify-between py-2 px-2 my-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isDbOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                       } rounded-lg cursor-pointer `}
                   >
@@ -256,7 +224,7 @@ const Sidebar = ({
                 }
                 <li className="group">
                   <div
-                    onClick={() => toggleDropdown("Recruitment")}
+                    onClick={() => handleToggleDropdown("Recruitment")}
                     className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isRecruitmentOpen ? "bg-[#DAEFF8] text-[#0D2282]" : " text-[#5C5E64]"
                       } rounded-lg cursor-pointer`}
                   >
@@ -322,7 +290,7 @@ const Sidebar = ({
                 }
                 <li className="group">
                   <div
-                    onClick={() => toggleDropdown("LeaveManagement")}
+                    onClick={() => handleToggleDropdown("LeaveManagement")}
                     className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                       } rounded-lg cursor-pointer`}
                   >
@@ -348,14 +316,14 @@ const Sidebar = ({
                               <p className="text-sm">Leave Application</p>
                             </div>
                           </Link>
-                          <Link to="/leave-application-status">
+                          {/* <Link to="/leave-application-status">
                             <div
                               className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                 }`}
                             >
                               <p className="text-sm">Application Status</p>
                             </div>
-                          </Link>
+                          </Link> */}
                           <Link to="/leave-calender">
                             <div
                               className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
@@ -369,7 +337,7 @@ const Sidebar = ({
                               className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                 }`}
                             >
-                              <p className="text-sm">Leave List</p>
+                              <p className="text-sm">Team Application Status</p>
                             </div>
                           </Link>
                           <Link to="/leave-balance">
@@ -377,7 +345,7 @@ const Sidebar = ({
                               className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                                 }`}
                             >
-                              <p className="text-sm">Leave Balance</p>
+                              <p className="text-sm">Team Leave Balance</p>
                             </div>
                           </Link>
                         </li>
@@ -398,20 +366,20 @@ const Sidebar = ({
                           <p className="text-sm">Leave Application</p>
                         </div>
                       </Link>
-                      <Link to="/leave-application-status">
+                      {/* <Link to="/leave-application-status">
                         <div
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
                           <p className="text-sm">Application Status</p>
                         </div>
-                      </Link>
+                      </Link> */}
                       <Link to="/leave-calender">
                         <div
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
-                          <p className="text-sm">Leave Calender</p>
+                          <p className="text-sm">Team Leave Calender</p>
                         </div>
                       </Link>
 
@@ -420,7 +388,7 @@ const Sidebar = ({
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
-                          <p className="text-sm">Leave List</p>
+                          <p className="text-sm">Team Application Status</p>
                         </div>
                       </Link>
                       <Link to="/leave-balance">
@@ -428,7 +396,7 @@ const Sidebar = ({
                           className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                             }`}
                         >
-                          <p className="text-sm">Leave Balance</p>
+                          <p className="text-sm">Team Leave Balance</p>
                         </div>
                       </Link>
                     </li>
@@ -452,7 +420,7 @@ const Sidebar = ({
             {userProfile.role !== 3 && (
               <>
                 <li
-                  onClick={() => toggleDropdown("Projects")}
+                  onClick={() => handleToggleDropdown("Projects")}
                   className={`flex group mt-2 mb-2 justify-between hover:bg-[#DAEFF8] hover:text-[#0D2282] rounded-md py-2 px-2 items-center gap-1 cursor-pointer ${isProjectOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                     }`}
                 >
@@ -582,7 +550,7 @@ const Sidebar = ({
                         <div className="flex items-center gap-x-2">
                           <div className="font-semibold">{employee?.username}</div>
                         </div>
-                        <div className="text-xs">{employee?.email}</div>
+                        <div className="text-xs overflow-hidden text-ellipsis" style={{width : '93px'}}>{employee?.work_email}</div>
                       </div>
                     </div>
                     <div className="flex flex-col gap-y-2 mt-2 mx-1">
@@ -590,7 +558,7 @@ const Sidebar = ({
                         <p>Profile Settings</p>
                         <BsPersonGear />
                       </Link>
-                      <div className="flex items-center justify-between px-3 py-1 mb-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+                      <div className="flex items-center cursor-pointer justify-between px-3 py-1 mb-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
                         onClick={() => {
                           cookies.set("token", "", { path: "*" });
                           setUserLogout();
@@ -603,21 +571,22 @@ const Sidebar = ({
                   </div>
                 )}
 
-                <div className={`flex flex-col text-[#5C5E64] ${isSidebarOpen ? 'block' : 'hidden'}`} onClick={() => toggleDropdown("Profile")}>
+                <div className={`flex flex-col text-[#5C5E64] ${isSidebarOpen ? 'block' : 'hidden'}`} onClick={() => handleToggleDropdown("Profile")}>
                   <div className="flex items-center gap-x-2">
                     <div className="font-semibold">{employee?.username}</div>
                     <FaAngleDown className={`text-xs transition-transform duration-300 ${isProfileOpen ? 'transform rotate-180' : ''}`} />
                   </div>
-                  <div className="text-xs">{employee?.email}</div>
+                  <div className="text-xs overflow-hidden text-ellipsis" style={{width : '113px'}}>{employee?.work_email}</div>
                 </div>
               </div>
+              
               {(isProfileOpen && isSidebarOpen) && (
                 <div className="flex flex-col gap-y-2 mt-2">
                   <Link to="/profile" className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]">
                     <p>Profile Settings</p>
                     <BsPersonGear />
                   </Link>
-                  <div className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+                  <div className="flex items-center cursor-pointer justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
                     onClick={() => {
                       cookies.set("token", "", { path: "*" });
                       setUserLogout();

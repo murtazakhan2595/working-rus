@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
+const LeaveApplicationListManager = ({ baseUrl, token, userProfile }) => {
+    console.log(userProfile, 'iam')
   // Initialize state variables
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -20,9 +21,9 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
   useEffect(() => {
     const fetchLeaveList = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/leave?ordering=date`, { headers });
+        const response = await axios.get(`${baseUrl}/leaveManager`, { headers });
         if (response.status === 200) {
-          setLeavesList(response.data);
+          setLeavesList(response.data.results);
           setLoading(false);
         }
       } catch (error) {
@@ -57,7 +58,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
 
   return (
     <div className="bg-[#F9F9F9] w-full">
-      <LeaveHeader post="Leave" />
+      <LeaveHeader post="Team Application Status" />
       <div className="overflow-y-auto max-h-[80vh] roundScroll px-8 py-3">
 
         {loading && (
@@ -87,7 +88,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">End Date</th>
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Status</th>
-                    <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Status</th>
+                    {/* <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Status</th> */}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -103,7 +104,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
                       <td className="px-3 py-2 whitespace-nowrap">{employee.start_date}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{employee.end_date}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{employee.status_manager}</td>
-                      <td className="px-3 py-2 whitespace-nowrap">{employee.status_hr}</td>
+                      {/* <td className="px-3 py-2 whitespace-nowrap">{employee.status_hr}</td> */}
                     </tr>
                   ))}
                 </tbody>
@@ -129,7 +130,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">End Date</th>
                     <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Manager Status</th>
-                    <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Status</th>
+                    {/* <th scope="col" className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">HR Status</th> */}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -145,7 +146,7 @@ const LeaveApplicationList = ({ baseUrl, token, userProfile }) => {
                       <td className="px-3 py-2 whitespace-nowrap">{employee.start_date}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{employee.end_date}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{employee.status_manager}</td>
-                      <td className="px-3 py-2 whitespace-nowrap">{employee.status_hr}</td>
+                      {/* <td className="px-3 py-2 whitespace-nowrap">{employee.status_hr}</td> */}
                     </tr>
                   ))}
                 </tbody>
@@ -172,4 +173,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(LeaveApplicationList);
+export default connect(mapStateToProps)(LeaveApplicationListManager);

@@ -26,7 +26,7 @@ const LeaveBalanceManager = ({ baseUrl, token, userProfile, isSidebarOpen }) => 
 
   const fetchLeaves = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/leaveManager?search{"report_to":${userProfile.id}}`, { headers });
+      const response = await axios.get(`${baseUrl}/leaveManager`, { headers });
       setLeaves(response.data.results);
       setLoading(false);
     } catch (error) {
@@ -69,7 +69,7 @@ const LeaveBalanceManager = ({ baseUrl, token, userProfile, isSidebarOpen }) => 
 
   return (
     <div className="bg-[#F9F9F9] w-full">
-      <LeaveHeader post="Leave Balance" />
+      <LeaveHeader post="Team Leave Balance" />
       <div className="md:my-3 lg:mx-8 lg:my-5 my-2">
         <div className="flex flex-wrap justify-between md:justify-center lg:justify-between md:gap-x-14 lg:gap-x-0 items-center bg-[#F2F2F2] rounded-md">
           <div className="p-2 lg:p-3 block">
@@ -126,9 +126,9 @@ const LeaveBalanceManager = ({ baseUrl, token, userProfile, isSidebarOpen }) => 
         </div>
       </div>
       <div className="flex items-center justify-center mx-1 md:mx-2 lg:mx-8 gap-x-2">
-        <h2 className="text-[#343434] font-semibold w-[100%] rounded-tl-md rounded-bl-lg py-1 bg-[#F2F2F2] text-lg text-center">
+        {/* <h2 className="text-[#343434] font-semibold w-[100%] rounded-tl-md rounded-bl-lg py-1 bg-[#F2F2F2] text-lg text-center">
           Employee Data
-        </h2>
+        </h2> */}
         {/* <h2 className="text-[#343434] font-semibold w-[30%] md:w-[13%] lg:w-[29%] rounded-tr-md rounded-br-lg py-1 bg-[#F2F2F2] text-lg text-center">
           Leave Data
         </h2> */}

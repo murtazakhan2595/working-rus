@@ -8,97 +8,56 @@ import Datepicker from '../Dashboard/Datepicker';
 import CustomSelect from '../UpdateEmployee/customSelect';
 import axios from "axios";
 import { connect } from 'react-redux';
-import { HeadOfDepartment, employeeStatus, jobRoles } from '../../../data/Data';
+import { HeadOfDepartment, department, employeeStatus, jobRoles } from '../../../data/Data';
+import { getEmployeeDepartemtInfoData, saveEmployeeDepartemtInfoData } from '../../hooks/employee';
+import { EmployeeDepartmentInfo } from '../../utils/Types/Employee'
+import { validationDepartmentInfoFormSchema } from '../../utils/FormSchema/employeeFormSchema'
 
+function getManagerSelected(managers, managersList) {
+    if (managers) {
+        managers = managers.split(', ') || [];
+        const matchingObjects = managersList.filter(obj => {
+            return managers.find(element => obj.label === element);
+        });
 
-const departmentSchema = Joi.object({
-    department_name: Joi.string()
-        .regex(/^[a-zA-Z\s]+$/)
-        .required()
-        .label('Department Name')
-        .messages({
-            "string.empty": `Department Name is required`,
-            "string.pattern.base": `Department Name must only contain letters and spaces`,
-        }),
-    department_position: Joi.string()
-        .regex(/^[a-zA-Z\s]+$/)
-        .required()
-        .label('Position')
-        .messages({
-            "string.empty": `Position is required`,
-            "string.pattern.base": `Position must only contain letters and spaces`,
-        }),
-    employee_status: Joi.string().required().label('Employee status')
-        .messages({
-            "string.empty": `Employee Status is required`,
-        }),
-    employee_type: Joi.string().required().label('Employee type')
-        .messages({
-            "string.empty": `Employee type is required`,
-        }),
-    // direct_report: Joi.string().required().label('Direct Report')
-    //     .messages({
-    //         "string.empty": `Direct Report is required`,
-    //     }),
-    // indirect_report: Joi.string().required().label('Indirect Report'),
-    // indirect_report: Joi.string().when('is_indirect_report_applicable', {
-    //     is: Joi.boolean().valid(true).required(),
-    //     then: Joi.required(),
-    //     otherwise: Joi.optional()
-    // }),
-    department_manager: Joi.string().required().label('Department Manger').messages({
-        "string.empty": `Department Manger is required`,
-    }),
-    joining_date: Joi.string()
-        .regex(/^\d{2}-\d{2}-\d{4}$/) // Matches "DD-MM-YYYY" format
-        .required()
-        .label('Joining Date')
-        .messages({
-            'string.empty': 'Joining Date is required',
-            'string.pattern.base': 'Joining Date must be in "DD-MM-YYYY" format',
-        })
-});
+        return matchingObjects;
+    }
 
+    return [];
 
+}
 
-const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, setDepartmentInfoProps }) => {
+const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
+    const [departmentInfo, setDepartmentInfo] = useState({})
 
-    const getDataFromSessionStorage = (key) => {
-        const serializedData = sessionStorage.getItem(key);
-        const data = JSON.parse(serializedData);
-        return data;
-    };
-    // const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo")
-    const defaultDeparmentInfo = getDataFromSessionStorage("departmentInfo") ?? {};
-    const intialDepartmentInfo = {
-        department_name: defaultDeparmentInfo?.department_name ? defaultDeparmentInfo.department_name : '',
-        department_position: defaultDeparmentInfo?.department_position ? defaultDeparmentInfo.department_position : '',
-        direct_report: defaultDeparmentInfo?.direct_report ? defaultDeparmentInfo.direct_report : '',
-        indirect_report: defaultDeparmentInfo?.indirect_report ? defaultDeparmentInfo.indirect_report : '',
-        // is_indirect_report_applicable: defaultDeparmentInfo?.is_indirect_report_applicable ? defaultDeparmentInfo.is_indirect_report_applicable : false,
-        department_manager: defaultDeparmentInfo?.department_manager ? defaultDeparmentInfo.department_manager : '',
-        employee_type: defaultDeparmentInfo?.employee_type ? defaultDeparmentInfo.employee_type : '',
-        employee_status: defaultDeparmentInfo?.employee_status ? defaultDeparmentInfo.employee_status : '',
-        joining_date: defaultDeparmentInfo?.joining_date ? defaultDeparmentInfo.joining_date : null,
-    };
-    const [departmentInfo, setDepartmentInfo] = useState(intialDepartmentInfo)
+    useEffect(() => {
+        getEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token).then(response => {
+            setDepartmentInfo(response);
+        }).catch(error => {
+            console.log(error);
+        });
+    }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
-    // useEffect(() => {
-    //     setDataInSessionStorage('departmentInfo', departmentInfo)
-    // }, [departmentInfo])
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${baseUrl}/emp/`, {
+                const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
                 if (response.status === 200) {
-                    setManagers(response.data);
+                    let managersList = response.data;
+                    managersList = managersList
+                        ?.filter(manager => manager.username)
+                        .map((manager) => ({
+                            value: manager.id,
+                            label: manager.username,
+                        }))
+                    setManagers(managersList);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -111,20 +70,19 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
 
     const handleNextStep = async () => {
         setIsLoading(true);
-        const { error } = departmentSchema.validate(
+        const { error } = validationDepartmentInfoFormSchema.validate(
             {
                 department_name: departmentInfo.department_name,
                 department_position: departmentInfo.department_position,
-                // direct_report: departmentInfo.direct_report,
                 department_manager: departmentInfo.department_manager,
                 employee_status: departmentInfo.employee_status,
                 employee_type: departmentInfo.employee_type,
-                // indirect_report: departmentInfo.is_indirect_report_applicable ? departmentInfo.indirect_report : null,
                 joining_date: departmentInfo.joining_date,
+                direct_report: departmentInfo.direct_report,
+                indirect_report: departmentInfo.indirect_report,
             },
             { abortEarly: false }
         );
-
         if (error) {
             const validationErrors = {};
             error.details.forEach((detail) => {
@@ -132,32 +90,28 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
             });
             setErrors(validationErrors);
         } else {
-            setDepartmentInfoProps(departmentInfo)
+            departmentInfo.is_filled = true;
+            saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
             await submitForm();
             setIsLoading(false);
         }
     };
 
-
-    const setDataInSessionStorage = (key, data) => {
-        const serializedData = JSON.stringify(data);
-        sessionStorage.setItem(key, serializedData);
-    };
-
     const handleChange = (name, value, values) => {
-        if (name === "is_indirect_report_applicable") {
-            setDepartmentInfo({ ...departmentInfo, [name]: value });
+        if (name === 'employee_type' || name === 'employee_status') {
+            setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+        } else if (name === "department_name") {
+            setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+        }
+        if (name === "indirect_report" || name === "direct_report") {
+            const updatedValues = values || [];
+            const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
+            setDepartmentInfo({
+                ...departmentInfo,
+                [name]: uniqueValues.join(', '), // Convert array to string
+            });
         } else {
-            if (name === "indirect_report" || name === "direct_report") {
-                const updatedValues = values || [];
-                const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
-                setDepartmentInfo({
-                    ...departmentInfo,
-                    [name]: uniqueValues.join(', '), // Convert array to string
-                });
-            } else {
-                setDepartmentInfo({ ...departmentInfo, [name]: value });
-            }
+            setDepartmentInfo({ ...departmentInfo, [name]: value });
         }
         setErrors({ ...errors, [name]: null });
     };
@@ -188,9 +142,21 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
                                 <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
                                     <label htmlFor="department_name" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Department Name:</label>
-                                    <input type="text" value={departmentInfo.department_name} name="department_name" id="" placeholder='Department Name Here'
+                                    {/* <input type="text" value={departmentInfo.department_name} name="department_name" id="" placeholder='Department Name Here'
                                         className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
                                         onChange={(e) => handleChange(e.target.name, e.target.value)}
+                                    /> */}
+
+                                    <Select
+                                        name="department_name"
+                                        className="focus:outline-none border-none"
+                                        options={department}
+                                        value={department.find(
+                                            (option) => option.label === departmentInfo.department_name
+                                        )}
+                                        onChange={(selectedOption) =>
+                                            handleChange("department_name", selectedOption.value)
+                                        }
                                     />
                                     {errors.department_name && <span className="text-red-500 text-sm ">{errors.department_name}</span>}
 
@@ -275,14 +241,9 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
                                         menuPlacement="top"
                                         name='direct_report'
                                         placeholder="Search Direct Report To..."
-                                        value={departmentInfo.direct_report ? departmentInfo.direct_report.split(',').map(label => ({ label, value: label })) : null}
+                                        value={getManagerSelected(departmentInfo.direct_report, managers)}
                                         onChange={(selectedOptions) => handleChange("direct_report", selectedOptions, selectedOptions)}
-                                        options={managers
-                                            ?.filter(manager => manager.username)
-                                            .map((manager) => ({
-                                                value: manager.id,
-                                                label: manager.username,
-                                            }))}
+                                        options={managers}
                                         isEdit={true}
                                         isMulti={true}
                                     />
@@ -322,14 +283,9 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
                                                 menuPlacement="top"
                                                 name='indirect_report'
                                                 placeholder="Search Direct Report To..."
-                                                value={departmentInfo.indirect_report ? departmentInfo.indirect_report.split(',').map(label => ({ label, value: label })) : null}
+                                                value={getManagerSelected(departmentInfo.indirect_report, managers)}
                                                 onChange={(selectedOptions) => handleChange("indirect_report", selectedOptions, selectedOptions)}
-                                                options={managers
-                                                    ?.filter(manager => manager.username)
-                                                    .map((manager) => ({
-                                                        value: manager.id,
-                                                        label: manager.username,
-                                                    }))}
+                                                options={managers}
                                                 isEdit={true}
                                                 isMulti={true}
                                             />
@@ -443,7 +399,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, baseUrl, token, s
                         onClick={handleNextStep}
                         text={
                             isLoading ? (
-                                <div className='flex items-center gap-x-2'>
+                                <div className='flex items-center gap-x-2 p-2 '>
                                     <span>Submit </span>
                                     <CustomLoader />
                                 </div>

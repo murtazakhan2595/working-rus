@@ -1,49 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
-import { IoIosSearch } from "react-icons/io";
-import { MdExitToApp, MdLock, MdOutlineAccountTree, MdOutlineCalendarMonth, MdOutlineLogout, MdOutlinePayment, MdOutlineTimeToLeave, MdSettings } from "react-icons/md";
-import { PiSuitcaseRollingBold } from "react-icons/pi";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleUp, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { setUserLogout } from "../../../../state/actions/UserAction";
+import { Link, useLocation } from "react-router-dom";
 import { LiaHomeSolid } from "react-icons/lia";
 import { BsPersonFillGear } from "react-icons/bs";
 import { LuCalendarDays, LuFolderCog2 } from "react-icons/lu";
-import { GrTree } from "react-icons/gr";
+import { toggleDropdown, isDbOpen, isRecruitmentOpen, isLeaveOpen } from "../../../../state/slices/DropdownSlice";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const HrRole = ({ isSidebarOpen }) => {
   const location = useLocation();
-  const [isDbOpen, setIsDbOpen] = useState(false);
-  const [isRecruitmentOpen, setIsRecruitmentOpen] = useState(false);
-  const [isLeaveOpen, setIsLeaveOpen] = useState(false);
+  
+  const { isDbOpen, isRecruitmentOpen, isLeaveOpen } = useSelector(state => state.dropdown);
+  const dispatch = useDispatch();
 
-
-
-  const toggleDropdown = (dropdownName) => {
-    if (dropdownName === "HRDatabase") {
-      setIsDbOpen((prev) => !prev);
-      setIsRecruitmentOpen(false);
-      setIsLeaveOpen(false);
-    } else if (dropdownName === "Recruitment") {
-      setIsRecruitmentOpen((prev) => !prev);
-      setIsDbOpen(false);
-      setIsLeaveOpen(false);
-    } else if (dropdownName === "LeaveManagement") {
-      setIsLeaveOpen((prev) => !prev);
-      setIsDbOpen(false);
-      setIsRecruitmentOpen(false);
-    } else if (dropdownName === "Projects") {
-      setIsDbOpen(false);
-      setIsRecruitmentOpen(false);
-      setIsLeaveOpen(false);
-    } else if (dropdownName === "Profile") {
-      setIsDbOpen(false);
-      setIsRecruitmentOpen(false);
-      setIsLeaveOpen(false);
-    }
+  const handleToggleDropdown = (dropdownName) => {
+    dispatch(toggleDropdown(dropdownName));
   };
-
 
   return (
     <>
@@ -71,7 +44,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
 
       <li className="group">
         <div
-          onClick={() => toggleDropdown("HRDatabase")}
+          onClick={() => handleToggleDropdown("HRDatabase")}
           className={`flex items-center justify-between py-2 px-2 my-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isDbOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
             } rounded-lg cursor-pointer `}
         >
@@ -136,7 +109,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
       }
       <li className="group">
         <div
-          onClick={() => toggleDropdown("Recruitment")}
+          onClick={() => handleToggleDropdown("Recruitment")}
           className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isRecruitmentOpen ? "bg-[#DAEFF8] text-[#0D2282]" : " text-[#5C5E64]"
             } rounded-lg cursor-pointer`}
         >
@@ -202,7 +175,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
       }
       <li className="group">
         <div
-          onClick={() => toggleDropdown("LeaveManagement")}
+          onClick={() => handleToggleDropdown("LeaveManagement")}
           className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
             } rounded-lg cursor-pointer`}
         >
@@ -233,7 +206,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                     className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                       }`}
                   >
-                    <p className="text-sm">Application Status</p>
+                    <p className="text-sm">My Application Status</p>
                   </div>
                 </Link>
                 <Link to="/leave-calender">
@@ -244,20 +217,20 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                     <p className="text-sm">Leave Calender</p>
                   </div>
                 </Link>
-                <Link to="/leave-list">
+                {/* <Link to="/leave-list">
                   <div
                     className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                       }`}
                   >
                     <p className="text-sm">Leave List</p>
                   </div>
-                </Link>
-                <Link to="/leave-balance">
+                </Link> */}
+                <Link to="/leave-balance-hr">
                   <div
-                    className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                    className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance-hr" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                       }`}
                   >
-                    <p className="text-sm">Leave Balance</p>
+                    <p className="text-sm">My Leave Balance</p>
                   </div>
                 </Link>
               </li>
@@ -283,7 +256,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                   }`}
               >
-                <p className="text-sm">Application Status</p>
+                <p className="text-sm">My Application Status</p>
               </div>
             </Link>
             <Link to="/leave-calender">
@@ -294,20 +267,29 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                 <p className="text-sm">Leave Calender</p>
               </div>
             </Link>
-            <Link to="/leave-list">
+            {/* <Link to="/leave-list">
               <div
                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                   }`}
               >
                 <p className="text-sm">Leave List</p>
               </div>
-            </Link>
-            <Link to="/leave-balance">
+            </Link> */}
+            {/* <Link to="/leave-balance">
               <div
                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
                   }`}
               >
                 <p className="text-sm">Leave Balance</p>
+              </div>
+            </Link> */}
+            
+            <Link to="/leave-balance-hr">
+              <div
+                className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance-hr" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                  }`}
+              >
+                <p className="text-sm">My Leave Balance</p>
               </div>
             </Link>
           </li>

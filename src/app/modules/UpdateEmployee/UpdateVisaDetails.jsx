@@ -11,7 +11,6 @@ import { toast } from 'react-toastify';
 import CustomLoader from '../../../common/CustomLoader';
 import { BiEdit } from 'react-icons/bi';
 import { WiCloudRefresh } from 'react-icons/wi';
-import Joi from "joi";
 import { RxCross2 } from 'react-icons/rx';
 import { useParams } from 'react-router-dom';
 import { downloadAttachment } from '../../../utils/fileUtils';
@@ -19,8 +18,8 @@ import { LuExternalLink } from 'react-icons/lu';
 import { Tooltip } from '@mui/material';
 import { downloadFiles } from '../../../utils/downUtils';
 import { BsDownload } from 'react-icons/bs';
-import { getVisaDetails } from '../../utils/MappingObjects/mapEmployeeData'
-
+import { getEmployeeVisaDetailData, saveEmployeeVisaDetailData } from '../../hooks/employee';
+import { EmployeeVisaDetails } from '../../utils/Types/Employee'
 
 const UpdateVisaDetails = ({ prevstep,
   nextstep,
@@ -31,14 +30,13 @@ const UpdateVisaDetails = ({ prevstep,
   baseUrl, }) => {
 
   let [isEdit, setIsEdit] = useState(false);
-  let [employeeVisaDetails, setEmployeeVisaDetails] = useState({});
+  const [employeeVisaDetails, setEmployeeVisaDetails] = useState({});
   const [employeeData, setEmployeeData] = useState({});
   const [documents, setDocuments] = useState({});
   const [visaDetailsFiles, setVisaDetailsFiles] = useState({})
   const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const showId = true;
-
   // const id = userProfile.id;
   const { id } = useParams();
 
@@ -49,14 +47,10 @@ const UpdateVisaDetails = ({ prevstep,
 
   const fetchData = async () => {
     try {
-      const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
-        headers,
-      });
-      const empVisaData = getVisaDetails(employeeResponse.data);
-      setEmployeeData(employeeResponse.data)
-      setEmployeeVisaDetails(empVisaData);
-
-} catch (error) {
+      getEmployeeVisaDetailData(baseUrl, id, token).then(responseEmpPersonalInformation => {
+        setEmployeeVisaDetails(responseEmpPersonalInformation);
+      })
+    } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
@@ -142,16 +136,17 @@ const UpdateVisaDetails = ({ prevstep,
       .catch((error) => console.error("Error reading files:", error));
   };
 
-
-
-  const updateDataOnServer = async () => {
+   const updateDataOnServer = async () => {
     setIsLoading(true);
     try {
-      // Make a copy of the updated data
-      const updatedDataCopy = { ...employeeData,...employeeVisaDetails };
 
-      // Update regular fields
-      const response = await axios.patch(`${baseUrl}/emp/${id}`, updatedDataCopy, { headers });
+      saveEmployeeVisaDetailData(baseUrl, id, token, employeeVisaDetails, visaDetailsFiles);
+
+      // // Make a copy of the updated data
+      // const updatedDataCopy = { ...employeeData,...employeeVisaDetails };
+
+      // // Update regular fields
+      // const response = await axios.patch(`${baseUrl}/emp/${id}`, updatedDataCopy, { headers });
 
       const updateAttachments = async (docName, fileData) => {
         setIsLoading(true);

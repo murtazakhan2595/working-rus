@@ -10,6 +10,8 @@ COPY package*.json ./
 # Install project dependencies
 RUN npm install
 
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 # Copy the rest of the application code to the container
 COPY . .
 
