@@ -263,7 +263,7 @@ const ProfessionalExp = ({
                           ).toDate()}
                           onChange={(date) => {
                             const formattedDate = moment(date)
-                              .format("DD-MM-YYYY")
+                              .format("YYYY-MM-DD")
                               .toLowerCase();
                             const updatedSections = [...experienceSections];
                             updatedSections[index].exp_start_date = formattedDate;
@@ -311,7 +311,7 @@ const ProfessionalExp = ({
                           }
                           onChange={(date) => {
                             const formattedDate = moment(date)
-                              .format("DD-MM-YYYY")
+                              .format("YYYY-MM-DD")
                               .toLowerCase();
                             const updatedSections = [...experienceSections];
                             updatedSections[index].exp_end_date = formattedDate;
