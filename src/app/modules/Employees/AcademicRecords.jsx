@@ -72,12 +72,12 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
   };
 
   const handleStartDate = (date) => {
-    const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
+    const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
     handleChange("edu_start_date", formattedDate);
   };
 
   const handleEndDate = (date) => {
-    const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
+    const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
     handleChange("edu_end_date", formattedDate);
   };
 
@@ -132,9 +132,6 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
         document: academicInfo.certificate,
       }
       academicInfo.employee_id = userProfile.id
-      academicInfo.edu_start_date = moment(academicInfo.edu_start_date, "DD-MM-YYYY").format("YYYY-MM-DD");
-      academicInfo.edu_end_date = moment(academicInfo.edu_end_date, "DD-MM-YYYY").format("YYYY-MM-DD");
-
       delete academicInfo.certificate
       saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo, academicDoc);
       saveEmployeeCertificationData(baseUrl, userProfile?.id, token, certificationSections);
@@ -248,9 +245,9 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                   </label>
                   <Datepicker
                     name="startdate"
-                    day={academicInfo.edu_start_date ? academicInfo.edu_start_date.substr(0, 2) : null}
-                    month={academicInfo.edu_start_date ? academicInfo.edu_start_date.substr(3, 2) : null}
-                    year={academicInfo.edu_start_date ? academicInfo.edu_start_date.substr(6, 4) : null}
+                    day={academicInfo.edu_start_date ? academicInfo.edu_start_date.substr(8, 2) : null}
+                    month={academicInfo.edu_start_date ? academicInfo.edu_start_date.substr(5, 2) : null}
+                    year={academicInfo.edu_start_date ? academicInfo.edu_start_date.substr(0, 4) : null}
                     selected={moment(
                       academicInfo.edu_start_date,
                       "DD-MM-YYYY"
@@ -273,9 +270,9 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                   </label>
                   <Datepicker
                     name="enddate"
-                    day={academicInfo.edu_end_date ? academicInfo.edu_end_date.substr(0, 2) : null}
-                    month={academicInfo.edu_end_date ? academicInfo.edu_end_date.substr(3, 2) : null}
-                    year={academicInfo.edu_end_date ? academicInfo.edu_end_date.substr(6, 4) : null}
+                    day={academicInfo.edu_end_date ? academicInfo.edu_end_date.substr(8, 2) : null}
+                    month={academicInfo.edu_end_date ? academicInfo.edu_end_date.substr(5, 2) : null}
+                    year={academicInfo.edu_end_date ? academicInfo.edu_end_date.substr(0, 4) : null}
                     selected={moment(
                       academicInfo.edu_end_date,
                       "DD-MM-YYYY"

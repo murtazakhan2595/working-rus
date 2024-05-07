@@ -117,8 +117,8 @@ function getAcademicRecord(data) {
     academicRecord.education_level = data?.education_level ?? '';
     academicRecord.program = data?.program ?? '';
     academicRecord.institute_name = data?.institute_name ?? '';
-    academicRecord.edu_start_date = data?.edu_start_date ? moment(data.edu_start_date).format("DD-MM-YYYY") : '';
-    academicRecord.edu_end_date = data?.edu_end_date ? moment(data.edu_end_date).format("DD-MM-YYYY") : '';
+    academicRecord.edu_start_date = data?.edu_start_date;
+    academicRecord.edu_end_date = data?.edu_end_date;
     academicRecord.certificate = data.certificate?.document ?? null;
     return academicRecord;
 }
