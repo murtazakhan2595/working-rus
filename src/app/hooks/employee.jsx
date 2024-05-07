@@ -258,9 +258,7 @@ const saveEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token
         try {
             payload.map(async (experience) => {
                 experience.employee_id = employeeid;
-                experience.exp_start_date = experience.exp_start_date ? moment(experience.exp_start_date, "DD-MM-YYYY").format("YYYY-MM-DD") : null;
-                experience.exp_end_date = experience.exp_end_date ? moment(experience.exp_end_date, "DD-MM-YYYY").format("YYYY-MM-DD") : null;
-                if (experience?.ids) {
+                if (experience?.id) {
                     await axios.patch(`${baseUrl}/experience/${experience.id}`, experience, {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -277,6 +275,7 @@ const saveEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token
                     });
                 }
             });
+            return true;
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
         }
@@ -336,7 +335,6 @@ const getEmployeeAcademicRecordData = async (baseUrl, employeeid, token) => {
                             "Content-Type": "application/json",
                         },
                     }).then(res => {
-                        debugger
                         const academicRecord = response.data[0]
                         if (res.status === 200 && res.data && res.data.length > 0)
                             academicRecord.certificate = res.data[0]
@@ -427,7 +425,6 @@ const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payload
     if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
         try {
             payloadAttachment.map(async (certification) => {
-                debugger
                 certification.employee_id = employeeid
                 if (certification?.id) {
                     await axios.patch(

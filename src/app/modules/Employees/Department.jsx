@@ -30,7 +30,7 @@ function getManagerSelected(managers, managersList) {
 const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
-    const [departmentInfo, setDepartmentInfo] = useState(EmployeeDepartmentInfo)
+    const [departmentInfo, setDepartmentInfo] = useState({})
 
     useEffect(() => {
         getEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token).then(response => {
@@ -83,7 +83,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
             },
             { abortEarly: false }
         );
-        debugger
         if (error) {
             const validationErrors = {};
             error.details.forEach((detail) => {

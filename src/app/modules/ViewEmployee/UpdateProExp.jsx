@@ -17,7 +17,7 @@ import { LuExternalLink } from "react-icons/lu";
 import { Tooltip } from "@mui/material";
 import { BsDownload } from "react-icons/bs";
 import { downloadFiles } from "../../../utils/downUtils";
-import { getEmployeeProfessionalExperianceData, saveEmployeeProfessionalExperianceData,deleteEmployeeProfessionalExperianceData } from '../../hooks/employee';
+import { getEmployeeProfessionalExperianceData, saveEmployeeProfessionalExperianceData, deleteEmployeeProfessionalExperianceData } from '../../hooks/employee';
 import { EmployeeProfessionalExperiance } from '../../utils/Types/Employee'
 
 const ProfessionalExp = ({
@@ -30,22 +30,16 @@ const ProfessionalExp = ({
   userProfile,
   baseUrl,
 }) => {
-  
-  const [experienceSections, setExperienceSections] = useState([EmployeeProfessionalExperiance]  );
+
+  const [experienceSections, setExperienceSections] = useState([EmployeeProfessionalExperiance]);
   const [deleteExp, setDeleteExp] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [disableEndDate, setDisableEndDate] = useState(false);
 
   useEffect(() => {
     getEmployeeProfessionalExperianceData(baseUrl, userProfile?.id, token).then(response => {
       setExperienceSections(response);
-      const hasNullEndDate = response.some(
-        (experience) => experience.exp_end_date === null
-      );
-      setDisableEndDate(hasNullEndDate); // Set disableEndDate state based on null exp_end_date
-
     }).catch(error => {
       console.log(error);
     });
@@ -85,7 +79,7 @@ const ProfessionalExp = ({
       if (!experience.exp_start_date) {
         fieldErrors[`exp_start_date_${i}`] = "Start Date is required.";
       }
-      if (!disableEndDate && !experience.exp_end_date) {
+      if (!experience.disableEndDate && !experience.exp_end_date) {
         fieldErrors[`exp_end_date_${i}`] = "End Date is required.";
       }
       // if (!experience.exp_letter?.hasOwnProperty("name")) {
@@ -293,25 +287,25 @@ const ProfessionalExp = ({
                       </label>
                       <div onClick={handleEditClick} className="flex items-center gap-x-2" >
                         <Datepicker
-                          disabled={disableEndDate}
+                          disabled={experience.disableEndDate}
                           name="exp_end_date"
                           day={
-                            experience?.exp_end_date && !disableEndDate
+                            experience?.exp_end_date && !experience.disableEndDate
                               ? experience?.exp_end_date.substr(8, 2)
                               : null
                           }
                           month={
-                            experience?.exp_end_date && !disableEndDate
+                            experience?.exp_end_date && !experience.disableEndDate
                               ? experience?.exp_end_date.substr(5, 2)
                               : null
                           }
                           year={
-                            experience?.exp_end_date && !disableEndDate
+                            experience?.exp_end_date && !experience.disableEndDate
                               ? experience?.exp_end_date.substr(0, 4)
                               : null
                           }
                           selected={
-                            disableEndDate
+                            experience.disableEndDate
                               ? new Date() // Set current date if end date is disabled
                               : moment(experience.exp_end_date, "DD-MM-YYYY").toDate()
                           }
@@ -328,11 +322,11 @@ const ProfessionalExp = ({
 
                         <input
                           type="checkbox"
-                          checked={disableEndDate}
+                          checked={experience.disableEndDate}
                           onChange={(e) => {
-                            setDisableEndDate(e.target.checked);
                             // Update exp_end_date based on checkbox status
                             const updatedSections = [...experienceSections];
+                            updatedSections[index].disableEndDate = e.target.checked;
                             updatedSections[index].exp_end_date = e.target.checked ? null : experience.exp_end_date;
                             setExperienceSections(updatedSections);
                             clearError(`exp_end_date_${index}`);

@@ -10,7 +10,6 @@ import { WiCloudRefresh } from "react-icons/wi";
 
 import { connect } from "react-redux";
 import { saveEmployeeAcademicRecordData, getEmployeeAcademicRecordData, saveEmployeeCertificationData, getEmployeeCerficationData } from '../../hooks/employee';
-import { EmployeeAcademicRecord, EmployeeCertifiation } from '../../utils/Types/Employee'
 import { validationAcademicRecordSchema } from '../../utils/FormSchema/employeeFormSchema'
 
 
@@ -23,9 +22,9 @@ const academicOptions = [
 
 const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, baseUrl, token }) => {
 
-  const [academicInfo, setAcademicInfo] = useState(EmployeeAcademicRecord);
+  const [academicInfo, setAcademicInfo] = useState({});
 
-  const [certificationSections, setCertificationSections] = useState([EmployeeCertifiation]);
+  const [certificationSections, setCertificationSections] = useState([]);
   useEffect(() => {
     getEmployeeAcademicRecordData(baseUrl, userProfile?.id, token).then(response => {
       setAcademicInfo(response);

@@ -31,7 +31,7 @@ function getPersonalInfo(data) {
     personalInfo.date_of_birth = data.date_of_birth;
     personalInfo.marital_status = data.marital_status;
     personalInfo.nationality = data.nationality;
-    personalInfo.email = data.email;
+    personalInfo.email = data.other_email;
     personalInfo.work_email = data.work_email;
     personalInfo.current_address = data.current_address;
     personalInfo.residential_address = data.residential_address;
@@ -100,7 +100,8 @@ async function getProfessionalExperiance(data) {
                 exp_designation: profExperience?.exp_designation ?? '',
                 exp_letter: profExperience?.exp_letter ?? '',
                 exp_start_date: profExperience.exp_start_date ? profExperience.exp_start_date : null,
-                exp_end_date: profExperience.exp_end_date ? profExperience.exp_end_date : null
+                exp_end_date: profExperience.exp_end_date ? profExperience.exp_end_date : null,
+                disableEndDate: profExperience.exp_end_date ? false : true,
             };
             experience.push(professionalExperience);
         })
@@ -152,7 +153,7 @@ function getDepartmentInfo(data) {
     department.employee_type = data?.employee_type ?? '';
     department.employee_status = data?.employee_status ?? '';
     department.joining_date = data?.joining_date ?? null;
-    department.is_indirect_report_applicable=data.indirect_report ? true : false;
+    department.is_indirect_report_applicable = data.indirect_report ? true : false;
 
     return department;
 }

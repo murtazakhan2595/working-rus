@@ -24,7 +24,7 @@ const BankDetails = ({
   let [isEdit, setIsEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   let [cancelBox, setCancelBox] = useState(false);
-  const [bankInfo, setBankInfo] = useState(EmployeeBankDetails)
+  const [bankInfo, setBankInfo] = useState({})
 
   useEffect(() => {
     getEmployeeBankDetailsData(baseUrl, userProfile?.id, token).then(response => {

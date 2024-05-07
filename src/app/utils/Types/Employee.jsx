@@ -64,6 +64,7 @@ const EmployeeProfessionalExperiance = {
     exp_letter: null,
     exp_start_date: null,
     exp_end_date: null,
+    disableEndDate:false,
 }
 
 const EmployeeAcademicRecord = {
