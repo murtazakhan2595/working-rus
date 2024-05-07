@@ -10,6 +10,73 @@ import { BiEdit } from "react-icons/bi";
 import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../hooks/employee';
 import { EmployeeBankDetails } from '../../utils/Types/Employee';
 import { validationBankDetailsFormSchema } from '../../utils/FormSchema/employeeFormSchema';
+import { useParams } from "react-router-dom";
+
+// const bankSchema = Joi.object({
+//   bank_name: Joi.string()
+//     .regex(/^[a-zA-Z\s]+$/)
+//     .required()
+//     .label("Bank Name")
+//     .messages({
+//       "string.empty": `Bank Name is required`,
+//       "string.pattern.base": `Bank Name must contain only letters and spaces`,
+//     }),
+//   account_title: Joi.string()
+//     .regex(/^[a-zA-Z\s]+$/)
+//     .required()
+//     .label("Account Title")
+//     .messages({
+//       "string.empty": `Account Title is required`,
+//       "string.pattern.base": `Account Title must contain only letters and spaces`,
+//     }),
+//   account_number: Joi.string()
+//     .regex(/^\d+$/) // Only numbers allowed
+//     .min(10) // Minimum length 10 digits
+//     .required()
+//     .label("Account Number")
+//     .messages({
+//       "string.empty": `Account Number is required`,
+//       "string.pattern.base": `Account Number must contain only numbers`,
+//       "string.min": `Account Number must be at least 10 digits long`,
+//     }),
+//   account_iban: Joi.string()
+//     .alphanum() // Allow alphanumeric characters
+//     .min(10) // Assuming a minimum length for IBAN
+//     .required()
+//     .label("IBAN")
+//     .messages({
+//       "string.empty": `IBAN is required`,
+//       "string.alphanum": `IBAN must contain only letters and numbers`,
+//     }),
+//   branch_address: Joi.string()
+//     // .min(10) // Minimum length 10 characters
+//     .required()
+//     .label("Branch Address")
+//     .messages({
+//       "string.empty": `Branch Address is required`,
+//       "string.min": `Branch Address must be at least 10 characters long`,
+//     }),
+//   branch_code: Joi.string()
+//     .regex(/^\d+$/) // Only numbers allowed
+//     .min(3) // Minimum length 3 digits
+//     .required()
+//     .label("Branch Code")
+//     .messages({
+//       "string.empty": `Branch Code is required`,
+//       "string.pattern.base": `Branch Code must contain only numbers`,
+//       "string.min": `Branch Code must be at least 3 digits long`,
+//     }),
+//   swift_code: Joi.string()
+//     .alphanum() // Allow alphanumeric characters
+//     .min(4) // Assuming a minimum length for Swift code
+//     .required()
+//     .label("Swift Code")
+//     .messages({
+//       "string.empty": `Swift Code is required`,
+//       "string.alphanum": `Swift Code must contain only letters and numbers`,
+//     }),
+// });
+
 
 const BankDetails = ({
   errors,

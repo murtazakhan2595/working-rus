@@ -136,9 +136,7 @@ const UpdateVisaDetails = ({ prevstep,
       .catch((error) => console.error("Error reading files:", error));
   };
 
-
-
-  const updateDataOnServer = async () => {
+   const updateDataOnServer = async () => {
     setIsLoading(true);
     try {
 
