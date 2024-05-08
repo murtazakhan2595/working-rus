@@ -17,7 +17,7 @@ import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
 
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { connect } from "react-redux";
+import PageLoader  from './common/PageLoader.jsx';
 import {
   setUserLogout,
   setUserProfile,
@@ -117,22 +117,16 @@ function App() {
       getProfile();
     }
   }, [location]);
-console.log(isLogin , userProfile);
+  // console.log(!isLogin,userProfile.is_filled,userProfile.hasOwnProperty('is_filled'))
   return (
     <>
-      {!isLogin && !userProfile &&(
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
-            <p className="text-gray-600 mt-4">Loading...</p>
-          </div>
-        </div>
+      {(!userProfile || !userProfile.hasOwnProperty('is_filled')) && (
+        <PageLoader/>
       )}
-
       <Routes>
         {isLogin && (
           <>
-            {userProfile.is_filled === true ? (
+            {userProfile.is_filled === true && (
               <>
                 <Route
                   element={
@@ -368,7 +362,8 @@ console.log(isLogin , userProfile);
                   <Route exact path="/employees" element={<Err401 />} />
                 )}
               </>
-            ) : (
+            )}
+            {userProfile.is_filled === false && (
               <Route exact path="/" element={<EmpForm />} />
             )}
             <Route path="*" element={<Err404 />} />
