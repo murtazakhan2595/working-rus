@@ -22,6 +22,7 @@ import { FaAngleUp } from "react-icons/fa6";
 import SuccessPopup from "./SuccessPop";
 import { getDTRAll } from "../../../state/slices/GetDtrAllSlice";
 import { GetAssigneDtr } from "../../../state/slices/GetAssigneDtr";
+import ViewTaskDetails from "./ViewTaskDetails";
 
 const CreateTask = ({ baseUrl, token }) => {
 
@@ -73,6 +74,8 @@ const CreateTask = ({ baseUrl, token }) => {
     const [tasks, setTasks] = useState([]);
     const [dropdownStates, setDropdownStates] = useState({});
     const [hoveredTask, setHoveredTask] = useState(null);
+    const [showHoveredTask, setShowHoveredTask] = useState(false);
+
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -151,7 +154,9 @@ const CreateTask = ({ baseUrl, token }) => {
         try {
             await dispatch(postTasks(tasks)); // Dispatch the postTasks action with tasks data
             setShowSuccessPopup(true); // Show success pop-up after successful API call
-            dispatch(fetchDTRByEmployeeId(userId));
+            // dispatch(fetchDTRByEmployeeId(userId));
+            setTasks([]);
+            dispatch(getDTRAll());
         } catch (error) {
             console.error("Error posting tasks:", error);
             // Handle error (e.g., show error message)
@@ -189,156 +194,22 @@ const CreateTask = ({ baseUrl, token }) => {
     };
 
 
+    const currenDate = new Date();
+    const day = currenDate.getDate().toString().padStart(2, '0'); // Add leading zero if needed
+    const month = (currenDate.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
+    const year = currenDate.getFullYear();
+
+    const formattedDate = `${day}-${month}-${year}`;
+
     return (
         <div className="flex w-full flex-col h-[100vh] lg:px-6 lg:py-2 bg-gray-50">
             {showSuccessPopup && (
-                <SuccessPopup onClose={() => setShowSuccessPopup(false)} />
+                <SuccessPopup onClose={() => setShowSuccessPopup(false)} heading="DTR Submitted" message="Your daily task report was successfully submitted." />
             )}
             <div className="flex justify-between lg:p-6">
                 <h1 className="font-lato lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1>
                 <div>Filter here</div>
             </div>
-
-
-            {/* display all employees names */}
-            <div className="flex">
-                <div className="w-[30%] lg:max-h-[85vh] overflow-y-auto bg-[#f0f1f2]">
-                    {dtrsAll?.map((dtr) => (
-                        <div className="flex items-center gap-x-2 group relative">
-                            <div className="flex items-center gap-x-2 border-b m-1 p-2 w-full hover:bg-blue-100 hover:rounded-md">
-                                <div className="w-12 h-12 rounded-full flex items-center text-xl justify-center text-white bg-[#DF418D] tracking-wider">{dtr.employee_name.toUpperCase().slice(0, 2)}</div>
-                                <div className="flex flex-col leading-none">
-                                    <div className="text-gray-400 text-sm leading-none">TXB-{dtr.employee_id.toString().padStart(4, "0")}</div>
-                                    <div className="font-semibold text-[16px] text-[#323333] font-lato">{dtr.employee_name}</div>
-                                    <div className="text-gray-400 text-sm">{dtr.designation}</div>
-                                </div>
-                            </div>
-                            <IoChevronForwardCircleOutline className=" text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
-                                onClick={() => handleDtrClick(dtr.assigne)} />
-                        </div>
-                    ))}
-                </div>
-                <div className="w-[70%] lg:max-h-[80vh] overflow-y-auto">
-                    {Object.entries(groupedTasks).map(([date, tasks]) => (
-                        <div key={date} className="w-full m-0">
-                            <div className={`font-normal font-lato text-[18px] text-[#323333] rounded-lg px-4 py-2 border-b ${dropdownStates[date] ? 'bg-blue-100' : ''}`}>
-                                <div onClick={() => toggleDropdown(date)} className="focus:outline-none flex items-center justify-between cursor-pointer">
-                                    {date}
-                                    <FaAngleUp className={`text-sm transform transition-transform duration-300 ${dropdownStates[date] ? 'rotate-180' : ''}`} />
-                                </div>
-                            </div>
-                            <div className={dropdownStates[date] ? '' : 'hidden'}>
-                                {tasks.map(task => (
-                                    <div key={task.task} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg"
-                                        onMouseEnter={() => setHoveredTask(task)}
-                                        onMouseLeave={() => setHoveredTask(null)}
-                                    >
-                                        <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
-                                            <div className="text-xl font-bold">
-                                                {task.Type === "Project" ? (
-                                                    <CiViewBoard className="text-[#FF61C0] bg-[#FFE8F6] rounded-full p-0.5" />
-                                                ) : (
-                                                    <CiCircleMore className="text-[#935AF2] bg-[#F1E8FF] rounded-full p-0.5" />
-                                                )}
-                                            </div>
-                                            <div className="flex items-center gap-x-2 text-sm px-3 text-baseGray">
-                                                <IoCalendarOutline className="text-xl" /> Due
-                                                <div className="font-lato">{task?.due_date?.slice(0, 5)}</div>
-                                            </div>
-                                            <h3 className="text-[18px] font-bold text-[#323333]">{task.task}</h3>
-                                        </div>
-                                        <div className="lg:w-[30%] flex items-center justify-end gap-x-4">
-                                            <div className="text-2xl">{statusIcons[task.priorty]}</div>
-                                            <div className="flex justify-between items-center lg:w-24">
-                                                <div className={`px-3 py-1 rounded-lg ${statusStyles[task.status]}`}>
-                                                    {task.status}
-                                                </div>
-                                            </div>
-                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">
-                                                {getReportingManager(task.assigne)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {hoveredTask && (
-                    <div className="absolute top-0 right-0 w-[40%] h-full bg-white shadow-lg z-10 p-5">
-                        <div className="flex items-center justify-evenly gap-x-5">
-                            <div className="flex items-center gap-x-4 text-sm font-lato lg:w-[40%]">
-                                {/* First Column */}
-                                <div className="flex flex-col gap-y-3 w-[57%]">
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <IoCalendarOutline className="text-xl" />
-                                        <h3 className="font-medium font-lato">Start Date</h3>
-                                    </div>
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <IoCalendarOutline className="text-xl" />
-                                        <h3 className="font-medium font-lato">Due Date</h3>
-                                    </div>
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <PiHeadlightsBold className="text-xl" />
-                                        <h3 className="font-medium font-lato">Priority</h3>
-                                    </div>
-                                </div>
-                                {/* Second Column */}
-                                <div className="flex flex-col gap-y-3 w-[50%]">
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <h3 className="font-medium font-lato">{hoveredTask.task_start_date}</h3>
-                                    </div>
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <h3 className="font-medium font-lato">{hoveredTask.due_date}</h3>
-                                    </div>
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <h3 className="font-medium font-lato flex items-center gap-x-1">{statusIcons[hoveredTask.priorty]}{hoveredTask.priorty}</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-x-5 text-sm">
-                                {/* First Column */}
-                                <div className="flex flex-col gap-y-3">
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <PiUsersLight className="text-xl" />
-                                        <h3 className="font-medium font-lato">Assignee</h3>
-                                    </div>
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <AiOutlineUnorderedList className="text-xl" />
-                                        <h3 className="font-medium font-lato">Type</h3>
-                                    </div>
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <TbCircleDashed className="text-xl" />
-                                        <h3 className="font-medium font-lato">Status</h3>
-                                    </div>
-                                </div>
-                                {/* Second Column */}
-                                <div className="flex flex-col gap-y-3 w-[60%]">
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <h3 className="font-medium font-lato">{getReportingManager(hoveredTask.assigne)}</h3>
-                                    </div>
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <h3 className="font-medium font-lato flex items-center gap-x-1">
-                                        <div className="text-xl font-bold">{hoveredTask.Type === "Project" ? <CiViewBoard className="text-[#FF61C0] bg-[#FFE8F6] rounded-full p-0.5" /> : <CiCircleMore className="text-[#935AF2] bg-[#F1E8FF] rounded-full p-0.5" />}</div>
-                                            {hoveredTask.Type}
-                                            </h3>
-                                    </div>
-                                    <div className="text-baseGray flex items-center gap-x-2 h-9">
-                                        <h3 className={`font-medium font-lato px-2 py-1 rounded-lg ${statusStyles[hoveredTask.status]}`}>{hoveredTask.status}</h3>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                )}
-            </div>
-
-            {/* view assgine all dtr's */}
-
-
-
 
             <div>
                 <div className="flex flex-col bg-white lg:px-6 lg:pb-1 lg:pt-3 rounded-lg mb-3">
@@ -355,7 +226,7 @@ const CreateTask = ({ baseUrl, token }) => {
 
                         {/* modal open */}
                         {isOpen && (
-                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                            <div className="fixed z-50 inset-0 flex items-center justify-center bg-[#4a4a4a69]">
                                 <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[95vh] relative">
                                     <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-4 lg:mb-4">Add Task</h2>
                                     <button onClick={() => dispatch(closeModal())} className="absolute top-6 right-8"><RxCross2 /></button>
@@ -611,6 +482,8 @@ const CreateTask = ({ baseUrl, token }) => {
                             </div>
                         )}
                         {/* modal close */}
+
+
                     </div>
                     <div className="max-h-36 overflow-y-auto">
                         {tasks.map((task) => (
@@ -642,8 +515,32 @@ const CreateTask = ({ baseUrl, token }) => {
                         }
                     </div>
                 </div>
-                {/* view Dtr */}
-                {/* <div className="space-y-2 rounded-lg bg-white">
+
+            </div>
+
+
+            {/* display all employees names */}
+            <div className="flex">
+                <div className="w-[30%] lg:max-h-[75vh] overflow-y-auto bg-[#f0f1f2]">
+                    {dtrsAll?.map((dtr) => (
+                        <div className="flex items-center gap-x-2 group relative">
+                            <div className="flex items-center gap-x-2 border-b m-1 p-2 w-full hover:bg-blue-100 hover:rounded-md">
+                                <div className="w-12 h-12 rounded-full flex items-center text-xl justify-center text-white bg-[#DF418D] tracking-wider">{dtr.employee_name.toUpperCase().slice(0, 2)}</div>
+                                <div className="flex flex-col leading-none">
+                                    <div className="text-gray-400 text-sm leading-none">TXB-{dtr.employee_id.toString().padStart(4, "0")}</div>
+                                    <div className="font-semibold text-[16px] text-[#323333] font-lato">{dtr.employee_name}</div>
+                                    <div className="flex items-center gap-x-1">
+                                        <div className="text-gray-400 text-sm">{dtr.department}</div>
+                                        <div className="text-gray-400 text-sm border-l-4 pl-1">{dtr.designation}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <IoChevronForwardCircleOutline className=" text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
+                                onClick={() => handleDtrClick(dtr.assigne)} />
+                        </div>
+                    ))}
+                </div>
+                <div className="w-[70%] lg:max-h-[80vh] overflow-y-auto">
                     {Object.entries(groupedTasks).map(([date, tasks]) => (
                         <div key={date} className="w-full m-0">
                             <div className={`font-normal font-lato text-[18px] text-[#323333] rounded-lg px-4 py-2 border-b ${dropdownStates[date] ? 'bg-blue-100' : ''}`}>
@@ -654,7 +551,11 @@ const CreateTask = ({ baseUrl, token }) => {
                             </div>
                             <div className={dropdownStates[date] ? '' : 'hidden'}>
                                 {tasks.map(task => (
-                                    <div key={task.task} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
+                                    <div key={task.task} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg"
+                                        onMouseEnter={() => setHoveredTask(task)}
+                                        // onMouseLeave={() => setHoveredTask(null)}
+                                        onClick={() => setShowHoveredTask(true)}
+                                    >
                                         <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
                                             <div className="text-xl font-bold">
                                                 {task.Type === "Project" ? (
@@ -663,9 +564,12 @@ const CreateTask = ({ baseUrl, token }) => {
                                                     <CiCircleMore className="text-[#935AF2] bg-[#F1E8FF] rounded-full p-0.5" />
                                                 )}
                                             </div>
-                                            <div className="flex items-center gap-x-2 text-sm px-3 text-baseGray">
+                                            <div className={`flex items-center gap-x-2 text-sm px-2 text-baseGray ${task?.due_date < formattedDate ? 'text-[#D96C6C] bg-[#F2DCDA] rounded-lg py-1' : ''}`}>
                                                 <IoCalendarOutline className="text-xl" /> Due
-                                                <div className="font-lato">{task?.due_date?.slice(0, 5)}</div>
+                                                <div className={`font-lato`}>
+                                                    {task?.due_date?.slice(0, 5)}
+
+                                                </div>
                                             </div>
                                             <h3 className="text-[18px] font-bold text-[#323333]">{task.task}</h3>
                                         </div>
@@ -685,9 +589,15 @@ const CreateTask = ({ baseUrl, token }) => {
                             </div>
                         </div>
                     ))}
-                </div> */}
-            </div>
+                </div>
 
+
+                {/* view task card started */}
+                {(hoveredTask && showHoveredTask) && (
+                    <ViewTaskDetails hoveredTask={hoveredTask} setShowHoveredTask={setShowHoveredTask} statusIcons={statusIcons} getReportingManager={getReportingManager} statusStyles={statusStyles} />
+                )}
+                {/* view task card ended */}
+            </div>
 
         </div>
     );
