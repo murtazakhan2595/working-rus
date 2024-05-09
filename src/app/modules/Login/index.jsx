@@ -122,7 +122,8 @@ function Login() {
       // Simulating a response delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
-      toast.error(error.response.data.detail, {
+      console.log(error?.response?.data?.detail ?? 'Login Failed')
+      toast.error(error?.response?.data?.detail ?? 'Login Failed', {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
