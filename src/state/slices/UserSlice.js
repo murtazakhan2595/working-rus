@@ -11,7 +11,7 @@ const initialState = {
   sidebarRefresh: false,
   token: "",
   baseUrl:
-    window.location.href.startsWith("https://hrms.tecbrix.cloud.com")
+    window.location.href.startsWith("https://hrms.tecbrix.cloud")
     ? "https://hrms.tecbrix.cloud:8080/api"
     : window.location.href.startsWith("http://localhost")
     ? "https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api"
