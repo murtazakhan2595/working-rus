@@ -11,9 +11,11 @@ const initialState = {
   sidebarRefresh: false,
   token: "",
   baseUrl:
-    window.location.href.indexOf("https") === -1
-      ? "https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api"
-      : "https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api",
+    window.location.href.startsWith("https://hrms.tecbrix.cloud.com")
+    ? "https://hrms.tecbrix.cloud:8080/api"
+    : window.location.href.startsWith("http://localhost")
+    ? "https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api"
+    : "https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api"
 };
 
 const userSlice = createSlice({
