@@ -20,13 +20,14 @@ import { FiMinusCircle } from "react-icons/fi";
 import { fetchDTRByEmployeeId } from "../../../state/slices/GetDtrSlice";
 import { FaAngleUp } from "react-icons/fa6";
 import SuccessPopup from "./SuccessPop";
+import UpdateModal from "./UpdateModal";
 
 const MyDtr = ({ baseUrl, token }) => {
 
     const statusStyles = {
         Inprogress: "bg-[#FFE8CD] text-[#FF9A1F]",
         Pending: "bg-[#DADADA] text-baseGray",
-        Done: "bg-[#CCEFE3] text-[#5B8C7B]"
+        Completed: "bg-[#CCEFE3] text-[#5B8C7B]"
     };
 
     const statusIcons = {
@@ -68,6 +69,8 @@ const MyDtr = ({ baseUrl, token }) => {
     const [assignToSearchQuery, setAssignToSearchQuery] = useState("");
     const [tasks, setTasks] = useState([]);
     const [dropdownStates, setDropdownStates] = useState({});
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [openUpdateModal, setOpenUpdateModal] = useState(false);
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -110,21 +113,8 @@ const MyDtr = ({ baseUrl, token }) => {
         user.username.toLowerCase().includes(assignToSearchQuery.toLowerCase())
     );
 
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setFormData({
-    //         ...formData,
-    //         [name]: value
-    //     });
-    // };
-
     const handleChange = (name, value) => {
-        // Check if the name is 'employee_type' or 'employee_status'
-        // if (name === 'taskType' || name === 'taskStatus' || name === "priority") {
-        //     setFormData({ ...formData, [name]: value });
-        // } else {
         setFormData({ ...formData, [name]: value });
-        // }
     };
 
 
@@ -173,6 +163,7 @@ const MyDtr = ({ baseUrl, token }) => {
         try {
             await dispatch(postTasks(tasks)); // Dispatch the postTasks action with tasks data
             setShowSuccessPopup(true); // Show success pop-up after successful API call
+            setTasks([]);
             dispatch(fetchDTRByEmployeeId(userId));
         } catch (error) {
             console.error("Error posting tasks:", error);
@@ -203,10 +194,18 @@ const MyDtr = ({ baseUrl, token }) => {
     };
 
 
+    // open update modal
+
+    const handleTaskClick = (task) => {
+        setSelectedTask(task);
+        setOpenUpdateModal(true);
+    }
+
+
     return (
         <div className="flex w-full flex-col h-[100vh] lg:px-6 lg:py-2 bg-gray-50">
-              {showSuccessPopup && (
-                <SuccessPopup onClose={() => setShowSuccessPopup(false)} />
+            {showSuccessPopup && (
+                <SuccessPopup onClose={() => setShowSuccessPopup(false)} heading="DTR Submitted" message="Your daily task report was successfully submitted." />
             )}
             <div className="flex justify-between lg:p-6">
                 <h1 className="font-lato lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1>
@@ -514,6 +513,7 @@ const MyDtr = ({ baseUrl, token }) => {
                         }
                     </div>
                 </div>
+
                 {/* view Dtr */}
                 <div className="space-y-2 rounded-lg bg-white">
                     {Object.entries(groupedTasks).map(([date, tasks]) => (
@@ -524,9 +524,18 @@ const MyDtr = ({ baseUrl, token }) => {
                                     <FaAngleUp className={`text-sm transform transition-transform duration-300 ${dropdownStates[date] ? 'rotate-180' : ''}`} />
                                 </div>
                             </div>
+                            {openUpdateModal && selectedTask && (
+                                <UpdateModal
+                                    task={selectedTask}
+                                    onClose={() => setOpenUpdateModal(false)}
+                                    getReportingManager={getReportingManager}
+                                    setAssignToSearchQuery={setAssignToSearchQuery}
+                                    filteredAssignToUsers={filteredAssignToUsers}
+                                />
+                            )}
                             <div className={dropdownStates[date] ? '' : 'hidden'}>
                                 {tasks.map(task => (
-                                    <div key={task.task} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
+                                    <div key={task.task} onClick={() => handleTaskClick(task)} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
                                         <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
                                             <div className="text-xl font-bold">
                                                 {task.Type === "Project" ? (

@@ -7,6 +7,7 @@ import { postTasks } from './DtrPostSlice';
 import GetDtrSlice from './GetDtrSlice';
 import GetDtrAllSlice from './GetDtrAllSlice';
 import GetAssigneDtr from './GetAssigneDtr';
+import UpdateDtrSlice from './UpdateDtrSlice';
 
 const rootReducer = combineReducers({
   user: userSlice,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   postDtr: postTasks,
   getDtrAll: GetDtrAllSlice,
   getAssigne: GetAssigneDtr,
+  updateDtr: UpdateDtrSlice
 });
 
 export default rootReducer;
