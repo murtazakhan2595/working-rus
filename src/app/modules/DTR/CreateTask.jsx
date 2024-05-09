@@ -23,6 +23,7 @@ import SuccessPopup from "./SuccessPop";
 import { getDTRAll } from "../../../state/slices/GetDtrAllSlice";
 import { GetAssigneDtr } from "../../../state/slices/GetAssigneDtr";
 import ViewTaskDetails from "./ViewTaskDetails";
+import UpdateModal from "./UpdateModal";
 
 const CreateTask = ({ baseUrl, token }) => {
 
@@ -75,6 +76,8 @@ const CreateTask = ({ baseUrl, token }) => {
     const [dropdownStates, setDropdownStates] = useState({});
     const [hoveredTask, setHoveredTask] = useState(null);
     const [showHoveredTask, setShowHoveredTask] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [openUpdateModal, setOpenUpdateModal] = useState(false);
 
 
     const userProfile = useSelector(state => state.user.userProfile);
@@ -154,7 +157,8 @@ const CreateTask = ({ baseUrl, token }) => {
         try {
             await dispatch(postTasks(tasks)); // Dispatch the postTasks action with tasks data
             setShowSuccessPopup(true); // Show success pop-up after successful API call
-            // dispatch(fetchDTRByEmployeeId(userId));
+            dispatch(fetchDTRByEmployeeId(userId));
+
             setTasks([]);
             dispatch(getDTRAll());
         } catch (error) {
@@ -200,6 +204,11 @@ const CreateTask = ({ baseUrl, token }) => {
     const year = currenDate.getFullYear();
 
     const formattedDate = `${day}-${month}-${year}`;
+
+    const handleTaskClick = (task) => {
+        setSelectedTask(task);
+        setOpenUpdateModal(true);
+    }
 
     return (
         <div className="flex w-full flex-col h-[100vh] lg:px-6 lg:py-2 bg-gray-50">
@@ -536,10 +545,24 @@ const CreateTask = ({ baseUrl, token }) => {
                                 </div>
                             </div>
                             <IoChevronForwardCircleOutline className=" text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
+                                // onClick={() => handleDtrClick(dtr.assigne)} />
                                 onClick={() => handleDtrClick(dtr.assigne)} />
                         </div>
                     ))}
                 </div>
+
+                {/* update task modal */}
+                {openUpdateModal && selectedTask && (
+                    <UpdateModal
+                        task={selectedTask}
+                        onClose={() => setOpenUpdateModal(false)}
+                        getReportingManager={getReportingManager}
+                        setAssignToSearchQuery={setAssignToSearchQuery}
+                        filteredAssignToUsers={filteredAssignToUsers}
+                        handleDtrClick={handleDtrClick}
+                    />
+                )}
+
                 <div className="w-[70%] lg:max-h-[80vh] overflow-y-auto">
                     {Object.entries(groupedTasks).map(([date, tasks]) => (
                         <div key={date} className="w-full m-0">
@@ -553,8 +576,9 @@ const CreateTask = ({ baseUrl, token }) => {
                                 {tasks.map(task => (
                                     <div key={task.task} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg"
                                         onMouseEnter={() => setHoveredTask(task)}
-                                        // onMouseLeave={() => setHoveredTask(null)}
-                                        onClick={() => setShowHoveredTask(true)}
+                                        onMouseLeave={() => setHoveredTask(null)}
+                                        // onClick={() => setShowHoveredTask(true)}
+                                        onClick={() => handleTaskClick(task)}
                                     >
                                         <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
                                             <div className="text-xl font-bold">
@@ -564,7 +588,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                                     <CiCircleMore className="text-[#935AF2] bg-[#F1E8FF] rounded-full p-0.5" />
                                                 )}
                                             </div>
-                                            <div className={`flex items-center gap-x-2 text-sm px-2 text-baseGray ${task?.due_date < formattedDate ? 'text-[#D96C6C] bg-[#F2DCDA] rounded-lg py-1' : ''}`}>
+                                            <div className={`flex items-center gap-x-2 text-sm px-2 ${task?.due_date < formattedDate ? 'text-[#D96C6C] bg-[#F2DCDA] rounded-lg py-1' : 'text-baseGray'}`}>
                                                 <IoCalendarOutline className="text-xl" /> Due
                                                 <div className={`font-lato`}>
                                                     {task?.due_date?.slice(0, 5)}
@@ -593,7 +617,7 @@ const CreateTask = ({ baseUrl, token }) => {
 
 
                 {/* view task card started */}
-                {(hoveredTask && showHoveredTask) && (
+                {(hoveredTask) && (
                     <ViewTaskDetails hoveredTask={hoveredTask} setShowHoveredTask={setShowHoveredTask} statusIcons={statusIcons} getReportingManager={getReportingManager} statusStyles={statusStyles} />
                 )}
                 {/* view task card ended */}

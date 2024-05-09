@@ -201,6 +201,13 @@ const MyDtr = ({ baseUrl, token }) => {
         setOpenUpdateModal(true);
     }
 
+    const currenDate = new Date();
+    const day = currenDate.getDate().toString().padStart(2, '0'); // Add leading zero if needed
+    const month = (currenDate.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
+    const year = currenDate.getFullYear();
+
+    const formattedDate = `${day}-${month}-${year}`
+
 
     return (
         <div className="flex w-full flex-col h-[100vh] lg:px-6 lg:py-2 bg-gray-50">
@@ -544,7 +551,7 @@ const MyDtr = ({ baseUrl, token }) => {
                                                     <CiCircleMore className="text-[#935AF2] bg-[#F1E8FF] rounded-full p-0.5" />
                                                 )}
                                             </div>
-                                            <div className="flex items-center gap-x-2 text-sm px-3 text-baseGray">
+                                            <div className={`flex items-center gap-x-2 text-sm px-3 ${task?.due_date < formattedDate ? 'text-[#D96C6C] bg-[#F2DCDA] rounded-lg py-1' : 'text-baseGray'}`}>
                                                 <IoCalendarOutline className="text-xl" /> Due
                                                 <div className="font-lato">{task?.due_date?.slice(0, 5)}</div>
                                             </div>

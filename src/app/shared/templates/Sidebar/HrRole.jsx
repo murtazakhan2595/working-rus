@@ -1,17 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FaAngleDown } from "react-icons/fa6";
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { LiaHomeSolid } from "react-icons/lia";
 import { BsPersonFillGear } from "react-icons/bs";
 import { LuCalendarDays, LuFolderCog2 } from "react-icons/lu";
 import { toggleDropdown, isDbOpen, isRecruitmentOpen, isLeaveOpen } from "../../../../state/slices/DropdownSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import { BiTask } from "react-icons/bi";
+const activeLink = "flex rounded-md my-2 py-2 px-4 items-center gap-x-1 bg-[#DAEFF8] text-[#0D2282]";
+const normalLink = "flex rounded-md my-2 py-2 px-4 items-center gap-x-1 text-gray-400 hover:bg-[#DAEFF8] hover:text-[#0D2282]"
+
 
 const HrRole = ({ isSidebarOpen }) => {
   const location = useLocation();
-  
-  const { isDbOpen, isRecruitmentOpen, isLeaveOpen } = useSelector(state => state.dropdown);
+
+  const { isDbOpen, isRecruitmentOpen, isLeaveOpen, isDtrOpen } = useSelector(state => state.dropdown);
   const dispatch = useDispatch();
 
   const handleToggleDropdown = (dropdownName) => {
@@ -283,7 +287,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                 <p className="text-sm">Leave Balance</p>
               </div>
             </Link> */}
-            
+
             <Link to="/leave-balance-hr">
               <div
                 className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance-hr" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
@@ -292,6 +296,60 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                 <p className="text-sm">My Leave Balance</p>
               </div>
             </Link>
+          </li>
+
+        </div>
+      }
+
+      <li className="group">
+        <div
+          onClick={() => handleToggleDropdown("dtr")}
+          className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
+            } rounded-lg cursor-pointer`}
+        >
+          <BiTask className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+          <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
+            <p className="flex-grow">Daily Task Report</p>
+            <FaAngleDown className={`text-xs transition-transform duration-300 ${isDtrOpen ? 'transform rotate-180' : ''}`} />
+          </div>
+        </div>
+        {!isSidebarOpen && (
+          <div className="absolute rounded-md top-72 ml-20
+          bg-white w-32 text-base
+          invisible opacity-20 -translate-x-3 transition-all
+          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+
+            <div className="flex flex-col rounded-lg bg-white">
+              <li>
+                <Link to="/create-task">
+                  <div
+                    className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                      }`}
+                  >
+                    <p className="text-sm">Create Task</p>
+                  </div>
+                </Link>
+              </li>
+
+            </div>
+          </div>
+        )}
+      </li>
+
+      {(isDtrOpen && isSidebarOpen) &&
+        <div className="flex flex-col mt-2 bg-[#F7F8FA]">
+          <li>
+            <NavLink to="/create-task"
+              className={({ isActive }) => isActive ? activeLink : normalLink}
+            >
+              <div
+              // className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+              //     }`}
+
+              >
+                <p className="text-sm">Create Task</p>
+              </div>
+            </NavLink>
           </li>
 
         </div>

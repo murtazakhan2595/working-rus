@@ -17,7 +17,7 @@ import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
 
 import axios from "axios";
 import Cookies from "universal-cookie";
-import PageLoader  from './common/PageLoader.jsx';
+import PageLoader from './common/PageLoader.jsx';
 import {
   setUserLogout,
   setUserProfile,
@@ -121,7 +121,7 @@ function App() {
   return (
     <>
       {(!userProfile || !userProfile.hasOwnProperty('is_filled')) && (
-        <PageLoader/>
+        <PageLoader />
       )}
       <Routes>
         {isLogin && (
@@ -339,6 +339,10 @@ function App() {
                         element={
                           <LeaveRequestHR isSidebarOpen={isSidebarOpen} />
                         }
+                      />
+                      <Route
+                        path="/create-task"
+                        element={<CreateTask />}
                       />
                     </>
                   )}

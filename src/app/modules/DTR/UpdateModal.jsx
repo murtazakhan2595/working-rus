@@ -13,10 +13,10 @@ import { priority2Options, status2Options, statusOptions, typeOptions } from "..
 import Select from "react-select";
 import { updateTask } from "../../../state/slices/UpdateDtrSlice";
 import { fetchDTRByEmployeeId } from "../../../state/slices/GetDtrSlice";
-import SuccessPopup from "./SuccessPop";
+import { getDTRAll } from "../../../state/slices/GetDtrAllSlice";
 
 
-const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filteredAssignToUsers, onClose }) => {
+const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filteredAssignToUsers, onClose, handleDtrClick }) => {
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -25,7 +25,6 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
 
     const [formData, setFormData] = useState(task);
     const [assignToUser, setAssignToUser] = useState({});
-    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
     const dispatch = useDispatch();
     const empDropdown = useSelector(state => state.modal.isEmpDropdownOpen);
@@ -51,21 +50,27 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
 
     const handleUpdateTask = async (e) => {
         e.preventDefault();
-    
+
         try {
             console.log("Updating task:", formData);
-            await dispatch(updateTask(formData)); // Dispatch the updateTask action with formData
+            const response = await dispatch(updateTask(formData));
+            // Dispatch the updateTask action with formData
+            console.log('i am update response', response);
             console.log("Task updated successfully!");
             // Ensure that the update was successful before showing the success popup
-            setShowSuccessPopup(true); // Show success pop-up after successful API call
-            dispatch(fetchDTRByEmployeeId(userId)); // Fetch updated data after successful update
+            // setShowSuccessPopup(true); // Show success pop-up after successful API call
+            // dispatch(fetchDTRByEmployeeId(userId)); // Fetch updated data after successful update
+            // dispatch(getDTRAll());
+            if (response) {
+                handleDtrClick(response.payload.assigne)
+            }
             onClose(); // Close the modal after successful update
         } catch (error) {
             console.error("Error updating task:", error);
             // Handle error (e.g., show error message)
         }
     };
-    
+
     // const handleUpdateTask = async (e) => {
     //     e.preventDefault();
 
@@ -95,9 +100,6 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
 
     return (
         <>
-            {showSuccessPopup && (
-                <SuccessPopup onClose={() => setShowSuccessPopup(false)} heading="DTR Submitted" message="Your daily task report was successfully submitted." />
-            )}
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[95vh] relative">
                     <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-4 lg:mb-4">Update Task</h2>
