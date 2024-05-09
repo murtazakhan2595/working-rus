@@ -17,7 +17,7 @@ import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
 
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { connect } from "react-redux";
+import PageLoader  from './common/PageLoader.jsx';
 import {
   setUserLogout,
   setUserProfile,
@@ -46,6 +46,8 @@ import LeaveBalanceHR from "./app/modules/LeaveApplication/LeaveBalanceHR.jsx";
 import LeaveApplicationListManager from "./app/modules/LeaveApplication/LeaveApplicationListManager.jsx";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import MyDtr from "./app/modules/DTR/MyDtr.jsx";
+import CreateTask from "./app/modules/DTR/CreateTask.jsx";
 
 // function App({
 //   setUserProfile,
@@ -115,22 +117,16 @@ function App() {
       getProfile();
     }
   }, [location]);
-
+  // console.log(!isLogin,userProfile.is_filled,userProfile.hasOwnProperty('is_filled'))
   return (
     <>
-      {(isLogin === null || userProfile.is_filled === undefined) && (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-blue-500"></div>
-            <p className="text-gray-600 mt-4">Loading...</p>
-          </div>
-        </div>
+      {(!userProfile || !userProfile.hasOwnProperty('is_filled')) && (
+        <PageLoader/>
       )}
-
       <Routes>
         {isLogin && (
           <>
-            {userProfile.is_filled === true ? (
+            {userProfile.is_filled === true && (
               <>
                 <Route
                   element={
@@ -269,6 +265,14 @@ function App() {
                           <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
                         }
                       />
+                      <Route
+                        path="/my-dtr"
+                        element={<MyDtr />}
+                      />
+                      <Route
+                        path="/create-task"
+                        element={<CreateTask />}
+                      />
                     </>
                   )}
                   {userProfile.role === 3 && (
@@ -358,7 +362,8 @@ function App() {
                   <Route exact path="/employees" element={<Err401 />} />
                 )}
               </>
-            ) : (
+            )}
+            {userProfile.is_filled === false && (
               <Route exact path="/" element={<EmpForm />} />
             )}
             <Route path="*" element={<Err404 />} />

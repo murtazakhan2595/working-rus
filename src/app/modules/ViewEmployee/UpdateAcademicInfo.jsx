@@ -41,18 +41,14 @@ const AcademicRecords = ({
   userProfile,
   baseUrl,
 }) => {
-  const getDataFromSessionStorage = (key) => {
-    const serializedData = sessionStorage.getItem(key);
-    const data = JSON.parse(serializedData);
-    return data;
-  };
+ 
   const [deleteExp, setDeleteExp] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [cerErrors, setCerErrors] = useState({});
-  const [academicInfo, setAcademicInfo] = useState(EmployeeAcademicRecord);
-  const [certificationSections, setCertificationSections] = useState([EmployeeCertifiation]);
+  const [academicInfo, setAcademicInfo] = useState({});
+  const [certificationSections, setCertificationSections] = useState([]);
 
   useEffect(() => {
     getEmployeeAcademicRecordData(baseUrl, userProfile?.id, token).then(response => {
@@ -77,10 +73,6 @@ const AcademicRecords = ({
     setCertificationSections([...certificationSections, {}]);
   };
 
-  const setDataInSessionStorage = (key, data) => {
-    const serializedData = JSON.stringify(data);
-    sessionStorage.setItem(key, serializedData);
-  };
   // Handle file input change
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -103,12 +95,12 @@ const AcademicRecords = ({
   };
 
   const handleStartDate = (date) => {
-    const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
+    const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
     handleChange("edu_start_date", formattedDate);
   };
 
   const handleEndDate = (date) => {
-    const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
+    const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
     handleChange("edu_end_date", formattedDate);
   };
 
@@ -169,12 +161,9 @@ const AcademicRecords = ({
           document: academicInfo.certificate,
         }
         academicInfo.employee_id = userProfile.id
-        academicInfo.edu_start_date = moment(academicInfo.edu_start_date, "DD-MM-YYYY").format("YYYY-MM-DD");
-        academicInfo.edu_end_date = moment(academicInfo.edu_end_date, "DD-MM-YYYY").format("YYYY-MM-DD");
-
         delete academicInfo.certificate
         saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo, academicDoc);
-        saveEmployeeCertificationData(baseUrl, userProfile?.id, token, academicDoc);
+        saveEmployeeCertificationData(baseUrl, userProfile?.id, token, certificationSections);
         deleteEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, deleteExp);
       }
       catch (error) {
@@ -187,7 +176,6 @@ const AcademicRecords = ({
       }
 
       setIsEdit(!isEdit);
-      sessionStorage.clear();
       toast.success("Academic Records Updated!", {
         position: "top-right",
         autoClose: 3000,
@@ -201,7 +189,6 @@ const AcademicRecords = ({
 
 
   const handleNextStep = () => {
-    sessionStorage.clear()
     nextstep();
   };
 
@@ -347,17 +334,17 @@ const AcademicRecords = ({
                       name="startdate"
                       day={
                         academicInfo.edu_start_date
-                          ? academicInfo.edu_start_date.substr(0, 2)
+                          ? academicInfo.edu_start_date.substr(8, 2)
                           : null
                       }
                       month={
                         academicInfo.edu_start_date
-                          ? academicInfo.edu_start_date.substr(3, 2)
+                          ? academicInfo.edu_start_date.substr(5, 2)
                           : null
                       }
                       year={
                         academicInfo.edu_start_date
-                          ? academicInfo.edu_start_date.substr(6, 4)
+                          ? academicInfo.edu_start_date.substr(0, 4)
                           : null
                       }
                       selected={moment(
@@ -387,17 +374,17 @@ const AcademicRecords = ({
                       name="enddate"
                       day={
                         academicInfo.edu_end_date
-                          ? academicInfo.edu_end_date.substr(0, 2)
+                          ? academicInfo.edu_end_date.substr(8, 2)
                           : null
                       }
                       month={
                         academicInfo.edu_end_date
-                          ? academicInfo.edu_end_date.substr(3, 2)
+                          ? academicInfo.edu_end_date.substr(5, 2)
                           : null
                       }
                       year={
                         academicInfo.edu_end_date
-                          ? academicInfo.edu_end_date.substr(6, 4)
+                          ? academicInfo.edu_end_date.substr(0, 4)
                           : null
                       }
                       selected={moment(
@@ -420,7 +407,7 @@ const AcademicRecords = ({
                     Attach Certification:
                   </h2>
                   <div>
-                    {academicInfo.certificate?.hasOwnProperty("name") ? (
+                    {academicInfo.certificate?.name ? (
                       <div className="flex gap-x-3 items-center">
                         {/* <button
                           className="text-blue-600 underline"
@@ -468,7 +455,6 @@ const AcademicRecords = ({
                             onClick={() => {
                               if (isEdit) {
                                 setAcademicInfo({ ...academicInfo, certificate: { ...academicInfo.certificate, document: {} } });
-                                setDataInSessionStorage("UpdatedAcademicInfo", academicInfo);
                               }
                             }}
                             className={`${isEdit ? "text-blue-600" : "text-gray-500"} text-xl`}
@@ -579,17 +565,17 @@ const AcademicRecords = ({
                       // disabled={isEdit ? false : true}
                       day={
                         certification?.completion_date
-                          ? certification?.completion_date.substr(0, 2)
+                          ? certification?.completion_date.substr(8, 2)
                           : null
                       }
                       month={
                         certification?.completion_date
-                          ? certification?.completion_date.substr(3, 2)
+                          ? certification?.completion_date.substr(5, 2)
                           : null
                       }
                       year={
                         certification?.completion_date
-                          ? certification?.completion_date.substr(6, 4)
+                          ? certification?.completion_date.substr(0, 4)
                           : null
                       }
                       name="completion_date"
@@ -599,7 +585,7 @@ const AcademicRecords = ({
                       ).toDate()}
                       onChange={(date) => {
                         const formattedDate = moment(date)
-                          .format("DD-MM-YYYY")
+                          .format("YYYY-MM-DD")
                           .toLowerCase();
                         const updatedSections = [...certificationSections];
                         updatedSections[index].completion_date = formattedDate;
@@ -627,17 +613,17 @@ const AcademicRecords = ({
                       name="expiry_date"
                       day={
                         certification?.expiry_date
-                          ? certification?.expiry_date.substr(0, 2)
+                          ? certification?.expiry_date.substr(8, 2)
                           : null
                       }
                       month={
                         certification?.expiry_date
-                          ? certification?.expiry_date.substr(3, 2)
+                          ? certification?.expiry_date.substr(5, 2)
                           : null
                       }
                       year={
                         certification?.expiry_date
-                          ? certification?.expiry_date.substr(6, 4)
+                          ? certification?.expiry_date.substr(0, 4)
                           : null
                       }
                       selected={moment(
@@ -646,7 +632,7 @@ const AcademicRecords = ({
                       ).toDate()}
                       onChange={(date) => {
                         const formattedDate = moment(date)
-                          .format("DD-MM-YYYY")
+                          .format("YYYY-MM-DD")
                           .toLowerCase();
                         const updatedSections = [...certificationSections];
                         updatedSections[index].expiry_date = formattedDate;

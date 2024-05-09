@@ -5,7 +5,8 @@ const initialState = {
   isRecruitmentOpen: false,
   isLeaveOpen: false,
   isProjectOpen: false,
-  isProfileOpen: false
+  isProfileOpen: false,
+  isDtrOpen: false
 };
 
 const dropdownSlice = createSlice({
@@ -21,6 +22,7 @@ const dropdownSlice = createSlice({
           state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
+          state.isDtrOpen = false;
           break;
         case 'Recruitment':
           state.isRecruitmentOpen = !state.isRecruitmentOpen;
@@ -28,6 +30,7 @@ const dropdownSlice = createSlice({
           state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
+          state.isDtrOpen = false;
           break;
         case 'LeaveManagement':
           state.isLeaveOpen = !state.isLeaveOpen;
@@ -35,6 +38,15 @@ const dropdownSlice = createSlice({
           state.isRecruitmentOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
+          state.isDtrOpen = false;
+          break;
+        case 'dtr':
+          state.isDtrOpen = !state.isDtrOpen;
+          state.isDbOpen = false;
+          state.isRecruitmentOpen = false;
+          state.isProjectOpen = false;
+          state.isProfileOpen = false;
+          state.isLeaveOpen = false;
           break;
         case 'Projects':
           state.isProjectOpen = !state.isProjectOpen;
@@ -42,6 +54,7 @@ const dropdownSlice = createSlice({
           state.isDbOpen = false;
           state.isRecruitmentOpen = false;
           state.isLeaveOpen = false;
+          state.isDtrOpen = false;
           break;
         case 'Profile':
           state.isProfileOpen = !state.isProfileOpen;
@@ -49,6 +62,7 @@ const dropdownSlice = createSlice({
           state.isDbOpen = false;
           state.isRecruitmentOpen = false;
           state.isLeaveOpen = false;
+          state.isDtrOpen = false;
           break;
         default:
           break;
@@ -57,5 +71,5 @@ const dropdownSlice = createSlice({
   }
 });
 
-export const { toggleDropdown, isDbOpen, isRecruitmentOpen, isLeaveOpen, isProjectOpen, isProfileOpen } = dropdownSlice.actions;
+export const { toggleDropdown, isDbOpen, isRecruitmentOpen, isLeaveOpen, isDtrOpen, isProjectOpen, isProfileOpen } = dropdownSlice.actions;
 export default dropdownSlice.reducer;

@@ -9,7 +9,7 @@ import { validationBankDetailsFormSchema } from '../../utils/FormSchema/employee
 
 const BankDetails = ({ errors, setErrors, prevstep, nextstep, userProfile, baseUrl, token }) => {
 
-    const [bankInfo, setBankInfo] = useState(EmployeeBankDetails)
+    const [bankInfo, setBankInfo] = useState({})
     useEffect(() => {
         getEmployeeBankDetailsData(baseUrl, userProfile?.id, token).then(response => {
             setBankInfo(response);

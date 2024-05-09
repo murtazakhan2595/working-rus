@@ -16,12 +16,6 @@ import { validationDepartmentInfoFormSchema } from '../../utils/FormSchema/emplo
 function getManagerSelected(managers, managersList) {
     if (managers) {
         managers = managers.split(', ') || [];
-        managersList = managersList
-            ?.filter(manager => manager.username)
-            .map((manager) => ({
-                value: manager.id,
-                label: manager.username,
-            }))
         const matchingObjects = managersList.filter(obj => {
             return managers.find(element => obj.label === element);
         });
@@ -36,7 +30,7 @@ function getManagerSelected(managers, managersList) {
 const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
-    const [departmentInfo, setDepartmentInfo] = useState(EmployeeDepartmentInfo)
+    const [departmentInfo, setDepartmentInfo] = useState({})
 
     useEffect(() => {
         getEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token).then(response => {
@@ -56,7 +50,14 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                     },
                 });
                 if (response.status === 200) {
-                    setManagers(response.data);
+                    let managersList = response.data;
+                    managersList = managersList
+                        ?.filter(manager => manager.username)
+                        .map((manager) => ({
+                            value: manager.id,
+                            label: manager.username,
+                        }))
+                    setManagers(managersList);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -77,10 +78,11 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                 employee_status: departmentInfo.employee_status,
                 employee_type: departmentInfo.employee_type,
                 joining_date: departmentInfo.joining_date,
+                direct_report: departmentInfo.direct_report,
+                indirect_report: departmentInfo.indirect_report,
             },
             { abortEarly: false }
         );
-
         if (error) {
             const validationErrors = {};
             error.details.forEach((detail) => {
@@ -96,19 +98,20 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
     };
 
     const handleChange = (name, value, values) => {
-        if (name === "is_indirect_report_applicable") {
-            setDepartmentInfo({ ...departmentInfo, [name]: value });
+        if (name === 'employee_type' || name === 'employee_status') {
+            setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+        } else if (name === "department_name") {
+            setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+        }
+        if (name === "indirect_report" || name === "direct_report") {
+            const updatedValues = values || [];
+            const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
+            setDepartmentInfo({
+                ...departmentInfo,
+                [name]: uniqueValues.join(', '), // Convert array to string
+            });
         } else {
-            if (name === "indirect_report" || name === "direct_report") {
-                const updatedValues = values || [];
-                const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
-                setDepartmentInfo({
-                    ...departmentInfo,
-                    [name]: uniqueValues.join(', '), // Convert array to string
-                });
-            } else {
-                setDepartmentInfo({ ...departmentInfo, [name]: value });
-            }
+            setDepartmentInfo({ ...departmentInfo, [name]: value });
         }
         setErrors({ ...errors, [name]: null });
     };
@@ -240,12 +243,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                                         placeholder="Search Direct Report To..."
                                         value={getManagerSelected(departmentInfo.direct_report, managers)}
                                         onChange={(selectedOptions) => handleChange("direct_report", selectedOptions, selectedOptions)}
-                                        options={managers
-                                            ?.filter(manager => manager.username)
-                                            .map((manager) => ({
-                                                value: manager.id,
-                                                label: manager.username,
-                                            }))}
+                                        options={managers}
                                         isEdit={true}
                                         isMulti={true}
                                     />
@@ -287,12 +285,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                                                 placeholder="Search Direct Report To..."
                                                 value={getManagerSelected(departmentInfo.indirect_report, managers)}
                                                 onChange={(selectedOptions) => handleChange("indirect_report", selectedOptions, selectedOptions)}
-                                                options={managers
-                                                    ?.filter(manager => manager.username)
-                                                    .map((manager) => ({
-                                                        value: manager.id,
-                                                        label: manager.username,
-                                                    }))}
+                                                options={managers}
                                                 isEdit={true}
                                                 isMulti={true}
                                             />
@@ -406,7 +399,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                         onClick={handleNextStep}
                         text={
                             isLoading ? (
-                                <div className='flex items-center gap-x-2'>
+                                <div className='flex items-center gap-x-2 p-2 '>
                                     <span>Submit </span>
                                     <CustomLoader />
                                 </div>

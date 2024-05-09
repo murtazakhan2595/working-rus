@@ -11,6 +11,7 @@ import {
     EmployeeBankDetails,
     EmployeeCertifiation,
 } from '../utils/Types/Employee'
+import moment from "moment";
 
 
 const getEmployeeData = async (baseUrl, employeeid, headers) => {
@@ -126,6 +127,7 @@ const saveEmployeeVisaDetailData = async (baseUrl, employeeid, token, visaDetail
         "Content-Type": "application/json",
     };
     if (employeeid) {
+        visaDetail.employee_id = employeeid;
         try {
             if (visaDetail.id) {
                 await axios.patch(`${baseUrl}/employeevisadetail/${visaDetail.id}`, visaDetail, { headers })
@@ -136,28 +138,31 @@ const saveEmployeeVisaDetailData = async (baseUrl, employeeid, token, visaDetail
             for (const key in visaDetailsFiles) {
                 if (visaDetailsFiles.hasOwnProperty(key)) {
                     const file = visaDetailsFiles[key];
-                    if (file?.id) {
-                        await axios.patch(`${baseUrl}/attachment/${file?.id}`, {
-                            employee_id: employeeid,
-                            name: file.name,
-                            description: `${file.name} file`,
-                            document: {
-                                name: file.document.name,
-                                data: file.document.data,
-                            },
-                        }, { headers });
-                    } else {
-                        // Otherwise, post a new attachment
-                        await axios.post(`${baseUrl}/attachment/`, {
-                            employee_id: employeeid,
-                            name: file.name,
-                            description: `${file.name} file`,
-                            document: file,
-                        }, { headers });
+                    if (file) {
+                        if (file?.id) {
+                            await axios.patch(`${baseUrl}/attachment/${file?.id}`, {
+                                employee_id: employeeid,
+                                name: key,
+                                description: `${file.name} file`,
+                                document: {
+                                    name: file.document.name,
+                                    data: file.document.data,
+                                },
+                            }, { headers });
+                        } else {
+                            // Otherwise, post a new attachment
+                            await axios.post(`${baseUrl}/attachment/`, {
+                                employee_id: employeeid,
+                                name: key,
+                                description: `${file.name} file`,
+                                document: file,
+                            }, { headers });
+                        }
                     }
 
                 }
             }
+            return true;
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
@@ -252,7 +257,8 @@ const saveEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token
     if (employeeid && payload && payload.length > 0) {
         try {
             payload.map(async (experience) => {
-                if (experience.hasOwnProperty("id")) {
+                experience.employee_id = employeeid;
+                if (experience?.id) {
                     await axios.patch(`${baseUrl}/experience/${experience.id}`, experience, {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -269,6 +275,7 @@ const saveEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token
                     });
                 }
             });
+            return true;
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
         }
@@ -419,7 +426,7 @@ const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payload
         try {
             payloadAttachment.map(async (certification) => {
                 certification.employee_id = employeeid
-                if (certification.hasOwnProperty("id")) {
+                if (certification?.id) {
                     await axios.patch(
                         `${baseUrl}/certification/${certification.id}`,
                         certification,

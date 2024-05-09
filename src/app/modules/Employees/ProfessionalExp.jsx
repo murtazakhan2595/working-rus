@@ -165,17 +165,17 @@ const ProfessionalExp = ({
                     <Datepicker
                       day={
                         experience?.exp_start_date
-                          ? experience?.exp_start_date.substr(0, 2)
+                          ? experience?.exp_start_date.substr(8, 2)
                           : null
                       }
                       month={
                         experience?.exp_start_date
-                          ? experience?.exp_start_date.substr(3, 2)
+                          ? experience?.exp_start_date.substr(5, 2)
                           : null
                       }
                       year={
                         experience?.exp_start_date
-                          ? experience?.exp_start_date.substr(6, 4)
+                          ? experience?.exp_start_date.substr(0, 4)
                           : null
                       }
                       name={`exp_start_date_${index}`}
@@ -185,7 +185,7 @@ const ProfessionalExp = ({
                       ).toDate()}
                       onChange={(date) => {
                         const formattedDate = moment(date)
-                          .format("DD-MM-YYYY")
+                          .format("YYYY-MM-DD")
                           .toLowerCase();
                         const updatedSections = [...experienceSections];
                         updatedSections[index].exp_start_date =
@@ -200,65 +200,7 @@ const ProfessionalExp = ({
                       </div>
                     )}
                   </div>
-                  {/* <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                    <label
-                      htmlFor={`exp_end_date_${index}`}
-                      className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
-                    >
-                      End Date:
-                    </label>
-                    <div className="flex items-center">
-                      <Datepicker
-                        name={`exp_end_date_${index}`}
-                        day={
-                          experience?.exp_end_date
-                            ? experience?.exp_end_date.substr(0, 2)
-                            : null
-                        }
-                        month={
-                          experience?.exp_end_date
-                            ? experience?.exp_end_date.substr(3, 2)
-                            : null
-                        }
-                        year={
-                          experience?.exp_end_date
-                            ? experience?.exp_end_date.substr(6, 4)
-                            : null
-                        }
-                        selected={
-                          experience.exp_end_date
-                            ? moment(
-                                experience.exp_end_date,
-                                "DD-MM-YYYY"
-                              ).toDate()
-                            : null
-                        }
-                        onChange={(date) => {
-                          const formattedDate = moment(date)
-                            .format("DD-MM-YYYY")
-                            .toLowerCase();
-                          const updatedSections = [...experienceSections];
-                          updatedSections[index].exp_end_date =
-                            disableEndDate ? null : formattedDate;
-                          setExperienceSections(updatedSections);
-                          clearError(`exp_end_date_${index}`);
-                        }}
-                        disabled={disableEndDate} // Disable the Datepicker if Till Date is checked
-                      />
-                      <input
-                        type="checkbox"
-                        checked={disableEndDate}
-                        onChange={(e) => setDisableEndDate(e.target.checked)}
-                        className="ml-2"
-                      />
-                      <label className="ml-1">Till Date</label>
-                    </div>
-                    {errors[`exp_end_date_${index}`] && !disableEndDate && (
-                      <div className="text-red-500 text-sm">
-                        {errors[`exp_end_date_${index}`]}
-                      </div>
-                    )}
-                  </div> */}
+       
                   <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                     <label
                       htmlFor={`exp_end_date_${index}`}
@@ -269,12 +211,12 @@ const ProfessionalExp = ({
                     <div className="flex items-center">
                       <Datepicker
                         name={`exp_end_date_${index}`}
-                        day={experience.exp_end_date ? experience.exp_end_date.substr(0, 2) : null}
-                        month={experience.exp_end_date ? experience.exp_end_date.substr(3, 2) : null}
-                        year={experience.exp_end_date ? experience.exp_end_date.substr(6, 4) : null}
+                        day={experience.exp_end_date ? experience.exp_end_date.substr(8, 2) : null}
+                        month={experience.exp_end_date ? experience.exp_end_date.substr(5, 2) : null}
+                        year={experience.exp_end_date ? experience.exp_end_date.substr(0, 4) : null}
                         selected={experience.exp_end_date ? moment(experience.exp_end_date, "DD-MM-YYYY").toDate() : null}
                         onChange={(date) => {
-                          const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
+                          const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
                           const updatedSections = [...experienceSections];
                           updatedSections[index].exp_end_date = formattedDate;
                           setExperienceSections(updatedSections);

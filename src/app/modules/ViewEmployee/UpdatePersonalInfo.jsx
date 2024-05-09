@@ -28,8 +28,8 @@ const PersonalInfo = ({
   const [isEdit, setIsEdit] = useState(false);
   const [cancelBox, setCancelBox] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [personalInfo, setPersonalInfo] = useState(EmployeePersonalInformation);
-  const [imagePreview, setImagePreview] = useState(EmployeePersonalInformation.profile_picture);
+  const [personalInfo, setPersonalInfo] = useState({});
+  const [imagePreview, setImagePreview] = useState(null);
   const id = userProfile.id;
 
   useEffect(() => {
@@ -92,13 +92,14 @@ const PersonalInfo = ({
       if (personalInfo && !personalInfo?.passport) {
         delete personalInfo.passport_number;
       }
+      personalInfrmation.other_email = personalInfrmation.email;
       saveEmployeePersonalInfoData(baseUrl, id, token, personalInfrmation).then(() => {
-          setIsEdit(!isEdit);
-          toast.success("Personal Information Updated!", {
-            position: "top-right",
-            autoClose: 3000,
-          });
-          nextstep();
+        setIsEdit(!isEdit);
+        toast.success("Personal Information Updated!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        nextstep();
       });
     }
   }
@@ -575,9 +576,9 @@ const PersonalInfo = ({
               >
                 <div className="w-full h-full flex flex-col justify-center items-center border-solid bg-[#EFEFEF] rounded-3xl relative">
                   <div className="relative w-32 h-32 border-2 border-gray-400 rounded-full overflow-hidden">
-                    {imagePreview ? (
+                    {imagePreview?.file ? (
                       <img
-                        src={imagePreview}
+                        src={imagePreview.file}
                         alt="Preview"
                         className="w-full h-full object-cover"
                       />
@@ -590,7 +591,7 @@ const PersonalInfo = ({
                     )}
                   </div>
                   <span className="text-base mt-3">
-                    {imagePreview ? "Change" : "Upload"} your photo
+                    {imagePreview?.file ? "Change" : "Upload"} your photo
                   </span>
                 </div>
                 <input

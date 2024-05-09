@@ -136,13 +136,11 @@ const UpdateVisaDetails = ({ prevstep,
       .catch((error) => console.error("Error reading files:", error));
   };
 
-
-
-  const updateDataOnServer = async () => {
+   const updateDataOnServer = async () => {
     setIsLoading(true);
     try {
 
-      saveEmployeeVisaDetailData(baseUrl, userProfile?.id, token, employeeVisaDetails, visaDetailsFiles);
+      saveEmployeeVisaDetailData(baseUrl, id, token, employeeVisaDetails, visaDetailsFiles);
 
       // // Make a copy of the updated data
       // const updatedDataCopy = { ...employeeData,...employeeVisaDetails };

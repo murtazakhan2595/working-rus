@@ -13,8 +13,8 @@ import { validationPersonalInfoFormSchema } from '../../utils/FormSchema/employe
 
 const PersonalInfo = ({ nextstep, errors, setErrors, userProfile, baseUrl, token }) => {
 
-  const [personalInfo, setPersonalInfo] = useState(EmployeePersonalInformation);
-  const [imagePreview, setImagePreview] = useState(EmployeePersonalInformation.profile_picture);
+  const [personalInfo, setPersonalInfo] = useState({});
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     getEmployeePersonalInfoData(baseUrl, userProfile?.id, token).then(response => {
@@ -80,10 +80,12 @@ const PersonalInfo = ({ nextstep, errors, setErrors, userProfile, baseUrl, token
       const imageError = { image: "Please upload an image." };
       setErrors(imageError);
     } else {
+      debugger
       personalInfrmation.profile_picture = imagePreview;
       if (personalInfo && !personalInfo?.passport) {
         delete personalInfo.passport_number;
       }
+      personalInfrmation.other_email=personalInfrmation.email;
       saveEmployeePersonalInfoData(baseUrl, userProfile?.id, token, personalInfrmation);
       setErrors({});
       nextstep();
