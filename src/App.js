@@ -228,6 +228,14 @@ function App() {
                           <LeaveCalender isSidebarOpen={isSidebarOpen} />
                         }
                       />
+                      <Route
+                        path="/create-task"
+                        element={<CreateTask />}
+                      />
+                      <Route
+                        path="/my-dtr"
+                        element={<MyDtr />}
+                      />
                     </>
                   )}
                   {(userProfile.role === 2 || userProfile.role === 4) && (

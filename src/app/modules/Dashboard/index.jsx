@@ -125,7 +125,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
           </div>
         </div>
         {/* ******************** Daily Task Report**************/}
-        <DailyTaskRpt />
+        {/* <DailyTaskRpt /> */}
         {/***********************   Task Planner   **********************************/}
         <TaskPlanner />
       </div>

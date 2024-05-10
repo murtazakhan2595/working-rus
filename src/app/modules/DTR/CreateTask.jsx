@@ -80,7 +80,8 @@ const CreateTask = ({ baseUrl, token }) => {
     const [showFiltersDropdown, setShowFilterDropdown] = useState(false);
     const [filter, setFilter] = useState("");
     const [filteredUsers, setFilteredUsers] = useState([]);
-    const [statusValue, setStatusValue] = useState('');
+    const [status, setStatus] = useState('');
+    const [type, setType] = useState('');
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -191,11 +192,12 @@ const CreateTask = ({ baseUrl, token }) => {
         }));
     };
 
-    const handleDtrClick = (employeeId, status) => {
+    const handleDtrClick = (employeeId, status, type) => {
         console.log('status clicked', status);
         // Call the function to fetch the respective person's DTR
-        dispatch(GetAssigneDtr(employeeId, status ));
+        dispatch(GetAssigneDtr({ assigneId: employeeId, status, type }));
     };
+    
 
 
     const currenDate = new Date();
@@ -233,7 +235,10 @@ const CreateTask = ({ baseUrl, token }) => {
     };
 
     const handleStatusChange = (value) => {
-        setStatusValue(value.value);
+        setStatus(value.value);
+    };
+    const handleTypeChange = (value) => {
+        setType(value.value);
     };
 
     return (
@@ -274,13 +279,14 @@ const CreateTask = ({ baseUrl, token }) => {
                                 options={status2Options}
                                 className="w-[170px]"
                                 onChange={handleStatusChange}
-                            />
-                        }
+                                />
+                            }
                         {filters.type &&
                             <Select
-                                name="type"
-                                options={typeOptions}
-                                className="w-[180px]"
+                            name="type"
+                            options={typeOptions}
+                            className="w-[180px]"
+                            onChange={handleTypeChange}
 
                             />
                         }
@@ -668,7 +674,7 @@ const CreateTask = ({ baseUrl, token }) => {
                             <IoChevronForwardCircleOutline
                                 className="text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
                                 onClick={() => {
-                                    handleDtrClick(dtr.assigne, dtr.status);
+                                    handleDtrClick(dtr.assigne, status, type);
                                 }}
                             />
 

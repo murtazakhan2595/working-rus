@@ -9,9 +9,11 @@ const initialState = {
 };
 
 // Define the thunk to fetch DTR by employee ID
+// Define the thunk to fetch DTR by employee ID
+// Define the thunk to fetch DTR by employee ID
 export const GetAssigneDtr = createAsyncThunk(
     'assigneDtr/GetAssigneDtr',
-    async (assigneId, status, { getState }) => {
+    async ({ assigneId, status, type }, { getState }) => {
         try {
             const { token, baseUrl } = getState().user;
             const headers = {
@@ -19,13 +21,15 @@ export const GetAssigneDtr = createAsyncThunk(
                 "Content-Type": "application/json",
             };
             // Modify the URL to include query parameters for employee ID
-            const response = await axios.get(`${baseUrl}/dtr/?search={"assigne": [${assigneId}], "status": "${status}"}`, { headers });
+            const response = await axios.get(`${baseUrl}/dtr/?search={"assigne": [${assigneId}], "status": "${status}", "Type": "${type}"}`, { headers });
             return response.data;
         } catch (error) {
             throw error;
         }
     }
 );
+
+
 
 // Define the slice
 const dtrSlice = createSlice({
