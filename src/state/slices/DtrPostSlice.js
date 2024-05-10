@@ -13,7 +13,7 @@ export const postTasks = createAsyncThunk(
     'tasks/postTasks',
     async (tasksData, { getState }) => {
         try {
-            const { token, userProfile } = getState().user; // Access token and userProfile from user slice
+            const { token, baseUrl, userProfile } = getState().user; // Access token and userProfile from user slice
             const { id } = userProfile; // Extract id from userProfile
             const headers = {
                 Authorization: `Bearer ${token}`,
@@ -22,7 +22,7 @@ export const postTasks = createAsyncThunk(
 
             // Array to store promises for each POST request
             const postPromises = tasksData.map(taskData => {
-                return axios.post('https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api/dtr/',
+                return axios.post(`${baseUrl}/dtr/`,
                     {
                         status: taskData.taskStatus,
                         priorty: taskData.priority,

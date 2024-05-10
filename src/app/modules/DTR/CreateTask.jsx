@@ -9,7 +9,7 @@ import { RxCross2, RxPlus } from "react-icons/rx";
 import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { TbCircleDashed } from "react-icons/tb";
-import { priority2Options, status2Options, statusOptions, typeOptions } from "../../../data/Data";
+import { department, priority2Options, status2Options, statusOptions, typeOptions } from "../../../data/Data";
 import Select from "react-select";
 import { fetchEmployees } from "../../../state/slices/EmpSlice";
 import { postTasks } from "../../../state/slices/DtrPostSlice";
@@ -24,6 +24,8 @@ import { getDTRAll } from "../../../state/slices/GetDtrAllSlice";
 import { GetAssigneDtr } from "../../../state/slices/GetAssigneDtr";
 import ViewTaskDetails from "./ViewTaskDetails";
 import UpdateModal from "./UpdateModal";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { toggleFilter } from "../../../state/slices/FilterSlice";
 
 const CreateTask = ({ baseUrl, token }) => {
 
@@ -54,13 +56,10 @@ const CreateTask = ({ baseUrl, token }) => {
     const isOpen = useSelector(state => state.modal.isModalOpen);
     const empDropdown = useSelector(state => state.modal.isEmpDropdownOpen);
     const employees = useSelector(state => state.emp.employees);
-    const dtrs = useSelector(state => state.getDtr.dtr);
     const dtrsAll = useSelector(state => state.getDtrAll.dtrs);
+    const filters = useSelector(state => state.filters);
     const assigneDtr = useSelector(state => state.getAssigne.assigneDtr);
-    const apiStatus = useSelector(state => state.postDtr.apiStatus);
-    const error = useSelector(state => state.postDtr.error);
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
     console.log('I am assigne dtr', assigneDtr)
@@ -78,7 +77,10 @@ const CreateTask = ({ baseUrl, token }) => {
     const [showHoveredTask, setShowHoveredTask] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
-
+    const [showFiltersDropdown, setShowFilterDropdown] = useState(false);
+    const [filter, setFilter] = useState("");
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [statusValue, setStatusValue] = useState('');
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -189,12 +191,10 @@ const CreateTask = ({ baseUrl, token }) => {
         }));
     };
 
-
-
-
-    const handleDtrClick = (employeeId) => {
+    const handleDtrClick = (employeeId, status) => {
+        console.log('status clicked', status);
         // Call the function to fetch the respective person's DTR
-        dispatch(GetAssigneDtr(employeeId));
+        dispatch(GetAssigneDtr(employeeId, status ));
     };
 
 
@@ -210,14 +210,135 @@ const CreateTask = ({ baseUrl, token }) => {
         setOpenUpdateModal(true);
     }
 
+    const handleCheckboxChange = (filterName) => {
+        dispatch(toggleFilter({ filterName, value: !filters[filterName] }));
+    };
+
+    useEffect(() => {
+        const lowerCaseFilter = filter.toLowerCase();
+        const filtered = dtrsAll.filter((user) => {
+            const userIdWithPrefix = `TXB-${user.employee_id.toString().padStart(4, "0")}`;
+            return (
+                userIdWithPrefix.toLowerCase().includes(lowerCaseFilter) ||
+                user.employee_name.toLowerCase().includes(lowerCaseFilter)
+                // || user.designation.toLowerCase().includes(lowerCaseFilter)
+            );
+        });
+        setFilteredUsers(filtered);
+    }, [filter]);
+
+    const handleSearchChange = (event) => {
+        const term = event.target.value;
+        setFilter(term);
+    };
+
+    const handleStatusChange = (value) => {
+        setStatusValue(value.value);
+    };
+
     return (
         <div className="flex w-full flex-col h-[100vh] lg:px-6 lg:py-2 bg-gray-50">
             {showSuccessPopup && (
                 <SuccessPopup onClose={() => setShowSuccessPopup(false)} heading="DTR Submitted" message="Your daily task report was successfully submitted." />
             )}
             <div className="flex justify-between lg:p-6">
-                <h1 className="font-lato lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1>
-                <div>Filter here</div>
+                {/* <h1 className="font-lato lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1> */}
+                <div className="flex justify-between">
+                    <div className="flex items-center gap-x-2 lg:w-[77vw]">
+                        {filters.search &&
+                            <input type="text" placeholder="Search by ID and Name"
+                                onChange={handleSearchChange}
+                                className="pl-2 bg-[#F0F1F2] h-8 outline-none rounded-lg" />}
+                        {filters.department &&
+                            <Select
+                                className="w-[170px]"
+                                options={department}
+                            // value={department.find(
+                            //     (option) => option.label === departmentInfo.department_name
+                            // )}
+                            // onChange={(selectedOption) =>
+                            //     handleChange("department_name", selectedOption.value)
+                            // }
+                            />}
+                        {filters.priority &&
+                            <Select
+                                name="priority"
+                                options={priority2Options}
+                                className="w-[170px]"
+
+                            />
+                        }
+                        {filters.status &&
+                            <Select
+                                name="status"
+                                options={status2Options}
+                                className="w-[170px]"
+                                onChange={handleStatusChange}
+                            />
+                        }
+                        {filters.type &&
+                            <Select
+                                name="type"
+                                options={typeOptions}
+                                className="w-[180px]"
+
+                            />
+                        }
+                    </div>
+                    <div className="relative">
+                        <div className="bg-[#F0F1F2] w-8 h-8 rounded-md flex justify-center items-center">
+                            <BsThreeDotsVertical className="text-xl" onClick={() => setShowFilterDropdown(prev => !prev)} />
+                        </div>
+                        {showFiltersDropdown && (
+                            <div className="absolute top-10 right-4 p-3 w-36 bg-[#FAFBFC] rounded-lg shadow-bottom">
+                                <h3 className="font-lato font-semibold">Manage Filters</h3>
+                                <div className="font-lato mt-3 flex flex-col gap-y-2">
+                                    <div className="flex items-center gap-x-4">
+                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.search}
+                                            onChange={() => handleCheckboxChange('search')} />
+                                        <label className="text-sm" htmlFor="search">Search</label>
+                                    </div>
+                                    <div className="flex items-center gap-x-4">
+                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.department}
+                                            onChange={() => handleCheckboxChange('department')} />
+                                        <label className="text-sm" htmlFor="department">Department</label>
+                                    </div>
+                                    <div className="flex items-center gap-x-4">
+                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.designation}
+                                            onChange={() => handleCheckboxChange('designation')} />
+                                        <label className="text-sm" htmlFor="designation">Designation</label>
+                                    </div>
+                                    <div className="flex items-center gap-x-4">
+                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.date}
+                                            onChange={() => handleCheckboxChange('date')} />
+                                        <label className="text-sm" htmlFor="date">Date</label>
+                                    </div>
+                                    <div className="flex items-center gap-x-4">
+                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.priority}
+                                            onChange={() => handleCheckboxChange('priority')} />
+                                        <label className="text-sm" htmlFor="priority">Priority</label>
+                                    </div>
+                                    <div className="flex items-center gap-x-4">
+                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.status}
+                                            onChange={() => handleCheckboxChange('status')} />
+                                        <label className="text-sm" htmlFor="status">Status</label>
+                                    </div>
+                                    <div className="flex items-center gap-x-4">
+                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.type}
+                                            onChange={() => handleCheckboxChange('type')} />
+                                        <label className="text-sm" htmlFor="type">Type</label>
+                                    </div>
+                                    <div className="flex items-center gap-x-4">
+                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.assignes}
+                                            onChange={() => handleCheckboxChange('assignes')} />
+                                        <label className="text-sm" htmlFor="assignes">Assignes</label>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                </div>
             </div>
 
             <div>
@@ -531,7 +652,7 @@ const CreateTask = ({ baseUrl, token }) => {
             {/* display all employees names */}
             <div className="flex">
                 <div className="w-[30%] lg:max-h-[75vh] overflow-y-auto bg-[#f0f1f2]">
-                    {dtrsAll?.map((dtr) => (
+                    {filteredUsers?.map((dtr) => (
                         <div className="flex items-center gap-x-2 group relative">
                             <div className="flex items-center gap-x-2 border-b m-1 p-2 w-full hover:bg-blue-100 hover:rounded-md">
                                 <div className="w-12 h-12 rounded-full flex items-center text-xl justify-center text-white bg-[#DF418D] tracking-wider">{dtr.employee_name.toUpperCase().slice(0, 2)}</div>
@@ -544,9 +665,13 @@ const CreateTask = ({ baseUrl, token }) => {
                                     </div>
                                 </div>
                             </div>
-                            <IoChevronForwardCircleOutline className=" text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
-                                // onClick={() => handleDtrClick(dtr.assigne)} />
-                                onClick={() => handleDtrClick(dtr.assigne)} />
+                            <IoChevronForwardCircleOutline
+                                className="text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
+                                onClick={() => {
+                                    handleDtrClick(dtr.assigne, dtr.status);
+                                }}
+                            />
+
                         </div>
                     ))}
                 </div>

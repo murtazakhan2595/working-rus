@@ -13,14 +13,14 @@ export const updateTask = createAsyncThunk(
     'tasks/updateTask',
     async (taskData, { getState }) => {
         try {
-            const { token } = getState().user; // Access token from user slice
+            const { token, baseUrl } = getState().user; // Access token from user slice
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
 
             // Update the task using axios.put
-            const response = await axios.put(`https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api/dtr/${taskData.id}`, taskData, { headers });
+            const response = await axios.put(`${baseUrl}/dtr/${taskData.id}`, taskData, { headers });
 
             // Return the updated task data
             return response.data;

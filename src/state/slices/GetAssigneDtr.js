@@ -11,15 +11,15 @@ const initialState = {
 // Define the thunk to fetch DTR by employee ID
 export const GetAssigneDtr = createAsyncThunk(
     'assigneDtr/GetAssigneDtr',
-    async (assigneId, { getState }) => {
+    async (assigneId, status, { getState }) => {
         try {
-            const { token } = getState().user;
+            const { token, baseUrl } = getState().user;
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
             // Modify the URL to include query parameters for employee ID
-            const response = await axios.get(`https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api/dtr/?search={"assigne": [${assigneId}]}`, { headers });
+            const response = await axios.get(`${baseUrl}/dtr/?search={"assigne": [${assigneId}], "status": "${status}"}`, { headers });
             return response.data;
         } catch (error) {
             throw error;
