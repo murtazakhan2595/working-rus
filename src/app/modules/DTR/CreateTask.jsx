@@ -258,12 +258,12 @@ const CreateTask = ({ baseUrl, token }) => {
                 <div className="flex justify-between">
                     <div className="flex items-center gap-x-2 lg:w-[75vw]">
                         {filters.search &&
-                            <input type="text" placeholder="Search by ID and Name"
+                            <input type="text" placeholder="Search by ID, Name or designation"
                                 onChange={handleSearchChange}
-                                className="pl-2 bg-[#F0F1F2] h-8 outline-none rounded-lg" />}
+                                className="pl-2 bg-[#F0F1F2] h-8 outline-none rounded-lg placeholder:text-xs" />}
                         {filters.department &&
                             <Select
-                                className="w-[170px]"
+                                className="w-[180px]"
                                 options={department}
                             // value={department.find(
                             //     (option) => option.label === departmentInfo.department_name
