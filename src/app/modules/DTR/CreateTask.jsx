@@ -79,9 +79,10 @@ const CreateTask = ({ baseUrl, token }) => {
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [showFiltersDropdown, setShowFilterDropdown] = useState(false);
     const [filter, setFilter] = useState("");
-    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState(dtrsAll);
     const [status, setStatus] = useState('');
     const [type, setType] = useState('');
+    const [dueDate, setDueDate] = useState('');
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -192,12 +193,12 @@ const CreateTask = ({ baseUrl, token }) => {
         }));
     };
 
-    const handleDtrClick = (employeeId, status, type) => {
-        console.log('status clicked', status);
+    const handleDtrClick = (employeeId, status, type, due_date) => {
+        console.log('date changed', due_date);
         // Call the function to fetch the respective person's DTR
-        dispatch(GetAssigneDtr({ assigneId: employeeId, status, type }));
+        dispatch(GetAssigneDtr({ assigneId: employeeId, status, due_date }));
     };
-    
+
 
 
     const currenDate = new Date();
@@ -220,14 +221,15 @@ const CreateTask = ({ baseUrl, token }) => {
         const lowerCaseFilter = filter.toLowerCase();
         const filtered = dtrsAll.filter((user) => {
             const userIdWithPrefix = `TXB-${user.employee_id.toString().padStart(4, "0")}`;
+            const designation = user.designation || ''
             return (
                 userIdWithPrefix.toLowerCase().includes(lowerCaseFilter) ||
                 user.employee_name.toLowerCase().includes(lowerCaseFilter)
-                // || user.designation.toLowerCase().includes(lowerCaseFilter)
+                || designation.toLowerCase().includes(lowerCaseFilter)
             );
         });
         setFilteredUsers(filtered);
-    }, [filter]);
+    }, [filter, dtrsAll]);
 
     const handleSearchChange = (event) => {
         const term = event.target.value;
@@ -241,15 +243,20 @@ const CreateTask = ({ baseUrl, token }) => {
         setType(value.value);
     };
 
+    const handleDateChange = (event) => {
+        const inputDate = event.target.value; // Get the input value
+        const formattedDate = formatDate(inputDate); // Format the input date
+        setDueDate(formattedDate); // Set the formatted date to state
+    };
     return (
         <div className="flex w-full flex-col h-[100vh] lg:px-6 lg:py-2 bg-gray-50">
             {showSuccessPopup && (
                 <SuccessPopup onClose={() => setShowSuccessPopup(false)} heading="DTR Submitted" message="Your daily task report was successfully submitted." />
             )}
-            <div className="flex justify-between lg:p-6">
+            <div className="flex justify-between lg:px-2 lg:py-4">
                 {/* <h1 className="font-lato lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1> */}
                 <div className="flex justify-between">
-                    <div className="flex items-center gap-x-2 lg:w-[77vw]">
+                    <div className="flex items-center gap-x-2 lg:w-[75vw]">
                         {filters.search &&
                             <input type="text" placeholder="Search by ID and Name"
                                 onChange={handleSearchChange}
@@ -265,6 +272,11 @@ const CreateTask = ({ baseUrl, token }) => {
                             //     handleChange("department_name", selectedOption.value)
                             // }
                             />}
+                        {filters.date &&
+                            <input type="date" name="startDate" className="w-[170px] border border-baseGray h-9 rounded-lg px-2"
+                                onChange={handleDateChange}
+                            />
+                        }
                         {filters.priority &&
                             <Select
                                 name="priority"
@@ -279,14 +291,25 @@ const CreateTask = ({ baseUrl, token }) => {
                                 options={status2Options}
                                 className="w-[170px]"
                                 onChange={handleStatusChange}
-                                />
-                            }
+                            />
+                        }
                         {filters.type &&
                             <Select
-                            name="type"
-                            options={typeOptions}
-                            className="w-[180px]"
-                            onChange={handleTypeChange}
+                                name="type"
+                                options={typeOptions}
+                                className="w-[180px]"
+                                onChange={handleTypeChange}
+
+                            />
+                        }
+                        {filters.assignes &&
+                            <Select
+                                name="assignes"
+                                options={employees.map((emp) => (
+                                    { label: emp.username, value: emp.employee_id }
+                                ))}
+                                className="w-[180px]"
+                            // onChange={handleTypeChange}
 
                             />
                         }
@@ -309,11 +332,11 @@ const CreateTask = ({ baseUrl, token }) => {
                                             onChange={() => handleCheckboxChange('department')} />
                                         <label className="text-sm" htmlFor="department">Department</label>
                                     </div>
-                                    <div className="flex items-center gap-x-4">
+                                    {/* <div className="flex items-center gap-x-4">
                                         <input type="checkbox" className="w-3.5 h-3.5" checked={filters.designation}
                                             onChange={() => handleCheckboxChange('designation')} />
                                         <label className="text-sm" htmlFor="designation">Designation</label>
-                                    </div>
+                                    </div> */}
                                     <div className="flex items-center gap-x-4">
                                         <input type="checkbox" className="w-3.5 h-3.5" checked={filters.date}
                                             onChange={() => handleCheckboxChange('date')} />
@@ -362,10 +385,11 @@ const CreateTask = ({ baseUrl, token }) => {
 
                         {/* modal open */}
                         {isOpen && (
-                            <div className="fixed z-50 inset-0 flex items-center justify-center bg-[#4a4a4a69]">
-                                <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[95vh] relative">
-                                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-4 lg:mb-4">Add Task</h2>
-                                    <button onClick={() => dispatch(closeModal())} className="absolute top-6 right-8"><RxCross2 /></button>
+                            <div className="fixed z-50 inset-0 flex items-center justify-center bg-[#4a4a4a69]
+                             w-screen overflow-y-auto scroll h-screen">
+                                <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[100vh] relative">
+                                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-3 lg:mb-3">Add Task</h2>
+                                    <button onClick={() => dispatch(closeModal())} className="absolute top-8 right-8"><RxCross2 /></button>
                                     <form onSubmit={handleAddTask}>
                                         <label htmlFor="title" className="text-[18px] font-lato font-semibold text-baseGray">Title</label>
                                         <input id="title" placeholder="Add here" type="text" required name="title" value={formData.title} onChange={(e) => handleChange(e.target.name, e.target.value)} className="block pl-2 lg:w-full outline-none border rounded-lg h-9 border-baseGray placeholder:font-lato lg:mb-4" />
@@ -485,6 +509,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                                         handleChange("taskType", selectedOption.value)
                                                     }}
                                                     required
+                                                    menuPlacement="auto"
                                                     styles={{
                                                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                                                         control: (provided) => ({
@@ -531,6 +556,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                                         handleChange("priority", selectedOption.value)
                                                     }}
                                                     required
+                                                    menuPlacement="auto"
                                                     styles={{
                                                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                                                         control: (provided) => ({
@@ -612,7 +638,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                             </div>
                                         </div>
 
-                                        <button type="submit" className="mt-8 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Add</button>
+                                        <button type="submit" className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Add</button>
                                     </form>
                                 </div>
                             </div>
@@ -674,7 +700,7 @@ const CreateTask = ({ baseUrl, token }) => {
                             <IoChevronForwardCircleOutline
                                 className="text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
                                 onClick={() => {
-                                    handleDtrClick(dtr.assigne, status, type);
+                                    handleDtrClick(dtr.assigne, status, type, dueDate);
                                 }}
                             />
 

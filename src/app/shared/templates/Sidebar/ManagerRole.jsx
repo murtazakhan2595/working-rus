@@ -177,21 +177,24 @@ const ManagerRole = ({
                     </div>
                 </div>
                 {!isSidebarOpen && (
-                    <div className="absolute rounded-md top-40 ml-20
+                    <div className="absolute rounded-md top-44 ml-20
           bg-white w-32 text-base
           invisible opacity-20 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                         <div className="flex flex-col rounded-lg bg-white">
                             <li>
-                                <Link to="/my-dtr">
+                                <NavLink to="/create-task"
+                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                >
                                     <div
-                                        className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                            }`}
+                                    // className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
+                                    //     }`}
+
                                     >
-                                        <p className="text-sm">My DTR</p>
+                                        <p className="text-sm">Create Task</p>
                                     </div>
-                                </Link>
+                                </NavLink>
                             </li>
 
                         </div>

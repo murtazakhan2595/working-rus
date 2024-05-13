@@ -233,9 +233,10 @@ const MyDtr = ({ baseUrl, token }) => {
 
                         {/* modal open */}
                         {isOpen && (
-                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[95vh] relative">
-                                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-4 lg:mb-4">Add Task</h2>
+                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50
+                             z-50 w-screen overflow-y-auto scroll h-screen">
+                                <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[100vh] relative">
+                                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-3 lg:mb-3">Add Task</h2>
                                     <button onClick={() => dispatch(closeModal())} className="absolute top-6 right-8"><RxCross2 /></button>
                                     <form onSubmit={handleAddTask}>
                                         <label htmlFor="title" className="text-[18px] font-lato font-semibold text-baseGray">Title</label>
@@ -402,6 +403,7 @@ const MyDtr = ({ baseUrl, token }) => {
                                                         handleChange("priority", selectedOption.value)
                                                     }}
                                                     required
+                                                    menuPlacement="auto"
                                                     styles={{
                                                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                                                         control: (provided) => ({
@@ -483,7 +485,7 @@ const MyDtr = ({ baseUrl, token }) => {
                                             </div>
                                         </div>
 
-                                        <button type="submit" className="mt-8 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Add</button>
+                                        <button type="submit" className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Add</button>
                                     </form>
                                 </div>
                             </div>

@@ -3,7 +3,6 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   search: false,
   department: false,
-  designation: false,
   date: false,
   priority: false,
   status: false,
