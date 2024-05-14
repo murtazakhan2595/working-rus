@@ -21,29 +21,28 @@ function mapEmployeeData(data) {
 }
 
 function getPersonalInfo(data) {
-    const personalInfo = EmployeePersonalInformation;
-    personalInfo.first_name = data.first_name;
-    personalInfo.last_name = data.last_name;
-    personalInfo.father_name = data.father_name;
-    personalInfo.mother_name = data.mother_name;
-    personalInfo.country_code = data.country_code;
-    personalInfo.mobile_no = data.mobile_no;
-    personalInfo.date_of_birth = data.date_of_birth;
-    personalInfo.marital_status = data.marital_status;
-    personalInfo.nationality = data.nationality;
-    personalInfo.email = data.other_email;
-    personalInfo.work_email = data.work_email;
-    personalInfo.current_address = data.current_address;
-    personalInfo.residential_address = data.residential_address;
-    personalInfo.nic = data.nic;
-    personalInfo.emergency_first_name = data.emergency_first_name;
-    personalInfo.emergency_last_name = data.emergency_last_name;
-    personalInfo.emergency_country_code = data.emergency_country_code;
-    personalInfo.emergency_phone_no = data.emergency_phone_no;
-    personalInfo.emergency_relation = data.emergency_relation;
-    personalInfo.profile_picture = data.profile_picture;
-
-    return personalInfo;
+    return {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        father_name: data.father_name,
+        mother_name: data.mother_name,
+        country_code: data.country_code,
+        mobile_no: data.mobile_no,
+        date_of_birth: data.date_of_birth,
+        marital_status: data.marital_status,
+        nationality: data.nationality,
+        email: data.other_email,
+        work_email: data.work_email,
+        current_address: data.current_address,
+        residential_address: data.residential_address,
+        nic: data.nic,
+        emergency_first_name: data.emergency_first_name,
+        emergency_last_name: data.emergency_last_name,
+        emergency_country_code: data.emergency_country_code,
+        emergency_phone_no: data.emergency_phone_no,
+        emergency_relation: data.emergency_relation,
+        profile_picture: data.profile_picture,
+    }
 }
 
 function getVisaDetails(data) {

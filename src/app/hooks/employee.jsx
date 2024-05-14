@@ -30,17 +30,16 @@ const getEmployeeData = async (baseUrl, employeeid, headers) => {
 const getEmployeePersonalInfoData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            await axios.get(`${baseUrl}/employeeInformationlist/${employeeid}`, {
+            const response = await axios.get(`${baseUrl}/employeeInformationlist/${employeeid}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then((response) => {
-                const employeeData = getPersonalInfo(response.data);
-                console.log(employeeData);
-                return employeeData;
             });
-
+            // Assuming response.data is the personal info object
+            const employeeData = getPersonalInfo(response.data);
+            console.log(employeeData);
+            return employeeData;
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
         }
@@ -100,19 +99,19 @@ const getEmployeeVisaDetailsFiles = async (baseUrl, id, token) => {
 const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            await axios.get(`${baseUrl}/employeevisadetail/?search={\"employee_id\":${employeeid}}`, {
+            const response = await axios.get(`${baseUrl}/employeevisadetail/?search={\"employee_id\":${employeeid}}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then(async (response) => {
-                if (response.status === 200) {
-                    if (response.data && response.data.results && response.data.results.length > 0) {
-                        const employeeData = getVisaDetails(response.data.results[0]);
-                        return employeeData;
-                    }
-                }
             });
+
+            if (response.status === 200) {
+                if (response.data && response.data.results && response.data.results.length > 0) {
+                    const employeeData = getVisaDetails(response.data.results[0]);
+                    return employeeData;
+                }
+            }
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
@@ -322,28 +321,27 @@ const deleteEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payl
 const getEmployeeAcademicRecordData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            await axios.get(`${baseUrl}/education/?search={\"employee_id\":${employeeid}}`, {
+            const response = await axios.get(`${baseUrl}/education/?search={\"employee_id\":${employeeid}}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then(async (response) => {
-                if (response.status === 200 && response.data && response.data.length > 0) {
-                    await axios.get(`${baseUrl}/attachment/?search={"employee_id":${employeeid},"name":"acadmicDoc"}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    }).then(res => {
-                        const academicRecord = response.data[0]
-                        if (res.status === 200 && res.data && res.data.length > 0)
-                            academicRecord.certificate = res.data[0]
-                        const employeeData = getAcademicRecord(academicRecord);
-                        console.log(employeeData);
-                        return employeeData;
-                    });
+            })
+            if (response.status === 200 && response.data && response.data.length > 0) {
+                const res = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${employeeid},"name":"acadmicDoc"}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                })
+                if (res.status === 200 && res.data && res.data.length > 0) {
+                    const academicRecord = response.data[0]
+                    academicRecord.certificate = res.data[0]
+                    const employeeData = getAcademicRecord(academicRecord);
+                    console.log(employeeData);
+                    return employeeData;
                 }
-            });
+            }
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
@@ -460,16 +458,15 @@ const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payload
 const getEmployeeDepartemtInfoData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            await axios.get(`${baseUrl}/employeeDepartmentlist/${employeeid}`, {
+            const response = await axios.get(`${baseUrl}/employeeDepartmentlist/${employeeid}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then((response) => {
-                const employeeData = getDepartmentInfo(response.data);
-                console.log(employeeData);
-                return employeeData;
             });
+            const employeeData = getDepartmentInfo(response.data);
+            console.log(employeeData);
+            return employeeData;
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
@@ -500,17 +497,16 @@ const saveEmployeeDepartemtInfoData = async (baseUrl, employeeid, token, payload
 const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            await axios.get(`${baseUrl}/employeebanklist/${employeeid}`, {
+            const response = await axios.get(`${baseUrl}/employeebanklist/${employeeid}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then((response) => {
-                const employeeData = getBankDetails(response.data);
-                console.log(employeeData);
-                return employeeData;
-            });
-
+            })
+            
+            const employeeData = getBankDetails(response.data);
+            console.log(employeeData);
+            return employeeData;
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
         }

@@ -100,8 +100,8 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                 });
                 return false;
             }
-        } 
-         if (visaDetails.is_visa_applicable) {
+        }
+        if (visaDetails.is_visa_applicable) {
             if (!visaDetails.entry_permit_number || !visaDetails.country_of_visa_issuance || !visaDetails.uid_number || !visaDetails.visa_type || !visaDetails.visa_issuance_date || !visaDetails.visa_expiry_date || !visaDetails.visa_duration || !visaDetails.visa_country_entry_date || !visaDetailsFiles.enter_permit || !visaDetailsFiles.visa_page || !visaDetailsFiles.medical || !visaDetailsFiles.id_application) {
                 toast.error("Please fill in all required fields!", {
                     position: "top-right",
@@ -110,7 +110,7 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                 return false;
             }
         }
-         if (visaDetails.is_insurance_applicable) {
+        if (visaDetails.is_insurance_applicable) {
             if (!visaDetails.dha_id || !visaDetails.card_number || !visaDetails.insurance_policy || !visaDetails.insurance_company || !visaDetails.insurance_active_date || !visaDetails.insurance_expiry_date || !visaDetailsFiles.insurance_card) {
                 toast.error("Please fill in all required fields!", {
                     position: "top-right",
@@ -118,8 +118,8 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                 });
                 return false;
             }
-        } 
-         if (!visaDetails.living_country_id_no || !visaDetails.place_of_issuance || !visaDetails.id_issuance_date || !visaDetails.id_expiry_date || !visaDetailsFiles.id_front || !visaDetailsFiles.id_back) {
+        }
+        if (!visaDetails.living_country_id_no || !visaDetails.place_of_issuance || !visaDetails.id_issuance_date || !visaDetails.id_expiry_date || !visaDetailsFiles.id_front || !visaDetailsFiles.id_back) {
             toast.error("Please fill all ID Details fields!", {
                 position: "top-right",
                 autoClose: 1000,
@@ -137,7 +137,7 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
         value: countryCode,
         label: getAllCountries()[countryCode].name
     }));
-
+    console.log(visaDetails.id_issuance_date, moment(visaDetails.id_issuance_date).toDate())
     return (
         <div className="bg-[#F9F9F9] h-[76vh] overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
             <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-2 lg:mt-7 lg:text-lg mt-2">
@@ -181,9 +181,28 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                         ID issuance Date
                     </label>
                     <Datepicker
-                        selected={visaDetails.id_issuance_date ? moment(visaDetails.id_issuance_date, "YYYY-MM-DD").toDate() : null}
+                        day={
+                            visaDetails.id_issuance_date
+                                ? visaDetails.id_issuance_date.substr(8, 2)
+                                : null
+                        }
+                        month={
+                            visaDetails.id_issuance_date
+                                ? visaDetails.id_issuance_date.substr(5, 2)
+                                : null
+                        }
+                        year={
+                            visaDetails.id_issuance_date
+                                ? visaDetails.id_issuance_date.substr(0, 4)
+                                : null
+                        } 
+                        selected={
+                            visaDetails.id_issuance_date
+                                ? moment(visaDetails.id_issuance_date, "YYYY-MM-DD").toDate()
+                                : null
+                        }
                         onChange={(date) => handleDateChange(date, "id_issuance_date")}
-                        dateFormat="yyyy-MM-dd"
+                        dateFormat="dd-MM-yyyy"
                         className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50 w-[100%]"
                     />
                 </div>
@@ -196,6 +215,21 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                         ID Expiry Date
                     </label>
                     <Datepicker
+                        day={
+                            visaDetails.id_expiry_date
+                              ? visaDetails.id_expiry_date.substr(8, 2)
+                              : null
+                          }
+                          month={
+                            visaDetails.id_expiry_date
+                              ? visaDetails.id_expiry_date.substr(5, 2)
+                              : null
+                          }
+                          year={
+                            visaDetails.id_expiry_date
+                              ? visaDetails.id_expiry_date.substr(0, 4)
+                              : null
+                          }
                         selected={visaDetails.id_expiry_date ? moment(visaDetails.id_expiry_date, "YYYY-MM-DD").toDate() : null}
                         onChange={(date) => handleDateChange(date, "id_expiry_date")}
                         dateFormat="yyyy-MM-dd"
@@ -360,6 +394,21 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                                 Issuance Date{visaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}:
                             </label>
                             <Datepicker
+                                day={
+                                    visaDetails.Passport_Issuance_Date
+                                        ? visaDetails.Passport_Issuance_Date.substr(8, 2)
+                                        : null
+                                }
+                                month={
+                                    visaDetails.Passport_Issuance_Date
+                                        ? visaDetails.Passport_Issuance_Date.substr(5, 2)
+                                        : null
+                                }
+                                year={
+                                    visaDetails.Passport_Issuance_Date
+                                        ? visaDetails.Passport_Issuance_Date.substr(0, 4)
+                                        : null
+                                }
                                 selected={visaDetails.Passport_Issuance_Date ? moment(visaDetails.Passport_Issuance_Date, "YYYY-MM-DD").toDate() : null}
                                 onChange={(date) => handleDateChange(date, "Passport_Issuance_Date")}
                                 dateFormat="yyyy-MM-dd"
@@ -376,6 +425,21 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                                 Expiry Date{visaDetails.is_passport_applicable && <span className="text-red-500 text-2xl">*</span>}:
                             </label>
                             <Datepicker
+                                day={
+                                    visaDetails.Passport_Expiry_Date
+                                        ? visaDetails.Passport_Expiry_Date.substr(8, 2)
+                                        : null
+                                }
+                                month={
+                                    visaDetails.Passport_Expiry_Date
+                                        ? visaDetails.Passport_Expiry_Date.substr(5, 2)
+                                        : null
+                                }
+                                year={
+                                    visaDetails.Passport_Expiry_Date
+                                        ? visaDetails.Passport_Expiry_Date.substr(0, 4)
+                                        : null
+                                }
                                 selected={visaDetails.Passport_Expiry_Date ? moment(visaDetails.Passport_Expiry_Date, "YYYY-MM-DD").toDate() : null}
                                 onChange={(date) => handleDateChange(date, "Passport_Expiry_Date")}
                                 dateFormat="yyyy-MM-dd"
@@ -520,6 +584,21 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                             </label>
                             {/* <input type="date" value={visaIssuanceDate} onChange={(e) => setVisaIssuanceDate(e.target.value)} placeholder="Visa Issuance Date" /> */}
                             <Datepicker
+                                day={
+                                    visaDetails.visa_issuance_date
+                                        ? visaDetails.visa_issuance_date.substr(8, 2)
+                                        : null
+                                }
+                                month={
+                                    visaDetails.visa_issuance_date
+                                        ? visaDetails.visa_issuance_date.substr(5, 2)
+                                        : null
+                                }
+                                year={
+                                    visaDetails.visa_issuance_date
+                                        ? visaDetails.visa_issuance_date.substr(0, 4)
+                                        : null
+                                }
                                 selected={visaDetails.visa_issuance_date ? moment(visaDetails.visa_issuance_date, "YYYY-MM-DD").toDate() : null}
                                 onChange={(date) => handleDateChange(date, "visa_issuance_date")}
                                 dateFormat="yyyy-MM-dd"
@@ -533,6 +612,21 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                                 Visa Expiry Date {visaDetails.is_visa_applicable && <span className="text-red-500 text-2xl">*</span>}
                             </label>
                             <Datepicker
+                                day={
+                                    visaDetails.visa_expiry_date
+                                        ? visaDetails.visa_expiry_date.substr(8, 2)
+                                        : null
+                                }
+                                month={
+                                    visaDetails.visa_expiry_date
+                                        ? visaDetails.visa_expiry_date.substr(5, 2)
+                                        : null
+                                }
+                                year={
+                                    visaDetails.visa_expiry_date
+                                        ? visaDetails.visa_expiry_date.substr(0, 4)
+                                        : null
+                                }
                                 selected={visaDetails.visa_expiry_date ? moment(visaDetails.visa_expiry_date, "YYYY-MM-DD").toDate() : null}
                                 onChange={(date) => handleDateChange(date, "visa_expiry_date")}
                                 dateFormat="yyyy-MM-dd"
@@ -556,6 +650,21 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                             </label>
                             {/* <input type="date" value={visaCountryEntryDate} onChange={(e) => setVisaCountryEntryDate(e.target.value)} placeholder="Visa Country Entry Date" /> */}
                             <Datepicker
+                                day={
+                                    visaDetails.visa_country_entry_date
+                                        ? visaDetails.visa_country_entry_date.substr(8, 2)
+                                        : null
+                                }
+                                month={
+                                    visaDetails.visa_country_entry_date
+                                        ? visaDetails.visa_country_entry_date.substr(5, 2)
+                                        : null
+                                }
+                                year={
+                                    visaDetails.visa_country_entry_date
+                                        ? visaDetails.visa_country_entry_date.substr(0, 4)
+                                        : null
+                                }
                                 selected={visaDetails.visa_country_entry_date ? moment(visaDetails.visa_country_entry_date, "YYYY-MM-DD").toDate() : null}
                                 onChange={(date) => handleDateChange(date, "visa_country_entry_date")}
                                 dateFormat="yyyy-MM-dd"
@@ -569,6 +678,21 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                                 Visa Country Exit Date
                             </label>
                             <Datepicker
+                            day={
+                                visaDetails.visa_country_exit_date
+                                  ? visaDetails.visa_country_exit_date.substr(8, 2)
+                                  : null
+                              }
+                              month={
+                                visaDetails.visa_country_exit_date
+                                  ? visaDetails.visa_country_exit_date.substr(5, 2)
+                                  : null
+                              }
+                              year={
+                                visaDetails.visa_country_exit_date
+                                  ? visaDetails.visa_country_exit_date.substr(0, 4)
+                                  : null
+                              }
                                 selected={visaDetails.visa_country_exit_date ? moment(visaDetails.visa_country_exit_date, "YYYY-MM-DD").toDate() : null}
                                 onChange={(date) => handleDateChange(date, "visa_country_exit_date")}
                                 dateFormat="yyyy-MM-dd"
@@ -835,6 +959,21 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                         </label>
 
                         <Datepicker
+                         day={
+                            visaDetails.insurance_active_date
+                              ? visaDetails.insurance_active_date.substr(8, 2)
+                              : null
+                          }
+                          month={
+                            visaDetails.insurance_active_date
+                              ? visaDetails.insurance_active_date.substr(5, 2)
+                              : null
+                          }
+                          year={
+                            visaDetails.insurance_active_date
+                              ? visaDetails.insurance_active_date.substr(0, 4)
+                              : null
+                          }
                             selected={visaDetails.insurance_active_date ? moment(visaDetails.insurance_active_date, "YYYY-MM-DD").toDate() : null}
                             onChange={(date) => handleDateChange(date, "insurance_active_date")}
                             dateFormat="yyyy-MM-dd"
@@ -850,6 +989,21 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                             Insurance Expiry Date {visaDetails.is_insurance_applicable && <span className="text-red-500 text-2xl">*</span>}
                         </label>
                         <Datepicker
+                         day={
+                            visaDetails.insurance_expiry_date
+                              ? visaDetails.insurance_expiry_date.substr(8, 2)
+                              : null
+                          }
+                          month={
+                            visaDetails.insurance_expiry_date
+                              ? visaDetails.insurance_expiry_date.substr(5, 2)
+                              : null
+                          }
+                          year={
+                            visaDetails.insurance_expiry_date
+                              ? visaDetails.insurance_expiry_date.substr(0, 4)
+                              : null
+                          }
                             selected={visaDetails.insurance_expiry_date ? moment(visaDetails.insurance_expiry_date, "YYYY-MM-DD").toDate() : null}
                             onChange={(date) => handleDateChange(date, "insurance_expiry_date")}
                             dateFormat="yyyy-MM-dd"

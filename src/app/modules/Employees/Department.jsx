@@ -79,7 +79,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                 employee_type: departmentInfo.employee_type,
                 joining_date: departmentInfo.joining_date,
                 direct_report: departmentInfo.direct_report,
-                indirect_report: departmentInfo.indirect_report,
             },
             { abortEarly: false }
         );

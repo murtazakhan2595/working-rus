@@ -80,7 +80,6 @@ const PersonalInfo = ({ nextstep, errors, setErrors, userProfile, baseUrl, token
       const imageError = { image: "Please upload an image." };
       setErrors(imageError);
     } else {
-      debugger
       personalInfrmation.profile_picture = imagePreview;
       if (personalInfo && !personalInfo?.passport) {
         delete personalInfo.passport_number;

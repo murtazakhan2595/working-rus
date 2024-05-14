@@ -565,17 +565,17 @@ const AcademicRecords = ({
                       // disabled={isEdit ? false : true}
                       day={
                         certification?.completion_date
-                          ? certification?.completion_date.substr(8, 2)
+                          ? certification?.completion_date.substr(0, 2)
                           : null
                       }
                       month={
                         certification?.completion_date
-                          ? certification?.completion_date.substr(5, 2)
+                          ? certification?.completion_date.substr(3, 2)
                           : null
                       }
                       year={
                         certification?.completion_date
-                          ? certification?.completion_date.substr(0, 4)
+                          ? certification?.completion_date.substr(6, 4)
                           : null
                       }
                       name="completion_date"
@@ -585,7 +585,7 @@ const AcademicRecords = ({
                       ).toDate()}
                       onChange={(date) => {
                         const formattedDate = moment(date)
-                          .format("YYYY-MM-DD")
+                          .format("DD-MM-YYYY")
                           .toLowerCase();
                         const updatedSections = [...certificationSections];
                         updatedSections[index].completion_date = formattedDate;
@@ -613,17 +613,17 @@ const AcademicRecords = ({
                       name="expiry_date"
                       day={
                         certification?.expiry_date
-                          ? certification?.expiry_date.substr(8, 2)
+                          ? certification?.expiry_date.substr(0, 2)
                           : null
                       }
                       month={
                         certification?.expiry_date
-                          ? certification?.expiry_date.substr(5, 2)
+                          ? certification?.expiry_date.substr(3, 2)
                           : null
                       }
                       year={
                         certification?.expiry_date
-                          ? certification?.expiry_date.substr(0, 4)
+                          ? certification?.expiry_date.substr(6, 4)
                           : null
                       }
                       selected={moment(
@@ -632,7 +632,7 @@ const AcademicRecords = ({
                       ).toDate()}
                       onChange={(date) => {
                         const formattedDate = moment(date)
-                          .format("YYYY-MM-DD")
+                          .format("DD-MM-YYYY")
                           .toLowerCase();
                         const updatedSections = [...certificationSections];
                         updatedSections[index].expiry_date = formattedDate;
