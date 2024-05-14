@@ -12,7 +12,13 @@ import moment from 'moment';
 import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
 import CustomSelect from './customSelect';
-import { HeadOfDepartment, department, employeeStatus, jobRoles } from '../../../data/Data';
+import { HeadOfDepartment, department, employeeStatus, jobRoles, workplaceTypes } from '../../../data/Data';
+import { getAllCountries } from 'countries-and-timezones';
+
+const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+  value: countryCode,
+  label: getAllCountries()[countryCode].name
+}));
 
 
 const departmentSchema = Joi.object({
@@ -98,7 +104,10 @@ const Department = ({ errors, setErrors, prevstep, token,
           department_manager: employeeData.department_manager,
           joining_date: employeeData.joining_date,
           employee_type: employeeData.employee_type,
-          employee_status: employeeData.employee_status
+          employee_work_type: employeeData.employee_work_type,
+          employee_location: employeeData.employee_location,
+          employee_status: employeeData.employee_status,
+          setDefaultData: employeeData.setDefaultData
         };
         setDefaultData(departmentObj);
 
@@ -179,7 +188,7 @@ const Department = ({ errors, setErrors, prevstep, token,
   // };
   const handleEdit = (name, value, values) => {
     // Check if the name is 'employee_type' or 'employee_status'
-    if (name === 'employee_type' || name === 'employee_status' || name === "department_name") {
+    if (name === 'employee_type' || name === 'employee_status' || name === "department_name" || name === "employee_work_type") {
       setDefaultData({ ...defaultData, [name]: value.value });
     } else if (name === "indirect_report" || name === "direct_report") {
 
@@ -274,6 +283,62 @@ const Department = ({ errors, setErrors, prevstep, token,
                     onChange={(e) => handleEdit(e.target.name, e.target.value)}
                   />
                   {errors.department_position && <span className="text-red-500 text-sm ">{errors.department_position}</span>}
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    className="font-sfpro tracking-wide
+                  font-medium text-input text-base mb-1"
+                  >
+                    Work Place Type:
+                  </label>
+                  <div
+                    onClick={() => setIsEdit(true)}
+                  >
+                    <Select
+                      menuPlacement="top"
+                      name="employee_work_type"
+                      isDisabled={isEdit ? false : true}
+                      value={workplaceTypes.find(option => option.value === defaultData.employee_work_type)}
+                      options={workplaceTypes}
+                      isSearchable={false}
+                      className="focus:outline-none border-none"
+                      onChange={selectedOption => handleEdit("employee_work_type", selectedOption)}
+                      menuPortalTarget={document.body}
+                      styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                    />
+
+                  </div>
+                </div>
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    className="font-sfpro tracking-wide
+                  font-medium text-input text-base mb-1"
+                  >
+                    Employee Location:
+                  </label>
+                  <div
+                  // onClick={handleEditClick}
+                  >
+                    <div onClick={() => setIsEdit(true)}>
+                      <Select
+                        readOnly={!isEdit}
+                        className={`${isEdit ? "text-black" : "text-gray-500"}`}
+                        isDisabled={!isEdit}
+                        name="employee_location"
+                        options={countryOptions}
+                        value={countryOptions.find(
+                          (option) => option.label === defaultData.employee_location
+                        )}
+                        onChange={(selectedOption) =>
+                          handleEdit("employee_location", selectedOption.label)
+                        }
+                        menuPlacement="auto"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 

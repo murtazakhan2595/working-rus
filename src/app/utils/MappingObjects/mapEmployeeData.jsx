@@ -151,6 +151,8 @@ function getDepartmentInfo(data) {
     department.department_manager = data?.department_manager ?? '';
     department.employee_type = data?.employee_type ?? '';
     department.employee_status = data?.employee_status ?? '';
+    department.employee_work_type = data?.employee_work_type ?? '';
+    department.employee_location = data?.employee_location ?? '';
     department.joining_date = data?.joining_date ?? null;
     department.is_indirect_report_applicable = data.indirect_report ? true : false;
 

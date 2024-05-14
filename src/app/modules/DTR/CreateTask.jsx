@@ -66,7 +66,7 @@ const CreateTask = ({ baseUrl, token }) => {
 
     const [currentDate, setCurrentDate] = useState('');
     const [taskType, setTaskType] = useState(null);
-    const [priority, setPriority] = useState(null);
+    // const [priority, setPriority] = useState(null);
     const [taskStatus, setTaskStatus] = useState(null);
     const [assignToOpen, setAssignToOpen] = useState(false);
     const [assignToUser, setAssignToUser] = useState({});
@@ -83,6 +83,8 @@ const CreateTask = ({ baseUrl, token }) => {
     const [status, setStatus] = useState('');
     const [type, setType] = useState('');
     const [dueDate, setDueDate] = useState('');
+    const [priority, setPriority] = useState('');
+    const [assigne, setAssigne] = useState('');
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -193,10 +195,11 @@ const CreateTask = ({ baseUrl, token }) => {
         }));
     };
 
-    const handleDtrClick = (employeeId, status, type, due_date) => {
-        console.log('date changed', due_date);
+    const handleDtrClick = (employeeId, status, type, priority, dueDate, assigne) => {
+        console.log('hey, iam assigne', assigne)
+
         // Call the function to fetch the respective person's DTR
-        dispatch(GetAssigneDtr({ assigneId: employeeId, status, due_date }));
+        dispatch(GetAssigneDtr({ employeeId, statusFilter: status, typeFilter: type, priorityFilter: priority, dueDateFilter: dueDate, assigneFilter: assigne }));
     };
 
 
@@ -222,10 +225,12 @@ const CreateTask = ({ baseUrl, token }) => {
         const filtered = dtrsAll.filter((user) => {
             const userIdWithPrefix = `TXB-${user.employee_id.toString().padStart(4, "0")}`;
             const designation = user.designation || ''
+            const department = user.department || ''
             return (
                 userIdWithPrefix.toLowerCase().includes(lowerCaseFilter) ||
                 user.employee_name.toLowerCase().includes(lowerCaseFilter)
                 || designation.toLowerCase().includes(lowerCaseFilter)
+                || department.toLowerCase().includes(lowerCaseFilter)
             );
         });
         setFilteredUsers(filtered);
@@ -241,6 +246,14 @@ const CreateTask = ({ baseUrl, token }) => {
     };
     const handleTypeChange = (value) => {
         setType(value.value);
+    };
+
+    const handlePriorityChange = (value) => {
+        setPriority(value.value);
+    };
+
+    const handleAssigneChange = (value) => {
+        setAssigne(value.value);
     };
 
     const handleDateChange = (event) => {
@@ -282,7 +295,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                 name="priority"
                                 options={priority2Options}
                                 className="w-[170px]"
-
+                                onChange={handlePriorityChange}
                             />
                         }
                         {filters.status &&
@@ -295,7 +308,7 @@ const CreateTask = ({ baseUrl, token }) => {
                         }
                         {filters.type &&
                             <Select
-                                name="type"
+                                name="Type"
                                 options={typeOptions}
                                 className="w-[180px]"
                                 onChange={handleTypeChange}
@@ -306,10 +319,10 @@ const CreateTask = ({ baseUrl, token }) => {
                             <Select
                                 name="assignes"
                                 options={employees.map((emp) => (
-                                    { label: emp.username, value: emp.employee_id }
+                                    { label: emp.username, value: emp.id }
                                 ))}
                                 className="w-[180px]"
-                            // onChange={handleTypeChange}
+                                onChange={handleAssigneChange}
 
                             />
                         }
@@ -327,11 +340,11 @@ const CreateTask = ({ baseUrl, token }) => {
                                             onChange={() => handleCheckboxChange('search')} />
                                         <label className="text-sm" htmlFor="search">Search</label>
                                     </div>
-                                    <div className="flex items-center gap-x-4">
+                                    {/* <div className="flex items-center gap-x-4">
                                         <input type="checkbox" className="w-3.5 h-3.5" checked={filters.department}
                                             onChange={() => handleCheckboxChange('department')} />
                                         <label className="text-sm" htmlFor="department">Department</label>
-                                    </div>
+                                    </div> */}
                                     {/* <div className="flex items-center gap-x-4">
                                         <input type="checkbox" className="w-3.5 h-3.5" checked={filters.designation}
                                             onChange={() => handleCheckboxChange('designation')} />
@@ -340,7 +353,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                     <div className="flex items-center gap-x-4">
                                         <input type="checkbox" className="w-3.5 h-3.5" checked={filters.date}
                                             onChange={() => handleCheckboxChange('date')} />
-                                        <label className="text-sm" htmlFor="date">Date</label>
+                                        <label className="text-sm" htmlFor="date">Due Date</label>
                                     </div>
                                     <div className="flex items-center gap-x-4">
                                         <input type="checkbox" className="w-3.5 h-3.5" checked={filters.priority}
@@ -700,7 +713,8 @@ const CreateTask = ({ baseUrl, token }) => {
                             <IoChevronForwardCircleOutline
                                 className="text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
                                 onClick={() => {
-                                    handleDtrClick(dtr.assigne, status, type, dueDate);
+                                    // handleDtrClick(dtr.assigne, status, type, dueDate);
+                                    handleDtrClick(dtr.employee_id, status, type, priority, dueDate, assigne);
                                 }}
                             />
 

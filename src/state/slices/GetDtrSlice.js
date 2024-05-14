@@ -19,7 +19,7 @@ export const fetchDTRByEmployeeId = createAsyncThunk(
                 "Content-Type": "application/json",
             };
             // Modify the URL to include query parameters for employee ID
-            const response = await axios.get(`${baseUrl}/dtr/?search={"Employee_id":${employeeId}}`, { headers });
+            const response = await axios.get(`${baseUrl}/dtr/?search={"employee_id":[${employeeId}]}`, { headers });
             return response.data;
         } catch (error) {
             throw error;

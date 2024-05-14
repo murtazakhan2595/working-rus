@@ -94,6 +94,8 @@ const EmployeeDepartmentInfo = {
     indirect_report: null,
     department_manager: null,
     employee_type: null,
+    employee_work_type: null,
+    employee_location: null,
     employee_status: null,
     joining_date: null,
     is_indirect_report_applicable:false,
