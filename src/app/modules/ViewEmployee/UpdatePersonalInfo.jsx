@@ -48,7 +48,10 @@ const PersonalInfo = ({
     if (selectedFile) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview(e.target.result);
+        setImagePreview({
+          name: selectedFile.name,
+          file: e.target.result,
+        });
       };
       reader.readAsDataURL(selectedFile);
       const imageError = { image: "" };

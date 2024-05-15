@@ -117,10 +117,10 @@ function App() {
       getProfile();
     }
   }, [location]);
-  // console.log(!isLogin,userProfile.is_filled,userProfile.hasOwnProperty('is_filled'))
+   console.log(!isLogin,userProfile.is_filled,userProfile.hasOwnProperty('is_filled'))
   return (
     <>
-      {(!userProfile || !userProfile.hasOwnProperty('is_filled')) && (
+      {(!userProfile || !userProfile.hasOwnProperty('is_filled') || (isLogin && userProfile.is_filled === null)) && (
         <PageLoader />
       )}
       <Routes>
