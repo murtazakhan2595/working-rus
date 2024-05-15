@@ -523,6 +523,17 @@ const MyDtr = ({ baseUrl, token }) => {
                     </div>
                 </div>
 
+                {/* update pop */}
+                {(openUpdateModal && selectedTask) && (
+                    <UpdateModal
+                        task={selectedTask}
+                        onClose={() => setOpenUpdateModal(false)}
+                        getReportingManager={getReportingManager}
+                        setAssignToSearchQuery={setAssignToSearchQuery}
+                        filteredAssignToUsers={filteredAssignToUsers}
+                    />
+                )}
+
                 {/* view Dtr */}
                 <div className="space-y-2 rounded-lg bg-white">
                     {Object.entries(groupedTasks).map(([date, tasks]) => (
@@ -533,15 +544,7 @@ const MyDtr = ({ baseUrl, token }) => {
                                     <FaAngleUp className={`text-sm transform transition-transform duration-300 ${dropdownStates[date] ? 'rotate-180' : ''}`} />
                                 </div>
                             </div>
-                            {openUpdateModal && selectedTask && (
-                                <UpdateModal
-                                    task={selectedTask}
-                                    onClose={() => setOpenUpdateModal(false)}
-                                    getReportingManager={getReportingManager}
-                                    setAssignToSearchQuery={setAssignToSearchQuery}
-                                    filteredAssignToUsers={filteredAssignToUsers}
-                                />
-                            )}
+
                             <div className={dropdownStates[date] ? '' : 'hidden'}>
                                 {tasks.map(task => (
                                     <div key={task.task} onClick={() => handleTaskClick(task)} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">

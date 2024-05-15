@@ -13,15 +13,29 @@ const initialState = {
 // Define the thunk to fetch DTR by employee ID
 export const GetAssigneDtr = createAsyncThunk(
     'assigneDtr/GetAssigneDtr',
-    async ({ assigneId, status, due_date }, { getState }) => {
+    async ({ employeeId, statusFilter, dueDateFilter, assigneFilter, priorityFilter, typeFilter }, { getState }) => {
         try {
             const { token, baseUrl } = getState().user;
+            const { date, priority, status, type, assignes } = getState().filters;
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
-            // Modify the URL to include query parameters for employee ID
-            const response = await axios.get(`${baseUrl}/dtr/?search={"assigne": [${assigneId}], "status": "${status}", "due_date": "${due_date}"}`, { headers });
+
+            const queryParams = {
+                employee_id: [employeeId],
+            };
+
+            // Conditionally add parameters to queryParams
+            if (status) queryParams.status = statusFilter;
+            if (date) queryParams.due_date = dueDateFilter;
+            if (assignes) queryParams.assigne = assigneFilter;
+            if (priority) queryParams.priorty = priorityFilter;
+            if (type) queryParams.Type = typeFilter;
+
+            const searchParams = encodeURIComponent(JSON.stringify(queryParams));
+            const response = await axios.get(`${baseUrl}/dtr/?search=${searchParams}`, { headers });
+
             return response.data;
         } catch (error) {
             throw error;

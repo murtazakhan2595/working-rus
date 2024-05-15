@@ -183,7 +183,7 @@ export const typeOptions = [
 
 export const priority2Options = [
   { value: "Low", label: <div className="flex items-center gap-x-2 text-baseGray "><IoMdArrowDropdownCircle className="text-2xl" /> Low</div> },
-  { value: "Medium", label: <div className="flex items-center gap-x-2 text-yellow-500"><FiMinusCircle  className="text-xl" /> Medium</div> },
+  { value: "Medium", label: <div className="flex items-center gap-x-2 text-yellow-500"><FiMinusCircle className="text-xl" /> Medium</div> },
   { value: "High", label: <div className="flex items-center gap-x-2 text-red-500"><IoMdArrowDropupCircle className="text-2xl" /> High</div> },
 ];
 
@@ -193,3 +193,11 @@ export const status2Options = [
   { value: "Inprogress", label: <div className="bg-[#FFE8CD] text-[#FF9A1F] rounded-md py-0.5 px-2">In Progress</div> },
   { value: "Completed", label: <div className="bg-[#CCEFE3] text-[#5B8C7B] rounded-md py-0.5 px-2">Completed</div> },
 ];
+
+export const workplaceTypes = [
+  { label: 'Remote', value: 'REMOTE' },
+  { label: 'Work from home', value: 'Work_From_Home' },
+  { label: 'Hybrid', value: 'Hybrid' },
+  { label: 'Onsite', value: 'ON_SITE' }
+];
+

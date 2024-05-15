@@ -86,6 +86,14 @@ const validationDepartmentInfoFormSchema = Joi.object({
     .messages({
       "string.empty": `Employee Status is required`,
     }),
+    employee_work_type: Joi.string().required().label('Work Type')
+    .messages({
+      "string.empty": `Work Type is required`,
+    }),
+    employee_location: Joi.string().required().label('Employee Location')
+    .messages({
+      "string.empty": `Employee Location is required`,
+    }),
   employee_type: Joi.string().required().label('Employee type')
     .messages({
       "string.empty": `Employee type is required`,

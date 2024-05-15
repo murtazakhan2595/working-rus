@@ -56,15 +56,15 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
             const response = await dispatch(updateTask(formData));
             // Dispatch the updateTask action with formData
             console.log('i am update response', response);
+            onClose(); // Close the modal after successful update
             console.log("Task updated successfully!");
             // Ensure that the update was successful before showing the success popup
             // setShowSuccessPopup(true); // Show success pop-up after successful API call
-            // dispatch(fetchDTRByEmployeeId(userId)); // Fetch updated data after successful update
-            // dispatch(getDTRAll());
+            dispatch(fetchDTRByEmployeeId(userId)); // Fetch updated data after successful update
+            dispatch(getDTRAll());
             if (response) {
                 handleDtrClick(response.payload.assigne)
             }
-            onClose(); // Close the modal after successful update
         } catch (error) {
             console.error("Error updating task:", error);
             // Handle error (e.g., show error message)

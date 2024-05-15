@@ -8,10 +8,16 @@ import Datepicker from '../Dashboard/Datepicker';
 import CustomSelect from '../UpdateEmployee/customSelect';
 import axios from "axios";
 import { connect } from 'react-redux';
-import { HeadOfDepartment, department, employeeStatus, jobRoles } from '../../../data/Data';
+import { HeadOfDepartment, department, employeeStatus, jobRoles, workplaceTypes } from '../../../data/Data';
 import { getEmployeeDepartemtInfoData, saveEmployeeDepartemtInfoData } from '../../hooks/employee';
 import { EmployeeDepartmentInfo } from '../../utils/Types/Employee'
 import { validationDepartmentInfoFormSchema } from '../../utils/FormSchema/employeeFormSchema'
+import { getAllCountries } from 'countries-and-timezones';
+
+const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name
+}));
 
 function getManagerSelected(managers, managersList) {
     if (managers) {
@@ -77,6 +83,8 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                 department_manager: departmentInfo.department_manager,
                 employee_status: departmentInfo.employee_status,
                 employee_type: departmentInfo.employee_type,
+                employee_work_type: departmentInfo.employee_work_type,
+                employee_location: departmentInfo.employee_location,
                 joining_date: departmentInfo.joining_date,
                 direct_report: departmentInfo.direct_report,
             },
@@ -226,6 +234,65 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                         />
                                         {errors.employee_status && <span className="text-red-500 text-sm ">{errors.employee_status}</span>}
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        className="font-sfpro tracking-wide
+                  font-medium text-input text-base mb-1"
+                                    >
+                                        Employee Work Type:
+                                    </label>
+                                    <div
+                                    // onClick={handleEditClick}
+                                    >
+                                        <Select
+                                            menuPlacement="top"
+                                            name="employee_type"
+                                            value={workplaceTypes?.find(
+                                                (option) => option.label === departmentInfo.employee_work_type
+                                            )}
+                                            options={workplaceTypes}
+                                            isSearchable={false}
+                                            className="focus:outline-none border-none"
+                                            onChange={(selectedOption) =>
+                                                handleChange("employee_work_type", selectedOption.value)
+                                            }
+                                            menuPortalTarget={document.body}
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                        />
+                                    </div>
+                                    {errors.employee_work_type && <span className="text-red-500 text-sm ">{errors.employee_work_type}</span>}
+
+                                </div>
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        className="font-sfpro tracking-wide
+                  font-medium text-input text-base mb-1"
+                                    >
+                                        Employee Location:
+                                    </label>
+                                    <div
+                                    // onClick={handleEditClick}
+                                    >
+                                        <Select
+                                            menuPlacement="top"
+                                            name="employee_location"
+                                            // value={departmentInfo?.employee_status}
+                                            value={countryOptions?.find(
+                                                (option) => option.label === departmentInfo?.employee_location
+                                            )}
+                                            options={countryOptions}
+                                            isSearchable={false}
+                                            className="focus:outline-none border-none"
+                                            onChange={(selectedOption) => handleChange("employee_location", selectedOption.value)}
+                                            menuPortalTarget={document.body}
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                        />
+                                        {errors.employee_location && <span className="text-red-500 text-sm ">{errors.employee_location}</span>}
 
                                     </div>
                                 </div>
