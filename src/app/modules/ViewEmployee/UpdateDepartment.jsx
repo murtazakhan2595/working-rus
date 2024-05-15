@@ -254,7 +254,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                                             menuPlacement="top"
                                             name="employee_type"
                                             value={workplaceTypes?.find(
-                                                (option) => option.label === departmentInfo.employee_work_type
+                                                (option) => option.value === departmentInfo.employee_work_type
                                             )}
                                             options={workplaceTypes}
                                             isSearchable={false}
