@@ -58,7 +58,7 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
     const handleFileChange = (name, files) => {
         Promise.all(
             Array.from(files).map((file) => {
-                if (file.size <= 1024 * 1024) {
+                if (file.size <= 300 * 1024) {
                     return new Promise((resolve, reject) => {
                         const reader = new FileReader();
                         reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
@@ -67,7 +67,7 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
                     });
                 } else {
                     // Display error message if file size exceeds 500 KB
-                    toast.error("File size should be less than or equal to 1 MB!", {
+                    toast.error("File size should be less than or equal to 300 KB!", {
                         position: "top-right",
                         autoClose: 3000,
                     });
@@ -76,12 +76,14 @@ const VisaDetails = ({ prevstep, nextstep, baseUrl, userProfile, token }) => {
             })
         )
             .then((fileContents) => {
-                const updatedFiles = { ...visaDetailsFiles };
-                updatedFiles[name] = fileContents && fileContents.length > 0 ? fileContents[0] : {};
-                setVisaDetailsFiles(updatedFiles);
+                // Filter out null values (files with size > 500 KB)
+                fileContents = fileContents.filter(Boolean);
+                setVisaDetailsFiles({ ...visaDetailsFiles, [name]: fileContents });
             })
             .catch((error) => console.error("Error reading files:", error));
     };
+    
+    
 
 
     // Function to handle previous step

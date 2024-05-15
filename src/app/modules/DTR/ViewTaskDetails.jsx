@@ -8,7 +8,7 @@ import { CiCircleMore } from "react-icons/ci";
 
 const ViewTaskDetails = ({hoveredTask, setShowHoveredTask, statusIcons, getReportingManager, statusStyles}) => {
     return (
-        <div className="absolute top-0 right-0 w-[37%] h-full bg-white shadow-lg z-10 p-10">
+        <div className="absolute top-0 right-0 w-[40%] h-full bg-white shadow-lg z-10 p-10">
             <div className="absolute right-6 top-6 cursor-pointer" onClick={() => setShowHoveredTask(false)}>
                 <RxCross2 className="text-baseGray" />
             </div>

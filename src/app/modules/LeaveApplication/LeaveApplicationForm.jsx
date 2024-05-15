@@ -9,45 +9,9 @@ import { connect } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { getAllCountries } from 'countries-and-timezones';
 import { department } from "../../../data/Data";
-import io from "socket.io-client";
 
 const EmployeeForm = ({ baseUrl, token, userProfile }) => {
 
-  // 
-  useEffect(() => {
-    // Connect to the WebSocket server
-    const socket = io("wss://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api/leave/");
-
-    // Event listener for WebSocket connection
-    socket.on("connect", () => {
-      console.log("Connected to WebSocket server");
-    });
-
-    // Event listener for WebSocket message
-    socket.on("message", (data) => {
-      console.log("Received message from server:", data);
-      // Handle WebSocket message
-    });
-
-    // Event listener for WebSocket disconnection
-    socket.on("disconnect", () => {
-      console.log("Disconnected from WebSocket server");
-    });
-
-    // Clean up function
-    return () => {
-      // Close WebSocket connection when component unmounts
-      socket.disconnect();
-    };
-  }, []);
-
-  // Function to send data over WebSocket
-  const sendData = (data) => {
-    // Send data to the WebSocket server
-    // Example: socket.emit("eventName", data);
-  };
-
-  // 
   const newDate = new Date();
   const defaultDate = moment(newDate).format("YYYY-MM-DD");
   const initialData = {

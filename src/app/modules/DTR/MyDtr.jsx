@@ -21,6 +21,7 @@ import { fetchDTRByEmployeeId } from "../../../state/slices/GetDtrSlice";
 import { FaAngleUp } from "react-icons/fa6";
 import SuccessPopup from "./SuccessPop";
 import UpdateModal from "./UpdateModal";
+import ViewTaskDetails from "./ViewTaskDetails";
 
 const MyDtr = ({ baseUrl, token }) => {
 
@@ -71,6 +72,8 @@ const MyDtr = ({ baseUrl, token }) => {
     const [dropdownStates, setDropdownStates] = useState({});
     const [selectedTask, setSelectedTask] = useState(null);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
+    const [hoveredTask, setHoveredTask] = useState(null);
+    const [showHoveredTask, setShowHoveredTask] = useState(false);
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -547,7 +550,11 @@ const MyDtr = ({ baseUrl, token }) => {
 
                             <div className={dropdownStates[date] ? '' : 'hidden'}>
                                 {tasks.map(task => (
-                                    <div key={task.task} onClick={() => handleTaskClick(task)} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
+                                    <div key={task.task}
+                                        onClick={() => handleTaskClick(task)}
+                                        onMouseEnter={() => setHoveredTask(task)}
+                                        onMouseLeave={() => setHoveredTask(null)}
+                                        className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
                                         <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
                                             <div className="text-xl font-bold">
                                                 {task.Type === "Project" ? (
@@ -580,6 +587,13 @@ const MyDtr = ({ baseUrl, token }) => {
                     ))}
                 </div>
             </div>
+
+
+            {/* view task card started */}
+            {(hoveredTask) && (
+                <ViewTaskDetails hoveredTask={hoveredTask} setShowHoveredTask={setShowHoveredTask} statusIcons={statusIcons} getReportingManager={getReportingManager} statusStyles={statusStyles} />
+            )}
+            {/* view task card ended */}
 
 
         </div>

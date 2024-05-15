@@ -117,24 +117,24 @@ const UpdateVisaDetails = ({ prevstep,
     handleEdit(name, formattedDate);
   };
 
-  const handleFileChange = (name, files) => {
-    Promise.all(
-      Array.from(files).map((file) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
-          reader.onerror = (error) => reject(error);
-          reader.readAsDataURL(file);
-        });
-      })
-    )
-      .then((fileContents) => {
-        const updatedFiles = { ...visaDetailsFiles };
-        updatedFiles[name] = fileContents;
-        setVisaDetailsFiles(updatedFiles);
-      })
-      .catch((error) => console.error("Error reading files:", error));
-  };
+  // const handleFileChange = (name, files) => {
+  //   Promise.all(
+  //     Array.from(files).map((file) => {
+  //       return new Promise((resolve, reject) => {
+  //         const reader = new FileReader();
+  //         reader.onload = (event) => resolve({ name: file.name, data: event.target.result });
+  //         reader.onerror = (error) => reject(error);
+  //         reader.readAsDataURL(file);
+  //       });
+  //     })
+  //   )
+  //     .then((fileContents) => {
+  //       const updatedFiles = { ...visaDetailsFiles };
+  //       updatedFiles[name] = fileContents;
+  //       setVisaDetailsFiles(updatedFiles);
+  //     })
+  //     .catch((error) => console.error("Error reading files:", error));
+  // };
 
    const updateDataOnServer = async () => {
     setIsLoading(true);
