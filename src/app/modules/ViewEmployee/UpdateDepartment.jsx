@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import { useNavigate } from "react-router-dom";
 import Button from './Button';
 import { useState, useEffect } from 'react';
 import CustomLoader from '../../../common/CustomLoader';
@@ -33,8 +33,9 @@ function getManagerSelected(managers, managersList) {
 
 }
 
-const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, baseUrl, token }) => {
+const Department = ({ errors, setErrors, prevstep, userProfile, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
     const [managers, setManagers] = useState([]);
     const [departmentInfo, setDepartmentInfo] = useState({})
 
@@ -87,7 +88,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                 employee_location: departmentInfo.employee_location,
                 joining_date: departmentInfo.joining_date,
                 direct_report: departmentInfo.direct_report,
-                indirect_report: departmentInfo.indirect_report,
             },
             { abortEarly: false }
         );
@@ -99,8 +99,10 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
             setErrors(validationErrors);
         } else {
             departmentInfo.is_filled = true;
-            saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
-            await submitForm();
+            const response  = await saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
+            if (response){
+                navigate('/')
+            } 
             setIsLoading(false);
         }
     };

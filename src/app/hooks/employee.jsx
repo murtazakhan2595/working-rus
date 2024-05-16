@@ -478,20 +478,21 @@ const getEmployeeDepartemtInfoData = async (baseUrl, employeeid, token) => {
 const saveEmployeeDepartemtInfoData = async (baseUrl, employeeid, token, payload) => {
     if (employeeid) {
         try {
-            await axios.patch(`${baseUrl}/emp/${employeeid}`, payload, {
+            const response = await axios.patch(`${baseUrl}/emp/${employeeid}`, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then(() => {
+            })
+            if (response.status == 200) {
                 return true;
-            });
+            }
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
+            return false;
         }
     }
-    return false;
 }
 
 const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
@@ -503,7 +504,7 @@ const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
                     "Content-Type": "application/json",
                 },
             })
-            
+
             const employeeData = getBankDetails(response.data);
             console.log(employeeData);
             return employeeData;
