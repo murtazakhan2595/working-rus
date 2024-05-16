@@ -18,13 +18,16 @@ import { getDTRAll } from "../../../state/slices/GetDtrAllSlice";
 
 const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filteredAssignToUsers, onClose, handleDtrClick }) => {
 
+
+    console.log('i am the task on modal open', task);
+
     const userProfile = useSelector(state => state.user.userProfile);
 
     // Access the id from the userProfile object
     const userId = userProfile.id;
 
     const [formData, setFormData] = useState(task);
-    const [assignToUser, setAssignToUser] = useState({});
+    const [assignToUser, setAssignToUser] = useState(task.employee_id);
 
     const dispatch = useDispatch();
     const empDropdown = useSelector(state => state.modal.isEmpDropdownOpen);
@@ -52,8 +55,13 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
         e.preventDefault();
 
         try {
-            console.log("Updating task:", formData);
-            const response = await dispatch(updateTask(formData));
+            const updatedFormData = { ...formData, assigne: assignToUser };
+
+            console.log(updatedFormData)
+
+            // Dispatch the updateTask action with the updated formData
+            const response = await dispatch(updateTask(updatedFormData));
+
             // Dispatch the updateTask action with formData
             console.log('i am update response', response);
             onClose(); // Close the modal after successful update
@@ -135,11 +143,12 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
                             </div>
                             <div className="flex lg:flex-col lg:gap-y-2.5 lg:w-[60%]">
                                 <div className="flex mt-2 gap-2">
-                                    {formData.assigne && (
+                                    {assignToUser && (
                                         <div className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-pink-500 border-2">
                                             <span className="text-white text-sm flex justify-center items-center plus-icon w-9 h-9">
                                                 {/* {assignToUser?.username?.toUpperCase().slice(0, 2)} */}
-                                                {getReportingManager(formData.assigne)}
+                                                {/* {getReportingManager(formData.assigne)} */}
+                                                {getReportingManager(assignToUser)}
                                             </span>
                                         </div>
                                     )}
@@ -180,12 +189,10 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
                                                         {filteredAssignToUsers.map((user) => (
                                                             <div
                                                                 onClick={() => {
-                                                                    // setAssignToUser({
-                                                                    //     id: user.id,
-                                                                    //     username: user.username,
-                                                                    // });
+                                                                    // Set the selected user as the new assignee
                                                                     setAssignToUser(user.id);
-                                                                    dispatch(closeEmpDropdown())
+                                                                    // Close the dropdown after selecting
+                                                                    dispatch(closeEmpDropdown());
                                                                 }}
                                                                 className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
                                                                 key={user.id}

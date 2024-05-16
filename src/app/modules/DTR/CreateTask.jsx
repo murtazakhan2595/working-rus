@@ -181,10 +181,7 @@ const CreateTask = ({ baseUrl, token }) => {
 
     const getReportingManager = (userId) => {
         const reportingManager = employees?.find((user) => user.id === userId);
-        return reportingManager ? reportingManager.username.toUpperCase()?.split(' ')
-            .map(word => word[0].toUpperCase())
-            .join('')
-            .slice(0, 2) : null;
+        return reportingManager ? reportingManager.username?.slice(0, 2).toUpperCase() : null;
     };
 
     const groupedTasks = assigneDtr

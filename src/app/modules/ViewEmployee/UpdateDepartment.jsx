@@ -289,7 +289,6 @@ const Department = ({ errors, setErrors, prevstep, userProfile, baseUrl, token }
                                                 (option) => option.label === departmentInfo?.employee_location
                                             )}
                                             options={countryOptions}
-                                            isSearchable={false}
                                             className="focus:outline-none border-none"
                                             onChange={(selectedOption) => handleChange("employee_location", selectedOption.value)}
                                             menuPortalTarget={document.body}
