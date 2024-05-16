@@ -9,7 +9,7 @@ import { RxCross2, RxPlus } from "react-icons/rx";
 import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { TbCircleDashed } from "react-icons/tb";
-import { priority2Options, status2Options, statusOptions, typeOptions } from "../../../data/Data";
+import { priority2Options, status2Options, typeOptions } from "../../../data/Data";
 import Select from "react-select";
 import { fetchEmployees } from "../../../state/slices/EmpSlice";
 import { postTasks } from "../../../state/slices/DtrPostSlice";
@@ -44,7 +44,7 @@ const MyDtr = ({ baseUrl, token }) => {
         startDate: "",
         dueDate: "",
         taskType: null,
-        priority: null,
+        priorty: null,
         taskStatus: null,
         assigne: null
     });
@@ -63,12 +63,12 @@ const MyDtr = ({ baseUrl, token }) => {
 
     const [currentDate, setCurrentDate] = useState('');
     const [taskType, setTaskType] = useState(null);
-    const [priority, setPriority] = useState(null);
+    const [priorty, setPriority] = useState(null);
     const [taskStatus, setTaskStatus] = useState(null);
     const [assignToOpen, setAssignToOpen] = useState(false);
-    const [assignToUser, setAssignToUser] = useState({});
+    const [assignToUser, setAssignToUser] = useState(null);
     const [assignToSearchQuery, setAssignToSearchQuery] = useState("");
-    const [tasks, setTasks] = useState([]);
+    // const [tasks, setTasks] = useState([]);
     const [dropdownStates, setDropdownStates] = useState({});
     const [selectedTask, setSelectedTask] = useState(null);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
@@ -81,7 +81,7 @@ const MyDtr = ({ baseUrl, token }) => {
     const userId = userProfile.id;
 
 
-    console.log(tasks);
+    // console.log(tasks);
 
 
     useEffect(() => {
@@ -121,11 +121,12 @@ const MyDtr = ({ baseUrl, token }) => {
     };
 
 
-    const handleAddTask = (e) => {
+    const handleAddTask = async (e) => {
         e.preventDefault();
 
         const formattedStartDate = formatDate(formData.startDate);
         const formattedDueDate = formatDate(formData.dueDate);
+
 
         // Create a new task object
         const newTask = {
@@ -135,8 +136,20 @@ const MyDtr = ({ baseUrl, token }) => {
             assigne: assignToUser
         };
 
-        // Update tasks array state by adding the new task
-        setTasks(prevTasks => [...prevTasks, newTask]);
+        console.log("Form Data:", newTask);
+        // // Update tasks array state by adding the new task
+        // setTasks(prevTasks => [...prevTasks, newTask]);
+
+
+        try {
+            await dispatch(postTasks(newTask)); // Dispatch the postTasks action with tasks data
+            setShowSuccessPopup(true); // Show success pop-up after successful API call
+            // setTasks([]);
+            dispatch(fetchDTRByEmployeeId(userId));
+        } catch (error) {
+            console.error("Error posting tasks:", error);
+            // Handle error (e.g., show error message)
+        }
 
         // Clear form data
         setFormData({
@@ -144,10 +157,11 @@ const MyDtr = ({ baseUrl, token }) => {
             taskDetails: "",
             dueDate: "",
             taskType: null,
-            priority: null,
+            priorty: null,
             taskStatus: null,
             assigne: null
         });
+        setAssignToUser(null);
 
         // Close the modal
         // handleCloseModal();
@@ -158,22 +172,6 @@ const MyDtr = ({ baseUrl, token }) => {
         const [year, month, day] = dateString.split("-");
         return `${day}-${month}-${year}`;
     };
-
-
-    const handlePostTasks = async (e) => {
-        e.preventDefault();
-
-        try {
-            await dispatch(postTasks(tasks)); // Dispatch the postTasks action with tasks data
-            setShowSuccessPopup(true); // Show success pop-up after successful API call
-            setTasks([]);
-            dispatch(fetchDTRByEmployeeId(userId));
-        } catch (error) {
-            console.error("Error posting tasks:", error);
-            // Handle error (e.g., show error message)
-        }
-    };
-
 
     const getReportingManager = (userId) => {
         const reportingManager = employees?.find((user) => user.id === userId);
@@ -263,7 +261,7 @@ const MyDtr = ({ baseUrl, token }) => {
                                                     <h3 className="font-medium text-[18px] font-lato">Type</h3>
                                                 </div>
                                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><PiHeadlightsBold className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] font-lato">Priority</h3>
+                                                    <h3 className="font-medium text-[18px] font-lato">priorty</h3>
                                                 </div>
                                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><TbCircleDashed className="text-xl" />
                                                     <h3 className="font-medium text-[18px] font-lato">Status</h3>
@@ -392,9 +390,9 @@ const MyDtr = ({ baseUrl, token }) => {
                                                     }}
                                                 />
                                                 <Select
-                                                    name="priority"
+                                                    name="priorty"
                                                     value={priority2Options.find(
-                                                        (opt) => opt.value === priority
+                                                        (opt) => opt.value === priorty
                                                     )}
                                                     options={priority2Options}
                                                     className="w-[60%]"
@@ -403,7 +401,7 @@ const MyDtr = ({ baseUrl, token }) => {
                                                     //     setPriority(selectedOption.value);
                                                     // }}
                                                     onChange={(selectedOption) => {
-                                                        handleChange("priority", selectedOption.value)
+                                                        handleChange("priorty", selectedOption.value)
                                                     }}
                                                     required
                                                     menuPlacement="auto"
@@ -495,7 +493,7 @@ const MyDtr = ({ baseUrl, token }) => {
                         )}
                         {/* modal close */}
                     </div>
-                    <div className="max-h-36 overflow-y-auto">
+                    {/* <div className="max-h-36 overflow-y-auto">
                         {tasks.map((task) => (
                             <div key={task.title} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
                                 <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
@@ -507,23 +505,25 @@ const MyDtr = ({ baseUrl, token }) => {
                                     <h3 className="text-[18px] font-bold text-[#323333]">{task.title}</h3>
                                 </div>
                                 <div className="lg:w-[30%] flex items-center justify-end gap-x-4">
-                                    <div className="text-2xl">{statusIcons[task.priority]}</div>
+                                    <div className="text-2xl">{statusIcons[task.priorty]}</div>
                                     <div className="flex justify-between items-center lg:w-24">
                                         <div className={`px-3 py-1 rounded-lg ${statusStyles[task.taskStatus]}`}>{task.taskStatus}</div>
                                     </div>
-                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">{getReportingManager(task.assigne)}</div>
-                                    {/* <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">{task.assignee?.username?.split(' ')
+                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">
+                                        {getReportingManager(task.employee_id)}
+                                        </div>
+                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">{task.assignee?.username?.split(' ')
                                     .map(word => word[0].toUpperCase())
                                     .join('')
-                                    .slice(0, 2)}</div> */}
+                                    .slice(0, 2)}</div>
                                 </div>
                             </div>
                         ))}
-                    </div>
-                    <div className="flex justify-end border-t">
+                    </div> */}
+                    {/* <div className="flex justify-end border-t">
                         {tasks.length > 0 && <button className="my-2 py-2 px-6 rounded-lg bg-[#323333] text-white" onClick={handlePostTasks}>Submit</button>
                         }
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* update pop */}
@@ -577,7 +577,8 @@ const MyDtr = ({ baseUrl, token }) => {
                                                 </div>
                                             </div>
                                             <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">
-                                                {getReportingManager(task.assigne)}
+                                                {/* {getReportingManager(task.assigne)} */}
+                                                {getReportingManager(task.employee_id)}
                                             </div>
                                         </div>
                                     </div>

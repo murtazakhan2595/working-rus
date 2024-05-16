@@ -26,8 +26,6 @@ import ViewTaskDetails from "./ViewTaskDetails";
 import UpdateModal from "./UpdateModal";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { toggleFilter } from "../../../state/slices/FilterSlice";
-import { fetchDTRByManagerId } from "../../../state/slices/GetDtrManagerSlice";
-import { fetchTeamDtr } from "../../../state/slices/GetTeamDtrSlice";
 
 const CreateTask = ({ baseUrl, token }) => {
 
@@ -58,15 +56,13 @@ const CreateTask = ({ baseUrl, token }) => {
     const isOpen = useSelector(state => state.modal.isModalOpen);
     const empDropdown = useSelector(state => state.modal.isEmpDropdownOpen);
     const employees = useSelector(state => state.emp.employees);
-    const dtrsAll = useSelector(state => state.getDtrAll.dtrs)
-    console.log('i am the dtr all response', dtrsAll);
+    const dtrsAll = useSelector(state => state.getDtrAll.dtrs);
     const filters = useSelector(state => state.filters);
     const assigneDtr = useSelector(state => state.getAssigne.assigneDtr);
-    const teamDtrs = useSelector(state => state.teamDtr.teamDtr);
     const dispatch = useDispatch();
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-    console.log('I am team dtr', teamDtrs)
+    console.log('I am assigne dtr', assigneDtr)
 
     const [currentDate, setCurrentDate] = useState('');
     const [taskType, setTaskType] = useState(null);
@@ -83,7 +79,7 @@ const CreateTask = ({ baseUrl, token }) => {
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [showFiltersDropdown, setShowFilterDropdown] = useState(false);
     const [filter, setFilter] = useState("");
-    const [filteredUsers, setFilteredUsers] = useState(teamDtrs);
+    const [filteredUsers, setFilteredUsers] = useState(dtrsAll);
     const [status, setStatus] = useState('');
     const [type, setType] = useState('');
     const [dueDate, setDueDate] = useState('');
@@ -101,7 +97,6 @@ const CreateTask = ({ baseUrl, token }) => {
 
     useEffect(() => {
         dispatch(getDTRAll());
-        dispatch(fetchTeamDtr());
     }, []);
 
 
@@ -148,8 +143,7 @@ const CreateTask = ({ baseUrl, token }) => {
             dispatch(fetchDTRByEmployeeId(userId));
 
             setTasks([]);
-            // dispatch(getDTRAll());
-            dispatch(fetchTeamDtr());
+            dispatch(getDTRAll());
         } catch (error) {
             console.error("Error posting tasks:", error);
             // Handle error (e.g., show error message)
@@ -179,12 +173,16 @@ const CreateTask = ({ baseUrl, token }) => {
     };
 
 
+    const handlePostTasks = async (e) => {
+        e.preventDefault();
+
+
+    };
+
+
     const getReportingManager = (userId) => {
         const reportingManager = employees?.find((user) => user.id === userId);
-        return reportingManager ? reportingManager.username.toUpperCase()?.split(' ')
-            .map(word => word[0].toUpperCase())
-            .join('')
-            .slice(0, 2) : null;
+        return reportingManager ? reportingManager.username.toUpperCase().slice(0, 2) : null;
     };
 
     const groupedTasks = assigneDtr
@@ -230,7 +228,7 @@ const CreateTask = ({ baseUrl, token }) => {
 
     useEffect(() => {
         const lowerCaseFilter = filter.toLowerCase();
-        const filtered = teamDtrs.filter((user) => {
+        const filtered = dtrsAll.filter((user) => {
             const userIdWithPrefix = `TXB-${user.employee_id.toString().padStart(4, "0")}`;
             const designation = user.designation || ''
             const department = user.department || ''
@@ -242,7 +240,7 @@ const CreateTask = ({ baseUrl, token }) => {
             );
         });
         setFilteredUsers(filtered);
-    }, [filter, teamDtrs]);
+    }, [filter, dtrsAll]);
 
     const handleSearchChange = (event) => {
         const term = event.target.value;
@@ -704,8 +702,7 @@ const CreateTask = ({ baseUrl, token }) => {
 
             {/* display all employees names */}
             <div className="flex">
-                <div className="w-[30%] lg:max-h-[75vh] overflow-y-auto bg-[#FAFBFC]">
-                    <h3 className="text-baseGray font-lato font-semibold text-lg">My Team</h3>
+                <div className="w-[30%] lg:max-h-[75vh] overflow-y-auto bg-[#f0f1f2]">
                     {filteredUsers?.map((dtr) => (
                         <div className="flex items-center gap-x-2 group relative">
                             <div className="flex items-center gap-x-2 border-b m-1 p-2 w-full hover:bg-blue-100 hover:rounded-md">
