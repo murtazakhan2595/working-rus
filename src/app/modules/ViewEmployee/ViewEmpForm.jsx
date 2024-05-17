@@ -47,7 +47,7 @@ const ViewEmpForm = ({ userProfile }) => {
 
   return (
     <>
-      <div className="py-6 bg-[#F9F9F9] lg:w-full">
+      <div className="bg-[#F9F9F9] lg:w-full">
         <PageHeader
           title={'Employment Information'}
         />

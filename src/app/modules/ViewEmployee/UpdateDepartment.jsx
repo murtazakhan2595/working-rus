@@ -290,7 +290,7 @@ const Department = ({ errors, setErrors, prevstep, userProfile, baseUrl, token }
                                             )}
                                             options={countryOptions}
                                             className="focus:outline-none border-none"
-                                            onChange={(selectedOption) => handleChange("employee_location", selectedOption.value)}
+                                            onChange={(selectedOption) => handleChange("employee_location", selectedOption.label)}
                                             menuPortalTarget={document.body}
                                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                         />
