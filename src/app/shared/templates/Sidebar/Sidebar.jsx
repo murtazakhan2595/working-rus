@@ -137,8 +137,8 @@ const Sidebar = ({
                 />
               </div>
             </li>
-
-            <div className="lg:h-[70vh] overflow-y-auto hideScroll">
+<div className="flex flex-col justify-between h-[87vh]">
+            <div className="overflow-y-auto hideScroll">
               {userProfile.role === 1 && (
                 <>
                   <li className="group">
@@ -597,7 +597,7 @@ const Sidebar = ({
               )}
             </div>
 
-            <div className="lg:h-[15vh]">
+            <div className="">
               <li className={`${isSidebarOpen ? 'bg-white py-2 px-2 rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1' : ''}`}>
 
                 <div className={`flex group items-center gap-x-2 py-3 ${isSidebarOpen ? 'bg-[#F0F1F2]' : 'borderr border--[#5C5E64]'} px-2 rounded-lg cursor-pointer`}>
@@ -615,7 +615,7 @@ const Sidebar = ({
                   )}
 
                   {!isSidebarOpen && (
-                    <div className="absolute rounded-md top-auto ml-20
+                    <div className="absolute rounded-md top-[30rem] ml-20
 bg-white w-40 text-sm
 invisible opacity-20 -translate-x-3 transition-all
 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
@@ -687,6 +687,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                   </div>
                 )}
               </li>
+            </div>
             </div>
           </ul >
         </div >

@@ -68,6 +68,7 @@ function App() {
   let width = window.screen.width;
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const cookies = new Cookies();
@@ -96,6 +97,7 @@ function App() {
         handleUpdateProfile(response.data);
         dispatch(setToken(token));
         cookies.set("token", token, { path: "*" });
+        setLoading(false);
         return;
       }
     } catch (error) {
@@ -109,6 +111,7 @@ function App() {
       } else {
         console.error("Error fetching data:", error);
       }
+      setLoading(false);
     }
   };
 
@@ -118,6 +121,10 @@ function App() {
     }
   }, [location]);
    console.log(!isLogin,userProfile.is_filled,userProfile.hasOwnProperty('is_filled'))
+
+   if (loading) {
+    return <PageLoader />; // Render the loader if loading is true
+  }
   return (
     <>
       {(!userProfile || !userProfile.hasOwnProperty('is_filled') || (isLogin && userProfile.is_filled === null)) && (
