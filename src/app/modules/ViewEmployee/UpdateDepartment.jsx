@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import Button from './Button';
 import { useState, useEffect } from 'react';
@@ -30,14 +31,13 @@ function getManagerSelected(managers, managersList) {
     }
 
     return [];
-
 }
 
 const Department = ({ errors, setErrors, prevstep, userProfile, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const [managers, setManagers] = useState([]);
-    const [departmentInfo, setDepartmentInfo] = useState({})
+    const [departmentInfo, setDepartmentInfo] = useState({});
 
     useEffect(() => {
         getEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token).then(response => {
@@ -45,8 +45,7 @@ const Department = ({ errors, setErrors, prevstep, userProfile, baseUrl, token }
         }).catch(error => {
             console.log(error);
         });
-    }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
-
+    }, [baseUrl, userProfile, token]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -63,17 +62,22 @@ const Department = ({ errors, setErrors, prevstep, userProfile, baseUrl, token }
                         .map((manager) => ({
                             value: manager.id,
                             label: manager.username,
-                        }))
+                        }));
                     setManagers(managersList);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
-                // Handle errors here if needed
             }
         };
 
-        fetchData(); // Call the async function to fetch data
-    }, []);
+        fetchData();
+    }, [baseUrl, token]);
+
+    useEffect(() => {
+        if (!departmentInfo.is_indirect_report_applicable) {
+            setDepartmentInfo((prevInfo) => ({ ...prevInfo, indirect_report: '' }));
+        }
+    }, [departmentInfo.is_indirect_report_applicable]);
 
     const handleNextStep = async () => {
         setIsLoading(true);
@@ -99,27 +103,31 @@ const Department = ({ errors, setErrors, prevstep, userProfile, baseUrl, token }
             setErrors(validationErrors);
         } else {
             departmentInfo.is_filled = true;
-            const response  = await saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
-            if (response){
-                navigate('/')
-            } 
+            const response = await saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
+            if (response) {
+                navigate('/');
+            }
             setIsLoading(false);
         }
     };
 
     const handleChange = (name, value, values) => {
-        if (name === 'employee_type' || name === 'employee_status') {
+        if (name === 'employee_type' || name === 'employee_status' || name === 'employee_work_type') {
             setDepartmentInfo({ ...departmentInfo, [name]: value.value });
         } else if (name === "department_name") {
             setDepartmentInfo({ ...departmentInfo, [name]: value.value });
-        }
-        if (name === "indirect_report" || name === "direct_report") {
+        } else if (name === "indirect_report" || name === "direct_report") {
             const updatedValues = values || [];
             const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
             setDepartmentInfo({
                 ...departmentInfo,
-                [name]: uniqueValues.join(', '), // Convert array to string
+                [name]: uniqueValues.join(', '),
             });
+        } else if (name === 'is_indirect_report_applicable') {
+            if (!value) {
+                setDepartmentInfo({ ...departmentInfo, indirect_report: '' });
+            }
+            setDepartmentInfo({ ...departmentInfo, [name]: value });
         } else {
             setDepartmentInfo({ ...departmentInfo, [name]: value });
         }
