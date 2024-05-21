@@ -91,10 +91,14 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
       }
       if (!certification.completion_date) {
         fieldErrors[`completion_date_${i}`] =
-          "Completion Date Designation is required.";
+          "Completion Date.";
       }
       if (!certification.expiry_date) {
         fieldErrors[`expiry_date_${i}`] = "Expiry Date is required.";
+      }
+      if (!certification.certification_institute) {
+        fieldErrors[`certification_institute_${i}`] =
+          "Certification Body is required.";
       }
 
     }
@@ -450,10 +454,36 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                   )}
                 </div>
               </div>
+              <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    htmlFor="certification_name"
+                    className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
+                  >
+                    Certification Body:
+                  </label>
+                  <input
+                    type="text"
+                    name="certification_institute"
+                    placeholder="Certification Body"
+                    value={experience.certification_institute}
+                    onChange={(e) => {
+                      const updatedSections = [...certificationSections];
+                      updatedSections[index].certification_institute = e.target.value;
+                      setCertificationSections(updatedSections);
+                      clearCerError(`certification_institute_${index}`);
+                    }}
+                    className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
+                  />
+                  {cerErrors[`certification_institute_${index}`] && (
+                    <div className="text-red-500 text-sm">
+                      {cerErrors[`certification_institute_${index}`]}
+                    </div>
+                  )}
+                </div>
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                 <div className="flex flex-col mt-2 md:mt-4">
                   <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
-                    Certification Body:
+                    Attach Certification:
                   </h2>
                   {experience.certification_body ? (
                     <div className="flex gap-1  items-center">

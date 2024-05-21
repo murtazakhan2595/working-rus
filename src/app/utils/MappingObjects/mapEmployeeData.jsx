@@ -131,6 +131,7 @@ function getCertifications(data) {
                 employee_id: record.employee_id,
                 certification_name: record?.certification_name ?? '',
                 completion_date: record?.completion_date ?? '',
+                certification_institute: record?.certification_institute ?? '',
                 expiry_date: record?.expiry_date ?? '',
                 certification_body: record?.certification_body ?? '',
             };
