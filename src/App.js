@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useNavigate } from "react-router-dom";
 import "./index.css";
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
@@ -49,14 +48,6 @@ import { useSelector } from "react-redux";
 import MyDtr from "./app/modules/DTR/MyDtr.jsx";
 import CreateTask from "./app/modules/DTR/CreateTask.jsx";
 
-// function App({
-//   setUserProfile,
-//   userProfile,
-//   baseUrl,
-//   isLogin,
-//   setToken,
-//   setUserLogout,
-// })
 function App() {
 
   let userProfile = useSelector(state => state.user.userProfile);
@@ -69,7 +60,6 @@ function App() {
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   const cookies = new Cookies();
   token = cookies.get("token");
@@ -107,7 +97,6 @@ function App() {
       ) {
         // Token expired or invalid
         dispatch(setUserLogout());
-        navigate("/");
       } else {
         console.error("Error fetching data:", error);
       }
@@ -120,7 +109,6 @@ function App() {
       getProfile();
     }
   }, [location]);
-   console.log(!isLogin,userProfile.is_filled,userProfile.hasOwnProperty('is_filled'))
 
    if (loading) {
     return <PageLoader />; // Render the loader if loading is true
@@ -401,17 +389,4 @@ function App() {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    baseUrl: state.user.baseUrl,
-    isLogin: state.user.isLogin,
-  };
-};
-
-// export default connect(mapStateToProps, {
-//   setUserLogout,
-//   setUserProfile,
-//   setToken,
-// })(App);
 export default App;
