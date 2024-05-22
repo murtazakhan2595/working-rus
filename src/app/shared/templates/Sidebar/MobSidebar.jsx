@@ -158,35 +158,6 @@ const MobSidebar = ({
                         <FaAngleDown className={`text-xs transition-transform duration-300 ${isDbOpen ? 'transform rotate-180' : ''}`} />
                       </span>
                     </div>
-
-                    {!isSidebarOpen && (
-                      <div className="absolute rounded-md top-40 ml-20
-          bg-white w-32 text-base
-          invisible opacity-20 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                        <div className="flex flex-col bg-white rounded-lg">
-                          <li>
-                            <Link to="/employees">
-                              <div
-                                className={`flex rounded-md mx-1 my-1 py-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/employees" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm px-2">Employee Sheet</p>
-                              </div>
-                            </Link>
-                            <Link to="/add-employee">
-                              <div
-                                className={`flex rounded-md mx-1 my-1 py-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/add-employee" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm px-2">Add Employee</p>
-                              </div>
-                            </Link>
-                          </li>
-                        </div>
-                      </div>
-                    )}
                   </li>
                   {(isDbOpen && isSidebarOpen) &&
                     <div className="flex flex-col mt-2 bg-[#F7F8FA]">
@@ -223,35 +194,6 @@ const MobSidebar = ({
                         <FaAngleDown className={`text-xs transition-transform duration-300 ${isRecruitmentOpen ? 'transform rotate-180' : ''}`} />
                       </div>
                     </div>
-                    {!isSidebarOpen && (
-                      <div className="absolute rounded-md top-52 ml-20
-          bg-white w-32 text-base
-          invisible opacity-20 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                        <div className="flex flex-col rounded-lg bg-white">
-                          <li>
-                            <Link to="/jobs">
-                              <div
-                                className={`flex rounded-md mx-1 my-2 py-2 px-2 items-center hover:bg-[#DAEFF8] hover:text-[#0D2282] gap-x-1 ${location.pathname === "/jobs" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm">Jobs</p>
-                              </div>
-                            </Link>
-                            <Link to="/job-post">
-                              <div
-                                className={`flex rounded-md mx-1 my-2 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282]  ${location.pathname === "/job-post" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm">Post a Job</p>
-                              </div>
-                            </Link>
-                          </li>
-
-                        </div>
-                      </div>
-                    )}
                   </li>
 
                   {(isRecruitmentOpen && isSidebarOpen) &&
@@ -289,59 +231,6 @@ const MobSidebar = ({
                         <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />
                       </div>
                     </div>
-                    {!isSidebarOpen && (
-                      <div className="absolute rounded-md top-56 ml-20
-          bg-white w-32 text-base
-          invisible opacity-20 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                        <div className="flex flex-col rounded-lg bg-white">
-                          <li>
-                            <Link to="/leave-application">
-                              <div
-                                className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm">Leave Application</p>
-                              </div>
-                            </Link>
-                            {/* <Link to="/leave-application-status">
-                            <div
-                              className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                }`}
-                            >
-                              <p className="text-sm">Application Status</p>
-                            </div>
-                          </Link> */}
-                            <Link to="/leave-calender">
-                              <div
-                                className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-calender" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm">Leave Calender</p>
-                              </div>
-                            </Link>
-                            <Link to="/leave-list">
-                              <div
-                                className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-list" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm">Team Application Status</p>
-                              </div>
-                            </Link>
-                            <Link to="/leave-balance">
-                              <div
-                                className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-balance" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm">Team Leave Balance</p>
-                              </div>
-                            </Link>
-                          </li>
-
-                        </div>
-                      </div>
-                    )}
                   </li>
 
                   {(isLeaveOpen && isSidebarOpen) &&
@@ -406,40 +295,6 @@ const MobSidebar = ({
                         <FaAngleDown className={`text-xs transition-transform duration-300 ${isDtrOpen ? 'transform rotate-180' : ''}`} />
                       </div>
                     </div>
-                    {!isSidebarOpen && (
-                      <div className="absolute rounded-md top-72 ml-20
-          bg-white w-32 text-base
-          invisible opacity-20 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                        <div className="flex flex-col rounded-lg bg-white">
-                          <li>
-                            <Link to="/create-task">
-                              <div
-                                className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm">Create Task</p>
-                              </div>
-                            </Link>
-                          </li>
-
-                        </div>
-                        <div className="flex flex-col rounded-lg bg-white">
-                          <li>
-                            <Link to="/my-dtr">
-                              <div
-                                className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                  }`}
-                              >
-                                <p className="text-sm">My DTR</p>
-                              </div>
-                            </Link>
-                          </li>
-
-                        </div>
-                      </div>
-                    )}
                   </li>
 
                   {(isDtrOpen && isSidebarOpen) &&
@@ -502,26 +357,6 @@ const MobSidebar = ({
                       className={`text-xs transform transition-transform ${isProjectOpen ? 'rotate-180' : ''
                         } ${isSidebarOpen ? 'block' : 'hidden'}`}
                     />
-                    {!isSidebarOpen && <div className="absolute rounded-md top-60 ml-20
-          bg-white w-32 text-base
-          invisible opacity-20 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
-                      <div className="max-h-[20vh] overflow-y-auto hideScroll p-1">
-                        {projects?.map((project, index) => (
-                          <div key={index} className="flex flex-col gap-2">
-                            <div
-                              onClick={() => {
-                                navigate(`/project/${project.id}`);
-                              }}
-                              className="flex items-center rounded-md gap-3 mb-1 cursor-pointer hover:bg-[#DAEFF8] text-[#616366] hover:text-[#0D2282]"
-                            >
-                              <div className="bg-[#616366] rounded-md w-[22px] h-[22px]"></div>
-                              <div className="text-sm">{project.name}</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>}
                   </li>
                   {(isProjectOpen && isSidebarOpen) && (
                     <>
@@ -558,7 +393,7 @@ const MobSidebar = ({
                             )}
                           </div>
                         </div>
-                        <div className="max-h-[20vh] overflow-y-auto hideScroll">
+                        <div className="max-h-[20vh] overflow-y-auto">
                           {projects?.map((project, index) => (
                             <div key={index} className="flex flex-col gap-2">
                               <div

@@ -520,10 +520,10 @@ const Sidebar = ({
                         } ${isSidebarOpen ? 'block' : 'hidden'}`}
                     />
                     {!isSidebarOpen && <div className="absolute rounded-md top-60 ml-20
-          bg-white w-32 text-base
+          bg-white w-36 text-base
           invisible opacity-20 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
-                      <div className="max-h-[20vh] overflow-y-auto hideScroll p-1">
+                      <div className="max-h-[20vh] overflow-y-auto p-1">
                         {projects?.map((project, index) => (
                           <div key={index} className="flex flex-col gap-2">
                             <div
@@ -575,7 +575,7 @@ const Sidebar = ({
                             )}
                           </div>
                         </div>
-                        <div className="max-h-[20vh] overflow-y-auto hideScroll">
+                        <div className="max-h-[20vh] overflow-y-auto">
                           {projects?.map((project, index) => (
                             <div key={index} className="flex flex-col gap-2">
                               <div

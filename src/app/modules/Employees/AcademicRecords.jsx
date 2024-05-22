@@ -20,6 +20,7 @@ const academicOptions = [
 ];
 
 
+
 const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, baseUrl, token }) => {
 
   const [academicInfo, setAcademicInfo] = useState({});
@@ -154,6 +155,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
       setCerErrors(updatedErrors);
     }
   };
+
 
   return (
     <>
@@ -329,7 +331,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                     </div>
                   )}
                   <small className="text-gray-400">
-                    Upload a pdf no larger than 100 MB.
+                    Upload a pdf no larger than 5 MB.
                   </small>
                 </div>
               </div>
@@ -340,8 +342,6 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
         <h2 className="text-baseBlue mt-5 tracking-wide mb-2 lg:mb-4 lg:text-lg ">
           Certifications:
         </h2>
-
-
 
         {certificationSections.map((experience, index) => (
           <div key={index}>
@@ -536,7 +536,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                     </div>
                   )}
                   <small className="text-gray-400">
-                    Upload a pdf no larger than 100 MB.
+                    Upload a pdf no larger than 5 MB.
                   </small>
                 </div>
               </div>
