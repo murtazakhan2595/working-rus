@@ -6,7 +6,8 @@ module.exports = {
     fontFamily: {
       montserrat: ["Montserrat", "sans-serif"],
       sfpro: ["SF Pro Display", "sans-serif"],
-      lato: ['Lato']
+      lato: ['Lato'],
+      roboto: ['Roboto']
     },
     extend: {
       boxShadow: {

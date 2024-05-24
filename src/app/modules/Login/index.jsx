@@ -6,7 +6,7 @@ import logo from "../.././../assets/images/tecbrix-logo.png";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { connect } from "react-redux";
 import { setUserProfile, setToken } from "../../../state/slices/UserSlice";
@@ -161,7 +161,156 @@ function Login() {
   }, []);
 
   return (
-    <div
+    <div className="h-screen flex justify-center p-3 md:p-5 lg:p-7">
+      <div className="w-full md:w-2/3 flex flex-col min-h-full">
+        <div className="flex justify-start items-start">
+          <img
+            src={logo}
+            className="w-[142px] h-auto md:h-auto lg:pl-5"
+            alt="Tecbrix logo"
+          />
+        </div>
+        <div className="flex justify-center items-center flex-grow">
+          <div className="md:mx-auto w-full max-w-md lg:max-w-xl">
+            <form
+              className="space-y-3 my-2 lg:py-10 md:py-6 md:px-8 md:m-6"
+              onSubmit={handleSubmit}
+              method="POST"
+            >
+              <div className="lg:block mx-auto">
+                <h2 className="text-[#323333] text-center text-2xl lg:text-4xl font-lato font-bold leading-9 pb-4 tracking-tight">
+                  Log In
+                </h2>
+                <p className="font-roboto text-center text-[#5C5E64] font-normal text-base lg:mb-10">It's nice to see you again!</p>
+              </div>
+
+              <div className="">
+                <label htmlFor="username" className="text-[#323333] font-normal font-lato text-base">Login ID*</label>
+                <input
+                  required
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  title="Enter Your Username"
+                  value={values.username}
+                  onChange={handleChange}
+                  className="w-full rounded-xl py-2 my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
+                />
+                <div className="text-sm text-rose-500">{errors.username}</div>
+              </div>
+
+
+              <div className="relative">
+                <div className="flex justify-between items-center">
+                  <label htmlFor="password" className="text-[#323333] font-normal font-lato text-base">Password*</label>
+                  <NavLink
+                    to="/forgot-password"
+                    className="text-[#323333] font-normal font-lato text-base underline underline-offset-4"
+                  >
+                    Forgot your password?
+                  </NavLink>
+                </div>
+                <input
+                  required
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  title="Enter Your Password"
+                  value={values.password}
+                  onChange={handleChange}
+                  className="w-full rounded-xl my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
+                />
+
+                <button
+                  type="button"
+                  onClick={handlePasswordVisibility}
+                  className={`absolute inset-y-12 right-2 flex items-center ${showPassword ? "text-gray-400" : ""}`}
+                >
+                  {showPassword ? (
+                    <BiShow className="text-gray-400" />
+                  ) : (
+                    <TbEyeClosed className="text-gray-400" />
+                  )}
+                </button>
+                <div className="text-sm text-rose-500">{errors.password}</div>
+              </div>
+
+
+              <div className="flex items-center gap-x-4">
+                <button
+                  type="submit"
+                  className="flex h-11 text-white justify-center items-center w-full font-normal rounded-xl bg-black px-3 py-1.5 text-sm md:text-lg leading-8 font-lato lg:text-base"
+                  disabled={isLoading} // Disable button when loading
+                >
+                  {isLoading ? (
+                    <span className="animate-pulse">Logging in...</span>
+                  ) : (
+                    <span>Log In</span>
+                  )}
+                </button>
+              </div>
+
+              <div className="flex pb-2 items-center">
+                <input
+                  id="keepSignedIn"
+                  name="keepSignedIn"
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={handleCheckboxChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="keepSignedIn"
+                  className="justify-start font-medium text-sm text-gray text-[#5C5E64] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
+                >
+                  <span
+                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${isChecked ? "bg-[#5C5E64]" : "bg-[#EBEBEB]"
+                      } transition-all duration-300`}
+                    style={{
+                      border: "none",
+                    }}
+                  >
+                    {isChecked && (
+                      <svg
+                        className="w-3 h-3 text-white ml-0.5 mt-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="4"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </span>
+                  Keep me signed in
+                </label>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div className="flex justify-start items-start">
+          <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">© 2024 TecBrix</p>
+        </div>
+      </div>
+
+      <div className="w-0: md:w-1/3 h-full bg-gray-500 rounded-xl">
+        {/* This div is for the banner image on the right side */}
+      </div>
+      {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}
+      <ToastContainer />
+    </div>
+
+
+  );
+}
+
+export default Login;
+
+/* <div
       className="h-screen"
       style={{
         backgroundImage: `url(${loginBg})`,
@@ -299,18 +448,4 @@ function Login() {
       </div>
       {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}
       <ToastContainer />
-    </div>
-  );
-}
-
-// const mapStateToProps = (state) => {
-//   return {
-//     userProfile: state.user.userProfile,
-//     token: state.user.token,
-//     baseUrl: state.user.baseUrl,
-//   };
-// };
-
-// export default connect(mapStateToProps, { setUserProfile, setToken })(Login);
-
-export default Login;
+    </div> */

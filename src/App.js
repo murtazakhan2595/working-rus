@@ -47,6 +47,8 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import MyDtr from "./app/modules/DTR/MyDtr.jsx";
 import CreateTask from "./app/modules/DTR/CreateTask.jsx";
+import ForgotPassword from "./app/modules/Login/ForgotPassword.jsx";
+import ResetPassword from "./app/modules/Login/ResetPassword.jsx";
 
 function App() {
 
@@ -110,7 +112,7 @@ function App() {
     }
   }, [location]);
 
-   if (loading) {
+  if (loading) {
     return <PageLoader />; // Render the loader if loading is true
   }
   return (
@@ -384,6 +386,9 @@ function App() {
         )}
         <Route path="/apply/:id" element={<JobApplicationForm />} />
         <Route path="/job-description/:id" element={<JobDescription />} />
+        {/* forgot Password */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/confirm-password" element={<ResetPassword />} />
       </Routes>
     </>
   );
