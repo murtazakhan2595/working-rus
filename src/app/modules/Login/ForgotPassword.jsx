@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import cover from "../.././../assets/images/cover.jfif";
+
 
 const ForgotPassword = () => {
     const baseUrl = useSelector((state) => state.user.baseUrl);
@@ -99,7 +100,7 @@ const ForgotPassword = () => {
             </div>
 
             <div className="w-0 md:w-1/3 h-full bg-gray-500 rounded-xl">
-                {/* This div is for the banner image on the right side */}
+            <img src={cover} alt="Meeting" className="object-cover w-full h-full rounded-xl" />
             </div>
         </div>
     );

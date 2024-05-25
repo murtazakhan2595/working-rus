@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
-import loginBg from "../.././../assets/images/login-bg.png";
+// import loginBg from "../.././../assets/images/login-bg.png";
+import cover from "../.././../assets/images/cover.jfif";
 import logo from "../.././../assets/images/tecbrix-logo.png";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -297,9 +298,10 @@ function Login() {
         </div>
       </div>
 
-      <div className="w-0: md:w-1/3 h-full bg-gray-500 rounded-xl">
-        {/* This div is for the banner image on the right side */}
+      <div className="w-0 md:w-1/3 bg-gray-500 h-full rounded-xl">
+        <img src={cover} alt="Meeting" className="object-cover w-full h-full rounded-xl" />
       </div>
+
       {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}
       <ToastContainer />
     </div>

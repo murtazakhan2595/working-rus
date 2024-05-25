@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { IoWarningOutline } from "react-icons/io5";
 import logo from "../.././../assets/images/tecbrix-logo.png";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
+import cover from "../.././../assets/images/cover.jfif";
+
 
 const ResetPassword = () => {
+    const { uid, token } = useParams();
     const baseUrl = useSelector((state) => state.user.baseUrl);
 
     const initialData = { password: "", retype_password: "" };
@@ -20,6 +23,7 @@ const ResetPassword = () => {
     });
     const [errorMessage, setErrorMessage] = useState("");
     const [isFormValid, setIsFormValid] = useState(false);
+    const [response, setResponse] = useState(null);
 
     useEffect(() => {
         if (formData.password && formData.retype_password) {
@@ -50,9 +54,26 @@ const ResetPassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // console.log(formData);
-        console.log({ "password": formData.password });
-        setFormData(initialData);
+        setIsLoading(true);
+
+        const payload = {
+            uid: uid,
+            token: token,
+            password: formData.password,
+        };
+
+        try {
+            const res = await axios.post(`${baseUrl}/password/reset/confirm`, payload);
+            if (res.status === 200) {
+                setResponse({ message: res.data.success, status: "success" });
+            }
+        } catch (error) {
+            setResponse({ message: error.response?.data?.error || "An error occurred", status: "error" });
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+            setFormData(initialData);
+        }
     };
 
     return (
@@ -92,7 +113,7 @@ const ResetPassword = () => {
                                     htmlFor="password"
                                     className="text-[#323333] font-normal font-lato text-base"
                                 >
-                                    New Password*
+                                    New password*
                                 </label>
                                 <input
                                     required
@@ -121,7 +142,7 @@ const ResetPassword = () => {
                                     htmlFor="retype_password"
                                     className="text-[#323333] font-normal font-lato text-base"
                                 >
-                                    Retype New Password*
+                                    Re-Type new password*
                                 </label>
                                 <input
                                     required
@@ -153,6 +174,14 @@ const ResetPassword = () => {
                                 </div>
                             )}
 
+                            {response && (
+                                <div className={`mx-auto p-2 flex gap-x-2 rounded-xl ${response.status === "success" ? "bg-[#E6FFEA] border border-[#B6F2C2]" : "bg-[#FFF8F7] border border-[#F2DCDA]"}`}>
+                                    <p className={`font-lato text-[14px] ${response.status === "success" ? "text-[#27A745]" : "text-[#F08278]"}`}>
+                                        {response.message}
+                                    </p>
+                                </div>
+                            )}
+
                             <div className="flex items-center gap-x-4">
                                 <button
                                     type="submit"
@@ -177,7 +206,7 @@ const ResetPassword = () => {
             </div>
 
             <div className="w-0 md:w-1/3 h-full bg-gray-500 rounded-xl">
-                {/* This div is for the banner image on the right side */}
+                <img src={cover} alt="Meeting" className="object-cover w-full h-full rounded-xl" />
             </div>
         </div>
     );
