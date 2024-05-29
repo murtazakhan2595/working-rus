@@ -298,7 +298,7 @@ function Login() {
         </div>
       </div>
 
-      <div className="w-0 md:w-1/3 bg-gray-500 h-full">
+      <div className="w-0 md:w-1/2 lg:w-1/3 bg-gray-500 h-full">
         <img src={cover} alt="Meeting" className="object-fill w-full h-full" />
       </div>
 

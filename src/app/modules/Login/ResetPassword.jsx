@@ -210,8 +210,8 @@ const ResetPassword = () => {
                 </div>
             </div>
 
-            <div className="w-0 md:w-1/3 h-full bg-gray-500">
-                <img src={confirm} alt="Meeting" className="object-cover w-full h-full" />
+            <div className="w-0 md:w-1/2 lg:w-1/3 bg-gray-500 h-full">
+                <img src={confirm} alt="Meeting" className="object-fill w-full h-full" />
             </div>
         </div>
     );
