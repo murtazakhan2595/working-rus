@@ -893,6 +893,11 @@ import { validationAcademicRecordSchema } from '../../utils/FormSchema/employeeF
 import CustomLoader from "../../../common/CustomLoader";
 import { RxCross2 } from "react-icons/rx";
 import { BiEdit } from "react-icons/bi";
+import { downloadAttachment } from "../../../utils/fileUtils";
+import { downloadFiles } from "../../../utils/downUtils";
+import { Tooltip } from "@mui/material";
+import { LuExternalLink } from "react-icons/lu";
+import { BsDownload } from "react-icons/bs";
 
 
 const academicOptions = [
@@ -906,16 +911,7 @@ const academicOptions = [
 const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, baseUrl, token }) => {
 
 
-  const [academicRecords, setAcademicRecords] = useState([
-    {
-      education_level: '',
-      program: '',
-      institute_name: '',
-      edu_start_date: '',
-      edu_end_date: '',
-      education_body: { file: '', name: '' }
-    }
-  ]);
+  const [academicRecords, setAcademicRecords] = useState([]);
 
   const [certificationSections, setCertificationSections] = useState([]);
   const [cancelBox, setCancelBox] = useState(false);
@@ -1244,9 +1240,46 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                     <h2 className="text-input tracking-wide text-base mt-3 mb-3 lg:mb-0 lg:text-base">
                       Attach Certification:
                     </h2>
-                    {record.education_body && record.education_body !== "" ? (
-                      <div className="flex gap-1 items-center">
-                        <div className="opacity-50">{record.education_body.name}</div>
+                    {record.education_body ? (
+                      <div className="flex gap-x-2 items-center">
+                        <div
+                          className={`flex items-center gap-x-3 text-base ${isEdit ? "opacity-50" : "text-gray-500"
+                            }`}
+                        >
+
+                          <Tooltip
+                            title="View Doc"
+                          >
+
+                            <button
+                              className="text-blue-600 underline"
+                              onClick={() =>
+                                downloadAttachment(
+                                  record.education_body.file,
+                                  record.education_body.name
+                                )
+                              }
+                            >
+                              {record.education_body.name ? <LuExternalLink /> : "Not available"}
+                            </button>
+                          </Tooltip>
+                          <Tooltip
+                            title="Download Doc"
+                          >
+
+                            <button
+                              className="text-blue-600 underline"
+                              onClick={() =>
+                                downloadFiles(
+                                  record.education_body.file,
+                                  record.education_body.name
+                                )
+                              }
+                            >
+                              {record.education_body.name ? <BsDownload /> : "Not available"}
+                            </button>
+                          </Tooltip>
+                        </div>
                         <div onClick={handleEditClick}>
                           <WiCloudRefresh
                             onClick={() => {
@@ -1324,6 +1357,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                     type="text"
                     name="certification_name"
                     placeholder="Certification Name"
+                    onClick={handleEditClick}
                     value={experience.certification_name}
                     onChange={(e) => {
                       const updatedSections = [...certificationSections];
@@ -1350,17 +1384,17 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                   </label>
                   <div onClick={handleEditClick}>
                     <Datepicker
-                      day={experience?.completion_date ? experience?.completion_date.substr(0, 2) : null}
-                      month={experience?.completion_date ? experience?.completion_date.substr(3, 2) : null}
-                      year={experience?.completion_date ? experience?.completion_date.substr(6, 4) : null}
+                      day={experience?.completion_date ? experience?.completion_date.substr(8, 2) : null}
+                      month={experience?.completion_date ? experience?.completion_date.substr(5, 2) : null}
+                      year={experience?.completion_date ? experience?.completion_date.substr(0, 4) : null}
                       name="completion_date"
                       selected={moment(
                         experience.completion_date,
-                        "DD-MM-YYYY"
+                        "YYYY-MM-DD"
                       ).toDate()}
                       onChange={(date) => {
                         const formattedDate = moment(date)
-                          .format("DD-MM-YYYY")
+                          .format("YYYY-MM-DD")
                           .toLowerCase();
                         const updatedSections = [...certificationSections];
                         updatedSections[index].completion_date = formattedDate;
@@ -1385,16 +1419,16 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                   <div onClick={handleEditClick}>
                     <Datepicker
                       name="expiry_date"
-                      day={experience?.expiry_date ? experience?.expiry_date.substr(0, 2) : null}
-                      month={experience?.expiry_date ? experience?.expiry_date.substr(3, 2) : null}
-                      year={experience?.expiry_date ? experience?.expiry_date.substr(6, 4) : null}
+                      day={experience?.expiry_date ? experience?.expiry_date.substr(8, 2) : null}
+                      month={experience?.expiry_date ? experience?.expiry_date.substr(5, 2) : null}
+                      year={experience?.expiry_date ? experience?.expiry_date.substr(0, 4) : null}
                       selected={moment(
                         experience.expiry_date,
-                        "DD-MM-YYYY"
+                        "YYYY-MM-DD"
                       ).toDate()}
                       onChange={(date) => {
                         const formattedDate = moment(date)
-                          .format("DD-MM-YYYY")
+                          .format("YYYY-MM-DD")
                           .toLowerCase();
                         const updatedSections = [...certificationSections];
                         updatedSections[index].expiry_date = formattedDate;
@@ -1421,6 +1455,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                   type="text"
                   name="certification_institute"
                   placeholder="Certification Body"
+                  onClick={handleEditClick}
                   value={experience.certification_institute}
                   onChange={(e) => {
                     const updatedSections = [...certificationSections];
@@ -1442,8 +1477,45 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                     Attach Certification:
                   </h2>
                   {experience.certification_body ? (
-                    <div className="flex gap-1  items-center">
-                      <div className="opacity-50">{experience.certification_body.name}</div>
+                    <div className="flex gap-x-2 items-center">
+                      <div
+                        className={`flex items-center gap-x-3 text-base ${isEdit ? "opacity-50" : "text-gray-500"
+                          }`}
+                      >
+
+                        <Tooltip
+                          title="View Doc"
+                        >
+
+                          <button
+                            className="text-blue-600 underline"
+                            onClick={() =>
+                              downloadAttachment(
+                                experience.certification_body.file,
+                                experience.certification_body.name
+                              )
+                            }
+                          >
+                            {experience.certification_body.name ? <LuExternalLink /> : "Not available"}
+                          </button>
+                        </Tooltip>
+                        <Tooltip
+                          title="Download Doc"
+                        >
+
+                          <button
+                            className="text-blue-600 underline"
+                            onClick={() =>
+                              downloadFiles(
+                                experience.certification_body.file,
+                                experience.certification_body.name
+                              )
+                            }
+                          >
+                            {experience.certification_body.name ? <BsDownload /> : "Not available"}
+                          </button>
+                        </Tooltip>
+                      </div>
                       <div onClick={handleEditClick}>
                         <WiCloudRefresh
                           onClick={() => {
