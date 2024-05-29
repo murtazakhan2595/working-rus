@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
 // import loginBg from "../.././../assets/images/login-bg.png";
-import cover from "../.././../assets/images/cover.jfif";
+import cover from "../.././../assets/images/cover.png";
 import logo from "../.././../assets/images/tecbrix-logo.png";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -162,8 +162,8 @@ function Login() {
   }, []);
 
   return (
-    <div className="h-screen flex justify-center p-3 md:p-5 lg:p-7">
-      <div className="w-full md:w-2/3 flex flex-col min-h-full">
+    <div className="h-screen flex justify-center">
+      <div className="w-full md:w-2/3 flex flex-col min-h-full p-3 md:p-5 lg:p-7">
         <div className="flex justify-start items-start">
           <img
             src={logo}
@@ -298,8 +298,8 @@ function Login() {
         </div>
       </div>
 
-      <div className="w-0 md:w-1/3 bg-gray-500 h-full rounded-xl">
-        <img src={cover} alt="Meeting" className="object-cover w-full h-full rounded-xl" />
+      <div className="w-0 md:w-1/3 bg-gray-500 h-full">
+        <img src={cover} alt="Meeting" className="object-fill w-full h-full" />
       </div>
 
       {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}

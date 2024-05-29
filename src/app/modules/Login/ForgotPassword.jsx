@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import cover from "../.././../assets/images/cover.jfif";
+import oops from "../.././../assets/images/oops.png";
+import logo from "../.././../assets/images/tecbrix-logo.png";
+import { PiCaretCircleLeftFill } from "react-icons/pi";
+import { Link } from "react-router-dom";
 
 
 const ForgotPassword = () => {
@@ -35,8 +38,18 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="h-screen flex justify-center p-3 md:p-5 lg:p-7">
-            <div className="w-full md:w-2/3 flex flex-col min-h-full">
+        <div className="h-screen flex justify-center">
+            <div className="w-full md:w-2/3 flex flex-col min-h-full p-3 md:p-5 lg:p-7">
+                <div className="flex justify-between">
+                    <div className="flex justify-start items-start">
+                        <img
+                            src={logo}
+                            className="w-[142px] h-auto md:h-auto lg:pl-5"
+                            alt="Tecbrix logo"
+                        />
+                    </div>
+                    <Link to='/' className="flex items-center gap-x-2 font-lato font-medium text-base lg:text-[20px]">Go Back <PiCaretCircleLeftFill className="text-black text-xl lg:text-2xl" /></Link>
+                </div>
                 <div className="flex justify-center items-center flex-grow">
                     <div className="md:mx-auto w-full max-w-md lg:max-w-xl">
                         <form
@@ -99,8 +112,8 @@ const ForgotPassword = () => {
                 </div>
             </div>
 
-            <div className="w-0 md:w-1/3 h-full bg-gray-500 rounded-xl">
-            <img src={cover} alt="Meeting" className="object-cover w-full h-full rounded-xl" />
+            <div className="w-0 md:w-1/3 h-full bg-gray-500">
+                <img src={oops} alt="Meeting" className="object-cover w-full h-full" />
             </div>
         </div>
     );
