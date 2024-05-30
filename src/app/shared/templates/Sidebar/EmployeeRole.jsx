@@ -11,7 +11,6 @@ import { FaRegStar } from "react-icons/fa";
 import { MdBarChart, MdOutlineTrendingUp } from "react-icons/md";
 
 
-
 const EmployeeRole = ({ isSidebarOpen }) => {
     const activeLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 bg-[#DAEFF8] text-[#5C5E64]`;
     const normalLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64] hover:border hover:border-blue-300 text-[10px]`

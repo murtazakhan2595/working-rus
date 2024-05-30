@@ -113,7 +113,7 @@ const ForgotPassword = () => {
             </div>
 
             <div className="w-0 md:w-1/2 lg:w-[35%] bg-gray-500 h-full">
-                <img src={oops} alt="Meeting" className="object-fill w-full h-full" />
+                <img src={oops} alt="Meeting" className="object-cover w-full h-full" />
             </div>
         </div>
     );
