@@ -49,6 +49,7 @@ import MyDtr from "./app/modules/DTR/MyDtr.jsx";
 import CreateTask from "./app/modules/DTR/CreateTask.jsx";
 import ForgotPassword from "./app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "./app/modules/Login/ResetPassword.jsx";
+import ComingSoon from "./app/modules/comingSoon/ComingSoon.jsx";
 
 function App() {
 
@@ -133,6 +134,7 @@ function App() {
                     />
                   }
                 >
+                  <Route path="/coming-soon" element={<ComingSoon isSidebarOpen={isSidebarOpen} />} />
                   <Route
                     exact
                     path="/"

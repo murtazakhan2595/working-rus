@@ -80,7 +80,7 @@ const ResetPassword = () => {
 
     return (
         <div className="h-screen flex justify-center">
-            <div className="w-full md:w-2/3 flex flex-col min-h-full p-3 md:p-5 lg:p-7">
+            <div className="w-full md:w-[65%] flex flex-col min-h-full p-3 md:p-5 lg:p-7">
                 <div className="flex justify-between">
                     <div className="flex justify-start items-start">
                         <img
@@ -210,7 +210,7 @@ const ResetPassword = () => {
                 </div>
             </div>
 
-            <div className="w-0 md:w-1/2 lg:w-1/3 bg-gray-500 h-full">
+            <div className="w-0 md:w-1/2 lg:w-[35%] bg-gray-500 h-full">
                 <img src={confirm} alt="Meeting" className="object-fill w-full h-full" />
             </div>
         </div>
