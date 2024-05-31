@@ -705,7 +705,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                 <>
                   <li
                     onClick={() => handleToggleDropdown("Projects")}
-                    className={`flex group mt-2 justify-between hover:bg-[#DAEFF8] hover:text-[#0D2282] py-2 px-2 items-center gap-1 cursor-pointer ${isProjectOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
+                    className={`flex group mt-2 justify-between hover:bg-[#DAEFF8] hover:text-[#0D2282] items-center gap-1 cursor-pointer ${isProjectOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                       } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"}`}
                   >
                     <div className="flex gap-x-2">
@@ -798,7 +798,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
             <div className="">
               <li className={`${isSidebarOpen ? 'bg-white pb-2 pt-0 px-2 rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1' : ''}`}>
 
-                <div className={`flex group items-center gap-x-2 ${isSidebarOpen ? 'bg-[#F0F1F2]' : 'borderr border--[#5C5E64]'} px-2 rounded-lg cursor-pointer`}>
+                <div className={`flex group items-center gap-x-2 ${isSidebarOpen ? 'bg-[#F0F1F2]' : 'borderr border--[#5C5E64]'} p-2 rounded-lg cursor-pointer`}>
                   {profileImage ? (
                     <img
                       src={profileImage}

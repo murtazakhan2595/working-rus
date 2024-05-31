@@ -7,7 +7,8 @@ module.exports = {
       montserrat: ["Montserrat", "sans-serif"],
       sfpro: ["SF Pro Display", "sans-serif"],
       lato: ['Lato'],
-      roboto: ['Roboto']
+      roboto: ['Roboto'],
+      opensans: ['Open Sans']
     },
     extend: {
       boxShadow: {
