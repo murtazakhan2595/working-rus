@@ -251,7 +251,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                                     >
                                         <Select
                                             menuPlacement="top"
-                                            name="employee_type"
+                                            name="employee_work_type"
                                             value={workplaceTypes?.find(
                                                 (option) => option.label === departmentInfo.employee_work_type
                                             )}
@@ -286,7 +286,6 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
                                                 (option) => option.label === departmentInfo?.employee_location
                                             )}
                                             options={countryOptions}
-                                            isSearchable={false}
                                             className="focus:outline-none border-none"
                                             onChange={(selectedOption) => handleChange("employee_location", selectedOption.value)}
                                             menuPortalTarget={document.body}

@@ -318,6 +318,86 @@ const deleteEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payl
     return false;
 }
 
+// const getEmployeeAcademicRecordData = async (baseUrl, employeeid, token) => {
+//     if (employeeid) {
+//         try {
+//             const response = await axios.get(`${baseUrl}/education/?search={\"employee_id\":${employeeid}}`, {
+//                 headers: {
+//                     Authorization: `Bearer ${token}`,
+//                     "Content-Type": "application/json",
+//                 },
+//             })
+//             if (response.status === 200 && response.data && response.data.length > 0) {
+//                 const res = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${employeeid},"name":"acadmicDoc"}`, {
+//                     headers: {
+//                         Authorization: `Bearer ${token}`,
+//                         "Content-Type": "application/json",
+//                     },
+//                 })
+//                 if (res.status === 200 && res.data && res.data.length > 0) {
+//                     const academicRecord = response.data[0]
+//                     academicRecord.certificate = res.data[0]
+//                     const employeeData = getAcademicRecord(academicRecord);
+//                     console.log(employeeData);
+//                     return employeeData;
+//                 }
+//             }
+
+//         } catch (error) {
+//             console.error("Error fetching Personal Info data :", error);
+//         }
+//     }
+//     return EmployeeAcademicRecord;
+// }
+
+// const saveEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payload, academicDoc) => {
+
+//     if (employeeid) {
+//         try {
+//             if (payload.id) {
+//                 await axios.patch(`${baseUrl}/education/${payload.id}`, payload, {
+//                     headers: {
+//                         Authorization: `Bearer ${token}`,
+//                         "Content-Type": "application/json",
+//                     },
+//                 })
+//             } else {
+//                 delete payload.id
+//                 await axios.post(`${baseUrl}/education/`, payload, {
+//                     headers: {
+//                         Authorization: `Bearer ${token}`,
+//                         "Content-Type": "application/json",
+//                     },
+//                 });
+//             }
+//             if (academicDoc) {
+//                 if (payload.certificate?.hasOwnProperty("id")) {
+//                     await axios.patch(`${baseUrl}/attachment/${payload.certificate.id}`, academicDoc, {
+//                         headers: {
+//                             Authorization: `Bearer ${token}`,
+//                             "Content-Type": "application/json",
+//                         },
+//                     });
+//                 }
+//                 else {
+//                     await axios.post(`${baseUrl}/attachment/`, academicDoc, {
+//                         headers: {
+//                             Authorization: `Bearer ${token}`,
+//                             "Content-Type": "application/json",
+//                         },
+//                     });
+
+//                 }
+//             }
+
+//         } catch (error) {
+//             console.error("Error fetching Personal Info data :", error);
+//         }
+//     }
+//     return false;
+// }
+
+
 const getEmployeeAcademicRecordData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
@@ -326,69 +406,48 @@ const getEmployeeAcademicRecordData = async (baseUrl, employeeid, token) => {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            })
-            if (response.status === 200 && response.data && response.data.length > 0) {
-                const res = await axios.get(`${baseUrl}/attachment/?search={"employee_id":${employeeid},"name":"acadmicDoc"}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                })
-                if (res.status === 200 && res.data && res.data.length > 0) {
-                    const academicRecord = response.data[0]
-                    academicRecord.certificate = res.data[0]
-                    const employeeData = getAcademicRecord(academicRecord);
-                    console.log(employeeData);
-                    return employeeData;
-                }
+            });
+            if (response.status === 200) {
+                const employeeData = getAcademicRecord(response.data);
+                console.log(employeeData);
+                return employeeData;
             }
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
         }
     }
-    return EmployeeAcademicRecord;
+    return [EmployeeCertifiation];
 }
 
-const saveEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payload, academicDoc) => {
-
-    if (employeeid) {
+const saveEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payloadAttachment) => {
+    if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
         try {
-            if (payload.id) {
-                await axios.patch(`${baseUrl}/education/${payload.id}`, payload, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                })
-            } else {
-                delete payload.id
-                await axios.post(`${baseUrl}/education/`, payload, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                });
-            }
-            if (academicDoc) {
-                if (payload.certificate?.hasOwnProperty("id")) {
-                    await axios.patch(`${baseUrl}/attachment/${payload.certificate.id}`, academicDoc, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    });
-                }
-                else {
-                    await axios.post(`${baseUrl}/attachment/`, academicDoc, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    });
+            payloadAttachment.map(async (education) => {
+                education.employee_id = employeeid
+                if (education?.id) {
+                    await axios.patch(
+                        `${baseUrl}/education/${education.id}`,
+                        education,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                            },
+                        }
+                    );
 
+                } else {
+                    await axios.post(`${baseUrl}/education/`, education, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json",
+                        },
+                    })
                 }
-            }
+            });
+
+            return false;
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);

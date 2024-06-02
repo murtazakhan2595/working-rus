@@ -109,17 +109,39 @@ async function getProfessionalExperiance(data) {
     return [EmployeeProfessionalExperiance];
 }
 
+// function getAcademicRecord(data) {
+//     const academicRecord = EmployeeAcademicRecord;
+//     academicRecord.id = data.id;
+//     academicRecord.employee_id = data.employee_id;
+//     academicRecord.education_level = data?.education_level ?? '';
+//     academicRecord.program = data?.program ?? '';
+//     academicRecord.institute_name = data?.institute_name ?? '';
+//     academicRecord.edu_start_date = data?.edu_start_date;
+//     academicRecord.edu_end_date = data?.edu_end_date;
+//     academicRecord.certificate = data.certificate?.document ?? null;
+//     return academicRecord;
+// }
+
 function getAcademicRecord(data) {
-    const academicRecord = EmployeeAcademicRecord;
-    academicRecord.id = data.id;
-    academicRecord.employee_id = data.employee_id;
-    academicRecord.education_level = data?.education_level ?? '';
-    academicRecord.program = data?.program ?? '';
-    academicRecord.institute_name = data?.institute_name ?? '';
-    academicRecord.edu_start_date = data?.edu_start_date;
-    academicRecord.edu_end_date = data?.edu_end_date;
-    academicRecord.certificate = data.certificate?.document ?? null;
-    return academicRecord;
+    const educations = [];
+    if (data && data.length > 0) {
+        data.map((record) => {
+            const empCerficate = {
+                id: record.id,
+                employee_id: record.employee_id,
+                education_level: record?.education_level ?? '',
+                program: record?.program ?? '',
+                institute_name: record?.institute_name ?? '',
+                edu_start_date: record?.edu_start_date ?? '',
+                edu_end_date: record?.edu_end_date ?? '',
+                education_body: record?.education_body ?? '',
+            };
+            educations.push(empCerficate)
+        })
+
+        return educations;
+    }
+    return [EmployeeAcademicRecord];
 }
 
 function getCertifications(data) {
@@ -131,6 +153,7 @@ function getCertifications(data) {
                 employee_id: record.employee_id,
                 certification_name: record?.certification_name ?? '',
                 completion_date: record?.completion_date ?? '',
+                certification_institute: record?.certification_institute ?? '',
                 expiry_date: record?.expiry_date ?? '',
                 certification_body: record?.certification_body ?? '',
             };

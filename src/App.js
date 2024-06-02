@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useNavigate } from "react-router-dom";
 import "./index.css";
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
@@ -48,15 +47,10 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import MyDtr from "./app/modules/DTR/MyDtr.jsx";
 import CreateTask from "./app/modules/DTR/CreateTask.jsx";
+import ForgotPassword from "./app/modules/Login/ForgotPassword.jsx";
+import ResetPassword from "./app/modules/Login/ResetPassword.jsx";
+import ComingSoon from "./app/modules/comingSoon/ComingSoon.jsx";
 
-// function App({
-//   setUserProfile,
-//   userProfile,
-//   baseUrl,
-//   isLogin,
-//   setToken,
-//   setUserLogout,
-// })
 function App() {
 
   let userProfile = useSelector(state => state.user.userProfile);
@@ -68,7 +62,7 @@ function App() {
   let width = window.screen.width;
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const cookies = new Cookies();
   token = cookies.get("token");
@@ -96,6 +90,7 @@ function App() {
         handleUpdateProfile(response.data);
         dispatch(setToken(token));
         cookies.set("token", token, { path: "*" });
+        setLoading(false);
         return;
       }
     } catch (error) {
@@ -105,10 +100,10 @@ function App() {
       ) {
         // Token expired or invalid
         dispatch(setUserLogout());
-        navigate("/");
       } else {
         console.error("Error fetching data:", error);
       }
+      setLoading(false);
     }
   };
 
@@ -117,7 +112,10 @@ function App() {
       getProfile();
     }
   }, [location]);
-   console.log(!isLogin,userProfile.is_filled,userProfile.hasOwnProperty('is_filled'))
+
+  if (loading) {
+    return <PageLoader />; // Render the loader if loading is true
+  }
   return (
     <>
       {(!userProfile || !userProfile.hasOwnProperty('is_filled') || (isLogin && userProfile.is_filled === null)) && (
@@ -136,6 +134,7 @@ function App() {
                     />
                   }
                 >
+                  <Route path="/coming-soon" element={<ComingSoon isSidebarOpen={isSidebarOpen} />} />
                   <Route
                     exact
                     path="/"
@@ -389,22 +388,12 @@ function App() {
         )}
         <Route path="/apply/:id" element={<JobApplicationForm />} />
         <Route path="/job-description/:id" element={<JobDescription />} />
+        {/* forgot Password */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/confirm-password" element={<ResetPassword />} />
       </Routes>
     </>
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    baseUrl: state.user.baseUrl,
-    isLogin: state.user.isLogin,
-  };
-};
-
-// export default connect(mapStateToProps, {
-//   setUserLogout,
-//   setUserProfile,
-//   setToken,
-// })(App);
 export default App;

@@ -303,7 +303,6 @@ const Department = ({ errors, setErrors, prevstep, token,
                       isDisabled={isEdit ? false : true}
                       value={workplaceTypes.find(option => option.value === defaultData.employee_work_type)}
                       options={workplaceTypes}
-                      isSearchable={false}
                       className="focus:outline-none border-none"
                       onChange={selectedOption => handleEdit("employee_work_type", selectedOption)}
                       menuPortalTarget={document.body}
