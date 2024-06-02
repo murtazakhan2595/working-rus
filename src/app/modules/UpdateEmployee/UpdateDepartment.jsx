@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { useNavigate, useParams } from 'react-router-dom';
-import CustomLoader from '../../../common/CustomLoader';
+import CustomLoader from '../../../components/CustomLoader';
 import { BiEdit } from 'react-icons/bi';
 import moment from 'moment';
 import Datepicker from "../Dashboard/Datepicker";

@@ -11,7 +11,7 @@ import { RxCross2 } from "react-icons/rx";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
-import CustomLoader from "../../../common/CustomLoader";
+import CustomLoader from "../../../components/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { downloadAttachment } from "../../../utils/fileUtils";

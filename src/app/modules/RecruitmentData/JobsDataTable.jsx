@@ -7,7 +7,7 @@ import { IoEyeOutline } from "react-icons/io5";
 import { MdContentCopy, MdDeleteForever } from "react-icons/md";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loader from "../../../common/Loader";
+import Loader from "../../../components/Loader";
 import { CiEdit } from "react-icons/ci";
 import { jobsStatusOptions } from "../../../data/Data";
 import moment from "moment";

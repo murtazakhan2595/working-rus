@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import EmpDataHeader from "./EmpDataHeader";
-import EmpSheetLoader from "../../../common/EmpSheetLoad";
+import EmpSheetLoader from "../../../components/EmpSheetLoad";
 import { toast } from "react-toastify";
 
 

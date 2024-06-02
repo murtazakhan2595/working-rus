@@ -8,7 +8,7 @@ import moment from 'moment';
 import axios from "axios";
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
-import CustomLoader from '../../../common/CustomLoader';
+import CustomLoader from '../../../components/CustomLoader';
 import { BiEdit } from 'react-icons/bi';
 import { WiCloudRefresh } from 'react-icons/wi';
 import { RxCross2 } from 'react-icons/rx';
