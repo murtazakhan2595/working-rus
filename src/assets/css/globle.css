@@ -27,7 +27,7 @@ body {
 }
 
 .form-control {
-    height: calc(3.5rem + 2px)
+    min-height: calc(3.5rem + 2px)
 }
 
 .custom-select-input.form-control {
@@ -38,7 +38,7 @@ body {
 .custom-select-input.form-control .css-13cymwt-control,
 .custom-select-input.form-control .css-t3ipsp-control {
     padding: .45rem .75rem .3rem;
-    height: calc(3.5rem)
+    min-height: calc(3.5rem)
 }
 
 .react-datepicker-wrapper {

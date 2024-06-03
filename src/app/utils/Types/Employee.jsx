@@ -64,7 +64,7 @@ const EmployeeProfessionalExperiance = {
     exp_letter: null,
     exp_start_date: null,
     exp_end_date: null,
-    disableEndDate:false,
+    disableEndDate: false,
 }
 
 const EmployeeAcademicRecord = {
@@ -98,7 +98,7 @@ const EmployeeDepartmentInfo = {
     employee_location: null,
     employee_status: null,
     joining_date: null,
-    is_indirect_report_applicable:false,
+    is_indirect_report_applicable: true,
 }
 
 const EmployeeBankDetails = {
@@ -110,7 +110,14 @@ const EmployeeBankDetails = {
     branch_code: null,
     swift_code: null,
 }
-
+const EmployeeInformation = {
+    username: null,
+    firstname: null,
+    lastname: null,
+    email: null,
+    password: null,
+    user_role: null,
+}
 const Employee = {
     id: null,
     personalInformation: EmployeePersonalInformation,
@@ -129,4 +136,5 @@ export {
     EmployeeDepartmentInfo,
     EmployeeBankDetails,
     EmployeeCertifiation,
+    EmployeeInformation,
 }

@@ -109,19 +109,6 @@ async function getProfessionalExperiance(data) {
     return [EmployeeProfessionalExperiance];
 }
 
-// function getAcademicRecord(data) {
-//     const academicRecord = EmployeeAcademicRecord;
-//     academicRecord.id = data.id;
-//     academicRecord.employee_id = data.employee_id;
-//     academicRecord.education_level = data?.education_level ?? '';
-//     academicRecord.program = data?.program ?? '';
-//     academicRecord.institute_name = data?.institute_name ?? '';
-//     academicRecord.edu_start_date = data?.edu_start_date;
-//     academicRecord.edu_end_date = data?.edu_end_date;
-//     academicRecord.certificate = data.certificate?.document ?? null;
-//     return academicRecord;
-// }
-
 function getAcademicRecord(data) {
     const educations = [];
     if (data && data.length > 0) {
@@ -194,6 +181,42 @@ function getBankDetails(data) {
 
     return bankDetail;
 }
+function getManagerSelected(managers) {
+    debugger
+    if (managers) {
+        const matchingObjects = managers.map(obj => {
+            return obj.value;
+        });
+
+        return matchingObjects.join(', ');
+    }
+    return [];
+}
+
+function getAddEmployeePayload(data) {
+    const department = EmployeeDepartmentInfo;
+    department.department_name = data?.department_name ?? '';
+    department.department_position = data?.department_position ?? '';
+    department.direct_report = data?.direct_report ? getManagerSelected(data.direct_report) : '';
+    department.indirect_report = data?.indirect_report ? getManagerSelected(data.indirect_report) : '';
+    department.department_manager = data?.department_manager ?? '';
+    department.employee_type = data?.employee_type ?? '';
+    department.employee_status = data?.employee_status ?? '';
+    department.employee_work_type = data?.employee_work_type ?? '';
+    department.employee_location = data?.employee_location ?? '';
+    department.joining_date = data?.joining_date ? moment(data.joining_date).format('YYYY-MM-DD') : null;
+    department.is_indirect_report_applicable = data.indirect_report ? true : false;
+
+    const employeeInformation = {
+        username: data.username,
+        firstname: data.firstname,
+        lastname: data.lastname,
+        email: data.email,
+        password: data.password,
+        user_role: data.user_role,
+    }
+    return { ...employeeInformation, ...department };
+}
 
 
 export {
@@ -206,4 +229,5 @@ export {
     getDepartmentInfo,
     getBankDetails,
     getCertifications,
+    getAddEmployeePayload,
 }

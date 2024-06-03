@@ -138,6 +138,13 @@ export const HeadOfDepartment = [
   { label: 'Prakash PV - VP Sales', value: 'Prakash' },
 ];
 
+export const UserRoles = [
+  { value: 1, label: "Super Admin" },
+  { value: 2, label: "Manager" },
+  { value: 3, label: "HR" },
+  { value: 4, label: "Employee" },
+];
+
 
 export const employeeStatus = [
   { label: 'Active', value: 'Active' },

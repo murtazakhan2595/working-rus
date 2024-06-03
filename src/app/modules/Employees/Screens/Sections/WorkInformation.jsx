@@ -3,7 +3,7 @@ import Select from "react-select";
 import moment from 'moment';
 import axios from "axios";
 import { connect } from 'react-redux';
-import { HeadOfDepartment, department, employeeStatus, jobRoles, workplaceTypes } from '../../../../../data/Data';
+import { HeadOfDepartment, department, employeeStatus, jobRoles, workplaceTypes, UserRoles } from '../../../../../data/Data';
 import { getAllCountries } from 'countries-and-timezones';
 import {
     Card,
@@ -19,7 +19,7 @@ import {
     Label,
     FormGroup, Input, InputGroup, InputGroupText
 } from 'reactstrap';
-import { SelectComponent, SelectMultiInputComponent, DateInput } from '../../../../../components/form-control'
+import { SelectComponent, SelectMultiInputComponent, DateInput, TextInput } from '../../../../../components/form-control'
 
 const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
     value: countryCode,
@@ -91,12 +91,51 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
                         error={errors.department_name}
                         touch={touched.department_name}
                         value={values.department_name}
-                        label={'Department Name'}
+                        label={'Department'}
                         onChange={(field, value) => {
                             onChange(field, value);
                         }}
                     />
                 </FormGroup>
+            </Col>
+            <Col md={6}>
+                <SelectComponent
+                    name={'employee_location'}
+                    options={countryOptions}
+                    error={errors.employee_location}
+                    touch={touched.employee_location}
+                    value={values.employee_location}
+                    label={'Employee Location'}
+                    onChange={(field, value) => {
+                        onChange(field, value);
+                    }}
+                />
+            </Col>
+            <Col md={6}>
+                <TextInput
+                    name={'department_position'}
+                    error={errors.department_position}
+                    touch={touched.department_position}
+                    value={values.department_position}
+                    label={'Position'}
+                    required={true}
+                    onChange={(field, value) => {
+                        onChange(field, value);
+                    }}
+                />
+            </Col>
+            <Col md={6}>
+                <SelectComponent
+                    name={'user_role'}
+                    options={UserRoles}
+                    error={errors.user_role}
+                    touch={touched.user_role}
+                    value={values.user_role}
+                    label={'Role'}
+                    onChange={(field, value) => {
+                        onChange(field, value);
+                    }}
+                />
             </Col>
             <Col md="6">
                 <FormGroup>
@@ -117,7 +156,7 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
             <Col md="6">
                 <FormGroup>
                     <SelectComponent
-                        name={'employee_work_type'}
+                        name={'employee_status'}
                         options={employeeStatus}
                         error={errors.employee_status}
                         touch={touched.employee_status}
@@ -142,19 +181,7 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
                     }}
                 />
             </Col>
-            <Col md={6}>
-                <SelectComponent
-                    name={'employee_location'}
-                    options={countryOptions}
-                    error={errors.employee_location}
-                    touch={touched.employee_location}
-                    value={values.employee_location}
-                    label={'Employee Location'}
-                    onChange={(field, value) => {
-                        onChange(field, value);
-                    }}
-                />
-            </Col>
+
             <Col md={6}>
                 <SelectMultiInputComponent
                     name={'direct_report'}
@@ -164,7 +191,6 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
                     value={values.direct_report}
                     label={'Direct Report'}
                     onChange={(field, value) => {
-                        debugger
                         onChange(field, value);
                     }}
                 />
@@ -178,6 +204,19 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
                     touch={touched.indirect_report}
                     value={values.indirect_report}
                     label={'Indirect Report'}
+                    onChange={(field, value) => {
+                        onChange(field, value);
+                    }}
+                />
+            </Col>
+            <Col md={6}>
+                <SelectComponent
+                    name={'department_manager'}
+                    options={HeadOfDepartmentOptions}
+                    error={errors.department_manager}
+                    touch={touched.department_manager}
+                    value={values.department_manager}
+                    label={'Department Head'}
                     onChange={(field, value) => {
                         onChange(field, value);
                     }}

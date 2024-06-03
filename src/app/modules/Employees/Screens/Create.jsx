@@ -25,27 +25,23 @@ import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import WorkInformation from './Sections/WorkInformation.jsx'
-import { EmployeeDepartmentInfo } from '../../../utils/Types/Employee.jsx'
+import { EmployeeDepartmentInfo, EmployeeInformation } from '../../../utils/Types/Employee.jsx'
+import { getAddEmployeePayload } from '../../../utils/MappingObjects/mapEmployeeData.jsx'
+import moment from "moment";
 
+function getManagerSelected(managers) {
+    debugger
+    if (managers) {
+        const matchingObjects = managers.map(obj => {
+            return obj.value;
+        });
 
-const userRoles = [
-    { value: 1, label: "Super Admin" },
-    { value: 2, label: "Manager" },
-    { value: 3, label: "HR" },
-    { value: 4, label: "Employee" },
-];
+        return matchingObjects.join(', ');
+    }
+    return [];
+}
 
 const CreateEmployee = ({ token, baseUrl }) => {
-
-
-    const initData = {
-        username: "",
-        username: "",
-        lastname: "",
-        email: "",
-        password: "",
-        userrole: null,
-    };
     const formRef = React.createRef();
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -53,7 +49,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
     };
 
 
-    const [formData, setFormData] = useState({ ...initData, ...EmployeeDepartmentInfo });
+    const [formData, setFormData] = useState({ ...EmployeeInformation, ...EmployeeDepartmentInfo });
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [validationError, setValidationError] = useState("");
     const [isUserNameInputFocused, setIsUserNameInputFocused] = useState(false);
@@ -66,35 +62,23 @@ const CreateEmployee = ({ token, baseUrl }) => {
 
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (data) => {
         debugger
-        e.preventDefault();
-
         // Check if an API call is already in progress
         if (isApiCallInProgress) {
             return;
         }
-
-        setIsApiCallInProgress(true);
         setIsLoading(true);
-
-        const data = {
-            username: formData.username,
-            first_name: formData.username,
-            last_name: formData.lastname,
-            email: formData.email,
-            password: formData.password,
-            user_role: formData.userrole.value,
-        };
-
+        const empInfopayload = getAddEmployeePayload(data);
         try {
-            const response = await axios.post(`${baseUrl}/emp/add`, data, {
+            const response = await axios.post(`${baseUrl}/emp/add`, empInfopayload, {
                 headers,
             });
 
             if (response.status === 201) {
                 setShowSuccessModal(true);
                 setRefreshComponent(!refreshComponent);
+
             }
         } catch (error) {
             if (
@@ -115,8 +99,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
             setIsApiCallInProgress(false);
             setIsLoading(false);
         }
-
-        setFormData(initData);
+        setFormData(data);
     };
 
     useEffect(() => {
@@ -448,7 +431,6 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                             errors={props.errors}
                                                             touched={props.touched}
                                                             onChange={(field, value) => {
-                                                                debugger
                                                                 props.setFieldValue(field, value);
                                                                 //  props.handleChange(field)(value);
                                                             }}

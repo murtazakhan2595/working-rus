@@ -36,7 +36,6 @@ const SelectMultiInputComponent = ({ name, value, error, touch, onChange, option
                 options={options ? options : []}
                 value={value ? value : ''}
                 onChange={(selectedOption) => {
-                    debugger
                     onChange(name, selectedOption)
                 }}
                 placeholder={label}
@@ -66,7 +65,6 @@ const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => 
                     selected={value}
                     dropdownMode="select"
                     onChange={(value) => {
-                        debugger
                         onChange(name, value)
                     }}
                     placeholderText={label}
@@ -83,8 +81,42 @@ const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => 
         </>
     );
 };
+
+const TextInput = ({ name, value, error, touch, onChange, label, disabled, required }) => {
+    return (
+        <>
+            <FormGroup floating>
+                <Input
+                    type="text"
+                    maxLength="100"
+                    id={name}
+                    name={name}
+                    autoComplete="Off"
+                    placeholder={'Enter' + label}
+                    value={value}
+                    className={error && touch ? 'is-invalid' : ''}
+                    onChange={(option) => {
+                        debugger
+                        const value=option.target.value;
+                        onChange(name, value);
+                    }}
+                />
+                <Label htmlFor="address">
+                    {required && <span className="text-danger">* </span>}{label}
+                </Label>
+
+                {error && touch && (
+                    <div className="invalid-feedback">
+                        {error}
+                    </div>
+                )}
+            </FormGroup>
+        </>
+    );
+};
 export {
     SelectComponent,
     SelectMultiInputComponent,
     DateInput,
+    TextInput,
 }
