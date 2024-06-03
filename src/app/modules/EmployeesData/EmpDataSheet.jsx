@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
-import { BsArrowLeftShort, BsArrowRightShort, BsThreeDots } from "react-icons/bs";
+import {
+  BsArrowLeftShort,
+  BsArrowRightShort,
+  BsThreeDots,
+} from "react-icons/bs";
 import { Link } from "react-router-dom";
 import EmpDataHeader from "./EmpDataHeader";
 import EmpSheetLoader from "../../../components/EmpSheetLoad";
 import { toast } from "react-toastify";
-import { IoIosArrowDropdownCircle } from "react-icons/io";
-import tie from '../../../assets/images/tie.png';
-import profile from '../../../assets/images/profile.png';
-import active from '../../../assets/images/active.png';
+import { IoIosSearch } from "react-icons/io";
+import tie from "../../../assets/images/tie.png";
+import profile from "../../../assets/images/profile.png";
+import active from "../../../assets/images/active.png";
+import Select from "react-select";
+import { department, dropdownStyles } from "../../../data/Data";
 
 const userRoles = [
   { value: 3, label: "HR" },
@@ -19,10 +25,10 @@ const userRoles = [
 ];
 
 const actions = [
-  { value: 'user', label: 'View' },
-  { value: 'edit-employee', label: 'Edit Employee' },
-  { value: 'profile', label: 'Edit Profile' },
-  { value: 'delete', label: 'Delete' }
+  { value: "user", label: "View" },
+  { value: "edit-employee", label: "Edit Employee" },
+  { value: "profile", label: "Edit Profile" },
+  { value: "delete", label: "Delete" },
 ];
 
 const EmpDataSheet = ({ baseUrl, token }) => {
@@ -43,10 +49,13 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   const fetchUsers = async (page = 1) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${baseUrl}/emp/?page=${page}&page_size=${itemsPerPage}`, {
-        headers
-      });
-      
+      const response = await axios.get(
+        `${baseUrl}/emp/?page=${page}&page_size=${itemsPerPage}`,
+        {
+          headers,
+        }
+      );
+
       setUsers(response.data); // Assuming response.data contains the user data directly
       setLoading(false);
     } catch (error) {
@@ -67,7 +76,9 @@ const EmpDataSheet = ({ baseUrl, token }) => {
       return (
         userIdWithPrefix.toLowerCase().includes(lowerCaseFilter) ||
         user.username.toLowerCase().includes(lowerCaseFilter) ||
-        `${user.first_name} ${user.last_name}`.toLowerCase().includes(lowerCaseFilter) ||
+        `${user.first_name} ${user.last_name}`
+          .toLowerCase()
+          .includes(lowerCaseFilter) ||
         user.email.toLowerCase().includes(lowerCaseFilter)
       );
     });
@@ -77,15 +88,23 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   const handleDelete = async (employeeId) => {
     setLoading(true);
     try {
-      const response = await axios.delete(`${baseUrl}/emp/${employeeId}`, { headers });
+      const response = await axios.delete(`${baseUrl}/emp/${employeeId}`, {
+        headers,
+      });
       if (response.status === 204) {
-        toast.success("User deleted successfully", { position: toast.POSITION.TOP_RIGHT, autoClose: 1000 });
+        toast.success("User deleted successfully", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1000,
+        });
         fetchUsers(currentPage);
       } else {
         toast.error(`Unexpected response status: ${response.status}`);
       }
     } catch (error) {
-      toast.error(error.message, { position: toast.POSITION.TOP_RIGHT, autoClose: 1000 });
+      toast.error(error.message, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
     } finally {
       setLoading(false);
     }
@@ -106,133 +125,185 @@ const EmpDataSheet = ({ baseUrl, token }) => {
   return (
     <div className="flex w-full flex-col bg-[#F0F1F2] h-[100vh]">
       {/* <EmpDataHeader title="Employee Data Sheet" onSearch={(term) => setFilter(term)} /> */}
-  <div className="px-6">
+      <div className="px-6">
         {/* header part */}
         <div className="flex md:justify-between md:px-9 md:py-7">
-        <h2 className="font-lato text-2xl font-bold text-baseGray leading-normal">Profile Management</h2>
-        <button className="flex items-center gap-x-2 text-white text-base font-semibold leading-6 bg-black rounded-lg font-opensans md:px-4">
-          <div className="text-xl">+</div>
-          <div>Add Employee</div>
-        </button>
+          <h2 className="font-lato text-2xl font-bold text-baseGray leading-normal">
+            Profile Management
+          </h2>
+          <button className="flex items-center gap-x-2 text-white text-base font-semibold leading-6 bg-black rounded-lg font-opensans md:px-4">
+            <div className="text-xl">+</div>
+            <div>Add Employee</div>
+          </button>
+        </div>
+        {/* blocks */}
+        <div className="flex items-center gap-x-6">
+          <div className="md:w-[32%] bg-[#FAFBFC] rounded-[20px] p-4 flex gap-x-[30px]">
+            <img src={profile} alt="tie icon" />
+            <div>
+              <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">
+                Total Employees
+              </h4>
+              <h2 className="font-lato text-2xl text-[#323333] font-normal leading-normal">
+                42
+              </h2>
+            </div>
+          </div>
+          <div className="md:w-[32%] bg-[#FAFBFC] rounded-[20px] p-4 flex gap-x-[30px]">
+            <img src={tie} alt="tie icon" />
+            <div>
+              <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">
+                Mangers only
+              </h4>
+              <h2 className="font-lato text-2xl text-[#323333] font-normal leading-normal">
+                11
+              </h2>
+            </div>
+          </div>
+          <div className="md:w-[32%] bg-[#FAFBFC] rounded-[20px] p-4 flex gap-x-[30px]">
+            <img src={active} alt="tie icon" />
+            <div>
+              <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">
+                Active Employees
+              </h4>
+              <h2 className="font-lato text-2xl text-[#323333] font-normal leading-normal">
+                48
+              </h2>
+            </div>
+          </div>
+        </div>
       </div>
-      {/* blocks */}
-      <div className="flex items-center gap-x-6">
-        <div className="md:w-[32%] bg-[#FAFBFC] rounded-[20px] p-4 flex gap-x-[30px]">
-          <img src={profile} alt="tie icon" />
-          <div>
-            <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">Total Employees</h4>
-            <h2 className="font-lato text-2xl text-[#323333] font-normal leading-normal">42</h2>
+      {/* Table */}
+      <div className="bg-white rounded-lg m-5 p-4">
+        {/* filters */}
+        <div className="flex items-center gap-x-3 mb-4">
+          <div className="relative">
+            <IoIosSearch className="absolute top-3 left-3 text-baseGray" />
+            <input
+              type="search"
+              placeholder="Search by ID and Name"
+              className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-10 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
+            />
           </div>
+          <Select
+            options={department}
+            placeholder="Department"
+            className="w-[20%] shadow-input rounded-lg"
+            styles={dropdownStyles}
+          />
+          <Select
+            options={department}
+            placeholder="Department"
+            className="w-[20%] shadow-input rounded-lg"
+            styles={dropdownStyles}
+          />
+          <Select
+            options={department}
+            placeholder="Department"
+            className="w-[20%] shadow-input rounded-lg"
+            styles={dropdownStyles}
+          />
         </div>
-        <div className="md:w-[32%] bg-[#FAFBFC] rounded-[20px] p-4 flex gap-x-[30px]">
-          <img src={tie} alt="tie icon" />
-          <div>
-            <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">Mangers only</h4>
-            <h2 className="font-lato text-2xl text-[#323333] font-normal leading-normal">11</h2>
-          </div>
-        </div>
-        <div className="md:w-[32%] bg-[#FAFBFC] rounded-[20px] p-4 flex gap-x-[30px]">
-          <img src={active}  alt="tie icon" />
-          <div>
-            <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">Active Employees</h4>
-            <h2 className="font-lato text-2xl text-[#323333] font-normal leading-normal">48</h2>
-          </div>
-        </div>
-      </div>
-  </div>
-        {/* Table */}
-      <div className="md:p-4 overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] roundScroll">
-      <div className="overflow-hidden rounded-t-[10px] bg-[#EBECED]">
-  <table className="min-w-full">
-    <thead>
-      <tr className="text-[#323333] font-lato text-base font-normal leading-5">
-        <th className="px-3 py-2 text-left">ID</th>
-        <th className="px-3 py-2 text-left">Name</th>
-        <th className="px-3 py-2 text-left">Role</th>
-        <th className="px-3 py-2 text-left">User Name</th>
-        <th className="px-3 py-2 text-left">Phone no/Email</th>
-        <th className="px-3 py-2 text-left">Status</th>
-        <th className="px-3 py-2 text-center">Action</th>
-      </tr>
-    </thead>
-    {loading ? (
-      <EmpSheetLoader />
-    ) : (
-      <tbody className="bg-white text-gray-500">
-        {filteredUsers.map((user) => (
-          <React.Fragment key={user.id}>
-            <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
-              <td className="px-3 font-lato text-base text-baseGray font-normal leading-5 py-1 text-left">TXB-{user.id.toString().padStart(4, "0")}</td>
-              <td className="px-3 py-1 text-left flex items-center gap-x-[10px]">
-              <div className="bg-[#BE24A5] text-[#FAFBFC] flex font-lato font-semibold text-lg items-center justify-center rounded-full w-10 h-10">
-    {user.first_name.toUpperCase().charAt(0)}{user.last_name.toUpperCase().charAt(0)}
-  </div>
-<div className="flex flex-col">
-<div className="text-base font-bold leading-normal text-[#323333] font-lato">{`${user.first_name} ${user.last_name}`}</div>
-                <div className="text-base font-lato">{`${user.department_position}`}</div>
-</div>
-              </td>
-              <td className="px-3 py-1 text-left">{Array.isArray(userRoles) &&
-                  userRoles.some((role) => role.value === user.user_role)
-                  ? userRoles.find((role) => role.value === user.user_role).label
-                  : ""}</td>
-              <td className="px-3 py-1 text-left">{user.username}</td>
-              <td className="px-3 py-1 text-left">
-              <div className="flex flex-col">
-                <div className="text-base font-lato">{`${user.mobile_no}`}</div>
-                <div className="text-base font-lato">{`${user.email}`}</div>
-</div>
-              </td>
-              <td className="px-3 py-1 text-left text-sm font-lato">{user.employee_status}</td>
+        <div className="overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[45vh] roundScroll">
+          <div className="overflow-hidden rounded-t-[10px] bg-[#EBECED]">
+            <table className="min-w-full">
+              <thead>
+                <tr className="text-[#323333] font-lato text-base font-normal leading-5">
+                  <th className="px-3 py-2 text-left">ID</th>
+                  <th className="px-3 py-2 text-left">Name</th>
+                  <th className="px-3 py-2 text-left">Role</th>
+                  <th className="px-3 py-2 text-left">User Name</th>
+                  <th className="px-3 py-2 text-left">Phone no/Email</th>
+                  <th className="px-3 py-2 text-left">Status</th>
+                  <th className="px-3 py-2 text-center">Action</th>
+                </tr>
+              </thead>
+              {loading ? (
+                <EmpSheetLoader />
+              ) : (
+                <tbody className="bg-white text-gray-500">
+                  {filteredUsers.map((user) => (
+                    <React.Fragment key={user.id}>
+                      <tr className="whitespace-nowrap border-b-2 hover:bg-gray-100">
+                        <td className="px-3 font-lato text-base text-baseGray font-normal leading-5 py-2 text-left">
+                          TXB-{user.id.toString().padStart(4, "0")}
+                        </td>
+                        <td className="px-3 py-2 text-left flex items-center gap-x-[10px]">
+                          <div className="bg-[#BE24A5] text-[#FAFBFC] flex font-lato font-semibold text-lg items-center justify-center rounded-full w-10 h-10">
+                            {user.first_name.toUpperCase().charAt(0)}
+                            {user.last_name.toUpperCase().charAt(0)}
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="text-base font-bold leading-normal text-[#323333] font-lato">{`${user.first_name} ${user.last_name}`}</div>
+                            <div className="text-base font-lato">{`${user.department_position}`}</div>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2 text-left">
+                          {Array.isArray(userRoles) &&
+                          userRoles.some(
+                            (role) => role.value === user.user_role
+                          )
+                            ? userRoles.find(
+                                (role) => role.value === user.user_role
+                              ).label
+                            : ""}
+                        </td>
+                        <td className="px-3 py-2 text-left">{user.username}</td>
+                        <td className="px-3 py-2 text-left">
+                          <div className="flex flex-col">
+                            <div className="text-base font-lato">{`${user.mobile_no}`}</div>
+                            <div className="text-base font-lato">{`${user.email}`}</div>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2 text-left text-sm font-lato">
+                          {user.employee_status}
+                        </td>
 
-              <td className="px-4 py-1 text-right gap-x-2 relative">
-                {/* <button
-                  onClick={() => toggleDropdown(user.id)}
-                  className="border-2 text-baseBlue border-blue-500 px-2 py-[2px] rounded flex gap-x-3 items-center"
-                >
-                  Actions
-                  <IoIosArrowDropdownCircle />
-                </button> */}
-                <div className="w-6 h-6  flex justify-center cursor-pointer items-center rounded-full bg-[#F0F1F2] hover:bg-[#dbeff8]">
-                <BsThreeDots onClick={() => toggleDropdown(user.id)} className="" />
-                </div>
-                {openDropdownRow === user.id && (
-                  <div className="absolute right-12 top-[34px] bg-white border text-baseBlue font-semibold border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-md">
-                    <Link
-                      to={`/profile/${user.id}`}
-                      className='block px-2 py-1 text-sm border border-gray-300 hover:bg-blue-100'
-                    >
-                      Edit Profile
-                    </Link>
-                    <Link
-                      to={`/edit-employee/${user.id}`}
-                      className='block px-2 py-1 text-sm border border-gray-300 hover:bg-blue-100'
-                    >
-                      Edit Employee
-                    </Link>
-                    <Link
-                      to={`/user/${user.id}`}
-                      className='block px-2 py-1 text-sm border border-gray-300 hover:bg-blue-100'
-                    >
-                      View Employee
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(user.id)}
-                      className='block px-2 py-1 text-sm cursor-pointer border border-gray-300 hover:bg-blue-100'
-                    >
-                      Delete Employee
-                    </button>
-                  </div>
-                )}
-              </td>
-            </tr>
-          </React.Fragment>
-        ))}
-      </tbody>
-    )}
-  </table>
-</div>
+                        <td className="px-4 py-2 text-right gap-x-2 relative">
+                          <div className="w-6 h-6 flex justify-center cursor-pointer items-center rounded-full bg-[#F0F1F2] hover:bg-[#dbeff8]">
+                            <BsThreeDots
+                              onClick={() => toggleDropdown(user.id)}
+                              className=""
+                            />
+                          </div>
+                          {openDropdownRow === user.id && (
+                            <div className="absolute right-16 font-lato text-[12px] w-36 text-left top-[32px] bg-white text-baseGray font-normal border-gray-300 z-10 pt-2 pb-2 rounded-xl shadow-bottom">
+                              <Link
+                                to={`/profile/${user.id}`}
+                                className="block px-4 py-2 hover:bg-[#f0f1f2]"
+                              >
+                                Edit Profile
+                              </Link>
+                              <Link
+                                to={`/edit-employee/${user.id}`}
+                                className="block px-4 py-2 hover:bg-[#f0f1f2]"
+                              >
+                                Edit Employee
+                              </Link>
+                              <Link
+                                to={`/user/${user.id}`}
+                                className="block px-4 py-2 hover:bg-[#f0f1f2]"
+                              >
+                                View Employee
+                              </Link>
 
+                              <button
+                                onClick={() => handleDelete(user.id)}
+                                className="block text-left w-36 px-4 py-2 cursor-pointer hover:bg-[#f0f1f2]"
+                              >
+                                Delete Employee
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              )}
+            </table>
+          </div>
+        </div>
       </div>
 
       {/* Pagination Controls */}
@@ -240,14 +311,18 @@ const EmpDataSheet = ({ baseUrl, token }) => {
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className={`text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md ${currentPage === 1 ? 'hidden' : ''}`}
+          className={`text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md ${
+            currentPage === 1 ? "hidden" : ""
+          }`}
         >
           <BsArrowLeftShort className="text-white text-2xl" title="Previous" />
         </button>
         <button
           onClick={handleNextPage}
           disabled={users.length < itemsPerPage}
-          className={`text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md ${users.length < itemsPerPage ? 'hidden' : ''}`}
+          className={`text-base bg-gray-500 flex items-center gap-x-2 hover:bg-[#259ED8] rounded-md ${
+            users.length < itemsPerPage ? "hidden" : ""
+          }`}
         >
           <BsArrowRightShort className="text-white text-2xl" title="Next" />
         </button>
@@ -265,8 +340,6 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps)(EmpDataSheet);
 
-
-
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 // import { connect } from "react-redux";
@@ -275,7 +348,6 @@ export default connect(mapStateToProps)(EmpDataSheet);
 // import EmpDataHeader from "./EmpDataHeader";
 // import EmpSheetLoader from "../../../components/EmpSheetLoad";
 // import { toast } from "react-toastify";
-
 
 // import { IoIosArrowDropdownCircle } from "react-icons/io";
 
@@ -326,7 +398,6 @@ export default connect(mapStateToProps)(EmpDataSheet);
 //     fetchUsers();
 //   }, [baseUrl, token]);
 
-
 //   const handleDelete = async (employeeId) => {
 //     try {
 //       setLoading(true);
@@ -352,7 +423,6 @@ export default connect(mapStateToProps)(EmpDataSheet);
 //       setLoading(false);
 //     }
 //   };
-  
 
 //   // Filter users locally based on search input
 //   useEffect(() => {

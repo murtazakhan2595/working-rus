@@ -17,7 +17,7 @@ import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
 import './assets/css/globle.css'
 import axios from "axios";
 import Cookies from "universal-cookie";
-import PageLoader from './components/PageLoader.jsx';
+import PageLoader from './common/PageLoader.jsx';
 import {
   setUserLogout,
   setUserProfile,
@@ -51,13 +51,14 @@ import CreateTask from "./app/modules/DTR/CreateTask.jsx";
 import ForgotPassword from "./app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "./app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "./app/modules/comingSoon/ComingSoon.jsx";
+import Welcome from "./app/modules/Employees/Welcome.jsx";
+import OnboardComplete from "./app/modules/Employees/OnboardComplete.jsx";
 
 function App() {
-
-  let userProfile = useSelector(state => state.user.userProfile);
-  let isLogin = useSelector(state => state.user.isLogin);
-  let token = useSelector(state => state.user.token);
-  let baseUrl = useSelector(state => state.user.baseUrl);
+  let userProfile = useSelector((state) => state.user.userProfile);
+  let isLogin = useSelector((state) => state.user.isLogin);
+  let token = useSelector((state) => state.user.token);
+  let baseUrl = useSelector((state) => state.user.baseUrl);
   let dispatch = useDispatch();
 
   let width = window.screen.width;
@@ -119,9 +120,9 @@ function App() {
   }
   return (
     <>
-      {(!userProfile || !userProfile.hasOwnProperty('is_filled') || (isLogin && userProfile.is_filled === null)) && (
-        <PageLoader />
-      )}
+      {(!userProfile ||
+        !userProfile.hasOwnProperty("is_filled") ||
+        (isLogin && userProfile.is_filled === null)) && <PageLoader />}
       <Routes>
         {isLogin && (
           <>
@@ -135,7 +136,10 @@ function App() {
                     />
                   }
                 >
-                  <Route path="/coming-soon" element={<ComingSoon isSidebarOpen={isSidebarOpen} />} />
+                  <Route
+                    path="/coming-soon"
+                    element={<ComingSoon isSidebarOpen={isSidebarOpen} />}
+                  />
                   <Route
                     exact
                     path="/"
@@ -162,11 +166,7 @@ function App() {
                         path="/employees"
                         element={<EmpDataSheet />}
                       />
-                      <Route
-                        exact
-                        path="/test"
-                        element={<Test />}
-                      />
+                      <Route exact path="/test" element={<Test />} />
                       <Route
                         exact
                         path="/add-employee"
@@ -199,7 +199,9 @@ function App() {
                       <Route
                         path="/leave-list"
                         element={
-                          <LeaveApplicationListHR isSidebarOpen={isSidebarOpen} />
+                          <LeaveApplicationListHR
+                            isSidebarOpen={isSidebarOpen}
+                          />
                         }
                       />
                       <Route
@@ -214,7 +216,9 @@ function App() {
                       />
                       <Route
                         path="/leave-application-status"
-                        element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <ApplicationStatus isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-request-hr/:id"
@@ -228,14 +232,8 @@ function App() {
                           <LeaveCalender isSidebarOpen={isSidebarOpen} />
                         }
                       />
-                      <Route
-                        path="/create-task"
-                        element={<CreateTask />}
-                      />
-                      <Route
-                        path="/my-dtr"
-                        element={<MyDtr />}
-                      />
+                      <Route path="/create-task" element={<CreateTask />} />
+                      <Route path="/my-dtr" element={<MyDtr />} />
                     </>
                   )}
                   {(userProfile.role === 2 || userProfile.role === 4) && (
@@ -248,7 +246,9 @@ function App() {
                       <Route
                         path="/leave-list"
                         element={
-                          <LeaveApplicationListManager isSidebarOpen={isSidebarOpen} />
+                          <LeaveApplicationListManager
+                            isSidebarOpen={isSidebarOpen}
+                          />
                         }
                       />
                       <Route
@@ -257,15 +257,21 @@ function App() {
                       />
                       <Route
                         path="/leave-balance-manager"
-                        element={<LeaveBalanceManager isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveBalanceManager isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-balance-employee"
-                        element={<LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-application-status"
-                        element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <ApplicationStatus isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-request/:id"
@@ -273,14 +279,8 @@ function App() {
                           <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
                         }
                       />
-                      <Route
-                        path="/my-dtr"
-                        element={<MyDtr />}
-                      />
-                      <Route
-                        path="/create-task"
-                        element={<CreateTask />}
-                      />
+                      <Route path="/my-dtr" element={<MyDtr />} />
+                      <Route path="/create-task" element={<CreateTask />} />
                     </>
                   )}
                   {userProfile.role === 3 && (
@@ -315,7 +315,9 @@ function App() {
                       <Route
                         path="/leave-list"
                         element={
-                          <LeaveApplicationListHR isSidebarOpen={isSidebarOpen} />
+                          <LeaveApplicationListHR
+                            isSidebarOpen={isSidebarOpen}
+                          />
                         }
                       />
                       <Route
@@ -324,11 +326,15 @@ function App() {
                       />
                       <Route
                         path="/leave-balance-hr"
-                        element={<LeaveBalanceHR isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveBalanceHR isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-application-status"
-                        element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <ApplicationStatus isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-calender"
@@ -348,10 +354,7 @@ function App() {
                           <LeaveRequestHR isSidebarOpen={isSidebarOpen} />
                         }
                       />
-                      <Route
-                        path="/create-task"
-                        element={<CreateTask />}
-                      />
+                      <Route path="/create-task" element={<CreateTask />} />
                     </>
                   )}
                 </Route>
@@ -376,7 +379,11 @@ function App() {
               </>
             )}
             {userProfile.is_filled === false && (
-              <Route exact path="/" element={<EmpForm />} />
+              <>
+                <Route exact path="/welcome" element={<Welcome />} />
+                <Route exact path="/onboard-completion" element={<OnboardComplete />} />
+                <Route exact path="/" element={<EmpForm />} />
+              </>
             )}
             <Route path="*" element={<Err404 />} />
           </>
