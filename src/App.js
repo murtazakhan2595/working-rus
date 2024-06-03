@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "./index.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -13,10 +14,10 @@ import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
 import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
-
+import './assets/css/globle.css'
 import axios from "axios";
 import Cookies from "universal-cookie";
-import PageLoader from './common/PageLoader.jsx';
+import PageLoader from './components/PageLoader.jsx';
 import {
   setUserLogout,
   setUserProfile,
@@ -24,7 +25,7 @@ import {
 } from "./state/slices/UserSlice.js";
 import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/modules/Employees/EmpForm";
-import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
+import CreateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
 import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
@@ -169,7 +170,7 @@ function App() {
                       <Route
                         exact
                         path="/add-employee"
-                        element={<EmpDataForm />}
+                        element={<CreateEmployee />}
                       />
                       <Route
                         path="/edit-employee/:id"
@@ -292,7 +293,7 @@ function App() {
                       <Route
                         exact
                         path="/add-employee"
-                        element={<EmpDataForm />}
+                        element={<CreateEmployee />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
 

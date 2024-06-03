@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import Button from './Button';
 import { useState, useEffect } from 'react';
-import CustomLoader from '../../../common/CustomLoader';
+import CustomLoader from '../../../components/CustomLoader';
 import Select from "react-select";
 import moment from 'moment';
 import Datepicker from '../Dashboard/Datepicker';
