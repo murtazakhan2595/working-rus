@@ -10,7 +10,7 @@ import Board from "./app/modules/Board";
 import RecruitmentForm from "./app/modules/RecruitmentData/RecruitmentForm.jsx";
 import ApplicantsDataTable from "./app/modules/RecruitmentData/ApplicantsDataTable.jsx";
 import JobsDataTable from "./app/modules/RecruitmentData/JobsDataTable.jsx";
-import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
+import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
 import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
