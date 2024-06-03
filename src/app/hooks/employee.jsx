@@ -6,12 +6,11 @@ import {
     getCertifications,
 } from '../utils/MappingObjects/mapEmployeeData'
 import {
-    EmployeeCVDetails, Employee, EmployeePersonalInformation, EmployeeVisaDetails, EmployeeProfessionalExperiance, EmployeeAcademicRecord,
+    EmployeeCVDetails, Employee, EmployeePersonalInformation, EmployeeVisaDetails, EmployeeProfessionalExperiance,
     EmployeeDepartmentInfo,
     EmployeeBankDetails,
     EmployeeCertifiation,
 } from '../utils/Types/Employee'
-import moment from "moment";
 
 
 const getEmployeeData = async (baseUrl, employeeid, headers) => {
@@ -99,7 +98,7 @@ const getEmployeeVisaDetailsFiles = async (baseUrl, id, token) => {
 const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            const response = await axios.get(`${baseUrl}/employeevisadetail/?search={\"employee_id\":${employeeid}}`, {
+            const response = await axios.get(`${baseUrl}/employeevisadetail/?search={"employee_id":${employeeid}}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -233,7 +232,7 @@ const saveEmployeeCVDetailData = async (baseUrl, employeeid, token, payload) => 
 const getEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            const response = await axios.get(`${baseUrl}/experience/?search={\"employee_id\":${employeeid}}`, {
+            const response = await axios.get(`${baseUrl}/experience/?search={"employee_id":${employeeid}}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -401,7 +400,7 @@ const deleteEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payl
 const getEmployeeAcademicRecordData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            const response = await axios.get(`${baseUrl}/education/?search={\"employee_id\":${employeeid}}`, {
+            const response = await axios.get(`${baseUrl}/education/?search={"employee_id":${employeeid}}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -459,7 +458,7 @@ const saveEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payloa
 const getEmployeeCerficationData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
-            const response = await axios.get(`${baseUrl}/certification/?search={\"employee_id\":${employeeid}}`, {
+            const response = await axios.get(`${baseUrl}/certification/?search={"employee_id":${employeeid}}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",

@@ -12,8 +12,9 @@ function mapEmployeeData(data) {
     employee.id = data.id;
     employee.personalInformation = getPersonalInfo(data);
     employee.visaDetails = getVisaDetails(data)
+    employee.bankDetails = getBankDetails(data)
+    employee.department = getDepartmentInfo(data)
     employee.academicRecord = getAcademicRecord(data);
-    employee.cv = getCVDetails(data);
     employee.professionalExperiance = getProfessionalExperiance(data);
 
     console.log(employee)
