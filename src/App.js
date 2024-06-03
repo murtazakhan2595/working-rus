@@ -17,7 +17,7 @@ import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
 import './assets/css/globle.css'
 import axios from "axios";
 import Cookies from "universal-cookie";
-import PageLoader from './common/PageLoader.jsx';
+import PageLoader from './components/PageLoader.jsx';
 import {
   setUserLogout,
   setUserProfile,
