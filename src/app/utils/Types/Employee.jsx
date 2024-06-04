@@ -2,23 +2,12 @@
 const EmployeePersonalInformation = {
     first_name: null,
     last_name: null,
-    father_name: null,
-    mother_name: null,
-    country_code: null,
     mobile_no: null,
     date_of_birth: null,
     marital_status: null,
     nationality: null,
-    email: null,
-    work_email: null,
-    current_address: null,
-    residential_address: null,
+    other_email: null,
     nic: null,
-    emergency_first_name: null,
-    emergency_last_name: null,
-    emergency_country_code: null,
-    emergency_phone_no: null,
-    emergency_relation: null,
     profile_picture: null,
 
 }
@@ -112,9 +101,9 @@ const EmployeeBankDetails = {
 }
 const EmployeeInformation = {
     username: null,
-    firstname: null,
-    lastname: null,
-    email: null,
+    first_name: null,
+    last_name: null,
+    other_email: null,
     password: null,
     user_role: null,
 }

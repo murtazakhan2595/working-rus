@@ -22,28 +22,18 @@ function mapEmployeeData(data) {
 }
 
 function getPersonalInfo(data) {
-    return {
+    const personalInfo = {
         first_name: data.first_name,
         last_name: data.last_name,
-        father_name: data.father_name,
-        mother_name: data.mother_name,
-        country_code: data.country_code,
         mobile_no: data.mobile_no,
-        date_of_birth: data.date_of_birth,
+        date_of_birth: data.date_of_birth ? moment(data.date_of_birth).format('YYYY-MM-DD') : '',
         marital_status: data.marital_status,
         nationality: data.nationality,
-        email: data.other_email,
-        work_email: data.work_email,
-        current_address: data.current_address,
-        residential_address: data.residential_address,
+        other_email: data.other_email,
         nic: data.nic,
-        emergency_first_name: data.emergency_first_name,
-        emergency_last_name: data.emergency_last_name,
-        emergency_country_code: data.emergency_country_code,
-        emergency_phone_no: data.emergency_phone_no,
-        emergency_relation: data.emergency_relation,
         profile_picture: data.profile_picture,
     }
+    return personalInfo;
 }
 
 function getVisaDetails(data) {
@@ -210,9 +200,9 @@ function getAddEmployeePayload(data) {
 
     const employeeInformation = {
         username: data.username,
-        firstname: data.firstname,
-        lastname: data.lastname,
-        email: data.email,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        other_email: data.other_email,
         password: data.password,
         user_role: data.user_role,
     }

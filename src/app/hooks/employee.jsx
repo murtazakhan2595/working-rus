@@ -36,9 +36,11 @@ const getEmployeePersonalInfoData = async (baseUrl, employeeid, token) => {
                 },
             });
             // Assuming response.data is the personal info object
-            const employeeData = getPersonalInfo(response.data);
-            console.log(employeeData);
-            return employeeData;
+            if (response.status === 200) {
+                const employeeData = getPersonalInfo(response.data);
+                console.log(employeeData);
+                return employeeData;
+            }
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
         }
@@ -49,14 +51,14 @@ const getEmployeePersonalInfoData = async (baseUrl, employeeid, token) => {
 const saveEmployeePersonalInfoData = async (baseUrl, employeeid, token, personalInfo) => {
     if (employeeid) {
         try {
-            await axios.patch(`${baseUrl}/emp/${employeeid}`, personalInfo, {
+            const response = await axios.patch(`${baseUrl}/emp/${employeeid}`, personalInfo, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }).then((response) => {
-                return response.status;
-            });
+            })
+            if (response.status === 200)
+                return true;
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
