@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 
 const ResetPassword = () => {
   const { uid, token } = useParams();
+  console.log("UID:", uid);
+  console.log("Token:", token);
   const baseUrl = useSelector((state) => state.user.baseUrl);
 
   const initialData = { password: "", retype_password: "" };
