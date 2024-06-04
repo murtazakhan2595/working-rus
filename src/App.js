@@ -37,7 +37,7 @@ import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestMana
 import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
 import EditDataForm from "./app/modules/EmployeesData/EditDataForm.jsx";
 import ViewEmpProfile from "./app/modules/Settings/Profile";
-import Profile from "./app/modules/Employees/Screens/Profile";
+import {EditEmployeeProfile} from "./app/modules/Employees/Screens/Profile";
 import Test from "./app/modules/Profile/Test.jsx";
 import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
 import LeaveBalanceManager from "./app/modules/LeaveApplication/LeaveBalanceManager.jsx";
@@ -56,7 +56,6 @@ import Welcome from "./app/modules/Employees/Screens/AddProfile/Welcome.jsx";
 import OnboardComplete from "./app/modules/Employees/Screens/AddProfile/OnboardComplete.jsx";
 import PersonalDetails from "./app/modules/Employees/Screens/AddProfile/PersonalInfo.jsx";
 import ContactInfo from "./app/modules/Employees/Screens/AddProfile/ContactInfo.jsx";
-import BankInfo from "./app/modules/Employees/Screens/AddProfile/BankInfo.jsx";
 import ExperienceInfo from "./app/modules/Employees/Screens/AddProfile/ExperienceInfo.jsx";
 import EducationInfo from "./app/modules/Employees/Screens/AddProfile/EducationInfo.jsx";
 import CertificationsInfo from "./app/modules/Employees/Screens/AddProfile/CertificationsInfo.jsx";
@@ -164,7 +163,7 @@ function App() {
                     element={<Board isSidebarOpen={isSidebarOpen} />}
                   />
                   {/* <Route path="/profile" element={<UpdateEmpForm />} /> */}
-                  <Route path="/profile/:id" element={<UpdateEmpForm />} />
+                  <Route path="/profile/:id" element={<EditEmployeeProfile />} />
                   <Route path="/profile" element={<ViewEmpProfile />} />
                   <Route path="/project/:id" element={<BoardList />} />
                   {userProfile.role === 1 && (
@@ -182,7 +181,7 @@ function App() {
                       />
                       <Route
                         path="/edit-employee/:id"
-                        element={<Profile />}
+                        element={<EditDataForm />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
 
@@ -397,7 +396,6 @@ function App() {
                 <Route exact path="/" element={<EmpForm />} />
                 <Route exact path="/personal-details" element={<PersonalDetails />} />
                 <Route exact path="/contact-information" element={<ContactInfo />} />
-                <Route exact path="/bank-details" element={<BankInfo />} />
                 <Route exact path="/experience-details" element={<ExperienceInfo />} />
                 <Route exact path="/education-details" element={<EducationInfo />} />
                 <Route exact path="/certifications-details" element={<CertificationsInfo />} />

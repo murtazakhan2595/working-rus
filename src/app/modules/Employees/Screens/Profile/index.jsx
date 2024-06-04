@@ -1,25 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import BankInformation from './BankInformation';
 import PersonalInformation from './PersonalInformation';
-
-const EditDataForm = () => {
-    const { id } = useParams(); // Get the ID from URL params
-    const [currentTab, setCurrentTab] = useState(1);
+import EditEmployeeProfile from './EditEmployeeProfile'
 
 
-    return (
-        <>
-            {currentTab === 1 &&
-                <PersonalInformation
-                    employeeId={id}
-                    nextstep={() => {
-                        setCurrentTab(2)
-                    }}
-                    isEditMode={true}
-                />
-            }
-        </>
-    );
-};
-
-export default EditDataForm;
+export{
+    BankInformation,
+    PersonalInformation,
+    EditEmployeeProfile,
+}
