@@ -1,31 +1,20 @@
 import React, { useState, useEffect } from "react";
 import {
-    Card,
     CardHeader,
     CardBody,
     Row,
     Col,
-    ButtonGroup,
-    ButtonDropdown,
-    DropdownToggle,
     Button,
     Form,
     Label,
-    FormGroup, Input, InputGroup, InputGroupText
+    FormGroup,
 } from 'reactstrap';
 import { Formik } from 'formik';
-import { Link } from "react-router-dom";
-import moment from "moment";
-import { getAllCountries } from 'countries-and-timezones';
-import Select from "react-select";
-import { countryCodes } from "../../../../../data/CountryCode.js";
 import { connect } from "react-redux";
 import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../../../hooks/employee.jsx';
 import { getBankDetails } from '../../../../utils/MappingObjects/mapEmployeeData.jsx'
-import EmpDataHeader from "../Sections/Header.jsx";
-import { SelectComponent, ImageInput, DateInput, TextInput, PhoneInput, EmailInput } from '../../../../../components/form-control.jsx';
+import { TextInput, } from '../../../../../components/form-control.jsx';
 import PageLoader from '../../../../../components/PageLoader.jsx';
-import { maritalStatus } from '../../../../../data/Data.js';
 
 const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
 

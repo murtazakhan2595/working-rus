@@ -1,152 +1,222 @@
-import Joi from 'joi';
-import Button from './Button';
-import { useState, useEffect } from 'react';
-
+import React, { useState, useEffect } from "react";
+import {
+    Card,
+    CardHeader,
+    CardBody,
+    Row,
+    Col,
+    ButtonGroup,
+    ButtonDropdown,
+    DropdownToggle,
+    Button,
+    Form,
+    Label,
+    FormGroup, Input, InputGroup, InputGroupText
+} from 'reactstrap';
+import { Formik } from 'formik';
+import { Link } from "react-router-dom";
+import moment from "moment";
+import { getAllCountries } from 'countries-and-timezones';
+import Select from "react-select";
+import { countryCodes } from "../../../../../data/CountryCode.js";
 import { connect } from "react-redux";
-import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../hooks/employee';
-import { EmployeeBankDetails } from '../../utils/Types/Employee'
-import { validationBankDetailsFormSchema } from '../../utils/FormSchema/employeeFormSchema'
+import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../../../hooks/employee.jsx';
+import { getBankDetails } from '../../../../utils/MappingObjects/mapEmployeeData.jsx'
+import EmpDataHeader from "../Sections/Header.jsx";
+import { SelectComponent, ImageInput, DateInput, TextInput, PhoneInput, EmailInput } from '../../../../../components/form-control.jsx';
+import PageLoader from '../../../../../components/PageLoader.jsx';
+import { maritalStatus } from '../../../../../data/Data.js';
 
-const ExperienceInformation = ({ errors, setErrors, prevstep, nextstep, userProfile, baseUrl, token }) => {
 
-    const [bankInfo, setBankInfo] = useState({})
+const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
+
+    const formRef = React.createRef();
+    const [bankInfo, setBankInfo] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+
+
     useEffect(() => {
-        getEmployeeBankDetailsData(baseUrl, userProfile?.id, token).then(response => {
+        getEmployeeBankDetailsData(baseUrl, employeeId, token).then(response => {
             setBankInfo(response);
+            setIsLoading(false)
         }).catch(error => {
             console.log(error);
         });
-    }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
+    }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
-    const handleChange = (name, value) => {
-        setBankInfo({ ...bankInfo, [name]: value })
-        setErrors({ ...errors, [name]: null });
-    };
-
-    const handleNextStep = () => {
-        const { error } = validationBankDetailsFormSchema.validate(
-            {
-                bank_name: bankInfo.bank_name,
-                account_title: bankInfo.account_title,
-                account_number: bankInfo.account_number,
-                branch_address: bankInfo.branch_address,
-                branch_code: bankInfo.branch_code,
-                swift_code: bankInfo.swift_code,
-            },
-            { abortEarly: false }
-        );
-
-        if (error) {
-            const validationErrors = {};
-            error.details.forEach((detail) => {
-                validationErrors[detail.path[0]] = detail.message;;
-            });
-            if (bankInfo.account_iban) {
-                if (bankInfo.account_iban.length < 10)
-                    validationErrors.account_iban = "IBAN number must be at least 10 characters";
-            }
-            setErrors(validationErrors);
-        } else {
-            if (bankInfo && !bankInfo?.account_iban) {
-                delete bankInfo.account_iban;
-            }
-            if (bankInfo && !bankInfo?.swift_code) {
-                delete bankInfo.swift_code;
-            }
-            saveEmployeeBankDetailsData(baseUrl, userProfile?.id, token, bankInfo);
+    const handleSubmit = (data) => {
+        debugger
+        const bandetails = getBankDetails(data);
+        const response = saveEmployeeBankDetailsData(baseUrl, employeeId, token, bandetails);
+        if (response && isEditMode)
             nextstep();
-        }
     };
 
     return (
-        <div>
-            <div className='bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10'>
-                <h2 className='text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2'>Bank Details:</h2>
-                <div className='flex flex-col md:flex-row lg:gap-x-36'>
-                    <div className='order-2 md:order-1 md:w-[50%]'>
-                        <div className="flex flex-col">
-                            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="bank" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Bank Name:</label>
-                                    <input type="text" value={bankInfo.bank_name} name="bank_name" id="" placeholder='Bank Name Here'
-                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                    />
-                                    {errors.bank_name && <div className="text-red-500 text-sm">{errors.bank_name}</div>}
+        <>
+            <div className="screen">
+                <Row>
+                    <Col lg={8} className="mx-auto">
+                        <CardHeader>
+                            <Row>
+                                <Col lg={12}>
+                                    <h4 className="ml-2 fw-700">Banking Details</h4>
+                                </Col>
+                            </Row>
+                        </CardHeader>
+                        <CardBody>
+                            {isLoading ?
+                                <Row>
+                                    <Col lg={12}>
+                                        <PageLoader />
+                                    </Col>
+                                </Row>
+                                :
+                                <Row>
+                                    <Col lg={12}>
+                                        <Formik
+                                            initialValues={bankInfo}
+                                            ref={formRef}
+                                            onSubmit={(values, { resetForm }) => {
+                                                handleSubmit(values, resetForm);
+                                            }}
+                                            validate={(values) => {
+                                                const errors = {};
+                                                for (let field in values) {
+                                                    if (!values[`${field}`]) {
+                                                        errors[`${field}`] = 'This field is required';
+                                                    }
+                                                }
+                                                console.log(values, errors)
 
-                                </div>
-                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="account_title" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Account Title:</label>
-                                    <input type="text" value={bankInfo.account_title} name="account_title" id="" placeholder='Account Title Here'
-                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                    />
-                                    {errors.account_title && <div className="text-red-500 text-sm">{errors.account_title}</div>}
-                                </div>
-                            </div>
-                            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="account_number" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Account Number:</label>
-                                    <input type="number" value={bankInfo.account_number} name="account_number" id="" placeholder='Account Number Here'
-                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                    />
-                                    {errors.account_number && <div className="text-red-500 text-sm">{errors.account_number}</div>}
-                                </div>
-                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                                    <label htmlFor="account_iban" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>IBAN Number:</label>
-                                    <input type="text" value={bankInfo.account_iban} name="account_iban" id="" placeholder='IBAN Here'
-                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                    />
-                                    {errors.account_iban && <div className="text-red-500 text-sm">{errors.account_iban}</div>}
-                                </div>
-                            </div>
-                            <div className='flex flex-col mt-2 md:mt-5'>
-                                <label htmlFor="branch_address" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Branch Address:</label>
-                                <input type="text" value={bankInfo.branch_address} name="branch_address" id="" placeholder='Branch Address Here'
-                                    className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                    onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                />
-                                {errors.branch_address && <div className="text-red-500 text-sm">{errors.branch_address}</div>}
-                            </div>
-                            <div className='flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12'>
-                                <div className='flex flex-col  mt-2 md:mt-5 w-1/2 lg:w-1/3'>
-                                    <label htmlFor="branch_code" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Branch Code:</label>
-                                    <input type="number" value={bankInfo.branch_code} name="branch_code" id="" placeholder='Branch Code Here'
-                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                    />
-                                    {errors.branch_code && <div className="text-red-500 text-sm">{errors.branch_code}</div>}
-                                </div>
-                                <div className='flex flex-col mt-2 md:mt-5 w-1/2 lg:w-1/3'>
-                                    <label htmlFor="swift_code" className='font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1'>Swift Code:</label>
-                                    <input type="text" value={bankInfo.swift_code} name="swift_code" id="" placeholder='Swift Code Here'
-                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
-                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                    />
-                                    {errors.swift_code && <div className="text-red-500 text-sm">{errors.swift_code}</div>}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                                return errors;
+                                            }}
 
-                <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40 lg:mb-40">
-                    <Button onClick={prevstep} text={'Previous'} />
-                    <Button onClick={handleNextStep} text={'Next'} />
-                </div>
-            </div >
-        </div>
-    )
-}
+                                        >
+                                            {(props) => (
+                                                <Form onSubmit={props.handleSubmit}>
+                                                    <Row>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'account_iban'}
+                                                                error={props.errors.account_iban}
+                                                                touch={props.touched.account_iban}
+                                                                value={props.values.account_iban}
+                                                                label={'IBAN Number'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'bank_name'}
+                                                                error={props.errors.bank_name}
+                                                                touch={props.touched.bank_name}
+                                                                value={props.values.bank_name}
+                                                                label={'Branch Name'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'account_title'}
+                                                                error={props.errors.account_title}
+                                                                touch={props.touched.account_title}
+                                                                value={props.values.account_title}
+                                                                label={'Account Title'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'branch_code'}
+                                                                error={props.errors.branch_code}
+                                                                touch={props.touched.branch_code}
+                                                                value={props.values.branch_code}
+                                                                label={'Branch Code'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                                regEx={/^[0-9]+$/}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'account_number'}
+                                                                error={props.errors.account_number}
+                                                                touch={props.touched.account_number}
+                                                                value={props.values.account_number}
+                                                                label={'Account Number'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                                regEx={/^[0-9]+$/}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'swift_code'}
+                                                                error={props.errors.swift_code}
+                                                                touch={props.touched.swift_code}
+                                                                value={props.values.swift_code}
+                                                                label={'Swift Code'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                                regEx={/^[0-9]+$/}
+                                                            />
+                                                        </Col>
+                                                        <Col md="12">
+                                                            <TextInput
+                                                                name={'branch_address'}
+                                                                error={props.errors.branch_address}
+                                                                touch={props.touched.branch_address}
+                                                                value={props.values.branch_address}
+                                                                label={'Branch Address'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                            />
+                                                        </Col>
+
+                                                    </Row>
+                                                    <Row>
+                                                        <Col md="12">
+                                                            <FormGroup className="text-right">
+                                                                <Button
+                                                                    type="submit"
+                                                                    className="btn btn-dark"
+                                                                >
+                                                                    Next
+                                                                </Button>
+                                                            </FormGroup>
+                                                        </Col>
+                                                    </Row>
+                                                </Form>
+                                            )}
+                                        </Formik>
+                                    </Col>
+                                </Row>
+                            }
+                        </CardBody>
+                    </Col>
+                </Row>
+            </div>
+        </>
+    );
+};
 
 
 
