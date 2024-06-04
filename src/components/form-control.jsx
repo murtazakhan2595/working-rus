@@ -25,7 +25,7 @@ const SelectComponent = ({
                 className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
                     }`}
                 options={options ? options : []}
-                value={options ? options.find((option) => option.label === value) : ""}
+                value={options ? options.find((option) => option.value === value) : ""}
                 onChange={(selectedOption) => onChange(name, selectedOption.value)}
                 placeholder={label}
             />
@@ -74,8 +74,8 @@ const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => 
                     id={name}
                     isDisabled={disabled}
                     className={`form-control ${error && touch ? 'is-invalid' : ''}`}
-                    value={value ? moment(value) : ''}
-                    selected={value}
+                    value={value ? new Date(moment(value)) : ''}
+                    selected={value ? new Date(moment(value)) : new Date()}
                     dropdownMode="select"
                     onChange={(value) => {
                         onChange(name, value)
@@ -86,7 +86,7 @@ const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => 
                     dateFormat="dd-MM-yyyy"
                 />
                 {error && touch && (
-                    <div className="invalid-feedback">
+                    <div className="invalid-feedback d-block">
                         {error}
                     </div>
                 )}
@@ -144,7 +144,7 @@ const PhoneInput = ({ name, value, error, touch, onChange, label, disabled, requ
                     name={name}
                     autoComplete="Off"
                     placeholder={'Enter' + label}
-                    value={value}
+                    value={value ? value : ''}
                     className={error && touch ? 'is-invalid' : ''}
                     onChange={(option) => {
                         const regExTelephone = /^[0-9-+]+$/;
@@ -278,6 +278,91 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
         </>
     );
 };
+const FileInput = ({ value, error, setImageError, onChange, touch, name }) => {
+    return (
+        <>
+            <div className="flex flex-col bg-[#F5F5FA] text-center" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
+                <h4>Upload your Experience Letter or drag it here</h4>
+                <label
+                    htmlFor={name}
+                    className="cursor-pointer opacity-70 rounded-lg text-input"
+                >
+                    <input
+                        id={name}
+                        type="file"
+                        name={name}
+                        accept=".pdf"
+                        max-size="104857600"
+                        onChange={(e) => {
+                            //     let exp_letter = e.target.files[0];
+                            //    // const updatedSections = [...experienceSections];
+                            //     const fileData = { name: exp_letter.name };
+                            //     if (exp_letter) {
+                            //       const reader = new FileReader();
+                            //       reader.onload = (e) => {
+                            //         let i = index;
+                            //         updatedSections[i].exp_letter = {
+                            //           name: fileData.name,
+                            //           exp_letter: e.target.result,
+                            //         };
+                            //         //setExperienceSections(updatedSections);
+                            //       };
+                            //       reader.readAsDataURL(exp_letter);
+                            //       //setErrors(`file_${index}`);
+                            //     }
+                        }}
+                        style={{ position: 'relative' }}
+                    />
+                </label>
+                <br />
+            </div>
+            {error && touch && (
+                <div className="text-red-500 text-sm">
+                    {error}
+                </div>
+            )}
+        </>
+    );
+};
+
+const TextAreaInput = ({ name, value, error, touch, onChange, label, disabled, required, regEx, maxLength }) => {
+    return (
+        <>
+            <FormGroup floating>
+                <Input
+                    type="textarea"
+                    maxLength={maxLength ?? '100'}
+                    id={name}
+                    name={name}
+                    autoComplete="Off"
+                    placeholder={'Enter' + label}
+                    value={value}
+                    rows={5}
+                    disabled={disabled}
+                    className={error && touch ? 'is-invalid' : ''}
+                    onChange={(option) => {
+                        const value = option.target.value;
+                        if (regEx) {
+                            if (!value || regEx.test(value))
+                                onChange(name, value);
+                        } else {
+                            onChange(name, value);
+                        }
+                    }}
+                />
+                <Label htmlFor="address">
+                    {required && <span className="text-danger">* </span>}{label}
+                </Label>
+
+                {error && touch && (
+                    <div className="invalid-feedback">
+                        {error}
+                    </div>
+                )}
+            </FormGroup>
+        </>
+    );
+};
 export {
 
     SelectComponent,
@@ -288,4 +373,6 @@ export {
     EmailInput,
     ImageInput,
     CustomButton,
+    TextAreaInput,
+    FileInput,
 }

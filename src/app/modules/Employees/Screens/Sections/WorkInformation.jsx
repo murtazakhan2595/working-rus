@@ -84,19 +84,17 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
     return (
         <>
             <Col md="6">
-                <FormGroup>
-                    <SelectComponent
-                        name={'department_name'}
-                        options={department}
-                        error={errors.department_name}
-                        touch={touched.department_name}
-                        value={values.department_name}
-                        label={'Department'}
-                        onChange={(field, value) => {
-                            onChange(field, value);
-                        }}
-                    />
-                </FormGroup>
+                <SelectComponent
+                    name={'department_name'}
+                    options={department}
+                    error={errors.department_name}
+                    touch={touched.department_name}
+                    value={values.department_name}
+                    label={'Department'}
+                    onChange={(field, value) => {
+                        onChange(field, value);
+                    }}
+                />
             </Col>
             <Col md={6}>
                 <SelectComponent

@@ -5,7 +5,7 @@ import { BankInformation, PersonalInformation, ExperienceInformation } from "./i
 
 const EditEmployeeProfile = () => {
     const { id } = useParams(); // Get the ID from URL params
-    const [currentTab, setCurrentTab] = useState(1);
+    const [currentTab, setCurrentTab] = useState(4);
 
 
     return (
@@ -28,14 +28,12 @@ const EditEmployeeProfile = () => {
                     isEditMode={true}
                 />
             }
-            {currentTab === 3 &&
                 <ExperienceInformation
                     employeeId={id}
                     nextstep={() => {
                         setCurrentTab(currentTab + 1)
                     }}
                     isEditMode={true} />
-            }
         </>
     );
 };

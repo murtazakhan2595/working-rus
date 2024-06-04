@@ -33,7 +33,6 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) =
     }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
     const handleSubmit = (data) => {
-        debugger
         const bandetails = getBankDetails(data);
         const response = saveEmployeeBankDetailsData(baseUrl, employeeId, token, bandetails);
         if (response && isEditMode)

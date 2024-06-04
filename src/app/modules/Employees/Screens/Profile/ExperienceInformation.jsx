@@ -1,43 +1,33 @@
 import React, { useState, useEffect } from "react";
 import {
-    Card,
     CardHeader,
     CardBody,
     Row,
     Col,
-    ButtonGroup,
-    ButtonDropdown,
-    DropdownToggle,
     Button,
     Form,
-    Label,
-    FormGroup, Input, InputGroup, InputGroupText
+    FormGroup,
 } from 'reactstrap';
 import { Formik } from 'formik';
 import { Link } from "react-router-dom";
-import moment from "moment";
-import { getAllCountries } from 'countries-and-timezones';
-import Select from "react-select";
-import { countryCodes } from "../../../../../data/CountryCode.js";
 import { connect } from "react-redux";
-import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../../../hooks/employee.jsx';
+import { getEmployeeProfessionalExperianceData, saveEmployeeProfessionalExperianceData } from '../../../../hooks/employee.jsx';
 import { getBankDetails } from '../../../../utils/MappingObjects/mapEmployeeData.jsx'
-import EmpDataHeader from "../Sections/Header.jsx";
-import { SelectComponent, ImageInput, DateInput, TextInput, PhoneInput, EmailInput } from '../../../../../components/form-control.jsx';
 import PageLoader from '../../../../../components/PageLoader.jsx';
-import { maritalStatus } from '../../../../../data/Data.js';
+import Experience from '../Sections/ExperianceForm.jsx'
+import { EmployeeProfessionalExperiance } from '../../../../utils/Types/Employee'
 
 
 const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
 
     const formRef = React.createRef();
-    const [bankInfo, setBankInfo] = useState({});
+    const [experiences, setExperiences] = useState({});
     const [isLoading, setIsLoading] = useState(true);
 
 
     useEffect(() => {
-        getEmployeeBankDetailsData(baseUrl, employeeId, token).then(response => {
-            setBankInfo(response);
+        getEmployeeProfessionalExperianceData(baseUrl, employeeId, token).then(response => {
+            setExperiences(response);
             setIsLoading(false)
         }).catch(error => {
             console.log(error);
@@ -45,9 +35,7 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
     }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
     const handleSubmit = (data) => {
-        debugger
-        const bandetails = getBankDetails(data);
-        const response = saveEmployeeBankDetailsData(baseUrl, employeeId, token, bandetails);
+        const response = saveEmployeeProfessionalExperianceData(baseUrl, employeeId, token,  data.experiences);
         if (response && isEditMode)
             nextstep();
     };
@@ -75,20 +63,28 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
                                 <Row>
                                     <Col lg={12}>
                                         <Formik
-                                            initialValues={bankInfo}
+                                            initialValues={{ experiences: experiences }}
                                             ref={formRef}
                                             onSubmit={(values, { resetForm }) => {
                                                 handleSubmit(values, resetForm);
                                             }}
                                             validate={(values) => {
                                                 const errors = {};
-                                                for (let field in values) {
-                                                    if (!values[`${field}`]) {
-                                                        errors[`${field}`] = 'This field is required';
-                                                    }
+                                                console.log(values, errors, 'Error');
+                                                if (values.experiences) {
+                                                    values.experiences.forEach((value, index) => {
+                                                        const experienceErrors = {};
+                                                        Object.keys(value).forEach((field) => {
+                                                            if (!value[field] && field !== 'disableEndDate') {
+                                                                experienceErrors[field] = 'This field is required';
+                                                            }
+                                                        });
+                                                        if (Object.keys(experienceErrors).length > 0) {
+                                                            errors.experiences = errors.experiences || [];
+                                                            errors.experiences[index] = experienceErrors;
+                                                        }
+                                                    });
                                                 }
-                                                console.log(values, errors)
-
                                                 return errors;
                                             }}
 
@@ -96,102 +92,38 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
                                             {(props) => (
                                                 <Form onSubmit={props.handleSubmit}>
                                                     <Row>
-                                                        <Col md="6">
-                                                            <TextInput
-                                                                name={'account_iban'}
-                                                                error={props.errors.account_iban}
-                                                                touch={props.touched.account_iban}
-                                                                value={props.values.account_iban}
-                                                                label={'IBAN Number'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <TextInput
-                                                                name={'bank_name'}
-                                                                error={props.errors.bank_name}
-                                                                touch={props.touched.bank_name}
-                                                                value={props.values.bank_name}
-                                                                label={'Branch Name'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <TextInput
-                                                                name={'account_title'}
-                                                                error={props.errors.account_title}
-                                                                touch={props.touched.account_title}
-                                                                value={props.values.account_title}
-                                                                label={'Account Title'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <TextInput
-                                                                name={'branch_code'}
-                                                                error={props.errors.branch_code}
-                                                                touch={props.touched.branch_code}
-                                                                value={props.values.branch_code}
-                                                                label={'Branch Code'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                                regEx={/^[0-9]+$/}
-                                                            />
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <TextInput
-                                                                name={'account_number'}
-                                                                error={props.errors.account_number}
-                                                                touch={props.touched.account_number}
-                                                                value={props.values.account_number}
-                                                                label={'Account Number'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                                regEx={/^[0-9]+$/}
-                                                            />
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <TextInput
-                                                                name={'swift_code'}
-                                                                error={props.errors.swift_code}
-                                                                touch={props.touched.swift_code}
-                                                                value={props.values.swift_code}
-                                                                label={'Swift Code'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                                regEx={/^[0-9]+$/}
-                                                            />
-                                                        </Col>
-                                                        <Col md="12">
-                                                            <TextInput
-                                                                name={'branch_address'}
-                                                                error={props.errors.branch_address}
-                                                                touch={props.touched.branch_address}
-                                                                value={props.values.branch_address}
-                                                                label={'Branch Address'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
+                                                        {props.values?.experiences && props.values.experiences.length > 0 && props.values.experiences.map((experience, index) => (
+                                                            <>
+                                                                <Col md="12">
+                                                                    <h5 className="fw-700 mb-3 mt-4">Experience {index + 1}</h5>
+                                                                </Col>
+                                                                <Experience
+                                                                    values={experience}
+                                                                    errors={props.errors?.experiences ? props.errors?.experiences[index] : {}}
+                                                                    touched={props.touched?.experiences ? props.touched?.experiences[index] : {}}
+                                                                    onChange={(field, value) => {
+                                                                        props.setFieldValue(`experiences[${index}].${field}`, value);
+                                                                    }}
+                                                                />
+                                                            </>
+                                                        ))}
+                                                        <Col md="12" className="text-left">
+                                                            <Link
+                                                                type="button"
+                                                                className="btn btn-outline-dark"
+                                                                onClick={() => {
+                                                                    debugger
+                                                                    const length = props.values?.experiences?.length
+                                                                    const index = length ? length : 0;
 
+                                                                    props.setFieldValue(`experiences[${index}]`, EmployeeProfessionalExperiance);
+                                                                }}
+                                                            >
+                                                                + Add Another
+                                                            </Link>
+                                                        </Col>
                                                     </Row>
+
                                                     <Row>
                                                         <Col md="12">
                                                             <FormGroup className="text-right">
