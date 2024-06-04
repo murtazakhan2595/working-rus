@@ -1,59 +1,71 @@
-import React from 'react';
-import Select from 'react-select';
-import { FormGroup, Label, Input } from 'reactstrap';
+import React from "react";
+import Select from "react-select";
+import { FormGroup, Label, Input, Button } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 import upload from "../assets/images/upload.png";
 
 const SelectComponent = ({
-    name, value, error, touch, onChange, options, label, disabled }) => {
-    return (
-        <FormGroup>
-            <Select
-                name={name}
-                isDisabled={disabled}
-                id={name}
-                className={`custom-select-input form-control ${error && touch ? 'is-invalid' : ''}`}
-                options={options ? options : []}
-                value={options ? options.find(option => option.label === value) : ''}
-                onChange={selectedOption => onChange(name, selectedOption.value)}
-                placeholder={label}
-            />
-            {error && touch && (
-                <div className="invalid-feedback">
-                    {error}
-                </div>
-            )}
-        </FormGroup>
-    );
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  options,
+  label,
+  disabled,
+}) => {
+  return (
+    <FormGroup>
+      <Select
+        name={name}
+        isDisabled={disabled}
+        id={name}
+        className={`custom-select-input form-control ${
+          error && touch ? "is-invalid" : ""
+        }`}
+        options={options ? options : []}
+        value={options ? options.find((option) => option.label === value) : ""}
+        onChange={(selectedOption) => onChange(name, selectedOption.value)}
+        placeholder={label}
+      />
+      {error && touch && <div className="invalid-feedback">{error}</div>}
+    </FormGroup>
+  );
 };
-const SelectMultiInputComponent = ({ name, value, error, touch, onChange, options, label, disabled }) => {
-    return (
-        <FormGroup>
-            <Select
-                name={name}
-                id={name}
-                isDisabled={disabled}
-                className={`custom-select-input form-control ${error && touch ? 'is-invalid' : ''}`}
-                options={options ? options : []}
-                value={value ? value : ''}
-                onChange={(selectedOption) => {
-                    onChange(name, selectedOption)
-                }}
-                placeholder={label}
-                isMulti={true}
-                noOptionsMessage={() => "No such employee found"}
-            />
-            {error && touch && (
-                <div className="invalid-feedback">
-                    {error}
-                </div>
-            )}
-        </FormGroup>
-    );
+const SelectMultiInputComponent = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  options,
+  label,
+  disabled,
+}) => {
+  return (
+    <FormGroup>
+      <Select
+        name={name}
+        id={name}
+        isDisabled={disabled}
+        className={`custom-select-input form-control ${
+          error && touch ? "is-invalid" : ""
+        }`}
+        options={options ? options : []}
+        value={value ? value : ""}
+        onChange={(selectedOption) => {
+          onChange(name, selectedOption);
+        }}
+        placeholder={label}
+        isMulti={true}
+        noOptionsMessage={() => "No such employee found"}
+      />
+      {error && touch && <div className="invalid-feedback">{error}</div>}
+    </FormGroup>
+  );
 };
-
 
 const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => {
     return (
@@ -180,15 +192,18 @@ const EmailInput = ({ name, value, error, touch, onChange, label, disabled, requ
                 <Label htmlFor="address">
                     {required && <span className="text-danger">* </span>}{label}
                 </Label>
-
-                {error && touch && (
-                    <div className="invalid-feedback">
-                        {error}
-                    </div>
-                )}
-            </FormGroup>
-        </>
-    );
+const CustomButton = ({ label, onClick, disabled }) => {
+  return (
+    <div className="flex justify-end">
+      <Button
+        className="bg-[#323333] text-[#F7F8FA] w-40 h-12 font-lato text-base font-semibold"
+        onClick={onClick}
+        disabled={disabled}
+      >
+        {label}
+      </Button>
+    </div>
+  );
 };
 
 const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
@@ -262,6 +277,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
     );
 };
 export {
+
     SelectComponent,
     SelectMultiInputComponent,
     DateInput,
@@ -269,4 +285,5 @@ export {
     PhoneInput,
     EmailInput,
     ImageInput,
+     CustomButton,
 }

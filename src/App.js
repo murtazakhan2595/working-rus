@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "./index.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -14,10 +14,9 @@ import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
 import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
-import './assets/css/globle.css'
+import "./assets/css/globle.css";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import PageLoader from './components/PageLoader.jsx';
 import {
   setUserLogout,
   setUserProfile,
@@ -52,8 +51,16 @@ import CreateTask from "./app/modules/DTR/CreateTask.jsx";
 import ForgotPassword from "./app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "./app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "./app/modules/comingSoon/ComingSoon.jsx";
-import Welcome from "./app/modules/Employees/Welcome.jsx";
-import OnboardComplete from "./app/modules/Employees/OnboardComplete.jsx";
+import PageLoader from "./components/PageLoader.jsx";
+import Welcome from "./app/modules/Employees/Screens/AddProfile/Welcome.jsx";
+import OnboardComplete from "./app/modules/Employees/Screens/AddProfile/OnboardComplete.jsx";
+import PersonalDetails from "./app/modules/Employees/Screens/AddProfile/PersonalInfo.jsx";
+import ContactInfo from "./app/modules/Employees/Screens/AddProfile/ContactInfo.jsx";
+import BankInfo from "./app/modules/Employees/Screens/AddProfile/BankInfo.jsx";
+import ExperienceInfo from "./app/modules/Employees/Screens/AddProfile/ExperienceInfo.jsx";
+import EducationInfo from "./app/modules/Employees/Screens/AddProfile/EducationInfo.jsx";
+import CertificationsInfo from "./app/modules/Employees/Screens/AddProfile/CertificationsInfo.jsx";
+import IdInfo from "./app/modules/Employees/Screens/AddProfile/IdInfo.jsx";
 
 function App() {
   let userProfile = useSelector((state) => state.user.userProfile);
@@ -379,11 +386,22 @@ function App() {
                 )}
               </>
             )}
-            {userProfile.is_filled === false && (
+            {userProfile.is_filled === true && (
               <>
                 <Route exact path="/welcome" element={<Welcome />} />
-                <Route exact path="/onboard-completion" element={<OnboardComplete />} />
+                <Route
+                  exact
+                  path="/onboard-completion"
+                  element={<OnboardComplete />}
+                />
                 <Route exact path="/" element={<EmpForm />} />
+                <Route exact path="/personal-details" element={<PersonalDetails />} />
+                <Route exact path="/contact-information" element={<ContactInfo />} />
+                <Route exact path="/bank-details" element={<BankInfo />} />
+                <Route exact path="/experience-details" element={<ExperienceInfo />} />
+                <Route exact path="/education-details" element={<EducationInfo />} />
+                <Route exact path="/certifications-details" element={<CertificationsInfo />} />
+                <Route exact path="/id-details" element={<IdInfo />} />
               </>
             )}
             <Route path="*" element={<Err404 />} />
