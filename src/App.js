@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useNavigate } from "react-router-dom";
 import "./index.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -10,14 +10,13 @@ import Board from "./app/modules/Board";
 import RecruitmentForm from "./app/modules/RecruitmentData/RecruitmentForm.jsx";
 import ApplicantsDataTable from "./app/modules/RecruitmentData/ApplicantsDataTable.jsx";
 import JobsDataTable from "./app/modules/RecruitmentData/JobsDataTable.jsx";
-import ViewEmployee from "./app/modules/EmployeesData/ViewEmployee.jsx";
+import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
 import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
-
+import "./assets/css/globle.css";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import PageLoader  from './common/PageLoader.jsx';
 import {
   setUserLogout,
   setUserProfile,
@@ -25,7 +24,7 @@ import {
 } from "./state/slices/UserSlice.js";
 import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/modules/Employees/EmpForm";
-import EmpDataForm from "./app/modules/EmployeesData/EmpDataForm";
+import CreateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
 import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
@@ -48,27 +47,31 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import MyDtr from "./app/modules/DTR/MyDtr.jsx";
 import CreateTask from "./app/modules/DTR/CreateTask.jsx";
+import ForgotPassword from "./app/modules/Login/ForgotPassword.jsx";
+import ResetPassword from "./app/modules/Login/ResetPassword.jsx";
+import ComingSoon from "./app/modules/comingSoon/ComingSoon.jsx";
+import PageLoader from "./components/PageLoader.jsx";
+import Welcome from "./app/modules/Employees/Screens/AddProfile/Welcome.jsx";
+import OnboardComplete from "./app/modules/Employees/Screens/AddProfile/OnboardComplete.jsx";
+import PersonalDetails from "./app/modules/Employees/Screens/AddProfile/PersonalInfo.jsx";
+import ContactInfo from "./app/modules/Employees/Screens/AddProfile/ContactInfo.jsx";
+import BankInfo from "./app/modules/Employees/Screens/AddProfile/BankInfo.jsx";
+import ExperienceInfo from "./app/modules/Employees/Screens/AddProfile/ExperienceInfo.jsx";
+import EducationInfo from "./app/modules/Employees/Screens/AddProfile/EducationInfo.jsx";
+import CertificationsInfo from "./app/modules/Employees/Screens/AddProfile/CertificationsInfo.jsx";
+import IdInfo from "./app/modules/Employees/Screens/AddProfile/IdInfo.jsx";
 
-// function App({
-//   setUserProfile,
-//   userProfile,
-//   baseUrl,
-//   isLogin,
-//   setToken,
-//   setUserLogout,
-// })
 function App() {
-
-  let userProfile = useSelector(state => state.user.userProfile);
-  let isLogin = useSelector(state => state.user.isLogin);
-  let token = useSelector(state => state.user.token);
-  let baseUrl = useSelector(state => state.user.baseUrl);
+  let userProfile = useSelector((state) => state.user.userProfile);
+  let isLogin = useSelector((state) => state.user.isLogin);
+  let token = useSelector((state) => state.user.token);
+  let baseUrl = useSelector((state) => state.user.baseUrl);
   let dispatch = useDispatch();
 
   let width = window.screen.width;
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const cookies = new Cookies();
   token = cookies.get("token");
@@ -96,6 +99,7 @@ function App() {
         handleUpdateProfile(response.data);
         dispatch(setToken(token));
         cookies.set("token", token, { path: "*" });
+        setLoading(false);
         return;
       }
     } catch (error) {
@@ -105,10 +109,10 @@ function App() {
       ) {
         // Token expired or invalid
         dispatch(setUserLogout());
-        navigate("/");
       } else {
         console.error("Error fetching data:", error);
       }
+      setLoading(false);
     }
   };
 
@@ -117,12 +121,15 @@ function App() {
       getProfile();
     }
   }, [location]);
-  // console.log(!isLogin,userProfile.is_filled,userProfile.hasOwnProperty('is_filled'))
+
+  if (loading) {
+    return <PageLoader />; // Render the loader if loading is true
+  }
   return (
     <>
-      {(!userProfile || !userProfile.hasOwnProperty('is_filled')) && (
-        <PageLoader/>
-      )}
+      {(!userProfile ||
+        !userProfile.hasOwnProperty("is_filled") ||
+        (isLogin && userProfile.is_filled === null)) && <PageLoader />}
       <Routes>
         {isLogin && (
           <>
@@ -136,6 +143,10 @@ function App() {
                     />
                   }
                 >
+                  <Route
+                    path="/coming-soon"
+                    element={<ComingSoon isSidebarOpen={isSidebarOpen} />}
+                  />
                   <Route
                     exact
                     path="/"
@@ -162,15 +173,11 @@ function App() {
                         path="/employees"
                         element={<EmpDataSheet />}
                       />
-                      <Route
-                        exact
-                        path="/test"
-                        element={<Test />}
-                      />
+                      <Route exact path="/test" element={<Test />} />
                       <Route
                         exact
                         path="/add-employee"
-                        element={<EmpDataForm />}
+                        element={<CreateEmployee />}
                       />
                       <Route
                         path="/edit-employee/:id"
@@ -199,7 +206,9 @@ function App() {
                       <Route
                         path="/leave-list"
                         element={
-                          <LeaveApplicationListHR isSidebarOpen={isSidebarOpen} />
+                          <LeaveApplicationListHR
+                            isSidebarOpen={isSidebarOpen}
+                          />
                         }
                       />
                       <Route
@@ -214,7 +223,9 @@ function App() {
                       />
                       <Route
                         path="/leave-application-status"
-                        element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <ApplicationStatus isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-request-hr/:id"
@@ -228,6 +239,8 @@ function App() {
                           <LeaveCalender isSidebarOpen={isSidebarOpen} />
                         }
                       />
+                      <Route path="/create-task" element={<CreateTask />} />
+                      <Route path="/my-dtr" element={<MyDtr />} />
                     </>
                   )}
                   {(userProfile.role === 2 || userProfile.role === 4) && (
@@ -240,7 +253,9 @@ function App() {
                       <Route
                         path="/leave-list"
                         element={
-                          <LeaveApplicationListManager isSidebarOpen={isSidebarOpen} />
+                          <LeaveApplicationListManager
+                            isSidebarOpen={isSidebarOpen}
+                          />
                         }
                       />
                       <Route
@@ -249,15 +264,21 @@ function App() {
                       />
                       <Route
                         path="/leave-balance-manager"
-                        element={<LeaveBalanceManager isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveBalanceManager isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-balance-employee"
-                        element={<LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-application-status"
-                        element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <ApplicationStatus isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-request/:id"
@@ -265,14 +286,8 @@ function App() {
                           <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
                         }
                       />
-                      <Route
-                        path="/my-dtr"
-                        element={<MyDtr />}
-                      />
-                      <Route
-                        path="/create-task"
-                        element={<CreateTask />}
-                      />
+                      <Route path="/my-dtr" element={<MyDtr />} />
+                      <Route path="/create-task" element={<CreateTask />} />
                     </>
                   )}
                   {userProfile.role === 3 && (
@@ -285,7 +300,7 @@ function App() {
                       <Route
                         exact
                         path="/add-employee"
-                        element={<EmpDataForm />}
+                        element={<CreateEmployee />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
 
@@ -307,7 +322,9 @@ function App() {
                       <Route
                         path="/leave-list"
                         element={
-                          <LeaveApplicationListHR isSidebarOpen={isSidebarOpen} />
+                          <LeaveApplicationListHR
+                            isSidebarOpen={isSidebarOpen}
+                          />
                         }
                       />
                       <Route
@@ -316,11 +333,15 @@ function App() {
                       />
                       <Route
                         path="/leave-balance-hr"
-                        element={<LeaveBalanceHR isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <LeaveBalanceHR isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-application-status"
-                        element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
+                        element={
+                          <ApplicationStatus isSidebarOpen={isSidebarOpen} />
+                        }
                       />
                       <Route
                         path="/leave-calender"
@@ -340,6 +361,7 @@ function App() {
                           <LeaveRequestHR isSidebarOpen={isSidebarOpen} />
                         }
                       />
+                      <Route path="/create-task" element={<CreateTask />} />
                     </>
                   )}
                 </Route>
@@ -363,8 +385,23 @@ function App() {
                 )}
               </>
             )}
-            {userProfile.is_filled === false && (
-              <Route exact path="/" element={<EmpForm />} />
+            {userProfile.is_filled === true && (
+              <>
+                <Route exact path="/welcome" element={<Welcome />} />
+                <Route
+                  exact
+                  path="/onboard-completion"
+                  element={<OnboardComplete />}
+                />
+                <Route exact path="/" element={<EmpForm />} />
+                <Route exact path="/personal-details" element={<PersonalDetails />} />
+                <Route exact path="/contact-information" element={<ContactInfo />} />
+                <Route exact path="/bank-details" element={<BankInfo />} />
+                <Route exact path="/experience-details" element={<ExperienceInfo />} />
+                <Route exact path="/education-details" element={<EducationInfo />} />
+                <Route exact path="/certifications-details" element={<CertificationsInfo />} />
+                <Route exact path="/id-details" element={<IdInfo />} />
+              </>
             )}
             <Route path="*" element={<Err404 />} />
           </>
@@ -377,22 +414,12 @@ function App() {
         )}
         <Route path="/apply/:id" element={<JobApplicationForm />} />
         <Route path="/job-description/:id" element={<JobDescription />} />
+        {/* forgot Password */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/confirm-password" element={<ResetPassword />} />
       </Routes>
     </>
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    baseUrl: state.user.baseUrl,
-    isLogin: state.user.isLogin,
-  };
-};
-
-// export default connect(mapStateToProps, {
-//   setUserLogout,
-//   setUserProfile,
-//   setToken,
-// })(App);
 export default App;

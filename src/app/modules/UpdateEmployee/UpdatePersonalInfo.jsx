@@ -8,7 +8,7 @@ import Button from "./Button";
 import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
-import CustomLoader from "../../../common/CustomLoader";
+import CustomLoader from "../../../components/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { getAllCountries } from 'countries-and-timezones';

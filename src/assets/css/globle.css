@@ -1,0 +1,46 @@
+body {
+    overflow: auto;
+}
+
+.screen {
+    padding: 30px 20px 20px 20px;
+    font-family: 'Lato';
+    width: 100%;
+}
+
+.card {
+    border-radius: 15px;
+    padding: 45px 35px;
+}
+
+.card-header {
+    padding: .5rem .5rem;
+    background-color: transparent;
+}
+
+.card-body {
+    padding: 2rem 1rem;
+}
+
+.fw-700 {
+    font-weight: 700;
+}
+
+.form-control {
+    min-height: calc(3.5rem + 2px)
+}
+
+.custom-select-input.form-control {
+    padding: 0px !important;
+
+}
+
+.custom-select-input.form-control .css-13cymwt-control,
+.custom-select-input.form-control .css-t3ipsp-control {
+    padding: .45rem .75rem .3rem;
+    min-height: calc(3.5rem)
+}
+
+.react-datepicker-wrapper {
+    width: 100%;
+}

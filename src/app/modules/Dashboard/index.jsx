@@ -8,7 +8,7 @@ import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { setUserLogout } from "../../../state/actions/UserAction";
-import { RiArrowDownSFill } from "react-icons/ri";
+import PageHeader from '../../shared/templates/PageHeader'
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
   // const [isBarOpen, seIsBarOpen] = useState(false);
@@ -37,43 +37,9 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
           }`}
       >
         {/***********************   Dashboard Header   **********************************/}
-        <div className="py-8 px-10 flex gap-3  items-center justify-between ">
-          <h1 className="text-3xl leading-none font-semibold  opacity-80 tracking-widest">
-            Dashboard
-          </h1>
-          <div className="relative flex justify-end mr-2">
-            <div
-              className="flex py-2 justify-end px-[.5rem] items-center gap-3 rounded-lg rounded-tl-full rounded-bl-full md:rounded-tl-md md:rounded-bl-md bg-gray-200 cursor-pointer"
-              onClick={handleDropdownClick}
-            >
-              <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
-              <div className="text-[#283b91] hidden md:block lg:block">
-                {userProfile.username}
-              </div>
-              <div className="text-[#283b91]">
-                <RiArrowDownSFill />
-              </div>
-            </div>
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-10 w-48 bg-[#283b91] border rounded-lg shadow-lg">
-                <button
-                  className="block w-full py-2 px-4 text-left hover:bg-gray-100 hover:text-[#283b91] text-white"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-          {/* <div className="relative">
-            <IoIosSearch className="absolute top-2 left-3 text-white" />
-            <input
-              type="search"
-              placeholder="Search"
-              className="focus:outline-none focus:border-non bg-gray-200 py-1 pl-8 pr-4 text-white placeholder-white border-none  md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
-            />
-          </div> */}
-        </div>
+        <PageHeader
+          title={'Dashboard'}
+        />
 
         {/* **********************   Bar   ********************************* */}
         {/* <div
@@ -125,7 +91,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
           </div>
         </div>
         {/* ******************** Daily Task Report**************/}
-        <DailyTaskRpt />
+        {/* <DailyTaskRpt /> */}
         {/***********************   Task Planner   **********************************/}
         <TaskPlanner />
       </div>

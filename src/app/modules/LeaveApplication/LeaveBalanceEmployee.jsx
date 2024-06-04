@@ -8,7 +8,7 @@ import { IoIosSearch } from "react-icons/io";
 import Select from "react-select";
 import Datepicker from "../Dashboard/Datepicker";
 import moment from "moment";
-import LeavesLoader from "../../../common/LeavesLoader";
+import LeavesLoader from "../../../components/LeavesLoader";
 
 const userRoles = [
     { value: 1, label: "Super Admin" },

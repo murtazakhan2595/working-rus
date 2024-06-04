@@ -1,539 +1,502 @@
-import Joi from 'joi';
-import Button from './Button';
-import { useState, useEffect } from 'react'
-import { RxCross2 } from "react-icons/rx";
-import { connect } from "react-redux";
-import { toast, ToastContainer } from "react-toastify";
-import axios from "axios";
-import { useNavigate, useParams } from 'react-router-dom';
-import CustomLoader from '../../../common/CustomLoader';
-import { BiEdit } from 'react-icons/bi';
-import moment from 'moment';
-import Datepicker from "../Dashboard/Datepicker";
-import Select from "react-select";
-import CustomSelect from './customSelect';
-import { HeadOfDepartment, department, employeeStatus, jobRoles } from '../../../data/Data';
 
+import { useNavigate } from "react-router-dom";
+import Button from './Button';
+import { useState, useEffect } from 'react';
+import CustomLoader from '../../../components/CustomLoader';
+import Select from "react-select";
+import moment from 'moment';
+import Datepicker from '../Dashboard/Datepicker';
+import CustomSelect from '../UpdateEmployee/customSelect';
+import axios from "axios";
+import { connect } from 'react-redux';
+import { HeadOfDepartment, department, employeeStatus, jobRoles, workplaceTypes } from '../../../data/Data';
 import { getEmployeeDepartemtInfoData, saveEmployeeDepartemtInfoData } from '../../hooks/employee';
 import { EmployeeDepartmentInfo } from '../../utils/Types/Employee'
 import { validationDepartmentInfoFormSchema } from '../../utils/FormSchema/employeeFormSchema'
+import { getAllCountries } from 'countries-and-timezones';
 
+const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name
+}));
 
 function getManagerSelected(managers, managersList) {
+    if (managers) {
+        managers = managers.split(', ') || [];
+        const matchingObjects = managersList.filter(obj => {
+            return managers.find(element => obj.label === element);
+        });
 
-  if (managers) {
-    managers = managers.split(', ') || [];
-    const matchingObjects = managersList.filter(obj => {
-      return managers.find(element => obj.label === element);
-    });
-    return matchingObjects;
-  }
+        return matchingObjects;
+    }
 
-  return [];
-
+    return [];
 }
 
-const Department = ({ errors, setErrors, prevstep, token,
-  userProfile,
-  baseUrl,
-}) => {
+const Department = ({ errors, setErrors, prevstep, userProfile, baseUrl, token }) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+    const [managers, setManagers] = useState([]);
+    const [departmentInfo, setDepartmentInfo] = useState({});
 
-  let [isEdit, setIsEdit] = useState(false);
-  let [cancelBox, setCancelBox] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [managers, setManagers] = useState([]);
-  const navigate = useNavigate()
-  const [departmentInfo, setDepartmentInfo] = useState(EmployeeDepartmentInfo)
-
-  useEffect(() => {
-    getEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token).then(response => {
-      setDepartmentInfo(response);
-    }).catch(error => {
-      console.log(error);
-    });
-  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    useEffect(() => {
+        getEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token).then(response => {
+            setDepartmentInfo(response);
+        }).catch(error => {
+            console.log(error);
         });
-        if (response.status === 200) {
-          let managersList = response.data;
-          managersList = managersList
-            ?.filter(manager => manager.username)
-            .map((manager) => ({
-              value: manager.id,
-              label: manager.username,
-            }))
-          setManagers(managersList);
+    }, [baseUrl, userProfile, token]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.status === 200) {
+                    let managersList = response.data;
+                    managersList = managersList
+                        ?.filter(manager => manager.username)
+                        .map((manager) => ({
+                            value: manager.id,
+                            label: manager.username,
+                        }));
+                    setManagers(managersList);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, [baseUrl, token]);
+
+    useEffect(() => {
+        if (!departmentInfo.is_indirect_report_applicable) {
+            setDepartmentInfo((prevInfo) => ({ ...prevInfo, indirect_report: '' }));
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        // Handle errors here if needed
-      }
+    }, [departmentInfo.is_indirect_report_applicable]);
+
+    const handleNextStep = async () => {
+        setIsLoading(true);
+        const { error } = validationDepartmentInfoFormSchema.validate(
+            {
+                department_name: departmentInfo.department_name,
+                department_position: departmentInfo.department_position,
+                department_manager: departmentInfo.department_manager,
+                employee_status: departmentInfo.employee_status,
+                employee_type: departmentInfo.employee_type,
+                employee_work_type: departmentInfo.employee_work_type,
+                employee_location: departmentInfo.employee_location,
+                joining_date: departmentInfo.joining_date,
+                direct_report: departmentInfo.direct_report,
+            },
+            { abortEarly: false }
+        );
+        if (error) {
+            const validationErrors = {};
+            error.details.forEach((detail) => {
+                validationErrors[detail.path[0]] = detail.message;
+            });
+            setErrors(validationErrors);
+        } else {
+            departmentInfo.is_filled = true;
+            const response = await saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
+            if (response) {
+                navigate('/');
+            }
+            setIsLoading(false);
+        }
     };
 
-    fetchData(); // Call the async function to fetch data
-  }, []);
+    const handleChange = (name, value, values) => {
+        if (name === 'employee_type' || name === 'employee_status' || name === 'employee_work_type') {
+            setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+        } else if (name === "department_name") {
+            setDepartmentInfo({ ...departmentInfo, [name]: value.value });
+        } else if (name === "indirect_report" || name === "direct_report") {
+            const updatedValues = values || [];
+            const uniqueValues = [...new Set(updatedValues.map(option => option.label))];
+            setDepartmentInfo({
+                ...departmentInfo,
+                [name]: uniqueValues.join(', '),
+            });
+        } else if (name === 'is_indirect_report_applicable') {
+            if (!value) {
+                setDepartmentInfo({ ...departmentInfo, indirect_report: '' });
+            }
+            setDepartmentInfo({ ...departmentInfo, [name]: value });
+        } else {
+            setDepartmentInfo({ ...departmentInfo, [name]: value });
+        }
+        setErrors({ ...errors, [name]: null });
+    };
 
-  const handleSave = async () => {
-    setIsLoading(true);
-    const { error } = validationDepartmentInfoFormSchema.validate(
-      {
-        department_name: departmentInfo.department_name,
-        department_position: departmentInfo.department_position,
-        direct_report: departmentInfo.direct_report,
-        indirect_report: departmentInfo.indirect_report,
-        department_manager: departmentInfo.department_manager,
-        employee_type: departmentInfo.employee_type,
-        employee_status: departmentInfo.employee_status,
-        joining_date: departmentInfo.joining_date,
-      },
-      { abortEarly: false }
-    );
+    const handleJoiningDate = (date) => {
+        const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
+        handleChange("joining_date", formattedDate);
+    };
 
-    if (error) {
-      const validationErrors = {};
-      error.details.forEach((detail) => {
-        validationErrors[detail.path[0]] = detail.message;
-      });
-      setErrors(validationErrors);
-      setIsLoading(false);
-    } else {
-      try {
-        setErrors({});
-        saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
-        setIsEdit(!isEdit);
-        toast.success('Department Information Updated!', {
-          position: 'top-right',
-          autoClose: 3000,
-        });
+    const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
+        label: (
+            <div>
+                <div style={{ fontWeight: 'bold', color: '#000' }}>{manager?.label?.split(' - ')[0]}</div>
+                <div style={{ fontSize: '13px', color: '#777', fontWeight: 'normal' }}>{manager?.label?.split(' - ')[1]}</div>
+            </div>
+        ),
+        value: manager.value
+    }));
 
-      } catch (error) {
-        toast.error('Failed to update department information. Please try again.', {
-          position: 'top-center',
-          autoClose: 3000,
-        });
-      } finally {
-        setIsLoading(false); // Set isLoading to false regardless of success or failure
-      }
-    }
-  };
-
-  const handleEdit = (name, value, values) => {
-    // Check if the name is 'employee_type' or 'employee_status'
-    if (name === 'employee_type' || name === 'employee_status') {
-      setDepartmentInfo({ ...departmentInfo, [name]: value.value });
-    } else if (name === "department_name") {
-      setDepartmentInfo({ ...departmentInfo, [name]: value.value });
-    }
-    else if (name === "indirect_report" || name === "direct_report") {
-      const updatedValues = values || []; // In case 'values' is null
-      const uniqueValues = [...new Set(updatedValues.map(option => option.label))]; // Extract labels
-      setDepartmentInfo({
-        ...departmentInfo,
-        [name]: uniqueValues.join(', '), // Convert array to string
-      });
-    } else {
-      setDepartmentInfo({ ...departmentInfo, [name]: value });
-    }
-    // Clear errors for the updated field
-    setErrors({ ...errors, [name]: null });
-  };
-
-
-
-  const handleJoiningDate = (date) => {
-    const formattedDate = moment(date).format("DD-MM-YYYY").toLowerCase();
-    handleEdit("joining_date", formattedDate);
-  };
-
-
-  const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
-    label: (
-      <div>
-        <div style={{ fontWeight: 'bold', color: '#000' }}>{manager?.label?.split(' - ')[0]}</div>
-        <div style={{ fontSize: '13px', color: '#777', fontWeight: 'normal' }}>{manager?.label?.split(' - ')[1]}</div>
-      </div>
-    ),
-    value: manager.value
-  }));
-
-
-  return (
-    <>
-      <div className='bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10'>
-        <div className="flex justify-between">
-          <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
-            Department Information:
-          </h2>
-          <div className="flex gap-2">
-            {isEdit ? (
-              null
-            ) : (
-              <button
-                onClick={() => {
-                  setIsEdit(!isEdit);
-                }}
-                className="bg-baseBlue rounded-full text-white p-3"
-              >
-                <BiEdit className="text-xl" />
-              </button>
-            )}
-          </div>
-        </div>
-        <div className='flex flex-col md:flex-row lg:gap-x-36'>
-          <div className='order-2 md:order-1 md:w-[55%]'>
-            <div className="flex flex-col">
-              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                  <label htmlFor="department_name" className='font-sfpro tracking-wide font-medium
+    return (
+        <>
+            <div className='bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10'>
+                <h2 className='text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2'>Department Information:</h2>
+                <div className='flex flex-col md:flex-row lg:gap-x-36'>
+                    <div className='order-2 md:order-1 md:w-[55%]'>
+                        <div className="flex flex-col">
+                            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
+                                    <label htmlFor="department_name" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Department Name:</label>
-                  <div
-                    onClick={() => setIsEdit(true)}
-                  >
-                    <Select
-                      name="department_name"
-                      isDisabled={isEdit ? false : true}
-                      className="focus:outline-none border-none"
-                      options={department}
-                      value={department.find(
-                        (option) => option.value === departmentInfo.department_name
-                      )}
-                      onChange={selectedOption => handleEdit("department_name", selectedOption)}
-                    />
-                  </div>
-                  {errors.department_name && <span className="text-red-500 text-sm ">{errors.department_name}</span>}
-                </div>
-                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
-                  <label htmlFor="department_position" className='font-sfpro tracking-wide font-medium
+                                    {/* <input type="text" value={departmentInfo.department_name} name="department_name" id="" placeholder='Department Name Here'
+                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
+                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
+                                    /> */}
+
+                                    <Select
+                                        name="department_name"
+                                        className="focus:outline-none border-none"
+                                        options={department}
+                                        value={department.find(
+                                            (option) => option.label === departmentInfo.department_name
+                                        )}
+                                        onChange={(selectedOption) =>
+                                            handleChange("department_name", selectedOption.value)
+                                        }
+                                    />
+                                    {errors.department_name && <span className="text-red-500 text-sm ">{errors.department_name}</span>}
+
+                                </div>
+                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
+                                    <label htmlFor="department_position" className='font-sfpro tracking-wide font-medium
                             text-input text-base mb-1'>Position:</label>
-                  <input type="text" readOnly={!isEdit} value={departmentInfo.department_position} name="department_position" id="" placeholder='Position Here'
-                    className={`${isEdit ? "text-black" : "text-gray-500"
-                      } pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50`}
-                    onClick={() => setIsEdit(true)}
-                    onChange={(e) => handleEdit(e.target.name, e.target.value)}
-                  />
-                  {errors.department_position && <span className="text-red-500 text-sm ">{errors.department_position}</span>}
-                </div>
-              </div>
+                                    <input type="text" value={departmentInfo.department_position} name="department_position" id="" placeholder='Position Here'
+                                        className='pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50'
+                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
+                                    />
+                                    {errors.department_position && <span className="text-red-500 text-sm ">{errors.department_position}</span>}
 
-              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                  <label
-                    className="font-sfpro tracking-wide
+                                </div>
+                            </div>
+                            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        className="font-sfpro tracking-wide
                   font-medium text-input text-base mb-1"
-                  >
-                    Employee Type:
-                  </label>
-                  <div
-                    onClick={() => setIsEdit(true)}
-                  >
-                    <Select
-                      menuPlacement="top"
-                      name="employee_type"
-                      isDisabled={isEdit ? false : true}
-                      value={jobRoles.find(option => option.label === departmentInfo.employee_type)}
-                      options={jobRoles}
-                      isSearchable={false}
-                      className="focus:outline-none border-none"
-                      onChange={selectedOption => handleEdit("employee_type", selectedOption)}
-                      menuPortalTarget={document.body}
-                      styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
-                    />
+                                    >
+                                        Employee Type:
+                                    </label>
+                                    <div
+                                    // onClick={handleEditClick}
+                                    >
+                                        <Select
+                                            menuPlacement="top"
+                                            name="employee_type"
+                                            value={jobRoles?.find(
+                                                (option) => option.label === departmentInfo.employee_type
+                                            )}
+                                            options={jobRoles}
+                                            isSearchable={false}
+                                            className="focus:outline-none border-none"
+                                            onChange={(selectedOption) =>
+                                                handleChange("employee_type", selectedOption.value)
+                                            }
+                                            menuPortalTarget={document.body}
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                        />
+                                    </div>
+                                    {errors.employee_type && <span className="text-red-500 text-sm ">{errors.employee_type}</span>}
 
-                  </div>
-                </div>
-                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                  <label
-                    className="font-sfpro tracking-wide
+                                </div>
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        className="font-sfpro tracking-wide
                   font-medium text-input text-base mb-1"
-                  >
-                    Employee status:
-                  </label>
-                  <div
-                  // onClick={handleEditClick}
-                  >
-                    <div onClick={() => setIsEdit(true)}>
-                      <Select
-                        menuPlacement="top"
-                        isDisabled={isEdit ? false : true}
-                        name="employee_status"
-                        value={employeeStatus?.find(option => option.label === departmentInfo.employee_status)}
-                        onChange={(selectedOption) => handleEdit("employee_status", selectedOption)}
-                        options={employeeStatus}
-                        isSearchable={false}
-                        className="focus:outline-none border-none"
-                        menuPortalTarget={document.body}
-                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+                                    >
+                                        Employee status:
+                                    </label>
+                                    <div
+                                    // onClick={handleEditClick}
+                                    >
+                                        <Select
+                                            menuPlacement="top"
+                                            name="employee_status"
+                                            // value={departmentInfo?.employee_status}
+                                            value={employeeStatus?.find(
+                                                (option) => option.label === departmentInfo?.employee_status
+                                            )}
+                                            options={employeeStatus}
+                                            isSearchable={false}
+                                            className="focus:outline-none border-none"
+                                            onChange={(selectedOption) => handleChange("employee_status", selectedOption.value)}
+                                            menuPortalTarget={document.body}
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                        />
+                                        {errors.employee_status && <span className="text-red-500 text-sm ">{errors.employee_status}</span>}
 
-              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                  <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium
-    text-input text-base mb-1'>Direct Report:</label>
-                  <div onClick={() => setIsEdit(true)}>
-                    <CustomSelect
-                      menuPlacement="top"
-                      name='direct_report'
-                      placeholder="Search Direct Report To..."
-                      value={getManagerSelected(departmentInfo.direct_report, managers)}
-                      onChange={(selectedOption) => handleEdit("direct_report", selectedOption, selectedOption)}
-                      options={managers}
-                      isEdit={isEdit} // Pass the isEdit prop
-                      isMulti={true}
-                    />
-                  </div>
-                  {errors.direct_report && <span className="text-red-500 text-sm ">{errors.direct_report}</span>}
-                </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        className="font-sfpro tracking-wide
+                  font-medium text-input text-base mb-1"
+                                    >
+                                        Employee Work Type:
+                                    </label>
+                                    <div
+                                    // onClick={handleEditClick}
+                                    >
+                                        <Select
+                                            menuPlacement="top"
+                                            name="employee_type"
+                                            value={workplaceTypes?.find(
+                                                (option) => option.value === departmentInfo.employee_work_type
+                                            )}
+                                            options={workplaceTypes}
+                                            isSearchable={false}
+                                            className="focus:outline-none border-none"
+                                            onChange={(selectedOption) =>
+                                                handleChange("employee_work_type", selectedOption.value)
+                                            }
+                                            menuPortalTarget={document.body}
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                        />
+                                    </div>
+                                    {errors.employee_work_type && <span className="text-red-500 text-sm ">{errors.employee_work_type}</span>}
 
+                                </div>
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        className="font-sfpro tracking-wide
+                  font-medium text-input text-base mb-1"
+                                    >
+                                        Employee Location:
+                                    </label>
+                                    <div
+                                    // onClick={handleEditClick}
+                                    >
+                                        <Select
+                                            menuPlacement="top"
+                                            name="employee_location"
+                                            // value={departmentInfo?.employee_status}
+                                            value={countryOptions?.find(
+                                                (option) => option.label === departmentInfo?.employee_location
+                                            )}
+                                            options={countryOptions}
+                                            className="focus:outline-none border-none"
+                                            onChange={(selectedOption) => handleChange("employee_location", selectedOption.label)}
+                                            menuPortalTarget={document.body}
+                                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                        />
+                                        {errors.employee_location && <span className="text-red-500 text-sm ">{errors.employee_location}</span>}
 
-
-                <div className='  mt-2 md:mt-5 md:w-1/2'>
-                  <div className='flex gap-x-3'>
-
-                    <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium text-input text-base mb-1'>
-                      Indirect Report:
-                    </label>
-
-                    <div className='flex items-center gap-x-2'>
-                      <p className='text-sm'>Yes</p>
-                      <input type="checkbox"
-                        checked={departmentInfo.is_indirect_report_applicable}
-                        name="is_indirect_report_applicable_yes"
-                        onChange={(e) => handleEdit('is_indirect_report_applicable', e.target.checked)}
-                      />
-                    </div>
-                    <div className='flex items-center gap-x-2'>
-                      <p className='text-sm'>No</p>
-                      <input type="checkbox"
-                        checked={!departmentInfo.is_indirect_report_applicable}
-                        name="is_indirect_report_applicable_no"
-                        onChange={(e) => handleEdit('is_indirect_report_applicable', !e.target.checked)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className='flex flex-col gap-2 items-center'>
-                    <div className='w-full'>
-
-                      {departmentInfo.is_indirect_report_applicable && (
-                        <>
-                          <div onClick={() => setIsEdit(true)}>
-
-                            <CustomSelect
-                              menuPlacement="top"
-                              name='indirect_report'
-                              placeholder="Search Indirect Report To..."
-                              value={getManagerSelected(departmentInfo.indirect_report, managers)}
-                              onChange={(selectedOption) => handleEdit("indirect_report", selectedOption, selectedOption)}
-                              options={managers}
-                              isEdit={isEdit}
-                              isMulti={true}
-                            />
-                          </div>
-                          {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
-                        </>
-                      )}
-                    </div>
-
-                  </div>
-                </div>
+                                    </div>
+                                </div>
+                            </div>
 
 
-              </div>
+                            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label htmlFor="direct_report" className='font-sfpro tracking-wide font-medium text-input text-base mb-1'>Direct Report:</label>
+
+                                    <CustomSelect
+                                        menuPlacement="top"
+                                        name='direct_report'
+                                        placeholder="Search Direct Report To..."
+                                        value={getManagerSelected(departmentInfo.direct_report, managers)}
+                                        onChange={(selectedOptions) => handleChange("direct_report", selectedOptions, selectedOptions)}
+                                        options={managers}
+                                        isEdit={true}
+                                        isMulti={true}
+                                    />
 
 
-              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
-                  <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
+                                    {errors.direct_report && <span className="text-red-500 text-sm ">{errors.direct_report}</span>}
+                                </div>
+
+                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2'>
+                                    <div className='flex gap-x-3'>
+
+                                        <label htmlFor="indirect_report" className='font-sfpro tracking-wide font-medium text-input text-base mb-1'>
+                                            Indirect Report:
+                                        </label>
+
+                                        <div className='flex items-center gap-x-2'>
+                                            <p className='text-sm'>Yes</p>
+                                            <input type="checkbox"
+                                                name='is_indirect_report_applicable_yes'
+                                                checked={departmentInfo.is_indirect_report_applicable}
+                                                onChange={(e) => handleChange('is_indirect_report_applicable', e.target.checked)}
+                                            />
+                                        </div>
+                                        <div className='flex items-center gap-x-2'>
+                                            <p className='text-sm'>No</p>
+                                            <input type="checkbox"
+                                                name='is_indirect_report_applicable_no'
+                                                checked={!departmentInfo.is_indirect_report_applicable}
+                                                onChange={(e) => handleChange('is_indirect_report_applicable', !e.target.checked)}
+                                            />
+                                        </div>
+
+                                    </div>
+                                    {departmentInfo.is_indirect_report_applicable &&
+                                        <>
+                                            <CustomSelect
+                                                menuPlacement="top"
+                                                name='indirect_report'
+                                                placeholder="Search Direct Report To..."
+                                                value={getManagerSelected(departmentInfo.indirect_report, managers)}
+                                                onChange={(selectedOptions) => handleChange("indirect_report", selectedOptions, selectedOptions)}
+                                                options={managers}
+                                                isEdit={true}
+                                                isMulti={true}
+                                            />
+
+                                            {errors.indirect_report && <span className="text-red-500 text-sm ">{errors.indirect_report}</span>}
+                                        </>
+                                    }
+                                </div>
+                            </div>
+
+
+                            <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+
+                                <div className='flex flex-col mt-2 md:mt-5 md:w-1/2  lg:w-[45.5%]'>
+                                    <label htmlFor="department_manager" className='font-sfpro tracking-wide font-medium
                         text-input text-base mb-1'>Department Head:</label>
-                  <div onClick={() => setIsEdit(true)}>
-                    <Select
-                      isDisabled={isEdit ? false : true}
-                      menuPlacement="top"
-                      name="department_manager"
-                      value={HeadOfDepartmentOptions.find(
-                        (option) => option.value === departmentInfo.department_manager
-                      )}
-                      onChange={(selectedOption) =>
-                        handleEdit("department_manager", selectedOption.value)
-                      }
-                      options={HeadOfDepartmentOptions}
-                      styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        control: (provided) => ({
-                          ...provided,
-                          border: "1px solid #ccc",
-                          borderRadius: "8px",
-                        }),
-                        option: (provided, state) => ({
-                          ...provided,
-                          fontSize: "16px",
-                          fontWeight: state.isSelected ? "bold" : "normal",
-                          color: state.isSelected ? "#000" : "#777",
-                          padding: "8px 12px",
-                          backgroundColor: state.isSelected ? '#E0F3FB' : 'transparent'
-                        }),
-                        menu: (provided) => ({
-                          ...provided,
-                          borderRadius: "8px",
-                          overflow: "hidden",
-                        }),
-                        scrollbarWidth: (base) => ({
-                          ...base,
-                          borderRadius: "8px",
-                          backgroundColor: "#ccc",
-                        }),
-                        dropdownIndicator: (provided) => ({
-                          ...provided,
-                          color: "#555",
-                        }),
-                      }}
+                                    <Select
+                                        menuPlacement="top"
+                                        name="department_manager"
+                                        value={HeadOfDepartmentOptions.find(
+                                            (option) => option.value === departmentInfo?.department_manager
+                                        )}
+                                        onChange={(selectedOption) =>
+                                            handleChange("department_manager", selectedOption.value)
+                                        }
+                                        options={HeadOfDepartmentOptions}
+                                        styles={{
+                                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                                            control: (provided) => ({
+                                                ...provided,
+                                                border: "1px solid #ccc",
+                                                borderRadius: "8px",
+                                            }),
+                                            option: (provided, state) => ({
+                                                ...provided,
+                                                fontSize: "16px",
+                                                fontWeight: state.isSelected ? "bold" : "normal",
+                                                color: state.isSelected ? "#000" : "#777",
+                                                padding: "8px 12px",
+                                                backgroundColor: state.isSelected ? '#E0F3FB' : 'transparent'
+                                            }),
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                borderRadius: "8px",
+                                                overflow: "hidden",
+                                            }),
+                                            scrollbarWidth: (base) => ({
+                                                ...base,
+                                                borderRadius: "8px",
+                                                backgroundColor: "#ccc",
+                                            }),
+                                            dropdownIndicator: (provided) => ({
+                                                ...provided,
+                                                color: "#555",
+                                            }),
+                                        }}
+                                    />
+
+                                    {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
+                                </div>
+
+                                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                                    <label
+                                        htmlFor="date_of_birth"
+                                        className="font-sfpro tracking-wide font-medium
+                                  text-input text-base mb-1"
+                                    >
+                                        Joining Date:
+                                    </label>
+                                    <Datepicker
+                                        // disabled={isEdit ? false : true}
+                                        // readOnly={!isEdit}
+                                        day={
+                                            departmentInfo.joining_date
+                                                ? departmentInfo.joining_date.substr(0, 2)
+                                                : null
+                                        }
+                                        month={
+                                            departmentInfo.joining_date
+                                                ? departmentInfo.joining_date.substr(3, 2)
+                                                : null
+                                        }
+                                        year={
+                                            departmentInfo.joining_date
+                                                ? departmentInfo.joining_date.substr(6, 4)
+                                                : null
+                                        }
+                                        name="joining_date"
+                                        className="z-50"
+                                        selected={moment(departmentInfo.joining_date, "DD-MM-YYYY").toDate()}
+                                        // onClick={handleFieldClick}
+                                        onChange={handleJoiningDate}
+                                    />
+                                    {errors.joining_date && (
+                                        <span className="text-red-500 text-sm ">
+                                            {errors.joining_date}
+                                        </span>
+                                    )}
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex gap-x-20 mt-6 lg:mt-10 md:mt-0 mb-40">
+                    <Button onClick={prevstep} text={'Previous'} />
+                    {/* <Button onClick={handleNextStep} text={isLoading ? <div className='flex items-center gap-x-2'><span>Submit </span><CustomLoader /></div> : 'Submit'} /> */}
+                    <Button
+                        onClick={handleNextStep}
+                        text={
+                            isLoading ? (
+                                <div className='flex items-center gap-x-2 p-2 '>
+                                    <span>Submit </span>
+                                    <CustomLoader />
+                                </div>
+                            ) : (
+                                'Submit'
+                            )
+                        }
                     />
-                    {errors.department_manager && <span className="text-red-500 text-sm ">{errors.department_manager}</span>}
-                  </div>
-                </div>
 
-                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                  <label
-                    htmlFor="date_of_birth"
-                    className="font-sfpro tracking-wide font-medium
-                            text-input text-base mb-1"
-                  >
-                    Joining Date:
-                  </label>
-                  <Datepicker
-                    disabled={isEdit ? false : true}
-                    // readOnly={!isEdit}
-                    day={
-                      departmentInfo.joining_date
-                        ? departmentInfo.joining_date.substr(0, 2)
-                        : null
-                    }
-                    month={
-                      departmentInfo.joining_date
-                        ? departmentInfo.joining_date.substr(3, 2)
-                        : null
-                    }
-                    year={
-                      departmentInfo.joining_date
-                        ? departmentInfo.joining_date.substr(6, 4)
-                        : null
-                    }
-                    name="joining_date"
-                    className="z-50"
-                    selected={moment(
-                      departmentInfo.joining_date,
-                      "DD-MM-YYYY"
-                    ).toDate()}
-                    // onClick={handleFieldClick}
-                    onChange={handleJoiningDate}
-                  />
-                  {/* {errors.joining_date && (
-                    <span className="text-red-500 text-sm ">
-                      {errors.joining_date}
-                    </span>
-                  )} */}
                 </div>
-
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-x-5 mb-40 mt-4 ">
-          {!isEdit && <Button onClick={prevstep} text={"Previous"} />}
-          {isEdit ? (
-            <button
-              onClick={() => {
-                setCancelBox(!cancelBox);
-              }}
-              className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            >
-              Cancel
-            </button>
-          ) : (
-            // <button
-            //   onClick={() => {
-            //     setIsEdit(!isEdit);
-            //   }}
-            //   className="bg-baseBlue rounded-lg text-white w-24 py-[3px]"
-            // >
-            //   Edit
-            // </button>
-            null
-          )}
-          {isEdit ? (
-            <button
-              onClick={handleSave}
-              className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
-            >
-              {isLoading ? <div className="flex items-center justify-center gap-x-2">Saving <CustomLoader /></div> : 'Save'}
-            </button>
-          ) : <button
-            onClick={() => { navigate("/") }}
-            className="bg-baseBlue rounded-lg text-white w-28 py-[3px]"
-          >
-            Back to Home
-          </button>}
-        </div>
-      </div >
-      {cancelBox && (
-        <div className="fixed inset-0 z-50 flex  items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-5 rounded-lg w-96 shadow-lg">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold">Discard Changes</h1>
-              <div className="text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer">
-                <RxCross2 onClick={() => setCancelBox(!cancelBox)} />
-              </div>
-            </div>
-            <p className="text-gray-700 mt-2">
-              If you have made changes, they will not be saved. Do you want to
-              proceed?
-            </p>
-            <div className="mt-4 flex justify-end">
-              <button
-                className="px-4 py-1 mr-2 text-white bg-blue-500 rounded"
-                onClick={() => {
-                  setCancelBox(!cancelBox);
-                }}
-              >
-                Keep
-              </button>
-              <button
-                className="px-4 py-1 mr-2 text-white bg-red-500 rounded"
-                onClick={() => {
-                  setIsEdit(!isEdit);
-                  setCancelBox(!cancelBox);
-                }}
-              >
-                Discard
-              </button>
-            </div>
-          </div>
-        </div>
-      )
-      }
-      <ToastContainer />
-    </>
-  )
+            </div >
+        </>
+    )
 }
 
 const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    token: state.user.token,
-    baseUrl: state.user.baseUrl,
-  };
+    return {
+        userProfile: state.user.userProfile,
+        token: state.user.token,
+        baseUrl: state.user.baseUrl,
+    };
 };
 
 export default connect(mapStateToProps)(Department);

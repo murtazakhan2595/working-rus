@@ -11,6 +11,7 @@ import { getAllCountries } from 'countries-and-timezones';
 import { department } from "../../../data/Data";
 
 const EmployeeForm = ({ baseUrl, token, userProfile }) => {
+
   const newDate = new Date();
   const defaultDate = moment(newDate).format("YYYY-MM-DD");
   const initialData = {
@@ -190,6 +191,7 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
     label: getAllCountries()[countryCode].name
   }));
 
+
   return (
     <div className="bg-[#F9F9F9] w-full">
       <LeaveHeader post="Leave Application Form" />
@@ -305,17 +307,6 @@ const EmployeeForm = ({ baseUrl, token, userProfile }) => {
                   >
                     Department:
                   </label>
-                  {/* <input
-                    placeholder="Enter Department Here"
-                    required
-                    className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"
-                    type="text"
-                    name="department"
-                    value={formData.department}
-                    onChange={(e) =>
-                      handleChange(e.target.name, e.target.value)
-                    }
-                  /> */}
                   <Select
                     name="department"
                     className="rounded-md pl-2 w-[60%] lg:w-[58%] h-8"

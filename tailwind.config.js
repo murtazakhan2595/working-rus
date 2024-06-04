@@ -6,7 +6,9 @@ module.exports = {
     fontFamily: {
       montserrat: ["Montserrat", "sans-serif"],
       sfpro: ["SF Pro Display", "sans-serif"],
-      lato: ['Lato']
+      lato: ["Lato"],
+      roboto: ["Roboto"],
+      opensans: ["Open Sans"],
     },
     extend: {
       boxShadow: {
@@ -15,14 +17,14 @@ module.exports = {
       textColor: {
         baseBlue: "#283B91",
         input: "#555657",
-        baseGray: "#5C5E64"
+        baseGray: "#5C5E64",
       },
       backgroundColor: {
         baseBlue: "#283B91",
       },
       borderColor: {
-        baseGray: "#5C5E64"
-      }
+        baseGray: "#5C5E64",
+      },
     },
     screens: {
       xs: "300px",
@@ -30,12 +32,15 @@ module.exports = {
 
       sm: "425px",
       // => @media (min-width: 426px) { ... }
-
+      500: "500px",
+      
       md: "768px",
       // => @media (min-width: 768px) { ... }
-
+      800: "800px",
+      
       lg: "1024px",
       // => @media (min-width: 1024px) { ... }
+      1100: "1100px",
 
       xl: "1280px",
       // => @media (min-width: 1280px) { ... }
@@ -47,5 +52,15 @@ module.exports = {
       // => @media (min-width: 1536px) { ... }
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        ".no-scrollbar": {
+          "::-webkit-scrollbar": { display: "none" },
+          "-ms-overflow-style": "none",
+          "scrollbar-width": "none",
+        },
+      });
+    },
+  ],
 };

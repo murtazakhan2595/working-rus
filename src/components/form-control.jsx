@@ -1,0 +1,159 @@
+import React from "react";
+import Select from "react-select";
+import { FormGroup, Label, Input, Button } from "reactstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+const SelectComponent = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  options,
+  label,
+  disabled,
+}) => {
+  return (
+    <FormGroup>
+      <Select
+        name={name}
+        isDisabled={disabled}
+        id={name}
+        className={`custom-select-input form-control ${
+          error && touch ? "is-invalid" : ""
+        }`}
+        options={options ? options : []}
+        value={options ? options.find((option) => option.label === value) : ""}
+        onChange={(selectedOption) => onChange(name, selectedOption.value)}
+        placeholder={label}
+      />
+      {error && touch && <div className="invalid-feedback">{error}</div>}
+    </FormGroup>
+  );
+};
+const SelectMultiInputComponent = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  options,
+  label,
+  disabled,
+}) => {
+  return (
+    <FormGroup>
+      <Select
+        name={name}
+        id={name}
+        isDisabled={disabled}
+        className={`custom-select-input form-control ${
+          error && touch ? "is-invalid" : ""
+        }`}
+        options={options ? options : []}
+        value={value ? value : ""}
+        onChange={(selectedOption) => {
+          onChange(name, selectedOption);
+        }}
+        placeholder={label}
+        isMulti={true}
+        noOptionsMessage={() => "No such employee found"}
+      />
+      {error && touch && <div className="invalid-feedback">{error}</div>}
+    </FormGroup>
+  );
+};
+
+const DateInput = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  disabled,
+}) => {
+  return (
+    <>
+      <FormGroup>
+        <DatePicker
+          name={name}
+          id={name}
+          isDisabled={disabled}
+          className={`form-control ${error && touch ? "is-invalid" : ""}`}
+          value={value ? value : ""}
+          selected={value}
+          dropdownMode="select"
+          onChange={(value) => {
+            onChange(name, value);
+          }}
+          placeholderText={label}
+          showMonthDropdown
+          showYearDropdown
+          dateFormat="dd-MM-yyyy"
+        />
+        {error && touch && <div className="invalid-feedback">{error}</div>}
+      </FormGroup>
+    </>
+  );
+};
+
+const TextInput = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  disabled,
+  required,
+}) => {
+  return (
+    <>
+      <FormGroup floating>
+        <Input
+          type="text"
+          maxLength="100"
+          id={name}
+          name={name}
+          autoComplete="Off"
+          placeholder={"Enter" + label}
+          value={value}
+          className={error && touch ? "is-invalid" : ""}
+          onChange={(option) => {
+            debugger;
+            const value = option.target.value;
+            onChange(name, value);
+          }}
+        />
+        <Label htmlFor="address">
+          {required && <span className="text-danger">* </span>}
+          {label}
+        </Label>
+
+        {error && touch && <div className="invalid-feedback">{error}</div>}
+      </FormGroup>
+    </>
+  );
+};
+
+const CustomButton = ({ label, onClick, disabled }) => {
+  return (
+    <div className="flex justify-end">
+      <Button
+        className="bg-[#323333] text-[#F7F8FA] w-40 h-12 font-lato text-base font-semibold"
+        onClick={onClick}
+        disabled={disabled}
+      >
+        {label}
+      </Button>
+    </div>
+  );
+};
+export {
+  SelectComponent,
+  SelectMultiInputComponent,
+  DateInput,
+  TextInput,
+  CustomButton,
+};
