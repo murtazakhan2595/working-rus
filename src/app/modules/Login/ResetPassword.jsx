@@ -65,8 +65,6 @@ const ResetPassword = () => {
       password: formData.password,
     };
 
-    console.log("i am the payload", payload);
-
     try {
       const res = await axios.post(
         `${baseUrl}/password/reset/confirm`,

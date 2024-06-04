@@ -18,8 +18,8 @@ const userRoles = [
 const EditDataForm = ({ token, baseUrl }) => {
   const initData = {
     username: "",
-    firstname: "",
-    lastname: "",
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
     userrole: null,
@@ -47,8 +47,8 @@ const EditDataForm = ({ token, baseUrl }) => {
       setFormData({
         employeeId: employeeData.id,
         username: employeeData.username,
-        firstname: employeeData.first_name,
-        lastname: employeeData.last_name,
+        first_name: employeeData.first_name,
+        last_name: employeeData.last_name,
         email: employeeData.email,
         password: "", // Assuming you don't want to show password in edit mode
         userrole: userRoles.find((role) => role.value === employeeData.user_role),
@@ -94,8 +94,8 @@ const EditDataForm = ({ token, baseUrl }) => {
 
     const data = {
       username: formData.username,
-      first_name: formData.firstname,
-      last_name: formData.lastname,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
       email: formData.email,
       user_role: formData.userrole.value,
       password:formData.password,
@@ -210,7 +210,7 @@ const EditDataForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex items-center mt-2">
                 <label
-                  htmlFor="firstname"
+                  htmlFor="first_name"
                   className="font-sfpro tracking-wide whitespace-nowrap
                             text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
                 >
@@ -218,8 +218,8 @@ const EditDataForm = ({ token, baseUrl }) => {
                 </label>
                 <input
                   type="text"
-                  name="firstname"
-                  value={formData.firstname}
+                  name="first_name"
+                  value={formData.first_name}
                   required
                   placeholder="First Name Here"
                   className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
@@ -229,7 +229,7 @@ const EditDataForm = ({ token, baseUrl }) => {
               </div>
               <div className="flex items-center mt-2">
                 <label
-                  htmlFor="lastname"
+                  htmlFor="last_name"
                   className="font-sfpro tracking-wide whitespace-nowrap
                             text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
                 >
@@ -237,8 +237,8 @@ const EditDataForm = ({ token, baseUrl }) => {
                 </label>
                 <input
                   type="text"
-                  name="lastname"
-                  value={formData.lastname}
+                  name="last_name"
+                  value={formData.last_name}
                   required
                   placeholder="Last Name Here"
                   className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
