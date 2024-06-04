@@ -1,34 +1,22 @@
 import React, { useState, useEffect } from "react";
 import {
-    Card,
     CardHeader,
     CardBody,
     Row,
     Col,
-    ButtonGroup,
-    ButtonDropdown,
-    DropdownToggle,
     Button,
     Form,
     Label,
-    FormGroup, Input, InputGroup, InputGroupText
+    FormGroup,
 } from 'reactstrap';
 import { Formik } from 'formik';
-import { Link } from "react-router-dom";
-import moment from "moment";
-import { getAllCountries } from 'countries-and-timezones';
-import Select from "react-select";
-import { countryCodes } from "../../../../../data/CountryCode.js";
 import { connect } from "react-redux";
 import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../../../hooks/employee.jsx';
 import { getBankDetails } from '../../../../utils/MappingObjects/mapEmployeeData.jsx'
-import EmpDataHeader from "../Sections/Header.jsx";
-import { SelectComponent, ImageInput, DateInput, TextInput, PhoneInput, EmailInput } from '../../../../../components/form-control.jsx';
+import { TextInput, } from '../../../../../components/form-control.jsx';
 import PageLoader from '../../../../../components/PageLoader.jsx';
-import { maritalStatus } from '../../../../../data/Data.js';
 
-
-const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
+const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
 
     const formRef = React.createRef();
     const [bankInfo, setBankInfo] = useState({});
@@ -60,7 +48,7 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
                         <CardHeader>
                             <Row>
                                 <Col lg={12}>
-                                    <h4 className="ml-2 fw-700">Experience</h4>
+                                    <h4 className="ml-2 fw-700">Banking Details</h4>
                                 </Col>
                             </Row>
                         </CardHeader>
@@ -218,14 +206,11 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
     );
 };
 
-
-
 const mapStateToProps = (state) => {
     return {
-        userProfile: state.user.userProfile,
         token: state.user.token,
         baseUrl: state.user.baseUrl,
     };
 };
 
-export default connect(mapStateToProps)(ExperienceInformation);
+export default connect(mapStateToProps)(BankInformation);

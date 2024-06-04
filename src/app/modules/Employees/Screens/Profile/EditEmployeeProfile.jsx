@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { PersonalInformation, ExperienceInformation } from "./index";
+import { BankInformation, PersonalInformation, ExperienceInformation } from "./index";
 
 
 const EditEmployeeProfile = () => {
@@ -19,15 +19,15 @@ const EditEmployeeProfile = () => {
                     isEditMode={true}
                 />
             }
-            {/* {currentTab === 2 &&
-                // <BankInformation
-                //     employeeId={id}
-                //     nextstep={() => {
-                //         setCurrentTab(currentTab + 1)
-                //     }}
-                //     isEditMode={true}
-                // />
-            } */}
+            {currentTab === 2 &&
+                <BankInformation
+                    employeeId={id}
+                    nextstep={() => {
+                        setCurrentTab(currentTab + 1)
+                    }}
+                    isEditMode={true}
+                />
+            }
             {currentTab === 3 &&
                 <ExperienceInformation
                     employeeId={id}
