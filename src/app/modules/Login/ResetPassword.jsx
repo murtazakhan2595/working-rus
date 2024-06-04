@@ -11,15 +11,12 @@ import { PiCaretCircleLeftFill } from "react-icons/pi";
 import { Link } from "react-router-dom";
 
 const ResetPassword = () => {
-<<<<<<< Updated upstream
+
     const { uid, token } = useParams();
+    console.log("UID:", uid);
+    console.log("Token:", token);
     const baseUrl = useSelector((state) => state.user.baseUrl);
-=======
-  const { uid, token } = useParams();
-  console.log("UID:", uid);
-  console.log("Token:", token);
-  const baseUrl = useSelector((state) => state.user.baseUrl);
->>>>>>> Stashed changes
+
 
     const initialData = { password: "", retype_password: "" };
 
