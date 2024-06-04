@@ -10,7 +10,6 @@ import confirm from "../.././../assets/images/confirm.png";
 import { PiCaretCircleLeftFill } from "react-icons/pi";
 import { Link } from "react-router-dom";
 
-
 const ResetPassword = () => {
     const { uid, token } = useParams();
     const baseUrl = useSelector((state) => state.user.baseUrl);
