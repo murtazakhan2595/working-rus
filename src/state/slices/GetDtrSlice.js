@@ -13,13 +13,13 @@ export const fetchDTRByEmployeeId = createAsyncThunk(
     'dtr/fetchDTRByEmployeeId',
     async (employeeId, { getState }) => {
         try {
-            const { token, baseUrl } = getState().user;
+            const { token } = getState().user;
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
             // Modify the URL to include query parameters for employee ID
-            const response = await axios.get(`${baseUrl}/dtr/?search={"assigne":[${employeeId}]}`, { headers });
+            const response = await axios.get(`https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api/dtr/?search={"Employee_id":${employeeId}}`, { headers });
             return response.data;
         } catch (error) {
             throw error;

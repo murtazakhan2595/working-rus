@@ -9,41 +9,23 @@ const initialState = {
 };
 
 // Define the thunk to fetch DTR by employee ID
-// Define the thunk to fetch DTR by employee ID
-// Define the thunk to fetch DTR by employee ID
 export const GetAssigneDtr = createAsyncThunk(
     'assigneDtr/GetAssigneDtr',
-    async ({ employeeId, statusFilter, dueDateFilter, assigneFilter, priorityFilter, typeFilter }, { getState }) => {
+    async (assigneId, { getState }) => {
         try {
-            const { token, baseUrl } = getState().user;
-            const { date, priority, status, type, assignes } = getState().filters;
+            const { token } = getState().user;
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
-
-            const queryParams = {
-                employee_id: [employeeId],
-            };
-
-            // Conditionally add parameters to queryParams
-            if (status) queryParams.status = statusFilter;
-            if (date) queryParams.due_date = dueDateFilter;
-            if (assignes) queryParams.assigne = assigneFilter;
-            if (priority) queryParams.priorty = priorityFilter;
-            if (type) queryParams.Type = typeFilter;
-
-            const searchParams = encodeURIComponent(JSON.stringify(queryParams));
-            const response = await axios.get(`${baseUrl}/dtr/?search=${searchParams}`, { headers });
-
+            // Modify the URL to include query parameters for employee ID
+            const response = await axios.get(`https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api/dtr/?search={"assigne": [${assigneId}]}`, { headers });
             return response.data;
         } catch (error) {
             throw error;
         }
     }
 );
-
-
 
 // Define the slice
 const dtrSlice = createSlice({

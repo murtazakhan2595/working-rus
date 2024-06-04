@@ -9,7 +9,7 @@ import { RxCross2, RxPlus } from "react-icons/rx";
 import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { TbCircleDashed } from "react-icons/tb";
-import { department, priority2Options, status2Options, statusOptions, typeOptions } from "../../../data/Data";
+import { priority2Options, status2Options, statusOptions, typeOptions } from "../../../data/Data";
 import Select from "react-select";
 import { fetchEmployees } from "../../../state/slices/EmpSlice";
 import { postTasks } from "../../../state/slices/DtrPostSlice";
@@ -23,11 +23,6 @@ import SuccessPopup from "./SuccessPop";
 import { getDTRAll } from "../../../state/slices/GetDtrAllSlice";
 import { GetAssigneDtr } from "../../../state/slices/GetAssigneDtr";
 import ViewTaskDetails from "./ViewTaskDetails";
-import UpdateModal from "./UpdateModal";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { toggleFilter } from "../../../state/slices/FilterSlice";
-import { fetchDTRByManagerId } from "../../../state/slices/GetDtrManagerSlice";
-import { fetchTeamDtr } from "../../../state/slices/GetTeamDtrSlice";
 
 const CreateTask = ({ baseUrl, token }) => {
 
@@ -58,19 +53,20 @@ const CreateTask = ({ baseUrl, token }) => {
     const isOpen = useSelector(state => state.modal.isModalOpen);
     const empDropdown = useSelector(state => state.modal.isEmpDropdownOpen);
     const employees = useSelector(state => state.emp.employees);
-    const dtrsAll = useSelector(state => state.getDtrAll.dtrs)
-    console.log('i am the dtr all response', dtrsAll);
-    const filters = useSelector(state => state.filters);
+    const dtrs = useSelector(state => state.getDtr.dtr);
+    const dtrsAll = useSelector(state => state.getDtrAll.dtrs);
     const assigneDtr = useSelector(state => state.getAssigne.assigneDtr);
-    const teamDtrs = useSelector(state => state.teamDtr.teamDtr);
+    const apiStatus = useSelector(state => state.postDtr.apiStatus);
+    const error = useSelector(state => state.postDtr.error);
     const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-    console.log('I am team dtr', teamDtrs)
+    console.log('I am assigne dtr', assigneDtr)
 
     const [currentDate, setCurrentDate] = useState('');
     const [taskType, setTaskType] = useState(null);
-    // const [priority, setPriority] = useState(null);
+    const [priority, setPriority] = useState(null);
     const [taskStatus, setTaskStatus] = useState(null);
     const [assignToOpen, setAssignToOpen] = useState(false);
     const [assignToUser, setAssignToUser] = useState({});
@@ -79,16 +75,7 @@ const CreateTask = ({ baseUrl, token }) => {
     const [dropdownStates, setDropdownStates] = useState({});
     const [hoveredTask, setHoveredTask] = useState(null);
     const [showHoveredTask, setShowHoveredTask] = useState(false);
-    const [selectedTask, setSelectedTask] = useState(null);
-    const [openUpdateModal, setOpenUpdateModal] = useState(false);
-    const [showFiltersDropdown, setShowFilterDropdown] = useState(false);
-    const [filter, setFilter] = useState("");
-    const [filteredUsers, setFilteredUsers] = useState(teamDtrs);
-    const [status, setStatus] = useState('');
-    const [type, setType] = useState('');
-    const [dueDate, setDueDate] = useState('');
-    const [priority, setPriority] = useState('');
-    const [assigne, setAssigne] = useState('');
+
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -101,7 +88,6 @@ const CreateTask = ({ baseUrl, token }) => {
 
     useEffect(() => {
         dispatch(getDTRAll());
-        dispatch(fetchTeamDtr());
     }, []);
 
 
@@ -123,7 +109,7 @@ const CreateTask = ({ baseUrl, token }) => {
     };
 
 
-    const handleAddTask = async (e) => {
+    const handleAddTask = (e) => {
         e.preventDefault();
 
         const formattedStartDate = formatDate(formData.startDate);
@@ -137,23 +123,8 @@ const CreateTask = ({ baseUrl, token }) => {
             assigne: assignToUser
         };
 
-
-        console.log(newTask)
-
         // Update tasks array state by adding the new task
-        // setTasks(prevTasks => [...prevTasks, newTask]);
-        try {
-            await dispatch(postTasks(newTask)); // Dispatch the postTasks action with tasks data
-            setShowSuccessPopup(true); // Show success pop-up after successful API call
-            dispatch(fetchDTRByEmployeeId(userId));
-
-            setTasks([]);
-            // dispatch(getDTRAll());
-            dispatch(fetchTeamDtr());
-        } catch (error) {
-            console.error("Error posting tasks:", error);
-            // Handle error (e.g., show error message)
-        }
+        setTasks(prevTasks => [...prevTasks, newTask]);
 
         // Clear form data
         setFormData({
@@ -166,8 +137,6 @@ const CreateTask = ({ baseUrl, token }) => {
             assigne: null
         });
 
-        setAssignToUser(null);
-
         // Close the modal
         // handleCloseModal();
         dispatch(closeModal())
@@ -179,9 +148,25 @@ const CreateTask = ({ baseUrl, token }) => {
     };
 
 
+    const handlePostTasks = async (e) => {
+        e.preventDefault();
+
+        try {
+            await dispatch(postTasks(tasks)); // Dispatch the postTasks action with tasks data
+            setShowSuccessPopup(true); // Show success pop-up after successful API call
+            // dispatch(fetchDTRByEmployeeId(userId));
+            setTasks([]);
+            dispatch(getDTRAll());
+        } catch (error) {
+            console.error("Error posting tasks:", error);
+            // Handle error (e.g., show error message)
+        }
+    };
+
+
     const getReportingManager = (userId) => {
         const reportingManager = employees?.find((user) => user.id === userId);
-        return reportingManager ? reportingManager.username?.slice(0, 2).toUpperCase() : null;
+        return reportingManager ? reportingManager.username.toUpperCase().slice(0, 2) : null;
     };
 
     const groupedTasks = assigneDtr
@@ -200,13 +185,13 @@ const CreateTask = ({ baseUrl, token }) => {
         }));
     };
 
-    const handleDtrClick = (employeeId, status, type, priority, dueDate, assigne) => {
-        console.log('hey, iam assigne', assigne)
 
+
+
+    const handleDtrClick = (employeeId) => {
         // Call the function to fetch the respective person's DTR
-        dispatch(GetAssigneDtr({ employeeId, statusFilter: status, typeFilter: type, priorityFilter: priority, dueDateFilter: dueDate, assigneFilter: assigne }));
+        dispatch(GetAssigneDtr(employeeId));
     };
-
 
 
     const currenDate = new Date();
@@ -216,176 +201,14 @@ const CreateTask = ({ baseUrl, token }) => {
 
     const formattedDate = `${day}-${month}-${year}`;
 
-    const handleTaskClick = (task) => {
-        setSelectedTask(task);
-        setOpenUpdateModal(true);
-    }
-
-    const handleCheckboxChange = (filterName) => {
-        dispatch(toggleFilter({ filterName, value: !filters[filterName] }));
-    };
-
-    useEffect(() => {
-        const lowerCaseFilter = filter.toLowerCase();
-        const filtered = teamDtrs.filter((user) => {
-            const userIdWithPrefix = `TXB-${user.employee_id.toString().padStart(4, "0")}`;
-            const designation = user.designation || ''
-            const department = user.department || ''
-            return (
-                userIdWithPrefix.toLowerCase().includes(lowerCaseFilter) ||
-                user.employee_name.toLowerCase().includes(lowerCaseFilter)
-                || designation.toLowerCase().includes(lowerCaseFilter)
-                || department.toLowerCase().includes(lowerCaseFilter)
-            );
-        });
-        setFilteredUsers(filtered);
-    }, [filter, teamDtrs]);
-
-    const handleSearchChange = (event) => {
-        const term = event.target.value;
-        setFilter(term);
-    };
-
-    const handleStatusChange = (value) => {
-        setStatus(value.value);
-    };
-    const handleTypeChange = (value) => {
-        setType(value.value);
-    };
-
-    const handlePriorityChange = (value) => {
-        setPriority(value.value);
-    };
-
-    const handleAssigneChange = (value) => {
-        setAssigne(value.value);
-    };
-
-    const handleDateChange = (event) => {
-        const inputDate = event.target.value; // Get the input value
-        const formattedDate = formatDate(inputDate); // Format the input date
-        setDueDate(formattedDate); // Set the formatted date to state
-    };
     return (
         <div className="flex w-full flex-col h-[100vh] lg:px-6 lg:py-2 bg-gray-50">
             {showSuccessPopup && (
                 <SuccessPopup onClose={() => setShowSuccessPopup(false)} heading="DTR Submitted" message="Your daily task report was successfully submitted." />
             )}
-            <div className="flex justify-between lg:px-2 lg:py-4">
-                {/* <h1 className="font-lato lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1> */}
-                <div className="flex justify-between">
-                    <div className="flex items-center gap-x-2 lg:w-[75vw]">
-                        {filters.search &&
-                            <input type="text" placeholder="Search by ID, Name or designation"
-                                onChange={handleSearchChange}
-                                className="pl-2 bg-[#F0F1F2] h-8 outline-none rounded-lg placeholder:text-xs" />}
-                        {filters.department &&
-                            <Select
-                                className="w-[180px]"
-                                options={department}
-                            // value={department.find(
-                            //     (option) => option.label === departmentInfo.department_name
-                            // )}
-                            // onChange={(selectedOption) =>
-                            //     handleChange("department_name", selectedOption.value)
-                            // }
-                            />}
-                        {filters.date &&
-                            <input type="date" name="startDate" className="w-[170px] border border-baseGray h-9 rounded-lg px-2"
-                                onChange={handleDateChange}
-                            />
-                        }
-                        {filters.priority &&
-                            <Select
-                                name="priority"
-                                options={priority2Options}
-                                className="w-[170px]"
-                                onChange={handlePriorityChange}
-                            />
-                        }
-                        {filters.status &&
-                            <Select
-                                name="status"
-                                options={status2Options}
-                                className="w-[170px]"
-                                onChange={handleStatusChange}
-                            />
-                        }
-                        {filters.type &&
-                            <Select
-                                name="Type"
-                                options={typeOptions}
-                                className="w-[180px]"
-                                onChange={handleTypeChange}
-
-                            />
-                        }
-                        {filters.assignes &&
-                            <Select
-                                name="assignes"
-                                options={employees.map((emp) => (
-                                    { label: emp.username, value: emp.id }
-                                ))}
-                                className="w-[180px]"
-                                onChange={handleAssigneChange}
-
-                            />
-                        }
-                    </div>
-                    <div className="relative">
-                        <div className="bg-[#F0F1F2] w-8 h-8 rounded-md flex justify-center items-center">
-                            <BsThreeDotsVertical className="text-xl" onClick={() => setShowFilterDropdown(prev => !prev)} />
-                        </div>
-                        {showFiltersDropdown && (
-                            <div className="absolute top-10 right-4 p-3 w-36 bg-[#FAFBFC] rounded-lg shadow-bottom">
-                                <h3 className="font-lato font-semibold">Manage Filters</h3>
-                                <div className="font-lato mt-3 flex flex-col gap-y-2">
-                                    <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.search}
-                                            onChange={() => handleCheckboxChange('search')} />
-                                        <label className="text-sm" htmlFor="search">Search</label>
-                                    </div>
-                                    {/* <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.department}
-                                            onChange={() => handleCheckboxChange('department')} />
-                                        <label className="text-sm" htmlFor="department">Department</label>
-                                    </div> */}
-                                    {/* <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.designation}
-                                            onChange={() => handleCheckboxChange('designation')} />
-                                        <label className="text-sm" htmlFor="designation">Designation</label>
-                                    </div> */}
-                                    <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.date}
-                                            onChange={() => handleCheckboxChange('date')} />
-                                        <label className="text-sm" htmlFor="date">Due Date</label>
-                                    </div>
-                                    <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.priority}
-                                            onChange={() => handleCheckboxChange('priority')} />
-                                        <label className="text-sm" htmlFor="priority">Priority</label>
-                                    </div>
-                                    <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.status}
-                                            onChange={() => handleCheckboxChange('status')} />
-                                        <label className="text-sm" htmlFor="status">Status</label>
-                                    </div>
-                                    <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.type}
-                                            onChange={() => handleCheckboxChange('type')} />
-                                        <label className="text-sm" htmlFor="type">Type</label>
-                                    </div>
-                                    <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.assignes}
-                                            onChange={() => handleCheckboxChange('assignes')} />
-                                        <label className="text-sm" htmlFor="assignes">Assignes</label>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                </div>
+            <div className="flex justify-between lg:p-6">
+                <h1 className="font-lato lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1>
+                <div>Filter here</div>
             </div>
 
             <div>
@@ -403,11 +226,10 @@ const CreateTask = ({ baseUrl, token }) => {
 
                         {/* modal open */}
                         {isOpen && (
-                            <div className="fixed z-50 inset-0 flex items-center justify-center bg-[#4a4a4a69]
-                             w-screen overflow-y-auto scroll h-screen">
-                                <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[100vh] relative">
-                                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-3 lg:mb-3">Add Task</h2>
-                                    <button onClick={() => dispatch(closeModal())} className="absolute top-8 right-8"><RxCross2 /></button>
+                            <div className="fixed z-50 inset-0 flex items-center justify-center bg-[#4a4a4a69]">
+                                <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[95vh] relative">
+                                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-4 lg:mb-4">Add Task</h2>
+                                    <button onClick={() => dispatch(closeModal())} className="absolute top-6 right-8"><RxCross2 /></button>
                                     <form onSubmit={handleAddTask}>
                                         <label htmlFor="title" className="text-[18px] font-lato font-semibold text-baseGray">Title</label>
                                         <input id="title" placeholder="Add here" type="text" required name="title" value={formData.title} onChange={(e) => handleChange(e.target.name, e.target.value)} className="block pl-2 lg:w-full outline-none border rounded-lg h-9 border-baseGray placeholder:font-lato lg:mb-4" />
@@ -527,7 +349,6 @@ const CreateTask = ({ baseUrl, token }) => {
                                                         handleChange("taskType", selectedOption.value)
                                                     }}
                                                     required
-                                                    menuPlacement="auto"
                                                     styles={{
                                                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                                                         control: (provided) => ({
@@ -571,10 +392,9 @@ const CreateTask = ({ baseUrl, token }) => {
                                                     //     setPriority(selectedOption.value);
                                                     // }}
                                                     onChange={(selectedOption) => {
-                                                        handleChange("priorty", selectedOption.value)
+                                                        handleChange("priority", selectedOption.value)
                                                     }}
                                                     required
-                                                    menuPlacement="auto"
                                                     styles={{
                                                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                                                         control: (provided) => ({
@@ -656,7 +476,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                             </div>
                                         </div>
 
-                                        <button type="submit" className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Add</button>
+                                        <button type="submit" className="mt-8 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Add</button>
                                     </form>
                                 </div>
                             </div>
@@ -665,7 +485,7 @@ const CreateTask = ({ baseUrl, token }) => {
 
 
                     </div>
-                    {/* <div className="max-h-36 overflow-y-auto">
+                    <div className="max-h-36 overflow-y-auto">
                         {tasks.map((task) => (
                             <div key={task.title} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
                                 <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
@@ -682,18 +502,18 @@ const CreateTask = ({ baseUrl, token }) => {
                                         <div className={`px-3 py-1 rounded-lg ${statusStyles[task.taskStatus]}`}>{task.taskStatus}</div>
                                     </div>
                                     <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">{getReportingManager(task.assigne)}</div>
-                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">{task.assignee?.username?.split(' ')
+                                    {/* <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">{task.assignee?.username?.split(' ')
                                     .map(word => word[0].toUpperCase())
                                     .join('')
-                                    .slice(0, 2)}</div>
+                                    .slice(0, 2)}</div> */}
                                 </div>
                             </div>
                         ))}
-                    </div> */}
-                    {/* <div className="flex justify-end border-t">
+                    </div>
+                    <div className="flex justify-end border-t">
                         {tasks.length > 0 && <button className="my-2 py-2 px-6 rounded-lg bg-[#323333] text-white" onClick={handlePostTasks}>Submit</button>
                         }
-                    </div> */}
+                    </div>
                 </div>
 
             </div>
@@ -701,16 +521,11 @@ const CreateTask = ({ baseUrl, token }) => {
 
             {/* display all employees names */}
             <div className="flex">
-                <div className="w-[30%] lg:max-h-[75vh] overflow-y-auto bg-[#FAFBFC]">
-                    <h3 className="text-baseGray font-lato font-semibold text-lg">My Team</h3>
-                    {filteredUsers?.map((dtr) => (
+                <div className="w-[30%] lg:max-h-[75vh] overflow-y-auto bg-[#f0f1f2]">
+                    {dtrsAll?.map((dtr) => (
                         <div className="flex items-center gap-x-2 group relative">
                             <div className="flex items-center gap-x-2 border-b m-1 p-2 w-full hover:bg-blue-100 hover:rounded-md">
-                                <div className="w-12 h-12 rounded-full flex items-center text-xl justify-center text-white bg-[#DF418D] tracking-wider">{dtr.employee_name.toUpperCase()?.split(' ')
-                                    .map(word => word[0].toUpperCase())
-                                    .join('')
-                                    .slice(0, 2)
-                                }</div>
+                                <div className="w-12 h-12 rounded-full flex items-center text-xl justify-center text-white bg-[#DF418D] tracking-wider">{dtr.employee_name.toUpperCase().slice(0, 2)}</div>
                                 <div className="flex flex-col leading-none">
                                     <div className="text-gray-400 text-sm leading-none">TXB-{dtr.employee_id.toString().padStart(4, "0")}</div>
                                     <div className="font-semibold text-[16px] text-[#323333] font-lato">{dtr.employee_name}</div>
@@ -720,30 +535,11 @@ const CreateTask = ({ baseUrl, token }) => {
                                     </div>
                                 </div>
                             </div>
-                            <IoChevronForwardCircleOutline
-                                className="text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
-                                onClick={() => {
-                                    // handleDtrClick(dtr.assigne, status, type, dueDate);
-                                    handleDtrClick(dtr.employee_id, status, type, priority, dueDate, assigne);
-                                }}
-                            />
-
+                            <IoChevronForwardCircleOutline className=" text-xl absolute top-7 right-3 opacity-0 group-hover:opacity-100 cursor-pointer"
+                                onClick={() => handleDtrClick(dtr.assigne)} />
                         </div>
                     ))}
                 </div>
-
-                {/* update task modal */}
-                {openUpdateModal && selectedTask && (
-                    <UpdateModal
-                        task={selectedTask}
-                        onClose={() => setOpenUpdateModal(false)}
-                        getReportingManager={getReportingManager}
-                        setAssignToSearchQuery={setAssignToSearchQuery}
-                        filteredAssignToUsers={filteredAssignToUsers}
-                        handleDtrClick={handleDtrClick}
-                    />
-                )}
-
                 <div className="w-[70%] lg:max-h-[80vh] overflow-y-auto">
                     {Object.entries(groupedTasks).map(([date, tasks]) => (
                         <div key={date} className="w-full m-0">
@@ -757,9 +553,8 @@ const CreateTask = ({ baseUrl, token }) => {
                                 {tasks.map(task => (
                                     <div key={task.task} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg"
                                         onMouseEnter={() => setHoveredTask(task)}
-                                        onMouseLeave={() => setHoveredTask(null)}
-                                        // onClick={() => setShowHoveredTask(true)}
-                                        onClick={() => handleTaskClick(task)}
+                                        // onMouseLeave={() => setHoveredTask(null)}
+                                        onClick={() => setShowHoveredTask(true)}
                                     >
                                         <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
                                             <div className="text-xl font-bold">
@@ -769,7 +564,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                                     <CiCircleMore className="text-[#935AF2] bg-[#F1E8FF] rounded-full p-0.5" />
                                                 )}
                                             </div>
-                                            <div className={`flex items-center gap-x-2 text-sm px-2 ${task?.due_date < formattedDate ? 'text-[#D96C6C] bg-[#F2DCDA] rounded-lg py-1' : 'text-baseGray'}`}>
+                                            <div className={`flex items-center gap-x-2 text-sm px-2 text-baseGray ${task?.due_date < formattedDate ? 'text-[#D96C6C] bg-[#F2DCDA] rounded-lg py-1' : ''}`}>
                                                 <IoCalendarOutline className="text-xl" /> Due
                                                 <div className={`font-lato`}>
                                                     {task?.due_date?.slice(0, 5)}
@@ -786,8 +581,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                                 </div>
                                             </div>
                                             <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">
-                                                {/* {getReportingManager(task.assigne)} */}
-                                                {getReportingManager(task.employee_id)}
+                                                {getReportingManager(task.assigne)}
                                             </div>
                                         </div>
                                     </div>
@@ -799,7 +593,7 @@ const CreateTask = ({ baseUrl, token }) => {
 
 
                 {/* view task card started */}
-                {(hoveredTask) && (
+                {(hoveredTask && showHoveredTask) && (
                     <ViewTaskDetails hoveredTask={hoveredTask} setShowHoveredTask={setShowHoveredTask} statusIcons={statusIcons} getReportingManager={getReportingManager} statusStyles={statusStyles} />
                 )}
                 {/* view task card ended */}

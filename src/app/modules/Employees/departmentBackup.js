@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import Button from './Button';
 import { useState, useEffect } from 'react';
-import CustomLoader from '../../../components/CustomLoader';
+import CustomLoader from '../../../common/CustomLoader';
 import Select from "react-select";
 import moment from 'moment';
 import Datepicker from '../Dashboard/Datepicker';

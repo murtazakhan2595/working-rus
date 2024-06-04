@@ -5,7 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
-import CustomLoader from "../../../components/CustomLoader";
+import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../hooks/employee';
 import { EmployeeBankDetails } from '../../utils/Types/Employee';

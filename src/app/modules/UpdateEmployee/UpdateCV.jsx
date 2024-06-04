@@ -5,7 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
 import SubStepsIndicator from "./UpdateSubSteps";
 import Button from "./Button";
-import CustomLoader from "../../../components/CustomLoader";
+import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { downloadAttachmentWord } from "../../../utils/wordFileUtils";

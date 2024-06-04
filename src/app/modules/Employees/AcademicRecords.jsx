@@ -3,6 +3,7 @@ import moment from "moment";
 import React, { useState } from "react";
 import Datepicker from "../Dashboard/Datepicker";
 import Select from "react-select";
+import Joi from "joi";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import Button from "./Button";
 import { WiCloudRefresh } from "react-icons/wi";
@@ -19,312 +20,65 @@ const academicOptions = [
 ];
 
 
-
 const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, baseUrl, token }) => {
 
-  // const [academicInfo, setAcademicInfo] = useState({});
-  // const [academicRecords, setAcademicRecords] = useState([
-  //   {
-  //     education_level: '',
-  //     program: '',
-  //     institute_name: '',
-  //     edu_start_date: '',
-  //     edu_end_date: '',
-  //     education_body: { file: '', name: '' }
-  //   }
-  // ]);
-
-  // const [certificationSections, setCertificationSections] = useState([]);
-  // useEffect(() => {
-  //   getEmployeeAcademicRecordData(baseUrl, userProfile?.id, token).then(response => {
-  //     setAcademicInfo(response);
-
-  //   }).catch(error => {
-  //     console.log(error);
-  //   });
-  // }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
-
-  // useEffect(() => {
-  //   getEmployeeCerficationData(baseUrl, userProfile?.id, token).then(response => {
-  //     setCertificationSections(response);
-
-  //   }).catch(error => {
-  //     console.log(error);
-  //   });
-  // }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
-
-
-  // const [cerErrors, setCerErrors] = useState({});
-
-
-  // const addCertificationSection = () => {
-  //   setCertificationSections([...certificationSections, {}]);
-  // };
-
-  // // Handle file input change
-  // // const handleFileChange = (e) => {
-  // //   const selectedFile = e.target.files[0];
-  // //   if (selectedFile) {
-  // //     let fileData = {
-  // //       name: selectedFile.name,
-  // //     };
-  // //     const reader = new FileReader();
-  // //     reader.onload = (e) => {
-  // //       setAcademicInfo({
-  // //         ...academicInfo,
-  // //         certificate: { name: fileData.name, file: e.target.result },
-  // //       });
-  // //     };
-  // //     reader.readAsDataURL(selectedFile);
-  // //     const certificateError = { ...errors, certificate: "" };
-  // //     setErrors(certificateError);
-  // //   }
-  // // };
-
-
-  // const handleDateChange = (index, name, date) => {
-  //   const newRecords = [...academicRecords];
-  //   newRecords[index][name] = moment(date).format('YYYY-MM-DD');
-  //   setAcademicRecords(newRecords);
-  // };
-
-  // const handleFileChange = (index, e) => {
-  //   const file = e.target.files[0];
-  //   const reader = new FileReader();
-  //   reader.onloadend = () => {
-  //     const newRecords = [...academicRecords];
-  //     newRecords[index].education_body = { file: reader.result, name: file.name };
-  //     setAcademicRecords(newRecords);
-  //   };
-  //   if (file) {
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
-
-
-  // const addRecord = () => {
-  //   setAcademicRecords([
-  //     ...academicRecords,
-  //     {
-  //       education_level: '',
-  //       program: '',
-  //       institute_name: '',
-  //       edu_start_date: '',
-  //       edu_end_date: '',
-  //       education_body: { file: '', name: '' }
-  //     }
-  //   ]);
-  //   console.log('New Record Added:', academicRecords);
-  // };
-
-
-  // const handleStartDate = (date) => {
-  //   const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
-  //   handleChange("edu_start_date", formattedDate);
-  // };
-
-  // const handleEndDate = (date) => {
-  //   const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
-  //   handleChange("edu_end_date", formattedDate);
-  // };
-
-  // const handleNextStep = () => {
-  //   const fieldErrors = {};
-  //   for (let i = 0; i < certificationSections.length; i++) {
-  //     const certification = certificationSections[i];
-  //     if (!certification.certification_name) {
-  //       fieldErrors[`certification_name_${i}`] =
-  //         "Certification Name is required.";
-  //     }
-  //     if (!certification.completion_date) {
-  //       fieldErrors[`completion_date_${i}`] =
-  //         "Completion Date.";
-  //     }
-  //     if (!certification.expiry_date) {
-  //       fieldErrors[`expiry_date_${i}`] = "Expiry Date is required.";
-  //     }
-  //     if (!certification.certification_institute) {
-  //       fieldErrors[`certification_institute_${i}`] =
-  //         "Certification Body is required.";
-  //     }
-
-  //   }
-
-  //   const { error } = validationAcademicRecordSchema.validate(
-  //     {
-  //       education_level: academicInfo.education_level,
-  //       program: academicInfo.program,
-  //       institute_name: academicInfo.institute_name,
-  //       edu_start_date: academicInfo.edu_start_date,
-  //       edu_end_date: academicInfo.edu_end_date,
-  //     },
-  //     { abortEarly: false }
-  //   );
-
-  //   const validationErrors = {};
-  //   if (Object.keys(fieldErrors).length > 0 || error || !academicInfo.certificate?.hasOwnProperty("name")) {
-  //     if (error) {
-  //       error.details.forEach((detail) => {
-  //         validationErrors[detail.path[0]] = detail.message;
-  //       });
-  //       setErrors(validationErrors);
-  //     }
-  //     if (Object.keys(fieldErrors).length > 0) {
-  //       let newErrors = { ...fieldErrors };
-  //       setCerErrors(newErrors);
-  //     }
-  //     return;
-  //   }
-  //   else {
-  //     const academicDoc = {
-  //       employee_id: userProfile.id,
-  //       name: "acadmicDoc",
-  //       description: "Acadmic Document",
-  //       document: academicInfo.certificate,
-  //     }
-  //     academicInfo.employee_id = userProfile.id
-  //     delete academicInfo.certificate
-  //     saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo, academicDoc);
-  //     saveEmployeeCertificationData(baseUrl, userProfile?.id, token, certificationSections);
-  //     nextstep();
-  //   }
-  // };
-
-
-  // // const handleChange = (name, value) => {
-  // //   setAcademicInfo({ ...academicInfo, [name]: value });
-  // //   setErrors({ ...errors, [name]: null });
-  // // };
-
-  // const handleChange = (index, e) => {
-  //   const { name, value } = e.target;
-  //   const newRecords = [...academicRecords];
-  //   newRecords[index][name] = value;
-  //   setAcademicRecords(newRecords);
-  // };
-
-  // const clearCerError = (fieldName) => {
-  //   if (cerErrors[fieldName]) {
-  //     const updatedErrors = { ...cerErrors };
-  //     delete updatedErrors[fieldName];
-  //     setCerErrors(updatedErrors);
-  //   }
-  // };
-
-  const [academicRecords, setAcademicRecords] = useState([
-    {
-      education_level: '',
-      program: '',
-      institute_name: '',
-      edu_start_date: '',
-      edu_end_date: '',
-      education_body: { file: '', name: '' }
-    }
-  ]);
+  const [academicInfo, setAcademicInfo] = useState({});
 
   const [certificationSections, setCertificationSections] = useState([]);
+  useEffect(() => {
+    getEmployeeAcademicRecordData(baseUrl, userProfile?.id, token).then(response => {
+      setAcademicInfo(response);
 
-  // useEffect(() => {
-  //   getEmployeeAcademicRecordData(baseUrl, userProfile?.id, token)
-  //     .then(response => {
-  //       setAcademicRecords(Array.isArray(response) && response.length > 0 ? response : [
-  //         {
-  //           education_level: '',
-  //           program: '',
-  //           institute_name: '',
-  //           edu_start_date: '',
-  //           edu_end_date: '',
-  //           education_body: { file: '', name: '' }
-  //         }
-  //       ]);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     });
-  // }, [baseUrl, userProfile, token]);
-
-  // useEffect(() => {
-  //   getEmployeeCerficationData(baseUrl, userProfile?.id, token)
-  //     .then(response => {
-  //       setCertificationSections(Array.isArray(response) ? response : []);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     });
-  // }, [baseUrl, userProfile, token]);
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
   useEffect(() => {
-    getEmployeeAcademicRecordData(baseUrl, userProfile?.id, token)
-      .then(response => {
-        console.log("Academic Records Response:", response); // Log response to verify
-        setAcademicRecords(Array.isArray(response) && response.length > 0 ? response : [
-          {
-            education_level: '',
-            program: '',
-            institute_name: '',
-            edu_start_date: '',
-            edu_end_date: '',
-            education_body: { file: '', name: '' }
-          }
-        ]);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }, [baseUrl, userProfile, token]);
+    getEmployeeCerficationData(baseUrl, userProfile?.id, token).then(response => {
+      setCertificationSections(response);
 
-  useEffect(() => {
-    getEmployeeCerficationData(baseUrl, userProfile?.id, token)
-      .then(response => {
-        console.log("Certification Sections Response:", response); // Log response to verify
-        setCertificationSections(Array.isArray(response) ? response : []);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }, [baseUrl, userProfile, token]);
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [baseUrl, userProfile, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
 
   const [cerErrors, setCerErrors] = useState({});
-  const [eduErrors, setEduErrors] = useState({});
+
 
   const addCertificationSection = () => {
     setCertificationSections([...certificationSections, {}]);
   };
 
-  const handleDateChange = (index, name, date) => {
-    const newRecords = [...academicRecords];
-    newRecords[index][name] = moment(date).format('YYYY-MM-DD');
-    setAcademicRecords(newRecords);
-    clearEduError(`${name}_${index}`);
-  };
-
-  const handleFileChange = (index, e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const newRecords = [...academicRecords];
-      newRecords[index].education_body = { file: reader.result, name: file.name };
-      setAcademicRecords(newRecords);
-      clearEduError(`education_body_${index}`);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
+  // Handle file input change
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      let fileData = {
+        name: selectedFile.name,
+      };
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAcademicInfo({
+          ...academicInfo,
+          certificate: { name: fileData.name, file: e.target.result },
+        });
+      };
+      reader.readAsDataURL(selectedFile);
+      const certificateError = { ...errors, certificate: "" };
+      setErrors(certificateError);
     }
   };
 
-  const addRecord = () => {
-    setAcademicRecords([
-      ...academicRecords,
-      {
-        education_level: '',
-        program: '',
-        institute_name: '',
-        edu_start_date: '',
-        edu_end_date: '',
-        education_body: { file: '', name: '' } 
-      }
-    ]);
+  const handleStartDate = (date) => {
+    const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
+    handleChange("edu_start_date", formattedDate);
+  };
+
+  const handleEndDate = (date) => {
+    const formattedDate = moment(date).format("YYYY-MM-DD").toLowerCase();
+    handleChange("edu_end_date", formattedDate);
   };
 
   const handleNextStep = () => {
@@ -332,89 +86,68 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
     for (let i = 0; i < certificationSections.length; i++) {
       const certification = certificationSections[i];
       if (!certification.certification_name) {
-        fieldErrors[`certification_name_${i}`] = "Certification Name is required.";
+        fieldErrors[`certification_name_${i}`] =
+          "Certification Name is required.";
       }
       if (!certification.completion_date) {
-        fieldErrors[`completion_date_${i}`] = "Completion Date is required.";
+        fieldErrors[`completion_date_${i}`] =
+          "Completion Date Designation is required.";
       }
       if (!certification.expiry_date) {
         fieldErrors[`expiry_date_${i}`] = "Expiry Date is required.";
       }
-      if (!certification.certification_institute) {
-        fieldErrors[`certification_institute_${i}`] = "Certification Body is required.";
-      }
+
     }
 
-    const eduFieldErrors = {};
-    const validAcademicRecords = [];
+    const { error } = validationAcademicRecordSchema.validate(
+      {
+        education_level: academicInfo.education_level,
+        program: academicInfo.program,
+        institute_name: academicInfo.institute_name,
+        edu_start_date: academicInfo.edu_start_date,
+        edu_end_date: academicInfo.edu_end_date,
+      },
+      { abortEarly: false }
+    );
 
-    for (const [index, record] of academicRecords.entries()) {
-      const { error } = validationAcademicRecordSchema.validate(
-        {
-          education_level: record.education_level,
-          program: record.program,
-          institute_name: record.institute_name,
-          edu_start_date: record.edu_start_date,
-          edu_end_date: record.edu_end_date,
-          education_body: record.education_body
-        },
-        { abortEarly: false }
-      );
-
+    const validationErrors = {};
+    if (Object.keys(fieldErrors).length > 0 || error || !academicInfo.certificate?.hasOwnProperty("name")) {
       if (error) {
         error.details.forEach((detail) => {
-          eduFieldErrors[`${detail.path[0]}_${index}`] = detail.message;
+          validationErrors[detail.path[0]] = detail.message;
         });
-      } else if (!record.education_body.file) {
-        eduFieldErrors[`education_body_${index}`] = "Education document is required.";
-      } else {
-        validAcademicRecords.push({ ...record, employee_id: userProfile.id });
+        setErrors(validationErrors);
       }
-    }
-
-    if (Object.keys(fieldErrors).length > 0 || Object.keys(eduFieldErrors).length > 0) {
       if (Object.keys(fieldErrors).length > 0) {
-        setCerErrors(fieldErrors);
-      }
-      if (Object.keys(eduFieldErrors).length > 0) {
-        setEduErrors(eduFieldErrors);
+        let newErrors = { ...fieldErrors };
+        setCerErrors(newErrors);
       }
       return;
     }
-
-    saveEmployeeAcademicRecordData(baseUrl, userProfile.id, token, validAcademicRecords);
-    saveEmployeeCertificationData(baseUrl, userProfile.id, token, certificationSections);
-    nextstep();
+    else {
+      const academicDoc = {
+        employee_id: userProfile.id,
+        name: "acadmicDoc",
+        description: "Acadmic Document",
+        document: academicInfo.certificate,
+      }
+      academicInfo.employee_id = userProfile.id
+      delete academicInfo.certificate
+      saveEmployeeAcademicRecordData(baseUrl, userProfile?.id, token, academicInfo, academicDoc);
+      saveEmployeeCertificationData(baseUrl, userProfile?.id, token, certificationSections);
+      nextstep();
+    }
   };
 
-  const handleChange = (index, e) => {
-    const { name, value } = e.target;
-    const newRecords = [...academicRecords];
-    newRecords[index][name] = value;
-    setAcademicRecords(newRecords);
-    clearEduError(`${name}_${index}`);
+  const handleChange = (name, value) => {
+    setAcademicInfo({ ...academicInfo, [name]: value });
+    setErrors({ ...errors, [name]: null });
   };
-
   const clearCerError = (fieldName) => {
     if (cerErrors[fieldName]) {
       const updatedErrors = { ...cerErrors };
       delete updatedErrors[fieldName];
       setCerErrors(updatedErrors);
-    }
-  };
-
-  const clearEduError = (fieldName) => {
-    if (eduErrors[fieldName]) {
-      const updatedErrors = { ...eduErrors };
-      delete updatedErrors[fieldName];
-      setEduErrors(updatedErrors);
-    }
-  };
-
-  const removeRecord = (index) => {
-    if (academicRecords.length > 1) {
-      const newRecords = academicRecords.filter((_, i) => i !== index);
-      setAcademicRecords(newRecords);
     }
   };
 
@@ -424,170 +157,187 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
         <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
           Academic Records:
         </h2>
-
-        <div className="flex flex-col lg:gap-x-36">
-          {academicRecords.map((record, index) => (
-            <div className="order-2 md:order-1 md:w-[55%]" key={index}>
-               <div className="flex items-center">
-              <AiOutlineCloseCircle
-                className="text-red-500 mr-1 text-lg mb-2 lg:mb-4 mt-2"
-                onClick={() => removeRecord(index)}
-              />
-              <h2 className="text-baseBlue tracking-wide mb-2 lg:mb-4 lg:text-lg mt-2">
-                Education Record {index + 1}:
-              </h2>
-            </div>
-
-              <div className="flex flex-col">
-                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                  <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                    <label
-                      htmlFor="education"
-                      className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
-                    >
-                      Education Level:
-                    </label>
-                    <Select
-                      name="education"
-                      value={academicOptions.find(
-                        (option) => option.value === record.education_level
-                      )}
-                      options={academicOptions}
-                      isSearchable={false}
-                      className="focus:outline-none border-none"
-                      onChange={(selectedOption) => {
-                        handleChange(index, { target: { name: 'education_level', value: selectedOption.value } });
-                      }}
-                    />
-                    {eduErrors[`education_level_${index}`] && <div className="text-sm text-red-500">{eduErrors[`education_level_${index}`]}</div>}
-
-                  </div>
-                  <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                    <label
-                      htmlFor="program"
-                      className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
-                    >
-                      Program:
-                    </label>
-                    <input
-                      type="text"
-                      value={record.program}
-                      name="program"
-                      placeholder="Program Here"
-                      className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
-                      onChange={(e) => handleChange(index, e)}
-                    />
-                    {eduErrors[`program_${index}`] && <div className="text-sm text-red-500">{eduErrors[`program_${index}`]}</div>}
-
-                  </div>
-                </div>
-                <div className="flex flex-col mt-2 md:mt-5">
+        <div className="flex flex-col md:flex-row lg:gap-x-36">
+          <div className="order-2 md:order-1 md:w-[55%]">
+            <div className="flex flex-col">
+              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
                   <label
-                    htmlFor="institute_name"
-                    className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
+                    htmlFor="education"
+                    className="font-sfpro tracking-wide 
+                  font-medium text-input text-base mb-1"
                   >
-                    Institute Name:
+                    Education Level:
+                  </label>
+                  <Select
+                    name="education"
+                    value={academicOptions.find(
+                      (option) => option.value === academicInfo.education_level
+                    )}
+                    options={academicOptions}
+                    isSearchable={false}
+                    className="focus:outline-none border-none"
+                    onChange={(selectedOption) => {
+                      setAcademicInfo({
+                        ...academicInfo,
+                        education_level: selectedOption.value,
+                      });
+                      setErrors({ ...errors, education_level: null });
+                    }}
+                  />
+                  {errors.education_level && (
+                    <div className="text-red-500 text-sm">{errors.education_level}</div>
+                  )}
+                </div>
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    htmlFor="program"
+                    className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                  >
+                    Program:
                   </label>
                   <input
                     type="text"
-                    value={record.institute_name}
-                    name="institute_name"
-                    placeholder="Institute Name Here"
+                    value={academicInfo.program}
+                    name="program"
+                    id=""
+                    placeholder="Program Here"
                     className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
-                    onChange={(e) => handleChange(index, e)}
+                    onChange={(e) =>
+                      handleChange(e.target.name, e.target.value)
+                    }
                   />
-                  {eduErrors[`institute_name_${index}`] && <div className="text-sm text-red-500">{eduErrors[`institute_name_${index}`]}</div>}
-
+                  {errors.program && (
+                    <div className="text-red-500 text-sm">{errors.program}</div>
+                  )}
                 </div>
-                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                  <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                    <label
-                      htmlFor="startdate"
-                      className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
-                    >
-                      Start Date:
-                    </label>
-                    <Datepicker
-                      name="edu_start_date"
-                      day={record.edu_start_date ? record.edu_start_date.substr(8, 2) : null}
-                      month={record.edu_start_date ? record.edu_start_date.substr(5, 2) : null}
-                      year={record.edu_start_date ? record.edu_start_date.substr(0, 4) : null}
-                      selected={moment(record.edu_start_date, "DD-MM-YYYY").toDate()}
-                      onChange={(date) => handleDateChange(index, 'edu_start_date', date)}
-                    />
-                    {eduErrors[`edu_start_date_${index}`] && <div className="text-sm text-red-500">{eduErrors[`edu_start_date_${index}`]}</div>}
-
-                  </div>
-                  <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                    <label
-                      htmlFor="edu_end_date"
-                      className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
-                    >
-                      End Date:
-                    </label>
-                    <Datepicker
-                      name="edu_end_date"
-                      day={record.edu_end_date ? record.edu_end_date.substr(8, 2) : null}
-                      month={record.edu_end_date ? record.edu_end_date.substr(5, 2) : null}
-                      year={record.edu_end_date ? record.edu_end_date.substr(0, 4) : null}
-                      selected={moment(record.edu_end_date, "DD-MM-YYYY").toDate()}
-                      onChange={(date) => handleDateChange(index, 'edu_end_date', date)}
-                    />
-                    {eduErrors[`edu_end_date_${index}`] && <div className="text-sm text-red-500">{eduErrors[`edu_end_date_${index}`]}</div>}
-
-                  </div>
+              </div>
+              <div className="flex flex-col mt-2 md:mt-5">
+                <label
+                  htmlFor="institute_name"
+                  className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                >
+                  Institute Name:
+                </label>
+                <input
+                  type="text"
+                  value={academicInfo.institute_name}
+                  name="institute_name"
+                  id=""
+                  placeholder="Institute Name Here"
+                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                />
+                {errors.institute_name && (
+                  <div className="text-red-500 text-sm">{errors.institute_name}</div>
+                )}
+              </div>
+              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    htmlFor="startdate"
+                    className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                  >
+                    Start Date:
+                  </label>
+                  <Datepicker
+                    name="startdate"
+                    day={academicInfo.edu_start_date ? academicInfo.edu_start_date.substr(8, 2) : null}
+                    month={academicInfo.edu_start_date ? academicInfo.edu_start_date.substr(5, 2) : null}
+                    year={academicInfo.edu_start_date ? academicInfo.edu_start_date.substr(0, 4) : null}
+                    selected={moment(
+                      academicInfo.edu_start_date,
+                      "DD-MM-YYYY"
+                    ).toDate()}
+                    onChange={handleStartDate}
+                  />
+                  {errors.edu_start_date && (
+                    <div className="text-red-500 text-sm">
+                      {errors.edu_start_date}
+                    </div>
+                  )}
                 </div>
-                <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
-                  <div className="flex flex-col mt-2 md:mt-4">
-                    <h2 className="text-input tracking-wide text-base mt-3 mb-3 lg:mb-0 lg:text-base">
-                      Attach Certification:
-                    </h2>
-                    {record.education_body && record.education_body !== "" ? (
-                      <div className="flex gap-1 items-center">
-                        <div className="opacity-50">{record.education_body.name}</div>
-                        <WiCloudRefresh
-                          onClick={() => {
-                            const newRecords = [...academicRecords];
-                            newRecords[index].education_body = "";
-                            setAcademicRecords(newRecords);
-                          }}
-                          className="text-blue-600 text-xl"
-                        />
+                <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
+                  <label
+                    htmlFor="enddate"
+                    className="font-sfpro tracking-wide font-medium
+                            text-input text-base mb-1"
+                  >
+                    End Date:
+                  </label>
+                  <Datepicker
+                    name="enddate"
+                    day={academicInfo.edu_end_date ? academicInfo.edu_end_date.substr(8, 2) : null}
+                    month={academicInfo.edu_end_date ? academicInfo.edu_end_date.substr(5, 2) : null}
+                    year={academicInfo.edu_end_date ? academicInfo.edu_end_date.substr(0, 4) : null}
+                    selected={moment(
+                      academicInfo.edu_end_date,
+                      "DD-MM-YYYY"
+                    ).toDate()}
+                    onChange={handleEndDate}
+                  />
+                  {errors.edu_end_date && (
+                    <div className="text-red-500 text-sm">{errors.edu_end_date}</div>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
+                <div className="flex flex-col mt-2 md:mt-4">
+                  <h2 className="text-input tracking-wide text-base mt-3 mb-3 lg:mb-0 lg:text-base">
+                    Attach Certification:
+                  </h2>
+                  {academicInfo.certificate?.hasOwnProperty("name") ? (
+                    <div className="flex gap-1  items-center">
+                      <div className="opacity-50">
+                        {academicInfo.certificate.name}
                       </div>
-                    ) : (
-                      <label
-                        htmlFor={`file-upload-${index}`}
-                        className="cursor-pointer opacity-70 rounded-lg py-1 text-input"
-                      >
-                        <input
-                          id={`file-upload-${index}`}
-                          type="file"
-                          name="education_body"
-                          max-size="5242880"
-                          accept=".pdf"
-                          className="leading-5"
-                          onChange={(e) => handleFileChange(index, e)}
-                        />
-                      </label>
-                    )}
-                    {eduErrors[`education_body_${index}`] && <div className="text-sm text-red-500">{eduErrors[`education_body_${index}`]}</div>}
-                    <small className="text-gray-400">Upload a pdf no larger than 5 MB.</small>
-                  </div>
+                      <WiCloudRefresh
+                        onClick={() => {
+                          setAcademicInfo({ ...academicInfo, certificate: {} });
+                        }}
+                        className="text-blue-600 text-xl"
+                      />
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="file-upload"
+                      className="cursor-pointer opacity-70 
+                    rounded-lg py-1 text-input"
+                    >
+                      <input
+                        id="file-upload"
+                        type="file"
+                        name="file"
+                        accept=".pdf"
+                        max-size="104857600"
+                        download="file"
+                        className="leading-5"
+                        onChange={handleFileChange}
+                      />
+                    </label>
+                  )}
+                  {errors.certificate && (
+                    <div className="text-red-500 text-sm">
+                      {errors.certificate}
+                    </div>
+                  )}
+                  <small className="text-gray-400">
+                    Upload a pdf no larger than 100 MB.
+                  </small>
                 </div>
               </div>
             </div>
-          ))}
+          </div>
         </div>
-        <button
-          onClick={addRecord}
-          className="mt-4 mb-3 rounded-lg w-52 border block border-[#25A8E0] cursor-pointer text-[#555657] py-1"
-        >
-          <span className="text-[#25A8E0] font-bold text-xl mr-2">+</span>Add New Academic
-        </button>
 
         <h2 className="text-baseBlue mt-5 tracking-wide mb-2 lg:mb-4 lg:text-lg ">
           Certifications:
         </h2>
+
+
 
         {certificationSections.map((experience, index) => (
           <div key={index}>
@@ -700,36 +450,10 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                   )}
                 </div>
               </div>
-              <div className="flex flex-col mt-2 md:mt-5 md:w-1/2">
-                <label
-                  htmlFor="certification_name"
-                  className="font-sfpro tracking-wide font-medium text-input text-base mb-1"
-                >
-                  Certification Body:
-                </label>
-                <input
-                  type="text"
-                  name="certification_institute"
-                  placeholder="Certification Body"
-                  value={experience.certification_institute}
-                  onChange={(e) => {
-                    const updatedSections = [...certificationSections];
-                    updatedSections[index].certification_institute = e.target.value;
-                    setCertificationSections(updatedSections);
-                    clearCerError(`certification_institute_${index}`);
-                  }}
-                  className="pl-2 bg-white rounded h-8 text-sm placeholder-[#555657] placeholder-opacity-50"
-                />
-                {cerErrors[`certification_institute_${index}`] && (
-                  <div className="text-red-500 text-sm">
-                    {cerErrors[`certification_institute_${index}`]}
-                  </div>
-                )}
-              </div>
               <div className="flex flex-col md:flex-row md:gap-x-3 lg:gap-x-12">
                 <div className="flex flex-col mt-2 md:mt-4">
                   <h2 className="text-input tracking-wide text-base mt-3 mb-1 lg:text-base">
-                    Attach Certification:
+                    Certification Body:
                   </h2>
                   {experience.certification_body ? (
                     <div className="flex gap-1  items-center">
@@ -753,7 +477,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                         type="file"
                         name="certification_body"
                         accept=".pdf"
-                        max-size="5242880"
+                        max-size="104857600"
                         onChange={(e) => {
                           let file = e.target.files[0];
                           const updatedSections = [...certificationSections];
@@ -782,7 +506,7 @@ const AcademicRecords = ({ errors, setErrors, prevstep, nextstep, userProfile, b
                     </div>
                   )}
                   <small className="text-gray-400">
-                    Upload a pdf no larger than 5 MB.
+                    Upload a pdf no larger than 100 MB.
                   </small>
                 </div>
               </div>
