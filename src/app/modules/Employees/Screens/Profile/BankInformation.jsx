@@ -27,11 +27,10 @@ import { SelectComponent, ImageInput, DateInput, TextInput, PhoneInput, EmailInp
 import PageLoader from '../../../../../components/PageLoader.jsx';
 import { maritalStatus } from '../../../../../data/Data.js';
 
-const BankInformation = ({ nextstep, baseUrl, token, employeeId , isEditMode}) => {
+const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
 
     const formRef = React.createRef();
     const [bankInfo, setBankInfo] = useState({});
-    const [imageError, setImageError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
 
@@ -45,19 +44,12 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId , isEditMode}) =
     }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
     const handleSubmit = (data) => {
-        const personalInfrmation = getBankDetails(data);
-        const response = saveEmployeeBankDetailsData(baseUrl, employeeId, token, personalInfrmation);
+        debugger
+        const bandetails = getBankDetails(data);
+        const response = saveEmployeeBankDetailsData(baseUrl, employeeId, token, bandetails);
         if (response && isEditMode)
             nextstep();
     };
-
-
-    // Get country options for Select component
-    const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
-        value: countryCode,
-        label: getAllCountries()[countryCode].name
-    }));
-
 
     return (
         <>
@@ -67,7 +59,7 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId , isEditMode}) =
                         <CardHeader>
                             <Row>
                                 <Col lg={12}>
-                                    <h4 className="ml-2 fw-700">Personal Details</h4>
+                                    <h4 className="ml-2 fw-700">Banking Details</h4>
                                 </Col>
                             </Row>
                         </CardHeader>
@@ -94,9 +86,6 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId , isEditMode}) =
                                                         errors[`${field}`] = 'This field is required';
                                                     }
                                                 }
-                                                if (imageError) {
-                                                    errors.profile_picture = imageError;
-                                                }
                                                 console.log(values, errors)
 
                                                 return errors;
@@ -106,46 +95,13 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId , isEditMode}) =
                                             {(props) => (
                                                 <Form onSubmit={props.handleSubmit}>
                                                     <Row>
-
-                                                        <Col md="12">
-                                                            <ImageInput
-                                                                name={'profile_picture'}
-                                                                error={props.errors.profile_picture}
-                                                                touch={props.touched.profile_picture}
-                                                                value={props.values.profile_picture}
-                                                                label={'Your Photo'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.setFieldValue(field, value);
-                                                                    setImageError(null);
-                                                                }}
-                                                                setImageError={setImageError}
-                                                            />
-                                                        </Col>
-                                                        <Col lg={12} className="mb-3 ml-1">
-                                                            <h6 className="fw-700 mb-0">{props.values.first_name} {props.values.last_name}</h6>
-                                                            <span className="opacity-65 fs-12">ID: </span>
-                                                        </Col>
                                                         <Col md="6">
                                                             <TextInput
-                                                                name={'first_name'}
-                                                                error={props.errors.first_name}
-                                                                touch={props.touched.first_name}
-                                                                value={props.values.first_name}
-                                                                label={'First Name'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md={6}>
-                                                            <PhoneInput
-                                                                name={'mobile_no'}
-                                                                error={props.errors.mobile_no}
-                                                                touch={props.touched.mobile_no}
-                                                                value={props.values.mobile_no}
-                                                                label={'Contact no.'}
+                                                                name={'account_iban'}
+                                                                error={props.errors.account_iban}
+                                                                touch={props.touched.account_iban}
+                                                                value={props.values.account_iban}
+                                                                label={'IBAN Number'}
                                                                 required={true}
                                                                 onChange={(field, value) => {
                                                                     props.handleChange(field,)(value);
@@ -154,24 +110,11 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId , isEditMode}) =
                                                         </Col>
                                                         <Col md="6">
                                                             <TextInput
-                                                                name={'last_name'}
-                                                                error={props.errors.last_name}
-                                                                touch={props.touched.last_name}
-                                                                value={props.values.last_name}
-                                                                label={'First Name'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <EmailInput
-                                                                name={'other_email'}
-                                                                error={props.errors.other_email}
-                                                                touch={props.touched.other_email}
-                                                                value={props.values.other_email}
-                                                                label={'Email'}
+                                                                name={'bank_name'}
+                                                                error={props.errors.bank_name}
+                                                                touch={props.touched.bank_name}
+                                                                value={props.values.bank_name}
+                                                                label={'Branch Name'}
                                                                 required={true}
                                                                 onChange={(field, value) => {
                                                                     props.handleChange(field,)(value);
@@ -180,11 +123,24 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId , isEditMode}) =
                                                         </Col>
                                                         <Col md="6">
                                                             <TextInput
-                                                                name={'nic'}
-                                                                error={props.errors.nic}
-                                                                touch={props.touched.nic}
-                                                                value={props.values.nic}
-                                                                label={'ID Card no'}
+                                                                name={'account_title'}
+                                                                error={props.errors.account_title}
+                                                                touch={props.touched.account_title}
+                                                                value={props.values.account_title}
+                                                                label={'Account Title'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'branch_code'}
+                                                                error={props.errors.branch_code}
+                                                                touch={props.touched.branch_code}
+                                                                value={props.values.branch_code}
+                                                                label={'Branch Code'}
                                                                 required={true}
                                                                 onChange={(field, value) => {
                                                                     props.handleChange(field,)(value);
@@ -192,45 +148,48 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId , isEditMode}) =
                                                                 regEx={/^[0-9]+$/}
                                                             />
                                                         </Col>
-                                                        <Col md={6}>
-                                                            <SelectComponent
-                                                                name={'nationality'}
-                                                                options={countryOptions}
-                                                                error={props.errors.nationality}
-                                                                touch={props.touched.nationality}
-                                                                value={props.values.nationality}
-                                                                label={'Nationality'}
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'account_number'}
+                                                                error={props.errors.account_number}
+                                                                touch={props.touched.account_number}
+                                                                value={props.values.account_number}
+                                                                label={'Account Number'}
+                                                                required={true}
                                                                 onChange={(field, value) => {
-                                                                    props.setFieldValue(field, value);
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                                regEx={/^[0-9]+$/}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'swift_code'}
+                                                                error={props.errors.swift_code}
+                                                                touch={props.touched.swift_code}
+                                                                value={props.values.swift_code}
+                                                                label={'Swift Code'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                                regEx={/^[0-9]+$/}
+                                                            />
+                                                        </Col>
+                                                        <Col md="12">
+                                                            <TextInput
+                                                                name={'branch_address'}
+                                                                error={props.errors.branch_address}
+                                                                touch={props.touched.branch_address}
+                                                                value={props.values.branch_address}
+                                                                label={'Branch Address'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
                                                                 }}
                                                             />
                                                         </Col>
-                                                        <Col md={6}>
-                                                            <DateInput
-                                                                name={'date_of_birth'}
-                                                                error={props.errors.date_of_birth}
-                                                                touch={props.touched.date_of_birth}
-                                                                //  value={props.values.date_of_birth}
-                                                                value={new Date()}
-                                                                label={'DOC'}
-                                                                onChange={(field, value) => {
-                                                                    props.setFieldValue(field, value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md={6}>
-                                                            <SelectComponent
-                                                                name={'marital_status'}
-                                                                options={maritalStatus}
-                                                                error={props.errors.marital_status}
-                                                                touch={props.touched.marital_status}
-                                                                value={props.values.marital_status}
-                                                                label={'Martial Status'}
-                                                                onChange={(field, value) => {
-                                                                    props.setFieldValue(field, value);
-                                                                }}
-                                                            />
-                                                        </Col>
+
                                                     </Row>
                                                     <Row>
                                                         <Col md="12">
@@ -266,4 +225,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(BankInformation);
-

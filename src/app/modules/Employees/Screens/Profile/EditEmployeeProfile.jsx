@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { BankInformation, PersonalInformation } from "./index";
+import { BankInformation, PersonalInformation, ExperienceInformation } from "./index";
+
 
 const EditEmployeeProfile = () => {
     const { id } = useParams(); // Get the ID from URL params
@@ -13,19 +14,27 @@ const EditEmployeeProfile = () => {
                 <PersonalInformation
                     employeeId={id}
                     nextstep={() => {
-                        setCurrentTab(2)
+                        setCurrentTab(currentTab + 1)
                     }}
                     isEditMode={true}
                 />
             }
-            {currentTab === 1 &&
+            {currentTab === 2 &&
                 <BankInformation
                     employeeId={id}
                     nextstep={() => {
-                        setCurrentTab(2)
+                        setCurrentTab(currentTab + 1)
                     }}
                     isEditMode={true}
                 />
+            }
+            {currentTab === 3 &&
+                <ExperienceInformation
+                    employeeId={id}
+                    nextstep={() => {
+                        setCurrentTab(currentTab + 1)
+                    }}
+                    isEditMode={true} />
             }
         </>
     );
