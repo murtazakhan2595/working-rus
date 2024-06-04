@@ -1,19 +1,11 @@
 import React from "react";
-import { CiEdit } from "react-icons/ci";
-import { FiPlus } from "react-icons/fi";
 
 const WorkInformation = ({ workInformation }) => {
  
 
   return (
     <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
-      <div className="flex justify-between">
-        <h2 className="text-xl">Work Information</h2>
-        <div className="flex gap-4 items-center">
-          <FiPlus className="text-2xl cursor-pointer opacity-80" />
-          <CiEdit className="text-2xl cursor-pointer opacity-80" />
-        </div>
-      </div>
+      <h2 className="text-xl mb-4">Work Information</h2>
       <hr />
       <div className="flex flex-col 1100:flex-row py-4 overflow-auto no-scrollbar">
         {workInformation.map((infoGroup, groupIndex) => (
