@@ -78,6 +78,11 @@ export const educationTypeOptions = [
   { value: "Intermediate", label: "Intermediate" },
 ];
 
+export const maritalStatus=[
+  { value: "Single", label: "Single" },
+  { value: "Married", label: "Married" },
+]
+
 export const locationTypeOptions = [
   { value: "pakistan", label: "Pakistan" },
   { value: "india", label: "India" },

@@ -29,17 +29,6 @@ import { EmployeeDepartmentInfo, EmployeeInformation } from '../../../utils/Type
 import { getAddEmployeePayload } from '../../../utils/MappingObjects/mapEmployeeData.jsx'
 import moment from "moment";
 
-function getManagerSelected(managers) {
-    debugger
-    if (managers) {
-        const matchingObjects = managers.map(obj => {
-            return obj.value;
-        });
-
-        return matchingObjects.join(', ');
-    }
-    return [];
-}
 
 const CreateEmployee = ({ token, baseUrl }) => {
     const formRef = React.createRef();
@@ -57,7 +46,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
     const [refreshComponent, setRefreshComponent] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isApiCallInProgress, setIsApiCallInProgress] = useState(false);
-    const [email, setEmail] = useState("");
+    const [other_email, setEmail] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
 
@@ -264,24 +253,24 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                                 <Input
                                                                     type="text"
                                                                     maxLength="100"
-                                                                    id="firstname"
-                                                                    name="firstname"
+                                                                    id="first_name"
+                                                                    name="first_name"
                                                                     autoComplete="Off"
                                                                     placeholder={'Enter User Name'}
                                                                     onChange={(option) => {
-                                                                        props.handleChange('firstname')(option);
+                                                                        props.handleChange('first_name')(option);
                                                                     }}
-                                                                    value={props.values.firstname}
+                                                                    value={props.values.first_name}
                                                                     className={
-                                                                        props.errors.firstname && props.touched.firstname ? 'is-invalid' : ''
+                                                                        props.errors.first_name && props.touched.first_name ? 'is-invalid' : ''
                                                                     }
                                                                 />
-                                                                <Label htmlFor="firstname">
+                                                                <Label htmlFor="first_name">
                                                                     <span className="text-danger">* </span>First Name
                                                                 </Label>
-                                                                {props.errors.firstname && props.touched.firstname && (
+                                                                {props.errors.first_name && props.touched.first_name && (
                                                                     <div className="invalid-feedback">
-                                                                        {props.errors.firstname}
+                                                                        {props.errors.first_name}
                                                                     </div>
                                                                 )}
                                                             </FormGroup>
@@ -291,24 +280,24 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                                 <Input
                                                                     type="text"
                                                                     maxLength="100"
-                                                                    id="lastname"
-                                                                    name="lastname"
+                                                                    id="last_name"
+                                                                    name="last_name"
                                                                     autoComplete="Off"
                                                                     placeholder={'Enter User Name'}
-                                                                    value={props.values.lastname}
+                                                                    value={props.values.last_name}
                                                                     className={
-                                                                        props.errors.lastname && props.touched.lastname ? 'is-invalid' : ''
+                                                                        props.errors.last_name && props.touched.last_name ? 'is-invalid' : ''
                                                                     }
                                                                     onChange={(option) => {
-                                                                        props.handleChange('lastname')(option);
+                                                                        props.handleChange('last_name')(option);
                                                                     }}
                                                                 />
-                                                                <Label htmlFor="lastname">
+                                                                <Label htmlFor="last_name">
                                                                     <span className="text-danger">* </span>Last Name:
                                                                 </Label>
-                                                                {props.errors.lastname && props.touched.lastname && (
+                                                                {props.errors.last_name && props.touched.last_name && (
                                                                     <div className="invalid-feedback">
-                                                                        {props.errors.lastname}
+                                                                        {props.errors.last_name}
                                                                     </div>
                                                                 )}
                                                             </FormGroup>
@@ -316,26 +305,26 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                         <Col md="6">
                                                             <FormGroup floating>
                                                                 <Input
-                                                                    type="email"
+                                                                    type="other_email"
                                                                     maxLength="100"
-                                                                    id="email"
-                                                                    name="email"
+                                                                    id="other_email"
+                                                                    name="other_email"
                                                                     autoComplete="Off"
                                                                     placeholder={'Enter User Name'}
-                                                                    value={props.values.email}
+                                                                    value={props.values.other_email}
                                                                     className={
-                                                                        props.errors.email && props.touched.email ? 'is-invalid' : ''
+                                                                        props.errors.other_email && props.touched.other_email ? 'is-invalid' : ''
                                                                     }
                                                                     onChange={(option) => {
-                                                                        props.handleChange('email')(option);
+                                                                        props.handleChange('other_email')(option);
                                                                     }}
                                                                 />
-                                                                <Label htmlFor="email">
+                                                                <Label htmlFor="other_email">
                                                                     <span className="text-danger">* </span>Email
                                                                 </Label>
-                                                                {props.errors.email && props.touched.email && (
+                                                                {props.errors.other_email && props.touched.other_email && (
                                                                     <div className="invalid-feedback">
-                                                                        {props.errors.email}
+                                                                        {props.errors.other_email}
                                                                     </div>
                                                                 )}
                                                             </FormGroup>
@@ -372,24 +361,24 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                                 <Input
                                                                     type="text"
                                                                     maxLength="100"
-                                                                    id="contact_number"
-                                                                    name="contact_number"
+                                                                    id="mobile_no"
+                                                                    name="mobile_no"
                                                                     autoComplete="Off"
                                                                     placeholder={'Enter User Name'}
-                                                                    value={props.values.contact_number}
+                                                                    value={props.values.mobile_no}
                                                                     className={
-                                                                        props.errors.contact_number && props.touched.contact_number ? 'is-invalid' : ''
+                                                                        props.errors.mobile_no && props.touched.mobile_no ? 'is-invalid' : ''
                                                                     }
                                                                     onChange={(option) => {
-                                                                        props.handleChange('contact_number')(option);
+                                                                        props.handleChange('mobile_no')(option);
                                                                     }}
                                                                 />
-                                                                <Label htmlFor="contact_number">
+                                                                <Label htmlFor="mobile_no">
                                                                     <span className="text-danger">* </span>Contact no.
                                                                 </Label>
-                                                                {props.errors.contact_number && props.touched.contact_number && (
+                                                                {props.errors.mobile_no && props.touched.mobile_no && (
                                                                     <div className="invalid-feedback">
-                                                                        {props.errors.contact_number}
+                                                                        {props.errors.mobile_no}
                                                                     </div>
                                                                 )}
                                                             </FormGroup>
@@ -399,24 +388,24 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                                 <Input
                                                                     type="text"
                                                                     maxLength="100"
-                                                                    id="address"
-                                                                    name="address"
+                                                                    id="residential_address"
+                                                                    name="residential_address"
                                                                     autoComplete="Off"
                                                                     placeholder={'Enter User Name'}
-                                                                    value={props.values.address}
+                                                                    value={props.values.residential_address}
                                                                     className={
-                                                                        props.errors.address && props.touched.address ? 'is-invalid' : ''
+                                                                        props.errors.residential_address && props.touched.residential_address ? 'is-invalid' : ''
                                                                     }
                                                                     onChange={(option) => {
-                                                                        props.handleChange('address')(option);
+                                                                        props.handleChange('residential_address')(option);
                                                                     }}
                                                                 />
-                                                                <Label htmlFor="address">
+                                                                <Label htmlFor="residential_address">
                                                                     <span className="text-danger">* </span>Address
                                                                 </Label>
-                                                                {props.errors.address && props.touched.address && (
+                                                                {props.errors.residential_address && props.touched.residential_address && (
                                                                     <div className="invalid-feedback">
-                                                                        {props.errors.address}
+                                                                        {props.errors.residential_address}
                                                                     </div>
                                                                 )}
                                                             </FormGroup>
@@ -541,7 +530,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
                             </div>
                             <div className="flex items-center mt-2">
                                 <label
-                                    htmlFor="lastname"
+                                    htmlFor="last_name"
                                     className="font-sfpro tracking-wide whitespace-nowrap
                             text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
                                 >
@@ -549,8 +538,8 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                 </label>
                                 <input
                                     type="text"
-                                    name="lastname"
-                                    value={formData.lastname}
+                                    name="last_name"
+                                    value={formData.last_name}
                                     required
                                     placeholder="Last Name Here"
                                     className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
@@ -562,7 +551,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
                         <div className="w-full flex flex-col gap-y-2 md:gap-y-3">
                             <div className="flex items-center mt-2">
                                 <label
-                                    htmlFor="email"
+                                    htmlFor="other_email"
                                     className="font-sfpro tracking-wide whitespace-nowrap
                             text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
                                 >
@@ -570,11 +559,11 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                     <span className="text-[#F9F9F9]">Add</span>
                                 </label>
                                 <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
+                                    type="other_email"
+                                    name="other_email"
+                                    value={formData.other_email}
                                     required
-                                    placeholder="Enter email Here"
+                                    placeholder="Enter other_email Here"
                                     className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
             placeholder-opacity-50"
                                     onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -649,7 +638,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
            justify-center items-center absolute md:w-[40%] lg:w-[26%] lg:h-[24%]"
                         >
                             <p className="text-base text-center text-gray-400">
-                                User has been successfully registered and has been sent to {email}
+                                User has been successfully registered and has been sent to {other_email}
                             </p>
                             <div
                                 className="absolute top-4 right-4 text-white bg-[#ECECEC] rounded-full p-[2px] cursor-pointer"

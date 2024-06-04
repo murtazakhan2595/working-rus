@@ -25,9 +25,17 @@ body {
 .fw-700 {
     font-weight: 700;
 }
+.fs-12 {
+    font-size: 12px;
+}
 
 .form-control {
     min-height: calc(3.5rem + 2px)
+}
+
+.opacity-65{
+    opacity: .65;
+
 }
 
 .custom-select-input.form-control {

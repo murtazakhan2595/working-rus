@@ -36,7 +36,7 @@ import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
 import LeaveRequestHR from "./app/modules/LeaveApplication/LeaveRequestHR.jsx";
 import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestManager.jsx";
 import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
-import EditDataForm from "./app/modules/EmployeesData/EditDataForm.jsx";
+import Profile from "./app/modules/Employees/Screens/Profile";
 import ViewEmpForm from "./app/modules/ViewEmployee/ViewEmpForm.jsx";
 import Test from "./app/modules/Profile/Test.jsx";
 import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
@@ -174,7 +174,7 @@ function App() {
                       />
                       <Route
                         path="/edit-employee/:id"
-                        element={<EditDataForm />}
+                        element={<Profile />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
 
