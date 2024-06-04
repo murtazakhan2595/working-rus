@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { IoArrowForward } from "react-icons/io5";
-import logo from "../.././../assets/images/tecbrix-logo.png";
+import logo from "../../../../../assets/images/tecbrix-logo.png";
 
 const OnboardComplete = () => {
   return (
