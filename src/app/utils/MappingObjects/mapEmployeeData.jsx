@@ -12,9 +12,8 @@ function mapEmployeeData(data) {
     employee.id = data.id;
     employee.personalInformation = getPersonalInfo(data);
     employee.visaDetails = getVisaDetails(data)
-    employee.bankDetails = getBankDetails(data)
-    employee.department = getDepartmentInfo(data)
     employee.academicRecord = getAcademicRecord(data);
+    employee.cv = getCVDetails(data);
     employee.professionalExperiance = getProfessionalExperiance(data);
 
     console.log(employee)
@@ -22,28 +21,29 @@ function mapEmployeeData(data) {
 }
 
 function getPersonalInfo(data) {
-    return {
-        first_name: data.first_name,
-        last_name: data.last_name,
-        father_name: data.father_name,
-        mother_name: data.mother_name,
-        country_code: data.country_code,
-        mobile_no: data.mobile_no,
-        date_of_birth: data.date_of_birth,
-        marital_status: data.marital_status,
-        nationality: data.nationality,
-        email: data.other_email,
-        work_email: data.work_email,
-        current_address: data.current_address,
-        residential_address: data.residential_address,
-        nic: data.nic,
-        emergency_first_name: data.emergency_first_name,
-        emergency_last_name: data.emergency_last_name,
-        emergency_country_code: data.emergency_country_code,
-        emergency_phone_no: data.emergency_phone_no,
-        emergency_relation: data.emergency_relation,
-        profile_picture: data.profile_picture,
-    }
+    const personalInfo = EmployeePersonalInformation;
+    personalInfo.first_name = data.first_name;
+    personalInfo.last_name = data.last_name;
+    personalInfo.father_name = data.father_name;
+    personalInfo.mother_name = data.mother_name;
+    personalInfo.country_code = data.country_code;
+    personalInfo.mobile_no = data.mobile_no;
+    personalInfo.date_of_birth = data.date_of_birth;
+    personalInfo.marital_status = data.marital_status;
+    personalInfo.nationality = data.nationality;
+    personalInfo.email = data.other_email;
+    personalInfo.work_email = data.work_email;
+    personalInfo.current_address = data.current_address;
+    personalInfo.residential_address = data.residential_address;
+    personalInfo.nic = data.nic;
+    personalInfo.emergency_first_name = data.emergency_first_name;
+    personalInfo.emergency_last_name = data.emergency_last_name;
+    personalInfo.emergency_country_code = data.emergency_country_code;
+    personalInfo.emergency_phone_no = data.emergency_phone_no;
+    personalInfo.emergency_relation = data.emergency_relation;
+    personalInfo.profile_picture = data.profile_picture;
+
+    return personalInfo;
 }
 
 function getVisaDetails(data) {
@@ -111,25 +111,16 @@ async function getProfessionalExperiance(data) {
 }
 
 function getAcademicRecord(data) {
-    const educations = [];
-    if (data && data.length > 0) {
-        data.map((record) => {
-            const empCerficate = {
-                id: record.id,
-                employee_id: record.employee_id,
-                education_level: record?.education_level ?? '',
-                program: record?.program ?? '',
-                institute_name: record?.institute_name ?? '',
-                edu_start_date: record?.edu_start_date ?? '',
-                edu_end_date: record?.edu_end_date ?? '',
-                education_body: record?.education_body ?? '',
-            };
-            educations.push(empCerficate)
-        })
-
-        return educations;
-    }
-    return [EmployeeAcademicRecord];
+    const academicRecord = EmployeeAcademicRecord;
+    academicRecord.id = data.id;
+    academicRecord.employee_id = data.employee_id;
+    academicRecord.education_level = data?.education_level ?? '';
+    academicRecord.program = data?.program ?? '';
+    academicRecord.institute_name = data?.institute_name ?? '';
+    academicRecord.edu_start_date = data?.edu_start_date;
+    academicRecord.edu_end_date = data?.edu_end_date;
+    academicRecord.certificate = data.certificate?.document ?? null;
+    return academicRecord;
 }
 
 function getCertifications(data) {
@@ -141,7 +132,6 @@ function getCertifications(data) {
                 employee_id: record.employee_id,
                 certification_name: record?.certification_name ?? '',
                 completion_date: record?.completion_date ?? '',
-                certification_institute: record?.certification_institute ?? '',
                 expiry_date: record?.expiry_date ?? '',
                 certification_body: record?.certification_body ?? '',
             };
@@ -162,8 +152,6 @@ function getDepartmentInfo(data) {
     department.department_manager = data?.department_manager ?? '';
     department.employee_type = data?.employee_type ?? '';
     department.employee_status = data?.employee_status ?? '';
-    department.employee_work_type = data?.employee_work_type ?? '';
-    department.employee_location = data?.employee_location ?? '';
     department.joining_date = data?.joining_date ?? null;
     department.is_indirect_report_applicable = data.indirect_report ? true : false;
 
@@ -182,42 +170,6 @@ function getBankDetails(data) {
 
     return bankDetail;
 }
-function getManagerSelected(managers) {
-    debugger
-    if (managers) {
-        const matchingObjects = managers.map(obj => {
-            return obj.value;
-        });
-
-        return matchingObjects.join(', ');
-    }
-    return [];
-}
-
-function getAddEmployeePayload(data) {
-    const department = EmployeeDepartmentInfo;
-    department.department_name = data?.department_name ?? '';
-    department.department_position = data?.department_position ?? '';
-    department.direct_report = data?.direct_report ? getManagerSelected(data.direct_report) : '';
-    department.indirect_report = data?.indirect_report ? getManagerSelected(data.indirect_report) : '';
-    department.department_manager = data?.department_manager ?? '';
-    department.employee_type = data?.employee_type ?? '';
-    department.employee_status = data?.employee_status ?? '';
-    department.employee_work_type = data?.employee_work_type ?? '';
-    department.employee_location = data?.employee_location ?? '';
-    department.joining_date = data?.joining_date ? moment(data.joining_date).format('YYYY-MM-DD') : null;
-    department.is_indirect_report_applicable = data.indirect_report ? true : false;
-
-    const employeeInformation = {
-        username: data.username,
-        firstname: data.firstname,
-        lastname: data.lastname,
-        email: data.email,
-        password: data.password,
-        user_role: data.user_role,
-    }
-    return { ...employeeInformation, ...department };
-}
 
 
 export {
@@ -230,5 +182,4 @@ export {
     getDepartmentInfo,
     getBankDetails,
     getCertifications,
-    getAddEmployeePayload,
 }

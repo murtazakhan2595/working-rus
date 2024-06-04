@@ -5,7 +5,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { HiDownload } from "react-icons/hi";
 import { dropdownOptions, filterDropdownOptions } from "../../../data/Data";
-import Loader from "../../../components/Loader";
+import Loader from "../../../common/Loader";
 import { IoFilter } from "react-icons/io5";
 
 const ApplicantsDataTable = ({ baseUrl, token }) => {

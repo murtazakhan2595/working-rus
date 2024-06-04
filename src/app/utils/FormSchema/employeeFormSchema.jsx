@@ -65,10 +65,6 @@ const validationAcademicRecordSchema = Joi.object({
   institute_name: Joi.string().required().label("Institute Name"),
   edu_start_date: Joi.string().required().label("Start Date"),
   edu_end_date: Joi.string().required().label("End Date"),
-  education_body: Joi.object({
-    file: Joi.string().required().label('Education Document'),
-    name: Joi.string().required().label('File Name')
-  }).required().label('Education Body')
 });
 
 const validationDepartmentInfoFormSchema = Joi.object({
@@ -90,14 +86,6 @@ const validationDepartmentInfoFormSchema = Joi.object({
     .messages({
       "string.empty": `Employee Status is required`,
     }),
-  employee_work_type: Joi.string().required().label('Work Type')
-    .messages({
-      "string.empty": `Work Type is required`,
-    }),
-  employee_location: Joi.string().required().label('Employee Location')
-    .messages({
-      "string.empty": `Employee Location is required`,
-    }),
   employee_type: Joi.string().required().label('Employee type')
     .messages({
       "string.empty": `Employee type is required`,
@@ -114,6 +102,7 @@ const validationDepartmentInfoFormSchema = Joi.object({
       'string.pattern.base': 'Joining Date must be in "DD-MM-YYYY" format',
     }),
   direct_report: Joi.string().required(),
+  indirect_report: Joi.string().required(),
 });
 
 const validationBankDetailsFormSchema = Joi.object({

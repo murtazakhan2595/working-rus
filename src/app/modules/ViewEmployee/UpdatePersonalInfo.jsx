@@ -7,7 +7,7 @@ import Button from "./Button";
 import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
-import CustomLoader from "../../../components/CustomLoader";
+import CustomLoader from "../../../common/CustomLoader";
 import { BiEdit } from "react-icons/bi";
 import { countryCodes } from "../../../data/CountryCode";
 import { getAllCountries } from 'countries-and-timezones';
@@ -48,10 +48,7 @@ const PersonalInfo = ({
     if (selectedFile) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview({
-          name: selectedFile.name,
-          file: e.target.result,
-        });
+        setImagePreview(e.target.result);
       };
       reader.readAsDataURL(selectedFile);
       const imageError = { image: "" };

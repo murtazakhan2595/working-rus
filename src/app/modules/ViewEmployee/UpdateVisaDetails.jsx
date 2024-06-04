@@ -7,7 +7,7 @@ import { visaOptions } from '../../../data/Data';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
-import CustomLoader from '../../../components/CustomLoader';
+import CustomLoader from '../../../common/CustomLoader';
 import { BiEdit } from 'react-icons/bi';
 import { WiCloudRefresh } from 'react-icons/wi';
 import { RxCross2 } from 'react-icons/rx';

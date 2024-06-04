@@ -9,7 +9,7 @@ import { IoIosSearch } from "react-icons/io";
 import Select from "react-select";
 import Datepicker from "../Dashboard/Datepicker";
 import moment from "moment";
-import LeavesLoader from "../../../components/LeavesLoader";
+import LeavesLoader from "../../../common/LeavesLoader";
 import { getAllCountries } from 'countries-and-timezones';
 import { FaAngleDown } from "react-icons/fa";
 import { department } from "../../../data/Data";

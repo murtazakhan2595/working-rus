@@ -13,12 +13,12 @@ export const fetchEmployees = createAsyncThunk(
     'employees/fetchEmployees',
     async (_, { getState }) => {
         try {
-            const { token, baseUrl } = getState().user;
+            const { token } = getState().user;
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
-            const response = await axios.get(`${baseUrl}/emp/`, { headers });
+            const response = await axios.get('https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api/emp/', { headers });
             return response.data;
         } catch (error) {
             throw error;

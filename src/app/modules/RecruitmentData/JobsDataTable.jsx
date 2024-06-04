@@ -7,7 +7,7 @@ import { IoEyeOutline } from "react-icons/io5";
 import { MdContentCopy, MdDeleteForever } from "react-icons/md";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loader from "../../../components/Loader";
+import Loader from "../../../common/Loader";
 import { CiEdit } from "react-icons/ci";
 import { jobsStatusOptions } from "../../../data/Data";
 import moment from "moment";
@@ -176,7 +176,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
                 <th className="px-6 py-3 text-left">End Date</th>
                 <th className="px-6 py-3 text-left">Job Link</th>
                 <th
-                  className="px-2 py-3 text-left flex items-center gap-x-3 relative"
+                  className="px-5 py-3 text-left flex items-center gap-x-3 relative"
                   onClick={handleShowFilter}
                 >
                   Job Status
@@ -285,12 +285,12 @@ const JobsDataTable = ({ baseUrl, token }) => {
                       </td>
                     </Link>
 
-                    <td className={`px-4 py-3 text-center font-bold`}>
-                      <button title="Edit Job Post" onClick={() => handleEdit(post.id)}>
+                    <td className={`px-6 py-3 text-center font-bold`}>
+                      <button onClick={() => handleEdit(post.id)}>
                         <FaEdit className="text-green-700" />
                       </button>{" "}
                       <button onClick={() => handleDelete(post.id)}>
-                        <MdDeleteForever title="Delete Job Post" className="text-red-700" />
+                        <MdDeleteForever className="text-red-700" />
                       </button>
                     </td>
                   </tr>

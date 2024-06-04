@@ -11,29 +11,16 @@ const initialState = {
 // Define the thunk to update a single task
 export const updateTask = createAsyncThunk(
     'tasks/updateTask',
-    async (updatedFormData, { getState }) => {
+    async (taskData, { getState }) => {
         try {
-            const { token, baseUrl, userProfile } = getState().user; // Access token from user slice
-            const { id } = userProfile;
+            const { token } = getState().user; // Access token from user slice
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
 
             // Update the task using axios.put
-            const response = await axios.patch(`${baseUrl}/dtr/${updatedFormData.id}`, {
-                status: updatedFormData.taskStatus,
-                priorty: updatedFormData.priorty,
-                date: new Date().toLocaleDateString(),
-                task: updatedFormData.task,
-                employee_id: updatedFormData.assigne,
-                assigne: id,
-                task_start_date: updatedFormData.task_start_date,
-                due_date: updatedFormData.due_date,
-                task_details: updatedFormData.task_details,
-                Type: updatedFormData.Type,
-                total_task_days: null,
-            }, { headers });
+            const response = await axios.put(`https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api/dtr/${taskData.id}`, taskData, { headers });
 
             // Return the updated task data
             return response.data;

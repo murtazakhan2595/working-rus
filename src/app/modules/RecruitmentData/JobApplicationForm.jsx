@@ -112,7 +112,7 @@ const JobApplicationForm = ({ token, baseUrl }) => {
         }
       }
     } catch (error) {
-      toast.error(error, {
+      toast.error("Error submitting the form. Please try again.", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
