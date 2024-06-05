@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
 import {
-    CardHeader,
-    CardBody,
-    Row,
-    Col,
-    Button,
-    Form,
-    FormGroup,
-} from 'reactstrap';
-import { Formik } from 'formik';
+  CardHeader,
+  CardBody,
+  Row,
+  Col,
+  Button,
+  Form,
+  FormGroup,
+} from "reactstrap";
+import { Formik } from "formik";
 import { connect } from "react-redux";
-import { getEmployeeCerficationData, saveEmployeeCertificationData } from '../../../../hooks/employee.jsx';
-import PageLoader from '../../../../../components/PageLoader.jsx';
-import { EmployeeCertifiation } from '../../../../utils/Types/Employee';
+import {
+  getEmployeeCerficationData,
+  saveEmployeeCertificationData,
+} from "../../../../hooks/employee.jsx";
+import PageLoader from "../../../../../components/PageLoader.jsx";
+import { EmployeeCertifiation } from "../../../../utils/Types/Employee";
 
 import logo from "../../../../../assets/images/tecbrix-logo.png";
 import {
@@ -22,189 +25,233 @@ import {
   TextInput,
 } from "../../../../../components/form-control";
 
-const CertificationsInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
+const CertificationsInformation = ({
+  nextstep,
+  baseUrl,
+  token,
+  employeeId,
+  isEditMode,
+}) => {
+  const formRef = React.createRef();
+  const [certifications, setCertifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-    const formRef = React.createRef();
-    const [certifications, setCertifications] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    console.log("Fetching certification data...");
+    getEmployeeCerficationData(baseUrl, employeeId, token)
+      .then((response) => {
+        console.log("Certification data fetched:", response);
+        setCertifications(response);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log("Error fetching certification data:", error);
+      });
+  }, [baseUrl, employeeId, token]);
 
-    useEffect(() => {
-        getEmployeeCerficationData(baseUrl, employeeId, token).then(response => {
-            setCertifications(response);
-            setIsLoading(false);
-        }).catch(error => {
-            console.log(error);
-        });
-    }, [baseUrl, employeeId, token]);
+  const handleSubmit = async (data) => {
+    console.log("Submitting data:", data);
+    try {
+      const response = await saveEmployeeCertificationData(
+        baseUrl,
+        employeeId,
+        token,
+        data.certifications
+      );
+      console.log("Save response:", response);
+      if (response && isEditMode) nextstep();
+    } catch (error) {
+      console.error("Error saving certifications:", error);
+    }
+  };
 
-    const handleSubmit = (data) => {
-        const response = saveEmployeeCertificationData(baseUrl, employeeId, token, data.certifications);
-        if (response && isEditMode)
-            nextstep();
-    };
-
-    return (
-        <>
-            <div className="screen">
+  return (
+    <>
+      <div className="screen">
+        <Row>
+          <Col lg={8} className="mx-auto">
+            <CardHeader>
+              <Row>
+                <Col lg={12}>
+                  <div className="flex justify-between">
+                    <div className="flex justify-start items-start">
+                      <img
+                        src={logo}
+                        className="w-[142px] h-auto md:h-auto lg:pl-5"
+                        alt="Tecbrix logo"
+                      />
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </CardHeader>
+            <CardBody>
+              {isLoading ? (
                 <Row>
-                    <Col lg={8} className="mx-auto">
-                        <CardHeader>
-                            <Row>
-                                <Col lg={12}>
-                                    <div className="flex justify-between">
-                                        <div className="flex justify-start items-start">
-                                            <img
-                                                src={logo}
-                                                className="w-[142px] h-auto md:h-auto lg:pl-5"
-                                                alt="Tecbrix logo"
-                                            />
-                                        </div>
-                                    </div>
-                                </Col>
-                            </Row>
-                        </CardHeader>
-                        <CardBody>
-                            {isLoading ?
-                                <Row>
-                                    <Col lg={12}>
-                                        <PageLoader />
-                                    </Col>
-                                </Row>
-                                :
-                                <Row>
-                                    <Col lg={12}>
-                                        <Formik
-                                            initialValues={{ certifications: certifications }}
-                                            ref={formRef}
-                                            onSubmit={(values, { resetForm }) => {
-                                                handleSubmit(values, resetForm);
-                                            }}
-                                            validate={(values) => {
-                                                const errors = {};
-                                                if (values.certifications) {
-                                                    values.certifications.forEach((value, index) => {
-                                                        const certificationErrors = {};
-                                                        Object.keys(value).forEach((field) => {
-                                                            if (!value[field]) {
-                                                                certificationErrors[field] = 'This field is required';
-                                                            }
-                                                        });
-                                                        if (Object.keys(certificationErrors).length > 0) {
-                                                            errors.certifications = errors.certifications || [];
-                                                            errors.certifications[index] = certificationErrors;
-                                                        }
-                                                    });
-                                                }
-                                                return errors;
-                                            }}
-                                        >
-                                            {(props) => (
-                                                <Form onSubmit={props.handleSubmit}>
-                                                    <Row>
-                                                        {props.values?.certifications && props.values.certifications.length > 0 && props.values.certifications.map((certification, index) => (
-                                                            <React.Fragment key={index}>
-                                                                <Col md="12">
-                                                                    <h5 className="fw-700 mb-3 mt-4">Certification {index + 1}</h5>
-                                                                </Col>
-                                                                <div className="flex flex-wrap gap-x-3">
-                                                                    <div className="w-full md:w-[48%]">
-                                                                        <TextInput 
-                                                                            name={`certifications[${index}].certification_name`} 
-                                                                            value={certification.certification_name}
-                                                                            onChange={props.handleChange}
-                                                                        />
-                                                                    </div>
-                                                                    <div className="w-full md:w-[48%]">
-                                                                        <DateInput 
-                                                                            name={`certifications[${index}].completion_date`} 
-                                                                            value={certification.completion_date}
-                                                                            onChange={props.handleChange}
-                                                                        />
-                                                                    </div>
-                                                                    <div className="w-full md:w-[48%]">
-                                                                        <DateInput 
-                                                                            name={`certifications[${index}].expiry_date`} 
-                                                                            value={certification.expiry_date}
-                                                                            onChange={props.handleChange}
-                                                                        />
-                                                                    </div>
-                                                                    <div className="w-full md:w-[48%]">
-                                                                        <TextInput 
-                                                                            name={`certifications[${index}].certification_institute`} 
-                                                                            value={certification.certification_institute}
-                                                                            onChange={props.handleChange}
-                                                                        />
-                                                                    </div>
-                                                                    <div className="w-full md:w-[97.5%] bg-[#E5E5F0] flex justify-center items-center h-40">
-                                                                        <input 
-                                                                            type="file" 
-                                                                            name={`certifications[${index}].certification_body`} 
-                                                                            onChange={(e) => {
-                                                                                props.setFieldValue(`certifications[${index}].certification_body`, e.currentTarget.files[0]);
-                                                                            }} 
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </React.Fragment>
-                                                        ))}
-                                                        <Col md="12" className="text-left">
-                                                            <Button
-                                                                type="button"
-                                                                className="btn btn-outline-dark"
-                                                                onClick={() => {
-                                                                    const length = props.values?.certifications?.length;
-                                                                    const index = length ? length : 0;
-                                                                    props.setFieldValue(`certifications[${index}]`, EmployeeCertifiation);
-                                                                }}
-                                                            >
-                                                                + Add Another
-                                                            </Button>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
-                                                        <Col md="12">
-                                                            <FormGroup className="text-right">
-                                                                <Button
-                                                                    type="submit"
-                                                                    className="btn btn-dark"
-                                                                >
-                                                                    Next
-                                                                </Button>
-                                                                <Button
-                                                                    type="button"
-                                                                    className="btn btn-secondary"
-                                                                    onClick={nextstep}
-                                                                >
-                                                                    Skip
-                                                                </Button>
-                                                            </FormGroup>
-                                                        </Col>
-                                                    </Row>
-                                                </Form>
-                                            )}
-                                        </Formik>
-                                    </Col>
-                                </Row>
-                            }
-                        </CardBody>
-                        <div className="flex justify-start items-start">
-                            <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
-                                © 2024 TecBrix
-                            </p>
-                        </div>
-                    </Col>
+                  <Col lg={12}>
+                    <PageLoader />
+                  </Col>
                 </Row>
-            </div>
-        </>
-    );
+              ) : (
+                <Row>
+                  <Col lg={12}>
+                    <Formik
+                      initialValues={{ certifications: certifications }}
+                      innerRef={formRef}
+                      onSubmit={(values, { resetForm }) => {
+                        console.log("Submitting form values:", values);
+                        handleSubmit(values);
+                      }}
+                      validate={(values) => {
+                        const errors = {};
+                        if (values.certifications) {
+                          values.certifications.forEach((value, index) => {
+                            const certificationErrors = {};
+                            Object.keys(value).forEach((field) => {
+                              if (!value[field]) {
+                                certificationErrors[field] =
+                                  "This field is required";
+                              }
+                            });
+                            if (Object.keys(certificationErrors).length > 0) {
+                              errors.certifications =
+                                errors.certifications || [];
+                              errors.certifications[index] =
+                                certificationErrors;
+                            }
+                          });
+                        }
+                        return errors;
+                      }}
+                    >
+                      {(props) => (
+                        <Form onSubmit={props.handleSubmit}>
+                          <Row>
+                            {props.values?.certifications &&
+                              props.values.certifications.length > 0 &&
+                              props.values.certifications.map(
+                                (certification, index) => (
+                                  <React.Fragment key={index}>
+                                    <Col md="12">
+                                      <h5 className="fw-700 mb-3 mt-4">
+                                        Certification {index + 1}
+                                      </h5>
+                                    </Col>
+                                    <div className="flex flex-wrap gap-x-3">
+                                      <div className="w-full md:w-[48%]">
+                                        <TextInput
+                                          name={`certifications[${index}].certification_name`}
+                                          value={
+                                            certification.certification_name
+                                          }
+                                          label={"Certification Name"}
+                                          onChange={(field, value) => {
+                                            props.setFieldValue(field, value);
+                                          }}
+                                        />
+                                      </div>
+                                      <div className="w-full md:w-[48%]">
+                                        <DateInput
+                                          name={`certifications[${index}].completion_date`}
+                                          value={certification.completion_date}
+                                          onChange={(field, value) => {
+                                            props.setFieldValue(field, value);
+                                          }}
+                                          label={"Completion Date"}
+                                        />
+                                      </div>
+                                      <div className="w-full md:w-[48%]">
+                                        <DateInput
+                                          name={`certifications[${index}].expiry_date`}
+                                          value={certification.expiry_date}
+                                          onChange={(field, value) => {
+                                            props.setFieldValue(field, value);
+                                          }}
+                                          label={"Expiry Date"}
+                                        />
+                                      </div>
+                                      <div className="w-full md:w-[48%]">
+                                        <TextInput
+                                          name={`certifications[${index}].certification_institute`}
+                                          value={
+                                            certification.certification_institute
+                                          }
+                                          onChange={(field, value) => {
+                                            props.setFieldValue(field, value);
+                                          }}
+                                          label={"Certification Body"}
+                                        />
+                                      </div>
+                                      <div className="w-full md:w-[97.5%] bg-[#E5E5F0] flex justify-center items-center h-40">
+                                        <input
+                                          type="file"
+                                          name={`certifications[${index}].certification_body`}
+                                          onChange={(e) => {
+                                            props.setFieldValue(
+                                              `certifications[${index}].certification_body`,
+                                              e.currentTarget.files[0]
+                                            );
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+                                  </React.Fragment>
+                                )
+                              )}
+                            <Col md="12" className="text-left">
+                              <Button
+                                type="button"
+                                className="btn btn-outline-dark"
+                                onClick={() => {
+                                  const length =
+                                    props.values?.certifications?.length;
+                                  const index = length ? length : 0;
+                                  props.setFieldValue(
+                                    `certifications[${index}]`,
+                                    EmployeeCertifiation
+                                  );
+                                }}
+                              >
+                                + Add Another
+                              </Button>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md="12">
+                              <FormGroup className="text-right">
+                                <Button type="submit" className="btn btn-dark">
+                                  Next
+                                </Button>
+                                <Button
+                                  type="button"
+                                  className="btn btn-secondary"
+                                  onClick={nextstep}
+                                >
+                                  Skip
+                                </Button>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                        </Form>
+                      )}
+                    </Formik>
+                  </Col>
+                </Row>
+              )}
+            </CardBody>
+          </Col>
+        </Row>
+      </div>
+    </>
+  );
 };
 
 const mapStateToProps = (state) => {
-    return {
-        userProfile: state.user.userProfile,
-        token: state.user.token,
-        baseUrl: state.user.baseUrl,
-    };
+  return {
+    userProfile: state.user.userProfile,
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+  };
 };
 
 export default connect(mapStateToProps)(CertificationsInformation);
