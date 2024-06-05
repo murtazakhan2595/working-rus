@@ -103,9 +103,21 @@ const EmployeeInformation = {
     username: null,
     first_name: null,
     last_name: null,
-    other_email: null,
+    work_email: null,
     password: null,
+    mobile_no: null,
     user_role: null,
+    residential_address:null,
+    department_name: null,
+    department_position: null,
+    direct_report: null,
+    indirect_report: null,
+    department_manager: null,
+    employee_type: null,
+    employee_work_type: null,
+    employee_location: null,
+    employee_status: null,
+    joining_date: null,
 }
 const Employee = {
     id: null,
@@ -117,6 +129,7 @@ const Employee = {
     department: EmployeeDepartmentInfo,
     bankDetails: EmployeeBankDetails,
     certifications: EmployeeCertifiation,
+
 }
 
 export {
