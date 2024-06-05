@@ -19,7 +19,7 @@ const EditEmployeeProfile = () => {
                     isEditMode={true}
                 />
             }
-            {currentTab === 2 &&
+            {currentTab === 3 &&
                 <BankInformation
                     employeeId={id}
                     nextstep={() => {
@@ -28,12 +28,15 @@ const EditEmployeeProfile = () => {
                     isEditMode={true}
                 />
             }
+            {
+                currentTab === 4 &&
                 <ExperienceInformation
                     employeeId={id}
                     nextstep={() => {
                         setCurrentTab(currentTab + 1)
                     }}
                     isEditMode={true} />
+            }
         </>
     );
 };

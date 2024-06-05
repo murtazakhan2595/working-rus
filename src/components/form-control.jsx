@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 import upload from "../assets/images/upload.png";
+import { TfiFiles } from 'react-icons/tfi'
 
 const SelectComponent = ({
     name,
@@ -281,11 +282,14 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
 const FileInput = ({ value, error, setImageError, onChange, touch, name }) => {
     return (
         <>
-            <div className="flex flex-col bg-[#F5F5FA] text-center" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
-                <h4>Upload your Experience Letter or drag it here</h4>
+            <div className="flex flex-col bg-[#F5F5FA] text-center file-input" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
+                <h4>
+                    <TfiFiles className="m-auto mb-3" />
+                    Upload your Experience Letter or drag it here
+                </h4>
                 <label
                     htmlFor={name}
-                    className="cursor-pointer opacity-70 rounded-lg text-input"
+                    className="cursor-pointer opacity-70 rounded-lg text-input mt-3"
                 >
                     <input
                         id={name}
@@ -294,22 +298,18 @@ const FileInput = ({ value, error, setImageError, onChange, touch, name }) => {
                         accept=".pdf"
                         max-size="104857600"
                         onChange={(e) => {
-                            //     let exp_letter = e.target.files[0];
-                            //    // const updatedSections = [...experienceSections];
-                            //     const fileData = { name: exp_letter.name };
-                            //     if (exp_letter) {
-                            //       const reader = new FileReader();
-                            //       reader.onload = (e) => {
-                            //         let i = index;
-                            //         updatedSections[i].exp_letter = {
-                            //           name: fileData.name,
-                            //           exp_letter: e.target.result,
-                            //         };
-                            //         //setExperienceSections(updatedSections);
-                            //       };
-                            //       reader.readAsDataURL(exp_letter);
-                            //       //setErrors(`file_${index}`);
-                            //     }
+                            let exp_letter = e.target.files[0];
+                            const fileData = { name: exp_letter.name };
+                            if (exp_letter) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    onChange('exp_letter', {
+                                        name: fileData.name,
+                                        exp_letter: e.target.result,
+                                    });
+                                };
+                                reader.readAsDataURL(exp_letter);
+                            }
                         }}
                         style={{ position: 'relative' }}
                     />

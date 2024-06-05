@@ -25,6 +25,7 @@ body {
 .fw-700 {
     font-weight: 700;
 }
+
 .fs-12 {
     font-size: 12px;
 }
@@ -33,7 +34,7 @@ body {
     min-height: calc(3.5rem + 2px)
 }
 
-.opacity-65{
+.opacity-65 {
     opacity: .65;
 
 }
@@ -54,49 +55,48 @@ body {
 }
 
 
-HTML CSSResult Skip Results Iframe
-EDIT ON
-input[type="file"] {
-  position: relative;
+HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
+    position: relative;
 }
 
-input[type="file"]::file-selector-button {
-  width: 136px;
-  color: transparent;
+.file-input input[type="file"]::file-selector-button {
+    width: 136px;
+    color: transparent;
 }
 
 /* Faked label styles and icon */
-input[type="file"]::before {
-  position: absolute;
-  pointer-events: none;
-  top: 10px;
-  left: 16px;
-  height: 20px;
-  width: 20px;
-  content: "";
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230964B0'%3E%3Cpath d='M18 15v3H6v-3H4v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h-2zM7 9l1.41 1.41L11 7.83V16h2V7.83l2.59 2.58L17 9l-5-5-5 5z'/%3E%3C/svg%3E");
+.file-input input[type="file"]::before {
+    position: absolute;
+    pointer-events: none;
+    top: 10px;
+    left: 16px;
+    height: 20px;
+    width: 20px;
+    content: "";
+    background-image: url('data:image/svg+xml,<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>');
 }
 
-input[type="file"]::after {
-  position: absolute;
-  pointer-events: none;
-  top: 11px;
-  left: 40px;
-  color: #0964b0;
-  content: "Upload File";
+.file-input input[type="file"]::after {
+    position: absolute;
+    pointer-events: none;
+    top: 11px;
+    left: 40px;
+    color: #5C5E64;
+    content: "Upload";
+    line-height: 20px;
 }
 
 /* ------- From Step 1 ------- */
 
 /* file upload button */
-input[type="file"]::file-selector-button {
-  border-radius: 4px;
-  padding: 0 16px;
-  height: 40px;
-  cursor: pointer;
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.16);
-  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05);
-  margin-right: 16px;
-  transition: background-color 200ms;
+.file-input input[type="file"]::file-selector-button {
+    border-radius: 4px;
+    padding: 0 16px;
+    height: 40px;
+    cursor: pointer;
+    background-color: transparent;
+    border: 1px solid #5C5E64;
+    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05);
+    margin-right: 16px;
+    transition: background-color 200ms;
 }

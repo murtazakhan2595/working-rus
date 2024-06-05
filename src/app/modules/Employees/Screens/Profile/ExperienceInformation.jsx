@@ -35,7 +35,7 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
     }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
     const handleSubmit = (data) => {
-        const response = saveEmployeeProfessionalExperianceData(baseUrl, employeeId, token,  data.experiences);
+        const response = saveEmployeeProfessionalExperianceData(baseUrl, employeeId, token, data.experiences);
         if (response && isEditMode)
             nextstep();
     };
@@ -107,7 +107,7 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
                                                                 />
                                                             </>
                                                         ))}
-                                                        <Col md="12" className="text-left">
+                                                        <Col md="12" className="text-left mt-4">
                                                             <Link
                                                                 type="button"
                                                                 className="btn btn-outline-dark"
@@ -123,7 +123,7 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
                                                             </Link>
                                                         </Col>
                                                     </Row>
-
+                                                    <hr className="m-3" />
                                                     <Row>
                                                         <Col md="12">
                                                             <FormGroup className="text-right">
