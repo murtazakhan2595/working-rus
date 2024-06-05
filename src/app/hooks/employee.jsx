@@ -4,12 +4,14 @@ import {
     getDepartmentInfo,
     getBankDetails,
     getCertifications,
+    getContactInfo,
 } from '../utils/MappingObjects/mapEmployeeData'
 import {
     EmployeeCVDetails, Employee, EmployeePersonalInformation, EmployeeVisaDetails, EmployeeProfessionalExperiance,
     EmployeeDepartmentInfo,
     EmployeeBankDetails,
     EmployeeCertifiation,
+    EmployeeContactInformation,
 } from '../utils/Types/Employee'
 
 
@@ -66,6 +68,47 @@ const saveEmployeePersonalInfoData = async (baseUrl, employeeid, token, personal
         }
     }
 }
+const getEmployeeContactInfo = async (baseUrl, employeeid, token) => {
+    if (employeeid) {
+        try {
+            const response = await axios.get(`${baseUrl}/employeeInformationlist/${employeeid}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            // Assuming response.data is the personal info object
+            if (response.status === 200) {
+                const employeeData = getContactInfo(response.data);
+                console.log(employeeData);
+                return employeeData;
+            }
+        } catch (error) {
+            console.error("Error fetching contact Info data :", error);
+        }
+    }
+    return EmployeeContactInformation;
+}
+
+const saveEmployeeContactInfoData = async (baseUrl, employeeid, token, contactInfo) => {
+    if (employeeid) {
+        try {
+            const response = await axios.patch(`${baseUrl}/emp/${employeeid}`, contactInfo, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            })
+            if (response.status === 200)
+                return true;
+
+        } catch (error) {
+            console.error("Error saving contact Info data :", error);
+            return false;
+        }
+    }
+}
+
 const getEmployeeVisaDetailsFiles = async (baseUrl, id, token) => {
     const headers = {
         Authorization: `Bearer ${token}`,
@@ -615,4 +658,6 @@ export {
     getEmployeeVisaDetailsFiles,
     deleteEmployeeProfessionalExperianceData,
     deleteEmployeeAcademicRecordData,
+    getEmployeeContactInfo,
+    saveEmployeeContactInfoData
 }

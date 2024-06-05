@@ -1,104 +1,110 @@
-
 const EmployeePersonalInformation = {
-    first_name: null,
-    last_name: null,
-    mobile_no: null,
-    date_of_birth: null,
-    marital_status: null,
-    nationality: null,
-    other_email: null,
-    nic: null,
-    profile_picture: null,
-
-}
+  first_name: null,
+  last_name: null,
+  mobile_no: null,
+  date_of_birth: null,
+  marital_status: null,
+  nationality: null,
+  other_email: null,
+  nic: null,
+  profile_picture: null,
+};
+const EmployeeContactInformation = {
+  emergency_phone_no: null,
+  emergency_first_name: null,
+  emergency_last_name: null,
+  emergency_relation: null,
+  current_address: null,
+  residential_address: null,
+};
 
 const EmployeeVisaDetails = {
-    passport_number: null,
-    Passport_Issuance_Country: null,
-    Passport_Issuance_Date: null,
-    Passport_Expiry_Date: null,
-    entry_permit_number: null,
-    country_of_visa_issuance: null,
-    visa_duration: null,
-    uid_number: null,
-    living_country_id_no: null,
-    dha_id: null,
-    card_number: null,
-    insurance_policy: null,
-    insurance_company: null,
-    visa_expiry_date: null,
-    visa_issuance_date: null,
-    visa_country_entry_date: null,
-    visa_country_exit_date: null,
-    id_issuance_date: null,
-    id_expiry_date: null,
-    insurance_active_date: null,
-    insurance_expiry_date: null,
-    visa_type: null,
-    place_of_issuance: null,
-
-}
+  passport_number: null,
+  Passport_Issuance_Country: null,
+  Passport_Issuance_Date: null,
+  Passport_Expiry_Date: null,
+  entry_permit_number: null,
+  country_of_visa_issuance: null,
+  visa_duration: null,
+  uid_number: null,
+  living_country_id_no: null,
+  dha_id: null,
+  card_number: null,
+  insurance_policy: null,
+  insurance_company: null,
+  visa_expiry_date: null,
+  visa_issuance_date: null,
+  visa_country_entry_date: null,
+  visa_country_exit_date: null,
+  id_issuance_date: null,
+  id_expiry_date: null,
+  insurance_active_date: null,
+  insurance_expiry_date: null,
+  visa_type: null,
+  place_of_issuance: null,
+};
 
 const EmployeeCVDetails = {
-    cv: null,
-    cvName: null,
-    existingCVId: null,
-}
+  cv: null,
+  cvName: null,
+  existingCVId: null,
+};
 
 const EmployeeProfessionalExperiance = {
-    id: null,
-    employee_id: null,
-    exp_organization: null,
-    exp_designation: null,
-    exp_letter: null,
-    exp_start_date: null,
-    exp_end_date: null,
-    disableEndDate: false,
-}
+  id: null,
+  employee_id: null,
+  exp_organization: null,
+  exp_designation: null,
+  exp_letter: null,
+  exp_start_date: null,
+  exp_end_date: null,
+  disableEndDate: false,
+};
 
 const EmployeeAcademicRecord = {
-    id: null,
-    employee_id: null,
-    education_level: null,
-    program: null,
-    institute_name: null,
-    edu_start_date: null,
-    edu_end_date: null,
-    certificate: null,
-}
+  id: null,
+  employee_id: null,
+  education_level: null,
+  program: null,
+  institute_name: null,
+  edu_start_date: null,
+  edu_end_date: null,
+  certificate: null,
+};
 
 const EmployeeCertifiation = {
-    id: null,
-    employee_id: null,
-    certification_name: null,
-    completion_date: null,
-    expiry_date: null,
-    certification_body: null,
-}
+  id: null,
+  employee_id: null,
+  certification_name: null,
+  completion_date: null,
+  expiry_date: null,
+  certification_body: null,
+  certification_institute: null,
+};
 
 const EmployeeDepartmentInfo = {
-    department_name: null,
-    department_position: null,
-    direct_report: null,
-    indirect_report: null,
-    department_manager: null,
-    employee_type: null,
-    employee_work_type: null,
-    employee_location: null,
-    employee_status: null,
-    joining_date: null,
-    is_indirect_report_applicable: true,
-}
+  department_name: null,
+  department_position: null,
+  direct_report: null,
+  indirect_report: null,
+  department_manager: null,
+  employee_type: null,
+  employee_work_type: null,
+  employee_location: null,
+  employee_status: null,
+  joining_date: null,
+  is_indirect_report_applicable: true,
+};
 
 const EmployeeBankDetails = {
-    bank_name: null,
-    account_title: null,
-    account_number: null,
-    account_iban: null,
-    branch_address: null,
-    branch_code: null,
-    swift_code: null,
-}
+  bank_name: null,
+  account_title: null,
+  account_number: null,
+  account_iban: null,
+  branch_address: null,
+  branch_code: null,
+  swift_code: null,
+};
 const EmployeeInformation = {
     username: null,
     first_name: null,
@@ -133,10 +139,15 @@ const Employee = {
 }
 
 export {
-    Employee, EmployeePersonalInformation, EmployeeVisaDetails, EmployeeAcademicRecord, EmployeeCVDetails,
-    EmployeeProfessionalExperiance,
-    EmployeeDepartmentInfo,
-    EmployeeBankDetails,
-    EmployeeCertifiation,
-    EmployeeInformation,
-}
+  Employee,
+  EmployeePersonalInformation,
+  EmployeeVisaDetails,
+  EmployeeAcademicRecord,
+  EmployeeCVDetails,
+  EmployeeProfessionalExperiance,
+  EmployeeDepartmentInfo,
+  EmployeeBankDetails,
+  EmployeeCertifiation,
+  EmployeeInformation,
+  EmployeeContactInformation
+};
