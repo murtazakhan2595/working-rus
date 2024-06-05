@@ -15,20 +15,32 @@ import {
 } from 'reactstrap';
 import PageLoader from '../../../../components/PageLoader.jsx';
 import EmpDataHeader from "./Sections/Header.jsx";
-import Select from "react-select";
+import { FaChevronCircleLeft } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { Formik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import WorkInformation from './Sections/WorkInformation.jsx'
-import { EmployeeDepartmentInfo, EmployeeInformation } from '../../../utils/Types/Employee.jsx'
+import { EmployeeInformation } from '../../../utils/Types/Employee.jsx'
 import { getAddEmployeePayload } from '../../../utils/MappingObjects/mapEmployeeData.jsx'
 import moment from "moment";
+import { EmailInput, PhoneInput, TextAreaInput, DateInput, TextInput } from '../../../../components/form-control.jsx'
+function getManagerSelected(managers) {
+    if (managers) {
+        const matchingObjects = managers.map(obj => {
+            return obj.value;
+        });
 
+        return matchingObjects.join(', ');
+    }
+    return [];
+}
 
 const CreateEmployee = ({ token, baseUrl }) => {
     const formRef = React.createRef();
@@ -36,31 +48,26 @@ const CreateEmployee = ({ token, baseUrl }) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
     };
-
-
-    const [formData, setFormData] = useState({ ...EmployeeInformation, ...EmployeeDepartmentInfo });
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({...EmployeeInformation });
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [validationError, setValidationError] = useState("");
-    const [isUserNameInputFocused, setIsUserNameInputFocused] = useState(false);
     const [empId, setempId] = useState(0);
+    const [email, setEmail] = useState('');
     const [refreshComponent, setRefreshComponent] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [isApiCallInProgress, setIsApiCallInProgress] = useState(false);
-    const [other_email, setEmail] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
 
 
 
     const handleSubmit = async (data) => {
         debugger
         // Check if an API call is already in progress
-        if (isApiCallInProgress) {
-            return;
-        }
+
+        data.indirect_report = data?.indirect_report ? getManagerSelected(data.indirect_report) : '';
+        data.direct_report = data?.direct_report ? getManagerSelected(data.direct_report) : '';
+        data.department_name = null;
         setIsLoading(true);
-        const empInfopayload = getAddEmployeePayload(data);
         try {
-            const response = await axios.post(`${baseUrl}/emp/add`, empInfopayload, {
+            const response = await axios.post(`${baseUrl}/emp/add`, data, {
                 headers,
             });
 
@@ -70,6 +77,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
 
             }
         } catch (error) {
+            setFormData(data);
             if (
                 error.response &&
                 error.response.data.username[0] ===
@@ -85,10 +93,8 @@ const CreateEmployee = ({ token, baseUrl }) => {
                 });
             }
         } finally {
-            setIsApiCallInProgress(false);
             setIsLoading(false);
         }
-        setFormData(data);
     };
 
     useEffect(() => {
@@ -130,6 +136,10 @@ const CreateEmployee = ({ token, baseUrl }) => {
         fetchLastItemFromLastPage();
     }, [refreshComponent, baseUrl, token]);
 
+    const closeModal = () => {
+        setShowSuccessModal(false)
+    }
+
 
     return (
 
@@ -149,8 +159,13 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                     </div>
                                 </Col>
                                 <Col lg={2}>
-                                    <Link className="btn btn-light">
-                                        Go Back
+                                    <Link
+                                        type="button"
+                                        className="btn btn-light bg-transparent fw-700"
+                                        to="/employees"
+                                    >
+
+                                        <span style={{ display: 'inline-block' }}>Go Back </span><FaChevronCircleLeft style={{ display: 'inline-block', marginLeft: '10px', marginBottom: '2px' }} />
                                     </Link>
                                 </Col>
                             </Row>
@@ -173,18 +188,11 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                             }}
                                             validate={(values) => {
                                                 const errors = {};
-                                                // if (!values.direct_report) {
-                                                //     errors.direct_report = 'Manager is Required'
-                                                // }
-                                                // if (!values.employeeId) {
-                                                //     errors.employeeId = 'Employee Id is Required'
-                                                // }
                                                 for (let field in values) {
                                                     if (!values[`${field}`]) {
                                                         errors[`${field}`] = 'This field is required';
                                                     }
                                                 }
-
                                                 return errors;
                                             }}
 
@@ -196,139 +204,74 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                             <h5 className="fw-700 mb-3">Employee Details</h5>
                                                         </Col>
                                                         <Col md="6">
-                                                            <FormGroup floating>
-                                                                <Input
-                                                                    type="text"
-                                                                    maxLength="100"
-                                                                    id="employeeId"
-                                                                    name="employeeId"
-                                                                    autoComplete="Off"
-                                                                    disable
-                                                                    placeholder={'Enter User Name'}
-                                                                    value={empId}
-                                                                    className={
-                                                                        props.errors.employeeId && props.touched.employeeId ? 'is-invalid' : ''
-                                                                    }
-                                                                />
-                                                                <Label htmlFor="employeeId">
-                                                                    <span className="text-danger">* </span>Employee ID
-                                                                </Label>
-                                                                {props.errors.employeeId && props.touched.employeeId && (
-                                                                    <div className="invalid-feedback">
-                                                                        {props.errors.employeeId}
-                                                                    </div>
-                                                                )}
-                                                            </FormGroup>
+                                                            <TextInput
+                                                                name={'employeeId'}
+                                                                error={props.errors?.employeeId}
+                                                                touch={props.touched?.employeeId}
+                                                                value={empId}
+                                                                label={'Employee ID'}
+                                                                required={true}
+                                                                disabled={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field)(value);
+                                                                }}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'username'}
+                                                                error={props.errors.username}
+                                                                touch={props.touched.username}
+                                                                value={props.values.username}
+                                                                label={'User Name'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'first_name'}
+                                                                error={props.errors.first_name}
+                                                                touch={props.touched.first_name}
+                                                                value={props.values.first_name}
+                                                                label={'First Name'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <TextInput
+                                                                name={'last_name'}
+                                                                error={props.errors.last_name}
+                                                                touch={props.touched.last_name}
+                                                                value={props.values.last_name}
+                                                                label={'Last Name'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                            />
+                                                        </Col>
+                                                        <Col md="6">
+                                                            <EmailInput
+                                                                name={'work_email'}
+                                                                error={props.errors.work_email}
+                                                                touch={props.touched.work_email}
+                                                                value={props.values.work_email}
+                                                                label={'Email'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                    setEmail(value);
+                                                                }}
+                                                            />
                                                         </Col>
 
-                                                        <Col md="6">
-                                                            <FormGroup floating>
-                                                                <Input
-                                                                    type="text"
-                                                                    maxLength="100"
-                                                                    id="username"
-                                                                    name="username"
-                                                                    autoComplete="Off"
-                                                                    placeholder={'Enter User Name'}
-                                                                    onChange={(option) => {
-                                                                        props.handleChange('username')(option);
-                                                                    }}
-                                                                    value={props.values.username}
-                                                                    className={
-                                                                        props.errors.username && props.touched.username ? 'is-invalid' : ''
-                                                                    }
-                                                                />
-                                                                <Label htmlFor="username">
-                                                                    <span className="text-danger">* </span>User Name
-                                                                </Label>
-                                                                {props.errors.username && props.touched.username && (
-                                                                    <div className="invalid-feedback">
-                                                                        {props.errors.username}
-                                                                    </div>
-                                                                )}
-                                                            </FormGroup>
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <FormGroup floating>
-                                                                <Input
-                                                                    type="text"
-                                                                    maxLength="100"
-                                                                    id="first_name"
-                                                                    name="first_name"
-                                                                    autoComplete="Off"
-                                                                    placeholder={'Enter User Name'}
-                                                                    onChange={(option) => {
-                                                                        props.handleChange('first_name')(option);
-                                                                    }}
-                                                                    value={props.values.first_name}
-                                                                    className={
-                                                                        props.errors.first_name && props.touched.first_name ? 'is-invalid' : ''
-                                                                    }
-                                                                />
-                                                                <Label htmlFor="first_name">
-                                                                    <span className="text-danger">* </span>First Name
-                                                                </Label>
-                                                                {props.errors.first_name && props.touched.first_name && (
-                                                                    <div className="invalid-feedback">
-                                                                        {props.errors.first_name}
-                                                                    </div>
-                                                                )}
-                                                            </FormGroup>
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <FormGroup floating>
-                                                                <Input
-                                                                    type="text"
-                                                                    maxLength="100"
-                                                                    id="last_name"
-                                                                    name="last_name"
-                                                                    autoComplete="Off"
-                                                                    placeholder={'Enter User Name'}
-                                                                    value={props.values.last_name}
-                                                                    className={
-                                                                        props.errors.last_name && props.touched.last_name ? 'is-invalid' : ''
-                                                                    }
-                                                                    onChange={(option) => {
-                                                                        props.handleChange('last_name')(option);
-                                                                    }}
-                                                                />
-                                                                <Label htmlFor="last_name">
-                                                                    <span className="text-danger">* </span>Last Name:
-                                                                </Label>
-                                                                {props.errors.last_name && props.touched.last_name && (
-                                                                    <div className="invalid-feedback">
-                                                                        {props.errors.last_name}
-                                                                    </div>
-                                                                )}
-                                                            </FormGroup>
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <FormGroup floating>
-                                                                <Input
-                                                                    type="other_email"
-                                                                    maxLength="100"
-                                                                    id="other_email"
-                                                                    name="other_email"
-                                                                    autoComplete="Off"
-                                                                    placeholder={'Enter User Name'}
-                                                                    value={props.values.other_email}
-                                                                    className={
-                                                                        props.errors.other_email && props.touched.other_email ? 'is-invalid' : ''
-                                                                    }
-                                                                    onChange={(option) => {
-                                                                        props.handleChange('other_email')(option);
-                                                                    }}
-                                                                />
-                                                                <Label htmlFor="other_email">
-                                                                    <span className="text-danger">* </span>Email
-                                                                </Label>
-                                                                {props.errors.other_email && props.touched.other_email && (
-                                                                    <div className="invalid-feedback">
-                                                                        {props.errors.other_email}
-                                                                    </div>
-                                                                )}
-                                                            </FormGroup>
-                                                        </Col>
+
                                                         <Col md="6">
                                                             <FormGroup floating>
                                                                 <Input
@@ -356,60 +299,33 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                                 )}
                                                             </FormGroup>
                                                         </Col>
-                                                        <Col md="4">
-                                                            <FormGroup floating>
-                                                                <Input
-                                                                    type="text"
-                                                                    maxLength="100"
-                                                                    id="mobile_no"
-                                                                    name="mobile_no"
-                                                                    autoComplete="Off"
-                                                                    placeholder={'Enter User Name'}
-                                                                    value={props.values.mobile_no}
-                                                                    className={
-                                                                        props.errors.mobile_no && props.touched.mobile_no ? 'is-invalid' : ''
-                                                                    }
-                                                                    onChange={(option) => {
-                                                                        props.handleChange('mobile_no')(option);
-                                                                    }}
-                                                                />
-                                                                <Label htmlFor="mobile_no">
-                                                                    <span className="text-danger">* </span>Contact no.
-                                                                </Label>
-                                                                {props.errors.mobile_no && props.touched.mobile_no && (
-                                                                    <div className="invalid-feedback">
-                                                                        {props.errors.mobile_no}
-                                                                    </div>
-                                                                )}
-                                                            </FormGroup>
+                                                        <Col md={6}>
+                                                            <PhoneInput
+                                                                name={'mobile_no'}
+                                                                error={props.errors.mobile_no}
+                                                                touch={props.touched.mobile_no}
+                                                                value={props.values.mobile_no}
+                                                                label={'Contact no.'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field,)(value);
+                                                                }}
+                                                            />
                                                         </Col>
                                                         <Col md="8">
-                                                            <FormGroup floating>
-                                                                <Input
-                                                                    type="text"
-                                                                    maxLength="100"
-                                                                    id="residential_address"
-                                                                    name="residential_address"
-                                                                    autoComplete="Off"
-                                                                    placeholder={'Enter User Name'}
-                                                                    value={props.values.residential_address}
-                                                                    className={
-                                                                        props.errors.residential_address && props.touched.residential_address ? 'is-invalid' : ''
-                                                                    }
-                                                                    onChange={(option) => {
-                                                                        props.handleChange('residential_address')(option);
-                                                                    }}
-                                                                />
-                                                                <Label htmlFor="residential_address">
-                                                                    <span className="text-danger">* </span>Address
-                                                                </Label>
-                                                                {props.errors.residential_address && props.touched.residential_address && (
-                                                                    <div className="invalid-feedback">
-                                                                        {props.errors.residential_address}
-                                                                    </div>
-                                                                )}
-                                                            </FormGroup>
+                                                            <TextAreaInput
+                                                                name={'residential_address'}
+                                                                error={props.errors?.residential_address}
+                                                                touch={props.touched?.residential_address}
+                                                                value={props.values?.residential_address}
+                                                                label={'Reponsibilities'}
+                                                                required={true}
+                                                                onChange={(field, value) => {
+                                                                    props.handleChange(field)(value);
+                                                                }}
+                                                            />
                                                         </Col>
+
                                                         <Col md="12">
                                                             <h5 className="fw-700 mb-3 mt-4">Work information</h5>
                                                         </Col>
@@ -454,203 +370,30 @@ const CreateEmployee = ({ token, baseUrl }) => {
                         </CardBody>
                     </Card>
                 </Col>
-            </Row>
-            {/* 
-            <form onSubmit={handleSubmit}>
-                <div className="px-2 py-3 md:px-3 md:py-4 lg:px-10 lg:py-6 overflow-y-auto xScroll max-h-[76vh] md:h-[100vh]">
-                    <div className="flex flex-col md:flex-row lg:flex-row w-full gap-x-10 lg:gap-x-16 gap-y-2 md:gap-y-3 lg:gap-y-4">
-                        <div className="w-full flex flex-col gap-y-2 md:gap-y-3">
-                            <div className="flex items-center mt-2">
-                                <label
-                                    htmlFor="username"
-                                    className="font-sfpro tracking-wide whitespace-nowrap
-                            text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
+                <Col lg={12}>
+                    {
+                        showSuccessModal && (
+                            <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+                                <div
+                                    className="bg-white shadow-md rounded-3xl lg:px-14 lg:py-16 w-[82%] px-10 py-12 flex justify-center items-center absolute md:w-[40%] lg:w-[26%] lg:h-[24%]"
                                 >
-                                    EmpolyeeID:
-                                </label>
-                                <div className="flex flex-col w-full">
-                                    {isLoading ? (
-                                        <div className="bg-gray-300 h-8 w-full animate-pulse rounded"></div>
-                                    ) : (
-                                        <input
-                                            type="text"
-                                            name="username"
-                                            readOnly
-                                            disabled
-                                            value={empId}
-                                            className="pl-2 w-full bg-white rounded h-8 text-sm text-gray-600"
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex items-center mt-2">
-                                <label
-                                    htmlFor="username"
-                                    className="font-sfpro tracking-wide whitespace-nowrap
-                            text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
-                                >
-                                    User Name:
-                                </label>
-                                <div className="flex flex-col w-full">
-                                    <input
-                                        type="text"
-                                        name="username"
-                                        value={formData.username}
-                                        required
-                                        placeholder="user@123"
-                                        className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
-            placeholder-opacity-50"
-                                        onChange={(e) =>
-                                            handleChange(e.target.name, e.target.value)
-                                        }
-                                        onFocus={handleUserNameInputFocus}
-                                        onBlur={handleUserNameInputBlur}
-                                    />
-                                    <div className="text-red-500 text-xs">{validationError}</div>
-                                </div>
-                            </div>
-                            <div className="flex items-center mt-2">
-                                <label
-                                    htmlFor="username"
-                                    className="font-sfpro tracking-wide whitespace-nowrap
-                            text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
-                                >
-                                    First Name:
-                                </label>
-                                <input
-                                    type="text"
-                                    name="username"
-                                    value={formData.username}
-                                    required
-                                    placeholder="First Name Here"
-                                    className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
-            placeholder-opacity-50"
-                                    onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                />
-                            </div>
-                            <div className="flex items-center mt-2">
-                                <label
-                                    htmlFor="last_name"
-                                    className="font-sfpro tracking-wide whitespace-nowrap
-                            text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
-                                >
-                                    Last Name:
-                                </label>
-                                <input
-                                    type="text"
-                                    name="last_name"
-                                    value={formData.last_name}
-                                    required
-                                    placeholder="Last Name Here"
-                                    className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
-            placeholder-opacity-50"
-                                    onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <div className="w-full flex flex-col gap-y-2 md:gap-y-3">
-                            <div className="flex items-center mt-2">
-                                <label
-                                    htmlFor="other_email"
-                                    className="font-sfpro tracking-wide whitespace-nowrap
-                            text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
-                                >
-                                    Email:
-                                    <span className="text-[#F9F9F9]">Add</span>
-                                </label>
-                                <input
-                                    type="other_email"
-                                    name="other_email"
-                                    value={formData.other_email}
-                                    required
-                                    placeholder="Enter other_email Here"
-                                    className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
-            placeholder-opacity-50"
-                                    onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                />
-                            </div>
-                            <div className="flex items-center mt-2">
-                                <label
-                                    htmlFor="password"
-                                    className="font-sfpro tracking-wide whitespace-nowrap
-                          text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
-                                >
-                                    Password:
-                                </label>
-                                <div className="relative w-full">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="password"
-                                        value={formData.password}
-                                        required
-                                        placeholder="Enter Password Here"
-                                        className="pl-2 w-full bg-white rounded h-8 text-sm placeholder-[#555657] 
-          placeholder-opacity-50"
-                                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                                        title="Must contain at least one number an uppercase and lowercase letter, and at least 8 or more characters"
-                                    />
+                                    <p className="text-base text-center text-gray-400">
+                                        User has been successfully registered and has been sent to {email}
+                                    </p>
                                     <div
-                                        className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                                        onClick={togglePasswordVisibility}
+                                        className="absolute top-4 right-4 text-white bg-[#ECECEC] rounded-full p-[2px] cursor-pointer"
+                                        onClick={closeModal}
                                     >
-                                        {showPassword ? (
-                                            <BiShow className="h-4 w-4 text-gray-400" />
-                                        ) : (
-                                            <TbEyeClosed className="h-4 w-4 text-gray-400" />
-                                        )}
+                                        <RxCross2 className="text-sm" />
                                     </div>
                                 </div>
                             </div>
+                        )
+                    }
+                    <ToastContainer />
+                </Col>
+            </Row>
 
-                            <div className="flex items-center mt-2">
-                                <label
-                                    htmlFor="userrole"
-                                    className="font-sfpro tracking-wide whitespace-nowrap
-                          text-input text-sm mb-1 pr-2 md:pr-3 lg:pr-4 font-semibold"
-                                >
-                                    User Role:
-                                </label>
-                                <Select
-                                    className="w-full"
-                                    name="userrole"
-                                    value={formData.userrole}
-                                    options={userRoles}
-                                    required
-                                    onChange={(selectedOption) =>
-                                        handleChange("userrole", selectedOption)
-                                    }
-                                />
-                            </div>
-                            <div className="mt-4 md:mt-3 mb-40 flex justify-end">
-                                <Button disabled={isLoading} text={"Create"} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form >
-            
-            {
-                showSuccessModal && (
-                    <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-                        <div
-                            className="bg-white shadow-md rounded-3xl lg:px-14 lg:py-16 w-[82%] px-10 py-12 flex
-           justify-center items-center absolute md:w-[40%] lg:w-[26%] lg:h-[24%]"
-                        >
-                            <p className="text-base text-center text-gray-400">
-                                User has been successfully registered and has been sent to {other_email}
-                            </p>
-                            <div
-                                className="absolute top-4 right-4 text-white bg-[#ECECEC] rounded-full p-[2px] cursor-pointer"
-                                onClick={closeModal}
-                            >
-                                <RxCross2 className="text-sm" />
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-            <ToastContainer /> */}
         </div>
 
     );

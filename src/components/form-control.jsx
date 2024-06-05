@@ -79,6 +79,7 @@ const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => 
                     selected={value ? new Date(moment(value)) : new Date()}
                     dropdownMode="select"
                     onChange={(value) => {
+                        value = moment(value).format('YYYY-MM-DD');
                         onChange(name, value)
                     }}
                     placeholderText={label}
