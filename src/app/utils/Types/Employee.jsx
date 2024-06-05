@@ -74,6 +74,7 @@ const EmployeeCertifiation = {
     completion_date: null,
     expiry_date: null,
     certification_body: null,
+    certification_institute: null,
 }
 
 const EmployeeDepartmentInfo = {
