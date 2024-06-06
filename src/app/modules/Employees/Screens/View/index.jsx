@@ -15,7 +15,7 @@ import IdentificationDetails from "./IdentificationDetails";
 import Loader  from '../../../../../components/PageLoader'
 
 
-const ViewEmployee = ({ token, baseUrl }) => {
+const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
   const [userData, setUserData] = useState("");
   const [educations, setEducations] = useState([{}]);
   const [certifications, setCertifications] = useState([{}]);
@@ -25,6 +25,7 @@ const ViewEmployee = ({ token, baseUrl }) => {
   const [visa, setVisa] = useState({});
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
+  const userId = profileView ? userProfile?.id : id
   const navigate = useNavigate();
 
   const headers = {
@@ -34,15 +35,14 @@ const ViewEmployee = ({ token, baseUrl }) => {
 
   let getDataByHooks = async()=> {
     setLoading(true)
-    let empData = await getEmployeeData(baseUrl,id,headers)
-    let expData = await getEmployeeProfessionalExperianceData(baseUrl,id,token)
-    let cvData = await getEmployeeCVDetailData(baseUrl,id,token)
-    let visaData = await getEmployeeVisaDetailData(baseUrl,id,token)
-    let educationData = await getEmployeeAcademicRecordData(baseUrl,id,token)
-    let certificationData = await getEmployeeCerficationData(baseUrl,id,token)
-    let documentsData = await getEmployeeVisaDetailsFiles(baseUrl,id,token)
+    let empData = await getEmployeeData(baseUrl,userId,headers)
+    let expData = await getEmployeeProfessionalExperianceData(baseUrl,userId,token)
+    let cvData = await getEmployeeCVDetailData(baseUrl,userId,token)
+    let visaData = await getEmployeeVisaDetailData(baseUrl,userId,token)
+    let educationData = await getEmployeeAcademicRecordData(baseUrl,userId,token)
+    let certificationData = await getEmployeeCerficationData(baseUrl,userId,token)
+    let documentsData = await getEmployeeVisaDetailsFiles(baseUrl,userId,token)
     setUserData(empData)
-    console.log("asdssdsadad",empData)
     setExperiences(expData)
     setCV(cvData)
     setVisa(visaData)
@@ -59,55 +59,55 @@ const ViewEmployee = ({ token, baseUrl }) => {
 
   const personalInfo = [
     [
-      { title: "First Name", data: userData.personalInformation?.first_name },
-      { title: "ID Card No", data: userData.personalInformation?.nic },
-      { title: "Contact Number", data: userData.personalInformation?.mobile_no },
-      { title: "Nationality", data: userData.personalInformation?.nationality },
+      { title: "First Name", data: userData.first_name },
+      { title: "ID Card No", data: userData?.nic },
+      { title: "Contact Number", data: userData?.mobile_no },
+      { title: "Nationality", data: userData?.nationality },
     ],
     [
-      { title: "Last Name", data: userData.personalInformation?.last_name },
-      { title: "Date of Birth", data: userData.personalInformation?.date_of_birth },
-      { title: "Email Address", data: userData.personalInformation?.email }, // Changed from current_address to email
-      { title: "Marital Status", data: userData.personalInformation?.marital_status },
+      { title: "Last Name", data: userData?.last_name },
+      { title: "Date of Birth", data: userData?.date_of_birth },
+      { title: "Email Address", data: userData?.email }, // Changed from current_address to email
+      { title: "Marital Status", data: userData?.marital_status },
     ],
   ];
 
   const contactInformation = [
-    { title: "Emergency Contact", data: userData.personalInformation?.emergency_phone_no },
-    { title: "Full Name", sub : true , data: userData.personalInformation?.emergency_first_name + " " + userData.personalInformation?.emergency_last_name },
-    { title: "Relation", sub : true , data: userData.personalInformation?.emergency_relation },
-    { title: "Permenent Address", data: userData.personalInformation?.residential_address },
+    { title: "Emergency Contact", data: userData?.emergency_phone_no },
+    { title: "Full Name", sub : true , data: userData?.emergency_first_name + " " + userData?.emergency_last_name },
+    { title: "Relation", sub : true , data: userData?.emergency_relation },
+    { title: "Permenent Address", data: userData?.residential_address },
     { title: "Postal Code", sub : true,  data: "" },
-    { title: "Present Address", data: userData.personalInformation?.current_address },
+    { title: "Present Address", data: userData?.current_address },
     { title: "Postal Code", sub : true , data: "" },
   ];
 
   const bankInformation = [
-    { title: "Bank Name", data: userData.bankDetails?.bank_name },
-    { title: "Account Title", data: userData.bankDetails?.account_title },
-    { title: "Account Number", data: userData.bankDetails?.account_number },
-    { title: "IBAN", data: userData.bankDetails?.account_iban },
-    { title: "Branch Address", data: userData.bankDetails?.branch_address },
-    { title: "Branch Code", data: userData.bankDetails?.branch_code },
-    { title: "Swift Code", data: userData.bankDetails?.swift_code },
+    { title: "Bank Name", data: userData?.bank_name },
+    { title: "Account Title", data: userData?.account_title },
+    { title: "Account Number", data: userData?.account_number },
+    { title: "IBAN", data: userData?.account_iban },
+    { title: "Branch Address", data: userData?.branch_address },
+    { title: "Branch Code", data: userData?.branch_code },
+    { title: "Swift Code", data: userData?.swift_code },
   ];
 
   const workInformation = [
     [
-      { title: "Department", data: userData.department?.department_name },
-      { title: "Position", data: userData.department?.department_position },
-      { title: "Work Email", data: userData.personalInformation?.work_email },
-      { title: "Employee Type", data: userData.department?.employee_type },
+      { title: "Department", data: userData?.department_name },
+      { title: "Position", data: userData?.department_position },
+      { title: "Work Email", data: userData?.work_email },
+      { title: "Employee Type", data: userData?.employee_type },
     ],
     [
-      { title: "Employee Status", data: userData.department?.employee_status },
-      { title: "Work Type", data: userData.department?.employee_work_type },
-      { title: "Work Location", data: userData.department?.employee_location },
-      { title: "Direct Report To", data: userData.department?.direct_report },
+      { title: "Employee Status", data: userData?.employee_status },
+      { title: "Work Type", data: userData?.employee_work_type },
+      { title: "Work Location", data: userData?.employee_location },
+      { title: "Direct Report To", data: userData?.direct_report },
     ],
     [
-      { title: "Department Head", data: userData.department?.department_manager },
-      { title: "Joining Date", data: userData.department?.joining_date },
+      { title: "Department Head", data: userData?.department_manager },
+      { title: "Joining Date", data: userData?.joining_date },
     ],
   ];
 
@@ -181,8 +181,8 @@ const ViewEmployee = ({ token, baseUrl }) => {
     <div className="w-full bg-[#f0f1f2] scroll-auto overflow-auto max-h-[100vh] md:px-4 xl:px-8">
       {/******************** HEADER **************************/}
       <div className="flex justify-between px-10 pt-10 pb-7">
-        <h1 className="text-[24px]">Profile</h1>
-        <div onClick={() => navigate("/employees")} className="flex cursor-pointer items-center gap-3 text-[20px]">
+        <h1 className="text-[24px]">{profileView ? "My Profile":"Profile Management"}</h1>
+        <div onClick={() => navigate(profileView ? "/" : "/employees")} className="flex cursor-pointer items-center gap-3 text-[20px]">
           Go Back <FaChevronCircleLeft/>
         </div>
       </div>
@@ -190,6 +190,8 @@ const ViewEmployee = ({ token, baseUrl }) => {
       {loading ? <Loader/> : 
       <div className="py-2 bg-white rounded-md">
         {/* ******************** BODY HEAD ************************** */}
+        {!profileView &&
+        <>
         <div className="px-10">
           <div className="opacity-60 mb-4">
             View Employee Data {`> ${userData.personalInformation?.first_name} ${userData.personalInformation?.last_name}`}
@@ -210,24 +212,26 @@ const ViewEmployee = ({ token, baseUrl }) => {
           </div>
         </div>
         <hr className="mt-2" />
+        </>
+}
         {/* ******************** BODY CONTENT *********************** */}
         <div className="px-10 pt-10">
-          <PersonalDetials  personalInfo={personalInfo} userData={userData}/>
+          <PersonalDetials isEditable={profileView}  personalInfo={personalInfo} userData={userData}/>
           <div className="flex gap-5 justify-between 800:flex-row flex-col">
-          <ContactInformation  contactInformation={contactInformation}/>
-          <BankInformation  bankInformation={bankInformation}/>
+          <ContactInformation isEditable={profileView}  contactInformation={contactInformation}/>
+          <BankInformation isEditable={profileView} bankInformation={bankInformation}/>
           </div>
-          <WorkInformation  workInformation={workInformation}/>
+          <WorkInformation isEditable={!profileView} workInformation={workInformation}/>
           {(Array.isArray(experiences) && experiences?.length > 0) &&
-            <Experience cv={cv} experience={experiences}/>
+            <Experience isEditable={profileView} cv={cv} experience={experiences}/>
           }
           {(Array.isArray(educations) && educations?.length > 0) &&
-            <AcademicInfo educations={educations}/>
+            <AcademicInfo isEditable={profileView} educations={educations}/>
           }
           {(Array.isArray(certifications) && certifications?.length > 0) &&
-            <Certifications certifications={certifications}/>
+            <Certifications isEditable={profileView} certifications={certifications}/>
           }
-          <IdentificationDetails identificationDetails={identificationDetails}/>
+          <IdentificationDetails isEditable={profileView} identificationDetails={identificationDetails}/>
         </div>
       </div>
 }
