@@ -365,6 +365,7 @@ const EducationInformation = ({
   token,
   employeeId,
   isEditMode,
+  prevStep,
 }) => {
   const formRef = React.createRef();
   const [educations, setEducations] = useState([]);
@@ -398,7 +399,7 @@ const EducationInformation = ({
       token,
       formattedData.educations
     );
-    if (response && isEditMode) nextstep();
+    if (response) nextstep();
   };
 
   return (
@@ -595,13 +596,25 @@ const EducationInformation = ({
                       </Button>
                     </Col>
                   </Row>
+                  <hr />
                   <Row>
-                    <Col md="12">
-                      <FormGroup className="text-right">
-                        <Button type="submit" className="btn btn-dark">
-                          Next
-                        </Button>
-                      </FormGroup>
+                    <Col md={6} className="text-left">
+                      {!isEditMode &&
+                        <CustomLightOutlineButton
+                          onClick={() => {
+                            prevStep()
+                          }}
+                          label={'Back'}
+                        />
+
+                      }</Col>
+                    <Col md="6" className="text-right">
+                      <CustomDarkButton
+                        onClick={() => {
+                          props.handleSubmit();
+                        }}
+                        label={isEditMode ? 'Save' : 'Next'}
+                      />
                     </Col>
                   </Row>
                 </Form>

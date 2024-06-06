@@ -8,7 +8,7 @@ import ExperienceInformation from "../Profile/ExperienceInformation";
 import EducationInformation from "../Profile/EducationInformation";
 import CertificationsInformation from "../Profile/CertificationsInformation";
 import logo from "../../../../../assets/images/tecbrix-logo.png";
-import OnboardComplete from "./OnboardComplete";
+// import OnboardComplete from "./OnboardComplete";
 import IdentificationInformation from "../Profile/IdentificationInformation";
 
 
@@ -103,7 +103,7 @@ const CreateEmployeeProfile = () => {
               isEditMode={true}
             />
           )}
-          {currentTab === 9 && (
+          {/* {currentTab === 9 && (
             <OnboardComplete
               employeeId={id}
               nextstep={() => {
@@ -111,7 +111,7 @@ const CreateEmployeeProfile = () => {
               }}
               isEditMode={true}
             />
-          )}
+          )} */}
           <div className="flex justify-start items-start">
             <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
               © 2024 TecBrix

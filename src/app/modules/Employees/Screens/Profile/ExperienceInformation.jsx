@@ -22,9 +22,9 @@ import {
     TextInput,
     CustomDarkButton,
     CustomLightOutlineButton,
-  } from "../../../../../components/form-control";
+} from "../../../../../components/form-control";
 
-const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
+const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, prevStep }) => {
 
     const formRef = React.createRef();
     const [experiences, setExperiences] = useState({});
@@ -41,8 +41,9 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
     }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
     const handleSubmit = (data) => {
+        debugger
         const response = saveEmployeeProfessionalExperianceData(baseUrl, employeeId, token, data.experiences);
-        if (response && isEditMode)
+        if (response)
             nextstep();
     };
 
@@ -118,17 +119,25 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
                                             </Link>
                                         </Col>
                                     </Row>
-                                    <hr className="m-3" />
+                                    <hr />
                                     <Row>
-                                        <Col md="12">
-                                            <FormGroup className="text-right">
-                                                <Button
-                                                    type="submit"
-                                                    className="btn btn-dark"
-                                                >
-                                                    Next
-                                                </Button>
-                                            </FormGroup>
+                                        <Col md={6} className="text-left">
+                                            {!isEditMode &&
+                                                <CustomLightOutlineButton
+                                                    onClick={() => {
+                                                        prevStep()
+                                                    }}
+                                                    label={'Back'}
+                                                />
+
+                                            }</Col>
+                                        <Col md="6" className="text-right">
+                                            <CustomDarkButton
+                                                onClick={() => {
+                                                    props.handleSubmit();
+                                                }}
+                                                label={isEditMode ? 'Save' : 'Next'}
+                                            />
                                         </Col>
                                     </Row>
                                 </Form>

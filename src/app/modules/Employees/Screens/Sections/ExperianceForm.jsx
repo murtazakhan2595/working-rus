@@ -78,10 +78,10 @@ const Experience = ({ errors, touched, values, onChange }) => {
             </Col>
             <Col md="12">
                 <TextAreaInput
-                    name={'exp_responsibilities'}
-                    error={errors?.exp_responsibilities}
-                    touch={touched?.exp_responsibilities}
-                    value={values?.exp_responsibilities}
+                    name={'exp_description'}
+                    error={errors?.exp_description}
+                    touch={touched?.exp_description}
+                    value={values?.exp_description}
                     label={'Reponsibilities'}
                     required={true}
                     onChange={(field, value) => {
