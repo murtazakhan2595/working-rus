@@ -5,21 +5,19 @@ import {
   Row,
   Col,
 } from 'reactstrap';
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   BankInformation,
   PersonalInformation,
   ExperienceInformation,
+  ContactInformation, EducationInformation, CertificationsInformation, IdentificationInformation,
 } from "./index";
-import EducationInformation from "./EducationInformation";
-import ContactInformation from "./ContactInformation";
-import CertificationsInformation from "./CertificationsInformation";
-import IdentificationInformation from "./IdentificationInformation";
+import { toast, } from "react-toastify";
 
 const EditEmployeeProfile = () => {
   const { id } = useParams();
-  //   const [currentTab, setCurrentTab] = useState(4);
-  const [currentTab, setCurrentTab] = useState(1);
+  const navigate = useNavigate();
+  const [currentTab, setCurrentTab] = useState(9);
   const getTitle = () => {
     if (currentTab === 1)
       return 'Personal Details';
@@ -33,7 +31,7 @@ const EditEmployeeProfile = () => {
       return 'Academics';
     else if (currentTab === 6)
       return 'Certification and Licences';
-    else if (currentTab === 7)
+    else if (currentTab === 9)
       return 'Identification Details';
 
   }
@@ -67,8 +65,8 @@ const EditEmployeeProfile = () => {
                     setCurrentTab(currentTab + 1);
                   }}
                   isEditMode={false}
-                  prevStep={()=>{
-                    setCurrentTab(currentTab - 1);  
+                  prevStep={() => {
+                    setCurrentTab(currentTab - 1);
                   }}
                 />
               )}
@@ -79,8 +77,8 @@ const EditEmployeeProfile = () => {
                     setCurrentTab(currentTab + 1);
                   }}
                   isEditMode={false}
-                  prevStep={()=>{
-                    setCurrentTab(currentTab - 1);  
+                  prevStep={() => {
+                    setCurrentTab(currentTab - 1);
                   }}
                 />
               )}
@@ -91,8 +89,8 @@ const EditEmployeeProfile = () => {
                     setCurrentTab(currentTab + 1);
                   }}
                   isEditMode={false}
-                  prevStep={()=>{
-                    setCurrentTab(currentTab - 1);  
+                  prevStep={() => {
+                    setCurrentTab(currentTab - 1);
                   }}
                 />
               )}
@@ -103,8 +101,8 @@ const EditEmployeeProfile = () => {
                     setCurrentTab(currentTab + 1);
                   }}
                   isEditMode={false}
-                  prevStep={()=>{
-                    setCurrentTab(currentTab - 1);  
+                  prevStep={() => {
+                    setCurrentTab(currentTab - 1);
                   }}
                 />
               )}
@@ -115,11 +113,41 @@ const EditEmployeeProfile = () => {
                     setCurrentTab(currentTab + 1);
                   }}
                   isEditMode={false}
-                  prevStep={()=>{
-                    setCurrentTab(currentTab - 1);  
+                  prevStep={() => {
+                    setCurrentTab(currentTab - 1);
                   }}
                 />
               )}
+              {currentTab === 7 && (
+                <IdentificationInformation
+                  employeeId={id}
+                  nextstep={() => {
+                    toast.success("Employee Profile Updated Successfully!", {
+                      position: toast.POSITION.TOP_RIGHT,
+                    });
+                    navigate('/employees')
+
+                  }}
+                  isEditMode={false}
+                  prevStep={() => {
+                    setCurrentTab(currentTab - 1);
+                  }}
+                />
+              )}
+              <IdentificationInformation
+                employeeId={id}
+                nextstep={() => {
+                  toast.success("Employee Profile Updated Successfully!", {
+                    position: toast.POSITION.TOP_RIGHT,
+                  });
+                  navigate('/employees')
+
+                }}
+                isEditMode={false}
+                prevStep={() => {
+                  setCurrentTab(currentTab - 1);
+                }}
+              />
             </CardBody>
           </Col>
         </Row>

@@ -5,6 +5,7 @@ import ExperienceInformation from './ExperienceInformation';
 import EducationInformation from './EducationInformation';
 import CertificationsInformation from './CertificationsInformation';
 import ContactInformation from './ContactInformation';
+import IdentificationInformation from './IdentificationInformation';
 
 
 export {
@@ -14,5 +15,6 @@ export {
     ExperienceInformation,
     CertificationsInformation,
     ContactInformation,
-    EducationInformation
+    EducationInformation,
+    IdentificationInformation,
 }

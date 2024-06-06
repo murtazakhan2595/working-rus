@@ -28,6 +28,12 @@ import { SelectComponent, ImageInput, DateInput, TextInput, PhoneInput, EmailInp
 import PageLoader from '../../../../../components/PageLoader.jsx';
 import { maritalStatus } from '../../../../../data/Data.js';
 
+// Get country options for Select component
+const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name
+}));
+
 const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
 
     const formRef = React.createRef();
@@ -54,14 +60,6 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
             nextstep();
 
     };
-
-
-    // Get country options for Select component
-    const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
-        value: countryCode,
-        label: getAllCountries()[countryCode].name
-    }));
-
 
     return (
         <>

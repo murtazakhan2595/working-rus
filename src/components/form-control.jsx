@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { FormGroup, Label, Input, Button } from "reactstrap";
+import { FormGroup, Label, Input, Button, Col } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
@@ -134,6 +134,29 @@ const TextInput = ({ name, value, error, touch, onChange, label, disabled, requi
                         {error}
                     </div>
                 )}
+            </FormGroup>
+        </>
+    );
+};
+
+const CheckBoxInput = ({ name, value, onChange, label, disabled}) => {
+    return (
+        <>
+            <FormGroup check className="my-3">
+                <Input
+                    id={name}
+                    type="checkbox"
+                    checked={value}
+                    value={value}
+                    disabled={disabled}
+                    onChange={() => {
+                        onChange(name, !value);
+                    }}
+                />
+                {' '}
+                <Label check>
+                    {label}
+                </Label>
             </FormGroup>
         </>
     );
@@ -314,7 +337,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
 const FileInput = ({ value, error, setImageError, onChange, touch, name }) => {
     return (
         <>
-            <div className="flex flex-col bg-[#F5F5FA] text-center file-input" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
+            <div className="flex flex-col bg-[#F5F5FA] text-center file-input mb-3" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
                 <h4>
                     <TfiFiles className="m-auto mb-3" />
                     Upload your Experience Letter or drag it here
@@ -425,20 +448,6 @@ const FilterInput = ({ filters }) => {
                     }
 
                 })}
-
-                {/* 
-                <Select
-                    options={department}
-                    placeholder="Department"
-                    className="w-[20%] shadow-input rounded-lg"
-                    styles={dropdownStyles}
-                />
-                <Select
-                    options={department}
-                    placeholder="Department"
-                    className="w-[20%] shadow-input rounded-lg"
-                    styles={dropdownStyles}
-                /> */}
             </div>
         </>
     );
@@ -458,4 +467,5 @@ export {
     FileInput,
     FilterInput,
     CustomLightOutlineButton,
+    CheckBoxInput,
 }
