@@ -28,7 +28,6 @@ import { SlBadge } from "react-icons/sl";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 
-
 const Sidebar = ({
     isSidebarOpen,
     setIsSidebarOpen,

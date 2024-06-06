@@ -47,6 +47,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId , isEditMode}) => {
 
     const handleSubmit = (data) => {
         const personalInfrmation = getPersonalInfo(data);
+
+        console.log('I am the submmited personal Information', personalInfrmation)
         const response = saveEmployeePersonalInfoData(baseUrl, employeeId, token, personalInfrmation);
         if (response && isEditMode)
             nextstep();
@@ -255,6 +257,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId , isEditMode}) => {
                     </Col>
                 </Row>
             </div>
+
+            
             {/* <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
                 <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
                     Personal Information:
