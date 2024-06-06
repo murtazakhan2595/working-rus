@@ -13,7 +13,6 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
             <div
               className="flex gap-4 items-center"
               onClick={() => {
-                alert("clicked");
                 setShowPersonalDetailCard(true);
               }}
             >

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Welcome from "./Welcome";
 import PersonalInformation from "../Profile/PersonalInformation";

@@ -218,20 +218,20 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
         <div className="px-10 pt-10">
           <PersonalDetials isEditable={profileView}  personalInfo={personalInfo} userData={userData}/>
           <div className="flex gap-5 justify-between 800:flex-row flex-col">
-          <ContactInformation isEditable={profileView}  contactInformation={contactInformation}/>
-          <BankInformation isEditable={profileView} bankInformation={bankInformation}/>
+          <ContactInformation isEditable={profileView}  contactInformation={contactInformation} employeeId={userData.id}/>
+          <BankInformation isEditable={profileView} bankInformation={bankInformation} employeeId={userData.id}/>
           </div>
-          <WorkInformation isEditable={!profileView} workInformation={workInformation}/>
+          <WorkInformation isEditable={!profileView} workInformation={workInformation} employeeId={userData.id}/>
           {(Array.isArray(experiences) && experiences?.length > 0) &&
-            <Experience isEditable={profileView} cv={cv} experience={experiences}/>
+            <Experience isEditable={profileView} cv={cv} experience={experiences} employeeId={userData.id}/>
           }
           {(Array.isArray(educations) && educations?.length > 0) &&
-            <AcademicInfo isEditable={profileView} educations={educations}/>
+            <AcademicInfo isEditable={profileView} educations={educations} employeeId={userData.id}/>
           }
           {(Array.isArray(certifications) && certifications?.length > 0) &&
-            <Certifications isEditable={profileView} certifications={certifications}/>
+            <Certifications isEditable={profileView} certifications={certifications} employeeId={userData.id}/>
           }
-          <IdentificationDetails isEditable={profileView} identificationDetails={identificationDetails}/>
+          <IdentificationDetails isEditable={profileView} identificationDetails={identificationDetails} employeeId={userData.id}/>
         </div>
       </div>
 }

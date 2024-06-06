@@ -344,6 +344,8 @@ import {
   DateInput,
   SelectComponent,
   TextInput,
+  CustomDarkButton,
+  CustomLightOutlineButton,
 } from "../../../../../components/form-control";
 import { educationTypeOptions } from "../../../../../data/Data.js";
 import FileInput from "./FileInput.jsx";

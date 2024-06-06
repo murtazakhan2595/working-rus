@@ -57,7 +57,7 @@ const EditEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
                 />
               )}
               {currentTab === 2 && (
@@ -66,7 +66,10 @@ const EditEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
+                  prevStep={()=>{
+                    setCurrentTab(currentTab - 1);  
+                  }}
                 />
               )}
               {currentTab === 3 && (
@@ -75,7 +78,10 @@ const EditEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
+                  prevStep={()=>{
+                    setCurrentTab(currentTab - 1);  
+                  }}
                 />
               )}
               {currentTab === 4 && (
@@ -84,7 +90,10 @@ const EditEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
+                  prevStep={()=>{
+                    setCurrentTab(currentTab - 1);  
+                  }}
                 />
               )}
               {currentTab === 5 && (
@@ -93,7 +102,10 @@ const EditEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
+                  prevStep={()=>{
+                    setCurrentTab(currentTab - 1);  
+                  }}
                 />
               )}
               {currentTab === 6 && (
@@ -102,7 +114,10 @@ const EditEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
+                  prevStep={()=>{
+                    setCurrentTab(currentTab - 1);  
+                  }}
                 />
               )}
             </CardBody>

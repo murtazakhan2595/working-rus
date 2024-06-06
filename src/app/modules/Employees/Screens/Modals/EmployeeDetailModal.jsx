@@ -1,6 +1,6 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
-import { PersonalInformation } from '../Profile';
+import { Modal, ModalHeader, ModalBody, } from 'reactstrap';
+import { PersonalInformation, ContactInformation , BankInformation, ExperienceInformation, EducationInformation, CertificationsInformation} from '../Profile';
 
 function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, }) {
     console.log(openModal, employeeId, typeof currentClick);
@@ -8,17 +8,17 @@ function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, 
         if (currentClick === 1)
             return 'Edit Personal Details';
         else if (currentClick === 2)
-            return 'Contact Information';
+            return 'Edit Contact Information';
         else if (currentClick === 3)
-            return 'Banking Details';
+            return 'Edit Banking Details';
         else if (currentClick === 4)
-            return 'Experience';
+            return 'Edit Experience';
         else if (currentClick === 5)
-            return 'Academics';
+            return 'Edit Academics';
         else if (currentClick === 6)
-            return 'Certification and Licences';
+            return 'Edit Certification and Licences';
         else if (currentClick === 7)
-            return 'Identification Details';
+            return 'Edit Identification Details';
 
     }
     return (
@@ -35,11 +35,57 @@ function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, 
                         <PersonalInformation
                             employeeId={employeeId}
                             isEditMode={true}
-                            nextstep={()=>{
+                            nextstep={() => {
                                 closeModal();
                             }}
+
                         />
                     }
+                    {currentClick === 2 && (
+                        <ContactInformation
+                            employeeId={employeeId}
+                            nextstep={() => {
+                                closeModal();
+                            }}
+                            isEditMode={true}
+                        />
+                    )}
+                    {currentClick === 3 && (
+                        <BankInformation
+                            employeeId={employeeId}
+                            nextstep={() => {
+                                closeModal();
+                            }}
+                            isEditMode={true}
+                        />
+                    )}
+                    {currentClick === 4 && (
+                        <ExperienceInformation
+                            employeeId={employeeId}
+                            nextstep={() => {
+                                closeModal();
+                            }}
+                            isEditMode={true}
+                        />
+                    )}
+                    {currentClick === 5 && (
+                        <EducationInformation
+                            employeeId={employeeId}
+                            nextstep={() => {
+                                closeModal();
+                            }}
+                            isEditMode={true}
+                        />
+                    )}
+                    {currentClick === 6 && (
+                        <CertificationsInformation
+                            employeeId={employeeId}
+                            nextstep={() => {
+                                closeModal();
+                            }}
+                            isEditMode={true}
+                        />
+                    )}
                 </ModalBody>
             </Modal>
         </div>

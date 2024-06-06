@@ -13,10 +13,14 @@ import { Formik } from 'formik';
 import { connect } from "react-redux";
 import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../../../hooks/employee.jsx';
 import { getBankDetails } from '../../../../utils/MappingObjects/mapEmployeeData.jsx'
-import { TextInput, } from '../../../../../components/form-control.jsx';
+import {
+    TextInput,
+    CustomDarkButton,
+    CustomLightOutlineButton,
+} from '../../../../../components/form-control.jsx';
 import PageLoader from '../../../../../components/PageLoader.jsx';
 
-const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
+const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, prevStep }) => {
 
     const formRef = React.createRef();
     const [bankInfo, setBankInfo] = useState({});
@@ -35,7 +39,7 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) =
     const handleSubmit = (data) => {
         const bandetails = getBankDetails(data);
         const response = saveEmployeeBankDetailsData(baseUrl, employeeId, token, bandetails);
-        if (response && isEditMode)
+        if (response)
             nextstep();
     };
 
@@ -168,16 +172,25 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) =
                                         </Col>
 
                                     </Row>
+                                    <hr />
                                     <Row>
-                                        <Col md="12">
-                                            <FormGroup className="text-right">
-                                                <Button
-                                                    type="submit"
-                                                    className="btn btn-dark"
-                                                >
-                                                    Next
-                                                </Button>
-                                            </FormGroup>
+                                        <Col md={6} className="text-left">
+                                            {!isEditMode &&
+                                                <CustomLightOutlineButton
+                                                    onClick={() => {
+                                                        prevStep()
+                                                    }}
+                                                    label={'Back'}
+                                                />
+
+                                            }</Col>
+                                        <Col md="6" className="text-right">
+                                            <CustomDarkButton
+                                                onClick={() => {
+                                                    props.handleSubmit();
+                                                }}
+                                                label={isEditMode ? 'Save' : 'Next'}
+                                            />
                                         </Col>
                                     </Row>
                                 </Form>

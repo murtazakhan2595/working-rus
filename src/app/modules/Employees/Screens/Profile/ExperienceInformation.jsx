@@ -16,7 +16,13 @@ import { getBankDetails } from '../../../../utils/MappingObjects/mapEmployeeData
 import PageLoader from '../../../../../components/PageLoader.jsx';
 import Experience from '../Sections/ExperianceForm.jsx'
 import { EmployeeProfessionalExperiance } from '../../../../utils/Types/Employee'
-
+import {
+    DateInput,
+    SelectComponent,
+    TextInput,
+    CustomDarkButton,
+    CustomLightOutlineButton,
+  } from "../../../../../components/form-control";
 
 const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
 

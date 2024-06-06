@@ -231,7 +231,7 @@ const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
     return (
         <Button
             type="button"
-            className="btn btn-outline-dark"
+            className="btn btn-outline-dark btn-light"
             style={style}
             onClick={onClick}
             disabled={disabled}

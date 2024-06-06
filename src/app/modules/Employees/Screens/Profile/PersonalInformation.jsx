@@ -28,7 +28,7 @@ import { SelectComponent, ImageInput, DateInput, TextInput, PhoneInput, EmailInp
 import PageLoader from '../../../../../components/PageLoader.jsx';
 import { maritalStatus } from '../../../../../data/Data.js';
 
-const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode, prevStep }) => {
+const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
 
     const formRef = React.createRef();
     const [personalInfo, setPersonalInfo] = useState({});
@@ -115,10 +115,12 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode, prevSt
                                                 setImageError={setImageError}
                                             />
                                         </Col>
-                                        <Col lg={12} className="mb-3 ml-1">
-                                            <h6 className="fw-700 mb-0">{props.values.first_name} {props.values.last_name}</h6>
-                                            <span className="opacity-65 fs-12">ID: {`TXB-${employeeId.toString().padStart(4, '0')}`}</span>
-                                        </Col>
+                                        {employeeId &&
+                                            <Col lg={12} className="mb-3 ml-1">
+                                                <h6 className="fw-700 mb-0">{props.values.first_name} {props.values.last_name}</h6>
+                                                <span className="opacity-65 fs-12">ID: {`TXB-${employeeId.toString().padStart(4, '0')}`}</span>
+                                            </Col>
+                                        }
                                         <Col md="6">
                                             <TextInput
                                                 name={'first_name'}
@@ -203,8 +205,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode, prevSt
                                                 name={'date_of_birth'}
                                                 error={props.errors.date_of_birth}
                                                 touch={props.touched.date_of_birth}
-                                                //  value={props.values.date_of_birth}
-                                                value={new Date()}
+                                                value={props.values.date_of_birth}
+                                                //value={new Date()}
                                                 label={'DOC'}
                                                 onChange={(field, value) => {
                                                     props.setFieldValue(field, value);
@@ -228,15 +230,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode, prevSt
                                     <hr />
                                     <Row>
                                         <Col md={6} className="text-left">
-                                            {!isEditMode &&
-                                                <CustomLightOutlineButton
-                                                    onClick={() => {
-                                                        prevStep()
-                                                    }}
-                                                    label={'Cancel'}
-                                                />
-
-                                            }</Col>
+                                        </Col>
                                         <Col md="6" className="text-right">
                                             <CustomDarkButton
                                                 onClick={() => {
