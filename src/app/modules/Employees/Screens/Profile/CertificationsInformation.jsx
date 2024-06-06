@@ -16,7 +16,6 @@ import {
 } from "../../../../hooks/employee.jsx";
 import PageLoader from "../../../../../components/PageLoader.jsx";
 import { EmployeeCertifiation } from "../../../../utils/Types/Employee";
-
 import logo from "../../../../../assets/images/tecbrix-logo.png";
 import {
   CustomButton,
@@ -24,6 +23,7 @@ import {
   SelectComponent,
   TextInput,
 } from "../../../../../components/form-control";
+import FileInput from "./FileInput";
 
 const CertificationsInformation = ({
   nextstep,

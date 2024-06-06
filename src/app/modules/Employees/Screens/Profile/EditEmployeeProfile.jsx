@@ -14,6 +14,7 @@ import {
 import EducationInformation from "./EducationInformation";
 import ContactInformation from "./ContactInformation";
 import CertificationsInformation from "./CertificationsInformation";
+import IdentificationInformation from "./IdentificationInformation";
 
 const EditEmployeeProfile = () => {
   const { id } = useParams();

@@ -48,6 +48,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
 
     const handleSubmit = (data) => {
         const personalInfrmation = getPersonalInfo(data);
+
+        console.log('I am the submmited personal Information', personalInfrmation)
         const response = saveEmployeePersonalInfoData(baseUrl, employeeId, token, personalInfrmation);
         if (response && isEditMode)
             nextstep();

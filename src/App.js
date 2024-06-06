@@ -52,6 +52,8 @@ import ForgotPassword from "./app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "./app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "./app/modules/comingSoon/ComingSoon.jsx";
 import PageLoader from "./components/PageLoader.jsx";
+import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
+import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 
 function App() {
   let userProfile = useSelector((state) => state.user.userProfile);
@@ -139,7 +141,12 @@ function App() {
                     path="/coming-soon"
                     element={<ComingSoon isSidebarOpen={isSidebarOpen} />}
                   />
-                                    <Route
+
+                  <Route
+                    path="/services"
+                    element={<Services isSidebarOpen={isSidebarOpen} />}
+                  />
+                  <Route
                     exact
                     path="/"
                     element={
@@ -378,9 +385,9 @@ function App() {
               </>
             )}
             {userProfile.is_filled === true && (
-              <>                
-                <Route exact path="/" element={<EmpForm />} />
-               
+              <>
+               <Route exact path="/create-profile" element={<CreateEmployeeProfile />} />
+
               </>
             )}
             <Route path="*" element={<Err404 />} />
