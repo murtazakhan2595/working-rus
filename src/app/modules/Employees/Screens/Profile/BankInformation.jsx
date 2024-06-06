@@ -62,12 +62,12 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                             }}
                             validate={(values) => {
                                 const errors = {};
-                                for (let field in values) {
-                                    if (!values[`${field}`]) {
-                                        errors[`${field}`] = 'This field is required';
-                                    }
-                                }
-                                console.log(values, errors)
+                                // for (let field in values) {
+                                //     if (!values[`${field}`]) {
+                                //         errors[`${field}`] = 'This field is required';
+                                //     }
+                                // }
+                                // console.log(values, errors)
 
                                 return errors;
                             }}

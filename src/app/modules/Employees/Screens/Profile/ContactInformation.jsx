@@ -66,11 +66,11 @@ const ContactInformation = ({
           }}
           validate={(values) => {
             const errors = {};
-            for (let field in values) {
-              if (!values[`${field}`]) {
-                errors[`${field}`] = "This field is required";
-              }
-            }
+            // for (let field in values) {
+            //   if (!values[`${field}`]) {
+            //     errors[`${field}`] = "This field is required";
+            //   }
+            // }
             return errors;
           }}
         >

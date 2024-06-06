@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { FormGroup, Label, Input, Button, Col } from "reactstrap";
+import { FormGroup, Label, Input, Button } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
@@ -8,7 +8,6 @@ import upload from "../assets/images/upload.png";
 import { TfiFiles } from 'react-icons/tfi'
 import { dropdownStyles } from "../data/Data";
 import { IoIosSearch } from "react-icons/io";
-import { File } from "../app/utils/Types/General";
 
 const SelectComponent = ({
     name,
@@ -456,6 +455,9 @@ const FilterInput = ({ filters }) => {
                                 styles={dropdownStyles}
                             />
                         )
+                    }
+                    else{
+                        return <></>;
                     }
 
                 })}

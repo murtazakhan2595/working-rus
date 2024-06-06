@@ -101,20 +101,20 @@ const EducationInformation = ({
               }}
               validate={(values) => {
                 const errors = {};
-                if (values.educations) {
-                  values.educations.forEach((value, index) => {
-                    const educationErrors = {};
-                    Object.keys(value).forEach((field) => {
-                      if (!value[field]) {
-                        educationErrors[field] = "This field is required";
-                      }
-                    });
-                    if (Object.keys(educationErrors).length > 0) {
-                      errors.educations = errors.educations || [];
-                      errors.educations[index] = educationErrors;
-                    }
-                  });
-                }
+                // if (values.educations) {
+                //   values.educations.forEach((value, index) => {
+                //     const educationErrors = {};
+                //     Object.keys(value).forEach((field) => {
+                //       if (!value[field]) {
+                //         educationErrors[field] = "This field is required";
+                //       }
+                //     });
+                //     if (Object.keys(educationErrors).length > 0) {
+                //       errors.educations = errors.educations || [];
+                //       errors.educations[index] = educationErrors;
+                //     }
+                //   });
+                // }
                 return errors;
               }}
             >

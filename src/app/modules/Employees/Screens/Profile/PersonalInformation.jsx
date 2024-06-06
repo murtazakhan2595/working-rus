@@ -80,15 +80,15 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                             }}
                             validate={(values) => {
                                 const errors = {};
-                                for (let field in values) {
-                                    if (!values[`${field}`]) {
-                                        errors[`${field}`] = 'This field is required';
-                                    }
-                                }
-                                if (imageError) {
-                                    errors.profile_picture = imageError;
-                                }
-                                console.log(values, errors)
+                                // for (let field in values) {
+                                //     if (!values[`${field}`]) {
+                                //         errors[`${field}`] = 'This field is required';
+                                //     }
+                                // }
+                                // if (imageError) {
+                                //     errors.profile_picture = imageError;
+                                // }
+                                // console.log(values, errors)
 
                                 return errors;
                             }}

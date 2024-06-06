@@ -109,8 +109,6 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
                     <Col md="12">
                       <h5 className="fw-700 mb-3 mt-4">ID Details</h5>
                     </Col>
-                    {console.log(props.values)}
-
                     <Col md="6">
                       <TextInput
                         name={'living_country_id_no'}

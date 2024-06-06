@@ -96,16 +96,15 @@ function App() {
         return;
       }
     } catch (error) {
-      // if (
-      //   error.response &&
-      //   (error.response.status === 401 || error.response.status === 403)
-      // ) {
-      //   // Token expired or invalid
-      //  /// dispatch(setUserLogout());
-
-      // } else {
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        // Token expired or invalid
+        dispatch(setUserLogout());
+      } else {
         console.error("Error fetching data:", error);
-      // }
+      }
       setLoading(false);
     }
   };

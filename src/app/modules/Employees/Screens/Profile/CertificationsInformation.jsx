@@ -88,20 +88,20 @@ const CertificationsInformation = ({
               }}
               validate={(values) => {
                 const errors = {};
-                if (values.certifications) {
-                  values.certifications.forEach((value, index) => {
-                    const certificationErrors = {};
-                    Object.keys(value).forEach((field) => {
-                      if (!value[field]) {
-                        certificationErrors[field] = "This field is required";
-                      }
-                    });
-                    if (Object.keys(certificationErrors).length > 0) {
-                      errors.certifications = errors.certifications || [];
-                      errors.certifications[index] = certificationErrors;
-                    }
-                  });
-                }
+                // if (values.certifications) {
+                //   values.certifications.forEach((value, index) => {
+                //     const certificationErrors = {};
+                //     Object.keys(value).forEach((field) => {
+                //       if (!value[field]) {
+                //         certificationErrors[field] = "This field is required";
+                //       }
+                //     });
+                //     if (Object.keys(certificationErrors).length > 0) {
+                //       errors.certifications = errors.certifications || [];
+                //       errors.certifications[index] = certificationErrors;
+                //     }
+                //   });
+                // }
                 return errors;
               }}
             >

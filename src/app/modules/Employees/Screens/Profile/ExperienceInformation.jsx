@@ -66,21 +66,21 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
                             }}
                             validate={(values) => {
                                 const errors = {};
-                                console.log(values, errors, 'Error');
-                                if (values.experiences) {
-                                    values.experiences.forEach((value, index) => {
-                                        const experienceErrors = {};
-                                        Object.keys(value).forEach((field) => {
-                                            if (!value[field] && field !== 'disableEndDate') {
-                                                experienceErrors[field] = 'This field is required';
-                                            }
-                                        });
-                                        if (Object.keys(experienceErrors).length > 0) {
-                                            errors.experiences = errors.experiences || [];
-                                            errors.experiences[index] = experienceErrors;
-                                        }
-                                    });
-                                }
+                                // console.log(values, errors, 'Error');
+                                // if (values.experiences) {
+                                //     values.experiences.forEach((value, index) => {
+                                //         const experienceErrors = {};
+                                //         // Object.keys(value).forEach((field) => {
+                                //         //     if (!value[field] && field !== 'disableEndDate') {
+                                //         //         experienceErrors[field] = 'This field is required';
+                                //         //     }
+                                //         // });
+                                //         // if (Object.keys(experienceErrors).length > 0) {
+                                //         //     errors.experiences = errors.experiences || [];
+                                //         //     errors.experiences[index] = experienceErrors;
+                                //         // }
+                                //     });
+                                // }
                                 return errors;
                             }}
 
