@@ -1,10 +1,18 @@
 import React from "react";
+import { CiEdit } from "react-icons/ci";
 
-const IdentificationDetails = ({ identificationDetails }) => {
+const IdentificationDetails = ({ identificationDetails,isEditable }) => {
 
   return (
     <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
-      <h2 className="text-xl mb-4">Identification Details</h2>
+      <div className="flex justify-between">
+        <h2 className="text-xl">Identification Details</h2>
+        {isEditable &&
+          <div className="flex gap-4 items-center">
+          <CiEdit className="text-2xl cursor-pointer opacity-80" />
+        </div>
+        }
+      </div>
       <hr />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 py-4">
         {identificationDetails.map((section, sectionIndex) => (

@@ -1,11 +1,21 @@
 import React from "react";
 import { FiDownload } from "react-icons/fi";
+import { CiEdit } from "react-icons/ci";
+import { FiPlus } from "react-icons/fi";
 
-const AcademicInfo = ({ educations }) => {
+const AcademicInfo = ({ educations, isEditable }) => {
   return (
     <div className="bg-white shadow border w-full rounded-lg p-4 mb-6">
       <div className="flex justify-between">
-        <h2 className="text-xl mb-4">Academic Detials</h2>
+      </div>
+      <div className="flex justify-between">
+        <h2 className="text-xl">Academic Detials</h2>
+        {isEditable &&
+          <div className="flex gap-4 items-center">
+          <FiPlus className="text-lg cursor-pointer opacity-80" />
+          <CiEdit className="text-2xl cursor-pointer opacity-80" />
+        </div>
+        }
       </div>
       <hr />
       <div className="py-4 overflow-auto no-scrollbar">

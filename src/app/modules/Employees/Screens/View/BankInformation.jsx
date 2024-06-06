@@ -1,10 +1,18 @@
 import React from "react";
+import { CiEdit } from "react-icons/ci";
 
-const BankInformation = ({ bankInformation }) => {
+const BankInformation = ({ bankInformation ,isEditable}) => {
   
   return (
     <div className="bg-white shadow border 800:w-1/2 w-full rounded-lg p-4 mb-6">
-      <h2 className="text-xl mb-4">Bank Information</h2>
+      <div className="flex justify-between">
+        <h2 className="text-xl">Bank Information</h2>
+        {isEditable &&
+          <div className="flex gap-4 items-center">
+          <CiEdit className="text-2xl cursor-pointer opacity-80" />
+        </div>
+        }
+      </div>
       <hr />
 
       {/* ********************* Bank INFO ************************ */}

@@ -107,6 +107,7 @@ async function getProfessionalExperiance(data) {
         employee_id: profExperience?.employee_id ?? "",
         exp_organization: profExperience?.exp_organization ?? "",
         exp_designation: profExperience?.exp_designation ?? "",
+        exp_description: profExperience?.exp_discription ?? "",
         exp_letter: profExperience?.exp_letter ?? "",
         exp_start_date: profExperience.exp_start_date
           ? profExperience.exp_start_date
