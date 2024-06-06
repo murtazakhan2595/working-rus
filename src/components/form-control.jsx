@@ -8,7 +8,7 @@ import upload from "../assets/images/upload.png";
 import { TfiFiles } from 'react-icons/tfi'
 import { dropdownStyles } from "../data/Data";
 import { IoIosSearch } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { File } from "../app/utils/Types/General";
 
 const SelectComponent = ({
     name,
@@ -139,7 +139,7 @@ const TextInput = ({ name, value, error, touch, onChange, label, disabled, requi
     );
 };
 
-const CheckBoxInput = ({ name, value, onChange, label, disabled}) => {
+const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
     return (
         <>
             <FormGroup check className="my-3">
@@ -334,59 +334,13 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
         </>
     );
 };
-// const FileInput = ({ value, error, setImageError, onChange, touch, name }) => {
-//     return (
-//         <>
-//             <div className="flex flex-col bg-[#F5F5FA] text-center file-input" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
-//                 <h4>
-//                     <TfiFiles className="m-auto mb-3" />
-//                     Upload your Experience Letter or drag it here
-//                 </h4>
-//                 <label
-//                     htmlFor={name}
-//                     className="cursor-pointer opacity-70 rounded-lg text-input mt-3"
-//                 >
-//                     <input
-//                         id={name}
-//                         type="file"
-//                         name={name}
-//                         accept=".pdf"
-//                         max-size="104857600"
-//                         onChange={(e) => {
-//                             let exp_letter = e.target.files[0];
-//                             const fileData = { name: exp_letter.name };
-//                             if (exp_letter) {
-//                                 const reader = new FileReader();
-//                                 reader.onload = (e) => {
-//                                     onChange('exp_letter', {
-//                                         name: fileData.name,
-//                                         exp_letter: e.target.result,
-//                                     });
-//                                 };
-//                                 reader.readAsDataURL(exp_letter);
-//                             }
-//                         }}
-//                         style={{ position: 'relative' }}
-//                     />
-//                 </label>
-//                 <br />
-//             </div>
-//             {error && touch && (
-//                 <div className="text-red-500 text-sm">
-//                     {error}
-//                 </div>
-//             )}
-//         </>
-//     );
-// };
-
 const FileInput = ({ value, error, setImageError, onChange, touch, name, label, acceptType }) => {
     return (
         <>
             <div className="flex flex-col bg-[#F5F5FA] text-center file-input mb-3" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
                 <h4>
                     <TfiFiles className="m-auto mb-3" />
-                    {label || 'Upload your file or drag it here'}
+                    {`Upload Your ${label || 'file'} or Drag it Here`}
                 </h4>
                 <label
                     htmlFor={name}
@@ -399,16 +353,27 @@ const FileInput = ({ value, error, setImageError, onChange, touch, name, label, 
                         accept={acceptType || "*/*"}
                         max-size="104857600"
                         onChange={(e) => {
+                            console.log(value);
                             let selectedFile = e.target.files[0];
-                            const fileData = { name: selectedFile.name };
+                            const fileData = { name: selectedFile?.name };
                             if (selectedFile) {
                                 const reader = new FileReader();
                                 reader.onload = (e) => {
-                                    onChange(name, {
+                                    debugger
+                                    const newDocument = {
                                         name: fileData.name,
                                         file: e.target.result,
-                                    });
+                                    }
+                                    if (value && value.id) {
+                                        value.document = newDocument;
+                                        value.name = fileData.name;
+                                    } else {
+                                        value = newDocument;
+                                    }
+                                    onChange(name, value)
+
                                 };
+
                                 reader.readAsDataURL(selectedFile);
                             }
                         }}

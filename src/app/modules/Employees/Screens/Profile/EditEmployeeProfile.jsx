@@ -31,7 +31,7 @@ const EditEmployeeProfile = () => {
       return 'Academics';
     else if (currentTab === 6)
       return 'Certification and Licences';
-    else if (currentTab === 9)
+    else if (currentTab === 7)
       return 'Identification Details';
 
   }
@@ -134,20 +134,6 @@ const EditEmployeeProfile = () => {
                   }}
                 />
               )}
-              <IdentificationInformation
-                employeeId={id}
-                nextstep={() => {
-                  toast.success("Employee Profile Updated Successfully!", {
-                    position: toast.POSITION.TOP_RIGHT,
-                  });
-                  navigate('/employees')
-
-                }}
-                isEditMode={false}
-                prevStep={() => {
-                  setCurrentTab(currentTab - 1);
-                }}
-              />
             </CardBody>
           </Col>
         </Row>

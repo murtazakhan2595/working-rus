@@ -7,7 +7,8 @@ const ContactInformation = ({ contactInformation, isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
 
   return (
-    <>  <div className="bg-white shadow border 800:w-1/2 w-full rounded-lg p-4 mb-6">
+    <> 
+     <div className="bg-white shadow border 800:w-1/2 w-full rounded-lg p-4 mb-6">
       <div className="flex justify-between">
         <h2 className="text-xl">Contact Information</h2>
         {isEditable &&

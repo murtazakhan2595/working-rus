@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, } from 'reactstrap';
-import { PersonalInformation, ContactInformation , BankInformation, ExperienceInformation, EducationInformation, CertificationsInformation} from '../Profile';
+import { PersonalInformation, ContactInformation , BankInformation, ExperienceInformation, EducationInformation, CertificationsInformation, IdentificationInformation} from '../Profile';
 
 function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, }) {
     console.log(openModal, employeeId, typeof currentClick);
@@ -79,6 +79,15 @@ function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, 
                     )}
                     {currentClick === 6 && (
                         <CertificationsInformation
+                            employeeId={employeeId}
+                            nextstep={() => {
+                                closeModal();
+                            }}
+                            isEditMode={true}
+                        />
+                    )}
+                    {currentClick === 7 && (
+                        <IdentificationInformation
                             employeeId={employeeId}
                             nextstep={() => {
                                 closeModal();

@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
+import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { FiDownload } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
 
-const AcademicInfo = ({ educations, isEditable }) => {
+const AcademicInfo = ({ educations, isEditable,employeeId }) => {
+  const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
-    <div className="bg-white shadow border w-full rounded-lg p-4 mb-6">
+    <> 
+      <div className="bg-white shadow border w-full rounded-lg p-4 mb-6">
       <div className="flex justify-between">
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between"onClick={() => {
+            setShowPersonalDetailCard(true);
+          }}>
         <h2 className="text-xl">Academic Detials</h2>
         {isEditable &&
           <div className="flex gap-4 items-center">
@@ -48,6 +53,17 @@ const AcademicInfo = ({ educations, isEditable }) => {
         ))}
       </div>
     </div>
+    {showPersonalDetailCard && (
+      <EmployeeDetailModal
+        openModal={showPersonalDetailCard}
+        closeModal={() => {
+          setShowPersonalDetailCard(false);
+        }}
+        employeeId={employeeId}
+        currentClick={5}
+      />
+    )}
+  </>
   );
 };
 

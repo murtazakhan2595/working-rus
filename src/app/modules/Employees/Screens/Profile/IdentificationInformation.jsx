@@ -37,29 +37,29 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
   const [isLoading, setIsLoading] = useState(true);
 
   const [visaDetails, setVisaDetails] = useState(false);
-  const [showVisaFields, setShowVisaFields] = useState(false);
-  const [showInsuranceFields, setShowInsuranceFields] = useState(false);
 
   useEffect(() => {
-    getEmployeeVisaDetailsFiles(baseUrl, employeeId, token).then(response => {
-      debugger
-      const files = response;
-      getEmployeeVisaDetailData(baseUrl, employeeId, token).then(responseData => {
-        const data = responseData;
-        setVisaDetails({ ...files, ...data });
-        setIsLoading(false)
-      }).catch(error => {
-        setIsLoading(false)
-        console.log(error);
-      });
-    }).catch(error => {
+    getEmployeeVisaDetailData(baseUrl, employeeId, token).then(response => {
+      setVisaDetails(response);
       setIsLoading(false)
+    }).catch(error => {
+      //  setIsLoading(false)
       console.log(error);
     });
   }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
   const handleSubmit = (data) => {
-    const response = saveEmployeeVisaDetailData(baseUrl, employeeId, token, data);
+    const documents = {
+      passport_copy: data.passport_copy,
+      enter_permit: data.enter_permit,
+      visa_page: data.visa_page,
+      medical: data.medical,
+      id_application: data.id_application,
+      id_front: data.id_front,
+      id_back: data.id_back,
+      insurance_card: data.insurance_card,
+    };
+    const response = saveEmployeeVisaDetailData(baseUrl, employeeId, token, data, documents);
     if (response)
       nextstep();
   };
@@ -104,12 +104,13 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
             >
               {(props) => (
                 <Form onSubmit={props.handleSubmit}>
-                  {console.log(values,)}
 
                   <Row>
                     <Col md="12">
                       <h5 className="fw-700 mb-3 mt-4">ID Details</h5>
                     </Col>
+                    {console.log(props.values)}
+
                     <Col md="6">
                       <TextInput
                         name={'living_country_id_no'}
@@ -196,7 +197,7 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
                         }}
                       />
                     </Col>
-                    {
+                    {props.values.is_passport_applicable &&
                       <>
                         <Col md="6">
                           <TextInput
@@ -250,11 +251,11 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
                         </Col>
                         <Col md="12">
                           <FileInput
-                            name={'id_front'}
+                            name={'passport_copy'}
                             error={props.errors?.passport_copy}
                             touch={props.touched?.passport_copy}
                             value={props.values?.passport_copy}
-                            label={'ID Front'}
+                            label={'Passport Copy'}
                             required={true}
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
@@ -266,15 +267,15 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
                     {/* ------------------------------------------------------------ */}
                     <Col md="12">
                       <CheckBoxInput
-                        name={'is_visa_applicable_yes'}
-                        value={props.values.is_visa_applicable_yes}
+                        name={'is_visa_applicable'}
+                        value={props.values.is_visa_applicable}
                         label={'Visa Details'}
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
                         }}
                       />
                     </Col>
-                    {
+                    {props.values.is_visa_applicable &&
                       <>
                         <Col md="6">
                           <TextInput
@@ -454,7 +455,7 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
                         }}
                       />
                     </Col>
-                    {
+                    {props.values.is_insurance_applicable &&
                       <>
                         <Col md="6">
                           <TextInput

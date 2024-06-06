@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
+import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { FiDownload } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
 
-const Experience = ({ experience,isEditable }) => {
+const Experience = ({ experience,isEditable , employeeId}) => {
+  const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
-    <div className="bg-white shadow border w-full rounded-lg p-4 mb-6">
+    <> 
+     <div className="bg-white shadow border w-full rounded-lg p-4 mb-6">
       <div className="flex justify-between">
         <h2 className="text-xl">Experience</h2>
         {isEditable &&
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center"onClick={() => {
+            setShowPersonalDetailCard(true);
+          }}>
           <FiPlus className="text-lg cursor-pointer opacity-80" />
           <CiEdit className="text-2xl cursor-pointer opacity-80" />
         </div>
@@ -49,6 +54,17 @@ const Experience = ({ experience,isEditable }) => {
         ))}
       </div>
     </div>
+    {showPersonalDetailCard && (
+      <EmployeeDetailModal
+        openModal={showPersonalDetailCard}
+        closeModal={() => {
+          setShowPersonalDetailCard(false);
+        }}
+        employeeId={employeeId}
+        currentClick={4}
+      />
+    )}
+  </>
   );
 };
 

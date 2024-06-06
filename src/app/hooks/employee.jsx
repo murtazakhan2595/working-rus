@@ -156,17 +156,17 @@ const getEmployeeVisaDetailsFiles = async (baseUrl, id, token) => {
 const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
+            const documents = await getEmployeeVisaDetailsFiles(baseUrl, employeeid, token);
             const response = await axios.get(`${baseUrl}/employeevisadetail/?search={"employee_id":${employeeid}}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
             });
-
             if (response.status === 200) {
                 if (response.data && response.data.results && response.data.results.length > 0) {
                     const employeeData = getVisaDetails(response.data.results[0]);
-                    return employeeData;
+                    return { ...employeeData, ...documents };
                 }
             }
 

@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
+import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { CiEdit } from "react-icons/ci";
 
-const IdentificationDetails = ({ identificationDetails,isEditable }) => {
-
+const IdentificationDetails = ({ identificationDetails,isEditable , employeeId}) => {
+  const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
-    <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
+    <> 
+      <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
       <div className="flex justify-between">
         <h2 className="text-xl">Identification Details</h2>
         {isEditable &&
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center"onClick={() => {
+            setShowPersonalDetailCard(true);
+          }}>
           <CiEdit className="text-2xl cursor-pointer opacity-80" />
         </div>
         }
@@ -28,6 +32,17 @@ const IdentificationDetails = ({ identificationDetails,isEditable }) => {
         ))}
       </div>
     </div>
+    {showPersonalDetailCard && (
+      <EmployeeDetailModal
+        openModal={showPersonalDetailCard}
+        closeModal={() => {
+          setShowPersonalDetailCard(false);
+        }}
+        employeeId={employeeId}
+        currentClick={7}
+      />
+    )}
+  </>
   );
 };
 
