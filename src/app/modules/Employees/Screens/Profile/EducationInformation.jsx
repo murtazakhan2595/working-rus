@@ -24,7 +24,7 @@ import {
   CustomLightOutlineButton,
 } from "../../../../../components/form-control";
 import { educationTypeOptions } from "../../../../../data/Data.js";
-import FileInput from "./FileInput.jsx";
+import { FileInput } from "../../../../../components/form-control.jsx";
 
 // Helper function to format dates
 const formatDate = (date) => {
@@ -233,12 +233,30 @@ const EducationInformation = ({
                             </div>
                             <div className="w-full">
                               <FileInput
+                                // name={`educations[${index}].education_body`}
+                                // value={education.edu_end_date}
+                                // onChange={(field, value) => {
+                                //   props.setFieldValue(field, value);
+                                // }}
+                                // label={"Education Body"}
+                                // required
+                                // error={
+                                //   props.errors.educations &&
+                                //   props.errors.educations[index]?.education_body
+                                // }
+                                // touched={
+                                //   props.touched.educations &&
+                                //   props.touched.educations[index]
+                                //     ?.education_body
+                                // }
+
+                                acceptType=".pdf"
                                 name={`educations[${index}].education_body`}
-                                value={education.edu_end_date}
+                                value={education.education_body}
                                 onChange={(field, value) => {
                                   props.setFieldValue(field, value);
                                 }}
-                                label={"Education Body"}
+                                label={"Upload your Certification or drag it here"}
                                 required
                                 error={
                                   props.errors.educations &&

@@ -19,7 +19,7 @@ import IdentificationInformation from "./IdentificationInformation";
 const EditEmployeeProfile = () => {
   const { id } = useParams();
   //   const [currentTab, setCurrentTab] = useState(4);
-  const [currentTab, setCurrentTab] = useState(1);
+  const [currentTab, setCurrentTab] = useState(6);
   const getTitle = () => {
     if (currentTab === 1)
       return 'Personal Details';

@@ -37,8 +37,9 @@ const Sidebar = ({
     sidebarRefresh,
 }) => {
 
-    const activeLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 bg-[#DAEFF8] text-[#5C5E64]`;
     const normalLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64] hover:border hover:border-blue-300 text-[10px]`
+    const activeLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 bg-[#DAEFF8] text-[#5C5E64]`;
+    const ComingActiveLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64]`;
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -230,44 +231,44 @@ const Sidebar = ({
                                                     <p className="text-sm px-2">Add Employee</p>
 
                                                 </NavLink>
-                                                <NavLink to="/people-team/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                <NavLink to="/coming-soon"
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Profile Management</p>
 
                                                 </NavLink>
-                                                <NavLink to="/people-team/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                <NavLink to="/coming-soon"
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Settings</p>
 
                                                 </NavLink>
-                                                <NavLink to="/people-team/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                <NavLink to="/coming-soon"
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Travel Details</p>
 
                                                 </NavLink>
-                                                <NavLink to="/people-team/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                <NavLink to="/coming-soon"
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Exit & Clearence</p>
 
                                                 </NavLink>
-                                                <NavLink to="/people-team/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                <NavLink to="/coming-soon"
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Employee Creation</p>
 
                                                 </NavLink>
-                                                <NavLink to="/people-team/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                <NavLink to="/coming-soon"
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Customise Employees</p>
 
                                                 </NavLink>
-                                                <NavLink to="/people-team/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                <NavLink to="/coming-soon"
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Relocation</p>
 
@@ -357,49 +358,49 @@ const Sidebar = ({
                                         {(isServiceHubOpen && isSidebarOpen) &&
                                             <div className="flex flex-col bg-[#F7F8FA]">
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">My Profile</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">My Team</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Calender</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Attendance</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">My Leaves</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Files & Data</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">My Travel Details</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Letter Requests</p>
 
@@ -560,7 +561,7 @@ const Sidebar = ({
                                         {(isRecruitmentOpen && isSidebarOpen) &&
                                             <div className="flex flex-col bg-[#F7F8FA]">
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Personnel Requisition</p>
 
@@ -578,19 +579,19 @@ const Sidebar = ({
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Applicants</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Referals</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">On Boarding</p>
 
@@ -638,7 +639,7 @@ const Sidebar = ({
                                         {(isPerformanceOpen && isSidebarOpen) &&
                                             <div className="flex flex-col bg-[#F7F8FA]">
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Employee Evaluation</p>
 
@@ -692,13 +693,13 @@ const Sidebar = ({
                                         {(isPayrollOpen && isSidebarOpen) &&
                                             <div className="flex flex-col bg-[#F7F8FA]">
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Payroll</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Attendance</p>
 
@@ -751,13 +752,13 @@ const Sidebar = ({
                                         {(isPeopleEngagementOpen && isSidebarOpen) &&
                                             <div className="flex flex-col bg-[#F7F8FA]">
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Announcement</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Recognition</p>
 
@@ -822,25 +823,25 @@ const Sidebar = ({
                                         {(isPersonalDevelopmentOpen && isSidebarOpen) &&
                                             <div className="flex flex-col bg-[#F7F8FA]">
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Learn</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Career Planning</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Succession Plan</p>
 
                                                 </NavLink>
                                                 <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Development Plan</p>
 
