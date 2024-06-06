@@ -562,11 +562,11 @@ const EducationInformation = ({
                                   onChange={async (e) => {
                                     const file =
                                       e.currentTarget.files[0];
-                                    const base64 =
-                                      await convertFileToBase64(file);
+                                    // const base64 =
+                                    //   await convertFileToBase64(file);
                                     props.setFieldValue(
                                       `educations[${index}].education_body`,
-                                      base64
+                                      file
                                     );
                                   }}
                                 />

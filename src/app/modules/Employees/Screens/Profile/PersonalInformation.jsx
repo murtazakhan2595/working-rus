@@ -29,8 +29,6 @@ import PageLoader from '../../../../../components/PageLoader.jsx';
 import { maritalStatus } from '../../../../../data/Data.js';
 
 const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
-    alert('fjk')
-    console.log(employeeId);
     const formRef = React.createRef();
     const [personalInfo, setPersonalInfo] = useState({});
     const [imageError, setImageError] = useState(null);

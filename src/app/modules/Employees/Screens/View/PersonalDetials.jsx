@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
-import PersonalInformationModal from '../Modals/PersonalInformation';
 
 const PersonalInformation = ({ personalInfo, userData }) => {
-
-  console.log(userData);
-  const [openModal, setOpenModal] = useState(false);
 
   return (
     <>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { CiEdit } from "react-icons/ci";
-import { PersonalInformationModal } from '../../Employees/Screens/Modals'
+import { EmployeeDetailModal } from '../../Employees/Screens/Modals'
 
 const PersonalInformation = ({ personalInfo, userData }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -52,13 +52,15 @@ const PersonalInformation = ({ personalInfo, userData }) => {
       </div>
     </div>
     {showPersonalDetailCard &&
-      <PersonalInformationModal
+      <EmployeeDetailModal
         openModal={showPersonalDetailCard}
         closeModal={() => {
           setShowPersonalDetailCard(false);
         }}
         employeeId={userData.id}
-      />}
+        currentClick={1}
+      />
+    }
   </>
   );
 };

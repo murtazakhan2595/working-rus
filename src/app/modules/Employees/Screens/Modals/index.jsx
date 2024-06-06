@@ -1,5 +1,5 @@
-import PersonalInformationModal from './PersonalInformation';
+import EmployeeDetailModal from './EmployeeDetailModal';
 
 export {
-    PersonalInformationModal,
+    EmployeeDetailModal,
 }
