@@ -69,6 +69,7 @@ const SelectMultiInputComponent = ({
 };
 
 const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => {
+    const date = new Date(moment(value));
     return (
         <>
             <FormGroup>
@@ -77,8 +78,8 @@ const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => 
                     id={name}
                     isDisabled={disabled}
                     className={`form-control ${error && touch ? 'is-invalid' : ''}`}
-                    value={value ? new Date(moment(value)) : ''}
-                    selected={value ? new Date(moment(value)) : new Date()}
+                    value={date && !isNaN(date.getTime()) ? date : ''}
+                    selected={date && !isNaN(date.getTime()) ? date : new Date()}
                     dropdownMode="select"
                     onChange={(value) => {
                         value = moment(value).format('YYYY-MM-DD');
@@ -212,16 +213,16 @@ const CustomButton = ({ label, onClick, disabled }) => {
     );
 };
 
-const CustomDarkButton = ({ label, onClick, disabled,style }) => {
+const CustomDarkButton = ({ label, onClick, disabled, style }) => {
     return (
-            <Button
-                className="btn btn-dark"
-                onClick={onClick}
-                disabled={disabled}
-                style={style}
-            >
-                {label}
-            </Button>
+        <Button
+            className="btn btn-dark"
+            onClick={onClick}
+            disabled={disabled}
+            style={style}
+        >
+            {label}
+        </Button>
     );
 };
 

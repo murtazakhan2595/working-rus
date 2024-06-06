@@ -209,37 +209,31 @@ function getManagerSelected(managers) {
   return [];
 }
 
-function getAddEmployeePayload(data) {
-  const department = EmployeeDepartmentInfo;
-  department.department_name = data?.department_name ?? "";
-  department.department_position = data?.department_position ?? "";
-  department.direct_report = data?.direct_report
-    ? getManagerSelected(data.direct_report)
-    : "";
-  department.indirect_report = data?.indirect_report
-    ? getManagerSelected(data.indirect_report)
-    : "";
-  department.department_manager = data?.department_manager ?? "";
-  department.employee_type = data?.employee_type ?? "";
-  department.employee_status = data?.employee_status ?? "";
-  department.employee_work_type = data?.employee_work_type ?? "";
-  department.employee_location = data?.employee_location ?? "";
-  department.joining_date = data?.joining_date
-    ? moment(data.joining_date).format("YYYY-MM-DD")
-    : null;
-  department.is_indirect_report_applicable = data.indirect_report
-    ? true
-    : false;
-
+function getEmployeeInformation(data) {
   const employeeInformation = {
+    id: data.id ?? 0,
     username: data.username,
     first_name: data.first_name,
     last_name: data.last_name,
-    other_email: data.other_email,
-    password: data.password,
+    work_email: data.work_email,
     user_role: data.user_role,
+    department_name: data?.department_name ?? '',
+    residential_address: data?.residential_address ?? '',
+    mobile_no: data?.mobile_no ?? '',
+    department_position: data?.department_position ?? '',
+    direct_report: data?.direct_report ?? '',
+    indirect_report: data?.indirect_report ?? '',
+    department_manager: data?.department_manager ?? '',
+    employee_type: data?.employee_type ?? '',
+    employee_status: data?.employee_status ?? '',
+    employee_work_type: data?.employee_work_type ?? '',
+    employee_location: data?.employee_location ?? '',
+    joining_date: data?.joining_date ?? null,
+    is_indirect_report_applicable: data.indirect_report
+      ? true
+      : false,
   };
-  return { ...employeeInformation, ...department };
+  return employeeInformation;
 }
 
 export {
@@ -253,5 +247,5 @@ export {
   getDepartmentInfo,
   getBankDetails,
   getCertifications,
-  getAddEmployeePayload,
+  getEmployeeInformation,
 };

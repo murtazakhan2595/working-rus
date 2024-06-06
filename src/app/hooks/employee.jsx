@@ -1,17 +1,18 @@
 import axios from "axios";
 import {
-    mapEmployeeData, getPersonalInfo, getVisaDetails, getCVDetails, getProfessionalExperiance, getAcademicRecord,
+    getPersonalInfo, getVisaDetails, getCVDetails, getProfessionalExperiance, getAcademicRecord,
     getDepartmentInfo,
     getBankDetails,
     getCertifications,
     getContactInfo,
 } from '../utils/MappingObjects/mapEmployeeData'
 import {
-    EmployeeCVDetails, Employee, EmployeePersonalInformation, EmployeeVisaDetails, EmployeeProfessionalExperiance,
+    EmployeeCVDetails, EmployeeInformation, EmployeePersonalInformation, EmployeeVisaDetails, EmployeeProfessionalExperiance,
     EmployeeDepartmentInfo,
     EmployeeBankDetails,
     EmployeeCertifiation,
     EmployeeContactInformation,
+
 } from '../utils/Types/Employee'
 
 
@@ -20,12 +21,24 @@ const getEmployeeData = async (baseUrl, employeeid, headers) => {
         const response = await axios.get(`${baseUrl}/emp/${employeeid}`, {
             headers,
         });
-        const employeeData = mapEmployeeData(response.data);
-        return employeeData;
+        return response.data;
     } catch (error) {
         console.error("Error fetching data:", error);
     }
-    return Employee;
+    return 0;
+}
+
+const getNewEmployeeCode = async (baseUrl, headers) => {
+    try {
+        const response = await axios.get(`${baseUrl}/lastemployee`, {
+            headers,
+        });
+        const id = response.data?.id;
+        return id + 1;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+    return EmployeeInformation;
 }
 
 const getEmployeePersonalInfoData = async (baseUrl, employeeid, token) => {
@@ -659,5 +672,6 @@ export {
     deleteEmployeeProfessionalExperianceData,
     deleteEmployeeAcademicRecordData,
     getEmployeeContactInfo,
-    saveEmployeeContactInfoData
+    saveEmployeeContactInfoData,
+    getNewEmployeeCode,
 }

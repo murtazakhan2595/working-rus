@@ -24,7 +24,7 @@ import {
 } from "./state/slices/UserSlice.js";
 import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/modules/Employees/EmpForm";
-import CreateEmployee from "./app/modules/Employees/Screens/Create.jsx";
+import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
 import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
@@ -177,11 +177,11 @@ function App() {
                       <Route
                         exact
                         path="/add-employee"
-                        element={<CreateEmployee />}
+                        element={<CreateUpdateEmployee />}
                       />
                       <Route
                         path="/edit-employee/:id"
-                        element={<EditDataForm />}
+                        element={<CreateUpdateEmployee />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
 
@@ -300,7 +300,7 @@ function App() {
                       <Route
                         exact
                         path="/add-employee"
-                        element={<CreateEmployee />}
+                        element={<CreateUpdateEmployee />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
 

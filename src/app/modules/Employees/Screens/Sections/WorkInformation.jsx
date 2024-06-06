@@ -27,16 +27,17 @@ const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
 }));
 
 function getManagerSelected(managers, managersList) {
-    if (managers) {
+    if (managers && managersList && managersList.length > 0) {
+        debugger
         managers = managers.split(', ') || [];
         const matchingObjects = managersList.filter(obj => {
             return managers.find(element => obj.label === element);
         });
-
+        console.log(matchingObjects)
         return matchingObjects;
     }
 
-    return [];
+    return managers;
 
 }
 
@@ -80,6 +81,14 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
         ),
         value: manager.value
     }));
+    if (values.direct_report && typeof values.direct_report === 'string') {
+        const managerList = getManagerSelected(values.direct_report, managers);
+        onChange('direct_report', managerList)
+    }
+    if (values.indirect_report && typeof values.indirect_report === 'string') {
+        const managerList = getManagerSelected(values.indirect_report, managers);
+        onChange('indirect_report', managerList)
+    }
 
     return (
         <>
