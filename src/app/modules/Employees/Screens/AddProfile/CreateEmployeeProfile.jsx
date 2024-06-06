@@ -8,6 +8,8 @@ import ExperienceInformation from "../Profile/ExperienceInformation";
 import EducationInformation from "../Profile/EducationInformation";
 import CertificationsInformation from "../Profile/CertificationsInformation";
 import logo from "../../../../../assets/images/tecbrix-logo.png";
+import OnboardComplete from "./OnboardComplete";
+import IdentificationInformation from "../Profile/IdentificationInformation";
 
 
 const CreateEmployeeProfile = () => {
@@ -85,6 +87,24 @@ const CreateEmployeeProfile = () => {
           )}
           {currentTab === 7 && (
             <CertificationsInformation
+              employeeId={id}
+              nextstep={() => {
+                setCurrentTab(currentTab + 1);
+              }}
+              isEditMode={true}
+            />
+          )}
+          {currentTab === 8 && (
+            <IdentificationInformation
+              employeeId={id}
+              nextstep={() => {
+                setCurrentTab(currentTab + 1);
+              }}
+              isEditMode={true}
+            />
+          )}
+          {currentTab === 9 && (
+            <OnboardComplete
               employeeId={id}
               nextstep={() => {
                 setCurrentTab(currentTab + 1);
