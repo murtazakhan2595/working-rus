@@ -16,7 +16,6 @@ import {
 } from "../../../../hooks/employee.jsx";
 import PageLoader from "../../../../../components/PageLoader.jsx";
 import { EmployeeCertifiation } from "../../../../utils/Types/Employee";
-
 import logo from "../../../../../assets/images/tecbrix-logo.png";
 import {
   CustomButton,
@@ -24,6 +23,7 @@ import {
   SelectComponent,
   TextInput,
 } from "../../../../../components/form-control";
+import FileInput from "./FileInput";
 
 const CertificationsInformation = ({
   nextstep,
@@ -75,11 +75,9 @@ const CertificationsInformation = ({
                 <Col lg={12}>
                   <div className="flex justify-between">
                     <div className="flex justify-start items-start">
-                      <img
-                        src={logo}
-                        className="w-[142px] h-auto md:h-auto lg:pl-5"
-                        alt="Tecbrix logo"
-                      />
+                      <h2 className="text-2xl font-lato font-bold text-[#323333] text-left">
+                        Certification and Licences
+                      </h2>
                     </div>
                   </div>
                 </Col>
@@ -179,18 +177,14 @@ const CertificationsInformation = ({
                                           onChange={(field, value) => {
                                             props.setFieldValue(field, value);
                                           }}
-                                          label={"Certification Body"}
+                                          label={"Certification Institute"}
                                         />
                                       </div>
-                                      <div className="w-full md:w-[97.5%] bg-[#E5E5F0] flex justify-center items-center h-40">
-                                        <input
-                                          type="file"
+                                      <div className="w-full md:w-[97.5%]">
+                                        <FileInput
                                           name={`certifications[${index}].certification_body`}
-                                          onChange={(e) => {
-                                            props.setFieldValue(
-                                              `certifications[${index}].certification_body`,
-                                              e.currentTarget.files[0]
-                                            );
+                                          onChange={(field, value) => {
+                                            props.setFieldValue(field, value);
                                           }}
                                         />
                                       </div>
@@ -201,7 +195,7 @@ const CertificationsInformation = ({
                             <Col md="12" className="text-left">
                               <Button
                                 type="button"
-                                className="btn btn-outline-dark"
+                                className="btn btn-outline-dark my-3 bg-white"
                                 onClick={() => {
                                   const length =
                                     props.values?.certifications?.length;

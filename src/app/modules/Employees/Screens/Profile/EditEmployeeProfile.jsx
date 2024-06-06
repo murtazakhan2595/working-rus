@@ -8,6 +8,7 @@ import {
 import EducationInformation from "./EducationInformation";
 import ContactInformation from "./ContactInformation";
 import CertificationsInformation from "./CertificationsInformation";
+import IdentificationInformation from "./IdentificationInformation";
 
 const EditEmployeeProfile = () => {
   const { id } = useParams();
@@ -63,6 +64,15 @@ const EditEmployeeProfile = () => {
       )}
       {currentTab === 6 && (
         <CertificationsInformation
+          employeeId={id}
+          nextstep={() => {
+            setCurrentTab(currentTab + 1);
+          }}
+          isEditMode={true}
+        />
+      )}
+      {currentTab === 7 && (
+        <IdentificationInformation
           employeeId={id}
           nextstep={() => {
             setCurrentTab(currentTab + 1);

@@ -60,6 +60,8 @@ import ExperienceInfo from "./app/modules/Employees/Screens/AddProfile/Experienc
 import EducationInfo from "./app/modules/Employees/Screens/AddProfile/EducationInfo.jsx";
 import CertificationsInfo from "./app/modules/Employees/Screens/AddProfile/CertificationsInfo.jsx";
 import IdInfo from "./app/modules/Employees/Screens/AddProfile/IdInfo.jsx";
+import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
+import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 
 function App() {
   let userProfile = useSelector((state) => state.user.userProfile);
@@ -146,6 +148,10 @@ function App() {
                   <Route
                     path="/coming-soon"
                     element={<ComingSoon isSidebarOpen={isSidebarOpen} />}
+                  />
+                  <Route
+                    path="/services"
+                    element={<Services isSidebarOpen={isSidebarOpen} />}
                   />
                   <Route
                     exact
@@ -387,19 +393,21 @@ function App() {
             )}
             {userProfile.is_filled === true && (
               <>
-                <Route exact path="/welcome" element={<Welcome />} />
+                {/* <Route exact path="/welcome" element={<Welcome />} />
                 <Route
                   exact
                   path="/onboard-completion"
                   element={<OnboardComplete />}
-                />
-                <Route exact path="/" element={<EmpForm />} />
+                /> */}
+                {/* <Route exact path="/" element={<EmpForm />} />
                 <Route exact path="/personal-details" element={<PersonalDetails />} />
                 <Route exact path="/contact-information" element={<ContactInfo />} />
                 <Route exact path="/experience-details" element={<ExperienceInfo />} />
                 <Route exact path="/education-details" element={<EducationInfo />} />
                 <Route exact path="/certifications-details" element={<CertificationsInfo />} />
-                <Route exact path="/id-details" element={<IdInfo />} />
+                <Route exact path="/id-details" element={<IdInfo />} /> */}
+                 <Route exact path="/create-profile" element={<CreateEmployeeProfile />} />
+
               </>
             )}
             <Route path="*" element={<Err404 />} />
