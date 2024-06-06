@@ -334,13 +334,59 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
         </>
     );
 };
-const FileInput = ({ value, error, setImageError, onChange, touch, name }) => {
+// const FileInput = ({ value, error, setImageError, onChange, touch, name }) => {
+//     return (
+//         <>
+//             <div className="flex flex-col bg-[#F5F5FA] text-center file-input" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
+//                 <h4>
+//                     <TfiFiles className="m-auto mb-3" />
+//                     Upload your Experience Letter or drag it here
+//                 </h4>
+//                 <label
+//                     htmlFor={name}
+//                     className="cursor-pointer opacity-70 rounded-lg text-input mt-3"
+//                 >
+//                     <input
+//                         id={name}
+//                         type="file"
+//                         name={name}
+//                         accept=".pdf"
+//                         max-size="104857600"
+//                         onChange={(e) => {
+//                             let exp_letter = e.target.files[0];
+//                             const fileData = { name: exp_letter.name };
+//                             if (exp_letter) {
+//                                 const reader = new FileReader();
+//                                 reader.onload = (e) => {
+//                                     onChange('exp_letter', {
+//                                         name: fileData.name,
+//                                         exp_letter: e.target.result,
+//                                     });
+//                                 };
+//                                 reader.readAsDataURL(exp_letter);
+//                             }
+//                         }}
+//                         style={{ position: 'relative' }}
+//                     />
+//                 </label>
+//                 <br />
+//             </div>
+//             {error && touch && (
+//                 <div className="text-red-500 text-sm">
+//                     {error}
+//                 </div>
+//             )}
+//         </>
+//     );
+// };
+
+const FileInput = ({ value, error, setImageError, onChange, touch, name, label, acceptType }) => {
     return (
         <>
             <div className="flex flex-col bg-[#F5F5FA] text-center file-input mb-3" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
                 <h4>
                     <TfiFiles className="m-auto mb-3" />
-                    Upload your Experience Letter or drag it here
+                    {label || 'Upload your file or drag it here'}
                 </h4>
                 <label
                     htmlFor={name}
@@ -350,20 +396,20 @@ const FileInput = ({ value, error, setImageError, onChange, touch, name }) => {
                         id={name}
                         type="file"
                         name={name}
-                        accept=".pdf"
+                        accept={acceptType || "*/*"}
                         max-size="104857600"
                         onChange={(e) => {
-                            let exp_letter = e.target.files[0];
-                            const fileData = { name: exp_letter.name };
-                            if (exp_letter) {
+                            let selectedFile = e.target.files[0];
+                            const fileData = { name: selectedFile.name };
+                            if (selectedFile) {
                                 const reader = new FileReader();
                                 reader.onload = (e) => {
-                                    onChange('exp_letter', {
+                                    onChange(name, {
                                         name: fileData.name,
-                                        exp_letter: e.target.result,
+                                        file: e.target.result,
                                     });
                                 };
-                                reader.readAsDataURL(exp_letter);
+                                reader.readAsDataURL(selectedFile);
                             }
                         }}
                         style={{ position: 'relative' }}
