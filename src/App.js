@@ -383,9 +383,9 @@ function App() {
                 )}
               </>
             )}
-            {userProfile.is_filled === true && (
+            {userProfile.is_filled === false && (
               <>
-               <Route exact path="/create-profile" element={<CreateEmployeeProfile />} />
+               <Route exact path="/" element={<CreateEmployeeProfile />} />
 
               </>
             )}

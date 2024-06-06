@@ -120,6 +120,18 @@ const EditEmployeeProfile = () => {
                   }}
                 />
               )}
+              {currentTab === 7 && (
+                <IdentificationInformation
+                  employeeId={id}
+                  nextstep={() => {
+                    setCurrentTab(currentTab + 1);
+                  }}
+                  isEditMode={false}
+                  prevStep={()=>{
+                    setCurrentTab(currentTab - 1);  
+                  }}
+                />
+              )}
             </CardBody>
           </Col>
         </Row>
