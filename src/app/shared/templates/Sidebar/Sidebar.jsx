@@ -124,7 +124,7 @@ const Sidebar = ({
                 >
                     <div className="text-xl z-10 py-3 px-7 flex border-b border-gray-300 flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 relative">
                         <img src={logo} className="inline-block w-12" alt="logo" />
-                        <h1 className={`inline-block overflow-hidden transition-all ${isSidebarOpen ? 'w-28' : 'w-0'}`}>TECBRIX</h1>
+                        <h1 className={`inline-block overflow-hidden transition-all text-2xl ${isSidebarOpen ? 'w-28' : 'w-0'}`}>TECBRIX</h1>
                     </div>
                     <ul className="overflow-y-auto overflow-x-hidden hideScroll -mt-10 mx-4">
                         <li>
@@ -230,43 +230,43 @@ const Sidebar = ({
                                                     <p className="text-sm px-2">Add Employee</p>
 
                                                 </NavLink>
-                                                <NavLink to="/coming-soon"
+                                                <NavLink to="/people-team/coming-soon"
                                                     className={({ isActive }) => isActive ? activeLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Profile Management</p>
 
                                                 </NavLink>
-                                                <NavLink to="/coming-soon"
+                                                <NavLink to="/people-team/coming-soon"
                                                     className={({ isActive }) => isActive ? activeLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Settings</p>
 
                                                 </NavLink>
-                                                <NavLink to="/coming-soon"
+                                                <NavLink to="/people-team/coming-soon"
                                                     className={({ isActive }) => isActive ? activeLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Travel Details</p>
 
                                                 </NavLink>
-                                                <NavLink to="/coming-soon"
+                                                <NavLink to="/people-team/coming-soon"
                                                     className={({ isActive }) => isActive ? activeLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Exit & Clearence</p>
 
                                                 </NavLink>
-                                                <NavLink to="/coming-soon"
+                                                <NavLink to="/people-team/coming-soon"
                                                     className={({ isActive }) => isActive ? activeLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Employee Creation</p>
 
                                                 </NavLink>
-                                                <NavLink to="/coming-soon"
+                                                <NavLink to="/people-team/coming-soon"
                                                     className={({ isActive }) => isActive ? activeLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Customise Employees</p>
 
                                                 </NavLink>
-                                                <NavLink to="/coming-soon"
+                                                <NavLink to="/people-team/coming-soon"
                                                     className={({ isActive }) => isActive ? activeLink : normalLink}
                                                 >
                                                     <p className="text-sm px-2">Relocation</p>

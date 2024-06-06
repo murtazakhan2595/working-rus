@@ -137,7 +137,7 @@ function App() {
                   }
                 >
                   <Route
-                    path="/coming-soon"
+                    path="people-team/coming-soon"
                     element={<ComingSoon isSidebarOpen={isSidebarOpen} />}
                   />
 
