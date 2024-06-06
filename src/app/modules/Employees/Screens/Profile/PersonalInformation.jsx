@@ -151,7 +151,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                                                 error={props.errors.last_name}
                                                 touch={props.touched.last_name}
                                                 value={props.values.last_name}
-                                                label={'First Name'}
+                                                label={'Last Name'}
                                                 required={true}
                                                 onChange={(field, value) => {
                                                     props.handleChange(field,)(value);
@@ -205,7 +205,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                                                 touch={props.touched.date_of_birth}
                                                 value={props.values.date_of_birth}
                                                 //value={new Date()}
-                                                label={'DOC'}
+                                                label={'DOB'}
                                                 onChange={(field, value) => {
                                                     props.setFieldValue(field, value);
                                                 }}

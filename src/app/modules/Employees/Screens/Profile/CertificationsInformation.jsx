@@ -93,15 +93,12 @@ const CertificationsInformation = ({
                     const certificationErrors = {};
                     Object.keys(value).forEach((field) => {
                       if (!value[field]) {
-                        certificationErrors[field] =
-                          "This field is required";
+                        certificationErrors[field] = "This field is required";
                       }
                     });
                     if (Object.keys(certificationErrors).length > 0) {
-                      errors.certifications =
-                        errors.certifications || [];
-                      errors.certifications[index] =
-                        certificationErrors;
+                      errors.certifications = errors.certifications || [];
+                      errors.certifications[index] = certificationErrors;
                     }
                   });
                 }
@@ -125,9 +122,7 @@ const CertificationsInformation = ({
                               <div className="w-full md:w-[48%]">
                                 <TextInput
                                   name={`certifications[${index}].certification_name`}
-                                  value={
-                                    certification.certification_name
-                                  }
+                                  value={certification.certification_name}
                                   label={"Certification Name"}
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
@@ -157,16 +152,14 @@ const CertificationsInformation = ({
                               <div className="w-full md:w-[48%]">
                                 <TextInput
                                   name={`certifications[${index}].certification_institute`}
-                                  value={
-                                    certification.certification_institute
-                                  }
+                                  value={certification.certification_institute}
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
                                   label={"Certification Body"}
                                 />
                               </div>
-                              <div className="w-full md:w-[97.5%] bg-[#E5E5F0] flex justify-center items-center h-40">
+                              {/* <div className="w-full md:w-[97.5%] bg-[#E5E5F0] flex justify-center items-center h-40">
                                 <input
                                   type="file"
                                   name={`certifications[${index}].certification_body`}
@@ -177,6 +170,47 @@ const CertificationsInformation = ({
                                     );
                                   }}
                                 />
+                              </div> */}
+                              <div className="w-full">
+                                <FileInput
+                                  // name={`certifications[${index}].certification_body`}
+                                  // value={certification.certification_body}
+                                  // onChange={(field, value) => {
+                                  //   props.setFieldValue(field, value);
+                                  // }}
+                                  // label={"Certification Body"}
+                                  // required
+                                  // error={
+                                  //   props.errors.certifications &&
+                                  //   props.errors.certifications[index]
+                                  //     ?.certification_body
+                                  // }
+                                  // touched={
+                                  //   props.touched.certifications &&
+                                  //   props.touched.certifications[index]
+                                  //     ?.certification_body
+                                  // }
+                                  acceptType=".pdf"
+                                  name={`certifications[${index}].certification_body`}
+                                  value={certification.certification_body}
+                                  onChange={(field, value) => {
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={
+                                    "Upload your Certification or drag it here"
+                                  }
+                                  required
+                                  error={
+                                    props.errors.certifications &&
+                                    props.errors.certifications[index]
+                                      ?.certification_body
+                                  }
+                                  touched={
+                                    props.touched.certifications &&
+                                    props.touched.certifications[index]
+                                      ?.certification_body
+                                  }
+                                />
                               </div>
                             </div>
                           </React.Fragment>
@@ -185,10 +219,9 @@ const CertificationsInformation = ({
                     <Col md="12" className="text-left">
                       <Button
                         type="button"
-                        className="btn btn-outline-dark"
+                        className="btn btn-outline-dark my-3 bg-white"
                         onClick={() => {
-                          const length =
-                            props.values?.certifications?.length;
+                          const length = props.values?.certifications?.length;
                           const index = length ? length : 0;
                           props.setFieldValue(
                             `certifications[${index}]`,
@@ -203,21 +236,21 @@ const CertificationsInformation = ({
                   <hr />
                   <Row>
                     <Col md={6} className="text-left">
-                      {!isEditMode &&
+                      {!isEditMode && (
                         <CustomLightOutlineButton
                           onClick={() => {
-                            prevStep()
+                            prevStep();
                           }}
-                          label={'Back'}
+                          label={"Back"}
                         />
-
-                      }</Col>
+                      )}
+                    </Col>
                     <Col md="6" className="text-right">
                       <CustomDarkButton
                         onClick={() => {
                           props.handleSubmit();
                         }}
-                        label={isEditMode ? 'Save' : 'Next'}
+                        label={isEditMode ? "Save" : "Next"}
                       />
                     </Col>
                   </Row>
