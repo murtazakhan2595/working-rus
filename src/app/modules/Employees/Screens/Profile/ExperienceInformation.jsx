@@ -42,110 +42,95 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
 
     return (
         <>
-            <div className="screen">
+            {isLoading ?
                 <Row>
-                    <Col lg={8} className="mx-auto">
-                        <CardHeader>
-                            <Row>
-                                <Col lg={12}>
-                                    <h4 className="ml-2 fw-700">Experience</h4>
-                                </Col>
-                            </Row>
-                        </CardHeader>
-                        <CardBody>
-                            {isLoading ?
-                                <Row>
-                                    <Col lg={12}>
-                                        <PageLoader />
-                                    </Col>
-                                </Row>
-                                :
-                                <Row>
-                                    <Col lg={12}>
-                                        <Formik
-                                            initialValues={{ experiences: experiences }}
-                                            ref={formRef}
-                                            onSubmit={(values, { resetForm }) => {
-                                                handleSubmit(values, resetForm);
-                                            }}
-                                            validate={(values) => {
-                                                const errors = {};
-                                                console.log(values, errors, 'Error');
-                                                if (values.experiences) {
-                                                    values.experiences.forEach((value, index) => {
-                                                        const experienceErrors = {};
-                                                        Object.keys(value).forEach((field) => {
-                                                            if (!value[field] && field !== 'disableEndDate') {
-                                                                experienceErrors[field] = 'This field is required';
-                                                            }
-                                                        });
-                                                        if (Object.keys(experienceErrors).length > 0) {
-                                                            errors.experiences = errors.experiences || [];
-                                                            errors.experiences[index] = experienceErrors;
-                                                        }
-                                                    });
-                                                }
-                                                return errors;
-                                            }}
-
-                                        >
-                                            {(props) => (
-                                                <Form onSubmit={props.handleSubmit}>
-                                                    <Row>
-                                                        {props.values?.experiences && props.values.experiences.length > 0 && props.values.experiences.map((experience, index) => (
-                                                            <>
-                                                                <Col md="12">
-                                                                    <h5 className="fw-700 mb-3 mt-4">Experience {index + 1}</h5>
-                                                                </Col>
-                                                                <Experience
-                                                                    values={experience}
-                                                                    errors={props.errors?.experiences ? props.errors?.experiences[index] : {}}
-                                                                    touched={props.touched?.experiences ? props.touched?.experiences[index] : {}}
-                                                                    onChange={(field, value) => {
-                                                                        props.setFieldValue(`experiences[${index}].${field}`, value);
-                                                                    }}
-                                                                />
-                                                            </>
-                                                        ))}
-                                                        <Col md="12" className="text-left mt-4">
-                                                            <Link
-                                                                type="button"
-                                                                className="btn btn-outline-dark"
-                                                                onClick={() => {
-                                                                    debugger
-                                                                    const length = props.values?.experiences?.length
-                                                                    const index = length ? length : 0;
-
-                                                                    props.setFieldValue(`experiences[${index}]`, EmployeeProfessionalExperiance);
-                                                                }}
-                                                            >
-                                                                + Add Another
-                                                            </Link>
-                                                        </Col>
-                                                    </Row>
-                                                    <hr className="m-3" />
-                                                    <Row>
-                                                        <Col md="12">
-                                                            <FormGroup className="text-right">
-                                                                <Button
-                                                                    type="submit"
-                                                                    className="btn btn-dark"
-                                                                >
-                                                                    Next
-                                                                </Button>
-                                                            </FormGroup>
-                                                        </Col>
-                                                    </Row>
-                                                </Form>
-                                            )}
-                                        </Formik>
-                                    </Col>
-                                </Row>
-                            }
-                        </CardBody>
+                    <Col lg={12}>
+                        <PageLoader />
                     </Col>
                 </Row>
-            </div>
+                :
+                <Row>
+                    <Col lg={12}>
+                        <Formik
+                            initialValues={{ experiences: experiences }}
+                            ref={formRef}
+                            onSubmit={(values, { resetForm }) => {
+                                handleSubmit(values, resetForm);
+                            }}
+                            validate={(values) => {
+                                const errors = {};
+                                console.log(values, errors, 'Error');
+                                if (values.experiences) {
+                                    values.experiences.forEach((value, index) => {
+                                        const experienceErrors = {};
+                                        Object.keys(value).forEach((field) => {
+                                            if (!value[field] && field !== 'disableEndDate') {
+                                                experienceErrors[field] = 'This field is required';
+                                            }
+                                        });
+                                        if (Object.keys(experienceErrors).length > 0) {
+                                            errors.experiences = errors.experiences || [];
+                                            errors.experiences[index] = experienceErrors;
+                                        }
+                                    });
+                                }
+                                return errors;
+                            }}
+
+                        >
+                            {(props) => (
+                                <Form onSubmit={props.handleSubmit}>
+                                    <Row>
+                                        {props.values?.experiences && props.values.experiences.length > 0 && props.values.experiences.map((experience, index) => (
+                                            <>
+                                                <Col md="12">
+                                                    <h5 className="fw-700 mb-3 mt-4">Experience {index + 1}</h5>
+                                                </Col>
+                                                <Experience
+                                                    values={experience}
+                                                    errors={props.errors?.experiences ? props.errors?.experiences[index] : {}}
+                                                    touched={props.touched?.experiences ? props.touched?.experiences[index] : {}}
+                                                    onChange={(field, value) => {
+                                                        props.setFieldValue(`experiences[${index}].${field}`, value);
+                                                    }}
+                                                />
+                                            </>
+                                        ))}
+                                        <Col md="12" className="text-left mt-4">
+                                            <Link
+                                                type="button"
+                                                className="btn btn-outline-dark"
+                                                onClick={() => {
+                                                    debugger
+                                                    const length = props.values?.experiences?.length
+                                                    const index = length ? length : 0;
+
+                                                    props.setFieldValue(`experiences[${index}]`, EmployeeProfessionalExperiance);
+                                                }}
+                                            >
+                                                + Add Another
+                                            </Link>
+                                        </Col>
+                                    </Row>
+                                    <hr className="m-3" />
+                                    <Row>
+                                        <Col md="12">
+                                            <FormGroup className="text-right">
+                                                <Button
+                                                    type="submit"
+                                                    className="btn btn-dark"
+                                                >
+                                                    Next
+                                                </Button>
+                                            </FormGroup>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            )}
+                        </Formik>
+                    </Col>
+                </Row>
+            }
         </>
     );
 };

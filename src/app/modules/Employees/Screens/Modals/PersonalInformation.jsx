@@ -1,9 +1,10 @@
 import React from 'react';
 import { Modal } from 'reactstrap';
-import PersonalInformation from '../Profile/PersonalInformation';
+import { PersonalInformation } from '../Profile';
 
-function PersonalInformationModal({ openModal, setOpenModal, employeeId }) {
-
+function PersonalInformationModal({ openModal, closeModal, employeeId }) {
+    alert('fjk')
+    console.log(openModal, employeeId);
     return (
         <div className="contact-modal-screen">
             <Modal
@@ -11,13 +12,8 @@ function PersonalInformationModal({ openModal, setOpenModal, employeeId }) {
                 className="modal-success contact-modal"
             >
                 <PersonalInformation
-                    getCurrentContactData={(contactData) => {
-                        this.props.getCurrentUser(contactData);
-                    }}
-                    closeModal={(e) => {
-                        setOpenModal(false);
-                    }}
                     employeeId={employeeId}
+                    isEditMode={true}
                 />
             </Modal>
         </div>

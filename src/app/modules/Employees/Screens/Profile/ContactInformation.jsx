@@ -48,13 +48,7 @@ const ContactInformation = ({
   };
 
   return (
-    <div className="screen">
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-full max-w-3xl p-3 md:p-5 lg:p-7">
-          <h2 className="text-2xl font-lato font-bold text-[#323333] text-left">
-            Contact Information
-          </h2>
-          <hr />
+   <>
           {isLoading ? (
             <Row>
               <Col lg={12}>
@@ -214,9 +208,7 @@ const ContactInformation = ({
               )}
             </Formik>
           )}
-        </div>
-      </div>
-    </div>
+        </>
   );
 };
 

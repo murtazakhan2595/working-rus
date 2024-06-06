@@ -94,230 +94,215 @@ const EducationInformation = ({
   };
 
   return (
-    <div className="screen">
-      <Row>
-        <Col lg={8} className="mx-auto">
-          <CardHeader>
-            <Row>
-              <Col lg={12}>
-                <h2 className="text-2xl font-lato font-bold text-[#323333] text-left">
-                  Academics
-                </h2>
-              </Col>
-            </Row>
-          </CardHeader>
-          <CardBody>
-            {isLoading ? (
-              <Row>
-                <Col lg={12}>
-                  <PageLoader />
-                </Col>
-              </Row>
-            ) : (
-              <Row>
-                <Col lg={12}>
-                  <Formik
-                    initialValues={{ educations: educations }}
-                    ref={formRef}
-                    onSubmit={(values, { resetForm }) => {
-                      handleSubmit(values);
-                    }}
-                    validate={(values) => {
-                      const errors = {};
-                      if (values.educations) {
-                        values.educations.forEach((value, index) => {
-                          const educationErrors = {};
-                          Object.keys(value).forEach((field) => {
-                            if (!value[field]) {
-                              educationErrors[field] = "This field is required";
-                            }
-                          });
-                          if (Object.keys(educationErrors).length > 0) {
-                            errors.educations = errors.educations || [];
-                            errors.educations[index] = educationErrors;
-                          }
-                        });
+    <>
+      {isLoading ? (
+        <Row>
+          <Col lg={12}>
+            <PageLoader />
+          </Col>
+        </Row>
+      ) : (
+        <Row>
+          <Col lg={12}>
+            <Formik
+              initialValues={{ educations: educations }}
+              ref={formRef}
+              onSubmit={(values, { resetForm }) => {
+                handleSubmit(values);
+              }}
+              validate={(values) => {
+                const errors = {};
+                if (values.educations) {
+                  values.educations.forEach((value, index) => {
+                    const educationErrors = {};
+                    Object.keys(value).forEach((field) => {
+                      if (!value[field]) {
+                        educationErrors[field] = "This field is required";
                       }
-                      return errors;
-                    }}
-                  >
-                    {(props) => (
-                      <Form onSubmit={props.handleSubmit}>
-                        <Row>
-                          {props.values?.educations &&
-                            props.values.educations.length > 0 &&
-                            props.values.educations.map(
-                              (education, index) => (
-                                <React.Fragment key={index}>
-                                  <Col md="12">
-                                    <h5 className="fw-700 mb-3 mt-4">
-                                      Education {index + 1}
-                                    </h5>
-                                  </Col>
-                                  <div className="flex flex-wrap gap-x-3">
-                                    <div className="w-full md:w-[48%]">
-                                      <SelectComponent
-                                        options={educationTypeOptions}
-                                        name={`educations[${index}].education_level`}
-                                        value={education.education_level}
-                                        onChange={(field, value) => {
-                                          props.setFieldValue(field, value);
-                                        }}
-                                        label={"Educational Level"}
-                                        required
-                                        error={
-                                          props.errors.educations &&
-                                          props.errors.educations[index]
-                                            ?.education_level
-                                        }
-                                        touched={
-                                          props.touched.educations &&
-                                          props.touched.educations[index]
-                                            ?.education_level
-                                        }
-                                      />
-                                    </div>
-                                    <div className="w-full md:w-[48%]">
-                                      <TextInput
-                                        name={`educations[${index}].program`}
-                                        value={education.program}
-                                        onChange={(field, value) => {
-                                          props.setFieldValue(field, value);
-                                        }}
-                                        label={"Program"}
-                                        required
-                                        error={
-                                          props.errors.educations &&
-                                          props.errors.educations[index]
-                                            ?.program
-                                        }
-                                        touched={
-                                          props.touched.educations &&
-                                          props.touched.educations[index]
-                                            ?.program
-                                        }
-                                      />
-                                    </div>
-                                    <div className="w-full md:w-[48%]">
-                                      <TextInput
-                                        name={`educations[${index}].institute_name`}
-                                        value={education.institute_name}
-                                        onChange={(field, value) => {
-                                          props.setFieldValue(field, value);
-                                        }}
-                                        label={"Institute"}
-                                        required
-                                        error={
-                                          props.errors.educations &&
-                                          props.errors.educations[index]
-                                            ?.institute_name
-                                        }
-                                        touched={
-                                          props.touched.educations &&
-                                          props.touched.educations[index]
-                                            ?.institute_name
-                                        }
-                                      />
-                                    </div>
-                                    <div className="w-full md:w-[48%]">
-                                      <DateInput
-                                        name={`educations[${index}].edu_start_date`}
-                                        value={education.edu_start_date}
-                                        onChange={(field, value) => {
-                                          props.setFieldValue(field, value);
-                                        }}
-                                        label={"Start Date"}
-                                        required
-                                        error={
-                                          props.errors.educations &&
-                                          props.errors.educations[index]
-                                            ?.edu_start_date
-                                        }
-                                        touched={
-                                          props.touched.educations &&
-                                          props.touched.educations[index]
-                                            ?.edu_start_date
-                                        }
-                                      />
-                                    </div>
-                                    <div className="w-full md:w-[48%]">
-                                      <DateInput
-                                        name={`educations[${index}].edu_end_date`}
-                                        value={education.edu_end_date}
-                                        onChange={(field, value) => {
-                                          props.setFieldValue(field, value);
-                                        }}
-                                        label={"End Date"}
-                                        required
-                                        error={
-                                          props.errors.educations &&
-                                          props.errors.educations[index]
-                                            ?.edu_end_date
-                                        }
-                                        touched={
-                                          props.touched.educations &&
-                                          props.touched.educations[index]
-                                            ?.edu_end_date
-                                        }
-                                      />
-                                    </div>
-                                    <div className="w-full md:w-[97.5%] bg-[#E5E5F0] flex justify-center items-center h-40">
-                                      <input
-                                        type="file"
-                                        name={`educations[${index}].education_body`}
-                                        onChange={async (e) => {
-                                          const file =
-                                            e.currentTarget.files[0];
-                                          const base64 =
-                                            await convertFileToBase64(file);
-                                          props.setFieldValue(
-                                            `educations[${index}].education_body`,
-                                            base64
-                                          );
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                </React.Fragment>
-                              )
-                            )}
-                          <Col md="12" className="text-left">
-                            <Button
-                              type="button"
-                              className="btn btn-outline-dark my-3 bg-white"
-                              onClick={() => {
-                                const length =
-                                  props.values?.educations?.length;
-                                const index = length ? length : 0;
-                                props.setFieldValue(
-                                  `educations[${index}]`,
-                                  EmployeeAcademicRecord
-                                );
-                              }}
-                            >
-                              + Add Another
-                            </Button>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col md="12">
-                            <FormGroup className="text-right">
-                              <Button type="submit" className="btn btn-dark">
-                                Next
-                              </Button>
-                            </FormGroup>
-                          </Col>
-                        </Row>
-                      </Form>
-                    )}
-                  </Formik>
-                </Col>
-              </Row>
-            )}
-          </CardBody>
-        </Col>
-      </Row>
-    </div>
+                    });
+                    if (Object.keys(educationErrors).length > 0) {
+                      errors.educations = errors.educations || [];
+                      errors.educations[index] = educationErrors;
+                    }
+                  });
+                }
+                return errors;
+              }}
+            >
+              {(props) => (
+                <Form onSubmit={props.handleSubmit}>
+                  <Row>
+                    {props.values?.educations &&
+                      props.values.educations.length > 0 &&
+                      props.values.educations.map(
+                        (education, index) => (
+                          <React.Fragment key={index}>
+                            <Col md="12">
+                              <h5 className="fw-700 mb-3 mt-4">
+                                Education {index + 1}
+                              </h5>
+                            </Col>
+                            <div className="flex flex-wrap gap-x-3">
+                              <div className="w-full md:w-[48%]">
+                                <SelectComponent
+                                  options={educationTypeOptions}
+                                  name={`educations[${index}].education_level`}
+                                  value={education.education_level}
+                                  onChange={(field, value) => {
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"Educational Level"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]
+                                      ?.education_level
+                                  }
+                                  touched={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.education_level
+                                  }
+                                />
+                              </div>
+                              <div className="w-full md:w-[48%]">
+                                <TextInput
+                                  name={`educations[${index}].program`}
+                                  value={education.program}
+                                  onChange={(field, value) => {
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"Program"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]
+                                      ?.program
+                                  }
+                                  touched={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.program
+                                  }
+                                />
+                              </div>
+                              <div className="w-full md:w-[48%]">
+                                <TextInput
+                                  name={`educations[${index}].institute_name`}
+                                  value={education.institute_name}
+                                  onChange={(field, value) => {
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"Institute"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]
+                                      ?.institute_name
+                                  }
+                                  touched={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.institute_name
+                                  }
+                                />
+                              </div>
+                              <div className="w-full md:w-[48%]">
+                                <DateInput
+                                  name={`educations[${index}].edu_start_date`}
+                                  value={education.edu_start_date}
+                                  onChange={(field, value) => {
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"Start Date"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]
+                                      ?.edu_start_date
+                                  }
+                                  touched={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.edu_start_date
+                                  }
+                                />
+                              </div>
+                              <div className="w-full md:w-[48%]">
+                                <DateInput
+                                  name={`educations[${index}].edu_end_date`}
+                                  value={education.edu_end_date}
+                                  onChange={(field, value) => {
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"End Date"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]
+                                      ?.edu_end_date
+                                  }
+                                  touched={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.edu_end_date
+                                  }
+                                />
+                              </div>
+                              <div className="w-full md:w-[97.5%] bg-[#E5E5F0] flex justify-center items-center h-40">
+                                <input
+                                  type="file"
+                                  name={`educations[${index}].education_body`}
+                                  onChange={async (e) => {
+                                    const file =
+                                      e.currentTarget.files[0];
+                                    const base64 =
+                                      await convertFileToBase64(file);
+                                    props.setFieldValue(
+                                      `educations[${index}].education_body`,
+                                      base64
+                                    );
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </React.Fragment>
+                        )
+                      )}
+                    <Col md="12" className="text-left">
+                      <Button
+                        type="button"
+                        className="btn btn-outline-dark my-3 bg-white"
+                        onClick={() => {
+                          const length =
+                            props.values?.educations?.length;
+                          const index = length ? length : 0;
+                          props.setFieldValue(
+                            `educations[${index}]`,
+                            EmployeeAcademicRecord
+                          );
+                        }}
+                      >
+                        + Add Another
+                      </Button>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="12">
+                      <FormGroup className="text-right">
+                        <Button type="submit" className="btn btn-dark">
+                          Next
+                        </Button>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </Form>
+              )}
+            </Formik>
+          </Col>
+        </Row>
+      )}
+    </>
   );
 };
 

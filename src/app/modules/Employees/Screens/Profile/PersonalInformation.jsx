@@ -28,8 +28,9 @@ import { SelectComponent, ImageInput, DateInput, TextInput, PhoneInput, EmailInp
 import PageLoader from '../../../../../components/PageLoader.jsx';
 import { maritalStatus } from '../../../../../data/Data.js';
 
-const PersonalInfo = ({ nextstep, baseUrl, token, employeeId , isEditMode}) => {
-
+const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
+    alert('fjk')
+    console.log(employeeId);
     const formRef = React.createRef();
     const [personalInfo, setPersonalInfo] = useState({});
     const [imageError, setImageError] = useState(null);
@@ -62,199 +63,185 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId , isEditMode}) => {
 
     return (
         <>
-            <div className="screen">
+            {isLoading ?
                 <Row>
-                    <Col lg={8} className="mx-auto">
-                        <CardHeader>
-                            <Row>
-                                <Col lg={12}>
-                                    <h4 className="ml-2 fw-700">Personal Details</h4>
-                                </Col>
-                            </Row>
-                        </CardHeader>
-                        <CardBody>
-                            {isLoading ?
-                                <Row>
-                                    <Col lg={12}>
-                                        <PageLoader />
-                                    </Col>
-                                </Row>
-                                :
-                                <Row>
-                                    <Col lg={12}>
-                                        <Formik
-                                            initialValues={personalInfo}
-                                            ref={formRef}
-                                            onSubmit={(values, { resetForm }) => {
-                                                handleSubmit(values, resetForm);
-                                            }}
-                                            validate={(values) => {
-                                                const errors = {};
-                                                for (let field in values) {
-                                                    if (!values[`${field}`]) {
-                                                        errors[`${field}`] = 'This field is required';
-                                                    }
-                                                }
-                                                if (imageError) {
-                                                    errors.profile_picture = imageError;
-                                                }
-                                                console.log(values, errors)
-
-                                                return errors;
-                                            }}
-
-                                        >
-                                            {(props) => (
-                                                <Form onSubmit={props.handleSubmit}>
-                                                    <Row>
-
-                                                        <Col md="12">
-                                                            <ImageInput
-                                                                name={'profile_picture'}
-                                                                error={props.errors.profile_picture}
-                                                                touch={props.touched.profile_picture}
-                                                                value={props.values.profile_picture}
-                                                                label={'Your Photo'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.setFieldValue(field, value);
-                                                                    setImageError(null);
-                                                                }}
-                                                                setImageError={setImageError}
-                                                            />
-                                                        </Col>
-                                                        <Col lg={12} className="mb-3 ml-1">
-                                                            <h6 className="fw-700 mb-0">{props.values.first_name} {props.values.last_name}</h6>
-                                                            <span className="opacity-65 fs-12">ID: </span>
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <TextInput
-                                                                name={'first_name'}
-                                                                error={props.errors.first_name}
-                                                                touch={props.touched.first_name}
-                                                                value={props.values.first_name}
-                                                                label={'First Name'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md={6}>
-                                                            <PhoneInput
-                                                                name={'mobile_no'}
-                                                                error={props.errors.mobile_no}
-                                                                touch={props.touched.mobile_no}
-                                                                value={props.values.mobile_no}
-                                                                label={'Contact no.'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <TextInput
-                                                                name={'last_name'}
-                                                                error={props.errors.last_name}
-                                                                touch={props.touched.last_name}
-                                                                value={props.values.last_name}
-                                                                label={'First Name'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <EmailInput
-                                                                name={'other_email'}
-                                                                error={props.errors.other_email}
-                                                                touch={props.touched.other_email}
-                                                                value={props.values.other_email}
-                                                                label={'Email'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md="6">
-                                                            <TextInput
-                                                                name={'nic'}
-                                                                error={props.errors.nic}
-                                                                touch={props.touched.nic}
-                                                                value={props.values.nic}
-                                                                label={'ID Card no'}
-                                                                required={true}
-                                                                onChange={(field, value) => {
-                                                                    props.handleChange(field,)(value);
-                                                                }}
-                                                                regEx={/^[0-9]+$/}
-                                                            />
-                                                        </Col>
-                                                        <Col md={6}>
-                                                            <SelectComponent
-                                                                name={'nationality'}
-                                                                options={countryOptions}
-                                                                error={props.errors.nationality}
-                                                                touch={props.touched.nationality}
-                                                                value={props.values.nationality}
-                                                                label={'Nationality'}
-                                                                onChange={(field, value) => {
-                                                                    props.setFieldValue(field, value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md={6}>
-                                                            <DateInput
-                                                                name={'date_of_birth'}
-                                                                error={props.errors.date_of_birth}
-                                                                touch={props.touched.date_of_birth}
-                                                                //  value={props.values.date_of_birth}
-                                                                value={new Date()}
-                                                                label={'DOC'}
-                                                                onChange={(field, value) => {
-                                                                    props.setFieldValue(field, value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                        <Col md={6}>
-                                                            <SelectComponent
-                                                                name={'marital_status'}
-                                                                options={maritalStatus}
-                                                                error={props.errors.marital_status}
-                                                                touch={props.touched.marital_status}
-                                                                value={props.values.marital_status}
-                                                                label={'Martial Status'}
-                                                                onChange={(field, value) => {
-                                                                    props.setFieldValue(field, value);
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
-                                                        <Col md="12">
-                                                            <FormGroup className="text-right">
-                                                                <Button
-                                                                    type="submit"
-                                                                    className="btn btn-dark"
-                                                                >
-                                                                    Next
-                                                                </Button>
-                                                            </FormGroup>
-                                                        </Col>
-                                                    </Row>
-                                                </Form>
-                                            )}
-                                        </Formik>
-                                    </Col>
-                                </Row>
-                            }
-                        </CardBody>
+                    <Col lg={12}>
+                        <PageLoader />
                     </Col>
                 </Row>
-            </div>
+                :
+                <Row>
+                    <Col lg={12}>
+                        <Formik
+                            initialValues={personalInfo}
+                            ref={formRef}
+                            onSubmit={(values, { resetForm }) => {
+                                handleSubmit(values, resetForm);
+                            }}
+                            validate={(values) => {
+                                const errors = {};
+                                for (let field in values) {
+                                    if (!values[`${field}`]) {
+                                        errors[`${field}`] = 'This field is required';
+                                    }
+                                }
+                                if (imageError) {
+                                    errors.profile_picture = imageError;
+                                }
+                                console.log(values, errors)
+
+                                return errors;
+                            }}
+
+                        >
+                            {(props) => (
+                                <Form onSubmit={props.handleSubmit}>
+                                    <Row>
+
+                                        <Col md="12">
+                                            <ImageInput
+                                                name={'profile_picture'}
+                                                error={props.errors.profile_picture}
+                                                touch={props.touched.profile_picture}
+                                                value={props.values.profile_picture}
+                                                label={'Your Photo'}
+                                                required={true}
+                                                onChange={(field, value) => {
+                                                    props.setFieldValue(field, value);
+                                                    setImageError(null);
+                                                }}
+                                                setImageError={setImageError}
+                                            />
+                                        </Col>
+                                        <Col lg={12} className="mb-3 ml-1">
+                                            <h6 className="fw-700 mb-0">{props.values.first_name} {props.values.last_name}</h6>
+                                            <span className="opacity-65 fs-12">ID: {`TXB-${employeeId.toString().padStart(4, '0')}`}</span>
+                                        </Col>
+                                        <Col md="6">
+                                            <TextInput
+                                                name={'first_name'}
+                                                error={props.errors.first_name}
+                                                touch={props.touched.first_name}
+                                                value={props.values.first_name}
+                                                label={'First Name'}
+                                                required={true}
+                                                onChange={(field, value) => {
+                                                    props.handleChange(field,)(value);
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col md={6}>
+                                            <PhoneInput
+                                                name={'mobile_no'}
+                                                error={props.errors.mobile_no}
+                                                touch={props.touched.mobile_no}
+                                                value={props.values.mobile_no}
+                                                label={'Contact no.'}
+                                                required={true}
+                                                onChange={(field, value) => {
+                                                    props.handleChange(field,)(value);
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <TextInput
+                                                name={'last_name'}
+                                                error={props.errors.last_name}
+                                                touch={props.touched.last_name}
+                                                value={props.values.last_name}
+                                                label={'First Name'}
+                                                required={true}
+                                                onChange={(field, value) => {
+                                                    props.handleChange(field,)(value);
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <EmailInput
+                                                name={'other_email'}
+                                                error={props.errors.other_email}
+                                                touch={props.touched.other_email}
+                                                value={props.values.other_email}
+                                                label={'Email'}
+                                                required={true}
+                                                onChange={(field, value) => {
+                                                    props.handleChange(field,)(value);
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <TextInput
+                                                name={'nic'}
+                                                error={props.errors.nic}
+                                                touch={props.touched.nic}
+                                                value={props.values.nic}
+                                                label={'ID Card no'}
+                                                required={true}
+                                                onChange={(field, value) => {
+                                                    props.handleChange(field,)(value);
+                                                }}
+                                                regEx={/^[0-9]+$/}
+                                            />
+                                        </Col>
+                                        <Col md={6}>
+                                            <SelectComponent
+                                                name={'nationality'}
+                                                options={countryOptions}
+                                                error={props.errors.nationality}
+                                                touch={props.touched.nationality}
+                                                value={props.values.nationality}
+                                                label={'Nationality'}
+                                                onChange={(field, value) => {
+                                                    props.setFieldValue(field, value);
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col md={6}>
+                                            <DateInput
+                                                name={'date_of_birth'}
+                                                error={props.errors.date_of_birth}
+                                                touch={props.touched.date_of_birth}
+                                                //  value={props.values.date_of_birth}
+                                                value={new Date()}
+                                                label={'DOC'}
+                                                onChange={(field, value) => {
+                                                    props.setFieldValue(field, value);
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col md={6}>
+                                            <SelectComponent
+                                                name={'marital_status'}
+                                                options={maritalStatus}
+                                                error={props.errors.marital_status}
+                                                touch={props.touched.marital_status}
+                                                value={props.values.marital_status}
+                                                label={'Martial Status'}
+                                                onChange={(field, value) => {
+                                                    props.setFieldValue(field, value);
+                                                }}
+                                            />
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md="12">
+                                            <FormGroup className="text-right">
+                                                <Button
+                                                    type="submit"
+                                                    className="btn btn-dark"
+                                                >
+                                                    Next
+                                                </Button>
+                                            </FormGroup>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            )}
+                        </Formik>
+                    </Col>
+                </Row>
+            }
+
             {/* <div className="bg-[#F9F9F9] h-screen overflow-y-auto overflow-x-hidden scroll px-3 md:px-6 lg:px-10">
                 <h2 className="text-baseBlue tracking-wide mb-4 lg:text-lg">
                     Personal Information:
