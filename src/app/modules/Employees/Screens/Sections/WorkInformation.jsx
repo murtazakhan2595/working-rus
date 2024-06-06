@@ -14,7 +14,7 @@ import {
     FormGroup, Input, InputGroup, InputGroupText
 } from 'reactstrap';
 import { SelectComponent, SelectMultiInputComponent, DateInput, TextInput } from '../../../../../components/form-control'
-import { getDepartmentList ,getManagersList} from '../../../../hooks/general';
+import { getDepartmentList, getManagersList } from '../../../../hooks/general';
 
 const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
     value: countryCode,
@@ -23,7 +23,6 @@ const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
 
 function getManagerSelected(managers, managersList) {
     if (managers && managersList && managersList.length > 0) {
-        debugger
         managers = managers.split(', ') || [];
         const matchingObjects = managersList.filter(obj => {
             return managers.find(element => obj.label === element);
@@ -36,8 +35,7 @@ function getManagerSelected(managers, managersList) {
 
 }
 
-const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseUrl, token }) => {
-    const [isLoading, setIsLoading] = useState(false);
+const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) => {
     const [managers, setManagers] = useState([]);
     const [departments, setDepartments] = useState([]);
     const headers = {
@@ -58,41 +56,14 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
         });
         getManagersList(baseUrl, headers).then(response => {
             let managersList = response;
-            managersList = managersList
-                ?.filter(manager => manager.username)
-                .map((manager) => ({
-                    value: manager.id,
-                    label: manager.username,
-                }))
+            managersList = managersList && managersList.map((manager) => ({
+                value: manager.id,
+                label: manager.username,
+            }))
             setManagers(managersList);
         }).catch(error => {
             console.log(error);
         });
-
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (response.status === 200) {
-                    let managersList = response.data;
-                    managersList = managersList
-                        ?.filter(manager => manager.username)
-                        .map((manager) => ({
-                            value: manager.id,
-                            label: manager.username,
-                        }))
-                    setManagers(managersList);
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                // Handle errors here if needed
-            }
-        };
-
-       // fetchData(); // Call the async function to fetch data
     }, []);
 
 

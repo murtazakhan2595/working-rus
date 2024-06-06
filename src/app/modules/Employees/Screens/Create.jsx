@@ -25,6 +25,7 @@ import { EmployeeInformation } from '../../../utils/Types/Employee.jsx'
 import { getEmployeeInformation } from '../../../utils/MappingObjects/mapEmployeeData.jsx';
 import { getEmployeeData, getNewEmployeeCode } from '../../../hooks/employee.jsx';
 import { EmailInput, PhoneInput, TextAreaInput, TextInput } from '../../../../components/form-control.jsx'
+
 function getManagerSelected(managers) {
     if (managers) {
         const matchingObjects = managers.map(obj => {
@@ -74,19 +75,31 @@ const CreateUpdateEmployee = ({ token, baseUrl }) => {
     }, [baseUrl, headers, id]);
 
     const handleSubmit = async (data) => {
+        debugger
         setIsLoading(true);
         // Check if an API call is already in progress
         data.indirect_report = data?.indirect_report ? getManagerSelected(data.indirect_report) : '';
         data.direct_report = data?.direct_report ? getManagerSelected(data.direct_report) : '';
         try {
-            const response = await axios.post(`${baseUrl}/emp/add`, data, {
-                headers,
-            });
-
-            if (response.status === 201) {
-                setShowSuccessModal(true);
-
+            if (data.id) {
+                const response = await axios.patch(`${baseUrl}/emp/${data.id}`, data, {
+                    headers,
+                });
+                if (response.status === 200) {
+                    toast.success("Employee Updated Successfully!", {
+                        position: toast.POSITION.TOP_RIGHT,
+                    });
+                    navigate('/employees')
+                }
+            } else {
+                const response = await axios.post(`${baseUrl}/emp/add`, data, {
+                    headers,
+                });
+                if (response.status === 201) {
+                    setShowSuccessModal(true);
+                }
             }
+
         } catch (error) {
             setFormData(data);
             if (

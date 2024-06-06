@@ -47,8 +47,6 @@ const Employee = ({ baseUrl, token }) => {
         sortOrder: '',
     });
 
-    // const navigate = useNavigate();
-
     const onSizePerPageList = (sizePerPage) => {
         if (options.sizePerPage !== sizePerPage) {
             setOptions((prevOptions) => ({ ...prevOptions, sizePerPage }));
@@ -158,7 +156,6 @@ const Employee = ({ baseUrl, token }) => {
     };
 
     const renderAction = (row) => {
-        console.log(row,)
         return (
             <div>
                 <ButtonDropdown
