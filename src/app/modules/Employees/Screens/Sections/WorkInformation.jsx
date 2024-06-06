@@ -3,7 +3,7 @@ import Select from "react-select";
 import moment from 'moment';
 import axios from "axios";
 import { connect } from 'react-redux';
-import { HeadOfDepartment, department, employeeStatus, jobRoles, workplaceTypes, UserRoles } from '../../../../../data/Data';
+import { HeadOfDepartment, employeeStatus, jobRoles, workplaceTypes, UserRoles } from '../../../../../data/Data';
 import { getAllCountries } from 'countries-and-timezones';
 import {
     Card,
@@ -11,15 +11,10 @@ import {
     CardBody,
     Row,
     Col,
-    ButtonGroup,
-    ButtonDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    Form,
-    Label,
     FormGroup, Input, InputGroup, InputGroupText
 } from 'reactstrap';
 import { SelectComponent, SelectMultiInputComponent, DateInput, TextInput } from '../../../../../components/form-control'
+import { getDepartmentList ,getManagersList} from '../../../../hooks/general';
 
 const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
     value: countryCode,
@@ -44,8 +39,36 @@ function getManagerSelected(managers, managersList) {
 const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [managers, setManagers] = useState([]);
+    const [departments, setDepartments] = useState([]);
+    const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+    }
 
     useEffect(() => {
+        getDepartmentList(baseUrl, headers).then(response => {
+            let departmentList = response.results;
+            departmentList = departmentList && departmentList.map((department) => ({
+                value: department.id,
+                label: department.name,
+            }))
+            setDepartments(departmentList);
+        }).catch(error => {
+            console.log(error);
+        });
+        getManagersList(baseUrl, headers).then(response => {
+            let managersList = response;
+            managersList = managersList
+                ?.filter(manager => manager.username)
+                .map((manager) => ({
+                    value: manager.id,
+                    label: manager.username,
+                }))
+            setManagers(managersList);
+        }).catch(error => {
+            console.log(error);
+        });
+
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
@@ -69,8 +92,9 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
             }
         };
 
-        fetchData(); // Call the async function to fetch data
+       // fetchData(); // Call the async function to fetch data
     }, []);
+
 
     const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
         label: (
@@ -95,7 +119,7 @@ const WorkInformation = ({ errors, touched, values, userProfile, onChange, baseU
             <Col md="6">
                 <SelectComponent
                     name={'department_name'}
-                    options={department}
+                    options={departments}
                     error={errors.department_name}
                     touch={touched.department_name}
                     value={values.department_name}

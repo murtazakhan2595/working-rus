@@ -18,7 +18,7 @@ function mapEmployeeData(data) {
   employee.EmployeeContactInformation = getContactInfo(data);
   employee.visaDetails = getVisaDetails(data);
   employee.bankDetails = getBankDetails(data);
-  employee.department = getDepartmentInfo(data);
+  employee.department = getWorkInformation(data);
   employee.academicRecord = getAcademicRecord(data);
   employee.professionalExperiance = getProfessionalExperiance(data);
 
@@ -167,7 +167,7 @@ function getCertifications(data) {
   return [EmployeeCertifiation];
 }
 
-function getDepartmentInfo(data) {
+function getWorkInformation(data) {
   const department = EmployeeDepartmentInfo;
   department.department_name = data?.department_name ?? "";
   department.department_position = data?.department_position ?? "";
@@ -245,7 +245,7 @@ export {
   getAcademicRecord,
   getCVDetails,
   getProfessionalExperiance,
-  getDepartmentInfo,
+  getWorkInformation,
   getBankDetails,
   getCertifications,
   getEmployeeInformation,

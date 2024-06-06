@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
     getPersonalInfo, getVisaDetails, getCVDetails, getProfessionalExperiance, getAcademicRecord,
-    getDepartmentInfo,
+    getWorkInformation,
     getBankDetails,
     getCertifications,
     getContactInfo,
@@ -571,7 +571,7 @@ const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payload
     return false;
 }
 
-const getEmployeeDepartemtInfoData = async (baseUrl, employeeid, token) => {
+const getEmployeeWorkInformationData = async (baseUrl, employeeid, token) => {
     if (employeeid) {
         try {
             const response = await axios.get(`${baseUrl}/employeeDepartmentlist/${employeeid}`, {
@@ -580,7 +580,7 @@ const getEmployeeDepartemtInfoData = async (baseUrl, employeeid, token) => {
                     "Content-Type": "application/json",
                 },
             });
-            const employeeData = getDepartmentInfo(response.data);
+            const employeeData = getWorkInformation(response.data);
             console.log(employeeData);
             return employeeData;
 
@@ -591,7 +591,7 @@ const getEmployeeDepartemtInfoData = async (baseUrl, employeeid, token) => {
     return EmployeeDepartmentInfo;
 }
 
-const saveEmployeeDepartemtInfoData = async (baseUrl, employeeid, token, payload) => {
+const saveEmployeeWorkInformationData = async (baseUrl, employeeid, token, payload) => {
     if (employeeid) {
         try {
             const response = await axios.patch(`${baseUrl}/emp/${employeeid}`, payload, {
@@ -650,6 +650,8 @@ const saveEmployeeBankDetailsData = async (baseUrl, employeeid, token, payload) 
     return false;
 }
 
+
+
 export {
     getEmployeeData,
     getEmployeePersonalInfoData,
@@ -662,8 +664,8 @@ export {
     saveEmployeeProfessionalExperianceData,
     getEmployeeAcademicRecordData,
     saveEmployeeAcademicRecordData,
-    saveEmployeeDepartemtInfoData,
-    getEmployeeDepartemtInfoData,
+    saveEmployeeWorkInformationData,
+    getEmployeeWorkInformationData,
     getEmployeeBankDetailsData,
     saveEmployeeBankDetailsData,
     getEmployeeCerficationData,

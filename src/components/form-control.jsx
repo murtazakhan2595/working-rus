@@ -8,6 +8,7 @@ import upload from "../assets/images/upload.png";
 import { TfiFiles } from 'react-icons/tfi'
 import { dropdownStyles } from "../data/Data";
 import { IoIosSearch } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const SelectComponent = ({
     name,
@@ -220,6 +221,20 @@ const CustomDarkButton = ({ label, onClick, disabled, style }) => {
             onClick={onClick}
             disabled={disabled}
             style={style}
+        >
+            {label}
+        </Button>
+    );
+};
+
+const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
+    return (
+        <Button
+            type="button"
+            className="btn btn-outline-dark"
+            style={style}
+            onClick={onClick}
+            disabled={disabled}
         >
             {label}
         </Button>
@@ -442,4 +457,5 @@ export {
     CustomDarkButton,
     FileInput,
     FilterInput,
+    CustomLightOutlineButton,
 }

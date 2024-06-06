@@ -19,7 +19,7 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { Formik } from 'formik';
 import { useParams } from 'react-router-dom';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import WorkInformation from './Sections/WorkInformation.jsx'
 import { EmployeeInformation } from '../../../utils/Types/Employee.jsx'
 import { getEmployeeInformation } from '../../../utils/MappingObjects/mapEmployeeData.jsx';
@@ -38,6 +38,7 @@ function getManagerSelected(managers) {
 
 const CreateUpdateEmployee = ({ token, baseUrl }) => {
     const formRef = React.createRef();
+    const navigate = useNavigate();
     const headers = {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -63,7 +64,6 @@ const CreateUpdateEmployee = ({ token, baseUrl }) => {
             });
         } else {
             getNewEmployeeCode(baseUrl, headers).then(response => {
-                debugger
                 setempId(`TXB-${response.toString().padStart(4, '0')}`)
                 setIsLoading(false)
             }).catch(error => {
@@ -110,6 +110,7 @@ const CreateUpdateEmployee = ({ token, baseUrl }) => {
 
     const closeModal = () => {
         setShowSuccessModal(false)
+        navigate('/employees')
     }
 
 

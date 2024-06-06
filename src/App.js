@@ -82,8 +82,6 @@ function App() {
   };
 
   const getProfile = async () => {
-    debugger
-    console.log(token)
     try {
       let response = await axios.get(`${baseUrl}/user/`, {
         headers: {

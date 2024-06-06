@@ -1,12 +1,12 @@
 import React from 'react';
-import { Modal , ModalHeader, ModalBody,} from 'reactstrap';
-import { PersonalInformation} from '../Profile';
+import { Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
+import { PersonalInformation } from '../Profile';
 
 function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, }) {
-    console.log(openModal, employeeId);
+    console.log(openModal, employeeId, typeof currentClick);
     const getTitle = () => {
         if (currentClick === 1)
-            return 'Personal Details';
+            return 'Edit Personal Details';
         else if (currentClick === 2)
             return 'Contact Information';
         else if (currentClick === 3)
@@ -25,20 +25,22 @@ function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, 
         <div className="contact-modal-screen">
             <Modal
                 isOpen={openModal}
-                className="modal-success contact-modal"
+                className="modal-success py-4 px-3"
             >
-                <ModalHeader toggle={closeModal()} tag="h4">
-                    <h5 className="mb-0">{getTitle(currentClick)}</h5>
+                <ModalHeader toggle={closeModal} tag="h4">
+                    <span className="mb-0 fw-700">{getTitle(currentClick)}</span>
                 </ModalHeader>
                 <ModalBody>
                     {currentClick === 1 &&
                         <PersonalInformation
                             employeeId={employeeId}
                             isEditMode={true}
+                            nextstep={()=>{
+                                closeModal();
+                            }}
                         />
                     }
                 </ModalBody>
-
             </Modal>
         </div>
     );

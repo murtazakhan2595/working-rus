@@ -9,7 +9,7 @@ import CustomSelect from '../UpdateEmployee/customSelect';
 import axios from "axios";
 import { connect } from 'react-redux';
 import { HeadOfDepartment, department, employeeStatus, jobRoles, workplaceTypes } from '../../../data/Data';
-import { getEmployeeDepartemtInfoData, saveEmployeeDepartemtInfoData } from '../../hooks/employee';
+import { getEmployeeWorkInformationData, saveEmployeeWorkInformationData } from '../../hooks/employee';
 import { EmployeeDepartmentInfo } from '../../utils/Types/Employee'
 import { validationDepartmentInfoFormSchema } from '../../utils/FormSchema/employeeFormSchema'
 import { getAllCountries } from 'countries-and-timezones';
@@ -39,7 +39,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
     const [departmentInfo, setDepartmentInfo] = useState({})
 
     useEffect(() => {
-        getEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token).then(response => {
+        getEmployeeWorkInformationData(baseUrl, userProfile?.id, token).then(response => {
             setDepartmentInfo(response);
         }).catch(error => {
             console.log(error);
@@ -98,7 +98,7 @@ const Department = ({ errors, setErrors, prevstep, submitForm, userProfile, base
             setErrors(validationErrors);
         } else {
             departmentInfo.is_filled = true;
-            saveEmployeeDepartemtInfoData(baseUrl, userProfile?.id, token, departmentInfo);
+            saveEmployeeWorkInformationData(baseUrl, userProfile?.id, token, departmentInfo);
             await submitForm();
             setIsLoading(false);
         }
