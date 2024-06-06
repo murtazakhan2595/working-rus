@@ -24,12 +24,12 @@ import {
 } from "./state/slices/UserSlice.js";
 import BoardList from "./app/modules/BoardList";
 import EmpForm from "./app/modules/Employees/EmpForm";
-import CreateEmployee from "./app/modules/Employees/Screens/Create.jsx";
+import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
 import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
 import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
-
+import Employee from './app/modules/Employees/Employee.jsx'
 import LeaveApplicationListHR from "./app/modules/LeaveApplication/LeaveApplicationListHR.jsx";
 import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
 import LeaveRequestHR from "./app/modules/LeaveApplication/LeaveRequestHR.jsx";
@@ -37,7 +37,7 @@ import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestMana
 import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
 import EditDataForm from "./app/modules/EmployeesData/EditDataForm.jsx";
 import ViewEmpProfile from "./app/modules/Settings/Profile";
-import {EditEmployeeProfile} from "./app/modules/Employees/Screens/Profile";
+import { EditEmployeeProfile } from "./app/modules/Employees/Screens/Profile";
 import Test from "./app/modules/Profile/Test.jsx";
 import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
 import LeaveBalanceManager from "./app/modules/LeaveApplication/LeaveBalanceManager.jsx";
@@ -149,11 +149,13 @@ function App() {
                     path="/coming-soon"
                     element={<ComingSoon isSidebarOpen={isSidebarOpen} />}
                   />
+
                   <Route
                     path="/services"
                     element={<Services isSidebarOpen={isSidebarOpen} />}
                   />
                   <Route
+                                    <Route
                     exact
                     path="/"
                     element={
@@ -177,17 +179,17 @@ function App() {
                       <Route
                         exact
                         path="/employees"
-                        element={<EmpDataSheet />}
+                        element={<Employee />}
                       />
                       <Route exact path="/test" element={<Test />} />
                       <Route
                         exact
                         path="/add-employee"
-                        element={<CreateEmployee />}
+                        element={<CreateUpdateEmployee />}
                       />
                       <Route
                         path="/edit-employee/:id"
-                        element={<EditDataForm />}
+                        element={<CreateUpdateEmployee />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
 
@@ -301,12 +303,12 @@ function App() {
                       <Route
                         exact
                         path="/employees"
-                        element={<EmpDataSheet />}
+                        element={<Employee />}
                       />
                       <Route
                         exact
                         path="/add-employee"
-                        element={<CreateEmployee />}
+                        element={<CreateUpdateEmployee />}
                       />
                       <Route path="/user/:id" element={<ViewEmployee />} />
 

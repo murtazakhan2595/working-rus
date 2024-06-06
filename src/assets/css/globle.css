@@ -1,11 +1,21 @@
 body {
     overflow: auto;
 }
-
+p {
+    margin-bottom: 0rem ;
+}
+dl, ol, ul {
+    margin-top: 0;
+    margin-bottom: 0rem;
+}
+ol, ul {
+    padding-left: 0rem; 
+}
 .screen {
     padding: 30px 20px 20px 20px;
     font-family: 'Lato';
     width: 100%;
+    background-color: #F0F1F2;
 }
 
 .card {

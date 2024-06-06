@@ -6,6 +6,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 import upload from "../assets/images/upload.png";
 import { TfiFiles } from 'react-icons/tfi'
+import { dropdownStyles } from "../data/Data";
+import { IoIosSearch } from "react-icons/io";
 
 const SelectComponent = ({
     name,
@@ -67,6 +69,7 @@ const SelectMultiInputComponent = ({
 };
 
 const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => {
+    const date = new Date(moment(value));
     return (
         <>
             <FormGroup>
@@ -75,8 +78,8 @@ const DateInput = ({ name, value, error, touch, onChange, label, disabled }) => 
                     id={name}
                     isDisabled={disabled}
                     className={`form-control ${error && touch ? 'is-invalid' : ''}`}
-                    value={value ? new Date(moment(value)) : ''}
-                    selected={value ? new Date(moment(value)) : new Date()}
+                    value={date && !isNaN(date.getTime()) ? date : ''}
+                    selected={date && !isNaN(date.getTime()) ? date : new Date()}
                     dropdownMode="select"
                     onChange={(value) => {
                         value = moment(value).format('YYYY-MM-DD');
@@ -207,6 +210,19 @@ const CustomButton = ({ label, onClick, disabled }) => {
                 {label}
             </Button>
         </div>
+    );
+};
+
+const CustomDarkButton = ({ label, onClick, disabled, style }) => {
+    return (
+        <Button
+            className="btn btn-dark"
+            onClick={onClick}
+            disabled={disabled}
+            style={style}
+        >
+            {label}
+        </Button>
     );
 };
 
@@ -364,6 +380,54 @@ const TextAreaInput = ({ name, value, error, touch, onChange, label, disabled, r
         </>
     );
 };
+
+
+const FilterInput = ({ filters }) => {
+    return (
+        <>
+            <div className="flex items-center gap-x-3 mb-4">
+                {filters && filters.map((filter, index) => {
+                    if (filter.type === 'search') {
+                        return (
+                            <div className="relative">
+                                <IoIosSearch className="absolute top-3 left-3 text-baseGray" />
+                                <input
+                                    type="search"
+                                    placeholder={filter.placeholder}
+                                    className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-10 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
+                                />
+                            </div>
+                        )
+                    } if (filter.type === 'select') {
+                        return (
+                            <Select
+                                options={filter.option}
+                                placeholder={filter.placeholder}
+                                className="w-[20%] shadow-input rounded-lg"
+                                styles={dropdownStyles}
+                            />
+                        )
+                    }
+
+                })}
+
+                {/* 
+                <Select
+                    options={department}
+                    placeholder="Department"
+                    className="w-[20%] shadow-input rounded-lg"
+                    styles={dropdownStyles}
+                />
+                <Select
+                    options={department}
+                    placeholder="Department"
+                    className="w-[20%] shadow-input rounded-lg"
+                    styles={dropdownStyles}
+                /> */}
+            </div>
+        </>
+    );
+};
 export {
 
     SelectComponent,
@@ -375,5 +439,7 @@ export {
     ImageInput,
     CustomButton,
     TextAreaInput,
+    CustomDarkButton,
     FileInput,
+    FilterInput,
 }

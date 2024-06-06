@@ -5,13 +5,10 @@ import {
     CardBody,
     Row,
     Col,
-    ButtonGroup,
-    ButtonDropdown,
-    DropdownToggle,
     Button,
     Form,
     Label,
-    FormGroup, Input, InputGroup, InputGroupText
+    FormGroup, Input,
 } from 'reactstrap';
 import PageLoader from '../../../../components/PageLoader.jsx';
 import EmpDataHeader from "./Sections/Header.jsx";
@@ -21,20 +18,17 @@ import { connect } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { Formik } from 'formik';
-import { useNavigate } from 'react-router-dom';
-
-import { BiShow } from "react-icons/bi";
-import { TbEyeClosed } from "react-icons/tb";
+import { useParams } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import WorkInformation from './Sections/WorkInformation.jsx'
 import { EmployeeInformation } from '../../../utils/Types/Employee.jsx'
-import { getAddEmployeePayload } from '../../../utils/MappingObjects/mapEmployeeData.jsx'
-import moment from "moment";
-import { EmailInput, PhoneInput, TextAreaInput, DateInput, TextInput } from '../../../../components/form-control.jsx'
+import { getEmployeeInformation } from '../../../utils/MappingObjects/mapEmployeeData.jsx';
+import { getEmployeeData, getNewEmployeeCode } from '../../../hooks/employee.jsx';
+import { EmailInput, PhoneInput, TextAreaInput, TextInput } from '../../../../components/form-control.jsx'
 function getManagerSelected(managers) {
     if (managers) {
         const matchingObjects = managers.map(obj => {
-            return obj.value;
+            return obj.label;
         });
 
         return matchingObjects.join(', ');
@@ -42,30 +36,49 @@ function getManagerSelected(managers) {
     return [];
 }
 
-const CreateEmployee = ({ token, baseUrl }) => {
+const CreateUpdateEmployee = ({ token, baseUrl }) => {
     const formRef = React.createRef();
     const headers = {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
     };
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({...EmployeeInformation });
+    const { id } = useParams();
+    const [formData, setFormData] = useState(EmployeeInformation);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [empId, setempId] = useState(0);
     const [email, setEmail] = useState('');
-    const [refreshComponent, setRefreshComponent] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
 
+    useEffect(() => {
+        if (id) {
+            getEmployeeData(baseUrl, id, headers).then(response => {
+                const employeeData = getEmployeeInformation(response);
+                setFormData(employeeData);
+                setempId(`TXB-${employeeData.id.toString().padStart(4, '0')}`)
+                setIsLoading(false)
+            }).catch(error => {
+                setIsLoading(false)
+                console.log(error);
+            });
+        } else {
+            getNewEmployeeCode(baseUrl, headers).then(response => {
+                debugger
+                setempId(`TXB-${response.toString().padStart(4, '0')}`)
+                setIsLoading(false)
+            }).catch(error => {
+                setIsLoading(false)
+                console.log(error);
+            });
+        }
+    }, [baseUrl, headers, id]);
 
     const handleSubmit = async (data) => {
         debugger
+        setIsLoading(true);
         // Check if an API call is already in progress
-
         data.indirect_report = data?.indirect_report ? getManagerSelected(data.indirect_report) : '';
         data.direct_report = data?.direct_report ? getManagerSelected(data.direct_report) : '';
-        data.department_name = null;
-        setIsLoading(true);
         try {
             const response = await axios.post(`${baseUrl}/emp/add`, data, {
                 headers,
@@ -73,7 +86,6 @@ const CreateEmployee = ({ token, baseUrl }) => {
 
             if (response.status === 201) {
                 setShowSuccessModal(true);
-                setRefreshComponent(!refreshComponent);
 
             }
         } catch (error) {
@@ -95,46 +107,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    useEffect(() => {
-        const fetchLastItemFromLastPage = async () => {
-            try {
-                // Step 1: Get the total number of pages and items per page
-                const initialResponse = await axios.get(`${baseUrl}/emp/`, {
-                    headers,
-                });
-                const totalItems = initialResponse.data.count;
-                const itemsPerPage = initialResponse.data.length;
-                const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-                // Step 2: Determine the last page number
-                const lastPage = totalPages;
-
-                // Step 3: Make a request to the last page
-                const lastPageResponse = await axios.get(
-                    `${baseUrl}/emp/?ordering=id&page=${lastPage}`,
-                    {
-                        headers,
-                    }
-                );
-                if (lastPageResponse.status === 200) {
-                    const lastPageData = lastPageResponse.data;
-                    // Step 4: Get the last item from the last page
-                    const lastItem = lastPageData[lastPageData.length - 1]?.id + 1;
-                    const empId = "TXB" + lastItem.toString().padStart(4, "0")
-                    setempId(empId);
-                    setIsLoading(false)
-                }
-            } catch (error) {
-                console.error(
-                    "Error fetching the last item from the last page:",
-                    error
-                );
-            }
-        };
-        fetchLastItemFromLastPage();
-    }, [refreshComponent, baseUrl, token]);
+    }
 
     const closeModal = () => {
         setShowSuccessModal(false)
@@ -155,7 +128,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                 <Col lg={10}>
                                     <div className="h4 mb-0 d-flex align-items-center">
                                         <i className="nav-icon fas fa-id-card-alt" />
-                                        <span className="ml-2 fw-700">Add Employee</span>
+                                        <span className="ml-2 fw-700">{id ? 'Update' : 'Add'} Employee</span>
                                     </div>
                                 </Col>
                                 <Col lg={2}>
@@ -312,13 +285,13 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                                 }}
                                                             />
                                                         </Col>
-                                                        <Col md="8">
+                                                        <Col md="6">
                                                             <TextAreaInput
                                                                 name={'residential_address'}
                                                                 error={props.errors?.residential_address}
                                                                 touch={props.touched?.residential_address}
                                                                 value={props.values?.residential_address}
-                                                                label={'Reponsibilities'}
+                                                                label={'Address'}
                                                                 required={true}
                                                                 onChange={(field, value) => {
                                                                     props.handleChange(field)(value);
@@ -329,7 +302,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                         <Col md="12">
                                                             <h5 className="fw-700 mb-3 mt-4">Work information</h5>
                                                         </Col>
-                                                        {console.log(props)}
+                                                        {console.log(props.values)}
                                                         <WorkInformation
                                                             employeeId={''}
                                                             values={props.values}
@@ -348,6 +321,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                             <Link
                                                                 type="button"
                                                                 className="btn btn-outline-dark w-100"
+                                                                to="/employees"
                                                             >
                                                                 Cancel
                                                             </Link>
@@ -357,7 +331,7 @@ const CreateEmployee = ({ token, baseUrl }) => {
                                                                 type="submit"
                                                                 className="btn btn-dark w-100"
                                                             >
-                                                                Add
+                                                                {id ? 'Update' : 'Add'}
                                                             </Button>
                                                         </Col>
                                                     </Row>
@@ -406,4 +380,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(CreateEmployee);
+export default connect(mapStateToProps)(CreateUpdateEmployee);
