@@ -74,7 +74,6 @@ const CreateUpdateEmployee = ({ token, baseUrl }) => {
     }, [baseUrl, headers, id]);
 
     const handleSubmit = async (data) => {
-        debugger
         setIsLoading(true);
         // Check if an API call is already in progress
         data.indirect_report = data?.indirect_report ? getManagerSelected(data.indirect_report) : '';

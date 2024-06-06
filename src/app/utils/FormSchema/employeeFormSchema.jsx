@@ -1,6 +1,10 @@
 import Joi from "joi";
 
+const validationEmployeeInfoFormSchema = (values)=>{
+  const errors={};
 
+  return errors;
+}
 const validationPersonalInfoFormSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
   last_name: Joi.string().min(3).max(40).required().label("Last Name"),
@@ -177,4 +181,5 @@ export {
   validationAcademicRecordSchema,
   validationDepartmentInfoFormSchema,
   validationBankDetailsFormSchema,
+  validationEmployeeInfoFormSchema,
 }

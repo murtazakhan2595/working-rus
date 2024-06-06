@@ -198,7 +198,7 @@ const Dashboard = ({ token, baseUrl }) => {
   }, []);
 
   return (
-    <div className="relative flex flex-col pt-5 justify-start sm:ml-5 sm:w-[95%] sm:mr-7 md:w-[60%] w-[90%] md:ml-10 items-start mx-auto ">
+    <div className="relative flex flex-col pt-5 justify-start sm:ml-5 sm:w-[95%] sm:mr-7 md:w-[60%] w-[90%] md:ml-10 items-start">
       <img
         className="absolute top-0 right-0 transform translate-y-[-15%] translate-x-[-20%]"
         src={todoImg}
