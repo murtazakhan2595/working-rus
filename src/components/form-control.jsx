@@ -339,7 +339,7 @@ const FileInput = ({ value, error, setImageError, onChange, touch, name, label, 
             <div className="flex flex-col bg-[#F5F5FA] text-center file-input mb-3" style={{ padding: '4rem 2rem', borderRadius: '12px' }}>
                 <h4>
                     <TfiFiles className="m-auto mb-3" />
-                    {`Upload Your ${label || 'file'} or Drag it Here`}
+                    {`Upload Your ${label || 'file'}`}
                 </h4>
                 <label
                     htmlFor={name}

@@ -25,7 +25,7 @@ import {
   CustomDarkButton,
   CustomLightOutlineButton,
 } from "../../../../../components/form-control";
-import FileInput from "./FileInput";
+import { FileInput } from "../../../../../components/form-control.jsx";
 
 const CertificationsInformation = ({
   nextstep,
@@ -197,7 +197,7 @@ const CertificationsInformation = ({
                                     props.setFieldValue(field, value);
                                   }}
                                   label={
-                                    "Upload your Certification or drag it here"
+                                    "Certification or drag it here"
                                   }
                                   required
                                   error={
