@@ -39,6 +39,9 @@ const Employee = ({ baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [employeeData, setEmployeeData] = useState([]);
     const [openDropdownRow, setOpenDropdownRow] = useState([]);
+    const [totalEmployee, setTotalEmployee] = useState(0);
+    const [activeEmployee, setActiveEmployee] = useState(0);
+    const [totalManagers, setTotalManager] = useState(0);
     const navigate = useNavigate();
     const [options, setOptions] = useState({
         page: 1,
@@ -103,7 +106,13 @@ const Employee = ({ baseUrl, token }) => {
                         headers,
                     }
                 );
-                setEmployeeData(response.data); // Assuming response.data contains the user data directly
+                const employeeData = response.data;
+                if (employeeData && employeeData.length > 0) {
+                    setEmployeeData(response.data); // Assuming response.data contains the user data directly
+                    setActiveEmployee(employeeData[0].active_employees)
+                    setTotalEmployee(employeeData[0].total_employees)
+                    setTotalManager(employeeData[0].active_manager)
+                }
                 setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching users:", error);
@@ -223,17 +232,17 @@ const Employee = ({ baseUrl, token }) => {
             {Blocks([
                 {
                     label: 'Total Employees',
-                    value: 42,
+                    value: totalEmployee,
                     image: profile,
                 },
                 {
                     label: 'Mangers only',
-                    value: 11,
+                    value: totalManagers,
                     image: tie,
                 },
                 {
                     label: 'Active Employees',
-                    value: 48,
+                    value: activeEmployee,
                     image: active,
                 },
             ])}
