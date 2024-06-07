@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isDbOpen: false,
@@ -11,110 +11,169 @@ const initialState = {
   isLeaveOpen: false,
   isProjectOpen: false,
   isProfileOpen: false,
-  isDtrOpen: false
+  isDtrOpen: false,
 };
 
 const dropdownSlice = createSlice({
-  name: 'dropdown',
+  name: "dropdown",
   initialState,
   reducers: {
     toggleDropdown(state, action) {
       const dropdownName = action.payload;
       switch (dropdownName) {
-        case 'HRDatabase':
+        case "HRDatabase":
           state.isDbOpen = !state.isDbOpen;
           state.isRecruitmentOpen = false;
           state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
           state.isDtrOpen = false;
+          state.isServiceHubOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
           break;
-        case 'serviceHub':
+        case "serviceHub":
           state.isServiceHubOpen = !state.isServiceHubOpen;
           state.isRecruitmentOpen = false;
           state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
           state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          state.isDbOpen = false;
           break;
-        case 'Recruitment':
+        case "Recruitment":
           state.isRecruitmentOpen = !state.isRecruitmentOpen;
-          state.isDbOpen = false;
           state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
           state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          state.isDbOpen = false;
           break;
-        case 'performance':
+        case "performance":
           state.isPerformanceOpen = !state.isPerformanceOpen;
-          state.isDbOpen = false;
+          state.isRecruitmentOpen = false;
           state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
           state.isDtrOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          state.isDbOpen = false;
+          state.isServiceHubOpen = false;
           break;
-        case 'payrollAndAttendance':
+        case "payrollAndAttendance":
           state.isPayrollOpen = !state.isPayrollOpen;
-          state.isDbOpen = false;
+          state.isRecruitmentOpen = false;
           state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
           state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isDbOpen = false;
+          state.isServiceHubOpen = false;
           break;
-        case 'personalDevelopment':
+        case "personalDevelopment":
           state.isPersonalDevelopmentOpen = !state.isPersonalDevelopmentOpen;
-          state.isDbOpen = false;
+          state.isRecruitmentOpen = false;
           state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
           state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPayrollOpen = false;
+          state.isDbOpen = false;
+          state.isServiceHubOpen = false;
           break;
-        case 'peopleEngagement':
+        case "peopleEngagement":
           state.isPeopleEngagementOpen = !state.isPeopleEngagementOpen;
-          state.isDbOpen = false;
+          state.isRecruitmentOpen = false;
           state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
           state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          state.isDbOpen = false;
+          state.isServiceHubOpen = false;
           break;
-        case 'LeaveManagement':
+        case "LeaveManagement":
           state.isLeaveOpen = !state.isLeaveOpen;
-          state.isDbOpen = false;
           state.isRecruitmentOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
           state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          state.isDbOpen = false;
+          state.isServiceHubOpen = false;
           break;
-        case 'dtr':
+        case "dtr":
           state.isDtrOpen = !state.isDtrOpen;
-          state.isDbOpen = false;
           state.isRecruitmentOpen = false;
+          state.isLeaveOpen = false;
           state.isProjectOpen = false;
           state.isProfileOpen = false;
-          state.isLeaveOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          state.isDbOpen = false;
           break;
-        case 'Projects':
+        case "Projects":
           state.isProjectOpen = !state.isProjectOpen;
+          state.isRecruitmentOpen = false;
+          state.isLeaveOpen = false;
           state.isProfileOpen = false;
-          state.isDbOpen = false;
-          state.isRecruitmentOpen = false;
-          state.isLeaveOpen = false;
           state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          state.isDbOpen = false;
           break;
-        case 'Profile':
+        case "Profile":
           state.isProfileOpen = !state.isProfileOpen;
-          state.isProjectOpen = false;
-          state.isDbOpen = false;
           state.isRecruitmentOpen = false;
           state.isLeaveOpen = false;
+          state.isProjectOpen = false;
           state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          state.isDbOpen = false;
           break;
         default:
           break;
       }
-    }
-  }
+    },
+  },
 });
 
-export const { toggleDropdown, isDbOpen, isRecruitmentOpen, isLeaveOpen, isDtrOpen, isProjectOpen, isProfileOpen } = dropdownSlice.actions;
+export const {
+  toggleDropdown,
+  isDbOpen,
+  isRecruitmentOpen,
+  isLeaveOpen,
+  isDtrOpen,
+  isProjectOpen,
+  isProfileOpen,
+} = dropdownSlice.actions;
 export default dropdownSlice.reducer;

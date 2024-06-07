@@ -14,7 +14,7 @@ import { CardHeader, CardBody, Row, Col } from "reactstrap";
 import { useSelector } from "react-redux";
 
 const CreateEmployeeProfile = () => {
-  const userProfile = useSelector(state => state.user.userProfile);
+  const userProfile = useSelector((state) => state.user.userProfile);
 
   // Access the id from the userProfile object
   const id = userProfile.id;
@@ -79,7 +79,10 @@ const CreateEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
+                prevStep={() => {
+                  setCurrentTab(currentTab - 1);
+                }}
                 />
               )}
               {currentTab === 4 && (
@@ -88,7 +91,10 @@ const CreateEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
+                prevStep={() => {
+                  setCurrentTab(currentTab - 1);
+                }}
                 />
               )}
               {currentTab === 5 && (
@@ -98,7 +104,10 @@ const CreateEmployeeProfile = () => {
                     setCurrentTab(currentTab + 1);
                   }}
                   isEditMode={true}
-                />
+                  prevStep={() => {
+                  setCurrentTab(currentTab - 1);
+                }}
+              />
               )}
               {currentTab === 6 && (
                 <EducationInformation
@@ -107,7 +116,10 @@ const CreateEmployeeProfile = () => {
                     setCurrentTab(currentTab + 1);
                   }}
                   isEditMode={true}
-                />
+                  prevStep={() => {
+                  setCurrentTab(currentTab - 1);
+                }}
+              />
               )}
               {currentTab === 7 && (
                 <CertificationsInformation
@@ -116,7 +128,10 @@ const CreateEmployeeProfile = () => {
                     setCurrentTab(currentTab + 1);
                   }}
                   isEditMode={true}
-                />
+                  prevStep={() => {
+                  setCurrentTab(currentTab - 1);
+                }}
+              />
               )}
               {currentTab === 8 && (
                 <IdentificationInformation
@@ -125,7 +140,10 @@ const CreateEmployeeProfile = () => {
                     setCurrentTab(currentTab + 1);
                   }}
                   isEditMode={true}
-                />
+                  prevStep={() => {
+                  setCurrentTab(currentTab - 1);
+                }}
+              />
               )}
               {currentTab === 9 && (
                 <OnboardComplete

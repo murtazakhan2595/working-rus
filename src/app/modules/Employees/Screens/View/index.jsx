@@ -194,12 +194,12 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
         <>
         <div className="px-10">
           <div className="opacity-60 mb-4">
-            View Employee Data {`> ${userData.personalInformation?.first_name} ${userData.personalInformation?.last_name}`}
+            View Employee Data {`> ${userData?.first_name} ${userData?.last_name}`}
           </div>
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-[25px]">
-                {userData.personalInformation?.first_name} {userData.personalInformation?.last_name}
+                {userData?.first_name} {userData?.last_name}
               </h2>
               <div className="opacity-60">
                 ID: TXB-{id.toString().padStart(4, "0")}
