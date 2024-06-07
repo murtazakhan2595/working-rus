@@ -61,7 +61,7 @@ const CreateEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
                 />
               )}
               {currentTab === 2 && (
@@ -70,7 +70,7 @@ const CreateEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
                 />
               )}
               {currentTab === 3 && (
@@ -103,7 +103,7 @@ const CreateEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
                   prevStep={() => {
                   setCurrentTab(currentTab - 1);
                 }}
@@ -115,7 +115,7 @@ const CreateEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
                   prevStep={() => {
                   setCurrentTab(currentTab - 1);
                 }}
@@ -127,7 +127,7 @@ const CreateEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
                   prevStep={() => {
                   setCurrentTab(currentTab - 1);
                 }}
@@ -139,7 +139,7 @@ const CreateEmployeeProfile = () => {
                   nextstep={() => {
                     setCurrentTab(currentTab + 1);
                   }}
-                  isEditMode={true}
+                  isEditMode={false}
                   prevStep={() => {
                   setCurrentTab(currentTab - 1);
                 }}
@@ -155,12 +155,12 @@ const CreateEmployeeProfile = () => {
                 />
               )}
             </div>
-            <div className="flex justify-start items-start">
+          </div>
+          <div className="flex justify-start items-start mb-2">
               <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
                 © 2024 TecBrix
               </p>
             </div>
-          </div>
         </div>
       </div>
     </>
