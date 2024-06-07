@@ -504,7 +504,7 @@ const saveEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payloa
                 }
             });
 
-            return false;
+            return true;
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
@@ -562,7 +562,7 @@ const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payload
                 }
             });
 
-            return false;
+            return true;
 
         } catch (error) {
             console.error("Error fetching Personal Info data :", error);
