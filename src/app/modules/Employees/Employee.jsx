@@ -140,6 +140,7 @@ const Employee = ({ baseUrl, token }) => {
     const renderName = (cell, row) => {
         return (
             <>
+
                 <div className="bg-[#BE24A5] text-[#FAFBFC] flex font-lato font-semibold text-lg items-center justify-center rounded-full w-10 h-10">
                     {row.first_name.toUpperCase().charAt(0)}
                     {row.last_name.toUpperCase().charAt(0)}
@@ -353,8 +354,8 @@ const Employee = ({ baseUrl, token }) => {
                                                     dataFormat={(cell, row) => {
                                                         return (
                                                             <>
-                                                                <div className="text-base font-lato">{`${row.mobile_no}`}</div>
-                                                                <div className="text-base font-lato">{`${row.email}`}</div>
+                                                                <div className="text-base font-lato">{row.mobile_no ? `${row.mobile_no}` : ''}</div>
+                                                                <div className="text-base font-lato">{row.work_email ? `${row.work_email}` : ''}</div>
                                                             </>
                                                         );
                                                     }}
