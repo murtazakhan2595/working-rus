@@ -127,7 +127,7 @@ const Sidebar = ({
                         <img src={logo} className="inline-block w-12" alt="logo" />
                         <h1 className={`inline-block overflow-hidden transition-all text-2xl ${isSidebarOpen ? 'w-28' : 'w-0'}`}>TECBRIX</h1>
                     </div>
-                    <ul className="overflow-y-auto overflow-x-hidden hideScroll -mt-10 mx-4">
+                    <ul className="overflow-y-auto overflow-x-hidden hideScroll -mt-10 mx-2">
                         <li>
                             <div className="relative invisible">
                                 <IoIosSearch className="absolute top-3 left-3 text-white" />
@@ -147,7 +147,7 @@ const Sidebar = ({
                                             <NavLink
                                                 to="/"
                                                 className={({ isActive }) =>
-                                                    `group flex mb-3 mt-5 rounded-md py-2 px-2 items-center gap-x-2 text-[#5C5E64] hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isActive ? 'bg-[#DAEFF8] text-[#0D2282]' : ''}`
+                                                    `group flex mb-3 rounded-md py-2 px-2 items-center gap-x-2 text-[#5C5E64] hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isActive ? 'bg-[#DAEFF8] text-[#0D2282]' : ''}`
                                                 }
                                             >
                                                 <div className="flex flex-col">
@@ -166,7 +166,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-md top-24 ml-20
           bg-white w-40 text-sm
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                                                     <p className="m-1 px-2 py-1 rounded-lg text-[#5C5E64] hover:bg-[#DAEFF8] hover:text-[#0D2282]"><Link to="/">Home</Link></p>
@@ -195,7 +195,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-lg border border-gray-100 top-40 ml-20
           bg-white w-44 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
 
                                                     <div className="flex flex-col bg-white rounded-lg">
@@ -299,7 +299,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-lg border border-gray-1 top-40 ml-20
           bg-[#F7F8FA] w-44 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
 
                                                     <div className="flex flex-col bg-white rounded-lg">
@@ -430,7 +430,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-lg border border-gray-1 top-56 ml-20
           bg-white w-44 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                                                     <div className="flex flex-col rounded-lg bg-white">
@@ -513,7 +513,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-lg border border-gray-1 top-52 ml-20
           bg-white w-44 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
 
                                                     <div className="flex flex-col rounded-lg bg-white">
@@ -620,7 +620,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-lg border border-gray-1 top-80 ml-20
           bg-white w-44 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                                                     <div className="flex flex-col rounded-lg bg-white">
@@ -668,7 +668,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-lg border border-gray-1 top-80 ml-20
           bg-white w-44 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                                                     <div className="flex flex-col rounded-lg bg-white">
@@ -727,7 +727,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-lg border border-gray-1 top-96 ml-20
           bg-white w-44 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                                                     <div className="flex flex-col rounded-lg bg-white">
@@ -787,7 +787,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-lg border border-gray-1 top-96 ml-20
           bg-white w-44 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                                                     <div className="flex flex-col rounded-lg bg-white">
@@ -905,7 +905,7 @@ const Sidebar = ({
                                             {!isSidebarOpen && (
                                                 <div className="absolute rounded-md top-72 ml-20
           bg-white w-32 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                                                     <div className="flex flex-col rounded-lg bg-white">
@@ -1004,7 +1004,7 @@ const Sidebar = ({
                                                     } ${isSidebarOpen ? 'block' : 'hidden'}`}
                                             />
                                             {!isSidebarOpen && <div className="absolute rounded-lg border border-gray-1 top-96 ml-20 bg-white w-44 text-base
-          invisible opacity-20 -translate-x-3 transition-all
+          opacity-00 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
                                                 <div className="max-h-[20vh] overflow-y-auto p-1">
                                                     {projects?.map((project, index) => (
@@ -1100,10 +1100,10 @@ const Sidebar = ({
                                         )}
 
                                         {!isSidebarOpen && (
-                                            <div className="absolute rounded-lg border border-gray-1 top-[30rem] ml-20
-bg-white w-44 text-sm
-invisible opacity-20 -translate-x-3 transition-all
-group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+                                            <div className="absolute rounded-lg border border-gray-1 ml-20
+                                                bg-white w-44 text-sm
+                                                opacity-00 
+                                                group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                                                 <div className="flex items-center bg-[#F0F1F2] rounded-lg m-1">
                                                     <div className={`flex group items-center gap-x-2 py-3 px-2 rounded-lg cursor-pointer`}>
