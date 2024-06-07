@@ -26,13 +26,13 @@ const OnboardComplete = ({ nextstep }) => {
             <p className="font-roboto text-base text-baseGray font-normal text-center mb-6">
             Let’s get to work
             </p>
-            <button
-              onClick={nextstep} // Call the nextstep function when clicked
+            <Link
+              to="/" 
               className={`flex h-10 justify-center items-center w-full font-normal rounded-xl px-3 py-1.5 text-sm md:text-lg leading-8 font-lato lg:text-base bg-black text-white gap-x-4`}
             >
               Proceed
               <IoArrowForward />
-            </button>
+            </Link>
           </div>
         </div>
         {/* <div className="flex justify-start items-start">

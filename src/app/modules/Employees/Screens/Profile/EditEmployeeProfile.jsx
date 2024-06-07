@@ -17,6 +17,7 @@ import { toast, } from "react-toastify";
 const EditEmployeeProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  //   const [currentTab, setCurrentTab] = useState(4);
   const [currentTab, setCurrentTab] = useState(1);
   const getTitle = () => {
     if (currentTab === 1)

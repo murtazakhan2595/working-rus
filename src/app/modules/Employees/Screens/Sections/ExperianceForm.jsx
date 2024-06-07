@@ -116,7 +116,7 @@ const Experience = ({ errors, touched, values, onChange }) => {
                 /> */}
         <FileInput
           name="exp_letter"
-          label="Upload your Experience Letter or drag it here"
+          label="Experience Letter or drag it here"
           acceptType=".pdf"
           error={errors?.exp_letter}
           touch={touched?.exp_letter}
