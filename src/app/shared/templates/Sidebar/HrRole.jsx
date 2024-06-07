@@ -189,49 +189,49 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
 
             <div className="flex flex-col bg-white rounded-lg">
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">My Profile</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">My Team</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Calender</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Attendance</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">My Leaves</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Files & Data</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">My Travel Details</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Letter Requests</p>
 
@@ -510,7 +510,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
 
             <div className="flex flex-col rounded-lg bg-white">
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Employee Evaluation</p>
 
@@ -558,13 +558,13 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
 
             <div className="flex flex-col rounded-lg bg-white">
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Payroll</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Attendance</p>
 
@@ -617,13 +617,13 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
 
             <div className="flex flex-col rounded-lg bg-white">
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Announcement</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Recognition</p>
 
@@ -677,25 +677,25 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
 
             <div className="flex flex-col rounded-lg bg-white">
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Learn</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Career Planning</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Succession Plan</p>
 
               </NavLink>
               <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? activeLink : normalLink}
+                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
               >
                 <p className="text-sm px-2">Development Plan</p>
 
