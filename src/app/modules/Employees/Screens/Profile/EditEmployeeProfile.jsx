@@ -127,7 +127,6 @@ const EditEmployeeProfile = () => {
                       position: toast.POSITION.TOP_RIGHT,
                     });
                     navigate('/employees')
-
                   }}
                   isEditMode={false}
                   prevStep={() => {

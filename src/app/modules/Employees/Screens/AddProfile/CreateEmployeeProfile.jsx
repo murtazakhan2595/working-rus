@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Welcome from "./Welcome";
 import PersonalInformation from "../Profile/PersonalInformation";
 import ContactInformation from "../Profile/ContactInformation";
@@ -12,13 +12,13 @@ import IdentificationInformation from "../Profile/IdentificationInformation";
 import OnboardComplete from "./OnboardComplete";
 import { CardHeader, CardBody, Row, Col } from "reactstrap";
 import { useSelector } from "react-redux";
+import { toast, } from "react-toastify";
 
 const CreateEmployeeProfile = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
-
+  const navigate = useNavigate();
   // Access the id from the userProfile object
   const id = userProfile.id;
-  //   const [currentTab, setCurrentTab] = useState(4);
   const [currentTab, setCurrentTab] = useState(1);
 
   const getTitle = () => {
@@ -30,6 +30,8 @@ const CreateEmployeeProfile = () => {
     else if (currentTab === 7) return "Certification and Licences";
     else if (currentTab === 8) return "Identification Details";
   };
+  if(userProfile.is_filled)
+    navigate('/');
 
   return (
     <>
@@ -48,114 +50,122 @@ const CreateEmployeeProfile = () => {
           {/*  */}
           <div className="screen">
             <div className="max-w-[60%] block mx-auto">
-              <CardHeader>
-                <Row>
-                  <Col lg={12}>
-                    <h4 className="ml-2 fw-700 font-lato">{getTitle()}</h4>
-                  </Col>
-                </Row>
-              </CardHeader>
-              <CardBody>
-                {currentTab === 1 && (
-                  <Welcome
-                    employeeId={id}
-                    nextstep={() => {
-                      setCurrentTab(currentTab + 1);
-                    }}
-                    isEditMode={false}
-                  />
-                )}
-                {currentTab === 2 && (
-                  <PersonalInformation
-                    employeeId={id}
-                    nextstep={() => {
-                      setCurrentTab(currentTab + 1);
-                    }}
-                    isEditMode={false}
-                  />
-                )}
-                {currentTab === 3 && (
-                  <ContactInformation
-                    employeeId={id}
-                    nextstep={() => {
-                      setCurrentTab(currentTab + 1);
-                    }}
-                    isEditMode={false}
-                    prevStep={() => {
-                      setCurrentTab(currentTab - 1);
-                    }}
-                  />
-                )}
-                {currentTab === 4 && (
-                  <BankInformation
-                    employeeId={id}
-                    nextstep={() => {
-                      setCurrentTab(currentTab + 1);
-                    }}
-                    isEditMode={false}
-                    prevStep={() => {
-                      setCurrentTab(currentTab - 1);
-                    }}
-                  />
-                )}
-                {currentTab === 5 && (
-                  <ExperienceInformation
-                    employeeId={id}
-                    nextstep={() => {
-                      setCurrentTab(currentTab + 1);
-                    }}
-                    isEditMode={false}
-                    prevStep={() => {
-                      setCurrentTab(currentTab - 1);
-                    }}
-                  />
-                )}
-                {currentTab === 6 && (
-                  <EducationInformation
-                    employeeId={id}
-                    nextstep={() => {
-                      setCurrentTab(currentTab + 1);
-                    }}
-                    isEditMode={false}
-                    prevStep={() => {
-                      setCurrentTab(currentTab - 1);
-                    }}
-                  />
-                )}
-                {currentTab === 7 && (
-                  <CertificationsInformation
-                    employeeId={id}
-                    nextstep={() => {
-                      setCurrentTab(currentTab + 1);
-                    }}
-                    isEditMode={false}
-                    prevStep={() => {
-                      setCurrentTab(currentTab - 1);
-                    }}
-                  />
-                )}
-                {currentTab === 8 && (
-                  <IdentificationInformation
-                    employeeId={id}
-                    nextstep={() => {
-                      setCurrentTab(currentTab + 1);
-                    }}
-                    isEditMode={false}
-                    prevStep={() => {
-                      setCurrentTab(currentTab - 1);
-                    }}
-                  />
-                )}
-                {currentTab === 9 && (
-                  <OnboardComplete
-                    employeeId={id}
-                    nextstep={() => {
-                      setCurrentTab(currentTab + 1);
-                    }}
-                    isEditMode={true}
-                  />
-                )}
-              </CardBody>
+              {currentTab === 1 && (
+                <Welcome
+                  employeeId={id}
+                  nextstep={() => {
+                    setCurrentTab(currentTab + 1);
+                  }}
+                  isEditMode={false}
+                />
+              )}
+              {currentTab === 9 && (
+                <OnboardComplete
+                  employeeId={id}
+                  nextstep={() => {
+                    setCurrentTab(currentTab + 1);
+                    toast.success("Employee Profile Updated Successfully!", {
+                      position: toast.POSITION.TOP_RIGHT,
+                    });
+                    navigate('/')
+                  }}
+                  isEditMode={true}
+                />
+              )}
+              {currentTab !== 1 && currentTab !== 9 &&
+                <>
+                  <CardHeader>
+                    <Row>
+                      <Col lg={12}>
+                        <h4 className="ml-2 fw-700 font-lato">{getTitle()}</h4>
+                      </Col>
+                    </Row>
+                  </CardHeader>
+                  <CardBody>
+                    {currentTab === 2 && (
+                      <PersonalInformation
+                        employeeId={id}
+                        nextstep={() => {
+                          setCurrentTab(currentTab + 1);
+                        }}
+                        isEditMode={false}
+                      />
+                    )}
+                    {currentTab === 3 && (
+                      <ContactInformation
+                        employeeId={id}
+                        nextstep={() => {
+                          setCurrentTab(currentTab + 1);
+                        }}
+                        isEditMode={false}
+                        prevStep={() => {
+                          setCurrentTab(currentTab - 1);
+                        }}
+                      />
+                    )}
+                    {currentTab === 4 && (
+                      <BankInformation
+                        employeeId={id}
+                        nextstep={() => {
+                          setCurrentTab(currentTab + 1);
+                        }}
+                        isEditMode={false}
+                        prevStep={() => {
+                          setCurrentTab(currentTab - 1);
+                        }}
+                      />
+                    )}
+                    {currentTab === 5 && (
+                      <ExperienceInformation
+                        employeeId={id}
+                        nextstep={() => {
+                          setCurrentTab(currentTab + 1);
+                        }}
+                        isEditMode={false}
+                        prevStep={() => {
+                          setCurrentTab(currentTab - 1);
+                        }}
+                      />
+                    )}
+                    {currentTab === 6 && (
+                      <EducationInformation
+                        employeeId={id}
+                        nextstep={() => {
+                          setCurrentTab(currentTab + 1);
+                        }}
+                        isEditMode={false}
+                        prevStep={() => {
+                          setCurrentTab(currentTab - 1);
+                        }}
+                      />
+                    )}
+                    {currentTab === 7 && (
+                      <CertificationsInformation
+                        employeeId={id}
+                        nextstep={() => {
+                          setCurrentTab(currentTab + 1);
+                        }}
+                        isEditMode={false}
+                        prevStep={() => {
+                          setCurrentTab(currentTab - 1);
+                        }}
+                      />
+                    )}
+                    {currentTab === 8 && (
+                      <IdentificationInformation
+                        employeeId={id}
+                        nextstep={() => {
+                          setCurrentTab(currentTab + 1);
+                        }}
+                        isEditMode={false}
+                        prevStep={() => {
+                          setCurrentTab(currentTab - 1);
+                        }}
+                      />
+                    )}
+                  </CardBody>
+                </>
+              }
             </div>
           </div>
           <div className="flex justify-start items-start mb-2">

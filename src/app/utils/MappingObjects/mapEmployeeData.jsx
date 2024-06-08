@@ -1,6 +1,5 @@
 import {
   Employee,
-  EmployeePersonalInformation,
   EmployeeDepartmentInfo,
   EmployeeVisaDetails,
   EmployeeAcademicRecord,

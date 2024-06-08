@@ -1,27 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
-  Card,
-  CardHeader,
-  CardBody,
   Row,
   Col,
-  ButtonGroup,
-  ButtonDropdown,
-  DropdownToggle,
-  Button,
   Form,
-  Label,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupText,
 } from "reactstrap";
 import { Formik } from "formik";
-import { Link } from "react-router-dom";
-import moment from "moment";
 import { getAllCountries } from "countries-and-timezones";
-import Select from "react-select";
-import { countryCodes } from "../../../../../data/CountryCode";
 import { connect } from "react-redux";
 import {
   getEmployeePersonalInfoData,
@@ -29,7 +13,6 @@ import {
 } from "../../../../hooks/employee";
 import { getPersonalInfo } from "../../../../utils/MappingObjects/mapEmployeeData.jsx";
 import { validationPersonalInfoFormSchema } from "../../../../utils/FormSchema/employeeFormSchema";
-import EmpDataHeader from "../Sections/Header";
 import {
   SelectComponent,
   ImageInput,
@@ -38,7 +21,6 @@ import {
   PhoneNumberInput,
   EmailInput,
   CustomDarkButton,
-  CustomLightOutlineButton,
 } from "../../../../../components/form-control";
 import PageLoader from "../../../../../components/PageLoader.jsx";
 import { maritalStatus } from "../../../../../data/Data.js";
@@ -103,9 +85,9 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                 //         errors[`${field}`] = 'This field is required';
                 //     }
                 // }
-                // if (imageError) {
-                //     errors.profile_picture = imageError;
-                // }
+                if (imageError) {
+                    errors.profile_picture = imageError;
+                }
                 // console.log(values, errors)
 
                 return errors;

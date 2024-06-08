@@ -59,6 +59,7 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
       id_back: data.id_back,
       insurance_card: data.insurance_card,
     };
+    data.is_filled = true;
     const response = saveEmployeeVisaDetailData(baseUrl, employeeId, token, data, documents);
     if (response)
       nextstep();

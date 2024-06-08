@@ -18,6 +18,8 @@ import { useSelector } from "react-redux";
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
   let baseUrl = useSelector(state => state.user.baseUrl);
+  let isLogin = useSelector((state) => state.user.isLogin);
+
   let dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -160,6 +162,10 @@ function Login() {
       window.removeEventListener("offline", handleConnectionChange);
     };
   }, []);
+
+  if(isLogin){
+    navigate('/')
+  }
 
   return (
     <div className="h-screen flex justify-center">

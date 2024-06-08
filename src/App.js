@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
@@ -66,7 +66,7 @@ function App() {
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   const cookies = new Cookies();
   token = cookies.get("token");
   const location = useLocation();
@@ -93,6 +93,9 @@ function App() {
         handleUpdateProfile(response.data);
         dispatch(setToken(token));
         cookies.set("token", token, { path: "*" });
+        if (!response.data.is_filled) {
+          navigate('/create-profile')
+        }
         setLoading(false);
         return;
       }
@@ -103,6 +106,7 @@ function App() {
       ) {
         // Token expired or invalid
         dispatch(setUserLogout());
+        navigate('/login')
       } else {
         console.error("Error fetching data:", error);
       }
@@ -163,7 +167,7 @@ function App() {
                   />
                   {/* <Route path="/profile" element={<UpdateEmpForm />} /> */}
                   <Route path="/profile/:id" element={<EditEmployeeProfile />} />
-                  <Route path="/profile" element={<ViewEmployee profileView/>} />
+                  <Route path="/profile" element={<ViewEmployee profileView />} />
                   <Route path="/project/:id" element={<BoardList />} />
                   {userProfile.role === 1 && (
                     <>
@@ -384,12 +388,7 @@ function App() {
                 )}
               </>
             )}
-            {userProfile.is_filled === false && (
-              <>
-               <Route exact path="/" element={<CreateEmployeeProfile />} />
-
-              </>
-            )}
+            <Route exact path="/create-profile" element={<CreateEmployeeProfile />} />
             <Route path="*" element={<Err404 />} />
           </>
         )}
@@ -399,6 +398,7 @@ function App() {
             <Route path="*" element={<Err404 />} />
           </>
         )}
+        <Route path="/login" element={<Login />} />
         <Route path="/apply/:id" element={<JobApplicationForm />} />
         <Route path="/job-description/:id" element={<JobDescription />} />
         {/* forgot Password */}
