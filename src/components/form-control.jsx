@@ -430,7 +430,7 @@ const TextAreaInput = ({ name, value, error, touch, onChange, label, disabled, r
 };
 
 
-const FilterInput = ({ filters }) => {
+const FilterInput = ({ filters, onChange }) => {
     return (
         <>
             <div className="flex items-center gap-x-3 mb-4">
@@ -443,6 +443,11 @@ const FilterInput = ({ filters }) => {
                                     type="search"
                                     placeholder={filter.placeholder}
                                     className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-10 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
+                                    name={filter.name}
+                                    id={filter.name}
+                                    onChange={(option) => {
+                                        onChange(filter.name, option);
+                                    }}
                                 />
                             </div>
                         )
@@ -453,10 +458,15 @@ const FilterInput = ({ filters }) => {
                                 placeholder={filter.placeholder}
                                 className="w-[20%] shadow-input rounded-lg"
                                 styles={dropdownStyles}
+                                name={filter.name}
+                                id={filter.name}
+                                onChange={(option) => {
+                                    onChange(filter.name, option.value);
+                                }}
                             />
                         )
                     }
-                    else{
+                    else {
                         return <></>;
                     }
 

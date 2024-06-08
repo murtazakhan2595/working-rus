@@ -7,12 +7,10 @@ import {
     Button,
     Row,
     Col,
-    ButtonGroup,
     ButtonDropdown,
     DropdownToggle,
     DropdownMenu,
     DropdownItem,
-    Placeholder,
 } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,8 +20,6 @@ import './style.css';
 import EmpDataHeader from "./Screens/Sections/Header.jsx";
 import axios from "axios";
 import {
-    BsArrowLeftShort,
-    BsArrowRightShort,
     BsThreeDots,
 } from "react-icons/bs";
 import { toast } from "react-toastify";
@@ -33,12 +29,16 @@ import active from "../../../assets/images/active.png";
 import { FilterInput, CustomDarkButton } from '../../../components/form-control.jsx';
 import { department, UserRoles } from "../../../data/Data.js";
 import { useNavigate } from 'react-router-dom';
+import { getDepartmentList, getDesignationList } from '../../hooks/general.jsx';
 
 
 const Employee = ({ baseUrl, token }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [employeeData, setEmployeeData] = useState([]);
     const [openDropdownRow, setOpenDropdownRow] = useState([]);
+    const [departments, setDepartments] = useState([]);
+    const [designations, setDesignations] = useState([]);
+    const [filterData, setFilterData] = useState();
     const [totalEmployee, setTotalEmployee] = useState(0);
     const [activeEmployee, setActiveEmployee] = useState(0);
     const [totalManagers, setTotalManager] = useState(0);
@@ -70,58 +70,58 @@ const Employee = ({ baseUrl, token }) => {
         }));
     };
 
-    const onRowSelect = (row, isSelected, e) => {
-        // Handle row selection logic here
-    };
-
-    const onSelectAll = (isSelected, rows) => {
-        // Handle select all logic here
-    };
-
-    const selectRowProp = {
-        bgColor: 'rgba(0,0,0, 0.05)',
-        clickToSelect: false,
-        onSelect: onRowSelect,
-        onSelectAll: onSelectAll,
-    };
-
-    const filterData = {
-        name: '',
-        email: '',
-        contactType: '',
-    };
-
     const headers = {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true);
-            try {
-                const response = await axios.get(
-                    `${baseUrl}/emp/?page=${options.page}&page_size=${options.sizePerPage}`,
-                    {
-                        headers,
-                    }
-                );
-                const employeeData = response.data;
-                if (employeeData && employeeData.length > 0) {
-                    setEmployeeData(response.data); // Assuming response.data contains the user data directly
-                    setActiveEmployee(employeeData[0].active_employees)
-                    setTotalEmployee(employeeData[0].total_employees)
-                    setTotalManager(employeeData[0].active_manager)
-                }
-                setIsLoading(false);
-            } catch (error) {
-                console.error("Error fetching users:", error);
-                setIsLoading(false);
+    useEffect(async () => {
+        setIsLoading(true);
+        try {
+            let URL = `${baseUrl}/emp/?page=${options.page}&page_size=${options.sizePerPage}`
+            if (filterData) {
+                URL = URL + filterData;
             }
-        };
-        fetchData();
-    }, [baseUrl, token, options, setIsLoading]);
+            console.log(URL);
+            const response = await axios.get(URL, { headers, });
+            const employeeData = response.data;
+            if (employeeData && employeeData.length > 0) {
+                setEmployeeData(response.data); // Assuming response.data contains the user data directly
+                setActiveEmployee(employeeData[0].active_employees)
+                setTotalEmployee(employeeData[0].total_employees)
+                setTotalManager(employeeData[0].active_manager)
+            }
+            setIsLoading(false);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            setIsLoading(false);
+        }
+    }, [baseUrl, options, filterData]);
 
+    useEffect(() => {
+        setIsLoading(true);
+        getDepartmentList(baseUrl, headers).then(response => {
+            let departmentList = response.results;
+            departmentList = departmentList && departmentList.map((department) => ({
+                value: department.id,
+                label: department.name,
+            }))
+            setDepartments(departmentList);
+        }).catch(error => {
+            console.log(error);
+        });
+        getDesignationList(baseUrl, headers).then(response => {
+            let designationList = response.results;
+            designationList = designationList && designationList.map((department) => ({
+                value: department.id,
+                label: department.name,
+            }))
+            setDesignations(designationList);
+        }).catch(error => {
+            console.log(error);
+        });
+    }, [baseUrl]);
+   
     const handleDelete = async (employeeId) => {
         setIsLoading(true);
         try {
@@ -145,7 +145,6 @@ const Employee = ({ baseUrl, token }) => {
             setIsLoading(false);
         }
     };
-
     const renderName = (cell, row) => {
         return (
             <>
@@ -164,7 +163,6 @@ const Employee = ({ baseUrl, token }) => {
     const toggleDropdown = (index) => {
         setOpenDropdownRow(index === openDropdownRow ? null : index)
     };
-
     const renderAction = (row) => {
         return (
             <div>
@@ -215,7 +213,6 @@ const Employee = ({ baseUrl, token }) => {
             </div>
         );
     }
-
     return (
         <div className="screen">
             <EmpDataHeader
@@ -262,23 +259,33 @@ const Employee = ({ baseUrl, token }) => {
                                                 },
                                                 {
                                                     type: 'select',
-                                                    option: department,
-                                                    name: '',
+                                                    option: departments,
+                                                    name: 'department_name',
                                                     placeholder: "Department"
                                                 },
                                                 {
                                                     type: 'select',
-                                                    option: department,
-                                                    name: '',
+                                                    option: designations,
+                                                    name: 'department_position',
                                                     placeholder: "Designation"
                                                 },
                                                 {
                                                     type: 'select',
                                                     option: UserRoles,
-                                                    name: '',
+                                                    name: 'user_role',
                                                     placeholder: "Role"
                                                 }
                                             ]}
+                                            onChange={async (filterName, filterValue) => {
+                                                if (!filterData) {
+                                                    const filters = `&search={"${filterName}":${filterValue}}`
+                                                    setFilterData(filters);
+                                                } else {
+                                                    const filters = `,"${filterName}":${filterValue}}`
+                                                    const newFilter = filterData.replace("}", filters);
+                                                    setFilterData(newFilter);
+                                                }
+                                            }}
                                         />
 
                                     </div>
@@ -297,7 +304,6 @@ const Employee = ({ baseUrl, token }) => {
                                     <Col lg={12}>
                                         <div>
                                             <BootstrapTable
-                                                selectRow={selectRowProp}
                                                 options={{
                                                     ...options,
                                                     onSizePerPageList: onSizePerPageList,
@@ -310,7 +316,7 @@ const Employee = ({ baseUrl, token }) => {
                                                 remote
                                                 data={employeeData || []}
                                                 pagination={!!employeeData.length}
-                                                fetchInfo={{ dataTotalSize: employeeData.length || 0 }}
+                                                fetchInfo={{ dataTotalSize: totalEmployee || 0 }}
                                                 className={'bootstrap-main-table'}
                                             >
                                                 <TableHeaderColumn

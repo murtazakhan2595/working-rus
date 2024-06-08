@@ -55,112 +55,114 @@ const CreateEmployeeProfile = () => {
                   </Col>
                 </Row>
               </CardHeader>
-              {currentTab === 1 && (
-                <Welcome
-                  employeeId={id}
-                  nextstep={() => {
-                    setCurrentTab(currentTab + 1);
-                  }}
-                  isEditMode={false}
-                />
-              )}
-              {currentTab === 2 && (
-                <PersonalInformation
-                  employeeId={id}
-                  nextstep={() => {
-                    setCurrentTab(currentTab + 1);
-                  }}
-                  isEditMode={false}
-                />
-              )}
-              {currentTab === 3 && (
-                <ContactInformation
-                  employeeId={id}
-                  nextstep={() => {
-                    setCurrentTab(currentTab + 1);
-                  }}
-                  isEditMode={false}
-                prevStep={() => {
-                  setCurrentTab(currentTab - 1);
-                }}
-                />
-              )}
-              {currentTab === 4 && (
-                <BankInformation
-                  employeeId={id}
-                  nextstep={() => {
-                    setCurrentTab(currentTab + 1);
-                  }}
-                  isEditMode={false}
-                prevStep={() => {
-                  setCurrentTab(currentTab - 1);
-                }}
-                />
-              )}
-              {currentTab === 5 && (
-                <ExperienceInformation
-                  employeeId={id}
-                  nextstep={() => {
-                    setCurrentTab(currentTab + 1);
-                  }}
-                  isEditMode={false}
-                  prevStep={() => {
-                  setCurrentTab(currentTab - 1);
-                }}
-              />
-              )}
-              {currentTab === 6 && (
-                <EducationInformation
-                  employeeId={id}
-                  nextstep={() => {
-                    setCurrentTab(currentTab + 1);
-                  }}
-                  isEditMode={false}
-                  prevStep={() => {
-                  setCurrentTab(currentTab - 1);
-                }}
-              />
-              )}
-              {currentTab === 7 && (
-                <CertificationsInformation
-                  employeeId={id}
-                  nextstep={() => {
-                    setCurrentTab(currentTab + 1);
-                  }}
-                  isEditMode={false}
-                  prevStep={() => {
-                  setCurrentTab(currentTab - 1);
-                }}
-              />
-              )}
-              {currentTab === 8 && (
-                <IdentificationInformation
-                  employeeId={id}
-                  nextstep={() => {
-                    setCurrentTab(currentTab + 1);
-                  }}
-                  isEditMode={false}
-                  prevStep={() => {
-                  setCurrentTab(currentTab - 1);
-                }}
-              />
-              )}
-              {currentTab === 9 && (
-                <OnboardComplete
-                  employeeId={id}
-                  nextstep={() => {
-                    setCurrentTab(currentTab + 1);
-                  }}
-                  isEditMode={true}
-                />
-              )}
+              <CardBody>
+                {currentTab === 1 && (
+                  <Welcome
+                    employeeId={id}
+                    nextstep={() => {
+                      setCurrentTab(currentTab + 1);
+                    }}
+                    isEditMode={false}
+                  />
+                )}
+                {currentTab === 2 && (
+                  <PersonalInformation
+                    employeeId={id}
+                    nextstep={() => {
+                      setCurrentTab(currentTab + 1);
+                    }}
+                    isEditMode={false}
+                  />
+                )}
+                {currentTab === 3 && (
+                  <ContactInformation
+                    employeeId={id}
+                    nextstep={() => {
+                      setCurrentTab(currentTab + 1);
+                    }}
+                    isEditMode={false}
+                    prevStep={() => {
+                      setCurrentTab(currentTab - 1);
+                    }}
+                  />
+                )}
+                {currentTab === 4 && (
+                  <BankInformation
+                    employeeId={id}
+                    nextstep={() => {
+                      setCurrentTab(currentTab + 1);
+                    }}
+                    isEditMode={false}
+                    prevStep={() => {
+                      setCurrentTab(currentTab - 1);
+                    }}
+                  />
+                )}
+                {currentTab === 5 && (
+                  <ExperienceInformation
+                    employeeId={id}
+                    nextstep={() => {
+                      setCurrentTab(currentTab + 1);
+                    }}
+                    isEditMode={false}
+                    prevStep={() => {
+                      setCurrentTab(currentTab - 1);
+                    }}
+                  />
+                )}
+                {currentTab === 6 && (
+                  <EducationInformation
+                    employeeId={id}
+                    nextstep={() => {
+                      setCurrentTab(currentTab + 1);
+                    }}
+                    isEditMode={false}
+                    prevStep={() => {
+                      setCurrentTab(currentTab - 1);
+                    }}
+                  />
+                )}
+                {currentTab === 7 && (
+                  <CertificationsInformation
+                    employeeId={id}
+                    nextstep={() => {
+                      setCurrentTab(currentTab + 1);
+                    }}
+                    isEditMode={false}
+                    prevStep={() => {
+                      setCurrentTab(currentTab - 1);
+                    }}
+                  />
+                )}
+                {currentTab === 8 && (
+                  <IdentificationInformation
+                    employeeId={id}
+                    nextstep={() => {
+                      setCurrentTab(currentTab + 1);
+                    }}
+                    isEditMode={false}
+                    prevStep={() => {
+                      setCurrentTab(currentTab - 1);
+                    }}
+                  />
+                )}
+                {currentTab === 9 && (
+                  <OnboardComplete
+                    employeeId={id}
+                    nextstep={() => {
+                      setCurrentTab(currentTab + 1);
+                    }}
+                    isEditMode={true}
+                  />
+                )}
+              </CardBody>
             </div>
           </div>
           <div className="flex justify-start items-start mb-2">
-              <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
-                © 2024 TecBrix
-              </p>
-            </div>
+            <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
+              © 2024 TecBrix
+            </p>
+          </div>
         </div>
       </div>
     </>
