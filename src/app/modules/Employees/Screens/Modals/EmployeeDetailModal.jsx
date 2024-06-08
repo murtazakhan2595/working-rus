@@ -1,9 +1,8 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, } from 'reactstrap';
-import { PersonalInformation, ContactInformation , BankInformation, ExperienceInformation, EducationInformation, CertificationsInformation, IdentificationInformation} from '../Profile';
-
+import { PersonalInformation, ContactInformation, BankInformation, ExperienceInformation, EducationInformation, CertificationsInformation, IdentificationInformation } from '../Profile';
+import CreateUpdateEmployee from '../Create';
 function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, }) {
-    console.log(openModal, employeeId, typeof currentClick);
     const getTitle = () => {
         if (currentClick === 1)
             return 'Edit Personal Details';
@@ -19,9 +18,12 @@ function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, 
             return 'Edit Certification and Licences';
         else if (currentClick === 7)
             return 'Edit Identification Details';
+        else if (currentClick === 8)
+            return 'Edit Work Details';
 
     }
     return (
+    <>
         <div className="contact-modal-screen">
             <Modal
                 isOpen={openModal}
@@ -95,9 +97,20 @@ function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, 
                             isEditMode={true}
                         />
                     )}
+                    {currentClick === 8 &&
+                        <CreateUpdateEmployee
+                            employeeId={employeeId}
+                            nextstep={() => {
+                                closeModal();
+                            }}
+                            isEditMode={true}
+                        />
+                    }
                 </ModalBody>
             </Modal>
         </div>
+    </>
+
     );
 }
 

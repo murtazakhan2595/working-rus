@@ -38,12 +38,13 @@ function getManagerSelected(managers, managersList) {
 const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) => {
     const [managers, setManagers] = useState([]);
     const [departments, setDepartments] = useState([]);
-    const headers = {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-    }
+    
 
     useEffect(() => {
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        }
         getDepartmentList(baseUrl, headers).then(response => {
             let departmentList = response.results;
             departmentList = departmentList && departmentList.map((department) => ({
