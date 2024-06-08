@@ -24,7 +24,7 @@ import WorkInformation from './Sections/WorkInformation.jsx'
 import { EmployeeInformation } from '../../../utils/Types/Employee.jsx'
 import { getEmployeeInformation } from '../../../utils/MappingObjects/mapEmployeeData.jsx';
 import { getEmployeeData, getNewEmployeeCode } from '../../../hooks/employee.jsx';
-import { EmailInput, PhoneInput, TextAreaInput, TextInput } from '../../../../components/form-control.jsx'
+import { EmailInput, PhoneNumberInput, TextAreaInput, TextInput } from '../../../../components/form-control.jsx'
 
 function getManagerSelected(managers) {
     if (managers) {
@@ -286,12 +286,14 @@ const CreateUpdateEmployee = ({ token, baseUrl }) => {
                                                             </FormGroup>
                                                         </Col>
                                                         <Col md={6}>
-                                                            <PhoneInput
+                                                            <PhoneNumberInput
                                                                 name={'mobile_no'}
                                                                 error={props.errors.mobile_no}
                                                                 touch={props.touched.mobile_no}
                                                                 value={props.values.mobile_no}
                                                                 label={'Contact no.'}
+                                                                countryCode={props.values.country_code}
+                                                                countryCodeName={'country_code'}
                                                                 required={true}
                                                                 onChange={(field, value) => {
                                                                     props.handleChange(field,)(value);

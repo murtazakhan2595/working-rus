@@ -1,3 +1,4 @@
+
 export const countryCodes = [{
     "name": "Afghanistan",
     "dial_code": "+93",
@@ -1451,3 +1452,8 @@ export const countryCodes = [{
     "code": "ZW"
 }
 ]
+
+export const countryCodesOptions = countryCodes.map((country) => ({
+    label: `${country.dial_code} ${country.name}`,
+    value: country.dial_code,
+}));

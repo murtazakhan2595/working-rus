@@ -30,6 +30,7 @@ function getPersonalInfo(data) {
   const personalInfo = {
     first_name: data.first_name,
     last_name: data.last_name,
+    country_code: data?.country_code ?? '',
     mobile_no: data.mobile_no,
     date_of_birth: data.date_of_birth
       ? moment(data.date_of_birth).format("YYYY-MM-DD")
@@ -46,10 +47,10 @@ function getContactInfo(data) {
   const contactInfo = {
     emergency_phone_no: data.emergency_phone_no,
     emergency_first_name: data.emergency_first_name,
-    emergency_last_name: data.emergency_last_name,
     emergency_relation: data.emergency_relation,
     current_address: data.current_address,
     residential_address: data.residential_address,
+    emergency_country_code: data.emergency_country_code,
   };
   return contactInfo;
 }
@@ -221,6 +222,7 @@ function getEmployeeInformation(data) {
     department_name: data?.department_name ?? '',
     residential_address: data?.residential_address ?? '',
     mobile_no: data?.mobile_no ?? '',
+    country_code: data?.country_code ?? '',
     department_position: data?.department_position ?? '',
     direct_report: data?.direct_report ?? '',
     indirect_report: data?.indirect_report ?? '',

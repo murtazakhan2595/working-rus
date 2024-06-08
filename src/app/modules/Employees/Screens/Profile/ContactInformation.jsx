@@ -11,6 +11,8 @@ import {
   CustomLightOutlineButton,
   CustomDarkButton,
   TextInput,
+  PhoneNumberInput,
+  TextAreaInput,
 } from "../../../../../components/form-control.jsx";
 import PageLoader from "../../../../../components/PageLoader.jsx";
 import { getContactInfo } from "../../../../utils/MappingObjects/mapEmployeeData.jsx";
@@ -81,12 +83,14 @@ const ContactInformation = ({
               </h2>
               <Row>
                 <Col md="6">
-                  <TextInput
+                  <PhoneNumberInput
                     name="emergency_phone_no"
                     error={props.errors.emergency_phone_no}
                     touch={props.touched.emergency_phone_no}
                     value={props.values.emergency_phone_no}
-                    label="Emergency Phone Number"
+                    countryCode={props.values.emergency_country_code}
+                    countryCodeName={'emergency_country_code'}
+                    label="Emergency Contact"
                     required
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
@@ -99,20 +103,7 @@ const ContactInformation = ({
                     error={props.errors.emergency_first_name}
                     touch={props.touched.emergency_first_name}
                     value={props.values.emergency_first_name}
-                    label="First Name"
-                    required
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-                <Col md="6">
-                  <TextInput
-                    name="emergency_last_name"
-                    error={props.errors.emergency_last_name}
-                    touch={props.touched.emergency_last_name}
-                    value={props.values.emergency_last_name}
-                    label="Last Name"
+                    label="Full Name"
                     required
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
@@ -138,7 +129,7 @@ const ContactInformation = ({
               </h2>
               <Row>
                 <Col md="6">
-                  <TextInput
+                  <TextAreaInput
                     name="residential_address"
                     error={props.errors.residential_address}
                     touch={props.touched.residential_address}
@@ -156,12 +147,10 @@ const ContactInformation = ({
                     error={props.errors.mobile_no}
                     touch={props.touched.mobile_no}
                     value={props.values.mobile_no}
-                    label="Mobile Number"
-                    required
+                    label="Postal Code"
                     onChange={(field, value) => {
-                      props.handleChange(field)(value);
+                      //props.handleChange(field)(value);
                     }}
-                    regEx={/^[0-9]+$/}
                   />
                 </Col>
               </Row>
@@ -170,7 +159,7 @@ const ContactInformation = ({
               </h2>
               <Row>
                 <Col md="6">
-                  <TextInput
+                  <TextAreaInput
                     name="current_address"
                     error={props.errors.current_address}
                     touch={props.touched.current_address}
@@ -188,12 +177,10 @@ const ContactInformation = ({
                     error={props.errors.mobile_no}
                     touch={props.touched.mobile_no}
                     value={props.values.mobile_no}
-                    label="Mobile Number"
-                    required
+                    label="Postal Code"
                     onChange={(field, value) => {
-                      props.handleChange(field)(value);
+                   //   props.handleChange(field)(value);
                     }}
-                    regEx={/^[0-9]+$/}
                   />
                 </Col>
               </Row>

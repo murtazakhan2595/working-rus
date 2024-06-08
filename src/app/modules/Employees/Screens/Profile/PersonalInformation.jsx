@@ -35,7 +35,7 @@ import {
   ImageInput,
   DateInput,
   TextInput,
-  PhoneInput,
+  PhoneNumberInput,
   EmailInput,
   CustomDarkButton,
   CustomLightOutlineButton,
@@ -153,15 +153,17 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                       />
                     </Col>
                     <Col md={6}>
-                      <PhoneInput
+                      <PhoneNumberInput
                         name={"mobile_no"}
                         error={props.errors.mobile_no}
                         touch={props.touched.mobile_no}
                         value={props.values.mobile_no}
                         label={"Contact no."}
+                        countryCode={props.values.country_code}
+                        countryCodeName={'country_code'}
                         required={true}
                         onChange={(field, value) => {
-                          props.handleChange(field)(value);
+                          props.setFieldValue(field, value);
                         }}
                       />
                     </Col>

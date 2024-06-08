@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { FormGroup, Label, Input, Button } from "reactstrap";
+import { FormGroup, Label, Input, Button, Col, Row } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
@@ -8,6 +8,7 @@ import upload from "../assets/images/upload.png";
 import { TfiFiles } from 'react-icons/tfi'
 import { dropdownStyles } from "../data/Data";
 import { IoIosSearch } from "react-icons/io";
+import { countryCodesOptions } from "../data/CountryCode";
 
 const SelectComponent = ({
     name,
@@ -161,36 +162,54 @@ const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
     );
 };
 
-const PhoneInput = ({ name, value, error, touch, onChange, label, disabled, required }) => {
+const PhoneNumberInput = ({ name, value, error, touch, onChange, label, disabled, required, countryCodeName, countryCode }) => {
     return (
         <>
-            <FormGroup floating>
-                <Input
-                    type="text"
-                    maxLength="100"
-                    id={name}
-                    name={name}
-                    autoComplete="Off"
-                    placeholder={'Enter' + label}
-                    value={value ? value : ''}
-                    className={error && touch ? 'is-invalid' : ''}
-                    onChange={(option) => {
-                        const regExTelephone = /^[0-9-+]+$/;
-                        const value = option.target.value;
-                        if (!value || regExTelephone.test(value))
-                            onChange(name, value);
-                    }}
-                />
-                <Label htmlFor="address">
-                    {required && <span className="text-danger">* </span>}{label}
-                </Label>
+            <div className="d-flex">
+                <Col sm={4} className="">
+                    <Select
+                        name={countryCodeName}
+                        isDisabled={disabled}
+                        id={countryCodeName}
+                        className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
+                            }`}
+                        options={countryCodesOptions ? countryCodesOptions : []}
+                        value={countryCodesOptions ? countryCodesOptions.find((option) => option.value === countryCode) : ""}
+                        onChange={(selectedOption) => onChange(countryCodeName, selectedOption.value)}
+                        placeholder={'Code'}
+                    />
+                </Col>
+                <Col sm={8} className="" >
+                    <FormGroup floating>
+                        <Input
+                            id={name}
+                            name={name}
+                            autoComplete="Off"
+                            placeholder={'Enter' + label}
+                            value={`${countryCode || ''}${value || ''}`}
+                            className={error && touch ? 'is-invalid' : ''}
+                            onChange={(option) => {
+                                const regExTelephone = /^[0-9-+]+$/;
+                                let value = option.target.value;
+                                value = value.replace(countryCode, '');
+                                if (value.includes('+'))
+                                    value = '';
+                                else if (!value || regExTelephone.test(value))
+                                    onChange(name, value);
+                            }}
+                        />
+                        <Label htmlFor="address">
+                            {required && <span className="text-danger">* </span>}{label}
+                        </Label>
 
-                {error && touch && (
-                    <div className="invalid-feedback">
-                        {error}
-                    </div>
-                )}
-            </FormGroup>
+                        {error && touch && (
+                            <div className="invalid-feedback">
+                                {error}
+                            </div>
+                        )}
+                    </FormGroup>
+                </Col>
+            </div>
         </>
     );
 };
@@ -481,7 +500,7 @@ export {
     SelectMultiInputComponent,
     DateInput,
     TextInput,
-    PhoneInput,
+    PhoneNumberInput,
     EmailInput,
     ImageInput,
     CustomButton,
