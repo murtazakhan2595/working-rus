@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -13,7 +14,7 @@ import JobsDataTable from "./app/modules/RecruitmentData/JobsDataTable.jsx";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
-import UpdateEmpForm from "./app/modules/UpdateEmployee/UpdateEmpForm.jsx";
+import 'react-toastify/dist/ReactToastify.css';
 import "./assets/css/globle.css";
 import axios from "axios";
 import Cookies from "universal-cookie";
