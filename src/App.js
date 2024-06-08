@@ -24,9 +24,7 @@ import {
   setToken,
 } from "./state/slices/UserSlice.js";
 import BoardList from "./app/modules/BoardList";
-import EmpForm from "./app/modules/Employees/EmpForm";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
-import EmpDataSheet from "./app/modules/EmployeesData/EmpDataSheet";
 import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
 import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
 import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
@@ -36,7 +34,6 @@ import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
 import LeaveRequestHR from "./app/modules/LeaveApplication/LeaveRequestHR.jsx";
 import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestManager.jsx";
 import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
-import EditDataForm from "./app/modules/EmployeesData/EditDataForm.jsx";
 import { EditEmployeeProfile } from "./app/modules/Employees/Screens/Profile";
 import Test from "./app/modules/Profile/Test.jsx";
 import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
