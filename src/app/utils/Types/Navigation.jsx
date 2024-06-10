@@ -1,11 +1,11 @@
 
-import { GoPeople, GoPerson } from "react-icons/go";
+import {GoHome, GoPeople, GoPerson } from "react-icons/go";
 import { LuCalendarDays } from "react-icons/lu";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaChevronLeft, FaChevronRight, FaRegStar } from "react-icons/fa";
+import { FaRegStar } from "react-icons/fa";
 import { SlBadge } from "react-icons/sl";
 import { BiTask } from "react-icons/bi";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
-import { MdBarChart, MdOutlineLogout, MdOutlineTrendingUp } from "react-icons/md";
+import { MdBarChart, MdOutlineTrendingUp } from "react-icons/md";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 
 
@@ -13,46 +13,44 @@ import { HiOutlineDocumentReport } from "react-icons/hi";
 function getNavigation(userRole) {
     const Navigation = {
         items: [
+            ...[{
+                name: 'Home',
+                icon: <GoHome/>,
+                dropdown: '',
+                url: '/',
+            }],
             ...((userRole === 1 || userRole === 3) ? [{
                 name: 'People Team',
                 icon: <GoPeople />,
                 dropdown: 'HRDatabase',
                 children: [
                     ...((userRole === 1 || userRole === 3) ? [{
-                        name: 'Employee Sheet',
-                        url: '/employees',
-                    }] : []),
-                    ...((userRole === 1 || userRole === 3) ? [{
-                        name: 'Add Employee',
-                        url: '/add-employee',
-                    }] : []),
-                    ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Profile Management',
-                        url: '/coming-soon',
+                        url: '/profile-management',
                     }] : []),
                     ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Settings',
-                        url: '/',
+                        url: '/settings',
                     }] : []),
                     ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Travel Details',
-                        url: '/coming-soon',
+                        url: '/travel-details',
                     }] : []),
                     ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Exit & Clearence',
-                        url: '/coming-soon',
+                        url: '/exit-clearance',
                     }] : []),
                     ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Employee Creation',
-                        url: '/coming-soon',
+                        url: '/create-employee',
                     }] : []),
                     ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Customise Employees',
-                        url: '/coming-soon',
+                        url: '/customise-employees',
                     }] : []),
                     ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Relocation',
-                        url: '/coming-soon',
+                        url: '/relocation',
                     }] : []),
                 ],
             }] : []),
@@ -63,39 +61,35 @@ function getNavigation(userRole) {
                 children: [
                     ...((userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3) ? [{
                         name: 'My Profile',
-                        url: '/coming-soon',
+                        url: '/my-profile',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3) ? [{
                         name: 'My Team',
-                        url: '/coming-soon',
+                        url: '/my-team',
                     }] : []),
                     ...((userRole === 4 || userRole === 2 || userRole === 3) ? [{
                         name: 'Calender',
-                        url: '/coming-soon',
+                        url: '/calender',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3) ? [{
                         name: 'Attendance',
-                        url: '/coming-soon',
+                        url: '/attendence',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3) ? [{
                         name: 'My Leaves',
-                        url: '/',
+                        url: '/my-leaves',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3) ? [{
                         name: 'Files & Data',
-                        url: '/coming-soon',
+                        url: '/files-data',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3) ? [{
                         name: 'My Travel Details',
-                        url: '/coming-soon',
-                    }] : []),
-                    ...((userRole === 1) ? [{
-                        name: 'Employee Creation',
-                        url: '/coming-soon',
+                        url: '/my-travel-details',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3) ? [{
                         name: 'Letter Requests',
-                        url: '/coming-soon',
+                        url: '/letter-request',
                     }] : []),
                 ],
             }] : []),
@@ -129,7 +123,7 @@ function getNavigation(userRole) {
                 children: [
                     ...((userRole === 1 || userRole === 2 || userRole === 3) ? [{
                         name: 'Personnel Requisition',
-                        url: '/coming-soon',
+                        url: '/personnel-requisition',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 3) ? [{
                         name: 'Jobs',
@@ -141,15 +135,15 @@ function getNavigation(userRole) {
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 3) ? [{
                         name: 'Applicants',
-                        url: '/coming-soon',
+                        url: '/applicants',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 3) ? [{
                         name: 'Referals',
-                        url: '/coming-soon',
+                        url: '/referals',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 3) ? [{
                         name: 'On Boarding',
-                        url: '/coming-soon',
+                        url: '/on-boarding',
                     }] : []),
                 ],
             }] : []),
@@ -160,7 +154,7 @@ function getNavigation(userRole) {
                 children: [
                     ...((userRole === 1 || userRole === 2 || userRole === 3) ? [{
                         name: 'Employee Evaluation',
-                        url: '/coming-soon',
+                        url: '/employee-evaluation',
                     }] : []),
                 ],
             }] : []),
@@ -171,11 +165,11 @@ function getNavigation(userRole) {
                 children: [
                     ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Payroll',
-                        url: '/coming-soon',
+                        url: '/payroll',
                     }] : []),
                     ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Attendance',
-                        url: '/coming-soon',
+                        url: '/attendance',
                     }] : []),
                 ],
             }] : []),
@@ -186,7 +180,7 @@ function getNavigation(userRole) {
                 children: [
                     ...((userRole === 1 || userRole === 2 || userRole === 3) ? [{
                         name: 'Learn',
-                        url: '/coming-soon',
+                        url: '/learn',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 3) ? [{
                         name: 'Career Planning',
@@ -194,11 +188,11 @@ function getNavigation(userRole) {
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 3) ? [{
                         name: 'Succession Plan',
-                        url: '/coming-soon',
+                        url: '/career-planning',
                     }] : []),
                     ...((userRole === 1 || userRole === 3) ? [{
                         name: 'Development Plan',
-                        url: '/coming-soon',
+                        url: '/development-plan',
                     }] : []),
                 ],
             }] : []),
@@ -209,11 +203,11 @@ function getNavigation(userRole) {
                 children: [
                     ...((userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3) ? [{
                         name: 'Announcement',
-                        url: '/coming-soon',
+                        url: '/announcement',
                     }] : []),
                     ...((userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3) ? [{
                         name: 'Recognition',
-                        url: '/coming-soon',
+                        url: '/recognition',
                     }] : []),
                 ],
             }] : []),
@@ -236,7 +230,7 @@ function getNavigation(userRole) {
                 name: 'Reports',
                 icon: <HiOutlineDocumentReport />,
                 dropdown: '',
-                url:'/coming-soon',
+                url: '/reports',
             }] : []),
         ]
     };

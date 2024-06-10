@@ -225,11 +225,11 @@ const Employee = ({ baseUrl, token }) => {
             ])}
             <Row>
                 <Col lg={12} className="mx-auto">
-                    <Card>
+                    <Card className="p-0">
                         <CardHeader>
                             <Row>
                                 <Col lg={12}>
-                                    <div className="py-3">
+                                    <div className="py-3 px-3">
                                         <FilterInput
                                             filters={[
                                                 { type: 'search', placeholder: 'Search by ID and Name', name: '' },
@@ -326,7 +326,6 @@ const Employee = ({ baseUrl, token }) => {
                                                 </TableHeaderColumn>
                                                 <TableHeaderColumn
                                                     columnClassName="text-right"
-                                                    width="7%"
                                                     className="table-header-bg text-right"
                                                     headerAlign="right"
                                                     dataFormat={(cell, row) => renderAction(row)}

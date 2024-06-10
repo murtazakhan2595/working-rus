@@ -17,8 +17,8 @@ import { useSelector } from "react-redux";
 
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
-  let baseUrl = useSelector(state => state.user.baseUrl);
   let isLogin = useSelector((state) => state.user.isLogin);
+  let baseUrl = useSelector(state => state.user.baseUrl);
 
   let dispatch = useDispatch();
 

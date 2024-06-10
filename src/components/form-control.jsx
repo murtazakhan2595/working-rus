@@ -452,7 +452,7 @@ const TextAreaInput = ({ name, value, error, touch, onChange, label, disabled, r
 const FilterInput = ({ filters, onChange }) => {
     return (
         <>
-            <div className="flex items-center gap-x-3 mb-4">
+            <div className="flex items-center gap-x-3">
                 {filters && filters.map((filter, index) => {
                     if (filter.type === 'search') {
                         return (
