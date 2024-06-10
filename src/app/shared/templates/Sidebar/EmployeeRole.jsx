@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FaAngleDown } from "react-icons/fa6";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { LuCalendarDays, } from "react-icons/lu";
 import { toggleDropdown } from "../../../../state/slices/DropdownSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { GoHome, GoPeople, GoPerson } from "react-icons/go";
-import { SlBadge } from "react-icons/sl";
-import { FaRegStar } from "react-icons/fa";
+import { GoHome, GoPerson } from "react-icons/go";
 import { MdBarChart, MdOutlineTrendingUp } from "react-icons/md";
+import { BiTask } from "react-icons/bi";
 
 
 const EmployeeRole = ({ isSidebarOpen }) => {
@@ -16,9 +15,10 @@ const EmployeeRole = ({ isSidebarOpen }) => {
     const normalLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64] hover:border hover:border-blue-300 text-[10px]`
     const ComingActiveLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64]`;
 
-    const { isServiceHubOpen, isPeopleEngagementOpen, isPersonalDevelopmentOpen, isLeaveOpen } = useSelector(state => state.dropdown);
+    const { isServiceHubOpen, isPeopleEngagementOpen, isPersonalDevelopmentOpen, isLeaveOpen, isDtrOpen } = useSelector(state => state.dropdown);
 
     const dispatch = useDispatch();
+    const location = useLocation();
 
     const handleToggleDropdown = (dropdownName) => {
         dispatch(toggleDropdown(dropdownName));
@@ -437,15 +437,15 @@ const EmployeeRole = ({ isSidebarOpen }) => {
       </NavLink> */}
 
             {/* dtrs */}
-            {/* <li className="group">
+             <li className="group">
           <div
               onClick={() => handleToggleDropdown("dtr")}
               className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                   } rounded-lg cursor-pointer`}
           >
-              <BiTask className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+              <BiTask className={`text-xl mr-2 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
               <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                  <p className="flex-grow">Daily Task Report</p>
+                  <p className="flex-grow text-sm">Daily Task Report</p>
                   <FaAngleDown className={`text-xs transition-transform duration-300 ${isDtrOpen ? 'transform rotate-180' : ''}`} />
               </div>
           </div>
@@ -515,7 +515,7 @@ const EmployeeRole = ({ isSidebarOpen }) => {
               </li>
   
           </div>
-      } */}
+      } 
 
         </>
     )

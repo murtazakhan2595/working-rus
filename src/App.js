@@ -118,7 +118,7 @@ function App() {
     if (isLogin || isLogin === null) {
       getProfile();
     }
-  }, [location]);
+  }, [isLogin]);
 
   if (loading) {
     return <PageLoader />; // Render the loader if loading is true
