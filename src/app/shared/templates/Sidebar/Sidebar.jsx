@@ -215,16 +215,6 @@ const Sidebar = ({
                                         )
                                     })}
                                 </>
-                                {/* {userProfile.role === 3 && (
-                                    <HrRole isSidebarOpen={isSidebarOpen} />
-                                )} */}
-                                {/* {(userProfile.role === 2) && (
-                                    <ManagerRole isSidebarOpen={isSidebarOpen} />
-                                )} */}
-                                {/* {(userProfile.role === 4) && (
-                                    <EmployeeRole isSidebarOpen={isSidebarOpen} />
-                                )} */}
-
                                 {userProfile.role !== 3 && (
                                     <>
                                         <li
@@ -422,7 +412,7 @@ const Sidebar = ({
 
                 {/* Sidebar collapse button */}
                 <button button
-                    className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${isSidebarOpen ? "left-[10rem] top-10" : "left-20 top-8"
+                    className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${isSidebarOpen ? "left-[11rem] top-10" : "left-20 top-8"
                         } rounded-lg  mt-4 mr-4 z-10`}
                     onClick={handleSidebarToggle}
                 >
