@@ -38,6 +38,7 @@ function getPersonalInfo(data) {
     nationality: data.nationality,
     other_email: data.other_email,
     nic: data.nic,
+    mother_name: data.mother_name,
     profile_picture: data.profile_picture,
   };
   return personalInfo;

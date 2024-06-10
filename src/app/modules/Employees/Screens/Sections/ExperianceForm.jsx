@@ -1,42 +1,21 @@
-import { useState, useEffect } from "react";
-import Select from "react-select";
-import moment from "moment";
-import axios from "axios";
-import { connect } from "react-redux";
-import {
-  HeadOfDepartment,
-  department,
-  employeeStatus,
-  jobRoles,
-  workplaceTypes,
-  UserRoles,
-} from "../../../../../data/Data";
-import { getAllCountries } from "countries-and-timezones";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Row,
-  Col,
-  ButtonGroup,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  Form,
-  Label,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupText,
-} from "reactstrap";
+import React from "react";
+import { Col } from "reactstrap";
 import {
   FileInput,
-  TextAreaInput,
   DateInput,
+  TextAreaInput,
   TextInput,
 } from "../../../../../components/form-control";
+import { CheckBoxInput } from "../../../../../components/form-control"; 
 
 const Experience = ({ errors, touched, values, onChange }) => {
+  const handleCheckboxChange = (fieldName, isChecked) => {
+    onChange(fieldName, isChecked);
+    if (fieldName === "disableEndDate" && isChecked) {
+      onChange("exp_end_date", null);
+    }
+  };
+
   return (
     <>
       <Col md="6">
@@ -45,7 +24,7 @@ const Experience = ({ errors, touched, values, onChange }) => {
           error={errors?.exp_organization}
           touch={touched?.exp_organization}
           value={values?.exp_organization}
-          label={"Comapny Name"}
+          label={"Company Name"}
           required={true}
           onChange={(field, value) => {
             onChange(field, value);
@@ -79,24 +58,34 @@ const Experience = ({ errors, touched, values, onChange }) => {
         />
       </Col>
       <Col md={6}>
-        <DateInput
-          name={"exp_end_date"}
-          error={errors?.exp_end_date}
-          touch={touched?.exp_end_date}
-          value={values?.exp_end_date}
-          label={"End Date"}
-          onChange={(field, value) => {
-            onChange(field, value);
-          }}
+        <CheckBoxInput
+          name={"disableEndDate"}
+          value={values.disableEndDate}
+          label={"Currently Working Here"}
+          onChange={handleCheckboxChange}
         />
       </Col>
+      {!values.disableEndDate && (
+        <Col md={6}>
+          <DateInput
+            name={"exp_end_date"}
+            error={errors?.exp_end_date}
+            touch={touched?.exp_end_date}
+            value={values?.exp_end_date}
+            label={"End Date"}
+            onChange={(field, value) => {
+              onChange(field, value);
+            }}
+          />
+        </Col>
+      )}
       <Col md="12">
         <TextAreaInput
           name={"exp_description"}
           error={errors?.exp_description}
           touch={touched?.exp_description}
           value={values?.exp_description}
-          label={"Reponsibilities"}
+          label={"Responsibilities"}
           required={true}
           onChange={(field, value) => {
             onChange(field, value);
@@ -104,16 +93,6 @@ const Experience = ({ errors, touched, values, onChange }) => {
         />
       </Col>
       <Col md="12">
-        {/* <FileInput
-                    name={'exp_letter'}
-                    error={errors?.exp_letter}
-                    touch={touched?.exp_letter}
-                    value={values?.exp_letter}
-                    required={true}
-                    onChange={(field, value) => {
-                        onChange(field, value);
-                    }}
-                /> */}
         <FileInput
           name="exp_letter"
           label="Experience Letter or drag it here"
@@ -131,12 +110,4 @@ const Experience = ({ errors, touched, values, onChange }) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    token: state.user.token,
-    baseUrl: state.user.baseUrl,
-  };
-};
-
-export default connect(mapStateToProps)(Experience);
+export default Experience;
