@@ -16,6 +16,8 @@ const ResetPassword = () => {
   console.log("Token:", token);
   const baseUrl = useSelector((state) => state.user.baseUrl);
 
+  console.log("i am baseurl from confirm", baseUrl);
+
   const initialData = { password: "", retype_password: "" };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +69,7 @@ const ResetPassword = () => {
 
     try {
       const res = await axios.post(
-        `${baseUrl}/password/reset/confirm`,
+        `${baseUrl}/password/reset/confirm/`,
         payload
       );
       if (res.status === 200) {

@@ -10,7 +10,6 @@ import { FaAngleDown } from "react-icons/fa6";
 import { Outlet, Link, useNavigate, useLocation, NavLink } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
 import logo from "../../../../assets/images/logo.png";
-import { setUserLogout } from "../../../../state/actions/UserAction";
 import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
@@ -28,6 +27,7 @@ import { SlBadge } from "react-icons/sl";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { BiTask } from "react-icons/bi";
+import { setUserLogout } from "../../../../state/slices/UserSlice";
 
 const Sidebar = ({
     isSidebarOpen,

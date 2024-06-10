@@ -25,7 +25,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
   const handleLogout = () => {
     cookies.set("token", "", { path: "*" });
     setUserLogout();
-    navigate("/");
+    navigate("/login");
   };
   return (
     <>
