@@ -60,7 +60,7 @@ const EmpForm = ({ userProfile }) => {
   const handleLogout = () => {
     cookies.set("token", "", { path: "*" });
     setUserLogout();
-    navigate("/");
+    navigate("/login");
   };
 
 

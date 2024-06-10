@@ -137,7 +137,7 @@ const BoardList = ({
   const handleLogout = () => {
     cookies.set("token", "", { path: "*" });
     setUserLogout();
-    navigate("/");
+    navigate("/login");
   };
 
   // refresh board list

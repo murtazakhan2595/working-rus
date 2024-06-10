@@ -28,7 +28,7 @@ const RecruitmentDataHeader = ({ userProfile, post,}) => {
   const handleLogout = () => {
     cookies.set("token", "", { path: "*" });
     setUserLogout();
-    navigate("/");
+    navigate("/login");
   };
 
   // show search bar

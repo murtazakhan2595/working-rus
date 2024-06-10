@@ -7,7 +7,7 @@ import {
 } from "react-icons/ai";
 import { FaAngleDoubleLeft, FaAngleDoubleRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
-import { Outlet, Link, useNavigate, useLocation, NavLink } from "react-router-dom";
+import { Outlet, Link, useNavigate, NavLink } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
 import logo from "../../../../assets/images/logo.png";
 import { setUserLogout } from "../../../../state/actions/UserAction";
@@ -34,7 +34,6 @@ const Sidebar = ({
     const activeLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 bg-[#DAEFF8] text-[#5C5E64]`;
     // const ComingActiveLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64]`;
 
-    const location = useLocation();
     const navigate = useNavigate();
     const cookies = new Cookies();
     const [isModelOpen, setisModelOpen] = useState(false);
@@ -145,7 +144,7 @@ const Sidebar = ({
                                             />
                                         </div>
                                     </li>
-                                    
+
                                     {Navigation && Navigation.items.map((item, index) => {
                                         return (
                                             <>
@@ -325,7 +324,7 @@ const Sidebar = ({
                                 )}
                             </div>
 
-                            <div className="">
+                            <div className="pb-2">
                                 <li className={`${isSidebarOpen ? 'bg-white rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1' : ''}`}>
 
                                     <div className={`flex group items-center gap-x-2 py-3 ${isSidebarOpen ? 'bg-[#F0F1F2]' : 'borderr border--[#5C5E64]'} px-2 rounded-lg cursor-pointer`}>
@@ -346,7 +345,8 @@ const Sidebar = ({
                                             <div className="absolute rounded-lg border border-gray-1 ml-20
                                                 bg-white w-44 text-sm
                                                 opacity-00 
-                                                group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+                                                group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom"
+                                                style={{ bottom: '5px' }}>
 
                                                 <div className="flex items-center bg-[#F0F1F2] rounded-lg m-1">
                                                     <div className={`flex group items-center gap-x-2 py-3 px-2 rounded-lg cursor-pointer`}>
