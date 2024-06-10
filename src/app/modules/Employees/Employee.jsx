@@ -42,7 +42,6 @@ const Employee = ({ baseUrl, token }) => {
         sortOrder: '',
     });
     const onSizePerPageList = (sizePerPage) => {
-        debugger
         if (options.sizePerPage !== sizePerPage) {
             setOptions((prevOptions) => ({ ...prevOptions, sizePerPage }));
         }

@@ -189,6 +189,19 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         regEx={/^[0-9]+$/}
                       />
                     </Col>
+                    <Col md="6">
+                      <TextInput
+                        name={"mother_name"}
+                        error={props.errors.mother_name}
+                        touch={props.touched.mother_name}
+                        value={props.values.mother_name}
+                        label={"Mother Name"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </Col>
                     <Col md={6}>
                       <SelectComponent
                         name={"nationality"}

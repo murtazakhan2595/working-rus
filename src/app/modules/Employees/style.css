@@ -1,14 +1,7 @@
 .customer-invoice-screen {
-  .card-header {
-    color: #2064d8;
-  }
-
+  
   .status-panel {
     border: 1px solid #e4e7ea;
-
-    .status-title {
-      color: #1b5083;
-    }
   }
 
   .btn-group {
@@ -20,21 +13,6 @@
   .badge {
     padding: 0.4em 0.6em;
     font-size: 90%;
-  }
-
-  .bootstrap-main-table {
-    .my-link {
-      font-weight: bold;
-      color: #2064d8;
-      text-decoration: none;
-      cursor: pointer;
-    }
-  }
-
-  .rounded-loader {
-    position: absolute;
-    top: 50%;
-    z-index: 9999;
   }
 
 }

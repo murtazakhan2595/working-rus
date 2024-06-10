@@ -14,7 +14,7 @@ import {
     FormGroup, Input, InputGroup, InputGroupText
 } from 'reactstrap';
 import { SelectComponent, SelectMultiInputComponent, DateInput, TextInput } from '../../../../../components/form-control'
-import { getDepartmentList, getManagersList } from '../../../../hooks/general';
+import { getDepartmentList, getManagersList, getDesignationList } from '../../../../hooks/general';
 
 const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
     value: countryCode,
@@ -38,33 +38,41 @@ function getManagerSelected(managers, managersList) {
 const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) => {
     const [managers, setManagers] = useState([]);
     const [departments, setDepartments] = useState([]);
-    
+    const [designations, setDesignations] = useState([]);
 
     useEffect(() => {
         const headers = {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
         }
-        getDepartmentList(baseUrl, headers).then(response => {
-            let departmentList = response.results;
-            departmentList = departmentList && departmentList.map((department) => ({
-                value: department.id,
-                label: department.name,
-            }))
-            setDepartments(departmentList);
-        }).catch(error => {
-            console.log(error);
-        });
-        getManagersList(baseUrl, headers).then(response => {
-            let managersList = response;
-            managersList = managersList && managersList.map((manager) => ({
-                value: manager.id,
-                label: manager.username,
-            }))
-            setManagers(managersList);
-        }).catch(error => {
-            console.log(error);
-        });
+        const fetchLists = async () => {
+            try {
+                const departmentResponse = await getDepartmentList(baseUrl, headers);
+                const departmentList = departmentResponse.results.map(department => ({
+                    value: department.id,
+                    label: department.name,
+                }));
+                setDepartments(departmentList);
+
+                const managerResponse = await getManagersList(baseUrl, headers);
+                const managersList = managerResponse.map(manager => ({
+                    value: manager.id,
+                    label: manager.username,
+                }))
+                setManagers(managersList);
+
+                const designationResponse = await getDesignationList(baseUrl, headers);
+                const designationList = designationResponse.results.map(department => ({
+                    value: department.id,
+                    label: department.name,
+                }));
+                setDesignations(designationList);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchLists();
     }, []);
 
 
@@ -115,12 +123,13 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                 />
             </Col>
             <Col md={6}>
-                <TextInput
+                <SelectComponent
                     name={'department_position'}
+                    options={designations}
                     error={errors.department_position}
                     touch={touched.department_position}
                     value={values.department_position}
-                    label={'Position'}
+                    label={'Designation'}
                     required={true}
                     onChange={(field, value) => {
                         onChange(field, value);

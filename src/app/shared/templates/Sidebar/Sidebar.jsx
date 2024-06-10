@@ -105,7 +105,7 @@ const Sidebar = ({
         });
         const employeeData = employeeResponse.data;
         setEmployee(employeeData)
-        setProfileImage(employeeResponse.data?.profile_picture.file || employeeResponse.data?.profile_picture);
+        setProfileImage(employeeResponse.data?.profile_picture?.file || employeeResponse.data?.profile_picture);
     }
 
     useEffect(() => {

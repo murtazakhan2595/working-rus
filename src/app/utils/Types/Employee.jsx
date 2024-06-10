@@ -7,6 +7,7 @@ const EmployeePersonalInformation = {
   nationality: null,
   other_email: null,
   nic: null,
+  mother_name: null,
   profile_picture: null,
 };
 const EmployeeContactInformation = {
