@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { IoIosSearch, IoMdCheckmarkCircleOutline } from "react-icons/io";
-import { MdBarChart, MdOutlineLogout, MdOutlineTrendingUp } from "react-icons/md";
+import { MdOutlineLogout } from "react-icons/md";
 import {
     AiOutlinePlus,
 } from "react-icons/ai";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaChevronLeft, FaChevronRight, FaRegStar } from "react-icons/fa";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
 import { Outlet, Link, useNavigate, useLocation, NavLink } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
@@ -16,17 +16,9 @@ import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { BsPersonGear } from "react-icons/bs";
-import { LuCalendarDays } from "react-icons/lu";
-import HrRole from "./HrRole";
-import ManagerRole from "./ManagerRole";
-import EmployeeRole from "./EmployeeRole";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { toggleDropdown } from "../../../../state/slices/DropdownSlice";
-import { GoHome, GoPeople, GoPerson } from "react-icons/go";
-import { SlBadge } from "react-icons/sl";
-import { IoCheckmarkDoneOutline } from "react-icons/io5";
-import { HiOutlineDocumentReport } from "react-icons/hi";
 import getNavigation from '../../../utils/Types/Navigation';
 
 const Sidebar = ({
@@ -40,7 +32,7 @@ const Sidebar = ({
 
     const normalLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64] hover:border hover:border-blue-300 text-[10px]`
     const activeLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 bg-[#DAEFF8] text-[#5C5E64]`;
-    const ComingActiveLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64]`;
+    // const ComingActiveLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64]`;
 
     const location = useLocation();
     const navigate = useNavigate();

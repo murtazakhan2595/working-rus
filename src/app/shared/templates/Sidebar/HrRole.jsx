@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FaAngleDown } from "react-icons/fa6";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { LuCalendarDays, } from "react-icons/lu";
 import { toggleDropdown } from "../../../../state/slices/DropdownSlice";
 import { useDispatch } from "react-redux";
@@ -11,6 +11,7 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { FaRegStar } from "react-icons/fa";
 import { MdBarChart, MdOutlineTrendingUp } from "react-icons/md";
 import { HiOutlineDocumentReport } from "react-icons/hi";
+import { BiTask } from "react-icons/bi";
 
 const HrRole = ({ isSidebarOpen }) => {
 
@@ -20,6 +21,7 @@ const HrRole = ({ isSidebarOpen }) => {
 
   const { isDbOpen, isServiceHubOpen, isRecruitmentOpen, isPerformanceOpen, isPayrollOpen, isPeopleEngagementOpen, isPersonalDevelopmentOpen, isLeaveOpen, isProjectOpen, isProfileOpen, isDtrOpen } = useSelector(state => state.dropdown);;
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const handleToggleDropdown = (dropdownName) => {
     dispatch(toggleDropdown(dropdownName));
@@ -94,7 +96,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
                 <NavLink to="/add-employee"
                   className={({ isActive }) => isActive ? activeLink : normalLink}
                 >
-                  <p className="text-sm px-2">Add Employee</p>
+                  <p className="text-sm px-2">Employee Creation</p>
 
                 </NavLink>
               </li>
@@ -108,12 +110,6 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
             className={({ isActive }) => isActive ? activeLink : normalLink}
           >
             <p className="text-sm px-2">Employee Sheet</p>
-
-          </NavLink>
-          <NavLink to="/add-employee"
-            className={({ isActive }) => isActive ? activeLink : normalLink}
-          >
-            <p className="text-sm px-2">Add Employee</p>
 
           </NavLink>
           <NavLink to="/coming-soon"
@@ -140,8 +136,8 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
             <p className="text-sm px-2">Exit & Clearence</p>
 
           </NavLink>
-          <NavLink to="/coming-soon"
-            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
+          <NavLink to="/add-employee"
+            className={({ isActive }) => isActive ? activeLink : normalLink}
           >
             <p className="text-sm px-2">Employee Creation</p>
 
@@ -188,8 +184,8 @@ invisible opacity-20 -translate-x-3 transition-all
 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
 
             <div className="flex flex-col bg-white rounded-lg">
-              <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
+              <NavLink to="/profile"
+                className={({ isActive }) => isActive ? activeLink : normalLink}
               >
                 <p className="text-sm px-2">My Profile</p>
 
@@ -242,8 +238,8 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
       </li>
       {(isServiceHubOpen && isSidebarOpen) &&
         <div className="flex flex-col bg-[#F7F8FA]">
-          <NavLink to="/coming-soon"
-            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
+          <NavLink to="/profile"
+            className={({ isActive }) => isActive ? activeLink : normalLink}
           >
             <p className="text-sm px-2">My Profile</p>
 
@@ -775,15 +771,15 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
     </NavLink> */}
 
       {/* dtrs */}
-      {/* <li className="group">
+       <li className="group">
         <div
             onClick={() => handleToggleDropdown("dtr")}
             className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                 } rounded-lg cursor-pointer`}
         >
-            <BiTask className={`text-xl mr-1 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
+            <BiTask className={`text-xl mr-2 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
             <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                <p className="flex-grow">Daily Task Report</p>
+                <p className="flex-grow text-sm">Daily Task Report</p>
                 <FaAngleDown className={`text-xs transition-transform duration-300 ${isDtrOpen ? 'transform rotate-180' : ''}`} />
             </div>
         </div>
@@ -853,7 +849,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
             </li>
 
         </div>
-    } */}
+    } 
 
     </>
   )
