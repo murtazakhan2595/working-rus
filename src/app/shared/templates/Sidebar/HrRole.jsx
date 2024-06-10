@@ -96,7 +96,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
                 <NavLink to="/add-employee"
                   className={({ isActive }) => isActive ? activeLink : normalLink}
                 >
-                  <p className="text-sm px-2">Add Employee</p>
+                  <p className="text-sm px-2">Employee Creation</p>
 
                 </NavLink>
               </li>
@@ -110,12 +110,6 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
             className={({ isActive }) => isActive ? activeLink : normalLink}
           >
             <p className="text-sm px-2">Employee Sheet</p>
-
-          </NavLink>
-          <NavLink to="/add-employee"
-            className={({ isActive }) => isActive ? activeLink : normalLink}
-          >
-            <p className="text-sm px-2">Add Employee</p>
 
           </NavLink>
           <NavLink to="/coming-soon"
@@ -142,8 +136,8 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
             <p className="text-sm px-2">Exit & Clearence</p>
 
           </NavLink>
-          <NavLink to="/coming-soon"
-            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
+          <NavLink to="/add-employee"
+            className={({ isActive }) => isActive ? activeLink : normalLink}
           >
             <p className="text-sm px-2">Employee Creation</p>
 
@@ -190,8 +184,8 @@ invisible opacity-20 -translate-x-3 transition-all
 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
 
             <div className="flex flex-col bg-white rounded-lg">
-              <NavLink to="/coming-soon"
-                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
+              <NavLink to="/profile"
+                className={({ isActive }) => isActive ? activeLink : normalLink}
               >
                 <p className="text-sm px-2">My Profile</p>
 
@@ -244,8 +238,8 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
       </li>
       {(isServiceHubOpen && isSidebarOpen) &&
         <div className="flex flex-col bg-[#F7F8FA]">
-          <NavLink to="/coming-soon"
-            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
+          <NavLink to="/profile"
+            className={({ isActive }) => isActive ? activeLink : normalLink}
           >
             <p className="text-sm px-2">My Profile</p>
 

@@ -84,8 +84,8 @@ const EmployeeRole = ({ isSidebarOpen }) => {
   group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
 
                         <div className="flex flex-col bg-white rounded-lg">
-                            <NavLink to="/coming-soon"
-                                className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
+                            <NavLink to="/profile"
+                                className={({ isActive }) => isActive ? activeLink : normalLink}
                             >
                                 <p className="text-sm px-2">My Profile</p>
 
@@ -138,8 +138,8 @@ const EmployeeRole = ({ isSidebarOpen }) => {
             </li>
             {(isServiceHubOpen && isSidebarOpen) &&
                 <div className="flex flex-col bg-[#F7F8FA]">
-                    <NavLink to="/coming-soon"
-                        className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
+                    <NavLink to="/profile"
+                        className={({ isActive }) => isActive ? activeLink : normalLink}
                     >
                         <p className="text-sm px-2">My Profile</p>
 
