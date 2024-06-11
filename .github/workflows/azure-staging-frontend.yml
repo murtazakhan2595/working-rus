@@ -43,5 +43,3 @@ jobs:
           imageToBuild: hrmsacr.azurecr.io/hrms-staging-frontend:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
-
-
