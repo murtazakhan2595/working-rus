@@ -82,6 +82,21 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
+                {
+                  name: "Employee Transfer",
+                  dropdown: "transfer",
+                  children: [
+                    {
+                      name: "Internal",
+                      url: "/internal",
+                    },
+                    {
+                      name: "External",
+                      url: "/external",
+                    },
+                  ],
+                },
+
                 ...(userRole === 1 || userRole === 3
                   ? [
                       {
@@ -180,9 +195,23 @@ function getNavigation(userRole) {
                 userRole === 4 ||
                 userRole === 3
                   ? [
+                      // {
+                      //   name: "Letter Requests",
+                      //   url: "/letter-request",
+                      // },
                       {
-                        name: "Letter Requests",
-                        url: "/letter-request",
+                        name: "Letter Request",
+                        dropdown: "letterRequest",
+                        children: [
+                          {
+                            name: "Type of letter 1",
+                            url: "/letter1",
+                          },
+                          {
+                            name: "Type of letter 2",
+                            url: "/letter2",
+                          },
+                        ],
                       },
                     ]
                   : []),
@@ -241,6 +270,23 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
+                ...(userRole === 1 ||
+                userRole === 2 ||
+                userRole === 4 ||
+                userRole === 3
+                  ? [
+                    {
+                      name: "Settings",
+                      dropdown: "settings",
+                      children: [
+                        {
+                          name: "Leave Type",
+                          url: "/leave-type",
+                        }
+                      ],
+                    },
+                    ]
+                  : []),
               ],
             },
           ]
@@ -292,6 +338,28 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
+                {
+                  name: "To Do",
+                  dropdown: "todo",
+                  children: [
+                    {
+                      name: "Interview",
+                      url: "/interview",
+                    },
+                    {
+                      name: "Assessment",
+                      url: "/assessment",
+                    },
+                    {
+                      name: "Screening",
+                      url: "/screening",
+                    },
+                    {
+                      name: "Interview Reports",
+                      url: "/interview-reports",
+                    },
+                  ],
+                },
                 ...(userRole === 1 || userRole === 2 || userRole === 3
                   ? [
                       {
@@ -385,7 +453,17 @@ function getNavigation(userRole) {
                   ? [
                       {
                         name: "Development Plan",
-                        url: "/development-plan",
+                        dropdown: "developmentPlan",
+                        children: [
+                          {
+                            name: "Individual Plan",
+                            url: "/individual-plan",
+                          },
+                          {
+                            name: "Team Development Plan",
+                            url: "/team-pevelopment-plan",
+                          },
+                        ],
                       },
                     ]
                   : []),
