@@ -14,8 +14,8 @@ const initialState = {
     window.location.href.startsWith("https://hrms.tecbrix.cloud")
     ? "https://hrms.tecbrix.cloud:8080/api"
     : window.location.href.startsWith("http://localhost")
-    ? "https://staging-hrms-be.tecbrix.cloud:8080/api"
-    : "https://staging-hrms-be.tecbrix.cloud:8080/api"
+    ? "https://staging-hrms-be.tecbrix.cloud/api"
+    : "https://staging-hrms-be.tecbrix.cloud/api"
 };
 
 const userSlice = createSlice({

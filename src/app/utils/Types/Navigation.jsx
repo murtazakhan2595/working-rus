@@ -195,10 +195,6 @@ function getNavigation(userRole) {
                 userRole === 4 ||
                 userRole === 3
                   ? [
-                      // {
-                      //   name: "Letter Requests",
-                      //   url: "/letter-request",
-                      // },
                       {
                         name: "Letter Request",
                         dropdown: "letterRequest",
