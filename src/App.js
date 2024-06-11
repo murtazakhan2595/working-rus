@@ -63,6 +63,7 @@ function App() {
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(true);
   const navigate = useNavigate();
   const cookies = new Cookies();
   token = cookies.get("token");
@@ -90,6 +91,7 @@ function App() {
         handleUpdateProfile(response.data);
         dispatch(setToken(token));
         cookies.set("token", token, { path: "*" });
+        setUserRole(response.data.user_role)
         if (!response.data.is_filled) {
           navigate('/create-profile')
         }
@@ -225,7 +227,7 @@ function App() {
                 }
               />
               <Route path="/leave-calender" element={<LeaveCalender />} />
-              {(userProfile.role === 1) &&
+              {(userRole === 1) &&
                 <>
                   <Route path="/create-task" element={<CreateTask />} />
                   <Route path="/my-dtr" element={<MyDtr />} />
@@ -233,7 +235,7 @@ function App() {
                 </>
               }
 
-              {(userProfile.role === 1 || userProfile.role === 3) &&
+              {(userRole === 1 || userRole === 3) &&
                 <>
                   <Route exact path="/profile-management" element={<Employee />} />
                   <Route path="/settings" element={<ComingSoon />} />
@@ -250,7 +252,7 @@ function App() {
                   <Route path="/user/:id" element={<ViewEmployee />} />
                 </>
               }
-              {(userProfile.role === 1 || userProfile.role === 2 || userProfile.role === 3) &&
+              {(userRole === 1 || userRole === 2 || userRole === 3) &&
                 <>
                   <Route path="/personnel-requisition" element={<ComingSoon />} />
                   <Route path="/jobs" element={<JobsDataTable />} />
@@ -268,19 +270,19 @@ function App() {
 
 
             </Route>
-            {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            {(userRole !== 1 || userRole !== 2) && (
               <Route path="/recruitment" element={<Err401 />} />
             )}
-            {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            {(userRole !== 1 || userRole !== 2) && (
               <Route path="/applicants/:id" element={<Err401 />} />
             )}
-            {/* {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            {/* {(userRole !== 1 || userRole !== 2) && (
               <Route path="/jobs" element={<Err401 />} />
             )} */}
-            {/* {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            {/* {(userRole !== 1 || userRole !== 2) && (
               <Route path="/user/:id" element={<Err401 />} />
             )} */}
-            {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            {(userRole !== 1 || userRole !== 2) && (
               <Route exact path="/emp-dataform" element={<Err401 />} />
             )}
             <Route path="*" element={<Err404 />} />

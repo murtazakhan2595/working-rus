@@ -6,8 +6,14 @@ const getDepartmentList = async (baseUrl, headers) => {
         const response = await axios.get(`${baseUrl}/department/`, {
             headers,
         })
-        if (response.status === 200)
-            return response.data;
+        if (response.status === 200) {
+            const departmentResponse = response.data;
+            const departmentList = await departmentResponse.map(department => ({
+                value: department.id,
+                label: department.name,
+            }));
+            return departmentList;
+        }
         else
             return []
     } catch (error) {
@@ -20,8 +26,14 @@ const getDesignationList = async (baseUrl, headers) => {
         const response = await axios.get(`${baseUrl}/designation/`, {
             headers,
         })
-        if (response.status === 200)
-            return response.data;
+        if (response.status === 200) {
+            const departmentResponse = response.data;
+            const designationList = await departmentResponse.map(department => ({
+                value: department.id,
+                label: department.name,
+            }));
+            return designationList
+        }
         else
             return []
     } catch (error) {
@@ -35,8 +47,14 @@ const getManagersList = async (baseUrl, headers) => {
         const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
             headers,
         })
-        if (response.status === 200)
-            return response.data;
+        if (response.status === 200) {
+            const managerResponse = response.data;
+            const managersList = managerResponse.map(manager => ({
+                value: manager.id,
+                label: manager.username,
+            }))
+            return managersList;
+        }
         else
             return []
     } catch (error) {

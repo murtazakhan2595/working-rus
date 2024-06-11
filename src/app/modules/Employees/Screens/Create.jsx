@@ -46,11 +46,11 @@ const EmployeeForm = forwardRef(({ isLoading, formData, handleSubmit, empId, set
                             }}
                             validate={(values) => {
                                 const errors = {};
-                                for (let field in values) {
-                                    if (!values[`${field}`]) {
-                                        errors[`${field}`] = 'This field is required';
-                                    }
-                                }
+                                // for (let field in values) {
+                                //     if (!values[`${field}`]) {
+                                //         errors[`${field}`] = 'This field is required';
+                                //     }
+                                // }
                                 return errors;
                             }}
                         >
@@ -298,7 +298,7 @@ const CreateUpdateEmployee = ({ token, baseUrl, isEditMode, nextStep }) => {
                     if (isEditMode)
                         nextStep();
                     else
-                        navigate('/employees')
+                        navigate('/profile-management')
                 }
             } else {
                 const response = await axios.post(`${baseUrl}/emp/add`, data, {
@@ -331,7 +331,7 @@ const CreateUpdateEmployee = ({ token, baseUrl, isEditMode, nextStep }) => {
 
     const closeModal = () => {
         setShowSuccessModal(false)
-        navigate('/employees')
+        navigate('/profile-management')
     }
 
     console.log(isEditMode, isLoading);

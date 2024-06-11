@@ -69,17 +69,16 @@ const Employee = ({ baseUrl, token }) => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                let URL = `${baseUrl}/emp/?page=${options.page}&page_size=${options.sizePerPage}`;
+                let URL = `${baseUrl}/customemp/?page=${options.page}&page_size=${options.sizePerPage}`;
                 if (filterData) {
                     URL += filterData;
                 }
-                const employeeData =await getList(URL, headers);
-                
-                if (employeeData && employeeData.length > 0) {
-                    setEmployeeData(employeeData);
-                    setActiveEmployee(employeeData[0].active_employees);
-                    setTotalEmployee(employeeData[0].total_employees);
-                    setTotalManager(employeeData[0].active_manager);
+                const employeeData = await getList(URL, headers);
+                setEmployeeData(employeeData);
+                if (employeeData && employeeData.results) {
+                    setActiveEmployee(employeeData.results.active_employees);
+                    setTotalEmployee(employeeData.results.total_employees);
+                    setTotalManager(employeeData.results.total_managers);
                 }
             } catch (error) {
                 console.error("Error fetching users:", error);
@@ -99,18 +98,9 @@ const Employee = ({ baseUrl, token }) => {
         const fetchLists = async () => {
             try {
                 const departmentResponse = await getDepartmentList(baseUrl, headers);
-                const departmentList = departmentResponse.results.map(department => ({
-                    value: department.id,
-                    label: department.name,
-                }));
-                setDepartments(departmentList);
-
+                setDepartments(departmentResponse);
                 const designationResponse = await getDesignationList(baseUrl, headers);
-                const designationList = designationResponse.results.map(department => ({
-                    value: department.id,
-                    label: department.name,
-                }));
-                setDesignations(designationList);
+                setDesignations(designationResponse);
             } catch (error) {
                 console.error(error);
             }
@@ -255,13 +245,13 @@ const Employee = ({ baseUrl, token }) => {
                                     <Col lg={12}>
                                         <div>
                                             <BootstrapTable
-                                                data={employeeData || []}
+                                                data={employeeData.results.employees || []}
                                                 version="4"
                                                 hover
                                                 remote
                                                 pagination
                                                 options={tableOptions}
-                                                fetchInfo={{ dataTotalSize: totalEmployee || 0 }}
+                                                fetchInfo={{ dataTotalSize: employeeData.count || 0 }}
                                                 className={'bootstrap-main-table'}
                                             >
                                                 <TableHeaderColumn

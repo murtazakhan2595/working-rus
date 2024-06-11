@@ -1,19 +1,12 @@
 import { useState, useEffect } from 'react';
-import Select from "react-select";
-import moment from 'moment';
-import axios from "axios";
 import { connect } from 'react-redux';
 import { HeadOfDepartment, employeeStatus, jobRoles, workplaceTypes, UserRoles } from '../../../../../data/Data';
 import { getAllCountries } from 'countries-and-timezones';
 import {
-    Card,
-    CardHeader,
-    CardBody,
-    Row,
     Col,
-    FormGroup, Input, InputGroup, InputGroupText
+    FormGroup,
 } from 'reactstrap';
-import { SelectComponent, SelectMultiInputComponent, DateInput, TextInput } from '../../../../../components/form-control'
+import { SelectComponent, SelectMultiInputComponent, DateInput } from '../../../../../components/form-control'
 import { getDepartmentList, getManagersList, getDesignationList } from '../../../../hooks/general';
 
 const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
@@ -48,25 +41,13 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
         const fetchLists = async () => {
             try {
                 const departmentResponse = await getDepartmentList(baseUrl, headers);
-                const departmentList = departmentResponse.results.map(department => ({
-                    value: department.id,
-                    label: department.name,
-                }));
-                setDepartments(departmentList);
+                setDepartments(departmentResponse);
 
                 const managerResponse = await getManagersList(baseUrl, headers);
-                const managersList = managerResponse.map(manager => ({
-                    value: manager.id,
-                    label: manager.username,
-                }))
-                setManagers(managersList);
+                setManagers(managerResponse);
 
                 const designationResponse = await getDesignationList(baseUrl, headers);
-                const designationList = designationResponse.results.map(department => ({
-                    value: department.id,
-                    label: department.name,
-                }));
-                setDesignations(designationList);
+                setDesignations(designationResponse);
             } catch (error) {
                 console.error(error);
             }
