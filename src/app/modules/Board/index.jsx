@@ -146,7 +146,7 @@ const Board = ({ isSidebarOpen, userProfile, baseUrl, token }) => {
   const handleLogout = () => {
     cookies.set("token", "", { path: "*" });
     setUserLogout();
-    navigate("/");
+    navigate("/login");
   };
 
   const headers = {

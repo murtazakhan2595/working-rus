@@ -24,9 +24,15 @@ const images = [
   { src: reports, title: "Reports" },
 ];
 
-const Services = () => {
+const Services = ({ isSidebarOpen }) => {
   return (
-    <div className="bg-[#f0f1f2]">
+    <div
+      className={`bg-[#f0f1f2] ${
+        isSidebarOpen
+          ? "3xl:w-[92%] w-[100%]"
+          : "3xl:w-[100%] xl:w-[100%] w-[100%]"
+      }`}
+    >
       <div className="flex justify-between pl-10 pr-3 py-7">
         <h2 className="font-lato text-xl font-bold text-baseGray">
           All Services

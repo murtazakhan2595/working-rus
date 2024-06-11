@@ -21,7 +21,7 @@ const LeaveHeader = ({ userProfile, post }) => {
   const handleLogout = () => {
     cookies.set("token", "", { path: "*" });
     setUserLogout();
-    navigate("/");
+    navigate("/login");
   };
 
   return (

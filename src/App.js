@@ -63,6 +63,7 @@ function App() {
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(true);
   const navigate = useNavigate();
   const cookies = new Cookies();
   token = cookies.get("token");
@@ -87,10 +88,10 @@ function App() {
         },
       });
       if (response.status === 200) {
-        debugger
         handleUpdateProfile(response.data);
         dispatch(setToken(token));
         cookies.set("token", token, { path: "*" });
+        setUserRole(response.data.user_role)
         if (!response.data.is_filled) {
           navigate('/create-profile')
         }
@@ -102,9 +103,16 @@ function App() {
         error.response &&
         (error.response.status === 401 || error.response.status === 403)
       ) {
-        // Token expired or invalid
-        dispatch(setUserLogout());
-        navigate('/')
+        // // Token expired or invalid
+        // dispatch(setUserLogout());
+        // navigate('/login')
+        const protectedRoutes = ['/apply', '/job-description', '/forgot-password', '/confirm-password'];
+        const isProtectedRoute = protectedRoutes.some(route => location.pathname.startsWith(route));
+
+        if (!isProtectedRoute) {
+          dispatch(setUserLogout());
+          navigate('/login');
+        }
       } else {
         console.error("Error fetching data:", error);
       }
@@ -122,6 +130,7 @@ function App() {
   if (loading) {
     return <PageLoader />; // Render the loader if loading is true
   }
+  console.log(userProfile);
   return (
     <>
       <Routes>
@@ -148,238 +157,133 @@ function App() {
               <Route
                 exact
                 path="/"
-                element={
-                  userProfile.role === 2 ? (
-                    <Dashboard isSidebarOpen={isSidebarOpen} />
-                  ) : (
-                    <Dashboard isSidebarOpen={isSidebarOpen} />
-                  )
-                }
+                element={<Dashboard isSidebarOpen={isSidebarOpen} />}
               />
               <Route
                 path="/board/:id"
                 element={<Board isSidebarOpen={isSidebarOpen} />}
               />
-              {/* <Route path="/profile" element={<UpdateEmpForm />} /> */}
-              <Route path="/profile/:id" element={<EditEmployeeProfile />} />
-              <Route path="/profile" element={<ViewEmployee profileView />} />
-              <Route path="/project/:id" element={<BoardList />} />
-              {userProfile.role === 1 && (
+              <Route path="/my-profile" element={<ViewEmployee profileView />} />
+              <Route exact path="/test" element={<Test />} />
+
+              <Route
+                path="/edit-post/:id"
+                element={<RecruitmentForm />}
+              />
+
+
+              <Route path="/leave-application" element={<LeaveApplicationForm isSidebarOpen={isSidebarOpen} />} />
+
+              <Route path="/leave-list" element={<LeaveApplicationListHR />} />
+              <Route
+                path="/leave-request/:id"
+                element={
+                  <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
+                }
+              />
+              <Route path="/leave-balance" element={<LeaveBalance />} />
+              <Route path="/leave-application-status" element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />} />
+              <Route
+                path="/leave-request-hr/:id"
+                element={
+                  <LeaveRequestHR isSidebarOpen={isSidebarOpen} />
+                }
+              />
+              <Route path="/my-team" element={<ComingSoon />} />
+              <Route path="/calender" element={<ComingSoon />} />
+              <Route path="/attendence" element={<ComingSoon />} />
+              <Route path="/my-leaves" element={<ComingSoon />} />
+              <Route path="/files-data" element={<ComingSoon />} />
+              <Route path="/announcement" element={<ComingSoon />} />
+              <Route path="/recognition" element={<ComingSoon />} />
+              <Route path="/my-travel-details" element={<ComingSoon />} />
+              <Route path="/letter-request" element={<ComingSoon />} />
+              <Route
+                path="/leave-balance-manager"
+                element={
+                  <LeaveBalanceManager isSidebarOpen={isSidebarOpen} />
+                }
+              />
+              <Route
+                path="/leave-balance-employee"
+                element={
+                  <LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />
+                }
+              />
+              <Route
+                path="/edit-post/:id"
+                element={<RecruitmentForm />}
+              />
+              <Route
+                path="/leave-balance-hr"
+                element={
+                  <LeaveBalanceHR isSidebarOpen={isSidebarOpen} />
+                }
+              />
+              <Route
+                path="/leave-application-status"
+                element={
+                  <ApplicationStatus isSidebarOpen={isSidebarOpen} />
+                }
+              />
+              <Route path="/leave-calender" element={<LeaveCalender />} />
+              {(userRole === 1) &&
                 <>
-                  <Route
-                    exact
-                    path="/employees"
-                    element={<Employee />}
-                  />
-                  <Route exact path="/test" element={<Test />} />
-                  <Route
-                    exact
-                    path="/add-employee"
-                    element={<CreateUpdateEmployee />}
-                  />
-                  <Route
-                    path="/edit-employee/:id"
-                    element={<CreateUpdateEmployee />}
-                  />
-                  <Route path="/user/:id" element={<ViewEmployee />} />
-
-                  <Route path="/job-post" element={<RecruitmentForm />} />
-                  <Route
-                    path="/edit-post/:id"
-                    element={<RecruitmentForm />}
-                  />
-                  <Route
-                    path="/applicants/:id"
-                    element={<ApplicantsDataTable />}
-                  />
-                  <Route path="/jobs" element={<JobsDataTable />} />
-
-                  <Route
-                    path="/leave-application"
-                    element={
-                      <LeaveApplicationForm isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-
-                  <Route
-                    path="/leave-list"
-                    element={
-                      <LeaveApplicationListHR
-                        isSidebarOpen={isSidebarOpen}
-                      />
-                    }
-                  />
-                  <Route
-                    path="/leave-request/:id"
-                    element={
-                      <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-balance"
-                    element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
-                  />
-                  <Route
-                    path="/leave-application-status"
-                    element={
-                      <ApplicationStatus isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-request-hr/:id"
-                    element={
-                      <LeaveRequestHR isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-calender"
-                    element={
-                      <LeaveCalender isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
                   <Route path="/create-task" element={<CreateTask />} />
                   <Route path="/my-dtr" element={<MyDtr />} />
+                  <Route path="/reports" element={<ComingSoon />} />
                 </>
-              )}
-              {(userProfile.role === 2 || userProfile.role === 4) && (
-                <>
-                  <Route
-                    path="/leave-application"
-                    element={<LeaveApplicationForm />}
-                  />
+              }
 
-                  <Route
-                    path="/leave-list"
-                    element={
-                      <LeaveApplicationListManager
-                        isSidebarOpen={isSidebarOpen}
-                      />
-                    }
-                  />
-                  <Route
-                    path="/leave-balance"
-                    element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
-                  />
-                  <Route
-                    path="/leave-balance-manager"
-                    element={
-                      <LeaveBalanceManager isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-balance-employee"
-                    element={
-                      <LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-application-status"
-                    element={
-                      <ApplicationStatus isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-request/:id"
-                    element={
-                      <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route path="/my-dtr" element={<MyDtr />} />
-                  <Route path="/create-task" element={<CreateTask />} />
-                </>
-              )}
-              {userProfile.role === 3 && (
+              {(userRole === 1 || userRole === 3) &&
                 <>
-                  <Route
-                    exact
-                    path="/employees"
-                    element={<Employee />}
-                  />
-                  <Route
-                    exact
-                    path="/add-employee"
-                    element={<CreateUpdateEmployee />}
-                  />
+                  <Route exact path="/profile-management" element={<Employee />} />
+                  <Route path="/settings" element={<ComingSoon />} />
+                  <Route exact path="/travel-details" element={<ComingSoon />} />
+                  <Route path="/exit-clearance" element={<ComingSoon />} />
+                  <Route path="/customise-employees" element={<ComingSoon />} />
+                  <Route path="/relocation" element={<ComingSoon />} />
+                  <Route exact path="/create-employee" element={<CreateUpdateEmployee />} />
+                  <Route path="/edit-employee/:id" element={<CreateUpdateEmployee />} />
+                  <Route path="/profile/:id" element={<EditEmployeeProfile />} />
+                  <Route path="/payroll" element={<ComingSoon />} />
+                  <Route path="/attendance" element={<ComingSoon />} />
+                  <Route path="/development-plan" element={<ComingSoon />} />
                   <Route path="/user/:id" element={<ViewEmployee />} />
-
-                  <Route path="/job-post" element={<RecruitmentForm />} />
-                  <Route
-                    path="/edit-post/:id"
-                    element={<RecruitmentForm />}
-                  />
-                  <Route
-                    path="/applicants/:id"
-                    element={<ApplicantsDataTable />}
-                  />
-                  <Route path="/jobs" element={<JobsDataTable />} />
-                  <Route
-                    path="/leave-application"
-                    element={<LeaveApplicationForm />}
-                  />
-
-                  <Route
-                    path="/leave-list"
-                    element={
-                      <LeaveApplicationListHR
-                        isSidebarOpen={isSidebarOpen}
-                      />
-                    }
-                  />
-                  <Route
-                    path="/leave-balance"
-                    element={<LeaveBalance isSidebarOpen={isSidebarOpen} />}
-                  />
-                  <Route
-                    path="/leave-balance-hr"
-                    element={
-                      <LeaveBalanceHR isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-application-status"
-                    element={
-                      <ApplicationStatus isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-calender"
-                    element={
-                      <LeaveCalender isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-request/:id"
-                    element={
-                      <LeaveRequestManager isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route
-                    path="/leave-request-hr/:id"
-                    element={
-                      <LeaveRequestHR isSidebarOpen={isSidebarOpen} />
-                    }
-                  />
-                  <Route path="/create-task" element={<CreateTask />} />
                 </>
-              )}
+              }
+              {(userRole === 1 || userRole === 2 || userRole === 3) &&
+                <>
+                  <Route path="/personnel-requisition" element={<ComingSoon />} />
+                  <Route path="/jobs" element={<JobsDataTable />} />
+                  <Route path="/job-post" element={<RecruitmentForm />} />
+                  <Route path="/applicants/:id" element={<ApplicantsDataTable />} />
+                  <Route path="/applicants" element={<ApplicantsDataTable />} />
+                  <Route path="/referals" element={<ComingSoon />} />
+                  <Route path="/learn" element={<ComingSoon />} />
+                  <Route path="/career-planning" element={<ComingSoon />} />
+                  <Route path="/on-boarding" element={<ComingSoon />} />
+                  <Route path="/employee-evaluation" element={<ComingSoon />} />
+                  <Route path="/project/:id" element={<BoardList />} />
+                </>
+              }
+
+
             </Route>
-            {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            {(userRole !== 1 || userRole !== 2) && (
               <Route path="/recruitment" element={<Err401 />} />
             )}
-            {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            {(userRole !== 1 || userRole !== 2) && (
               <Route path="/applicants/:id" element={<Err401 />} />
             )}
-            {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            {/* {(userRole !== 1 || userRole !== 2) && (
               <Route path="/jobs" element={<Err401 />} />
-            )}
-            {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            )} */}
+            {/* {(userRole !== 1 || userRole !== 2) && (
               <Route path="/user/:id" element={<Err401 />} />
-            )}
-            {(userProfile.role !== 1 || userProfile.role !== 2) && (
+            )} */}
+            {(userRole !== 1 || userRole !== 2) && (
               <Route exact path="/emp-dataform" element={<Err401 />} />
-            )}
-            {(userProfile.role !== 1 || userProfile.role !== 2) && (
-              <Route exact path="/employees" element={<Err401 />} />
             )}
             <Route path="*" element={<Err404 />} />
           </>
@@ -393,7 +297,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/apply/:id" element={<JobApplicationForm />} />
         <Route path="/job-description/:id" element={<JobDescription />} />
-        {/* forgot Password */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/confirm-password" element={<ResetPassword />} />
       </Routes>

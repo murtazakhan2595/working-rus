@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { IoIosSearch, IoMdCheckmarkCircleOutline } from "react-icons/io";
-import { MdBarChart, MdOutlineLogout, MdOutlineTrendingUp } from "react-icons/md";
+import { MdOutlineLogout } from "react-icons/md";
 import {
     AiOutlinePlus,
 } from "react-icons/ai";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaChevronLeft, FaChevronRight, FaRegStar } from "react-icons/fa";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
-import { Outlet, Link, useNavigate, useLocation, NavLink } from "react-router-dom";
+import { Outlet, Link, useNavigate, NavLink } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
 import logo from "../../../../assets/images/logo.png";
 import { connect } from "react-redux";
@@ -15,19 +15,11 @@ import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { BsPersonGear } from "react-icons/bs";
-import { LuCalendarDays } from "react-icons/lu";
-import HrRole from "./HrRole";
-import ManagerRole from "./ManagerRole";
-import EmployeeRole from "./EmployeeRole";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { toggleDropdown } from "../../../../state/slices/DropdownSlice";
-import { GoHome, GoPeople, GoPerson } from "react-icons/go";
-import { SlBadge } from "react-icons/sl";
-import { IoCheckmarkDoneOutline } from "react-icons/io5";
-import { HiOutlineDocumentReport } from "react-icons/hi";
-import { BiTask } from "react-icons/bi";
-import { setUserLogout } from "../../../../state/slices/UserSlice";
+import getNavigation from '../../../utils/Types/Navigation';
+import { setUserLogout } from "../../../../state/actions/UserAction";
 
 const Sidebar = ({
     isSidebarOpen,
@@ -40,9 +32,8 @@ const Sidebar = ({
 
     const normalLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64] hover:border hover:border-blue-300 text-[10px]`
     const activeLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 bg-[#DAEFF8] text-[#5C5E64]`;
-    const ComingActiveLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64]`;
+    // const ComingActiveLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64]`;
 
-    const location = useLocation();
     const navigate = useNavigate();
     const cookies = new Cookies();
     const [isModelOpen, setisModelOpen] = useState(false);
@@ -52,14 +43,12 @@ const Sidebar = ({
     const [projectsCount, setProjectCount] = useState(0);
     const [profileImage, setProfileImage] = useState(null);
     const [employee, setEmployee] = useState(null);
-
+    const [Navigation, setNavigation] = useState(null);
     const { isDbOpen, isServiceHubOpen, isRecruitmentOpen, isPerformanceOpen, isPayrollOpen, isPeopleEngagementOpen, isPersonalDevelopmentOpen, isLeaveOpen, isProjectOpen, isProfileOpen, isDtrOpen } = useSelector(state => state.dropdown);
     const dispatch = useDispatch();
-
     const handleToggleDropdown = (dropdownName) => {
         dispatch(toggleDropdown(dropdownName));
     };
-
     const handleSidebarToggle = () => {
         setIsSidebarOpen((prev) => !prev);
     };
@@ -67,6 +56,18 @@ const Sidebar = ({
     const closeProjectModal = () => {
         setisModelOpen(false);
     };
+
+    const dropdownOpen = {
+        HRDatabase: isDbOpen,
+        serviceHub: isServiceHubOpen,
+        Recruitment: isRecruitmentOpen,
+        LeaveManagement: isLeaveOpen,
+        performance: isPerformanceOpen,
+        payrollAndAttendance: isPayrollOpen,
+        peopleEngagement: isPeopleEngagementOpen,
+        personalDevelopment: isPersonalDevelopmentOpen,
+        dtr: isDtrOpen,
+    }
 
     const getProjects = async (
         url = `${baseUrl}/project/${userProfile.role === 1 || userProfile.role === 2
@@ -105,6 +106,7 @@ const Sidebar = ({
         });
         const employeeData = employeeResponse.data;
         setEmployee(employeeData)
+        setNavigation(getNavigation(employeeData.user_role))
         setProfileImage(employeeResponse.data?.profile_picture?.file || employeeResponse.data?.profile_picture);
     }
 
@@ -113,877 +115,105 @@ const Sidebar = ({
     }, []);
 
 
-
     return (
         <>
             <div className="flex">
                 {/* Sidebar content goes here */}
                 <div
-                    style={{ backgroundImage: `url(${sidebg})` }}
-                    className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-e-lg ${isSidebarOpen ? "w-[14.2rem]" : "w-24"
+                    // style={{ backgroundImage: `url(${sidebg})` }}
+                    className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-e-lg ${isSidebarOpen ? "w-64" : "w-28"
                         }`}
 
                 >
-                    <div className="text-xl z-10 py-3 px-7 flex border-b border-gray-300 flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 relative">
-                        <img src={logo} className="inline-block w-12" alt="logo" />
+                    <div className="text-xl z-10 py-3 px-3 flex border-b border-gray-300 flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 relative">
+                        <img src={logo} className={`w-12 ${isSidebarOpen ? "inline-block": "block mx-auto"} `} alt="logo" />
                         <h1 className={`inline-block overflow-hidden transition-all text-2xl ${isSidebarOpen ? 'w-28' : 'w-0'}`}>TECBRIX</h1>
                     </div>
-                    <ul className="overflow-y-auto overflow-x-hidden hideScroll -mt-10 mx-2">
-                        <li>
-                            <div className="relative invisible">
-                                <IoIosSearch className="absolute top-3 left-3 text-white" />
-                                <input
-                                    type="search"
-                                    placeholder="Search"
-                                    className="focus:outline-none focus:border-non bg-[#8292e2] py-2 pl-10 pr-4  placeholder-white border-none w-48 rounded-md"
-                                />
-                            </div>
-                        </li>
-                        <div className="flex flex-col justify-between h-[87vh]">
-                            <div className="overflow-y-auto hideScroll">
-                                {userProfile.role === 1 && (
-                                    <>
-                                        <li className="group">
-
-                                            <NavLink
-                                                to="/"
-                                                className={({ isActive }) =>
-                                                    `group flex mb-3 rounded-md py-2 px-2 items-center gap-x-2 text-[#5C5E64] hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isActive ? 'bg-[#DAEFF8] text-[#0D2282]' : ''}`
-                                                }
-                                            >
-                                                <div className="flex flex-col">
-                                                    <div className={`text-xl ${!isSidebarOpen ? 'ml-[12px]' : ''}`}>
-                                                        <GoHome />
-                                                    </div>
-                                                    <p className={`text-xs ml-2 text-center transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                        Home
-                                                    </p>
-                                                </div>
-                                                <p className={`overflow-hidden text-[14px] transition-all ${isSidebarOpen ? 'w-28' : 'w-0'}`}>
-                                                    Home
-                                                </p>
-                                            </NavLink>
-
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-md top-24 ml-20
-          bg-white w-40 text-sm
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                                                    <p className="m-1 px-2 py-1 rounded-lg text-[#5C5E64] hover:bg-[#DAEFF8] hover:text-[#0D2282]"><Link to="/">Home</Link></p>
-                                                </div>
-                                            )}
-                                        </li>
-
-                                        <li className="group">
-                                            <div
-                                                onClick={() => handleToggleDropdown("HRDatabase")}
-                                                className={`flex items-center justify-between py-2 px-2 mt-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isDbOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
-                                                    } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"} cursor-pointer `}
-                                            >
-                                                <div className="flex flex-col justify-center">
-                                                    <GoPeople className={`text-xl mr-3 ${!isSidebarOpen ? 'ml-[12px]' : ''}`} />
-                                                    <p className={`text-xs text-center transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                        People Team
-                                                    </p>
-                                                </div>
-                                                <span className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                                                    <p className="flex-grow text-[14px]">People Team</p>
-                                                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isDbOpen ? 'transform rotate-180' : ''}`} />
-                                                </span>
-                                            </div>
-
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-lg border border-gray-100 top-40 ml-20
-          bg-white w-44 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
-
-                                                    <div className="flex flex-col bg-white rounded-lg">
-                                                        <li>
-                                                            <NavLink to="/employees"
-                                                                className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                            >
-                                                                <p className="text-sm px-2">Employee Sheet</p>
-
-                                                            </NavLink>
-                                                            <NavLink to="/add-employee"
-                                                                className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                            >
-                                                                <p className="text-sm px-2">Employee Creation</p>
-
-                                                            </NavLink>
-                                                        </li>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </li>
-                                        {(isDbOpen && isSidebarOpen) &&
-                                            <div className="flex flex-col bg-[#F7F8FA]">
-                                                <NavLink to="/employees"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Employee Sheet</p>
-
-                                                </NavLink>
-                                                {/* <NavLink to="/add-employee"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Add Employee</p>
-
-                                                </NavLink> */}
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Profile Management</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Settings</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Travel Details</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Exit & Clearence</p>
-
-                                                </NavLink>
-                                                <NavLink to="/add-employee"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Employee Creation</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Customise Employees</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Relocation</p>
-
-                                                </NavLink>
-
-                                            </div>
-                                        }
-
-                                        {/* self service hub */}
-                                        <li className="group">
-                                            <div
-                                                onClick={() => handleToggleDropdown("serviceHub")}
-                                                className={`flex items-center justify-between py-2 px-2 mt-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isServiceHubOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
-                                                    } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"} cursor-pointer `}
-                                            >
-                                                <div className="flex flex-col justify-center">
-                                                    <GoPerson className={`text-xl mr-3 ${!isSidebarOpen ? 'ml-[12px]' : ''}`} />
-                                                    <p className={`text-center text-xs transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                        Self Service Hub
-                                                    </p>
-                                                </div>
-                                                <span className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                                                    <p className="flex-grow text-[14px]">Self Service Hub</p>
-                                                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isServiceHubOpen ? 'transform rotate-180' : ''}`} />
-                                                </span>
-                                            </div>
-
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-lg border border-gray-1 top-40 ml-20
-          bg-[#F7F8FA] w-44 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
-
-                                                    <div className="flex flex-col bg-white rounded-lg">
-                                                        <NavLink to="/profile"
-                                                            className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">My Profile</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">My Team</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Calender</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Attendance</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">My Leaves</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Files & Data</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">My Travel Details</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Letter Requests</p>
-
-                                                        </NavLink>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </li>
-                                        {(isServiceHubOpen && isSidebarOpen) &&
-                                            <div className="flex flex-col bg-[#F7F8FA]">
-                                                <NavLink to="/profile"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">My Profile</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">My Team</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Calender</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Attendance</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">My Leaves</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Files & Data</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">My Travel Details</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Letter Requests</p>
-
-                                                </NavLink>
-                                            </div>
-                                        }
-
-                                        {/* Leave Management */}
-
-                                        <li className="group">
-                                            <div
-                                                onClick={() => handleToggleDropdown("LeaveManagement")}
-                                                className={`flex items-center justify-between mt-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
-                                                    } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"} cursor-pointer`}
-                                            >
-                                                <div className="flex flex-col justify-center">
-                                                    <LuCalendarDays className={`text-xl mr-3 ${!isSidebarOpen ? 'ml-[12px]' : ''}`} />
-                                                    <p className={`text-center text-xs transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                        Leave Tracker
-                                                    </p>
-                                                </div>
-                                                <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                                                    <p className="flex-grow text-[14px]">Leave Management</p>
-                                                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isLeaveOpen ? 'transform rotate-180' : ''}`} />
-                                                </div>
-                                            </div>
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-lg border border-gray-1 top-56 ml-20
-          bg-white w-44 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                                                    <div className="flex flex-col rounded-lg bg-white">
-                                                        <NavLink to="/leave-application"
-                                                            className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Leave Application</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/leave-calender"
-                                                            className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Leave Calender</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/leave-list"
-                                                            className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Team Application Status</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/leave-balance"
-                                                            className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Team Leave Balance</p>
-
-                                                        </NavLink>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </li>
-
-                                        {(isLeaveOpen && isSidebarOpen) &&
-                                            <div className="flex flex-col bg-[#F7F8FA]">
-                                                <NavLink to="/leave-application"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Leave Application</p>
-
-                                                </NavLink>
-                                                <NavLink to="/leave-calender"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Leave Calender</p>
-
-                                                </NavLink>
-                                                <NavLink to="/leave-list"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Team Application Status</p>
-
-                                                </NavLink>
-                                                <NavLink to="/leave-balance"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Team Leave Balance</p>
-
-                                                </NavLink>
-                                            </div>
-                                        }
-
-                                        {/* Talent sphere */}
-                                        <li className="group">
-                                            <div
-                                                onClick={() => handleToggleDropdown("Recruitment")}
-                                                className={`flex items-center justify-between mt-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isRecruitmentOpen ? "bg-[#DAEFF8] text-[#0D2282]" : " text-[#5C5E64]"
-                                                    } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"} cursor-pointer`}
-                                            >
-                                                <div className="flex flex-col justify-center">
-                                                    <FaRegStar className={`text-xl mr-3 ${!isSidebarOpen ? 'ml-[12px]' : ''}`} />
-                                                    <p className={`text-center text-xs transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                        Talent Sphere
-                                                    </p>
-                                                </div>
-                                                <div className={`flex items-center gap-x-2 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                                                    <p className="flex-grow text-[14px]">Talent Sphere</p>
-                                                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isRecruitmentOpen ? 'transform rotate-180' : ''}`} />
-                                                </div>
-                                            </div>
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-lg border border-gray-1 top-52 ml-20
-          bg-white w-44 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
-
-                                                    <div className="flex flex-col rounded-lg bg-white">
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Personnel Requisition</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/jobs"
-                                                            className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Jobs</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/job-post"
-                                                            className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Post a Job</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Applicants</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Referals</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">On Boarding</p>
-
-                                                        </NavLink>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </li>
-
-                                        {(isRecruitmentOpen && isSidebarOpen) &&
-                                            <div className="flex flex-col bg-[#F7F8FA]">
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Personnel Requisition</p>
-
-                                                </NavLink>
-                                                <NavLink to="/jobs"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Jobs</p>
-
-                                                </NavLink>
-                                                <NavLink to="/job-post"
-                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Post a Job</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Applicants</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Referals</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">On Boarding</p>
-
-                                                </NavLink>
-                                            </div>
-                                        }
-
-                                        {/* Performance Management */}
-                                        <li className="group">
-                                            <div
-                                                onClick={() => handleToggleDropdown("performance")}
-                                                className={`flex items-center justify-between mt-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isPerformanceOpen ? "bg-[#DAEFF8] text-[#0D2282]" : " text-[#5C5E64]"
-                                                    } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"} cursor-pointer`}
-                                            >
-                                                <div className="flex flex-col justify-center">
-                                                    <SlBadge className={`text-xl mr-3 ${!isSidebarOpen ? 'ml-[12px]' : ''}`} />
-                                                    <p className={`text-center text-xs transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                        Perform...
-                                                    </p>
-                                                </div>
-                                                <div className={`flex items-center gap-x-2 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                                                    <p className="flex-grow text-[14px]">Performance Management</p>
-                                                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isPerformanceOpen ? 'transform rotate-180' : ''}`} />
-                                                </div>
-                                            </div>
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-lg border border-gray-1 top-80 ml-20
-          bg-white w-44 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                                                    <div className="flex flex-col rounded-lg bg-white">
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Employee Evaluation</p>
-
-                                                        </NavLink>
-
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </li>
-
-                                        {(isPerformanceOpen && isSidebarOpen) &&
-                                            <div className="flex flex-col bg-[#F7F8FA]">
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Employee Evaluation</p>
-
-                                                </NavLink>
-                                            </div>
-                                        }
-
-                                        {/* Payroll and attendance */}
-                                        <li className="group">
-                                            <div
-                                                onClick={() => handleToggleDropdown("payrollAndAttendance")}
-                                                className={`flex items-center justify-between mt-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isPayrollOpen ? "bg-[#DAEFF8] text-[#0D2282]" : " text-[#5C5E64]"
-                                                    } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"} cursor-pointer`}
-                                            >
-                                                <div className="flex flex-col justify-center">
-                                                    <IoCheckmarkDoneOutline className={`text-xl mr-3 ${!isSidebarOpen ? 'ml-[12px]' : ''}`} />
-                                                    <p className={`text-center text-xs transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                        Payroll
-                                                    </p>
-                                                </div>
-                                                <div className={`flex items-center gap-x-2 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                                                    <p className="flex-grow text-[14px]">Payroll & Attendance</p>
-                                                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isPayrollOpen ? 'transform rotate-180' : ''}`} />
-                                                </div>
-                                            </div>
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-lg border border-gray-1 top-80 ml-20
-          bg-white w-44 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                                                    <div className="flex flex-col rounded-lg bg-white">
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Payroll</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Attendance</p>
-
-                                                        </NavLink>
-
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </li>
-
-                                        {(isPayrollOpen && isSidebarOpen) &&
-                                            <div className="flex flex-col bg-[#F7F8FA]">
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Payroll</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Attendance</p>
-
-                                                </NavLink>
-                                            </div>
-                                        }
-                                        {/* People Engagement */}
-                                        <li className="group">
-                                            <div
-                                                onClick={() => handleToggleDropdown("peopleEngagement")}
-                                                className={`flex items-center justify-between mt-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isPeopleEngagementOpen ? "bg-[#DAEFF8] text-[#0D2282]" : " text-[#5C5E64]"
-                                                    } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"} cursor-pointer`}
-                                            >
-                                                <div className="flex flex-col justify-center">
-                                                    <MdOutlineTrendingUp className={`text-xl mr-3 ${!isSidebarOpen ? 'ml-[12px]' : ''}`} />
-                                                    <p className={`text-center text-xs transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                        People
-                                                    </p>
-                                                </div>
-                                                <div className={`flex items-center gap-x-2 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                                                    <p className="flex-grow text-[14px]">People Engagement</p>
-                                                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isPeopleEngagementOpen ? 'transform rotate-180' : ''}`} />
-                                                </div>
-                                            </div>
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-lg border border-gray-1 top-96 ml-20
-          bg-white w-44 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                                                    <div className="flex flex-col rounded-lg bg-white">
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Announcement</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Recognition</p>
-
-                                                        </NavLink>
-
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </li>
-
-                                        {(isPeopleEngagementOpen && isSidebarOpen) &&
-                                            <div className="flex flex-col bg-[#F7F8FA]">
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Announcement</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Recognition</p>
-
-                                                </NavLink>
-                                            </div>
-                                        }
-
-                                        {/* Personnel Development */}
-                                        <li className="group">
-                                            <div
-                                                onClick={() => handleToggleDropdown("personalDevelopment")}
-                                                className={`flex items-center justify-between mt-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isPersonalDevelopmentOpen ? "bg-[#DAEFF8] text-[#0D2282]" : " text-[#5C5E64]"
-                                                    } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"} cursor-pointer`}
-                                            >
-                                                <div className="flex flex-col justify-center">
-                                                    <MdBarChart className={`text-xl mr-3 ${!isSidebarOpen ? 'ml-[12px]' : ''}`} />
-                                                    <p className={`text-center text-xs transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                        Personnel
-                                                    </p>
-                                                </div>
-                                                <div className={`flex items-center gap-x-2 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                                                    <p className="flex-grow text-[14px]">Personnel Development</p>
-                                                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isPersonalDevelopmentOpen ? 'transform rotate-180' : ''}`} />
-                                                </div>
-                                            </div>
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-lg border border-gray-1 top-96 ml-20
-          bg-white w-44 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                                                    <div className="flex flex-col rounded-lg bg-white">
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Learn</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Career Planning</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Succession Plan</p>
-
-                                                        </NavLink>
-                                                        <NavLink to="/coming-soon"
-                                                            className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                        >
-                                                            <p className="text-sm px-2">Development Plan</p>
-
-                                                        </NavLink>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </li>
-
-                                        {(isPersonalDevelopmentOpen && isSidebarOpen) &&
-                                            <div className="flex flex-col bg-[#F7F8FA]">
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Learn</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Career Planning</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Succession Plan</p>
-
-                                                </NavLink>
-                                                <NavLink to="/coming-soon"
-                                                    className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
-                                                >
-                                                    <p className="text-sm px-2">Development Plan</p>
-
-                                                </NavLink>
-                                            </div>
-                                        }
-
-                                        {/* Reports */}
-                                        <NavLink
-                                            to="/coming-soon"
-                                            className={({ isActive }) =>
-                                                `group flex rounded-md py-2 px-2 items-center gap-x-2 text-[#5C5E64] hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isActive ? 'bg-[#DAEFF8] text-[#0D2282]' : ''}`
-                                            }
-                                        >
-                                            <div className="flex flex-col">
-                                                <div className={`text-xl ${!isSidebarOpen ? 'ml-[12px]' : ''}`}>
-                                                    <HiOutlineDocumentReport />
-                                                </div>
-                                                <p className={`text-xs ml-1 text-center transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                    Reports
-                                                </p>
-                                            </div>
-                                            <p className={`overflow-hidden text-[14px] transition-all ${isSidebarOpen ? 'w-28' : 'w-0'}`}>
-                                                Reports
-                                            </p>
-                                        </NavLink>
-
-                                        {/* <NavLink
-                                            to="/coming-sonn"
-                                            className={({ isActive }) =>
-                                                `group flex rounded-md py-2 px-2 items-center gap-x-2 text-[#5C5E64] hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isActive ? 'bg-[#DAEFF8] text-[#0D2282]' : ''
-                                                }`
-                                            }
-                                        >
-                                            <div className="flex flex-col items-center">
-                                                <div className={`text-xl ${!isSidebarOpen ? '' : ''}`}>
-                                                    <HiOutlineDocumentReport />
-                                                </div>
-                                                <p className={`text-center text-xs transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}>
-                                                    Reports
-                                                </p>
-                                            </div>
-                                            <p className={`overflow-hidden text-[14px] transition-all ${isSidebarOpen ? 'w-28' : 'w-0'}`}>
-                                                Reports
-                                            </p>
-                                        </NavLink> */}
-
-                                        {/* dtrs */}
-                                         <li className="group">
-                                            <div
-                                                onClick={() => handleToggleDropdown("dtr")}
-                                                className={`flex items-center justify-between my-2 py-2 px-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${isLeaveOpen ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
-                                                    } rounded-lg cursor-pointer`}
-                                            >
-                                                <BiTask className={`text-xl mr-2 ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />
-                                                <div className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
-                                                    <p className="flex-grow text-sm">Daily Task Report</p>
-                                                    <FaAngleDown className={`text-xs transition-transform duration-300 ${isDtrOpen ? 'transform rotate-180' : ''}`} />
-                                                </div>
-                                            </div>
-                                            {!isSidebarOpen && (
-                                                <div className="absolute rounded-md top-72 ml-20
-          bg-white w-32 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
-
-                                                    <div className="flex flex-col rounded-lg bg-white">
-                                                        <li>
-                                                            <Link to="/create-task">
-                                                                <div
-                                                                    className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                                                        }`}
-                                                                >
-                                                                    <p className="text-sm">Create Task</p>
-                                                                </div>
-                                                            </Link>
-                                                        </li>
-
-                                                    </div>
-                                                    <div className="flex flex-col rounded-lg bg-white">
-                                                        <li>
-                                                            <Link to="/my-dtr">
-                                                                <div
-                                                                    className={`flex rounded-md mx-1 my-1 py-2 px-2 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                                                        }`}
-                                                                >
-                                                                    <p className="text-sm">My DTR</p>
-                                                                </div>
-                                                            </Link>
-                                                        </li>
-
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </li>
-
-                                        {(isDtrOpen && isSidebarOpen) &&
-                                            <div className="flex flex-col mt-2 bg-[#F7F8FA]">
-                                                <li>
-                                                    <NavLink to="/create-task"
-                                                        className={({ isActive }) => isActive ? activeLink : normalLink}
+                    <ul className="hideScroll mx-2">
+                        <div className="flex flex-col justify-between items-center h-[87vh]">
+                            <div className={`hideScroll ${isSidebarOpen ? 'overflow-y-auto overflow-x-visible' : ''}`}>
+                                <>
+                                    <li className="d-none">
+                                        <div className="relative">
+                                            <IoIosSearch className="absolute top-3 left-3 text-white" />
+                                            <input
+                                                type="search"
+                                                placeholder="Search"
+                                                className="focus:outline-none focus:border-non bg-[#8292e2] py-2 pl-10 pr-4  placeholder-white border-none w-48 rounded-md"
+                                            />
+                                        </div>
+                                    </li>
+
+                                    {Navigation && Navigation.items.map((item, index) => {
+                                        return (
+                                            <>
+                                                <li className="group relative">
+                                                    <div
+                                                        onClick={() => {
+                                                            if (item.url) navigate(item.url)
+                                                            else handleToggleDropdown(item.dropdown)
+                                                        }}
+                                                        className={`flex items-center justify-between py-2 px-2 mt-2 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${dropdownOpen[item.dropdown] ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
+                                                            } ${isSidebarOpen ? "rounded-t-lg" : "rounded-lg"} cursor-pointer `}
                                                     >
-                                                        <div
-                                                        // className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                                        //     }`}
-
-                                                        >
-                                                            <p className="text-sm">Create Task</p>
+                                                        <div className="flex flex-col justify-center">
+                                                            <div className={`text-xl mr-3 ${!isSidebarOpen ? 'ml-[12px] flex justify-center' : ''}`}>{item.icon}</div>
+                                                            <p className={`text-xs text-center transition-opacity duration-300 ${isSidebarOpen ? 'hidden' : 'hidden group-hover:block group-hover:opacity-100'}`}
+                                                                style={{
+                                                                    overflow: 'hidden',
+                                                                }}>
+                                                                {item.name}
+                                                            </p>
                                                         </div>
-                                                    </NavLink>
+                                                        <span className={`flex items-center gap-x-1 flex-grow ${isSidebarOpen ? 'block' : 'hidden'}`}>
+                                                            <p className="flex-grow text-[14px]">{item.name}</p>
+                                                            {!(item.url) && <FaAngleDown className={`text-xs transition-transform duration-300 ${dropdownOpen[item.dropdown] ? 'transform rotate-180' : ''}`} />}
+                                                        </span>
+                                                    </div>
+                                                    {item.children &&
+                                                        <>
+                                                            {!isSidebarOpen && (
+                                                                <div className="absolute rounded-lg border border-gray-100 ml-20 bg-white w-44 text-base opacity-00 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom"
+                                                                    style={{ top: '0' }}>
+                                                                    <div className="flex flex-col bg-white rounded-lg">
+                                                                        <li>
+                                                                            {item.children.map((child, index) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        <NavLink to={child.url}
+                                                                                            className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                                                        >
+                                                                                            <p className="text-sm px-2">{child.name}</p>
+                                                                                        </NavLink>
+                                                                                    </>
+                                                                                )
+                                                                            })}
+                                                                        </li>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {(dropdownOpen[item.dropdown] && isSidebarOpen) &&
+                                                                <div className="flex flex-col bg-[#F7F8FA]">
+                                                                    {item.children.map((child, index) => {
+                                                                        return (
+                                                                            <>
+                                                                                <NavLink to={child.url}
+                                                                                    className={({ isActive }) => isActive ? activeLink : normalLink}
+                                                                                >
+                                                                                    <p className="text-sm px-2">{child.name}</p>
+                                                                                </NavLink>
+                                                                            </>
+                                                                        )
+                                                                    })}
+                                                                </div>
+                                                            }
+                                                        </>
+                                                    }
                                                 </li>
-                                                <li>
-                                                    <NavLink to="/my-dtr"
-                                                        className={({ isActive }) => isActive ? activeLink : normalLink}
-                                                    >
-                                                        <div
-                                                        // className={`flex rounded-md my-2 py-2 px-4 items-center gap-x-1 hover:bg-[#DAEFF8] hover:text-[#0D2282] ${location.pathname === "/leave-application" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-gray-400"
-                                                        //     }`}
-
-                                                        >
-                                                            <p className="text-sm">My DTR</p>
-                                                        </div>
-                                                    </NavLink>
-                                                </li>
-
-                                            </div>
-                                        } 
-
-                                    </>
-                                )}
-
-                                {userProfile.role === 3 && (
-                                    <HrRole isSidebarOpen={isSidebarOpen} />
-                                )}
-                                {(userProfile.role === 2) && (
-                                    <ManagerRole isSidebarOpen={isSidebarOpen} />
-                                )}
-                                {(userProfile.role === 4) && (
-                                    <EmployeeRole isSidebarOpen={isSidebarOpen} />
-                                )}
-
+                                            </>
+                                        )
+                                    })}
+                                </>
                                 {userProfile.role !== 3 && (
                                     <>
                                         <li
@@ -1004,9 +234,9 @@ const Sidebar = ({
                                                 className={`text-xs transform transition-transform ${isProjectOpen ? 'rotate-180' : ''
                                                     } ${isSidebarOpen ? 'block' : 'hidden'}`}
                                             />
-                                            {!isSidebarOpen && <div className="absolute rounded-lg border border-gray-1 top-96 ml-20 bg-white w-44 text-base
-          opacity-00 -translate-x-3 transition-all
-          group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
+                                            {!isSidebarOpen && <div className="absolute rounded-lg border border-gray-1 ml-20 bg-white w-44 text-base
+                                                opacity-00 -translate-x-3 transition-all
+                                                group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
                                                 <div className="max-h-[20vh] overflow-y-auto p-1">
                                                     {projects?.map((project, index) => (
                                                         <div key={index} className="flex flex-col gap-2">
@@ -1083,7 +313,7 @@ const Sidebar = ({
                                 )}
                             </div>
 
-                            <div className="">
+                            <div className="pb-2">
                                 <li className={`${isSidebarOpen ? 'bg-white rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1' : ''}`}>
 
                                     <div className={`flex group items-center gap-x-2 py-3 ${isSidebarOpen ? 'bg-[#F0F1F2]' : 'borderr border--[#5C5E64]'} px-2 rounded-lg cursor-pointer`}>
@@ -1104,7 +334,8 @@ const Sidebar = ({
                                             <div className="absolute rounded-lg border border-gray-1 ml-20
                                                 bg-white w-44 text-sm
                                                 opacity-00 
-                                                group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+                                                group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom"
+                                                style={{ bottom: '5px' }}>
 
                                                 <div className="flex items-center bg-[#F0F1F2] rounded-lg m-1">
                                                     <div className={`flex group items-center gap-x-2 py-3 px-2 rounded-lg cursor-pointer`}>
@@ -1137,7 +368,7 @@ const Sidebar = ({
                                                         onClick={() => {
                                                             cookies.set("token", "", { path: "*" });
                                                             setUserLogout();
-                                                            navigate("/");
+                                                            navigate("/login");
                                                         }}>
                                                         <p>Logout</p>
                                                         <MdOutlineLogout />
@@ -1165,7 +396,7 @@ const Sidebar = ({
                                                 onClick={() => {
                                                     cookies.set("token", "", { path: "*" });
                                                     setUserLogout();
-                                                    navigate("/");
+                                                    navigate("/login");
                                                 }}>
                                                 <p>Logout</p>
                                                 <MdOutlineLogout />
@@ -1180,7 +411,7 @@ const Sidebar = ({
 
                 {/* Sidebar collapse button */}
                 <button button
-                    className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${isSidebarOpen ? "left-[13rem] top-10" : "left-20 top-8"
+                    className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${isSidebarOpen ? "left-[12.5rem] top-10" : "left-[5.5rem] top-10"
                         } rounded-lg  mt-4 mr-4 z-10`}
                     onClick={handleSidebarToggle}
                 >

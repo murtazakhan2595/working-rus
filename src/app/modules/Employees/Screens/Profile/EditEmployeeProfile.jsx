@@ -126,7 +126,7 @@ const EditEmployeeProfile = () => {
                     toast.success("Employee Profile Updated Successfully!", {
                       position: toast.POSITION.TOP_RIGHT,
                     });
-                    navigate('/employees')
+                    navigate('/profile-management')
                   }}
                   isEditMode={false}
                   prevStep={() => {

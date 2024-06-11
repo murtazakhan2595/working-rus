@@ -4,7 +4,7 @@ import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
 
 const WorkInformation = ({ workInformation, isEditable, employeeId }) => {
-  const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(true);
+  const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
       <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
