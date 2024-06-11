@@ -125,7 +125,7 @@ function App() {
       setLoading(true);
       getProfile();
     }
-  }, []);
+  }, [isLogin, baseUrl, token, navigate, dispatch]);
 
   if (loading) {
     return <PageLoader />; // Render the loader if loading is true

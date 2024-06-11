@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { IoWarningOutline } from "react-icons/io5";
 import logo from "../.././../assets/images/tecbrix-logo.png";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
@@ -11,10 +11,17 @@ import { PiCaretCircleLeftFill } from "react-icons/pi";
 import { Link } from "react-router-dom";
 
 const ResetPassword = () => {
-  const { uid, token } = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const uid = searchParams.get("uid");
+  const token = searchParams.get("token");
+
   console.log("UID:", uid);
   console.log("Token:", token);
+
   const baseUrl = useSelector((state) => state.user.baseUrl);
+
+  console.log("i am baseurl from confirm", baseUrl);
 
   const initialData = { password: "", retype_password: "" };
 
@@ -67,7 +74,7 @@ const ResetPassword = () => {
 
     try {
       const res = await axios.post(
-        `${baseUrl}/password/reset/confirm`,
+        `${baseUrl}/password/reset/confirm/`,
         payload
       );
       if (res.status === 200) {

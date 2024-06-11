@@ -10,7 +10,6 @@ import { FaAngleDown } from "react-icons/fa6";
 import { Outlet, Link, useNavigate, NavLink } from "react-router-dom";
 import sidebg from "./sidebarBG.png";
 import logo from "../../../../assets/images/logo.png";
-import { setUserLogout } from "../../../../state/actions/UserAction";
 import { connect } from "react-redux";
 import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
@@ -20,6 +19,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { toggleDropdown } from "../../../../state/slices/DropdownSlice";
 import getNavigation from '../../../utils/Types/Navigation';
+import { setUserLogout } from "../../../../state/actions/UserAction";
 
 const Sidebar = ({
     isSidebarOpen,
@@ -115,23 +115,22 @@ const Sidebar = ({
     }, []);
 
 
-
     return (
         <>
             <div className="flex">
                 {/* Sidebar content goes here */}
                 <div
-                    style={{ backgroundImage: `url(${sidebg})` }}
-                    className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-e-lg ${isSidebarOpen ? "w-[14.2rem]" : "w-24"
+                    // style={{ backgroundImage: `url(${sidebg})` }}
+                    className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-e-lg ${isSidebarOpen ? "w-64" : "w-28"
                         }`}
 
                 >
                     <div className="text-xl z-10 py-3 px-3 flex border-b border-gray-300 flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold mb-4 relative">
-                        <img src={logo} className="inline-block w-12" alt="logo" />
+                        <img src={logo} className={`w-12 ${isSidebarOpen ? "inline-block": "block mx-auto"} `} alt="logo" />
                         <h1 className={`inline-block overflow-hidden transition-all text-2xl ${isSidebarOpen ? 'w-28' : 'w-0'}`}>TECBRIX</h1>
                     </div>
                     <ul className="hideScroll mx-2">
-                        <div className="flex flex-col justify-between h-[87vh]">
+                        <div className="flex flex-col justify-between items-center h-[87vh]">
                             <div className={`hideScroll ${isSidebarOpen ? 'overflow-y-auto overflow-x-visible' : ''}`}>
                                 <>
                                     <li className="d-none">
@@ -412,7 +411,7 @@ const Sidebar = ({
 
                 {/* Sidebar collapse button */}
                 <button button
-                    className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${isSidebarOpen ? "left-[11rem] top-10" : "left-20 top-8"
+                    className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${isSidebarOpen ? "left-[12.5rem] top-10" : "left-[5.5rem] top-10"
                         } rounded-lg  mt-4 mr-4 z-10`}
                     onClick={handleSidebarToggle}
                 >
