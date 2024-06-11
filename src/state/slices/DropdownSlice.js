@@ -12,6 +12,11 @@ const initialState = {
   isProjectOpen: false,
   isProfileOpen: false,
   isDtrOpen: false,
+  isTransferOpen: false,
+  isLetterRequestOpen: false,
+  isTodoOpen: false,
+  isDevelopmentPlanOpen: false,
+  isSettingsOpen: false,
 };
 
 const dropdownSlice = createSlice({
@@ -147,6 +152,55 @@ const dropdownSlice = createSlice({
           state.isPersonalDevelopmentOpen = false;
           state.isPayrollOpen = false;
           state.isDbOpen = false;
+          break;
+        case "transfer":
+          state.isTransferOpen = !state.isTransferOpen;
+          state.isRecruitmentOpen = false;
+          state.isLeaveOpen = false;
+          state.isProfileOpen = false;
+          state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          break;
+        case "letterRequest":
+          state.isLetterRequestOpen = !state.isLetterRequestOpen;
+          state.isRecruitmentOpen = false;
+          state.isLeaveOpen = false;
+          state.isProfileOpen = false;
+          state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          break;
+        case "todo":
+          state.isTodoOpen = !state.isTodoOpen;
+          state.isLeaveOpen = false;
+          state.isProfileOpen = false;
+          state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPersonalDevelopmentOpen = false;
+          state.isPayrollOpen = false;
+          break;
+        case "developmentPlan":
+          state.isDevelopmentPlanOpen = !state.isDevelopmentPlanOpen;
+          state.isLeaveOpen = false;
+          state.isProfileOpen = false;
+          state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPayrollOpen = false;
+          break;
+        case "settings":
+          state.isSettingsOpen = !state.isSettingsOpen;
+          state.isProfileOpen = false;
+          state.isDtrOpen = false;
+          state.isPerformanceOpen = false;
+          state.isPeopleEngagementOpen = false;
+          state.isPayrollOpen = false;
           break;
         case "Profile":
           state.isProfileOpen = !state.isProfileOpen;
