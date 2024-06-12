@@ -88,6 +88,7 @@ function App() {
         },
       });
       if (response.status === 200) {
+        debugger
         handleUpdateProfile(response.data);
         dispatch(setToken(token));
         cookies.set("token", token, { path: "*" });

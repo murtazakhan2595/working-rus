@@ -40,13 +40,13 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
         }
         const fetchLists = async () => {
             try {
-                const departmentResponse = await getDepartmentList(baseUrl, headers);
+                const departmentResponse = await getDepartmentList(headers);
                 setDepartments(departmentResponse);
 
-                const managerResponse = await getManagersList(baseUrl, headers);
+                const managerResponse = await getManagersList(headers);
                 setManagers(managerResponse);
 
-                const designationResponse = await getDesignationList(baseUrl, headers);
+                const designationResponse = await getDesignationList(headers);
                 setDesignations(designationResponse);
             } catch (error) {
                 console.error(error);

@@ -30,7 +30,8 @@ const Employee = ({ baseUrl, token }) => {
     const [openDropdownRow, setOpenDropdownRow] = useState(null);
     const [departments, setDepartments] = useState([]);
     const [designations, setDesignations] = useState([]);
-    const [filterData, setFilterData] = useState("");
+    const [filterData, setFilterData] = useState({});
+    const [filters, setFilters] = useState("");
     const [totalEmployee, setTotalEmployee] = useState(0);
     const [activeEmployee, setActiveEmployee] = useState(0);
     const [totalManagers, setTotalManager] = useState(0);
@@ -69,9 +70,9 @@ const Employee = ({ baseUrl, token }) => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                let URL = `${baseUrl}/customemp/?page=${options.page}&page_size=${options.sizePerPage}`;
-                if (filterData) {
-                    URL += filterData;
+                let URL = `/customemp/?page=${options.page}&page_size=${options.sizePerPage}`;
+                if (filters) {
+                    URL += filters;
                 }
                 const employeeData = await getList(URL, headers);
                 setEmployeeData(employeeData);
@@ -88,7 +89,7 @@ const Employee = ({ baseUrl, token }) => {
         };
 
         fetchData();
-    }, [baseUrl, options, filterData, setIsLoading, token]);
+    }, [baseUrl, options, filters, setIsLoading, token]);
 
     useEffect(() => {
         const headers = {
@@ -97,9 +98,9 @@ const Employee = ({ baseUrl, token }) => {
         };
         const fetchLists = async () => {
             try {
-                const departmentResponse = await getDepartmentList(baseUrl, headers);
+                const departmentResponse = await getDepartmentList(headers);
                 setDepartments(departmentResponse);
-                const designationResponse = await getDesignationList(baseUrl, headers);
+                const designationResponse = await getDesignationList(headers);
                 setDesignations(designationResponse);
             } catch (error) {
                 console.error(error);
@@ -107,7 +108,7 @@ const Employee = ({ baseUrl, token }) => {
         };
 
         fetchLists();
-    }, [baseUrl, token]);
+    }, [token]);
 
     const handleDelete = async (employeeId) => {
         setIsLoading(true);
@@ -175,14 +176,15 @@ const Employee = ({ baseUrl, token }) => {
 
     const handleFilterChange = (filterName, filterValue) => {
         debugger
-        let filters;
-        if (!filterData) {
-            filters = `&search={"${filterName}":${filterValue}}`;
-        } else {
-            filters = `,"${filterName}":${filterValue}}`;
-            filters = filterData.replace("}", filters);
+        const filtersList = filterData;
+        filtersList[filterName] = filterValue;
+        let filters = "&search={"
+        for (const filter in filtersList) {
+                filters = `${filters}"${filter}":${filtersList[`${filter}`]},`;
         }
-        setFilterData(filters);
+        filters = `${filters}}`;
+        setFilterData(filtersList);
+        setFilters(filters);
     };
 
     return (
@@ -222,7 +224,7 @@ const Employee = ({ baseUrl, token }) => {
                                     <div className="py-3 px-3">
                                         <FilterInput
                                             filters={[
-                                                { type: 'search', placeholder: 'Search by ID and Name', name: '' },
+                                                { type: 'search', placeholder: 'Search by ID and Name', name: 'id_and_first_name' },
                                                 { type: 'select', option: departments, name: 'department_name', placeholder: "Department" },
                                                 { type: 'select', option: designations, name: 'department_position', placeholder: "Designation" },
                                                 { type: 'select', option: UserRoles, name: 'user_role', placeholder: "Role" }
@@ -245,13 +247,13 @@ const Employee = ({ baseUrl, token }) => {
                                     <Col lg={12}>
                                         <div>
                                             <BootstrapTable
-                                                data={employeeData.results.employees || []}
+                                                data={employeeData?.results?.employees || []}
                                                 version="4"
                                                 hover
                                                 remote
                                                 pagination
                                                 options={tableOptions}
-                                                fetchInfo={{ dataTotalSize: employeeData.count || 0 }}
+                                                fetchInfo={{ dataTotalSize: employeeData?.count || 0 }}
                                                 className={'bootstrap-main-table'}
                                             >
                                                 <TableHeaderColumn
