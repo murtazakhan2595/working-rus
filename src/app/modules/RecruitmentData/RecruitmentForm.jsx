@@ -22,22 +22,18 @@ import {
 import { PiCaretCircleLeftFill } from "react-icons/pi";
 import PageLoader from "../../../components/PageLoader.jsx";
 import { connect } from "react-redux";
+import { addJob } from "../../hooks/recruitment.jsx";
 
 const RecruitmentForm = ({ baseUrl, token }) => {
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (values) => {
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    };
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${baseUrl}/recruitment/`, values, {
-        headers,
-      });
+      const response = await addJob(baseUrl, values, token);
+
       if (response.status === 201) {
         toast.success("Job added successfully!");
         formRef.current.resetForm();
@@ -45,7 +41,7 @@ const RecruitmentForm = ({ baseUrl, token }) => {
         toast.error("Failed to add job. Please try again.");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error adding job:", error);
       toast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);

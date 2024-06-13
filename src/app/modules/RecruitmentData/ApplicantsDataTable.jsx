@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import RecruitmentDataHeader from "./RecruitmentDataHeader";
-import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { HiDownload } from "react-icons/hi";
 import { dropdownOptions, filterDropdownOptions } from "../../../data/Data";
 import Loader from "../../../components/Loader";
@@ -17,6 +16,18 @@ import list from "../../../assets/images/list.png";
 import { AiOutlineDownload } from "react-icons/ai";
 import { FaCaretDown } from "react-icons/fa";
 import jobIcon from "../../../assets/images/jobIcon.png";
+import Blocks from "../../../components/Blocks";
+import Tabs from "../../../components/Tabs";
+import JobDetails from "./JobDetails";
+import CandidatesList from "./CandidatesList";
+import EmpDataHeader from "../../modules/Employees/Screens/Sections/Header";
+import { CustomDarkButton } from "../../../components/form-control";
+import {
+  fetchJobById,
+  fetchApplicants,
+  updateApplicationStatus,
+  downloadCV,
+} from "../../hooks/recruitment";
 
 const ApplicantsDataTable = ({ baseUrl, token }) => {
   const [selectedRow, setSelectedRow] = useState(null);
@@ -29,326 +40,129 @@ const ApplicantsDataTable = ({ baseUrl, token }) => {
   const [activeTab, setActiveTab] = useState("candidates");
   const [job, setJob] = useState(null);
 
-  // fetch applicants
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
-  // Fetching posts by id
-  const fetchJob = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
-        headers,
-      });
-      setPost(response.data);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-
-  //download cv
-  const downloadCV = async (cv, name) => {
-    try {
-      const response = await axios.get(cv, {
-        responseType: "blob",
-      });
-      const blob = new Blob([response.data], { type: "application/pdf" });
-
-      const url = window.URL.createObjectURL(blob);
-
-      // Create a temporary link element
-      const link = document.createElement("a");
-      link.href = url;
-
-      // Set the download attribute to the desired file name
-      link.download = `${name}_cv.pdf`; // You can adjust the file name accordingly
-
-      // Append the link to the document
-      document.body.appendChild(link);
-
-      // Programmatically trigger a click on the link to initiate the download
-      link.click();
-
-      // Remove the link from the document
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error fetching CV:", error);
-    }
-  };
-  // Fetching users
-  const fetchApplicants = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/candidateall/?search=${encodeURIComponent(
-          `{"application_status": "${applicationStatus}", "job_id": ${id}}`
-        )}`,
-        {
-          headers,
-        }
-      );
-      setApplicants(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchJob();
-  }, []);
+    const loadJob = async () => {
+      try {
+        const jobData = await fetchJobById(baseUrl, id, token);
+        setPost(jobData);
+      } catch (error) {
+        console.error("Error fetching job:", error);
+      }
+    };
+    loadJob();
+  }, [id]);
 
   useEffect(() => {
-    fetchApplicants();
+    const loadApplicants = async () => {
+      try {
+        const applicantsData = await fetchApplicants(
+          baseUrl,
+          id,
+          applicationStatus,
+          token
+        );
+        setApplicants(applicantsData);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching applicants:", error);
+      }
+    };
+    loadApplicants();
   }, [id, applicationStatus]);
 
-  // update status
-
-  // truncate cv link
-  const truncateCVLink = (cvLink, maxLength) => {
-    return cvLink.length > maxLength
-      ? cvLink.substring(0, maxLength) + "..."
-      : cvLink;
-  };
-
-  // Function to handle row selection
   const handleRowClick = (id) => {
     setSelectedRow(selectedRow === id ? null : id);
   };
 
-  const handleStatusFilter = async (option) => {
+  const handleStatusFilter = (option) => {
     setApplicationStatus(option);
   };
 
   const handleOptionSelect = async (option) => {
     try {
-      // Find the selected row in the data array
       const selectedApplicant = applicants.find(
         (applicant) => applicant.id === selectedRow
       );
 
       if (selectedApplicant) {
-        const response = await axios.patch(
-          `${baseUrl}/candidate/${selectedApplicant.id}`,
-          {
-            application_status: option,
-            first_name: selectedApplicant.first_name,
-            last_name: selectedApplicant.last_name,
-            phone_number: selectedApplicant.phone_number,
-            email: selectedApplicant.email,
-            cv: selectedApplicant.cv,
-            job_id: selectedApplicant.job_id,
-          },
-          {
-            headers,
-          }
+        const response = await updateApplicationStatus(
+          baseUrl,
+          selectedApplicant,
+          option,
+          token
         );
 
-        // Check if the request was successful
         if (response.status === 200) {
-          // Update the applicationStatus for the selected row in the local state
           selectedApplicant.applicationStatus = option;
-
-          // Update the data state with the modified row
           setApplicants((prevData) =>
             prevData.map((applicant) =>
               applicant.id === selectedRow ? selectedApplicant : applicant
             )
           );
-
-          fetchApplicants();
+          fetchApplicants(baseUrl, id, applicationStatus, token);
         } else {
           console.error("Failed to update application status");
         }
       }
-
-      // Close the dropdown
       setSelectedRow(null);
     } catch (error) {
       console.error("Error updating application status:", error);
     }
   };
 
-  // show filter
-
   const handleShowFilter = () => {
     setShowFilter(!showFilter);
   };
 
+  const tabs = ["All Candidates", "Jobs"];
+
+  const tabContents = {
+    "All Candidates": <CandidatesList />,
+    Jobs: <JobDetails post={post} jobIcon={jobIcon} />,
+  };
+
   return (
     <div className="flex w-full flex-col bg-[#F0F1F2] h-[100vh]">
-      {/* <RecruitmentDataHeader post={post} /> */}
-
-      <div className="flex gap-x-6 p-4">
+      <div className="flex gap-x-6 px-4 pt-4 pb">
         <div className="md:w-[45%]">
           <div className="bg-white w-full h-full rounded-[10px] p-4">
-            <div className="flex justify-between items-center border-b border-[#F0F1F2]">
-              <div className="flex space-x-4">
-                <button
-                  className={`py-2 px-4 ${
-                    activeTab === "candidates"
-                      ? "border-b-2 border-[#35B6E9] text-baseGray font-lato text-base"
-                      : "text-gray-500"
-                  }`}
-                  onClick={() => setActiveTab("candidates")}
-                >
-                  All Candidates
-                </button>
-                <button
-                  className={`py-2 px-4 ${
-                    activeTab === "jobs"
-                      ? "border-b-2 border-[#35B6E9] text-baseGray font-lato text-base"
-                      : "text-gray-500"
-                  }`}
-                  onClick={() => setActiveTab("jobs")}
-                >
-                  Jobs
-                </button>
-              </div>
-              <button className="py-2 px-4 text-[#323333] font-lato text-sm flex items-center gap-x-2">
-                Change Job
-                <IoArrowForwardCircle className="text-xl" />
-              </button>
-            </div>
-            <div className="mt-4">
-              {activeTab === "candidates" && (
-                <div>
-                  {/* Candidates content here */}
-                  <p>List of all candidates...</p>
-                </div>
-              )}
-              {activeTab === "jobs" && (
-                <div className="flex flex-col justify-between gap-y-10">
-                  <div className="flex justify-between">
-                    <div className="flex items-center gap-x-2">
-                      <img src={jobIcon} alt="" />
-                      <div>
-                        <p className="font-lato text-baseGray text-base">
-                          {post.id}
-                        </p>
-                        <h3 className="font-lato text-[20px] text-baseGray font-bold">
-                          {post.Job_Title}
-                        </h3>
-                      </div>
-                    </div>
-                    <div className="font-lato text-base text-baseGray flex items-center gap-x-2">
-                      <IoCalendarOutline className="text-lg" />
-                      {`${post.updated_at?.slice(0, 10)} to ${post.Deadline} `}
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <div
-                      className={`flex items-center text-baseGray font-lato text-base font-normal rounded-2xl px-2 ${
-                        post.status === "Live" ? "bg-green-100" : "bg-red-100"
-                      }`}
-                    >
-                      <span
-                        className={`w-3 h-3 rounded-full mr-2 ${
-                          post.status === "Live" ? "bg-green-500" : "bg-red-500"
-                        }`}
-                      ></span>
-                      {post.status}
-                    </div>
-                    <div
-                      className="text-baseGray font-lato text-base font-normal bg-[#E6E9F0] rounded-2xl
-                    px-2"
-                    >
-                      {post.Employee_Type}
-                    </div>
-                    <div
-                      className="text-baseGray font-lato text-base font-normal bg-[#E6E9F0] rounded-2xl
-                      px-2"
-                    >
-                      {post.Work_type}
-                    </div>
-                    <div
-                      className="text-baseGray font-lato text-base font-normal bg-[#E6E9F0] rounded-2xl
-                      px-2"
-                    >
-                      {post.location}
-                    </div>
-                    <div
-                      className="text-baseGray font-lato text-base font-normal bg-[#E6E9F0] rounded-2xl
-                      px-2"
-                    >
-                      {post.Job_Type}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            <Tabs
+              tabs={tabs}
+              onTabChange={setActiveTab}
+              tabContents={tabContents}
+            />
           </div>
         </div>
-        <div className="md:w-[55%] flex">
-          <div className="flex flex-wrap md:flex-nowrap">
-            <div className="md:w-1/2 w-full p-2">
-              <div className="flex flex-col space-y-3">
-                <div className="flex flex-col">
-                  <div className="flex gap-x-3 items-center bg-[#FAFBFC] px-3 py-4 rounded-[20px] w-72">
-                    <img src={file} alt="Image 1" />
-                    <div>
-                      <h2 className="text-lato text-[14px] text-baseGray font-normal">
-                        Total applications
-                      </h2>
-                      <h1 className="text-lato text-2xl text-[#323333] font-normal">
-                        50
-                      </h1>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col space-y-3">
-                  <div className="flex gap-x-3 items-center bg-[#FAFBFC] px-3 py-4 rounded-[20px] w-72">
-                    <img src={file} alt="Image 1" />
-                    <div>
-                      <h2 className="text-lato text-[14px] text-baseGray font-normal">
-                        Selected applications
-                      </h2>
-                      <h1 className="text-lato text-2xl text-[#323333] font-normal">
-                        200
-                      </h1>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-wrap md:flex-nowrap">
-            <div className="md:w-1/2 w-full p-2">
-              <div className="flex flex-col space-y-3">
-                <div className="flex flex-col">
-                  <div className="flex gap-x-3 items-center bg-[#FAFBFC] px-3 py-4 rounded-[20px] w-72">
-                    <img src={list} alt="Image 1" />
-                    <div>
-                      <h2 className="text-lato text-[14px] text-baseGray font-normal">
-                        Shortlisted applications
-                      </h2>
-                      <h1 className="text-lato text-2xl text-[#323333] font-normal">
-                        12
-                      </h1>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col space-y-3">
-                  <div className="flex gap-x-3 items-center bg-[#FAFBFC] px-3 py-4 rounded-[20px] w-72">
-                    <img src={cut} alt="Image 1" />
-                    <div>
-                      <h2 className="text-lato text-[14px] text-baseGray font-normal">
-                        Rejected applications
-                      </h2>
-                      <h1 className="text-lato text-2xl text-[#323333] font-normal">
-                        07
-                      </h1>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="md:w-[55%] flex gap-2 flex-wrap">
+          <Blocks
+            blocks={[
+              {
+                label: "Total applications",
+                value: "200",
+                image: file,
+              },
+              {
+                label: "Shortlisted applications",
+                value: "12",
+                image: list,
+              },
+              {
+                label: "Selected applications",
+                value: "12",
+                image: file,
+              },
+              {
+                label: "Rejected applications",
+                value: "23",
+                image: cut,
+              },
+            ]}
+          />
         </div>
       </div>
 
-      {/* Table */}
       <div className="px-1 py-4 md:p-3 md:py-3 lg:px-8 lg:py-5 h-[100%] overflow-x-auto overflow-y-auto max-h-[60.5vh] md:max-h-[75.5vh] lg:max-h-[70vh] xScroll">
         <table className="min-w-full">
           <thead>
