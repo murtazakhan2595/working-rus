@@ -44,7 +44,7 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
     }
   };
 
-  const getUsers = async (url = `${baseUrl}/emp/`) => {
+  const getUsers = async (url = `${baseUrl}/customemp/`) => {
     try {
       await axios
         .get(url, {

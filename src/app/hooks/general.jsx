@@ -1,7 +1,10 @@
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast } from "react-toastify"; 
+import {initialState} from '../../state/slices/UserSlice';
 
-const getDepartmentList = async (baseUrl, headers) => {
+const baseUrl = initialState.baseUrl;
+
+const getDepartmentList = async (headers) => {
     try {
         const response = await axios.get(`${baseUrl}/department/`, {
             headers,
@@ -21,7 +24,7 @@ const getDepartmentList = async (baseUrl, headers) => {
     }
     return [];
 }
-const getDesignationList = async (baseUrl, headers) => {
+const getDesignationList = async (headers) => {
     try {
         const response = await axios.get(`${baseUrl}/designation/`, {
             headers,
@@ -42,7 +45,7 @@ const getDesignationList = async (baseUrl, headers) => {
     return [];
 }
 
-const getManagersList = async (baseUrl, headers) => {
+const getManagersList = async (headers) => {
     try {
         const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
             headers,
@@ -65,7 +68,7 @@ const getManagersList = async (baseUrl, headers) => {
 
 const getList = async (URL, headers) => {
     try {
-        const response = await axios.get(URL, { headers, })
+        const response = await axios.get(`${baseUrl}${URL}`, { headers, })
         if (response.status === 200)
             return response.data;
         else

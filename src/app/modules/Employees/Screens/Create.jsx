@@ -51,6 +51,9 @@ const EmployeeForm = forwardRef(({ isLoading, formData, handleSubmit, empId, set
                                 //         errors[`${field}`] = 'This field is required';
                                 //     }
                                 // }
+                                if(!values.user_role){
+                                    errors.user_role='User role is required'
+                                }
                                 return errors;
                             }}
                         >

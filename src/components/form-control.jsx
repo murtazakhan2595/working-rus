@@ -465,7 +465,7 @@ const FilterInput = ({ filters, onChange }) => {
                                     name={filter.name}
                                     id={filter.name}
                                     onChange={(option) => {
-                                        onChange(filter.name, option);
+                                        onChange(filter.name, option.target.value);
                                     }}
                                 />
                             </div>
