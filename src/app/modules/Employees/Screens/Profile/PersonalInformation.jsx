@@ -221,7 +221,6 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         error={props.errors.date_of_birth}
                         touch={props.touched.date_of_birth}
                         value={props.values.date_of_birth}
-                        //value={new Date()}
                         label={"DOB"}
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
