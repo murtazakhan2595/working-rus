@@ -34,19 +34,15 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
     const [designations, setDesignations] = useState([]);
 
     useEffect(() => {
-        const headers = {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        }
         const fetchLists = async () => {
             try {
-                const departmentResponse = await getDepartmentList(headers);
+                const departmentResponse = await getDepartmentList();
                 setDepartments(departmentResponse);
 
-                const managerResponse = await getManagersList(headers);
+                const managerResponse = await getManagersList();
                 setManagers(managerResponse);
 
-                const designationResponse = await getDesignationList(headers);
+                const designationResponse = await getDesignationList();
                 setDesignations(designationResponse);
             } catch (error) {
                 console.error(error);

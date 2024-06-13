@@ -88,6 +88,8 @@ function Login() {
           const userProfile = {
             id: userProfileResponse.data.id,
             username: userProfileResponse.data.username,
+            is_filled: userProfileResponse.data.is_filled,
+            role: userProfileResponse.data.user_role,
           };
 
           // Update the user profile in the Redux store
@@ -163,7 +165,7 @@ function Login() {
     };
   }, []);
 
-  if(isLogin){
+  if (isLogin) {
     navigate('/')
   }
 

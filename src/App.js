@@ -53,17 +53,16 @@ import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 
 function App() {
-  let userProfile = useSelector((state) => state.user.userProfile);
-  let isLogin = useSelector((state) => state.user.isLogin);
+  const isLogin = useSelector((state) => state.user.isLogin);
   let token = useSelector((state) => state.user.token);
-  let baseUrl = useSelector((state) => state.user.baseUrl);
+  const baseUrl = useSelector((state) => state.user.baseUrl);
   let dispatch = useDispatch();
 
   let width = window.screen.width;
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(true);
+  const [userRole, setUserRole] = useState(baseUrl.role);
   const navigate = useNavigate();
   const cookies = new Cookies();
   token = cookies.get("token");
@@ -82,20 +81,19 @@ function App() {
 
   const getProfile = async () => {
     try {
-      let response = await axios.get(`${baseUrl}/user/`, {
+      const response = await axios.get(`${baseUrl}/user/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (response.status === 200) {
-        debugger
-        handleUpdateProfile(response.data);
-        dispatch(setToken(token));
-        cookies.set("token", token, { path: "*" });
         setUserRole(response.data.user_role)
         if (!response.data.is_filled) {
           navigate('/create-profile')
         }
+        handleUpdateProfile(response.data);
+        dispatch(setToken(token));
+        cookies.set("token", token, { path: "*" });
         setLoading(false);
         return;
       }
@@ -131,7 +129,7 @@ function App() {
   if (loading) {
     return <PageLoader />; // Render the loader if loading is true
   }
-  console.log(userProfile);
+  console.log(userRole);
   return (
     <>
       <Routes>

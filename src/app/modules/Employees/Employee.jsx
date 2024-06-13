@@ -24,7 +24,7 @@ import { UserRoles } from "../../../data/Data.js";
 import { useNavigate } from 'react-router-dom';
 import { getDepartmentList, getDesignationList, getList, deleteRecord } from '../../hooks/general.jsx';
 
-const Employee = ({ baseUrl, token }) => {
+const Employee = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [employeeData, setEmployeeData] = useState([]);
     const [openDropdownRow, setOpenDropdownRow] = useState(null);
@@ -63,10 +63,7 @@ const Employee = ({ baseUrl, token }) => {
     };
 
     useEffect(() => {
-        const headers = {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        };
+        
         const fetchData = async () => {
             setIsLoading(true);
             try {
@@ -74,7 +71,7 @@ const Employee = ({ baseUrl, token }) => {
                 if (filters) {
                     URL += filters;
                 }
-                const employeeData = await getList(URL, headers);
+                const employeeData = await getList(URL);
                 setEmployeeData(employeeData);
                 if (employeeData && employeeData.results) {
                     setActiveEmployee(employeeData.results.active_employees);
@@ -89,18 +86,14 @@ const Employee = ({ baseUrl, token }) => {
         };
 
         fetchData();
-    }, [baseUrl, options, filters, setIsLoading, token]);
+    }, [options, filters, setIsLoading]);
 
     useEffect(() => {
-        const headers = {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        };
         const fetchLists = async () => {
             try {
-                const departmentResponse = await getDepartmentList(headers);
+                const departmentResponse = await getDepartmentList();
                 setDepartments(departmentResponse);
-                const designationResponse = await getDesignationList(headers);
+                const designationResponse = await getDesignationList();
                 setDesignations(designationResponse);
             } catch (error) {
                 console.error(error);
@@ -108,17 +101,13 @@ const Employee = ({ baseUrl, token }) => {
         };
 
         fetchLists();
-    }, [token]);
+    }, []);
 
     const handleDelete = async (employeeId) => {
         setIsLoading(true);
-        const headers = {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        };
         try {
-            const URL = `${baseUrl}/emp/${employeeId}`;
-            await deleteRecord(URL, headers, 'Employee')
+            const URL = `/emp/${employeeId}`;
+            await deleteRecord(URL, 'Employee')
         } catch (error) {
             console.log(error);
         } finally {
@@ -175,17 +164,28 @@ const Employee = ({ baseUrl, token }) => {
     };
 
     const handleFilterChange = (filterName, filterValue) => {
-        debugger
-        const filtersList = filterData;
-        filtersList[filterName] = filterValue;
-        let filters = "&search={"
-        for (const filter in filtersList) {
-                filters = `${filters}"${filter}":${filtersList[`${filter}`]},`;
-        }
-        filters = `${filters}}`;
-        setFilterData(filtersList);
-        setFilters(filters);
+        setFilterData((prevFilters) => {
+            const updatedFilters = { ...prevFilters };
+    
+            if (filterValue === "") {
+                delete updatedFilters[filterName];
+            } else {
+                updatedFilters[filterName] = filterValue;
+            }
+    
+            if (Object.keys(updatedFilters).length > 0) {
+                const filters = Object.entries(updatedFilters)
+                    .map(([key, value]) => `"${key}":"${value}"`)
+                    .join(",");
+                setFilters(`&search={${filters}}`);
+            } else {
+                setFilters(null);
+            }
+    
+            return updatedFilters;
+        });
     };
+    
 
     return (
         <div className="screen">
@@ -365,8 +365,6 @@ function Blocks(blocks) {
 
 const mapStateToProps = (state) => ({
     userProfile: state.user.userProfile,
-    token: state.user.token,
-    baseUrl: state.user.baseUrl,
 });
 
 export default connect(mapStateToProps)(Employee);
