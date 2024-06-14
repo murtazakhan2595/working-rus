@@ -371,7 +371,7 @@ const CreateUpdateEmployee = ({ token, baseUrl, isEditMode, nextStep }) => {
                                             <Link
                                                 type="button"
                                                 className="btn btn-light bg-transparent fw-700"
-                                                to="/employees"
+                                                to="/profile-management"
                                             >
                                                 <span style={{ display: 'inline-block' }}>Go Back </span><FaChevronCircleLeft style={{ display: 'inline-block', marginLeft: '10px', marginBottom: '2px' }} />
                                             </Link>

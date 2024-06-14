@@ -67,7 +67,7 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
     [
       { title: "Last Name", data: userData?.last_name },
       { title: "Date of Birth", data: userData?.date_of_birth },
-      { title: "Email Address", data: userData?.email }, // Changed from current_address to email
+      { title: "Email Address", data: userData?.other_email }, // Changed from current_address to email
       { title: "Marital Status", data: userData?.marital_status },
     ],
   ];
@@ -121,16 +121,16 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
         { title: "ID Expiry Date", data: visa.id_expiry_date },
         {
           title: "ID Front Image",
-          data: documents?.id_front?.document?.data && (
-            <a href={documents.id_front.document.data} download={documents.id_front.document.name} className="flex items-center no-underline text-black">
+          data: documents?.id_front?.document?.file && (
+            <a href={documents.id_front.document.file} download={documents.id_front.document.name} className="flex items-center no-underline text-black">
               <FiDownload />
             </a>
           ),
         },
         {
           title: "ID Back Image",
-          data: documents?.id_back?.document?.data && (
-            <a href={documents.id_back.document.data} download={documents.id_back.document.name} className="flex items-center no-underline text-black">
+          data: documents?.id_back?.document?.file && (
+            <a href={documents.id_back.document.file} download={documents.id_back.document.name} className="flex items-center no-underline text-black">
               <FiDownload />
             </a>
           ),

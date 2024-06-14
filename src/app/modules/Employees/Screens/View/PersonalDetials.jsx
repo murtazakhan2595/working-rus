@@ -32,6 +32,7 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
               alt="Profile"
               className="w-24 h-24 rounded-full mb-4"
             />
+            
             <div className="font-semibold text-lg">
               {userData.personalInformation?.first_name}{" "}
               {userData.personalInformation?.last_name}
