@@ -1,9 +1,11 @@
 import axios from 'axios';
+import {initialState} from '../../state/slices/UserSlice';
 
-const headers = (token) => ({
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  });
+const baseUrl = initialState.baseUrl;
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
 
 export const fetchJobPosts = async (baseUrl, token, status) => {
   let searchStatus = '';
@@ -19,7 +21,7 @@ export const fetchJobPosts = async (baseUrl, token, status) => {
         JSON.stringify({ status: searchStatus })
       )}`,
       {
-        headers: headers(token),
+        headers: headers(),
       }
     );
     return response.data;
@@ -34,7 +36,7 @@ export const fetchJobPosts = async (baseUrl, token, status) => {
 export const fetchJobById = async (baseUrl, id, token) => {
   try {
     const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
-      headers: headers(token),
+      headers: headers(),
     });
     return response.data;
   } catch (error) {
@@ -43,14 +45,12 @@ export const fetchJobById = async (baseUrl, id, token) => {
   }
 };
 
-export const fetchApplicants = async (baseUrl, id, applicationStatus, token) => {
+const getJobApplications = async (URL) => {
   try {
     const response = await axios.get(
-      `${baseUrl}/candidateall/?search=${encodeURIComponent(
-        `{"application_status": "${applicationStatus}", "job_id": ${id}}`
-      )}`,
+      `${baseUrl}${URL}`,
       {
-        headers: headers(token),
+        headers: headers(),
       }
     );
     return response.data;
@@ -79,7 +79,7 @@ export const updateApplicationStatus = async (
         job_id: selectedApplicant.job_id,
       },
       {
-        headers: headers(token),
+        headers: headers(),
       }
     );
     return response;
@@ -112,7 +112,7 @@ export const downloadCV = async (cv, name) => {
 export const addJob = async (baseUrl, values, token) => {
     try {
       const response = await axios.post(`${baseUrl}/recruitment/`, values,  {
-        headers: headers(token),
+        headers: headers(),
       });
       return response;
     } catch (error) {
@@ -120,3 +120,8 @@ export const addJob = async (baseUrl, values, token) => {
       throw error;
     }
   };
+
+
+  export {
+    getJobApplications,
+  }

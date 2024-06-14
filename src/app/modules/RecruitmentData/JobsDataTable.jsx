@@ -8,7 +8,7 @@ import Loader from "../../../components/Loader";
 import jobIcon from "../../../assets/images/jobIcon.png";
 import dots from "../../../assets/images/dots.svg";
 import ViewJobDetails from "./ViewJobDetails";
-import Tabs from "../../../components/Tabs";
+import Tabs from "./Sections/Tabs";
 import { fetchJobPosts } from "../../hooks/recruitment";
 
 const JobsDataTable = ({ baseUrl, token }) => {

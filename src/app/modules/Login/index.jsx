@@ -75,8 +75,8 @@ function Login() {
         const token = response.data.access;
 
         // Save the token in cookies
-        cookies.set("token", token, { path: "*" });
-
+        window.localStorage.setItem("token",token)
+        
         // Fetch user profile with the obtained token
         const userProfileResponse = await axios.get(`${baseUrl}/user/`, {
           headers: {

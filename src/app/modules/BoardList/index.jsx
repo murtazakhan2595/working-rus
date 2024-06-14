@@ -135,7 +135,7 @@ const BoardList = ({
 
   // handle logout
   const handleLogout = () => {
-    cookies.set("token", "", { path: "*" });
+    window.localStorage.setItem("token", "")
     setUserLogout();
     navigate("/login");
   };

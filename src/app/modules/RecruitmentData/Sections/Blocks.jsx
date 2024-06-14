@@ -1,25 +1,20 @@
-// Header.js
 import React from "react";
+import { Row, Col } from 'reactstrap';
 
-function Block({ blocks }) {
+const Blocks = ({ blocks }) => {
     return (
-        <>
-            <Row className="flex items-center">
-                {blocks && blocks.map(block => (
-                    <SubBlock
-                        label={block.label}
-                        value={block.value}
-                        image={block.image}
-                    />
-                ))}
-            </Row>
-        </>
+        <Row className="flex items-center">
+            {blocks && blocks.map((block, index) => (
+                <SubBlock key={index} label={block.label} value={block.value} image={block.image} />
+            ))}
+        </Row>
     );
 };
-function SubBlock(label, value, image) {
+
+const SubBlock = ({ label, value, image }) => {
     return (
-        <Col md={6} className="mb-3">
-            <div className="bg-[#FAFBFC] rounded-[20px] p-4 flex gap-x-[30px] m-1">
+        <Col md={6} className="mb-2">
+            <div className="bg-[#FAFBFC] rounded-[20px] px-3 py-4 flex gap-x-[20px]">
                 <img src={image} alt="icon" />
                 <div>
                     <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">
@@ -31,9 +26,7 @@ function SubBlock(label, value, image) {
                 </div>
             </div>
         </Col>
-    )
-}
+    );
+};
 
-
-
-export default Block;
+export default Blocks;

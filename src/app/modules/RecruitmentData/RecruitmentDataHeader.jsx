@@ -24,12 +24,6 @@ const RecruitmentDataHeader = ({ userProfile, post,}) => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  // handle logout
-  const handleLogout = () => {
-    cookies.set("token", "", { path: "*" });
-    setUserLogout();
-    navigate("/login");
-  };
 
   // show search bar
   const handleSearchClick = () => {

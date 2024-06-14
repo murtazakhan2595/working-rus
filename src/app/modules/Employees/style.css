@@ -93,7 +93,7 @@
 }
 
 .react-bs-table table th {
-  white-space: pre;
+  white-space: pre-line;
 }
 
 .react-bs-table table td {
