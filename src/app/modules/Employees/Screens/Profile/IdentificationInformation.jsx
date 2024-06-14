@@ -289,7 +289,7 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
                             }}
                           />
                         </Col>
-                        <Col md={6}>
+                        <Col md={6} className="z-0">
                           <SelectComponent
                             name={'country_of_visa_issuance'}
                             options={countryOptions}
@@ -316,7 +316,7 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
                             regEx={/^[0-9]+$/}
                           />
                         </Col>
-                        <Col md={6}>
+                        <Col md={6} className="z-0">
                           <SelectComponent
                             name={'visa_type'}
                             options={visaOptions}
@@ -380,7 +380,7 @@ const IdentificationInformation = ({ nextstep, baseUrl, token, employeeId, isEdi
                         </Col>
                         <Col md={6}>
                           <DateInput
-                            name={'visa_country_entry_date'}
+                            name={'visa_country_exit_date'}
                             error={props.errors.visa_country_exit_date}
                             touch={props.touched.visa_country_exit_date}
                             value={props.values.visa_country_exit_date}

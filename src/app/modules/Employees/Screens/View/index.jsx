@@ -77,9 +77,9 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
     { title: "Full Name", sub : true , data: userData?.emergency_first_name + " " + userData?.emergency_last_name },
     { title: "Relation", sub : true , data: userData?.emergency_relation },
     { title: "Permenent Address", data: userData?.residential_address },
-    { title: "Postal Code", sub : true,  data: "" },
+    // { title: "Postal Code", sub : true,  data: "" },
     { title: "Present Address", data: userData?.current_address },
-    { title: "Postal Code", sub : true , data: "" },
+    // { title: "Postal Code", sub : true , data: "" },
   ];
 
   const bankInformation = [

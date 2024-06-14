@@ -121,3 +121,10 @@
   border: none;
   box-shadow: 0px 6.65px 5.32px 0px #00000007;
 }
+
+
+/* form labels z-index */
+
+.form-floating>label{
+  z-index: 0;
+}

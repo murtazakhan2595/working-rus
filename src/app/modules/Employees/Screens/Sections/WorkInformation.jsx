@@ -73,7 +73,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
 
     return (
         <>
-            <Col md="6">
+            <Col md="6" className="z-0">
                 <SelectComponent
                     name={'department_name'}
                     options={departments}
@@ -99,7 +99,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     }}
                 />
             </Col>
-            <Col md={6}>
+            <Col md={6} className="z-0">
                 <SelectComponent
                     name={'department_position'}
                     options={designations}
@@ -126,7 +126,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     }}
                 />
             </Col>
-            <Col md="6">
+            <Col md="6" className="z-0">
                 <FormGroup>
                     <SelectComponent
                         name={'employee_type'}
@@ -157,7 +157,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     />
                 </FormGroup>
             </Col>
-            <Col md={6}>
+            <Col md={6} className="z-0">
                 <SelectComponent
                     name={'employee_work_type'}
                     options={workplaceTypes}
