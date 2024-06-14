@@ -174,9 +174,9 @@ const Applications = ({ baseUrl, token }) => {
           <BsThreeDots onClick={() => toggleDropdown(row.id)} />
         </DropdownToggle>
         <DropdownMenu right>
-          <DropdownItem onClick={() => navigate(`/profile/${row.id}`)}>Edit Profile</DropdownItem>
+          {/* <DropdownItem onClick={() => navigate(`/profile/${row.id}`)}>Edit Profile</DropdownItem>
           <DropdownItem onClick={() => navigate(`/edit-employee/${row.id}`)}>Edit Employee</DropdownItem>
-          <DropdownItem onClick={() => navigate(`/user/${row.id}`)}>View Profile</DropdownItem>
+          <DropdownItem onClick={() => navigate(`/user/${row.id}`)}>View Profile</DropdownItem> */}
           {/* <DropdownItem onClick={() => handleDelete(row.id)}>Delete Employee</DropdownItem> */}
         </DropdownMenu>
       </ButtonDropdown>
