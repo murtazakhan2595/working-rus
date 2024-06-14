@@ -39,9 +39,8 @@ const SelectComponent = ({
         name={name}
         isDisabled={disabled}
         id={name}
-        className={`custom-select-input z-10 form-control ${
-          error && touch ? "is-invalid" : ""
-        }`}
+        className={`custom-select-input z-10 form-control ${error && touch ? "is-invalid" : ""
+          }`}
         options={options ? options : []}
         value={options ? options.find((option) => option.value === value) : ""}
         onChange={(selectedOption) => onChange(name, selectedOption.value)}
@@ -74,9 +73,8 @@ const SelectMultiInputComponent = ({
         name={name}
         id={name}
         isDisabled={disabled}
-        className={`custom-select-input form-control ${
-          error && touch ? "is-invalid" : ""
-        }`}
+        className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
+          }`}
         options={options ? options : []}
         value={value ? value : ""}
         onChange={(selectedOption) => {
@@ -213,15 +211,14 @@ const PhoneNumberInput = ({
             name={countryCodeName}
             isDisabled={disabled}
             id={countryCodeName}
-            className={`custom-select-input form-control ${
-              error && touch ? "is-invalid" : ""
-            }`}
+            className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
+              }`}
             options={countryCodesOptions ? countryCodesOptions : []}
             value={
               countryCodesOptions
                 ? countryCodesOptions.find(
-                    (option) => option.value === countryCode
-                  )
+                  (option) => option.value === countryCode
+                )
                 : ""
             }
             onChange={(selectedOption) =>
@@ -542,7 +539,7 @@ const FilterInput = ({ filters, onChange }) => {
                 </div>
               );
             }
-            if (filter.type === "select") {
+            else if (filter.type === "select") {
               return (
                 <Select
                   options={filter.option}
@@ -553,6 +550,20 @@ const FilterInput = ({ filters, onChange }) => {
                   id={filter.name}
                   onChange={(option) => {
                     onChange(filter.name, option.value);
+                  }}
+                />
+              );
+            } else if (filter.type === "date") {
+              return (
+                <input
+                  type="date"
+                  placeholder={filter.placeholder}
+                  className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 px-3 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
+                  name={filter.name}
+                  id={filter.name}
+                  dateFormat="dd-mm-yyyy"
+                  onChange={(option) => {
+                    onChange(filter.name, option.target.value);
                   }}
                 />
               );

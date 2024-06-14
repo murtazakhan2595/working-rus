@@ -101,7 +101,7 @@ const Applications = ({ baseUrl, token }) => {
     const fetchLists = async () => {
       try {
         // const URL = `/candidateall/?search=${encodeURIComponent(`{"application_status": "${applicationStatus}", "job_id": ${id}}`)}`
-        const URL = `/candidateall/`
+        const URL = `/candidateall/?page=${options.page}&page_size=${options.sizePerPage}`
         const applicationsData = await getJobApplications(URL);
         setApplications(applicationsData);
         setIsLoading(false);
@@ -110,7 +110,7 @@ const Applications = ({ baseUrl, token }) => {
       }
     };
     fetchLists();
-  }, [id, applicationStatus]);
+  }, [id, applicationStatus,options]);
 
   const handleRowClick = (id) => {
     setSelectedRow(selectedRow === id ? null : id);
@@ -174,10 +174,13 @@ const Applications = ({ baseUrl, token }) => {
           <BsThreeDots onClick={() => toggleDropdown(row.id)} />
         </DropdownToggle>
         <DropdownMenu right>
-          {/* <DropdownItem onClick={() => navigate(`/profile/${row.id}`)}>Edit Profile</DropdownItem>
-          <DropdownItem onClick={() => navigate(`/edit-employee/${row.id}`)}>Edit Employee</DropdownItem>
-          <DropdownItem onClick={() => navigate(`/user/${row.id}`)}>View Profile</DropdownItem> */}
-          {/* <DropdownItem onClick={() => handleDelete(row.id)}>Delete Employee</DropdownItem> */}
+          {dropdownOptions.map(option => {
+            return (
+              <>
+                <DropdownItem onClick={() => handleOptionSelect(option.value)}>{option.label}</DropdownItem>
+              </>
+            )
+          })}
         </DropdownMenu>
       </ButtonDropdown>
     </div>
@@ -306,9 +309,9 @@ const Applications = ({ baseUrl, token }) => {
                   <div className="py-3 px-3">
                     <FilterInput
                       filters={[
-                        { type: 'search', placeholder: 'Search by ID and Name', name: 'id_and_first_name' },
-                        { type: 'select', option: departments, name: 'department_name', placeholder: "Department" },
-                        { type: 'select', option: designations, name: 'department_position', placeholder: "Designation" },
+                        { type: 'search', placeholder: 'Search by Keyword', name: 'id_and_first_name' },
+                        { type: 'date', name: 'updated_at', placeholder: "Applied On" },
+                        { type: 'select', option: dropdownOptions, name: 'status', placeholder: "Status" },
                         // { type: 'select', option: UserRoles, name: 'user_role', placeholder: "Role" }
                       ]}
                       onChange={handleFilterChange}
@@ -342,14 +345,12 @@ const Applications = ({ baseUrl, token }) => {
                           tdStyle={{ whiteSpace: 'normal' }}
                           isKey
                           dataField="id"
-                          dataSort
-                          className="table-header-bg"
+                          className="table-header-bg text-center"
                         >
                           Candidate ID
                         </TableHeaderColumn>
                         <TableHeaderColumn
                           dataField="first_name"
-                          dataSort
                           className="table-header-bg"
                           dataFormat={renderCandidate}
                         >
@@ -357,7 +358,6 @@ const Applications = ({ baseUrl, token }) => {
                         </TableHeaderColumn>
                         <TableHeaderColumn
                           dataField="phone_number"
-                          dataSort
                           className="table-header-bg"
                           width="20%"
                           dataFormat={(cell, row) => (
@@ -403,11 +403,21 @@ const Applications = ({ baseUrl, token }) => {
                           Resume
                         </TableHeaderColumn>
                         <TableHeaderColumn
-                          className="table-header-bg text-right"
-                          headerAlign="center"
-                          dataFormat={(cell, row) => renderAction(row)}
+                          dataField="application_status"
+                          className="table-header-bg"
+                          dataFormat={(cell) => {
+                            const role = dropdownOptions.find(obj => obj.value === cell);
+                            return role?.label ?? '';
+                          }}
                         >
                           Status
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                          className="table-header-bg text-right"
+                          width="42px"
+                          headerAlign="right"
+                          dataFormat={(cell, row) => renderAction(row)}
+                        >
                         </TableHeaderColumn>
                       </BootstrapTable>
                     </div>
