@@ -1,4 +1,4 @@
-name: Trigger auto deployment for hrms-staging-frontend
+name: Azure Staging Deployment 
 
 # When this action will be executed
 on:
