@@ -39,6 +39,7 @@ function getPersonalInfo(data) {
     other_email: data.other_email,
     nic: data.nic,
     mother_name: data.mother_name,
+    father_name: data.father_name,
     profile_picture: data.profile_picture,
   };
   return personalInfo;
