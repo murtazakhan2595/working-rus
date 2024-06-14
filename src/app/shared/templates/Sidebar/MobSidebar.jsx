@@ -829,7 +829,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
                     </Link>
                     <div className="flex items-center cursor-pointer justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
                       onClick={() => {
-                        cookies.set("token", "", { path: "*" });
+                        window.localStorage.setItem("token","")
                         setUserLogout();
                         navigate("/");
                       }}>

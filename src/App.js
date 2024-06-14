@@ -9,7 +9,7 @@ import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
 import RecruitmentForm from "./app/modules/RecruitmentData/RecruitmentForm.jsx";
-import ApplicantsDataTable from "./app/modules/RecruitmentData/ApplicantsDataTable.jsx";
+import { Applications } from "./app/modules/RecruitmentData";
 import JobsDataTable from "./app/modules/RecruitmentData/JobsDataTable.jsx";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
@@ -55,7 +55,7 @@ import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/Cr
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
   const userProfile = useSelector((state) => state.user.userProfile);
-  let token = useSelector((state) => state.user.token);
+  const token = window.localStorage.getItem("token")
   const baseUrl = useSelector((state) => state.user.baseUrl);
   let dispatch = useDispatch();
 
@@ -66,7 +66,7 @@ function App() {
   const [userRole, setUserRole] = useState(userProfile.role);
   const navigate = useNavigate();
   const cookies = new Cookies();
-  token = cookies.get("token");
+  //token = cookies.get("token");
   const location = useLocation();
 
   const handleUpdateProfile = (data) => {
@@ -94,7 +94,7 @@ function App() {
         }
         handleUpdateProfile(response.data);
         dispatch(setToken(token));
-        cookies.set("token", token, { path: "*" });
+        window.localStorage.setItem("token", token)
         setLoading(false);
         return;
       }
@@ -134,7 +134,7 @@ function App() {
   if (loading) {
     return <PageLoader />; // Render the loader if loading is true
   }
-  console.log(userRole,userProfile);
+  console.log(userRole, userProfile);
   return (
     <>
       <Routes>
@@ -261,8 +261,8 @@ function App() {
                   <Route path="/personnel-requisition" element={<ComingSoon />} />
                   <Route path="/jobs" element={<JobsDataTable />} />
                   <Route path="/job-post" element={<RecruitmentForm />} />
-                  <Route path="/applicants/:id" element={<ApplicantsDataTable />} />
-                  <Route path="/applicants" element={<ApplicantsDataTable />} />
+                  <Route path="/applicants/:id" element={<Applications />} />
+                  <Route path="/applicants" element={<Applications />} />
                   <Route path="/referals" element={<ComingSoon />} />
                   <Route path="/learn" element={<ComingSoon />} />
                   <Route path="/career-planning" element={<ComingSoon />} />

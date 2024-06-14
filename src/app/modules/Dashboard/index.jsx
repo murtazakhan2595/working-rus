@@ -23,7 +23,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
   };
 
   const handleLogout = () => {
-    cookies.set("token", "", { path: "*" });
+    window.localStorage.setItem("token","")
     setUserLogout();
     navigate("/login");
   };

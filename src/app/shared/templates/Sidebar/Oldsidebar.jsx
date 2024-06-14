@@ -568,7 +568,7 @@ const Sidebar = ({
 
             <li
               onClick={() => {
-                cookies.set("token", "", { path: "*" });
+                window.localStorage.setItem("token","")
                 setUserLogout();
                 navigate("/");
               }}

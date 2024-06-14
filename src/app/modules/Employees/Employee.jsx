@@ -194,7 +194,7 @@ const Employee = () => {
                 content={
                     <CustomDarkButton
                         label={'+ Add Employee'}
-                        onClick={() => navigate('/create-employee')}
+                        onClick={() => navigate('/add-employee')}
                     />
                 }
             />

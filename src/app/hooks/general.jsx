@@ -1,21 +1,17 @@
 import axios from "axios";
 import { toast } from "react-toastify"; 
 import {initialState} from '../../state/slices/UserSlice';
-import Cookies from "universal-cookie";
 
 const baseUrl = initialState.baseUrl;
-const cookies = new Cookies();
-const token = cookies.get("token");
-console.log(token)
-const headers = {
-    Authorization: `Bearer ${token}`,
+const headers = () => ({
+    Authorization: `Bearer ${window.localStorage.getItem("token")}`,
     "Content-Type": "application/json",
-};
+  });
 
 const getDepartmentList = async () => {
     try {
         const response = await axios.get(`${baseUrl}/department/`, {
-            headers,
+            headers:headers(),
         })
         if (response.status === 200) {
             const departmentResponse = response.data;
@@ -35,7 +31,7 @@ const getDepartmentList = async () => {
 const getDesignationList = async () => {
     try {
         const response = await axios.get(`${baseUrl}/designation/`, {
-            headers,
+            headers:headers(),
         })
         if (response.status === 200) {
             const departmentResponse = response.data;
@@ -56,7 +52,7 @@ const getDesignationList = async () => {
 const getManagersList = async () => {
     try {
         const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
-            headers,
+            headers:headers(),
         })
         if (response.status === 200) {
             const managerResponse = response.data;
@@ -76,7 +72,7 @@ const getManagersList = async () => {
 
 const getList = async (URL) => {
     try {
-        const response = await axios.get(`${baseUrl}${URL}`, { headers, })
+        const response = await axios.get(`${baseUrl}${URL}`, { headers:headers(), })
         if (response.status === 200)
             return response.data;
         else
@@ -89,7 +85,7 @@ const getList = async (URL) => {
 
 const deleteRecord = async (URL, recordName) => {
     try {
-        const response = await axios.delete(`${baseUrl}${URL}`, { headers });
+        const response = await axios.delete(`${baseUrl}${URL}`, { headers:headers() });
         if (response.status === 204) {
             toast.success(`${recordName} deleted successfully`, {
                 position: toast.POSITION.TOP_RIGHT,
