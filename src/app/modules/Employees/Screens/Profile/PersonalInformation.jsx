@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Row,
-  Col,
-  Form,
-} from "reactstrap";
+import { Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import { getAllCountries } from "countries-and-timezones";
 import { connect } from "react-redux";
@@ -86,7 +82,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                 //     }
                 // }
                 if (imageError) {
-                    errors.profile_picture = imageError;
+                  errors.profile_picture = imageError;
                 }
                 // console.log(values, errors)
 
@@ -142,7 +138,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         value={props.values.mobile_no}
                         label={"Contact no."}
                         countryCode={props.values.country_code}
-                        countryCodeName={'country_code'}
+                        countryCodeName={"country_code"}
                         required={true}
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
@@ -191,6 +187,19 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                     </Col>
                     <Col md="6">
                       <TextInput
+                        name={"father_name"}
+                        error={props.errors.father_name}
+                        touch={props.touched.father_name}
+                        value={props.values.father_name}
+                        label={"Father Name"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </Col>
+                    <Col md="6">
+                      <TextInput
                         name={"mother_name"}
                         error={props.errors.mother_name}
                         touch={props.touched.mother_name}
@@ -202,6 +211,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         }}
                       />
                     </Col>
+
                     <Col md={6}>
                       <SelectComponent
                         name={"nationality"}

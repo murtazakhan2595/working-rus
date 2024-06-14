@@ -209,7 +209,7 @@ const EmployeeForm = forwardRef(({ isLoading, formData, handleSubmit, empId, set
                                                 <Link
                                                     type="button"
                                                     className="btn btn-outline-dark w-100"
-                                                    to="/employees"
+                                                    to="/profile-management"
                                                 >
                                                     Cancel
                                                 </Link>
