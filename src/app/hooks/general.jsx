@@ -6,6 +6,7 @@ import Cookies from "universal-cookie";
 const baseUrl = initialState.baseUrl;
 const cookies = new Cookies();
 const token = cookies.get("token");
+console.log(token)
 const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",

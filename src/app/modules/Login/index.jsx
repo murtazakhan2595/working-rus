@@ -37,8 +37,7 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
 
   const handleUpdateProfile = (data) => {
-    let updateProfile = { id: data.id, username: data.username };
-    dispatch(setUserProfile(updateProfile));
+    dispatch(setUserProfile(data));
   };
 
   const handleCheckboxChange = (e) => {
@@ -116,11 +115,7 @@ function Login() {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: 1000,
           });
-
-          // // Navigate to the desired location after a delay (e.g., 2 seconds)
-          // setTimeout(() => {
-          //   navigate("/");
-          // }, 2000);
+          navigate("/");
           return;
         }
       }

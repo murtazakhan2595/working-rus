@@ -54,6 +54,7 @@ import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/Cr
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
+  const userProfile = useSelector((state) => state.user.userProfile);
   let token = useSelector((state) => state.user.token);
   const baseUrl = useSelector((state) => state.user.baseUrl);
   let dispatch = useDispatch();
@@ -62,7 +63,7 @@ function App() {
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(baseUrl.role);
+  const [userRole, setUserRole] = useState(userProfile.role);
   const navigate = useNavigate();
   const cookies = new Cookies();
   token = cookies.get("token");
@@ -126,10 +127,14 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    setUserRole(userProfile.role)
+  }, [userProfile]);
+
   if (loading) {
     return <PageLoader />; // Render the loader if loading is true
   }
-  console.log(userRole);
+  console.log(userRole,userProfile);
   return (
     <>
       <Routes>

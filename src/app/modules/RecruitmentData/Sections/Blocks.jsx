@@ -18,7 +18,7 @@ function Block({ blocks }) {
 };
 function SubBlock(label, value, image) {
     return (
-        <Col md={4} className="mb-3">
+        <Col md={6} className="mb-3">
             <div className="bg-[#FAFBFC] rounded-[20px] p-4 flex gap-x-[30px] m-1">
                 <img src={image} alt="icon" />
                 <div>
