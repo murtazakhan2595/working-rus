@@ -212,7 +212,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                       />
                     </Col>
 
-                    <Col md={6}>
+                    <Col md={6} className="z-0">
                       <SelectComponent
                         name={"nationality"}
                         options={countryOptions}
@@ -237,7 +237,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         }}
                       />
                     </Col>
-                    <Col md={6}>
+                    <Col md={6} className="z-0">
                       <SelectComponent
                         name={"marital_status"}
                         options={maritalStatus}
