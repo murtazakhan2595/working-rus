@@ -635,7 +635,7 @@ const Sidebar = ({
                         </div>
                         <div className="flex flex-col gap-y-2 mt-2 mx-1">
                           <Link
-                            to="/profile"
+                            to="/my-profile"
                             className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
                           >
                             <p>Profile Settings</p>
@@ -684,7 +684,7 @@ const Sidebar = ({
                   {isProfileOpen && isSidebarOpen && (
                     <div className="flex flex-col gap-y-2 mt-2">
                       <Link
-                        to="/profile"
+                        to="/my-profile"
                         className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
                       >
                         <p>Profile Settings</p>

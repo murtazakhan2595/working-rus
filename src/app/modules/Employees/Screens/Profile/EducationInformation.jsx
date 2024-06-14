@@ -256,7 +256,7 @@ const EducationInformation = ({
                                 onChange={(field, value) => {
                                   props.setFieldValue(field, value);
                                 }}
-                                label={"Upload your Certification or drag it here"}
+                                label={"Certification or drag it here"}
                                 required
                                 error={
                                   props.errors.educations &&

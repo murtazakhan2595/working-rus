@@ -6,11 +6,6 @@ const headers = (token) => ({
   });
 
 export const fetchJobPosts = async (baseUrl, token, status) => {
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-
   let searchStatus = '';
   if (status === 'Open') {
     searchStatus = 'live';
@@ -33,6 +28,7 @@ export const fetchJobPosts = async (baseUrl, token, status) => {
     throw error;
   }
 };
+
 
 
 export const fetchJobById = async (baseUrl, id, token) => {

@@ -43,7 +43,7 @@ const Experience = ({ experience,isEditable , employeeId}) => {
                 </div>
                 <div className="opacity-80">
                   {exp.exp_start_date || "00/00/0000"} -{" "}
-                  {exp.exp_end_date || "00/00/0000"}
+                  {exp.exp_end_date ? exp.exp_end_date : "Till date" || "00/00/0000"}
                 </div>
               </div>
               <div className="md:w-[calc(100%-250px)] opacity-70">
