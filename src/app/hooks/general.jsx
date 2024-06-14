@@ -1,10 +1,17 @@
 import axios from "axios";
 import { toast } from "react-toastify"; 
 import {initialState} from '../../state/slices/UserSlice';
+import Cookies from "universal-cookie";
 
 const baseUrl = initialState.baseUrl;
+const cookies = new Cookies();
+const token = cookies.get("token");
+const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+};
 
-const getDepartmentList = async (headers) => {
+const getDepartmentList = async () => {
     try {
         const response = await axios.get(`${baseUrl}/department/`, {
             headers,
@@ -24,7 +31,7 @@ const getDepartmentList = async (headers) => {
     }
     return [];
 }
-const getDesignationList = async (headers) => {
+const getDesignationList = async () => {
     try {
         const response = await axios.get(`${baseUrl}/designation/`, {
             headers,
@@ -45,7 +52,7 @@ const getDesignationList = async (headers) => {
     return [];
 }
 
-const getManagersList = async (headers) => {
+const getManagersList = async () => {
     try {
         const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
             headers,
@@ -66,7 +73,7 @@ const getManagersList = async (headers) => {
     return [];
 }
 
-const getList = async (URL, headers) => {
+const getList = async (URL) => {
     try {
         const response = await axios.get(`${baseUrl}${URL}`, { headers, })
         if (response.status === 200)
@@ -79,9 +86,9 @@ const getList = async (URL, headers) => {
     return [];
 }
 
-const deleteRecord = async (URL, headers, recordName) => {
+const deleteRecord = async (URL, recordName) => {
     try {
-        const response = await axios.delete(URL, { headers });
+        const response = await axios.delete(`${baseUrl}${URL}`, { headers });
         if (response.status === 204) {
             toast.success(`${recordName} deleted successfully`, {
                 position: toast.POSITION.TOP_RIGHT,

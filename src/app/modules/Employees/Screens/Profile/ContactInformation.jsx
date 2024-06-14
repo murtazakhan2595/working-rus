@@ -128,7 +128,7 @@ const ContactInformation = ({
                 Permanent Address
               </h2>
               <Row>
-                <Col md="6">
+                <Col md="12">
                   <TextAreaInput
                     name="residential_address"
                     error={props.errors.residential_address}
@@ -141,24 +141,12 @@ const ContactInformation = ({
                     }}
                   />
                 </Col>
-                <Col md="6">
-                  <TextInput
-                    name="mobile_no"
-                    error={props.errors.mobile_no}
-                    touch={props.touched.mobile_no}
-                    value={props.values.mobile_no}
-                    label="Postal Code"
-                    onChange={(field, value) => {
-                      //props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
               </Row>
               <h2 className="text-[22px] font-lato font-bold text-[#323333] text-left">
                 Present Address
               </h2>
               <Row>
-                <Col md="6">
+                <Col md="12">
                   <TextAreaInput
                     name="current_address"
                     error={props.errors.current_address}
@@ -168,18 +156,6 @@ const ContactInformation = ({
                     required
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-                <Col md="6">
-                  <TextInput
-                    name="mobile_no"
-                    error={props.errors.mobile_no}
-                    touch={props.touched.mobile_no}
-                    value={props.values.mobile_no}
-                    label="Postal Code"
-                    onChange={(field, value) => {
-                   //   props.handleChange(field)(value);
                     }}
                   />
                 </Col>

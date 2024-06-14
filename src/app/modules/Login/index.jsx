@@ -54,6 +54,7 @@ function Login() {
   };
 
   const handleSubmit = async (e) => {
+    debugger
     e.preventDefault();
 
     // Check for internet connection
@@ -88,6 +89,8 @@ function Login() {
           const userProfile = {
             id: userProfileResponse.data.id,
             username: userProfileResponse.data.username,
+            is_filled: userProfileResponse.data.is_filled,
+            role: userProfileResponse.data.user_role,
           };
 
           // Update the user profile in the Redux store
@@ -114,10 +117,10 @@ function Login() {
             autoClose: 1000,
           });
 
-          // Navigate to the desired location after a delay (e.g., 2 seconds)
-          setTimeout(() => {
-            navigate("/");
-          }, 2000);
+          // // Navigate to the desired location after a delay (e.g., 2 seconds)
+          // setTimeout(() => {
+          //   navigate("/");
+          // }, 2000);
           return;
         }
       }
@@ -162,10 +165,6 @@ function Login() {
       window.removeEventListener("offline", handleConnectionChange);
     };
   }, []);
-
-  if(isLogin){
-    navigate('/')
-  }
 
   return (
     <div className="h-screen flex justify-center">
