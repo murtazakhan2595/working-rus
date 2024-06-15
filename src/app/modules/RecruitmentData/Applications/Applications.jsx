@@ -24,7 +24,7 @@ import {
 import { cut, file, list, jobIcon } from '../../../../assets/images';
 import { AiOutlineDownload } from "react-icons/ai";
 import { FaCaretDown } from "react-icons/fa";
-import { Tabs, Blocks, Header } from "../Sections";
+import { Tabs, Blocks, Header, StatusLabel } from "../Sections";
 import JobDetails from "../JobDetails";
 import CandidatesList from "../CandidatesList";
 import {
@@ -110,7 +110,7 @@ const Applications = ({ baseUrl, token }) => {
       }
     };
     fetchLists();
-  }, [id, applicationStatus,options]);
+  }, [id, applicationStatus, options]);
 
   const handleRowClick = (id) => {
     setSelectedRow(selectedRow === id ? null : id);
@@ -255,7 +255,7 @@ const Applications = ({ baseUrl, token }) => {
   return (
     <div className="screen bg-[#F0F1F2]">
       <Header
-        title="Profile Management"
+        title="Applications"
         content={
           <FilterInput
             filters={[
@@ -342,10 +342,11 @@ const Applications = ({ baseUrl, token }) => {
                         className={'bootstrap-main-table'}
                       >
                         <TableHeaderColumn
-                          tdStyle={{ whiteSpace: 'normal' }}
                           isKey
                           dataField="id"
                           className="table-header-bg text-center"
+                          headerAlign="center"
+                          dataAlign="center"
                         >
                           Candidate ID
                         </TableHeaderColumn>
@@ -407,7 +408,7 @@ const Applications = ({ baseUrl, token }) => {
                           className="table-header-bg"
                           dataFormat={(cell) => {
                             const role = dropdownOptions.find(obj => obj.value === cell);
-                            return role?.label ?? '';
+                            return (<StatusLabel status={role?.label} />);
                           }}
                         >
                           Status
