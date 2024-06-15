@@ -11,12 +11,14 @@ import ViewJobDetails from "./ViewJobDetails";
 import Tabs from "./Sections/Tabs";
 import { fetchJobPosts } from "../../hooks/recruitment";
 import { LuExternalLink } from "react-icons/lu";
+import ViewApplicantDetails from "./Applications/ViewApplicantDetails";
 
 const JobsDataTable = ({ baseUrl, token }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All");
   const [selectedPost, setSelectedPost] = useState(null);
+  const [show, setShow] = useState(true);
 
   const navigate = useNavigate();
 
@@ -165,6 +167,9 @@ const JobsDataTable = ({ baseUrl, token }) => {
       {renderTable()}
       {selectedPost && (
         <ViewJobDetails post={selectedPost} onClose={closeModal} />
+      )}
+      {show && (
+        <ViewApplicantDetails />
       )}
     </div>
   );

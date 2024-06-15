@@ -263,6 +263,7 @@ function App() {
                   <Route path="/job-post" element={<RecruitmentForm />} />
                   <Route path="/applicants/:id" element={<Applications />} />
                   <Route path="/applicants" element={<Applications />} />
+                  <Route path="/tests" element={<Test />} />
                   <Route path="/referals" element={<ComingSoon />} />
                   <Route path="/learn" element={<ComingSoon />} />
                   <Route path="/career-planning" element={<ComingSoon />} />
