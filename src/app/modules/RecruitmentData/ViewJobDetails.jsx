@@ -5,6 +5,7 @@ import dots from "../../../assets/images/dots.svg";
 import { CiEdit } from "react-icons/ci";
 import { PiBriefcaseThin } from "react-icons/pi";
 import { IoArrowForward } from "react-icons/io5";
+import { convertToK } from "../../../utils/ConvertToK";
 
 const ViewJobDetails = ({ post, onClose }) => {
   return (
@@ -98,7 +99,7 @@ const ViewJobDetails = ({ post, onClose }) => {
         <div>
           <p class="text-[14px] font-normal font-lato text-baseGray">Salary</p>
           <p class="text-base font-semibold font-lato text-baseGray">
-            {post?.min_salary} - {post?.max_salary}
+            {convertToK(post?.min_salary)} - {convertToK(post?.max_salary)}
           </p>
         </div>
         <div>

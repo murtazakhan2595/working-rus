@@ -9,6 +9,7 @@ import proCheck from "../../../assets/images/proCheck.svg";
 import { Header } from "./Sections";
 import Label from "./Sections/Label";
 import { fetchJobById } from "../../hooks/recruitment";
+import { convertToK } from "../../../utils/ConvertToK";
 
 const JobDescription = ({ baseUrl }) => {
   const [jobDetails, setJobDetails] = useState(null);
@@ -53,12 +54,6 @@ const JobDescription = ({ baseUrl }) => {
     }
   };
 
-  function convertToK(number) {
-    if (number >= 1000) {
-      return (number / 1000).toFixed(1) + "K";
-    }
-    return number?.toString();
-  }
 
   return (
     <>
