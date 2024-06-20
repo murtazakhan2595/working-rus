@@ -6,6 +6,7 @@ import { PiBriefcaseThin } from "react-icons/pi";
 import { IoArrowForward } from "react-icons/io5";
 import { Tabs, Blocks, Header, StatusLabel, Labels } from "../Sections";
 import { PiDotsThreeOutlineFill } from "react-icons/pi";
+import { convertToK } from "../../../utils/ConvertToK";
 
 const ViewJobDetails = ({ job, onClose }) => {
   console.log(job)
@@ -83,7 +84,7 @@ const ViewJobDetails = ({ job, onClose }) => {
           <div>
             <p class="text-[14px] font-normal font-lato text-baseGray">Salary</p>
             <p class="text-base font-semibold font-lato text-baseGray">
-              {job?.min_salary} - {job?.max_salary}
+              {convertToK(post?.min_salary)} - {convertToK(post?.max_salary)}
             </p>
           </div>
           <div>
