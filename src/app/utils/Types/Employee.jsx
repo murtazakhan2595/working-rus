@@ -56,6 +56,7 @@ const EmployeeProfessionalExperiance = {
   employee_id: null,
   exp_organization: null,
   exp_designation: null,
+  exp_discription: null,
   exp_letter: null,
   exp_start_date: null,
   exp_end_date: null,

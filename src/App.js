@@ -86,6 +86,7 @@ function App() {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("i am getProfile respnse from app.js", response);
       if (response.status === 200) {
         setUserRole(response.data.user_role)
         if (!response.data.is_filled) {
