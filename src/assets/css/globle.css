@@ -140,3 +140,12 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
     border-top-left-radius: 10px !important;
     border-top-right-radius: 10px !important;
 }
+
+.date-floating-label{
+    transform: scale(.85) translateY(-.5rem) translateX(.15rem);
+}
+
+.date-floating-input{
+    padding-top: 1.625rem;
+    padding-bottom: .625rem;
+}

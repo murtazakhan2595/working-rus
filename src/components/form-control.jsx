@@ -22,29 +22,15 @@ const SelectComponent = ({
 }) => {
   return (
     <FormGroup>
-      {/* <Select
-                name={name}
-                isDisabled={disabled}
-                id={name}
-                className={`custom-select-input z-10 form-control ${error && touch ? "is-invalid" : ""
-                    }`}
-                options={options ? options : []}
-                value={options ? options.find((option) => option.value === value) : ""}
-                onChange={(selectedOption) => onChange(name, selectedOption.value)}
-                placeholder={label}
-                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
-            /> */}
-
       <Select
         name={name}
         isDisabled={disabled}
         id={name}
-        className={`custom-select-input z-10 form-control ${
-          error && touch ? "is-invalid" : ""
-        }`}
+        className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
+          }`}
         options={options ? options : []}
-        value={options ? options.find((option) => option.label === value) : ""}
-        onChange={(selectedOption) => onChange(name, selectedOption.label)}
+        value={options ? options.find((option) => option.value === value) : ""}
+        onChange={(selectedOption) => onChange(name, selectedOption.value)}
         placeholder={label}
         styles={{
           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -74,9 +60,8 @@ const SelectMultiInputComponent = ({
         name={name}
         id={name}
         isDisabled={disabled}
-        className={`custom-select-input form-control ${
-          error && touch ? "is-invalid" : ""
-        }`}
+        className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
+          }`}
         options={options ? options : []}
         value={value ? value : ""}
         onChange={(selectedOption) => {
@@ -88,6 +73,48 @@ const SelectMultiInputComponent = ({
       />
       {error && touch && <div className="invalid-feedback">{error}</div>}
     </FormGroup>
+  );
+};
+
+const DateInput = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  disabled,
+}) => {
+  const date = value ? new Date(moment(value)) : null;
+  return (
+    <>
+      <FormGroup floating>
+        <DatePicker
+          name={name}
+          id={name}
+          isDisabled={disabled}
+          className={`form-control ${error && touch ? "is-invalid" : ""} ${value ? 'date-floating-input' : ''}`}
+          value={date && !isNaN(date.getTime()) ? date : ""}
+          selected={date && !isNaN(date.getTime()) ? date : new Date()}
+          dropdownMode="select"
+          onChange={(value) => {
+            if (value) {
+              value = moment(value).format("YYYY-MM-DD");
+              onChange(name, value);
+            } else {
+              onChange(name, null);
+            }
+          }}
+          showMonthDropdown
+          showYearDropdown
+          dateFormat="dd-MM-yyyy"
+        />
+        <Label className={`text-baseGray ${value ? 'date-floating-label' : ''}`} for={name}>{label}</Label>
+        {error && touch && (
+          <div className="invalid-feedback d-block">{error}</div>
+        )}
+      </FormGroup>
+    </>
   );
 };
 
@@ -104,23 +131,20 @@ const SelectMultiInputComponent = ({
 //   return (
 //     <>
 //       <FormGroup floating>
-//         <DatePicker
+//         <Input
+//           type="date"
 //           name={name}
 //           id={name}
-//           isDisabled={disabled}
+//           disabled={disabled}
 //           className={`form-control ${error && touch ? "is-invalid" : ""}`}
 //           value={date && !isNaN(date.getTime()) ? date : ""}
-//           selected={date && !isNaN(date.getTime()) ? date : new Date()}
-//           dropdownMode="select"
-//           onChange={(value) => {
-//             value = moment(value).format("YYYY-MM-DD");
+//           onChange={(e) => {
+//             const value = e.target.value;
 //             onChange(name, value);
 //           }}
-//           placeholderText={label}
-//           showMonthDropdown
-//           showYearDropdown
-//           dateFormat="dd-MM-yyyy"
+//           placeholder={label}
 //         />
+//         {label && <Label className="text-baseGray" for={name}>{label}</Label>}
 //         {error && touch && (
 //           <div className="invalid-feedback d-block">{error}</div>
 //         )}
@@ -128,40 +152,6 @@ const SelectMultiInputComponent = ({
 //     </>
 //   );
 // };
-
-const DateInput = ({
-  name,
-  value,
-  error,
-  touch,
-  onChange,
-  label,
-  disabled,
-}) => {
-  return (
-    <>
-      <FormGroup floating>
-        <Input
-          type="date"
-          name={name}
-          id={name}
-          disabled={disabled}
-          className={`form-control ${error && touch ? "is-invalid" : ""}`}
-          value={value ? value : ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            onChange(name, value);
-          }}
-          placeholder={label}
-        />
-        {label && <Label for={name}>{label}</Label>}
-        {error && touch && (
-          <div className="invalid-feedback d-block">{error}</div>
-        )}
-      </FormGroup>
-    </>
-  );
-};
 
 const TextInput = ({
   name,
@@ -196,7 +186,7 @@ const TextInput = ({
             }
           }}
         />
-        <Label htmlFor="address">
+        <Label className="text-baseGray" htmlFor="address">
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
@@ -247,15 +237,14 @@ const PhoneNumberInput = ({
             name={countryCodeName}
             isDisabled={disabled}
             id={countryCodeName}
-            className={`custom-select-input form-control ${
-              error && touch ? "is-invalid" : ""
-            }`}
+            className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
+              }`}
             options={countryCodesOptions ? countryCodesOptions : []}
             value={
               countryCodesOptions
                 ? countryCodesOptions.find(
-                    (option) => option.value === countryCode
-                  )
+                  (option) => option.value === countryCode
+                )
                 : ""
             }
             onChange={(selectedOption) =>
@@ -282,7 +271,7 @@ const PhoneNumberInput = ({
                   onChange(name, value);
               }}
             />
-            <Label htmlFor="address">
+            <Label className="text-baseGray" htmlFor="address">
               {required && <span className="text-danger">* </span>}
               {label}
             </Label>
@@ -323,7 +312,7 @@ const EmailInput = ({
             if (!value || regExTelephone.test(value)) onChange(name, value);
           }}
         />
-        <Label htmlFor="address">
+        <Label className="text-baseGray" htmlFor="address">
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
@@ -542,7 +531,7 @@ const TextAreaInput = ({
             }
           }}
         />
-        <Label htmlFor="address">
+        <Label className="text-baseGray" htmlFor="address">
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>

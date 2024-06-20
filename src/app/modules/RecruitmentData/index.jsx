@@ -1,8 +1,9 @@
 import {Applications} from './Applications';
-import { Jobs } from './Jobs';
+import { Jobs ,CreateUpdateJob} from './Jobs';
 
 
 export {
     Applications,
     Jobs,
+    CreateUpdateJob
 }

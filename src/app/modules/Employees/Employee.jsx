@@ -42,6 +42,7 @@ const Employee = () => {
         sortName: '',
         sortOrder: '',
     });
+
     const onSizePerPageList = (sizePerPage) => {
         if (options.sizePerPage !== sizePerPage) {
             setOptions((prevOptions) => ({ ...prevOptions, sizePerPage }));
@@ -63,7 +64,7 @@ const Employee = () => {
     };
 
     useEffect(() => {
-        
+        let isMounted = true;
         const fetchData = async () => {
             setIsLoading(true);
             try {
@@ -72,21 +73,28 @@ const Employee = () => {
                     URL += filters;
                 }
                 const employeeData = await getList(URL);
-                setEmployeeData(employeeData);
-                if (employeeData && employeeData.results) {
-                    setActiveEmployee(employeeData.results.active_employees);
-                    setTotalEmployee(employeeData.results.total_employees);
-                    setTotalManager(employeeData.results.total_managers);
+                if (isMounted) {
+                    setEmployeeData(employeeData);
+                    if (employeeData && employeeData.results) {
+                        setActiveEmployee(employeeData.results.active_employees);
+                        setTotalEmployee(employeeData.results.total_employees);
+                        setTotalManager(employeeData.results.total_managers);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching users:", error);
             } finally {
-                setIsLoading(false);
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         };
 
         fetchData();
-    }, [options, filters, setIsLoading]);
+        return () => {
+            isMounted = false;
+        };
+    }, [options, filters]);
 
     useEffect(() => {
         const fetchLists = async () => {
@@ -107,7 +115,7 @@ const Employee = () => {
         setIsLoading(true);
         try {
             const URL = `/emp/${employeeId}`;
-            await deleteRecord(URL, 'Employee')
+            await deleteRecord(URL, 'Employee');
         } catch (error) {
             console.log(error);
         } finally {
@@ -116,18 +124,18 @@ const Employee = () => {
     };
 
     const renderName = (cell, row) => (
-        <>
+        <div className="flex items-center">
             <div className="bg-[#BE24A5] text-[#FAFBFC] flex font-lato font-semibold text-lg items-center justify-center rounded-full w-10 h-10">
                 {row.first_name.toUpperCase().charAt(0)}
                 {row.last_name.toUpperCase().charAt(0)}
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col ml-2">
                 <div className="text-base font-bold leading-normal text-[#323333] font-lato">
                     {`${row.first_name} ${row.last_name}`}
                 </div>
                 <div className="text-base font-lato">{`${row.department_position}`}</div>
             </div>
-        </>
+        </div>
     );
 
     const toggleDropdown = (index) => {
@@ -135,23 +143,21 @@ const Employee = () => {
     };
 
     const renderAction = (row) => (
-        <div>
-            <ButtonDropdown
-                isOpen={openDropdownRow === row.id}
-                toggle={() => toggleDropdown(row.id)}
-                className="float-end"
-            >
-                <DropdownToggle size="sm" className="btn-brand">
-                    <BsThreeDots onClick={() => toggleDropdown(row.id)} />
-                </DropdownToggle>
-                <DropdownMenu right>
-                    <DropdownItem onClick={() => navigate(`/profile/${row.id}`)}>Edit Profile</DropdownItem>
-                    <DropdownItem onClick={() => navigate(`/edit-employee/${row.id}`)}>Edit Employee</DropdownItem>
-                    <DropdownItem onClick={() => navigate(`/user/${row.id}`)}>View Profile</DropdownItem>
-                    <DropdownItem onClick={() => handleDelete(row.id)}>Delete Employee</DropdownItem>
-                </DropdownMenu>
-            </ButtonDropdown>
-        </div>
+        <ButtonDropdown
+            isOpen={openDropdownRow === row.id}
+            toggle={() => toggleDropdown(row.id)}
+            className="float-end"
+        >
+            <DropdownToggle size="sm" className="btn-brand">
+                <BsThreeDots />
+            </DropdownToggle>
+            <DropdownMenu end>
+                <DropdownItem onClick={() => navigate(`/profile/${row.id}`)}>Edit Profile</DropdownItem>
+                <DropdownItem onClick={() => navigate(`/edit-employee/${row.id}`)}>Edit Employee</DropdownItem>
+                <DropdownItem onClick={() => navigate(`/user/${row.id}`)}>View Profile</DropdownItem>
+                <DropdownItem onClick={() => handleDelete(row.id)}>Delete Employee</DropdownItem>
+            </DropdownMenu>
+        </ButtonDropdown>
     );
 
     const tableOptions = {
@@ -166,13 +172,11 @@ const Employee = () => {
     const handleFilterChange = (filterName, filterValue) => {
         setFilterData((prevFilters) => {
             const updatedFilters = { ...prevFilters };
-    
             if (filterValue === "") {
                 delete updatedFilters[filterName];
             } else {
                 updatedFilters[filterName] = filterValue;
             }
-    
             if (Object.keys(updatedFilters).length > 0) {
                 const filters = Object.entries(updatedFilters)
                     .map(([key, value]) => `"${key}":"${value}"`)
@@ -181,11 +185,9 @@ const Employee = () => {
             } else {
                 setFilters(null);
             }
-    
             return updatedFilters;
         });
     };
-    
 
     return (
         <div className="screen">

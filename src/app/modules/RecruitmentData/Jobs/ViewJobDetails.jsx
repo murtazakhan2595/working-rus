@@ -6,7 +6,7 @@ import { PiBriefcaseThin } from "react-icons/pi";
 import { IoArrowForward } from "react-icons/io5";
 import { Tabs, Blocks, Header, StatusLabel, Labels } from "../Sections";
 import { PiDotsThreeOutlineFill } from "react-icons/pi";
-import { convertToK } from "../../../utils/ConvertToK";
+import { convertToK } from "../../../../utils/ConvertToK";
 
 const ViewJobDetails = ({ job, onClose }) => {
   console.log(job)
@@ -23,12 +23,12 @@ const ViewJobDetails = ({ job, onClose }) => {
 
         <div class="mb-4 flex items-center justify-between">
           <div>
-            <p class="font-lato text-base text-baseGray mb-3">{job?.id}</p>
-            <h2 class="text-2xl font-lato font-bold text-[#323333]">
+            <p class="text-capitalize text-base text-baseGray mb-3">{job?.id}</p>
+            <h2 class="text-2xl text-capitalize font-bold text-[#323333]">
               {job?.Job_Title}
             </h2>
           </div>
-          <div className="font-lato text-base text-baseGray flex items-center gap-x-4">
+          <div className="text-base text-baseGray flex items-center gap-x-4">
             <Link
               to={`/applicants/${job?.id}`}
               className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2"
@@ -42,71 +42,71 @@ const ViewJobDetails = ({ job, onClose }) => {
         </div>
         <div class="grid grid-cols-3 gap-4 mb-4 border border-gray-400 rounded-lg px-3 py-4">
           <div>
-            <p class="text-[14px] font-normal font-lato text-baseGray">
+            <p class="text-[14px] font-normal text-baseGray">
               Education
             </p>
-            <p class="text-base font-semibold font-lato text-baseGray">
+            <p class="text-base font-semibold text-baseGray">
               {job?.Education}
             </p>
           </div>
           <div>
-            <p class="text-[14px] font-normal font-lato text-baseGray">
+            <p class="text-[14px] font-normal text-baseGray">
               Job type
             </p>
-            <p class="text-base font-semibold font-lato text-baseGray">
+            <p class="text-base font-semibold text-baseGray">
               {job?.Job_Type}
             </p>
           </div>
           <div>
-            <p class="text-[14px] font-normal font-lato text-baseGray">
+            <p class="text-[14px] font-normal text-baseGray">
               Work type
             </p>
-            <p class="text-base font-semibold font-lato text-baseGray">
+            <p class="text-base font-semibold text-baseGray">
               {job?.Work_type}
             </p>
           </div>
           <div>
-            <p class="text-[14px] font-normal font-lato text-baseGray">
+            <p class="text-[14px] font-normal text-baseGray">
               Location
             </p>
-            <p class="text-base font-semibold font-lato text-baseGray">
+            <p class="text-base font-semibold text-baseGray">
               {job?.location}
             </p>
           </div>
           <div>
-            <p class="text-[14px] font-normal font-lato text-baseGray">
+            <p class="text-[14px] font-normal text-baseGray">
               Employee type
             </p>
-            <p class="text-base font-semibold font-lato text-baseGray">
+            <p class="text-base font-semibold text-baseGray">
               {job?.Employee_Type}
             </p>
           </div>
           <div>
-            <p class="text-[14px] font-normal font-lato text-baseGray">Salary</p>
-            <p class="text-base font-semibold font-lato text-baseGray">
-              {convertToK(post?.min_salary)} - {convertToK(post?.max_salary)}
+            <p class="text-[14px] font-normal text-baseGray">Salary</p>
+            <p class="text-base font-semibold text-baseGray">
+              {convertToK(job?.min_salary)} - {convertToK(job?.max_salary)}
             </p>
           </div>
           <div>
-            <p class="text-[14px] font-normal font-lato text-baseGray">
+            <p class="text-[14px] font-normal text-baseGray">
               Start date
             </p>
-            <p class="text-base font-semibold font-lato text-baseGray">
+            <p class="text-base font-semibold text-baseGray">
               06-07-2024
             </p>
           </div>
           <div>
-            <p class="text-[14px] font-normal font-lato text-baseGray">
+            <p class="text-[14px] font-normal text-baseGray">
               Deadline
             </p>
-            <p class="text-base font-semibold font-lato text-baseGray">
+            <p class="text-base font-semibold text-baseGray">
               29-08-2024
             </p>
           </div>
         </div>
 
         <div class="flex justify-between items-center">
-          <button class="flex items-center gap-x-2 rounded-full bg-[#E6E9F0] px-3 py-1 font-lato text-baseGray text-base font-normal">
+          <button class="flex items-center gap-x-2 rounded-full bg-[#E6E9F0] px-3 py-1 text-baseGray text-base font-normal">
             <PiBriefcaseThin className="text-xl" /> 40 Applications
           </button>
           <button className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2">
@@ -116,17 +116,17 @@ const ViewJobDetails = ({ job, onClose }) => {
         </div>
 
         <div className="mt-3">
-          <h3 className="font-lato font-bold text-base text-[#323333]">
+          <h3 className="font-bold text-base text-[#323333]">
             Job Description
           </h3>
-          <p className="text-base font-lato font-normal text-baseGray">
+          <p className="text-base font-normal text-baseGray">
             {job?.Job_Description}
           </p>
         </div>
-        <h3 className="font-lato font-bold text-base text-[#323333]">
+        <h3 className="font-bold text-base text-[#323333]">
           Job Requirements
         </h3>
-        <p className="text-base font-lato font-normal text-baseGray">
+        <p className="text-base font-normal text-baseGray">
           {job?.Job_Requirement}
         </p>
       </div>

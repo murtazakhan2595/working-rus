@@ -1,5 +1,6 @@
 import Jobs from "./Jobs";
+import CreateUpdateJob from './CreateUpdateJob';
 
-export{
-    Jobs
+export {
+    Jobs, CreateUpdateJob,
 }

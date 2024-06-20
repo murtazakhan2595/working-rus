@@ -1,15 +1,23 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Row, Col, Button, Form } from "reactstrap";
+import React, { useState, useEffect, useRef, forwardRef } from "react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Row,
+  Col,
+  Button,
+  Form,
+} from 'reactstrap';
 import { Formik } from "formik";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { FaChevronCircleLeft } from "react-icons/fa";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   TextInput,
   CustomDarkButton,
   SelectComponent,
   DateInput,
   TextAreaInput,
-} from "../../../components/form-control.jsx";
+} from "../../../../components/form-control.jsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -18,87 +26,54 @@ import {
   jobTypeOptions,
   locationTypeOptions,
   workTypeOptions,
-} from "../../../data/Data";
+} from "../../../../data/Data.js";
 import { PiCaretCircleLeftFill } from "react-icons/pi";
-import PageLoader from "../../../components/PageLoader.jsx";
+import PageLoader from "../../../../components/PageLoader.jsx";
 import { connect } from "react-redux";
-import { addJob } from "../../hooks/recruitment.jsx";
+import { addJob } from "../../../hooks/recruitment.jsx";
+import { JobDetail } from "../../../utils/Types/Recruitment.jsx"
+import { Header } from "../Sections/index.js"
+import { RxCross2 } from "react-icons/rx";
 
-const RecruitmentForm = ({ baseUrl, token }) => {
-  const formRef = useRef();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (values) => {
-    setIsLoading(true);
-
-    try {
-      const response = await addJob(baseUrl, values, token);
-
-      if (response.status === 201) {
-        toast.success("Job added successfully!");
-        formRef.current.resetForm();
-      } else {
-        toast.error("Failed to add job. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error adding job:", error);
-      toast.error("An error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+const JobForm = forwardRef(({ isLoading, formData, handleSubmit, isEditMode, id }, formRef) => {
   return (
-    <div className="flex w-full flex-col bg-[#F0F1F2]">
-      <h2 className="font-lato text-xl font-bold text-baseGray px-6 py-4">Jobs</h2>
-      <div className="bg-[#FAFBFC] p-4 rounded-lg mx-3 h-[88vh] overflow-y-auto hideScroll">
-        <div className="flex justify-between mb-3">
-          <h3 className="text-[#323333] font-bold font-lato text-2xl">
-            Add New Job
-          </h3>
-          <Link
-            to="/"
-            className="flex items-center gap-x-2 font-lato font-medium text-xl"
-          >
-            Go Back
-            <PiCaretCircleLeftFill className="text-black text-xl" />
-          </Link>
-        </div>
-        <div className="md:max-w-3xl">
-          {isLoading ? (
-            <Row>
-              <Col lg={12}>
-                <PageLoader />
-              </Col>
-            </Row>
-          ) : (
+    <>
+      {isLoading ?
+        <Row>
+          <Col lg={12}>
+            <PageLoader />
+          </Col>
+        </Row>
+        :
+        <Row>
+          <Col lg={12}>
             <Formik
+              initialValues={formData}
               innerRef={formRef}
-              initialValues={{
-                Job_Title: "",
-                Job_Type: "",
-                Work_type: "",
-                Employee_Type: "",
-                Education: "",
-                location: "",
-                min_salary: "",
-                max_salary: "",
-                Deadline: "",
-                Job_Requirement: "",
-                Job_Description: "",
+              onSubmit={(values, { resetForm }) => {
+                handleSubmit(values, resetForm);
               }}
               validate={(values) => {
                 const errors = {};
-                // Add your validation logic here if needed
+                // for (let field in values) {
+                //     if (!values[`${field}`]) {
+                //         errors[`${field}`] = 'This field is required';
+                //     }
+                // }
+                if (!values.user_role) {
+                  errors.user_role = 'User role is required'
+                }
                 return errors;
-              }}
-              onSubmit={(values, { resetForm }) => {
-                handleSubmit(values);
               }}
             >
               {(props) => (
                 <Form onSubmit={props.handleSubmit}>
                   <Row>
+
+                    <Col md="12">
+                      <h5 className="fw-700 mb-3 mt-4">Details</h5>
+                    </Col>
                     <Col md="6">
                       <TextInput
                         name="Job_Title"
@@ -126,8 +101,6 @@ const RecruitmentForm = ({ baseUrl, token }) => {
                         }}
                       />
                     </Col>
-                  </Row>
-                  <Row>
                     <Col md="6">
                       <SelectComponent
                         name="Work_type"
@@ -156,9 +129,8 @@ const RecruitmentForm = ({ baseUrl, token }) => {
                         }}
                       />
                     </Col>
-                  </Row>
-                  <Row>
-                    <Col md="6">
+
+                    <Col md={6}>
                       <SelectComponent
                         name="Education"
                         options={educationTypeOptions}
@@ -186,8 +158,6 @@ const RecruitmentForm = ({ baseUrl, token }) => {
                         }}
                       />
                     </Col>
-                  </Row>
-                  <Row>
                     <Col md="6">
                       <TextInput
                         name="min_salary"
@@ -199,6 +169,7 @@ const RecruitmentForm = ({ baseUrl, token }) => {
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
+                        regEx={/^[0-9]+$/}
                       />
                     </Col>
                     <Col md="6">
@@ -212,10 +183,9 @@ const RecruitmentForm = ({ baseUrl, token }) => {
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
+                        regEx={/^[0-9]+$/}
                       />
                     </Col>
-                  </Row>
-                  <Row>
                     <Col md="6">
                       <DateInput
                         name="Deadline"
@@ -229,12 +199,10 @@ const RecruitmentForm = ({ baseUrl, token }) => {
                         }}
                       />
                     </Col>
-                  </Row>
-                  <h3 className="font-lato text-baseGray text-xl font-bold">
-                    Description
-                  </h3>
-                  <Row>
-                    <Col md="6">
+                    <Col md="12">
+                      <h5 className="fw-700 mb-3 mt-4">Description</h5>
+                    </Col>
+                    <Col md="12">
                       <TextAreaInput
                         name="Job_Requirement"
                         error={props.errors.Job_Requirement}
@@ -247,7 +215,7 @@ const RecruitmentForm = ({ baseUrl, token }) => {
                         }}
                       />
                     </Col>
-                    <Col md="6">
+                    <Col md="12">
                       <TextAreaInput
                         name="Job_Description"
                         error={props.errors.Job_Description}
@@ -262,26 +230,143 @@ const RecruitmentForm = ({ baseUrl, token }) => {
                     </Col>
                   </Row>
                   <Row>
-                    <Col md="6" className="text-left"><CustomDarkButton
-                        label="Cancel"
-                      /></Col>
-                    <Col md="6" className="text-right">
-                      <CustomDarkButton
-                        onClick={() => {
-                          props.handleSubmit();
-                        }}
-                        label="Add"
-                      />
+                    <Col md="2">
+
+                      <Link
+                        type="button"
+                        className="btn btn-outline-dark w-100"
+                        to="/profile-management"
+                      >
+                        Cancel
+                      </Link>
+                    </Col>
+                    <Col md="4">
+                      <Button
+                        type="submit"
+                        className="btn btn-dark w-100"
+                      >
+                        {id ? 'Update' : 'Add'}
+                      </Button>
                     </Col>
                   </Row>
                 </Form>
               )}
             </Formik>
-          )}
+          </Col>
+        </Row>
+      }
+    </>
+  )
+});
+
+const CreateUpdateJob = ({ baseUrl, token, isEditMode }) => {
+  const formRef = React.createRef();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState(JobDetail);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const handleSubmit = async (values) => {
+    setIsLoading(true);
+
+    try {
+      const response = await addJob(baseUrl, values, token);
+
+      if (response.status === 201) {
+        toast.success("Job added successfully!");
+        formRef.current.resetForm();
+      } else {
+        toast.error("Failed to add job. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error adding job:", error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const closeModal = () => {
+    setShowSuccessModal(false)
+    navigate('/jobs')
+  }
+
+  return (
+    <>
+      {isEditMode ?
+        <JobForm
+          isLoading={isLoading}
+          formData={formData}
+          handleSubmit={handleSubmit}
+          formRef={formRef}
+          isEditMode={isEditMode}
+          id={id}
+        />
+        :
+        <div className="screen bg-[#F0F1F2]">
+          <Header
+            title="Jobs"
+          />
+          <Row>
+            <Col lg={12} className="mx-auto">
+              <Card>
+                <CardHeader>
+                  <Row>
+                    <Col lg={10}>
+                      <div className="h4 mb-0 d-flex align-items-center">
+                        <i className="nav-icon fas fa-id-card-alt" />
+                        <span className="ml-2 fw-700">{id ? 'Update' : 'Add New'} Job</span>
+                      </div>
+                    </Col>
+                    <Col lg={2}>
+                      <Link
+                        type="button"
+                        className="btn btn-light bg-transparent fw-700"
+                        to="/jobs"
+                      >
+                        <span style={{ display: 'inline-block' }}>Go Back </span><FaChevronCircleLeft style={{ display: 'inline-block', marginLeft: '10px', marginBottom: '2px' }} />
+                      </Link>
+                    </Col>
+                  </Row>
+                </CardHeader>
+                <CardBody style={{ maxWidth: '800px' }}>
+                  <JobForm
+                    isLoading={isLoading}
+                    formData={formData}
+                    handleSubmit={handleSubmit}
+                    formRef={formRef}
+                    isEditMode={isEditMode}
+                    id={id}
+                  />
+                </CardBody>
+              </Card>
+            </Col>
+            <Col lg={12}>
+              {showSuccessModal && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+                  <div
+                    className="bg-white shadow-md rounded-3xl lg:px-14 lg:py-16 w-[82%] px-10 py-12 flex justify-center items-center absolute md:w-[40%] lg:w-[26%] lg:h-[24%]"
+                  >
+                    <p className="text-base text-center text-gray-400">
+                      User has been successfully registered and has been sent to
+                    </p>
+                    <div
+                      className="absolute top-4 right-4 text-white bg-[#ECECEC] rounded-full p-[2px] cursor-pointer"
+                      onClick={closeModal}
+                    >
+                      <RxCross2 className="text-sm" />
+                    </div>
+                  </div>
+                </div>
+              )}
+              <ToastContainer />
+            </Col>
+          </Row>
         </div>
-      </div>
-      <ToastContainer />
-    </div>
+      }
+    </>
+
   );
 };
 
@@ -292,5 +377,5 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(RecruitmentForm);
+export default connect(mapStateToProps)(CreateUpdateJob);
 
