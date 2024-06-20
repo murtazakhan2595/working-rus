@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaPlus } from "react-icons/fa";
 
 const Tabs = ({ tabs, onTabChange, tabContents }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]);

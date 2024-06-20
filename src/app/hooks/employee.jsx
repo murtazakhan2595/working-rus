@@ -72,6 +72,7 @@ const saveEmployeePersonalInfoData = async (baseUrl, employeeid, token, personal
                     "Content-Type": "application/json",
                 },
             })
+            
             if (response.status === 200)
                 return true;
 

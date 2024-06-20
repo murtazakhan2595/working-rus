@@ -33,11 +33,9 @@ export const fetchJobPosts = async (baseUrl, token, status) => {
 
 
 
-export const fetchJobById = async (baseUrl, id, token) => {
+export const fetchJobById = async (baseUrl, id) => {
   try {
-    const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
-      headers: headers(),
-    });
+    const response = await axios.get(`${baseUrl}/recruitment/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching job:", error);
