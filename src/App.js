@@ -8,8 +8,7 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
-import RecruitmentForm from "./app/modules/RecruitmentData/RecruitmentForm.jsx";
-import { Applications,Jobs } from "./app/modules/RecruitmentData";
+import { Applications,Jobs ,CreateUpdateJob} from "./app/modules/RecruitmentData";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
@@ -172,7 +171,7 @@ function App() {
 
               <Route
                 path="/edit-post/:id"
-                element={<RecruitmentForm />}
+                element={<CreateUpdateJob />}
               />
 
 
@@ -216,7 +215,7 @@ function App() {
               />
               <Route
                 path="/edit-post/:id"
-                element={<RecruitmentForm />}
+                element={<CreateUpdateJob />}
               />
               <Route
                 path="/leave-balance-hr"
@@ -260,7 +259,7 @@ function App() {
                 <>
                   <Route path="/personnel-requisition" element={<ComingSoon />} />
                   <Route path="/jobs" element={<Jobs />} />
-                  <Route path="/job-post" element={<RecruitmentForm />} />
+                  <Route path="/job-post" element={<CreateUpdateJob />} />
                   <Route path="/applicants/:id" element={<Applications />} />
                   <Route path="/applicants" element={<Applications />} />
                   <Route path="/tests" element={<Test />} />
