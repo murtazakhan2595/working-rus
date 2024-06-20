@@ -10,6 +10,7 @@ import { cut, file, dots, jobIcon } from '../../../../assets/images';
 import { Tabs, Blocks, Header, StatusLabel } from "../Sections";
 import PageLoader from "../../../../components/PageLoader";
 import { FilterInput, CustomDarkButton } from '../../../../components/form-control';
+import { LuExternalLink } from "react-icons/lu";
 
 
 const JobsDataTable = ({ baseUrl, token }) => {
@@ -17,6 +18,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All");
   const [selectedPost, setSelectedPost] = useState(null);
+  const [show, setShow] = useState(true);
 
   const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
         const data = await fetchJobPosts(baseUrl, token, activeTab);
         setPosts(data);
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error("Error fetching posts:", error);
       } finally {
         setLoading(false);
       }
@@ -37,14 +39,17 @@ const JobsDataTable = ({ baseUrl, token }) => {
   }, [activeTab, baseUrl, token]);
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-    const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+    const options = { year: "numeric", month: "numeric", day: "numeric" };
+    const formattedDate = new Date(dateString).toLocaleDateString(
+      undefined,
+      options
+    );
     return formattedDate;
   };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    toast.success('Link copied to clipboard!', {
+    toast.success("Link copied to clipboard!", {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 1000,
     });
@@ -59,37 +64,61 @@ const JobsDataTable = ({ baseUrl, token }) => {
   };
 
   const renderTable = () => (
-    <div className="h-[100%]">
+    <div className="h-[100%] mt-2">
       <div className="min-w-full">
-        <table className="min-w-full">
+        <table className="min-w-full w-full">
           {loading ? (
             <PageLoader />
           ) : (
             <tbody className="bg-white text-gray-500">
+              <div className="px-7 w-full">
               {posts.map((post) => (
-                <tr className={`whitespace-nowrap border-b-2 hover:bg-gray-100`} key={post.id}>
-                  <td className="px-4 py-3">
+                <tr
+                  className={`whitespace-nowrap border-b-2 hover:bg-gray-100`}
+                  key={post.id}
+                >
+                  <td className="px-4 py-3 w-[60%]">
                     <div className="flex flex-col justify-between gap-y-10">
                       <div className="flex justify-between">
                         <div className="flex items-center gap-x-2">
                           <img src={jobIcon} alt="" />
                           <div>
-                            <p className="font-lato text-baseGray text-base">{post.id}</p>
-                            <h3 className="font-lato text-[20px] text-baseGray font-bold">{post.Job_Title}</h3>
+                            <p className="font-lato text-baseGray text-base">
+                              {post.id}
+                            </p>
+                            <h3 className="font-lato text-[20px] text-baseGray font-bold">
+                              {post.Job_Title}
+                            </h3>
                           </div>
                         </div>
                         <div className="font-lato text-base text-baseGray flex items-center gap-x-4">
-                          <Link to={`/applicants/${post.id}`} className="border px-3 py-2 rounded-md border-gray-400">
+                          <Link
+                            to={`/applicants/${post.id}`}
+                            className="border px-3 py-2 rounded-md border-gray-400"
+                          >
                             View applications
                           </Link>
-                          <img src={dots} alt="" onClick={() => handleDotsClick(post)} className="cursor-pointer" />
+                          <Link
+                            to={`/job-description/${post.id}`}
+                            className="px-3 py-2"
+                          >
+                            <LuExternalLink />
+                          </Link>
+                          <img
+                            src={dots}
+                            alt=""
+                            onClick={() => handleDotsClick(post)}
+                            className="cursor-pointer"
+                          />
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <div className="font-lato text-base text-baseGray flex items-center gap-x-2">
                           <IoCalendarOutline className="text-lg" />
-                          {`${formatDate(post.updated_at)} to ${formatDate(post.Deadline)}`}
+                          {`${formatDate(post.updated_at)} to ${formatDate(
+                            post.Deadline
+                          )}`}
                         </div>
                         <div className="flex justify-between items-center gap-x-2">
                           <div
@@ -120,6 +149,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
                   </td>
                 </tr>
               ))}
+              </div>
             </tbody>
           )}
         </table>

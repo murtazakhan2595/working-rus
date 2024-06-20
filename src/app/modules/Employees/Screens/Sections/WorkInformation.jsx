@@ -198,7 +198,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     }}
                 />
             </Col>
-            <Col md={6}>
+            <Col md={6} className='z-0'>
                 <SelectComponent
                     name={'department_manager'}
                     options={HeadOfDepartmentOptions}

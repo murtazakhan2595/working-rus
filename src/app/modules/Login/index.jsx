@@ -18,7 +18,7 @@ import { useSelector } from "react-redux";
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
   let isLogin = useSelector((state) => state.user.isLogin);
-  let baseUrl = useSelector(state => state.user.baseUrl);
+  let baseUrl = useSelector((state) => state.user.baseUrl);
 
   let dispatch = useDispatch();
 
@@ -52,8 +52,87 @@ function Login() {
     setPopupVisible(false);
   };
 
+  // const handleSubmit = async (e) => {
+  //   // debugger
+  //   e.preventDefault();
+
+  //   // Check for internet connection
+  //   if (!navigator.onLine) {
+  //     // Show the custom pop-up with a message
+  //     setPopupVisible(true);
+  //     return;
+  //   }
+
+  //   setIsLoading(true); // Set loading state to true
+
+  //   try {
+  //     const response = await axios.post(`${baseUrl}/token/`, {
+  //       username: values.username,
+  //       password: values.password,
+  //     });
+
+  //     if (response.status === 200) {
+  //       const token = response.data.access;
+
+  //       // Save the token in cookies
+  //       window.localStorage.setItem("token",token)
+
+  //       // Fetch user profile with the obtained token
+  //       const userProfileResponse = await axios.get(`${baseUrl}/user/`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       if (userProfileResponse.status === 200) {
+  //         const userProfile = {
+  //           id: userProfileResponse.data.id,
+  //           username: userProfileResponse.data.username,
+  //           is_filled: userProfileResponse.data.is_filled,
+  //           role: userProfileResponse.data.user_role,
+  //         };
+
+  //         // Update the user profile in the Redux store
+  //         handleUpdateProfile(userProfile);
+
+  //         // Update the token in the Redux store
+  //         dispatch(setToken(token));
+
+  //         // Clear form values
+  //         setValues({
+  //           username: "",
+  //           password: "",
+  //         });
+
+  //         // Save username and password in cookies if "Keep me Signed In" is checked
+  //         if (isChecked) {
+  //           cookies.set("uname", values.username, { path: "*" });
+  //           cookies.set("pwd", values.password, { path: "*" });
+  //         }
+
+  //         // Display success message
+  //         toast.success("Login successful!", {
+  //           position: toast.POSITION.TOP_RIGHT,
+  //           autoClose: 1000,
+  //         });
+  //         navigate("/");
+  //         return;
+  //       }
+  //     }
+
+  //     // Simulating a response delay
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   } catch (error) {
+  //     console.log(error?.response?.data?.detail ?? 'Login Failed')
+  //     toast.error(error?.response?.data?.detail ?? 'Login Failed', {
+  //       position: toast.POSITION.TOP_RIGHT,
+  //     });
+  //   } finally {
+  //     setIsLoading(false); // Reset loading state
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
-    debugger
     e.preventDefault();
 
     // Check for internet connection
@@ -75,8 +154,8 @@ function Login() {
         const token = response.data.access;
 
         // Save the token in cookies
-        window.localStorage.setItem("token",token)
-        
+        window.localStorage.setItem("token", token);
+
         // Fetch user profile with the obtained token
         const userProfileResponse = await axios.get(`${baseUrl}/user/`, {
           headers: {
@@ -115,7 +194,15 @@ function Login() {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: 1000,
           });
-          navigate("/");
+
+          // console.log('userProfile.is_filled:', userProfile.is_filled);
+          // debugger; 
+
+          if (userProfile.is_filled) {
+            navigate("/");
+          } else {
+            navigate("/create-profile");
+          }
           return;
         }
       }
@@ -123,14 +210,15 @@ function Login() {
       // Simulating a response delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
-      console.log(error?.response?.data?.detail ?? 'Login Failed')
-      toast.error(error?.response?.data?.detail ?? 'Login Failed', {
+      console.log(error?.response?.data?.detail ?? "Login Failed");
+      toast.error(error?.response?.data?.detail ?? "Login Failed", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
       setIsLoading(false); // Reset loading state
     }
   };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -182,11 +270,18 @@ function Login() {
                 <h2 className="text-[#323333] text-center text-2xl lg:text-4xl font-lato font-bold leading-9 pb-4 tracking-tight">
                   Log In
                 </h2>
-                <p className="font-roboto text-center text-[#5C5E64] font-normal text-base lg:mb-10">It's nice to see you again!</p>
+                <p className="font-roboto text-center text-[#5C5E64] font-normal text-base lg:mb-10">
+                  It's nice to see you again!
+                </p>
               </div>
 
               <div className="">
-                <label htmlFor="username" className="text-[#323333] font-normal font-lato text-base">Login ID*</label>
+                <label
+                  htmlFor="username"
+                  className="text-[#323333] font-normal font-lato text-base"
+                >
+                  Login ID*
+                </label>
                 <input
                   required
                   name="username"
@@ -200,10 +295,14 @@ function Login() {
                 <div className="text-sm text-rose-500">{errors.username}</div>
               </div>
 
-
               <div className="relative">
                 <div className="flex justify-between items-center">
-                  <label htmlFor="password" className="text-[#323333] font-normal font-lato text-base">Password*</label>
+                  <label
+                    htmlFor="password"
+                    className="text-[#323333] font-normal font-lato text-base"
+                  >
+                    Password*
+                  </label>
                   <NavLink
                     to="/forgot-password"
                     className="text-[#323333] font-normal font-lato text-base underline underline-offset-4"
@@ -225,7 +324,9 @@ function Login() {
                 <button
                   type="button"
                   onClick={handlePasswordVisibility}
-                  className={`absolute inset-y-12 right-2 flex items-center ${showPassword ? "text-gray-400" : ""}`}
+                  className={`absolute inset-y-12 right-2 flex items-center ${
+                    showPassword ? "text-gray-400" : ""
+                  }`}
                 >
                   {showPassword ? (
                     <BiShow className="text-gray-400" />
@@ -235,7 +336,6 @@ function Login() {
                 </button>
                 <div className="text-sm text-rose-500">{errors.password}</div>
               </div>
-
 
               <div className="flex items-center gap-x-4">
                 <button
@@ -265,8 +365,9 @@ function Login() {
                   className="justify-start font-medium text-sm text-gray text-[#5C5E64] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
                 >
                   <span
-                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${isChecked ? "bg-[#5C5E64]" : "bg-[#EBEBEB]"
-                      } transition-all duration-300`}
+                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${
+                      isChecked ? "bg-[#5C5E64]" : "bg-[#EBEBEB]"
+                    } transition-all duration-300`}
                     style={{
                       border: "none",
                     }}
@@ -294,7 +395,9 @@ function Login() {
           </div>
         </div>
         <div className="flex justify-start items-start">
-          <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">© 2024 TecBrix</p>
+          <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
+            © 2024 TecBrix
+          </p>
         </div>
       </div>
 
@@ -305,10 +408,7 @@ function Login() {
       {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}
       <ToastContainer />
     </div>
-
-
   );
 }
 
 export default Login;
-

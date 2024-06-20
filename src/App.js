@@ -86,6 +86,7 @@ function App() {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("i am getProfile respnse from app.js", response);
       if (response.status === 200) {
         setUserRole(response.data.user_role)
         if (!response.data.is_filled) {
@@ -262,6 +263,7 @@ function App() {
                   <Route path="/job-post" element={<RecruitmentForm />} />
                   <Route path="/applicants/:id" element={<Applications />} />
                   <Route path="/applicants" element={<Applications />} />
+                  <Route path="/tests" element={<Test />} />
                   <Route path="/referals" element={<ComingSoon />} />
                   <Route path="/learn" element={<ComingSoon />} />
                   <Route path="/career-planning" element={<ComingSoon />} />

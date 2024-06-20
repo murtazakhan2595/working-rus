@@ -2,13 +2,14 @@ import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import calender from "../../../assets/images/calendar.png";
-import time from "../../../assets/images/time.png";
-import pin from "../../../assets/images/pin.png";
-import money from "../../../assets/images/money.png";
-import suitcase from "../../../assets/images/suitcase.png";
-import magistrate from "../../../assets/images/magistrate.png";
-import employee from "../../../assets/images/employee.png";
+import restart from "../../../assets/images/restart.svg";
+import education from "../../../assets/images/education.svg";
+import money from "../../../assets/images/money.svg";
+import proCheck from "../../../assets/images/proCheck.svg";
+import { Header } from "./Sections";
+import Label from "./Sections/Label";
+import { fetchJobById } from "../../hooks/recruitment";
+import { convertToK } from "../../../utils/ConvertToK";
 
 const JobDescription = ({ baseUrl }) => {
   const [jobDetails, setJobDetails] = useState(null);
@@ -18,16 +19,16 @@ const JobDescription = ({ baseUrl }) => {
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const getJobDetails = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/recruitment/${id}`);
-        setJobDetails(response.data);
+        const data = await fetchJobById(baseUrl, id);
+        setJobDetails(data);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching job details:", error);
       }
     };
-    fetchPosts();
-  }, []);
+    getJobDetails();
+  }, [baseUrl, id]);
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "numeric", day: "numeric" };
@@ -38,153 +39,80 @@ const JobDescription = ({ baseUrl }) => {
     return formattedDate;
   };
 
+  const calculateRemainingDays = (deadline) => {
+    const currentDate = new Date();
+    const deadlineDate = new Date(deadline);
+    const diffTime = deadlineDate - currentDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays > 0) {
+      return `${diffDays} days left`;
+    } else if (diffDays < 0) {
+      return ` expired ${Math.abs(diffDays)} days ago`;
+    } else {
+      return `Today is the deadline`;
+    }
+  };
+
+
   return (
     <>
-      <div className="">
-        <div className="border border-gray-400 px-4 xl:px-8">
-          <p className="pt-4 pb-2 text-input font-sfpro text-sm md:text-base">
-            Job ID: {jobDetails?.id}
-          </p>
-          <h1 className="text-black text-2xl font-black">
-            {jobDetails?.Job_Title}
-          </h1>
-
-          {/* job details */}
-          <div
-            className={`mt-3 md:mt-4 flex flex-col justify-between xl:items-center xl:flex-row xl:justify-between pb-2 xl:pb-4`}
-          >
-            <div className="flex flex-wrap gap-x-[34px] md:flex-row md:flex-wrap gap-y-2 xl:gap-x-8">
-              {/* <div className="flex flex-wrap gap-x-[33px] gap-y-2 xl:gap-x-8"> */}
-              <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
-                <div className="text-[28px]">
-                  <img src={calender} alt="calender" className="w-7" />
-                </div>
-                <div className="flex items-center">
-                  <div className="text-sm md:text-base">
-                    {" "}
-                    <p>Open: {formatDate(jobDetails?.created_at)}</p>
-                    <p>Deadline: {formatDate(jobDetails?.Deadline)}</p>
+      <div className="bg-[#F0F1F2] w-full">
+        <Header title="Job Application" />
+        <div className="p-6 bg-[#FAFBFC] rounded-lg shadow-sm md:mx-4 h-[90vh] overflow-y-auto hideScroll">
+          <div className="max-w-4xl">
+            <div className="mb-4">
+              <span className="text-base font-lato font-normal text-baseGray">
+                Job ID: {jobDetails?.id}
+              </span>
+              <h3 className="text-2xl font-lato font-bold text-baseGray mt-1">
+                {jobDetails?.Job_Title}
+              </h3>
+              <div className="flex justify-between border-b border-[#DADADA] pb-4">
+                <div>
+                  <div className="flex items-center text-baseGray mt-1 font-lato">
+                    <span>{jobDetails?.location}</span>
+                    <span className="mx-2">•</span>
+                    <span>{jobDetails?.Job_Type}</span>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Apply before {formatDate(jobDetails?.Deadline)} • {calculateRemainingDays(jobDetails?.Deadline)}
                   </div>
                 </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
-                <div className="text-[28px]">
-                  <img src={time} alt="clock" className="w-7" />
-                </div>
-                <div className="flex items-center">
-                  <div className="text-sm md:text-base">
-                    {" "}
-                    <p>{jobDetails?.Work_type}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto ml-[50px] md:ml-0">
-                <div className="text-[28px]">
-                  <img src={pin} alt="location" className="w-7" />
-                </div>
-                <div className="flex items-center">
-                  <div className="text-sm md:text-base">
-                    {" "}
-                    <address>{jobDetails?.location}</address>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
-                <div className="text-[28px]">
-                  <img src={money} alt="money" className="w-7" />
-                </div>
-                <div className="flex items-center">
-                  <div className="text-sm md:text-base">
-                    {" "}
-                    <p>
-                      {Number(jobDetails?.min_salary).toLocaleString()} - {Number(jobDetails?.max_salary).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-2 md:w-[30%] xl:w-auto">
-                <div className="text-[28px]">
-                  <img src={suitcase} alt="suitcase" className="w-7" />
-                </div>
-                <div className="flex items-center">
-                  <div className="text-sm md:text-base">
-                    {" "}
-                    <p>{jobDetails?.Job_Type}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center  gap-x-2 md:w-[30%] xl:w-auto">
-                <div className="text-[28px]">
-                  <img src={magistrate} alt="Graduate" className="w-7" />
-                </div>
-                <div className="flex items-center">
-                  <div className="text-sm md:text-base">
-                    {" "}
-                    <p>{jobDetails?.Education}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center  gap-x-2 md:w-[30%] xl:w-auto ml-[25px] md:ml-0">
-                <div className="text-[28px]">
-                  <img src={employee} alt="employee" className="w-7" />
-                </div>
-                <div className="flex items-center">
-                  <div className="text-sm md:text-base">
-                    {" "}
-                    <p>{jobDetails?.Employee_Type}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {jobStatus === "expired" ? "" : <Link to={`/apply/${jobDetails?.id}`}>
-              <div className="flex justify-center md:flex-end">
-                <button className="md:w-[25%] mt-2 md:-mt-8 xl:mt-0 xl:w-full bg-baseBlue text-white px-5 py-1 rounded-md font-sfpro">
-                  Apply Now
+                <button className="btn btn-dark text-baseGray font-lato">
+                  Apply now
                 </button>
               </div>
-            </Link>}
-
-          </div>
-        </div>
-        {/* job description */}
-        {jobStatus === 'expired' ? <p className="text-center text-red-600 mt-10 font-semibold text-lg">
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-50"
-          >
-            <div className="bg-white p-5 rounded-lg shadow-lg relative w-full md:w-2/3 lg:w-1/3">
-
-              <div className="flex items-center gap-x-5">
-                <div className="text-6xl">
-                  😔
-                </div>
-                <div>
-                  <div className="flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">Job Expired! </h1>
-                  </div>
-                  <p className="text-left text-black mt-2 font-semibold text-lg">
-                    Sorry you are late, this job is expired. For more updates, please follow the
-                    <Link to="https://tecbrix.com/careers/" target="_blank" className="underline mx-2 text-baseBlue">
-                      careers
-                    </Link>
-                    pages.
-                  </p>
-                </div>
-              </div>
-
+            </div>
+            <div className="flex flex-wrap items-center gap-x-6 mb-4">
+              <Label title={jobDetails?.Employee_Type} src={restart} />
+              <Label title={jobDetails?.Education} src={education} />
+              <Label title={jobDetails?.Work_type} src={proCheck} />
+              <Label
+                title={`PKR ${convertToK(
+                  jobDetails?.min_salary
+                )} - ${convertToK(jobDetails?.max_salary)} /month`}
+                src={money}
+              />
+            </div>
+            <div className="mb-4">
+              <h4 className="text-lg font-semibold font-lato text-baseGray">
+                Job Description:
+              </h4>
+              <p className="text-baseGray font-lato text-base mt-2">
+                {jobDetails?.Job_Description}
+              </p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold font-lato text-baseGray">
+                Job Requirements:
+              </h4>
+              <p className="text-baseGray font-lato text-base mt-2">
+                {jobDetails?.Job_Requirement}
+              </p>
             </div>
           </div>
-        </p> : <div className="bg-[#F9F9F9] px-6 xl:px-14 overflow-y-auto max-h-[500px] h-[600px]">
-          <h2 className="py-5 text-baseBlue text-xl font-semibold">
-            Job Description:
-          </h2>
-          <p>{jobDetails?.Job_Description}</p>
-          <h2 className="py-5 text-baseBlue text-xl font-semibold">
-            Job Requirement:
-          </h2>
-          <p>{jobDetails?.Job_Requirement}</p>
         </div>
-        }
-
       </div>
     </>
   );
