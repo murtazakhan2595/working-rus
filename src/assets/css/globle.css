@@ -135,3 +135,8 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
 .group:hover .group-hover\:opacity-100{
     z-index: 90;
 }
+
+.rounded-top{
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+}

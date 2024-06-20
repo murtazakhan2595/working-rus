@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { IoArrowForwardCircle } from "react-icons/io5";
 
 const Tabs = ({ tabs, onTabChange, tabContents }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
@@ -11,8 +9,7 @@ const Tabs = ({ tabs, onTabChange, tabContents }) => {
   };
 
   return (
-    <div className="bg-white w-full rounded-[10px] p-2">
-      <div className="flex justify-between items-center border-b border-[#F0F1F2]">
+      <div className="flex justify-between items-center">
         <div className="flex space-x-4">
           {tabs.map((tab) => (
             <button
@@ -29,8 +26,7 @@ const Tabs = ({ tabs, onTabChange, tabContents }) => {
           ))}
         </div>
       </div>
-      <div className="mt-4">{tabContents ? tabContents[activeTab] : null}</div>
-    </div>
+      // <div className="mt-4">{tabContents ? tabContents[activeTab] : null}</div>
   );
 };
 

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiDownload } from "react-icons/hi";
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { dropdownOptions, filterDropdownOptions } from "../../../../data/Data";
+import { dropdownOptions, employeeTypeOptions } from "../../../../data/Data";
 import PageLoader from "../../../../components/PageLoader";
 import {
   Card,
