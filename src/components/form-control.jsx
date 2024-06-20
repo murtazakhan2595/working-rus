@@ -39,8 +39,9 @@ const SelectComponent = ({
         name={name}
         isDisabled={disabled}
         id={name}
-        className={`custom-select-input z-10 form-control ${error && touch ? "is-invalid" : ""
-          }`}
+        className={`custom-select-input z-10 form-control ${
+          error && touch ? "is-invalid" : ""
+        }`}
         options={options ? options : []}
         value={options ? options.find((option) => option.label === value) : ""}
         onChange={(selectedOption) => onChange(name, selectedOption.label)}
@@ -73,8 +74,9 @@ const SelectMultiInputComponent = ({
         name={name}
         id={name}
         isDisabled={disabled}
-        className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
-          }`}
+        className={`custom-select-input form-control ${
+          error && touch ? "is-invalid" : ""
+        }`}
         options={options ? options : []}
         value={value ? value : ""}
         onChange={(selectedOption) => {
@@ -89,6 +91,44 @@ const SelectMultiInputComponent = ({
   );
 };
 
+// const DateInput = ({
+//   name,
+//   value,
+//   error,
+//   touch,
+//   onChange,
+//   label,
+//   disabled,
+// }) => {
+//   const date = new Date(moment(value));
+//   return (
+//     <>
+//       <FormGroup floating>
+//         <DatePicker
+//           name={name}
+//           id={name}
+//           isDisabled={disabled}
+//           className={`form-control ${error && touch ? "is-invalid" : ""}`}
+//           value={date && !isNaN(date.getTime()) ? date : ""}
+//           selected={date && !isNaN(date.getTime()) ? date : new Date()}
+//           dropdownMode="select"
+//           onChange={(value) => {
+//             value = moment(value).format("YYYY-MM-DD");
+//             onChange(name, value);
+//           }}
+//           placeholderText={label}
+//           showMonthDropdown
+//           showYearDropdown
+//           dateFormat="dd-MM-yyyy"
+//         />
+//         {error && touch && (
+//           <div className="invalid-feedback d-block">{error}</div>
+//         )}
+//       </FormGroup>
+//     </>
+//   );
+// };
+
 const DateInput = ({
   name,
   value,
@@ -98,27 +138,23 @@ const DateInput = ({
   label,
   disabled,
 }) => {
-  const date = new Date(moment(value));
   return (
     <>
-      <FormGroup>
-        <DatePicker
+      <FormGroup floating>
+        <Input
+          type="date"
           name={name}
           id={name}
-          isDisabled={disabled}
+          disabled={disabled}
           className={`form-control ${error && touch ? "is-invalid" : ""}`}
-          value={date && !isNaN(date.getTime()) ? date : ""}
-          selected={date && !isNaN(date.getTime()) ? date : new Date()}
-          dropdownMode="select"
-          onChange={(value) => {
-            value = moment(value).format("YYYY-MM-DD");
+          value={value ? value : ""}
+          onChange={(e) => {
+            const value = e.target.value;
             onChange(name, value);
           }}
-          placeholderText={label}
-          showMonthDropdown
-          showYearDropdown
-          dateFormat="dd-MM-yyyy"
+          placeholder={label}
         />
+        {label && <Label for={name}>{label}</Label>}
         {error && touch && (
           <div className="invalid-feedback d-block">{error}</div>
         )}
@@ -211,14 +247,15 @@ const PhoneNumberInput = ({
             name={countryCodeName}
             isDisabled={disabled}
             id={countryCodeName}
-            className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
-              }`}
+            className={`custom-select-input form-control ${
+              error && touch ? "is-invalid" : ""
+            }`}
             options={countryCodesOptions ? countryCodesOptions : []}
             value={
               countryCodesOptions
                 ? countryCodesOptions.find(
-                  (option) => option.value === countryCode
-                )
+                    (option) => option.value === countryCode
+                  )
                 : ""
             }
             onChange={(selectedOption) =>
@@ -538,8 +575,7 @@ const FilterInput = ({ filters, onChange }) => {
                   />
                 </div>
               );
-            }
-            else if (filter.type === "select") {
+            } else if (filter.type === "select") {
               return (
                 <Select
                   options={filter.option}
