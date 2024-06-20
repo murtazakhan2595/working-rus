@@ -64,19 +64,20 @@ const JobsDataTable = ({ baseUrl, token }) => {
   };
 
   const renderTable = () => (
-    <div className="h-[100%]">
+    <div className="h-[100%] mt-2">
       <div className="min-w-full">
-        <table className="min-w-full">
+        <table className="min-w-full w-full">
           {loading ? (
             <PageLoader />
           ) : (
             <tbody className="bg-white text-gray-500">
+              <div className="px-7 w-full">
               {posts.map((post) => (
                 <tr
                   className={`whitespace-nowrap border-b-2 hover:bg-gray-100`}
                   key={post.id}
                 >
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 w-[60%]">
                     <div className="flex flex-col justify-between gap-y-10">
                       <div className="flex justify-between">
                         <div className="flex items-center gap-x-2">
@@ -148,6 +149,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
                   </td>
                 </tr>
               ))}
+              </div>
             </tbody>
           )}
         </table>
