@@ -4,14 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoCalendarOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loader from "../../../components/Loader";
-import jobIcon from "../../../assets/images/jobIcon.png";
-import dots from "../../../assets/images/dots.svg";
-import ViewJobDetails from "./ViewJobDetails";
-import Tabs from "./Sections/Tabs";
-import { fetchJobPosts } from "../../hooks/recruitment";
+import ViewJobDetails from "../ViewJobDetails";
+import { fetchJobPosts } from "../../../hooks/recruitment";
+import { cut, file, dots, jobIcon } from '../../../../assets/images';
+import { Tabs, Blocks, Header, StatusLabel } from "../Sections";
+import PageLoader from "../../../../components/PageLoader";
+import { FilterInput, CustomDarkButton } from '../../../../components/form-control';
 import { LuExternalLink } from "react-icons/lu";
-import ViewApplicantDetails from "./Applications/ViewApplicantDetails";
+
 
 const JobsDataTable = ({ baseUrl, token }) => {
   const [posts, setPosts] = useState([]);
@@ -64,11 +64,11 @@ const JobsDataTable = ({ baseUrl, token }) => {
   };
 
   const renderTable = () => (
-    <div className="h-[100%] overflow-x-auto overflow-y-auto">
+    <div className="h-[100%]">
       <div className="min-w-full">
         <table className="min-w-full">
           {loading ? (
-            <Loader />
+            <PageLoader />
           ) : (
             <tbody className="bg-white text-gray-500">
               {posts.map((post) => (
@@ -121,18 +121,12 @@ const JobsDataTable = ({ baseUrl, token }) => {
                         </div>
                         <div className="flex justify-between items-center gap-x-2">
                           <div
-                            className={`flex items-center text-baseGray font-lato text-base font-normal rounded-2xl px-2 ${
-                              post.status === "live"
-                                ? "bg-green-100"
-                                : "bg-red-100"
-                            }`}
+                            className={`flex items-center text-baseGray font-lato text-base font-normal rounded-2xl px-2 ${post.status === 'live' ? 'bg-green-100' : 'bg-red-100'
+                              }`}
                           >
                             <span
-                              className={`w-3 h-3 rounded-full mr-2 ${
-                                post.status === "live"
-                                  ? "bg-green-500"
-                                  : "bg-red-500"
-                              }`}
+                              className={`w-3 h-3 rounded-full mr-2 ${post.status === 'live' ? 'bg-green-500' : 'bg-red-500'
+                                }`}
                             ></span>
                             {post.status}
                           </div>
@@ -162,15 +156,28 @@ const JobsDataTable = ({ baseUrl, token }) => {
   );
 
   return (
-    <div className="flex w-full flex-col bg-[#F0F1F2] h-[100vh] p-2">
-      <Tabs tabs={["All", "Open", "Closed"]} onTabChange={setActiveTab} />
-      {renderTable()}
-      {selectedPost && (
-        <ViewJobDetails post={selectedPost} onClose={closeModal} />
-      )}
-      {show && (
-        <ViewApplicantDetails />
-      )}
+    <div className="screen bg-[#F0F1F2]">
+      <Header
+        title="Jobs"
+        content={
+          <FilterInput
+            filters={[
+              { type: 'search', placeholder: 'Search', name: 'id_and_first_name' },
+            ]}
+            onChange={() => { }}
+          />
+        }
+      />
+      <div className="flex w-full flex-col bg-[#F0F1F2] h-[100vh] p-2">
+        <Tabs tabs={["All", "Open", "Closed"]}
+          onTabChange={setActiveTab}
+        />
+        {renderTable()}
+        <br/>
+        {selectedPost && (
+          <ViewJobDetails post={selectedPost} onClose={closeModal} />
+        )}
+      </div>
     </div>
   );
 };
