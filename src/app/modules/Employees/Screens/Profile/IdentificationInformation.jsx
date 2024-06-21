@@ -28,6 +28,7 @@ import {
   getEmployeeVisaDetailData,
   saveEmployeeVisaDetailData,
   getEmployeePersonalInfoData,
+  saveEmployeePersonalInfoData,
 } from "../../../../hooks/employee.jsx";
 import axios from "axios";
 
@@ -61,16 +62,6 @@ const IdentificationInformation = ({
       });
   }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
-  useEffect(() => {
-    getEmployeePersonalInfoData(baseUrl, employeeId, token)
-      .then((response) => {
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [baseUrl, employeeId, token]);
-
   const handleSubmit = (data) => {
     const documents = {
       passport_copy: data.passport_copy,
@@ -92,12 +83,13 @@ const IdentificationInformation = ({
     );
     if (response) nextstep();
 
-    const newResponse = axios.patch(`${baseUrl}/emp/${employeeId}`, {is_filled: true}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
+    let personalInfrmation = { is_filled: true };
+    const newResponse = saveEmployeePersonalInfoData(
+      baseUrl,
+      employeeId,
+      token,
+      personalInfrmation
+    );
 
     console.log(newResponse);
   };

@@ -164,6 +164,7 @@ const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
                     "Content-Type": "application/json",
                 },
             });
+            console.log("I am documents esponse", documents);
             if (response.status === 200) {
                 if (response.data && response.data.results && response.data.results.length > 0) {
                     const employeeData = getVisaDetails(response.data.results[0]);

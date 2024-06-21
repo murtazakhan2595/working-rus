@@ -29,8 +29,8 @@ const SelectComponent = ({
         className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
           }`}
         options={options ? options : []}
-        value={options ? options.find((option) => option.value === value) : ""}
-        onChange={(selectedOption) => onChange(name, selectedOption.value)}
+        value={options ? options.find((option) => option.label === value) : ""}
+        onChange={(selectedOption) => onChange(name, selectedOption.label)}
         placeholder={label}
         styles={{
           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -569,7 +569,7 @@ const FilterInput = ({ filters, onChange }) => {
                 <Select
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className="w-[20%] shadow-input rounded-lg"
+                  className="w-[40%] shadow-input rounded-lg"
                   styles={dropdownStyles}
                   name={filter.name}
                   id={filter.name}
