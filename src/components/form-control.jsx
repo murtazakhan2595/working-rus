@@ -569,7 +569,7 @@ const FilterInput = ({ filters, onChange }) => {
                 <Select
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className="w-[20%] shadow-input rounded-lg"
+                  className="w-[40%] shadow-input rounded-lg"
                   styles={dropdownStyles}
                   name={filter.name}
                   id={filter.name}

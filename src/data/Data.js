@@ -78,10 +78,10 @@ export const educationTypeOptions = [
   { value: "Intermediate", label: "Intermediate" },
 ];
 
-export const maritalStatus=[
+export const maritalStatus = [
   { value: "Single", label: "Single" },
   { value: "Married", label: "Married" },
-]
+];
 
 export const locationTypeOptions = [
   { value: "pakistan", label: "Pakistan" },
@@ -146,7 +146,6 @@ export const UserRoles = [
   { value: 3, label: "HR" },
   { value: 4, label: "Employee" },
 ];
-
 
 export const employeeStatus = [
   { label: "Active", value: "Active" },
@@ -295,3 +294,7 @@ export const dropdownStyles = {
   }),
 };
 
+export const Sorting = [
+  { value: "newest_first", label: "Newest First" },
+  { value: "oldest_first", label: "Oldest First" },
+];

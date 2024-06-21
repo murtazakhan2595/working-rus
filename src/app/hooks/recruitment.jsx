@@ -7,7 +7,31 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-export const fetchJobPosts = async (baseUrl, token, status) => {
+// export const fetchJobPosts = async (baseUrl, token, status) => {
+//   let searchStatus = '';
+//   if (status === 'Open') {
+//     searchStatus = 'live';
+//   } else if (status === 'Closed') {
+//     searchStatus = 'expired';
+//   }
+
+//   try {
+//     const response = await axios.get(
+//       `${baseUrl}/recruitment/?search=${encodeURIComponent(
+//         JSON.stringify({ status: searchStatus })
+//       )}`,
+//       {
+//         headers: headers(),
+//       }
+//     );
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error fetching posts:', error);
+//     throw error;
+//   }
+// };
+
+export const fetchJobPosts = async (baseUrl, token, status, searchQuery, sortOption) => {
   let searchStatus = '';
   if (status === 'Open') {
     searchStatus = 'live';
@@ -15,11 +39,15 @@ export const fetchJobPosts = async (baseUrl, token, status) => {
     searchStatus = 'expired';
   }
 
+  const searchParams = {
+    status: searchStatus,
+    search: searchQuery,
+    sort: sortOption,
+  };
+
   try {
     const response = await axios.get(
-      `${baseUrl}/recruitment/?search=${encodeURIComponent(
-        JSON.stringify({ status: searchStatus })
-      )}`,
+      `${baseUrl}/recruitment/?search=${encodeURIComponent(JSON.stringify(searchParams))}`,
       {
         headers: headers(),
       }
@@ -30,7 +58,6 @@ export const fetchJobPosts = async (baseUrl, token, status) => {
     throw error;
   }
 };
-
 
 
 export const fetchJobById = async (baseUrl, id) => {
