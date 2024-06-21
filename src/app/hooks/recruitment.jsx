@@ -31,7 +31,7 @@ const headers = () => ({
 //   }
 // };
 
-export const fetchJobPosts = async (baseUrl, token, status, searchQuery, sortOption) => {
+export const fetchJobPosts = async (status, searchQuery, sortOption) => {
   let searchStatus = '';
   if (status === 'Open') {
     searchStatus = 'live';

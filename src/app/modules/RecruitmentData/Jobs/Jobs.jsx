@@ -53,8 +53,6 @@ const JobsDataTable = ({ baseUrl, token }) => {
       setLoading(true);
       try {
         const data = await fetchJobPosts(
-          baseUrl,
-          token,
           activeTab,
           searchQuery,
           sortOption
