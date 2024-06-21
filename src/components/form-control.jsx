@@ -29,8 +29,8 @@ const SelectComponent = ({
         className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
           }`}
         options={options ? options : []}
-        value={options ? options.find((option) => option.label === value) : ""}
-        onChange={(selectedOption) => onChange(name, selectedOption.label)}
+        value={options ? options.find((option) => option.value === value) : ""}
+        onChange={(selectedOption) => onChange(name, selectedOption.value)}
         placeholder={label}
         styles={{
           menuPortal: (base) => ({ ...base, zIndex: 9999 }),

@@ -30,7 +30,6 @@ import {
   getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,
 } from "../../../../hooks/employee.jsx";
-import axios from "axios";
 
 const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
   value: countryCode,
