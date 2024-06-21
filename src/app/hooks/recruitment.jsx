@@ -1,5 +1,5 @@
-import axios from 'axios';
-import {initialState} from '../../state/slices/UserSlice';
+import axios from "axios";
+import { initialState } from "../../state/slices/UserSlice";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -31,34 +31,41 @@ const headers = () => ({
 //   }
 // };
 
-export const fetchJobPosts = async (baseUrl, token, status, searchQuery, sortOption) => {
-  let searchStatus = '';
-  if (status === 'Open') {
-    searchStatus = 'live';
-  } else if (status === 'Closed') {
-    searchStatus = 'expired';
+export const fetchJobPosts = async (
+  baseUrl,
+  token,
+  status,
+  searchQuery,
+  sortOption
+) => {
+  let searchStatus = "";
+  if (status === "Open") {
+    searchStatus = "live";
+  } else if (status === "Closed") {
+    searchStatus = "expired";
   }
 
   const searchParams = {
     status: searchStatus,
-    search: searchQuery,
-    sort: sortOption,
+    // search: searchQuery,
+    // sort: sortOption,
   };
 
   try {
     const response = await axios.get(
-      `${baseUrl}/recruitment/?search=${encodeURIComponent(JSON.stringify(searchParams))}`,
+      `${baseUrl}/recruitment/?search=${encodeURIComponent(
+        JSON.stringify(searchParams)
+      )}`,
       {
         headers: headers(),
       }
     );
     return response.data;
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error("Error fetching posts:", error);
     throw error;
   }
 };
-
 
 export const fetchJobById = async (baseUrl, id) => {
   try {
@@ -72,12 +79,9 @@ export const fetchJobById = async (baseUrl, id) => {
 
 const getJobApplications = async (URL) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}${URL}`,
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching applicants:", error);
@@ -133,20 +137,31 @@ export const downloadCV = async (cv, name) => {
   }
 };
 
-
 export const addJob = async (baseUrl, values, token) => {
-    try {
-      const response = await axios.post(`${baseUrl}/recruitment/`, values,  {
-        headers: headers(),
-      });
-      return response;
-    } catch (error) {
-      console.error("Error adding job:", error);
-      throw error;
-    }
-  };
-
-
-  export {
-    getJobApplications,
+  try {
+    const response = await axios.post(`${baseUrl}/recruitment/`, values, {
+      headers: headers(),
+    });
+    return response;
+  } catch (error) {
+    console.error("Error adding job:", error);
+    throw error;
   }
+};
+
+export const updateJob = async (baseUrl, values, id) => {
+  console.log("I am id from recruitment.jsx", id);
+  console.log("i am values from recruitment.jsx", values);
+
+  try {
+    const response = await axios.patch(`${baseUrl}/recruitment/${values}`, id, {
+      headers: headers(),
+    });
+    return response;
+  } catch (error) {
+    console.error("Error adding job:", error);
+    throw error;
+  }
+};
+
+export { getJobApplications };

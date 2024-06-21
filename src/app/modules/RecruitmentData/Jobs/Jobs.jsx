@@ -197,7 +197,9 @@ const RenderJob = ({ job, handleDotsClick }) => {
           >
             View applications
           </Link>
-          <BsBoxArrowUpRight className="text-xl cursor-pointer opacity-80" />
+          <Link to={`/job-description/${job.id}`}>
+            <BsBoxArrowUpRight className="text-xl cursor-pointer opacity-80" />
+          </Link>
           <PiDotsThreeOutlineFill className="text-xl cursor-pointer opacity-80" />
         </div>
       </div>
