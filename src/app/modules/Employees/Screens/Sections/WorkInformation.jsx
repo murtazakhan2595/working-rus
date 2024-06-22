@@ -81,6 +81,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     touch={touched.department_name}
                     value={values.department_name}
                     label={'Department'}
+                    required={true}
                     onChange={(field, value) => {
                         onChange(field, value);
                     }}
@@ -93,6 +94,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     error={errors.employee_location}
                     touch={touched.employee_location}
                     value={values.employee_location}
+                    required={true}
                     label={'Employee Location'}
                     onChange={(field, value) => {
                         onChange(field, value);
@@ -120,6 +122,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     error={errors.user_role}
                     touch={touched.user_role}
                     value={values.user_role}
+                    required={true}
                     label={'Role'}
                     onChange={(field, value) => {
                         onChange(field, value);
@@ -134,6 +137,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                         error={errors.employee_type}
                         touch={touched.employee_type}
                         value={values.employee_type}
+                        required={true}
                         label={'Employee Type'}
                         onChange={(field, value) => {
                             onChange(field, value);
@@ -150,6 +154,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                         error={errors.employee_status}
                         touch={touched.employee_status}
                         value={values.employee_status}
+                        required={true}
                         label={'Employee status'}
                         onChange={(field, value) => {
                             onChange(field, value);
@@ -164,6 +169,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     error={errors.employee_work_type}
                     touch={touched.employee_work_type}
                     value={values.employee_work_type}
+                    required={true}
                     label={'Employee Work Type'}
                     onChange={(field, value) => {
                         onChange(field, value);
@@ -178,6 +184,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     error={errors.direct_report}
                     touch={touched.direct_report}
                     value={values.direct_report}
+                    required={true}
                     label={'Direct Report'}
                     onChange={(field, value) => {
                         onChange(field, value);
@@ -192,6 +199,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     error={errors.indirect_report}
                     touch={touched.indirect_report}
                     value={values.indirect_report}
+                    required={true}
                     label={'Indirect Report'}
                     onChange={(field, value) => {
                         onChange(field, value);
@@ -205,6 +213,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     error={errors.department_manager}
                     touch={touched.department_manager}
                     value={values.department_manager}
+                    required={true}
                     label={'Department Head'}
                     onChange={(field, value) => {
                         onChange(field, value);
@@ -217,6 +226,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     error={errors.joining_date}
                     touch={touched.joining_date}
                     value={values.joining_date}
+                    required={true}
                     label={'Joining Date'}
                     onChange={(field, value) => {
                         onChange(field, value);

@@ -52,86 +52,6 @@ function Login() {
     setPopupVisible(false);
   };
 
-  // const handleSubmit = async (e) => {
-  //   // debugger
-  //   e.preventDefault();
-
-  //   // Check for internet connection
-  //   if (!navigator.onLine) {
-  //     // Show the custom pop-up with a message
-  //     setPopupVisible(true);
-  //     return;
-  //   }
-
-  //   setIsLoading(true); // Set loading state to true
-
-  //   try {
-  //     const response = await axios.post(`${baseUrl}/token/`, {
-  //       username: values.username,
-  //       password: values.password,
-  //     });
-
-  //     if (response.status === 200) {
-  //       const token = response.data.access;
-
-  //       // Save the token in cookies
-  //       window.localStorage.setItem("token",token)
-
-  //       // Fetch user profile with the obtained token
-  //       const userProfileResponse = await axios.get(`${baseUrl}/user/`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       if (userProfileResponse.status === 200) {
-  //         const userProfile = {
-  //           id: userProfileResponse.data.id,
-  //           username: userProfileResponse.data.username,
-  //           is_filled: userProfileResponse.data.is_filled,
-  //           role: userProfileResponse.data.user_role,
-  //         };
-
-  //         // Update the user profile in the Redux store
-  //         handleUpdateProfile(userProfile);
-
-  //         // Update the token in the Redux store
-  //         dispatch(setToken(token));
-
-  //         // Clear form values
-  //         setValues({
-  //           username: "",
-  //           password: "",
-  //         });
-
-  //         // Save username and password in cookies if "Keep me Signed In" is checked
-  //         if (isChecked) {
-  //           cookies.set("uname", values.username, { path: "*" });
-  //           cookies.set("pwd", values.password, { path: "*" });
-  //         }
-
-  //         // Display success message
-  //         toast.success("Login successful!", {
-  //           position: toast.POSITION.TOP_RIGHT,
-  //           autoClose: 1000,
-  //         });
-  //         navigate("/");
-  //         return;
-  //       }
-  //     }
-
-  //     // Simulating a response delay
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-  //   } catch (error) {
-  //     console.log(error?.response?.data?.detail ?? 'Login Failed')
-  //     toast.error(error?.response?.data?.detail ?? 'Login Failed', {
-  //       position: toast.POSITION.TOP_RIGHT,
-  //     });
-  //   } finally {
-  //     setIsLoading(false); // Reset loading state
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -194,9 +114,6 @@ function Login() {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: 1000,
           });
-
-          // console.log('userProfile.is_filled:', userProfile.is_filled);
-          // debugger; 
 
           if (userProfile.is_filled) {
             navigate("/");

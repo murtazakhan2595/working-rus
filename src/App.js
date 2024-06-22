@@ -8,7 +8,7 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
-import { Applications,Jobs ,CreateUpdateJob} from "./app/modules/RecruitmentData";
+import { Applications, Jobs, CreateUpdateJob, JobDescription } from "./app/modules/RecruitmentData";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
@@ -23,7 +23,6 @@ import {
 } from "./state/slices/UserSlice.js";
 import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
-import JobDescription from "./app/modules/RecruitmentData/JobDescription.jsx";
 import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
 import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
 import Employee from './app/modules/Employees/Employee.jsx'
@@ -63,8 +62,6 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(userProfile.role);
   const navigate = useNavigate();
-  const cookies = new Cookies();
-  //token = cookies.get("token");
   const location = useLocation();
 
   const handleUpdateProfile = (data) => {
@@ -103,8 +100,6 @@ function App() {
         (error.response.status === 401 || error.response.status === 403)
       ) {
         // // Token expired or invalid
-        // dispatch(setUserLogout());
-        // navigate('/login')
         const protectedRoutes = ['/apply', '/job-description', '/forgot-password', '/confirm-password'];
         const isProtectedRoute = protectedRoutes.some(route => location.pathname.startsWith(route));
 
@@ -280,12 +275,6 @@ function App() {
             {(userRole !== 1 || userRole !== 2) && (
               <Route path="/applicants/:id" element={<Err401 />} />
             )}
-            {/* {(userRole !== 1 || userRole !== 2) && (
-              <Route path="/jobs" element={<Err401 />} />
-            )} */}
-            {/* {(userRole !== 1 || userRole !== 2) && (
-              <Route path="/user/:id" element={<Err401 />} />
-            )} */}
             {(userRole !== 1 || userRole !== 2) && (
               <Route exact path="/emp-dataform" element={<Err401 />} />
             )}

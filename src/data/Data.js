@@ -43,8 +43,10 @@ export const academicOptions = [
   {
     value: "inter",
     label: "Inter",
+  }, {
     value: "bachelors",
     label: "Bachelors",
+  }, {
     value: "masters",
     label: "Masters",
   },

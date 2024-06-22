@@ -25,6 +25,7 @@ import { EmployeeInformation } from '../../../utils/Types/Employee.jsx'
 import { getEmployeeInformation } from '../../../utils/MappingObjects/mapEmployeeData.jsx';
 import { getEmployeeData, getNewEmployeeCode } from '../../../hooks/employee.jsx';
 import { EmailInput, PhoneNumberInput, TextAreaInput, TextInput } from '../../../../components/form-control.jsx';
+import {validationEmployeeInfoFormSchema} from '../../../utils/FormSchema/employeeFormSchema.jsx';
 
 const EmployeeForm = forwardRef(({ isLoading, formData, handleSubmit, empId, setEmail, isEditMode, id }, formRef) => {
     return (
@@ -45,15 +46,7 @@ const EmployeeForm = forwardRef(({ isLoading, formData, handleSubmit, empId, set
                                 handleSubmit(values, resetForm);
                             }}
                             validate={(values) => {
-                                const errors = {};
-                                // for (let field in values) {
-                                //     if (!values[`${field}`]) {
-                                //         errors[`${field}`] = 'This field is required';
-                                //     }
-                                // }
-                                if(!values.user_role){
-                                    errors.user_role='User role is required'
-                                }
+                                const errors = validationEmployeeInfoFormSchema(values);
                                 return errors;
                             }}
                         >

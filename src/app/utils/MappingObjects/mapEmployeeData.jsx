@@ -200,17 +200,6 @@ function getBankDetails(data) {
 
   return bankDetail;
 }
-function getManagerSelected(managers) {
-  debugger;
-  if (managers) {
-    const matchingObjects = managers.map((obj) => {
-      return obj.value;
-    });
-
-    return matchingObjects.join(", ");
-  }
-  return [];
-}
 
 function getEmployeeInformation(data) {
   const employeeInformation = {

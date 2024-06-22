@@ -79,15 +79,13 @@ const getJobApplications = async (URL) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching applicants:", error);
-    throw error;
+    return false;
   }
 };
 
 export const updateApplicationStatus = async (
-  baseUrl,
   selectedApplicant,
   option,
-  token
 ) => {
   try {
     const response = await axios.patch(

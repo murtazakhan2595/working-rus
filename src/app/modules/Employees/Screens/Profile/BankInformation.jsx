@@ -122,7 +122,6 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                 touch={props.touched.branch_code}
                                                 value={props.values.branch_code}
                                                 label={'Branch Code'}
-                                                required={true}
                                                 onChange={(field, value) => {
                                                     props.handleChange(field,)(value);
                                                 }}
@@ -150,7 +149,6 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                 touch={props.touched.swift_code}
                                                 value={props.values.swift_code}
                                                 label={'Swift Code'}
-                                                required={true}
                                                 onChange={(field, value) => {
                                                     props.handleChange(field,)(value);
                                                 }}
@@ -164,7 +162,6 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                 touch={props.touched.branch_address}
                                                 value={props.values.branch_address}
                                                 label={'Branch Address'}
-                                                required={true}
                                                 onChange={(field, value) => {
                                                     props.handleChange(field,)(value);
                                                 }}

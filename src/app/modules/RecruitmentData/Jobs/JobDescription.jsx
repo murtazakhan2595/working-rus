@@ -1,15 +1,10 @@
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import restart from "../../../assets/images/restart.svg";
-import education from "../../../assets/images/education.svg";
-import money from "../../../assets/images/money.svg";
-import proCheck from "../../../assets/images/proCheck.svg";
-import { Header } from "./Sections";
-import Label from "./Sections/Label";
-import { fetchJobById } from "../../hooks/recruitment";
-import { convertToK } from "../../../utils/ConvertToK";
+import { restart, education, money, proCheck } from "../../../../assets/images";
+import { Header, Labels } from "../Sections";
+import { fetchJobById } from "../../../hooks/recruitment";
+import { convertToK } from "../../../../utils/ConvertToK";
 import { RxCross2 } from "react-icons/rx";
 
 const JobDescription = ({ baseUrl }) => {
@@ -89,14 +84,15 @@ const JobDescription = ({ baseUrl }) => {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-x-6 mb-4">
-              <Label title={jobDetails?.Employee_Type} src={restart} />
-              <Label title={jobDetails?.Education} src={education} />
-              <Label title={jobDetails?.Work_type} src={proCheck} />
-              <Label
-                title={`PKR ${convertToK(
+              <Labels label={jobDetails?.Employee_Type} src={restart} backgroungColor={'bg-[#F0F1F2]'} />
+              <Labels label={jobDetails?.Education} src={education} backgroungColor={'bg-[#F0F1F2]'} />
+              <Labels label={jobDetails?.Work_type} src={proCheck} backgroungColor={'bg-[#F0F1F2]'} />
+              <Labels
+                label={`PKR ${convertToK(
                   jobDetails?.min_salary
                 )} - ${convertToK(jobDetails?.max_salary)} /month`}
                 src={money}
+                backgroungColor={'bg-[#F0F1F2]'}
               />
             </div>
             <div className="mb-4">

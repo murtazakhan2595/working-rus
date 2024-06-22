@@ -53,6 +53,7 @@ const SelectMultiInputComponent = ({
   options,
   label,
   disabled,
+  required,
 }) => {
   return (
     <FormGroup>
@@ -67,7 +68,7 @@ const SelectMultiInputComponent = ({
         onChange={(selectedOption) => {
           onChange(name, selectedOption);
         }}
-        placeholder={label}
+        placeholder={`${required ? '*': ''}${label}`}
         isMulti={true}
         noOptionsMessage={() => "No such employee found"}
       />
@@ -84,6 +85,7 @@ const DateInput = ({
   onChange,
   label,
   disabled,
+  required
 }) => {
   const date = value ? new Date(moment(value)) : null;
   return (
@@ -97,6 +99,7 @@ const DateInput = ({
           value={date && !isNaN(date.getTime()) ? date : ""}
           selected={date && !isNaN(date.getTime()) ? date : new Date()}
           dropdownMode="select"
+          placeholder={`${required ? '*': ''}${label}`}
           onChange={(value) => {
             if (value) {
               value = moment(value).format("YYYY-MM-DD");
@@ -118,40 +121,6 @@ const DateInput = ({
   );
 };
 
-// const DateInput = ({
-//   name,
-//   value,
-//   error,
-//   touch,
-//   onChange,
-//   label,
-//   disabled,
-// }) => {
-//   const date = new Date(moment(value));
-//   return (
-//     <>
-//       <FormGroup floating>
-//         <Input
-//           type="date"
-//           name={name}
-//           id={name}
-//           disabled={disabled}
-//           className={`form-control ${error && touch ? "is-invalid" : ""}`}
-//           value={date && !isNaN(date.getTime()) ? date : ""}
-//           onChange={(e) => {
-//             const value = e.target.value;
-//             onChange(name, value);
-//           }}
-//           placeholder={label}
-//         />
-//         {label && <Label className="text-baseGray" for={name}>{label}</Label>}
-//         {error && touch && (
-//           <div className="invalid-feedback d-block">{error}</div>
-//         )}
-//       </FormGroup>
-//     </>
-//   );
-// };
 
 const TextInput = ({
   name,
@@ -469,7 +438,6 @@ const FileInput = ({
               if (selectedFile) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                  debugger;
                   const newDocument = {
                     name: fileData.name,
                     file: e.target.result,
@@ -569,7 +537,7 @@ const FilterInput = ({ filters, onChange }) => {
                 <Select
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className="w-[40%] shadow-input rounded-lg"
+                  className="shadow-input rounded-lg"
                   styles={dropdownStyles}
                   name={filter.name}
                   id={filter.name}

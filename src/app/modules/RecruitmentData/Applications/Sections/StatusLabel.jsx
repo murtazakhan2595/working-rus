@@ -7,19 +7,19 @@ const StatusLabel = ({ status }) => {
     }
     let classname = '';
     if (status === 'Selected') {
-        classname = 'bg-success';
+        classname = 'label-success';
     } else if (status === 'Pending') {
-        classname = 'bg-warning';
+        classname = 'label-Pending';
     } else if (status === 'Shortlisted') {
-        classname = 'bg-info';
+        classname = 'label-closed';
     } else if (status === 'Rejected') {
         classname = 'label-danger';
     } else {
-        classname = 'bg-secondary';
+        classname = 'label-draft';
     }
     return (
         <>
-            <span className={`badge p-2 ${classname} bg-opacity-25`}>
+            <span className={`p-2 ${classname} badge`}>
                 {status}
             </span>
         </>

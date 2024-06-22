@@ -41,7 +41,6 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
     }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
     const handleSubmit = (data) => {
-        debugger
         const response = saveEmployeeProfessionalExperianceData(baseUrl, employeeId, token, data.experiences);
         if (response)
             nextstep();
@@ -108,7 +107,6 @@ const ExperienceInformation = ({ nextstep, baseUrl, token, employeeId, isEditMod
                                                 type="button"
                                                 className="btn btn-outline-dark"
                                                 onClick={() => {
-                                                    debugger
                                                     const length = props.values?.experiences?.length
                                                     const index = length ? length : 0;
 
