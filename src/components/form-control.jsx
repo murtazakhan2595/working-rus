@@ -68,7 +68,7 @@ const SelectMultiInputComponent = ({
         onChange={(selectedOption) => {
           onChange(name, selectedOption);
         }}
-        placeholder={`${required ? '*': ''}${label}`}
+        placeholder={`${required ? '*' : ''}${label}`}
         isMulti={true}
         noOptionsMessage={() => "No such employee found"}
       />
@@ -85,7 +85,8 @@ const DateInput = ({
   onChange,
   label,
   disabled,
-  required
+  required,
+  minDate,
 }) => {
   const date = value ? new Date(moment(value)) : null;
   return (
@@ -94,12 +95,13 @@ const DateInput = ({
         <DatePicker
           name={name}
           id={name}
+          minDate={minDate}
           isDisabled={disabled}
           className={`form-control ${error && touch ? "is-invalid" : ""} ${value ? 'date-floating-input' : ''}`}
           value={date && !isNaN(date.getTime()) ? date : ""}
           selected={date && !isNaN(date.getTime()) ? date : new Date()}
           dropdownMode="select"
-          placeholder={`${required ? '*': ''}${label}`}
+          placeholder={`${required ? '*' : ''}${label}`}
           onChange={(value) => {
             if (value) {
               value = moment(value).format("YYYY-MM-DD");
@@ -149,7 +151,7 @@ const TextInput = ({
           onChange={(option) => {
             const value = option.target.value;
             if (regEx) {
-              if (!value || regEx.test(value)) onChange(name, value);
+              if (!value || regEx.test(value)) { onChange(name, value) }
             } else {
               onChange(name, value);
             }
@@ -232,11 +234,11 @@ const PhoneNumberInput = ({
               value={`${countryCode || ""}${value || ""}`}
               className={error && touch ? "is-invalid" : ""}
               onChange={(option) => {
-                const regExTelephone = /^[0-9-+]+$/;
+                const regExTelephone = /^[0-9-]+$/;
                 let value = option.target.value;
                 value = value.replace(countryCode, "");
-                if (value.includes("+")) value = "";
-                else if (!value || regExTelephone.test(value))
+                if (value.includes("+")) {value = "";}
+                if (!value || regExTelephone.test(value))
                   onChange(name, value);
               }}
             />

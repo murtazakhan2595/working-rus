@@ -78,9 +78,9 @@ const JobDescription = ({ baseUrl }) => {
                     {calculateRemainingDays(jobDetails?.Deadline)}
                   </div>
                 </div>
-                <button className="btn btn-dark text-baseGray font-lato">
+                <Link className="btn btn-dark" to={`/apply/${jobDetails?.id}`}>
                   Apply now
-                </button>
+                </Link>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-x-6 mb-4">

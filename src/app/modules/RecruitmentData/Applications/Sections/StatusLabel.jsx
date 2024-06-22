@@ -18,6 +18,8 @@ const StatusLabel = ({ status }) => {
         classname = 'label-primary-7D11EA';
     } else if (status === 'Selected') {
         classname = 'label-success';
+    } else if (status === 'Shortlisted') {
+        classname = 'label-green-28D9AC';
     } else {
         classname = 'label-draft';
     }

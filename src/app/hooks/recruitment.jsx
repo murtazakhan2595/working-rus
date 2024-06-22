@@ -141,6 +141,18 @@ export const addJob = async (baseUrl, values, token) => {
   }
 };
 
+export const addApplication = async (values) => {
+  try {
+    const response = await axios.post(`${baseUrl}/candidate/`, values, {
+      headers: headers(),
+    });
+    return response;
+  } catch (error) {
+    console.error("Error adding job:", error);
+    throw error;
+  }
+};
+
 export const updateJob = async (baseUrl, values, id) => {
   console.log("I am id from recruitment.jsx", id);
   console.log("i am values from recruitment.jsx", values);

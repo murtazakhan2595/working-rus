@@ -8,7 +8,7 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
-import { Applications, Jobs, CreateUpdateJob, JobDescription } from "./app/modules/RecruitmentData";
+import { Applications, Jobs, CreateUpdateJob, JobDescription, JobApplicationForm } from "./app/modules/RecruitmentData";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
@@ -23,7 +23,6 @@ import {
 } from "./state/slices/UserSlice.js";
 import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
-import JobApplicationForm from "./app/modules/RecruitmentData/JobApplicationForm.jsx";
 import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
 import Employee from './app/modules/Employees/Employee.jsx'
 import LeaveApplicationListHR from "./app/modules/LeaveApplication/LeaveApplicationListHR.jsx";
