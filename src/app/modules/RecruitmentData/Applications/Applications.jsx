@@ -55,7 +55,6 @@ const Applications = () => {
       setOptions((prevOptions) => ({ ...prevOptions, sizePerPage }));
     }
   };
-  console.log(location)
   const onPageChange = (page, sizePerPage) => {
     if (options.page !== page) {
       setOptions((prevOptions) => ({ ...prevOptions, page }));
@@ -91,14 +90,6 @@ const Applications = () => {
     fetchLists();
   }, [id, applicationStatus, options, filterData]);
 
-  const handleRowClick = (id) => {
-    setSelectedRow(selectedRow === id ? null : id);
-  };
-
-  const handleStatusFilter = (option) => {
-    setApplicationStatus(option);
-  };
-
   const handleOptionSelect = async (applicant, option) => {
     try {
       if (applicant) {
@@ -118,13 +109,6 @@ const Applications = () => {
       console.error("Error updating application status:", error);
     }
   };
-
-  const handleShowFilter = () => {
-    setShowFilter(!showFilter);
-  };
-
-
-
 
   const renderAction = (row) => (
     <div>
@@ -183,9 +167,9 @@ const Applications = () => {
   );
 
   const handleFilterChange = (filterName, filterValue) => {
+    onPageChange(1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-
       if (filterValue === "") {
         delete updatedFilters[filterName];
       } else {

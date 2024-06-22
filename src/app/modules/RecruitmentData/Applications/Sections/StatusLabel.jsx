@@ -6,14 +6,18 @@ const StatusLabel = ({ status }) => {
         return '';
     }
     let classname = '';
-    if (status === 'Selected') {
-        classname = 'label-success';
-    } else if (status === 'Pending') {
-        classname = 'label-Pending';
-    } else if (status === 'Shortlisted') {
-        classname = 'label-closed';
+    if (status === 'Onboard') {
+        classname = 'label-green-2FD115';
+    } else if (status === 'Contacted') {
+        classname = 'label-warning-FF9900';
+    } else if (status === 'Offered') {
+        classname = 'label-warning-D5D912';
     } else if (status === 'Rejected') {
         classname = 'label-danger';
+    } else if (status === 'Declined') {
+        classname = 'label-primary-7D11EA';
+    } else if (status === 'Selected') {
+        classname = 'label-success';
     } else {
         classname = 'label-draft';
     }
