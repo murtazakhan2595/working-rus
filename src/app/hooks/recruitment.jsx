@@ -31,18 +31,12 @@ const headers = () => ({
 //   }
 // };
 
-export const fetchJobPosts = async (
-  baseUrl,
-  token,
-  status,
-  searchQuery,
-  sortOption
-) => {
-  let searchStatus = "";
-  if (status === "Open") {
-    searchStatus = "live";
-  } else if (status === "Closed") {
-    searchStatus = "expired";
+export const fetchJobPosts = async (status, searchQuery, sortOption) => {
+  let searchStatus = '';
+  if (status === 'Open') {
+    searchStatus = 'live';
+  } else if (status === 'Closed') {
+    searchStatus = 'expired';
   }
 
   const searchParams = {
