@@ -10,6 +10,7 @@ import { Header } from "./Sections";
 import Label from "./Sections/Label";
 import { fetchJobById } from "../../hooks/recruitment";
 import { convertToK } from "../../../utils/ConvertToK";
+import { RxCross2 } from "react-icons/rx";
 
 const JobDescription = ({ baseUrl }) => {
   const [jobDetails, setJobDetails] = useState(null);
@@ -54,12 +55,14 @@ const JobDescription = ({ baseUrl }) => {
     }
   };
 
-
   return (
     <>
       <div className="bg-[#F0F1F2] w-full">
         <Header title="Job Application" />
-        <div className="p-6 bg-[#FAFBFC] rounded-lg shadow-sm md:mx-4 h-[90vh] overflow-y-auto hideScroll">
+        <div className="p-6 relative bg-[#FAFBFC] rounded-lg shadow-sm md:mx-4 h-[90vh] overflow-y-auto hideScroll">
+          <Link to="/jobs" className="absolute top-5 right-5">
+            <RxCross2 className="text-xl" title="Back to Jobs" />
+          </Link>
           <div className="max-w-4xl">
             <div className="mb-4">
               <span className="text-base font-lato font-normal text-baseGray">
@@ -76,7 +79,8 @@ const JobDescription = ({ baseUrl }) => {
                     <span>{jobDetails?.Job_Type}</span>
                   </div>
                   <div className="text-sm text-gray-600">
-                    Apply before {formatDate(jobDetails?.Deadline)} • {calculateRemainingDays(jobDetails?.Deadline)}
+                    Apply before {formatDate(jobDetails?.Deadline)} •{" "}
+                    {calculateRemainingDays(jobDetails?.Deadline)}
                   </div>
                 </div>
                 <button className="btn btn-dark text-baseGray font-lato">

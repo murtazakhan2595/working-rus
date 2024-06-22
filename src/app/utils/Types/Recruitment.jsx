@@ -1,17 +1,15 @@
 const JobDetail = {
-    Job_Title: null,
-    Job_Type: null,
-    Work_type: null,
-    Employee_Type: null,
-    Education: null,
-    location: null,
-    min_salary: null,
-    max_salary: null,
-    Deadline: null,
-    Job_Requirement: null,
-    Job_Description: null,
+  Job_Title: "",
+  Job_Type: "",
+  Work_type: "",
+  Employee_Type: "",
+  Education: "",
+  location: "",
+  min_salary: "",
+  max_salary: "",
+  Deadline: "",
+  Job_Requirement: "",
+  Job_Description: "",
 };
 
-export {
-    JobDetail,
-}
+export { JobDetail };
