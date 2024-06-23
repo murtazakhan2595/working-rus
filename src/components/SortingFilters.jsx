@@ -1,0 +1,65 @@
+import React, { useState } from "react";
+import {
+    ButtonDropdown, DropdownToggle,
+    DropdownMenu,
+    DropdownItem,
+} from "reactstrap";
+import { CheckBoxInput } from "./form-control";
+
+const CheckboxDropdown = ({ items, onChange, values }) => {
+    const [openDropdownRow, setOpenDropdownRow] = useState(false);
+
+    const toggleDropdown = () => {
+        setOpenDropdownRow(!openDropdownRow);
+    };
+
+    return (
+        <div>
+            <ButtonDropdown
+                isOpen={openDropdownRow}
+                toggle={() => { }}
+                className="float-end"
+            >
+                <DropdownToggle className="custom-dropdown-toggle placeholder-[#5C5E64] rounded-md">
+                    <span onClick={() => toggleDropdown()}>Sorting Filters</span>
+                </DropdownToggle>
+                <DropdownMenu right className="custom-dropdown-menu">
+                    <h5 className="mb-2"><b>Sort</b></h5>
+                    {items.map(item => {
+                        return (
+                            <>
+                                <DropdownItem onClick={() => { }} className="custom-dropdown-item"><SortingCategory item={item} onChange={onChange} values={values} /></DropdownItem>
+                            </>
+                        )
+                    })}
+                </DropdownMenu>
+            </ButtonDropdown>
+        </div>
+    );
+};
+
+export const SortingCategory = ({ item, onChange, values }) => {
+    return (
+        <div>
+            <div><b>{item.label}</b></div>
+            {item.options.map(checkbox => {
+                return (
+                    <div className="pl-3">
+                        <CheckBoxInput
+                            name={item.name}
+                            label={checkbox.label}
+                            value={values && values[item.name] && values[item.name].includes(checkbox.value)}
+                            onChange={() => {
+                                onChange(item.name, checkbox.value)
+                            }}
+
+                        />
+                    </div>
+                );
+            })}
+        </div>
+    )
+}
+
+
+export default CheckboxDropdown;

@@ -68,7 +68,7 @@ export const workTypeOptions = [
 
 export const employeeTypeOptions = [
   { value: "Internees", label: "Intern" },
-  { value: "Part_Tiime", label: "Part Time" },
+  { value: "Part_Time", label: "Part Time" },
   { value: "Full_Time", label: "Full Time" },
   { value: "Contract", label: "Contract" },
   { value: "Freelancer", label: "Freelancer" },
@@ -296,7 +296,10 @@ export const dropdownStyles = {
   }),
 };
 
-export const Sorting = [
-  { value: "newest_first", label: "Newest First" },
-  { value: "oldest_first", label: "Oldest First" },
+export const JobSortingFilters = [
+  { label: 'Sort by date', name: "sort_by_date", options: [{ label: 'Newest First', value: 'newest_first' }, { label: "Oldest First", value: 'oldest_first' }] },
+  { label: 'Worktype', name: "Job_Type", options: [{ label: 'Remote', value: 'Remote' }, { label: "Hybrid", value: 'Hybrid' }, { label: "Onsite", value: 'Onsite' }] },
+  { label: 'Employee Type', name: "Employee_Type", options: [{ label: 'Full-Time', value: 'Full_Time' }, { label: "Internship", value: 'Internees' }, { label: "Part-time", value: 'Part_Time' }] },
+  { label: 'Job Level', name: "Work_type", options: [{ label: 'Senior', value: 'Senior_Level' }, { label: "Mid Level", value: 'Mid_Level' }, { label: "Intern", value: 'Internees' }, { label: "Junior", value: 'Junior_Level' }] },
+
 ];

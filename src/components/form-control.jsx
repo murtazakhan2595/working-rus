@@ -9,7 +9,7 @@ import { TfiFiles } from "react-icons/tfi";
 import { dropdownStyles } from "../data/Data";
 import { IoIosSearch } from "react-icons/io";
 import { countryCodesOptions } from "../data/CountryCode";
-
+import CheckboxMenu from './SortingFilters';
 const SelectComponent = ({
   name,
   value,
@@ -237,7 +237,7 @@ const PhoneNumberInput = ({
                 const regExTelephone = /^[0-9-]+$/;
                 let value = option.target.value;
                 value = value.replace(countryCode, "");
-                if (value.includes("+")) {value = "";}
+                if (value.includes("+")) { value = ""; }
                 if (!value || regExTelephone.test(value))
                   onChange(name, value);
               }}
@@ -434,7 +434,6 @@ const FileInput = ({
             accept={acceptType || "*/*"}
             max-size="104857600"
             onChange={(e) => {
-              console.log(value);
               let selectedFile = e.target.files[0];
               const fileData = { name: selectedFile?.name };
               if (selectedFile) {
@@ -560,6 +559,17 @@ const FilterInput = ({ filters, onChange }) => {
                   onChange={(option) => {
                     onChange(filter.name, option.target.value);
                   }}
+                />
+              );
+            } else if (filter.type === "sorting") {
+              return (
+                <CheckboxMenu
+                  items={filter.option}
+                  onChange={(name, value) => {
+                    debugger
+                    onChange(name, value);
+                  }}
+                  values={filter.values}
                 />
               );
             } else {

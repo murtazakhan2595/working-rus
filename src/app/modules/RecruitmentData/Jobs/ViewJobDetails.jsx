@@ -12,7 +12,6 @@ import EditJobDetails from "./EditJobDetails";
 
 const ViewJobDetails = ({ job, onClose }) => {
   const [showEdit, setShowEdit] = useState(false);
-  console.log(job);
 
   const handleEditClick = () => {
     setShowEdit(true);

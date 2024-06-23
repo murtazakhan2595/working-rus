@@ -7,48 +7,13 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-// export const fetchJobPosts = async (baseUrl, token, status) => {
-//   let searchStatus = '';
-//   if (status === 'Open') {
-//     searchStatus = 'live';
-//   } else if (status === 'Closed') {
-//     searchStatus = 'expired';
-//   }
 
-//   try {
-//     const response = await axios.get(
-//       `${baseUrl}/recruitment/?search=${encodeURIComponent(
-//         JSON.stringify({ status: searchStatus })
-//       )}`,
-//       {
-//         headers: headers(),
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error fetching posts:', error);
-//     throw error;
-//   }
-// };
-
-export const fetchJobPosts = async (status, searchQuery, sortOption) => {
-  let searchStatus = '';
-  if (status === 'Open') {
-    searchStatus = 'live';
-  } else if (status === 'Closed') {
-    searchStatus = 'expired';
-  }
-
-  const searchParams = {
-    status: searchStatus,
-    // search: searchQuery,
-    // sort: sortOption,
-  };
-
+export const fetchJobPosts = async (filterData) => {
+ 
   try {
     const response = await axios.get(
       `${baseUrl}/recruitment/?search=${encodeURIComponent(
-        JSON.stringify(searchParams)
+        JSON.stringify(filterData)
       )}`,
       {
         headers: headers(),

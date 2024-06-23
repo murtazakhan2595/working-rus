@@ -1,61 +1,45 @@
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { IoCalendarOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ViewJobDetails from "./ViewJobDetails";
 import { fetchJobPosts } from "../../../hooks/recruitment";
-import { cut, file, dots, jobIcon } from "../../../../assets/images";
+import { jobIcon } from "../../../../assets/images";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 import { PiDotsThreeOutlineFill } from "react-icons/pi";
-import { Tabs, Blocks, Header, StatusLabel, Labels } from "../Sections";
+import { Tabs, Header, Labels } from "../Sections";
 import {
   workTypeOptions,
   employeeTypeOptions,
   jobTypeOptions,
   locationTypeOptions,
-  Sorting,
+  JobSortingFilters,
 } from "../../../../data/Data";
 import PageLoader from "../../../../components/PageLoader";
 import moment from "moment";
 import { LiaBriefcaseSolid } from "react-icons/lia";
 import {
   FilterInput,
-  CustomDarkButton,
 } from "../../../../components/form-control";
-import { LuExternalLink } from "react-icons/lu";
 import {
-  Card,
-  CardHeader,
-  CardBody,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Row,
   Col,
 } from "reactstrap";
 
-const JobsDataTable = ({ baseUrl, token }) => {
+const JobsDataTable = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("All");
   const [selectedJob, setSelectedPost] = useState(null);
-  const [show, setShow] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState("");
-
-  const navigate = useNavigate();
+  const [filterData, setFilterData] = useState({});
 
   useEffect(() => {
     const getPosts = async () => {
       setLoading(true);
       try {
         const data = await fetchJobPosts(
-          activeTab,
-          searchQuery,
-          sortOption
+          filterData,
         );
         setPosts(data);
       } catch (error) {
@@ -66,24 +50,7 @@ const JobsDataTable = ({ baseUrl, token }) => {
     };
 
     getPosts();
-  }, [activeTab, searchQuery, sortOption]);
-
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "numeric", day: "numeric" };
-    const formattedDate = new Date(dateString).toLocaleDateString(
-      undefined,
-      options
-    );
-    return formattedDate;
-  };
-
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Link copied to clipboard!", {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 1000,
-    });
-  };
+  }, [filterData]);
 
   const handleDotsClick = (post) => {
     setSelectedPost(post);
@@ -93,14 +60,28 @@ const JobsDataTable = ({ baseUrl, token }) => {
     setSelectedPost(null);
   };
 
-  const handleFilterChange = (name, value) => {
-    if (name === "id_and_first_name") {
-      setSearchQuery(value);
-    } else if (name === "sort") {
-      setSortOption(value);
-    }
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+    //  debugger
+      const updatedFilters = { ...prevFilters };
+      if (filterName !== 'status' && filterName !== 'Job_Title') {
+        if (!updatedFilters[filterName]) {
+          updatedFilters[filterName] = filterValue;
+        } else {
+          updatedFilters[filterName] = `${updatedFilters[filterName]},${filterValue}`;
+        }
+      }
+      else {
+        if (!filterValue) {
+          delete updatedFilters[filterName];
+        } else {
+          updatedFilters[filterName] = filterValue;
+        }
+      }
+      return updatedFilters;
+    });
   };
-
+  console.log(filterData);
   return (
     <div className="screen bg-[#F0F1F2]">
       <Header
@@ -111,13 +92,14 @@ const JobsDataTable = ({ baseUrl, token }) => {
               {
                 type: "search",
                 placeholder: "Search by ID & Job Title",
-                name: "id_and_first_name",
+                name: "Job_Title",
               },
               {
-                type: "select",
-                option: Sorting,
-                name: "sort",
+                type: "sorting",
+                option: JobSortingFilters,
+                name: "sorting",
                 placeholder: "Sort By",
+                values: filterData,
               },
             ]}
             onChange={handleFilterChange}
@@ -132,7 +114,12 @@ const JobsDataTable = ({ baseUrl, token }) => {
         )}
         <Col lg={12}>
           <div className="rounded-top bg-white p-2 m-2">
-            <Tabs tabs={["All", "Open", "Closed"]} onTabChange={setActiveTab} />
+            <Tabs
+              tabs={["All", "Open", "Closed"]}
+              onTabChange={(value) => {
+                handleFilterChange('status', value === 'Open' ? 'live' : value === 'Closed' ? 'expired' : '');
+              }}
+            />
           </div>
         </Col>
         <Col lg={12}>

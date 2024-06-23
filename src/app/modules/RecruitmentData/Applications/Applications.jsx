@@ -34,7 +34,6 @@ const Applications = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [Applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showFilter, setShowFilter] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState("");
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
@@ -198,7 +197,7 @@ const Applications = () => {
             filters={[
               { type: 'search', placeholder: 'Search', name: 'id_and_first_name' },
             ]}
-            onChange={() => { }}
+            onChange={handleFilterChange}
           />
         }
       />
