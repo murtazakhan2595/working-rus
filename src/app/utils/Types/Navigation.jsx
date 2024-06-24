@@ -7,7 +7,7 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { MdBarChart, MdOutlineTrendingUp } from "react-icons/md";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import buble from "../../../assets/images/buble.png";
-import { IoIosSearch, IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 
 function getNavigation(userRole, projects) {
   console.log(projects,'87987989')
@@ -272,16 +272,15 @@ function getNavigation(userRole, projects) {
           },
         ]
         : []),
-      ...(userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3
+      ...(userRole === 1 || userRole === 2 || userRole === 3
         ? [
           {
-            name: "Leave Management",
+            name: "Leave Tracker",
             icon: <LuCalendarDays />,
             dropdown: "LeaveManagement",
             children: [
               ...(userRole === 1 ||
                 userRole === 2 ||
-                userRole === 4 ||
                 userRole === 3
                 ? [
                   {
@@ -296,7 +295,7 @@ function getNavigation(userRole, projects) {
                 userRole === 3
                 ? [
                   {
-                    name: "Leave Calender",
+                    name: "Calender",
                     url: "/leave-calender",
                   },
                 ]
@@ -307,7 +306,18 @@ function getNavigation(userRole, projects) {
                 userRole === 3
                 ? [
                   {
-                    name: "Team Application Status",
+                    name: "Leave History",
+                    url: "/leave-calender",
+                  },
+                ]
+                : []),
+              ...(userRole === 1 ||
+                userRole === 2 ||
+                userRole === 4 ||
+                userRole === 3
+                ? [
+                  {
+                    name: "Leave Status",
                     url: "/leave-list",
                   },
                 ]
@@ -318,7 +328,7 @@ function getNavigation(userRole, projects) {
                 userRole === 3
                 ? [
                   {
-                    name: "Team Leave Balance",
+                    name: "Holidays",
                     url: "/leave-balance",
                   },
                 ]

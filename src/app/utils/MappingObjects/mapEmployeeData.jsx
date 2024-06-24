@@ -203,7 +203,7 @@ function getBankDetails(data) {
 
 function getEmployeeInformation(data) {
   const employeeInformation = {
-    id: data.id ?? 0,
+    id: data?.id ?? 0,
     username: data.username,
     first_name: data.first_name,
     last_name: data.last_name,
