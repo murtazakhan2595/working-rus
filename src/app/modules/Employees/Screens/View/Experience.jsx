@@ -51,9 +51,11 @@ const Experience = ({ experience, isEditable, employeeId }) => {
                       "DD MMMM, YYYY"
                     ) || "00/00/0000"}{" "}
                     -{" "}
-                    {moment(exp.exp_end_date, "YYYY-MM-DD").format(
-                      "DD MMMM, YYYY"
-                    ) || "00/00/0000"}{" "}
+                    {exp.exp_end_date
+                      ? moment(exp.exp_end_date, "YYYY-MM-DD").format(
+                          "DD MMMM, YYYY"
+                        )
+                      : "Till date"}{" "}
                   </div>
                 </div>
                 <div className="md:w-[calc(100%-250px)] opacity-70">
