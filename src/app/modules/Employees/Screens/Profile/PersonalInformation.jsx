@@ -33,74 +33,30 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // function getUserRespones(baseUrl, employeeId, token) {
-  //   getEmployeePersonalInfoData(baseUrl, employeeId, token)
-  //     .then((response) => {
-  //       setPersonalInfo(response);
-  //       setIsLoading(false);
-  //       console.log('I am then')
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       console.log('I am catch')
-
-  //     });
-  // }
-
-  // useEffect(() => {
-  //   getUserRespones(baseUrl, employeeId, token);
-  // }, [baseUrl, employeeId, token]);
-
-  // const handleSubmit = (data) => {
-  //   const personalInfrmation = getPersonalInfo(data);
-
-  //   const response = saveEmployeePersonalInfoData(
-  //     baseUrl,
-  //     employeeId,
-  //     token,
-  //     personalInfrmation
-  //   );
-  //   if (response) {
-  //     getUserRespones(baseUrl, employeeId, token);
-  //     nextstep();
-  //   }
-  // };
-
-  const getUserResponses = async (baseUrl, employeeId, token) => {
-    try {
-      const response = await getEmployeePersonalInfoData(baseUrl, employeeId, token);
-      setPersonalInfo(response);
-      setIsLoading(false);
-      console.log('I am then');
-    } catch (error) {
-      console.log(error);
-      console.log('I am catch');
-    }
-  };
-
   useEffect(() => {
-    getUserResponses(baseUrl, employeeId, token);
+    getEmployeePersonalInfoData(baseUrl, employeeId, token)
+      .then((response) => {
+        setPersonalInfo(response);
+        setIsLoading(false);
+        console.log("I am then");
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("I am catch");
+      });
   }, [baseUrl, employeeId, token]);
 
-  const handleSubmit = async (data) => {
-    try {
-      const personalInformation = getPersonalInfo(data);
-      const response = await saveEmployeePersonalInfoData(
-        baseUrl,
-        employeeId,
-        token,
-        personalInformation
-      );
+  const handleSubmit = (data) => {
+    const personalInfrmation = getPersonalInfo(data);
 
-      if (response) {
-        await getUserResponses(baseUrl, employeeId, token);
-        nextstep();
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    const response = saveEmployeePersonalInfoData(
+      baseUrl,
+      employeeId,
+      token,
+      personalInfrmation
+    );
+    if (response) nextstep();
   };
-
 
   return (
     <>
