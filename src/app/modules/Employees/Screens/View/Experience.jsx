@@ -4,6 +4,7 @@ import { FiDownload } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
 import { formatDate } from "../../../../hooks/employee";
+import moment from "moment";
 
 const Experience = ({ experience, isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -46,10 +47,15 @@ const Experience = ({ experience, isEditable, employeeId }) => {
                     {exp.exp_designation || "------"}
                   </div>
                   <div className="opacity-80">
-                    {formatDate(exp.exp_start_date) || "00/00/0000"} -{" "}
+                    {moment(exp.exp_start_date, "YYYY-MM-DD").format(
+                      "DD MMMM, YYYY"
+                    ) || "00/00/0000"}{" "}
+                    -{" "}
                     {exp.exp_end_date
-                      ? formatDate(exp.exp_end_date)
-                      : "Till date" || "00/00/0000"}
+                      ? moment(exp.exp_end_date, "YYYY-MM-DD").format(
+                          "DD MMMM, YYYY"
+                        )
+                      : "Till date"}{" "}
                   </div>
                 </div>
                 <div className="md:w-[calc(100%-250px)] opacity-70">

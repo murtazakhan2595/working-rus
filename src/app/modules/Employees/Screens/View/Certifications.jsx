@@ -3,8 +3,7 @@ import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
 import React, { useState } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
-import { formatDate } from "../../../../hooks/employee";
-
+import moment from "moment";
 
 const Certifications = ({ certifications,isEditable , employeeId}) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -34,8 +33,14 @@ const Certifications = ({ certifications,isEditable , employeeId}) => {
                 {cer.certification_institute || "------"}
               </div>
               <div className="opacity-70">
-                {formatDate(cer.completion_date) || "00-00-0000"}{cer.expiry_date &&" - "}
-                {formatDate(cer.expiry_date) || ""}
+                {moment(cer.completion_date, "YYYY-MM-DD").format(
+                  "DD MMMM, YYYY"
+                )
+                || "00-00-0000"}{cer.expiry_date &&" - "}
+                {moment(cer.expiry_date, "YYYY-MM-DD").format(
+                  "DD MMMM, YYYY"
+                )
+                || ""}
               </div>
             </div>
             <div>

@@ -27,7 +27,6 @@ const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
   label: getAllCountries()[countryCode].name,
 }));
 
-
 const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
   const formRef = React.createRef();
   const [personalInfo, setPersonalInfo] = useState({});
@@ -39,16 +38,17 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
       .then((response) => {
         setPersonalInfo(response);
         setIsLoading(false);
+        console.log("I am then");
       })
       .catch((error) => {
         console.log(error);
+        console.log("I am catch");
       });
-  }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
+  }, [baseUrl, employeeId, token]);
 
   const handleSubmit = (data) => {
     const personalInfrmation = getPersonalInfo(data);
 
-    console.log("I am the submmited personal Information", personalInfrmation);
     const response = saveEmployeePersonalInfoData(
       baseUrl,
       employeeId,
