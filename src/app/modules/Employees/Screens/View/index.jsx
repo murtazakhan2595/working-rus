@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaChevronCircleLeft } from "react-icons/fa";
-import {getEmployeeCVDetailData ,getEmployeeVisaDetailData , getEmployeeCerficationData ,getEmployeeData,getEmployeeProfessionalExperianceData,getEmployeeAcademicRecordData,getEmployeeVisaDetailsFiles} from '../../../../hooks/employee'
+import {
+  getEmployeeCVDetailData,
+  getEmployeeVisaDetailData,
+  getEmployeeCerficationData,
+  getEmployeeData,
+  getEmployeeProfessionalExperianceData,
+  getEmployeeAcademicRecordData,
+  getEmployeeVisaDetailsFiles,
+  convertDateToDayMonthYear,
+} from "../../../../hooks/employee";
 import { connect } from "react-redux";
 import { FiDownload } from "react-icons/fi";
 import PersonalDetials from "./PersonalDetials";
@@ -12,10 +21,10 @@ import Experience from "./Experience";
 import AcademicInfo from "./AcademicDetials";
 import Certifications from "./Certifications";
 import IdentificationDetails from "./IdentificationDetails";
-import Loader  from '../../../../../components/PageLoader'
+import Loader from "../../../../../components/PageLoader";
+import getCountryFullName from "../../../../../utils/getCountryName";
 
-
-const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
+const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [userData, setUserData] = useState("");
   const [educations, setEducations] = useState([{}]);
   const [certifications, setCertifications] = useState([{}]);
@@ -25,7 +34,7 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
   const [visa, setVisa] = useState({});
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
-  const userId = profileView ? userProfile?.id : id
+  const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
 
   const headers = {
@@ -33,49 +42,73 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
     "Content-Type": "application/json",
   };
 
-  let getDataByHooks = async()=> {
-    setLoading(true)
-    let empData = await getEmployeeData(baseUrl,userId,headers)
-    let expData = await getEmployeeProfessionalExperianceData(baseUrl,userId,token)
-    let cvData = await getEmployeeCVDetailData(baseUrl,userId,token)
-    let visaData = await getEmployeeVisaDetailData(baseUrl,userId,token)
-    let educationData = await getEmployeeAcademicRecordData(baseUrl,userId,token)
-    let certificationData = await getEmployeeCerficationData(baseUrl,userId,token)
-    let documentsData = await getEmployeeVisaDetailsFiles(baseUrl,userId,token)
-    setUserData(empData)
-    setExperiences(expData)
-    setCV(cvData)
-    setVisa(visaData)
-    setEducations(educationData)
+  let getDataByHooks = async () => {
+    setLoading(true);
+    let empData = await getEmployeeData(baseUrl, userId, headers);
+    let expData = await getEmployeeProfessionalExperianceData(
+      baseUrl,
+      userId,
+      token
+    );
+    let cvData = await getEmployeeCVDetailData(baseUrl, userId, token);
+    let visaData = await getEmployeeVisaDetailData(baseUrl, userId, token);
+    let educationData = await getEmployeeAcademicRecordData(
+      baseUrl,
+      userId,
+      token
+    );
+    let certificationData = await getEmployeeCerficationData(
+      baseUrl,
+      userId,
+      token
+    );
+    let documentsData = await getEmployeeVisaDetailsFiles(
+      baseUrl,
+      userId,
+      token
+    );
+    setUserData(empData);
+    setExperiences(expData);
+    setCV(cvData);
+    setVisa(visaData);
+    setEducations(educationData);
     setCertifications(certificationData);
     setDocuments(documentsData);
-    setLoading(false)
-  }
+    setLoading(false);
+  };
   useEffect(() => {
-    getDataByHooks()
+    getDataByHooks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   const personalInfo = [
     [
       { title: "First Name", data: userData.first_name },
       { title: "ID Card No", data: userData?.nic },
-      { title: "Contact Number", data: userData?.mobile_no },
-      { title: "Nationality", data: userData?.nationality },
+      { title: "Contact No", data: userData?.mobile_no },
+      { title: "Nationality", data: getCountryFullName(userData?.nationality) },
+      { title: "Father Name", data: userData?.father_name },
+
     ],
     [
       { title: "Last Name", data: userData?.last_name },
-      { title: "Date of Birth", data: userData?.date_of_birth },
-      { title: "Email Address", data: userData?.other_email }, // Changed from current_address to email
+      { title: "Date of Birth", data: convertDateToDayMonthYear(userData?.date_of_birth) },
+      { title: "Email Address", data: userData?.other_email },
       { title: "Marital Status", data: userData?.marital_status },
+      { title: "Mother Name", data: userData?.mother_name },
+
     ],
   ];
 
   const contactInformation = [
     { title: "Emergency Contact", data: userData?.emergency_phone_no },
-    { title: "Full Name", sub : true , data: userData?.emergency_first_name + " " + userData?.emergency_last_name },
-    { title: "Relation", sub : true , data: userData?.emergency_relation },
+    {
+      title: "Full Name",
+      sub: true,
+      data:
+        userData?.emergency_first_name + " " + userData?.emergency_last_name,
+    },
+    { title: "Relation", sub: true, data: userData?.emergency_relation },
     { title: "Permenent Address", data: userData?.residential_address },
     // { title: "Postal Code", sub : true,  data: "" },
     { title: "Present Address", data: userData?.current_address },
@@ -102,12 +135,12 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
     [
       { title: "Employee Status", data: userData?.employee_status },
       { title: "Work Type", data: userData?.employee_work_type },
-      { title: "Work Location", data: userData?.employee_location },
+      { title: "Work Location", data: getCountryFullName(userData?.employee_location) },
       { title: "Direct Report To", data: userData?.direct_report },
     ],
     [
       { title: "Department Head", data: userData?.department_manager },
-      { title: "Joining Date", data: userData?.joining_date },
+      { title: "Joining Date", data: convertDateToDayMonthYear(userData?.joining_date) },
     ],
   ];
 
@@ -117,12 +150,16 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
       fields: [
         { title: "Current Country ID", data: visa.living_country_id_no },
         { title: "Issuance Country", data: visa.place_of_issuance },
-        { title: "ID Issuance Date", data: visa.id_issuance_date },
-        { title: "ID Expiry Date", data: visa.id_expiry_date },
+        { title: "ID Issuance Date", data: convertDateToDayMonthYear(visa.id_issuance_date) },
+        { title: "ID Expiry Date", data: convertDateToDayMonthYear(visa.id_expiry_date) },
         {
           title: "ID Front Image",
           data: documents?.id_front?.document?.file && (
-            <a href={documents.id_front.document.file} download={documents.id_front.document.name} className="flex items-center no-underline text-black">
+            <a
+              href={documents.id_front.document.file}
+              download={documents.id_front.document.name}
+              className="flex items-center no-underline text-black"
+            >
               <FiDownload />
             </a>
           ),
@@ -130,7 +167,11 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
         {
           title: "ID Back Image",
           data: documents?.id_back?.document?.file && (
-            <a href={documents.id_back.document.file} download={documents.id_back.document.name} className="flex items-center no-underline text-black">
+            <a
+              href={documents.id_back.document.file}
+              download={documents.id_back.document.name}
+              className="flex items-center no-underline text-black"
+            >
               <FiDownload />
             </a>
           ),
@@ -141,13 +182,17 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
       title: "Passport Details",
       fields: [
         { title: "Passport Number", data: visa.passport_number },
-        { title: "Issuance Country", data: visa.Passport_Issuance_Country },
-        { title: "Issuance Date", data: visa.Passport_Issuance_Date },
-        { title: "Expiry Date", data: visa.Passport_Expiry_Date },
+        { title: "Issuance Country", data: getCountryFullName(visa.Passport_Issuance_Country) },
+        { title: "Issuance Date", data: convertDateToDayMonthYear(visa.Passport_Issuance_Date) },
+        { title: "Expiry Date", data: convertDateToDayMonthYear(visa.Passport_Expiry_Date) },
         {
           title: "Passport Copy",
           data: documents?.passport_copy?.document?.data && (
-            <a href={documents.passport_copy.document.data} download={documents.passport_copy.document.name} className="flex items-center no-underline text-black">
+            <a
+              href={documents.passport_copy.document.data}
+              download={documents.passport_copy.document.name}
+              className="flex items-center no-underline text-black"
+            >
               <FiDownload />
             </a>
           ),
@@ -161,80 +206,121 @@ const ViewEmployee = ({ token, baseUrl ,userProfile ,profileView}) => {
         { title: "Card Number", data: visa.card_number },
         { title: "Insurance Policy", data: visa.insurance_policy },
         { title: "Insurance Company", data: visa.insurance_company },
-        { title: "Active Date", data: visa.insurance_active_date },
-        { title: "Expiry Date", data: visa.insurance_expiry_date },
+        { title: "Active Date", data: convertDateToDayMonthYear(visa.insurance_active_date) },
+        { title: "Expiry Date", data: convertDateToDayMonthYear(visa.insurance_expiry_date) },
       ],
     },
     {
       title: "Visa Details",
       fields: [
         { title: "Entry Permit Number", data: visa.entry_permit_number },
-        { title: "Issuance Country", data: visa.country_of_visa_issuance },
-        { title: "Issuance Date", data: visa.visa_issuance_date },
-        { title: "Expiry Date", data: visa.visa_expiry_date },
+        { title: "Issuance Country", data: getCountryFullName(visa.country_of_visa_issuance) },
+        { title: "Issuance Date", data: convertDateToDayMonthYear(visa.visa_issuance_date) },
+        { title: "Expiry Date", data: convertDateToDayMonthYear(visa.visa_expiry_date) },
         { title: "UID Number", data: visa.uid_number },
       ],
     },
   ];
-  
+
   return (
     <div className="w-full bg-[#f0f1f2] scroll-auto overflow-auto max-h-[100vh] md:px-4 xl:px-8">
       {/******************** HEADER **************************/}
       <div className="flex justify-between px-10 pt-10 pb-7">
-        <h1 className="text-[24px]">{profileView ? "My Profile":"Profile Management"}</h1>
-        <div onClick={() => navigate(profileView ? "/" : "/employees")} className="flex cursor-pointer items-center gap-3 text-[20px]">
-          Go Back <FaChevronCircleLeft/>
+        <h1 className="text-[24px]">
+          {profileView ? "My Profile" : "Profile Management"}
+        </h1>
+        <div
+          onClick={() => navigate(profileView ? "/" : "/employees")}
+          className="flex cursor-pointer items-center gap-3 text-[20px]"
+        >
+          Go Back <FaChevronCircleLeft />
         </div>
       </div>
       {/* ************************** BODY *************************** */}
-      {loading ? <Loader/> : 
-      <div className="py-2 bg-white rounded-md">
-        {/* ******************** BODY HEAD ************************** */}
-        {!profileView &&
-        <>
-        <div className="px-10">
-          <div className="opacity-60 mb-4">
-            View Employee Data {`> ${userData?.first_name} ${userData?.last_name}`}
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-[25px]">
-                {userData?.first_name} {userData?.last_name}
-              </h2>
-              <div className="opacity-60">
-                ID: TXB-{id.toString().padStart(4, "0")}
+      {loading ? (
+        <Loader />
+      ) : (
+        <div className="py-2 bg-white rounded-md">
+          {/* ******************** BODY HEAD ************************** */}
+          {!profileView && (
+            <>
+              <div className="px-10">
+                <div className="opacity-60 mb-4">
+                  View Employee Data{" "}
+                  {`> ${userData?.first_name} ${userData?.last_name}`}
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-[25px]">
+                      {userData?.first_name} {userData?.last_name}
+                    </h2>
+                    <div className="opacity-60">
+                      ID: TXB-{id.toString().padStart(4, "0")}
+                    </div>
+                  </div>
+                  <button className="flex items-center gap-x-2 py-2 opacity-50 text-base font-semibold leading-6 border-2 border-black rounded-lg font-opensans px-4">
+                    <div>Download</div>
+                    <FiDownload />
+                  </button>
+                </div>
               </div>
+              <hr className="mt-2" />
+            </>
+          )}
+          {/* ******************** BODY CONTENT *********************** */}
+          <div className="px-10 pt-10">
+            <PersonalDetials
+              isEditable={profileView}
+              personalInfo={personalInfo}
+              userData={userData}
+            />
+            <div className="flex gap-5 justify-between 800:flex-row flex-col">
+              <ContactInformation
+                isEditable={profileView}
+                contactInformation={contactInformation}
+                employeeId={userData.id}
+              />
+              <BankInformation
+                isEditable={profileView}
+                bankInformation={bankInformation}
+                employeeId={userData.id}
+              />
             </div>
-            <button className="flex items-center gap-x-2 py-2 opacity-50 text-base font-semibold leading-6 border-2 border-black rounded-lg font-opensans px-4">
-              <div>Download</div>
-              <FiDownload />
-            </button>
+            <WorkInformation
+              isEditable={!profileView}
+              workInformation={workInformation}
+              employeeId={userData.id}
+            />
+            {Array.isArray(experiences) && experiences?.length > 0 && (
+              <Experience
+                isEditable={profileView}
+                cv={cv}
+                experience={experiences}
+                employeeId={userData.id}
+              />
+            )}
+            {Array.isArray(educations) && educations?.length > 0 && (
+              <AcademicInfo
+                isEditable={profileView}
+                educations={educations}
+                employeeId={userData.id}
+              />
+            )}
+            {Array.isArray(certifications) && certifications?.length > 0 && (
+              <Certifications
+                isEditable={profileView}
+                certifications={certifications}
+                employeeId={userData.id}
+              />
+            )}
+            <IdentificationDetails
+              isEditable={profileView}
+              identificationDetails={identificationDetails}
+              employeeId={userData.id}
+            />
           </div>
         </div>
-        <hr className="mt-2" />
-        </>
-}
-        {/* ******************** BODY CONTENT *********************** */}
-        <div className="px-10 pt-10">
-          <PersonalDetials isEditable={profileView}  personalInfo={personalInfo} userData={userData}/>
-          <div className="flex gap-5 justify-between 800:flex-row flex-col">
-          <ContactInformation isEditable={profileView}  contactInformation={contactInformation} employeeId={userData.id}/>
-          <BankInformation isEditable={profileView} bankInformation={bankInformation} employeeId={userData.id}/>
-          </div>
-          <WorkInformation isEditable={!profileView} workInformation={workInformation} employeeId={userData.id}/>
-          {(Array.isArray(experiences) && experiences?.length > 0) &&
-            <Experience isEditable={profileView} cv={cv} experience={experiences} employeeId={userData.id}/>
-          }
-          {(Array.isArray(educations) && educations?.length > 0) &&
-            <AcademicInfo isEditable={profileView} educations={educations} employeeId={userData.id}/>
-          }
-          {(Array.isArray(certifications) && certifications?.length > 0) &&
-            <Certifications isEditable={profileView} certifications={certifications} employeeId={userData.id}/>
-          }
-          <IdentificationDetails isEditable={profileView} identificationDetails={identificationDetails} employeeId={userData.id}/>
-        </div>
-      </div>
-}
+      )}
     </div>
   );
 };

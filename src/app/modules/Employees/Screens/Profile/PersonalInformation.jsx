@@ -27,6 +27,7 @@ const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
   label: getAllCountries()[countryCode].name,
 }));
 
+
 const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
   const formRef = React.createRef();
   const [personalInfo, setPersonalInfo] = useState({});
