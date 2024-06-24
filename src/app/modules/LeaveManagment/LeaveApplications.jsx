@@ -126,12 +126,15 @@ const RenderApplications = ({ applicationsList }) => {
     return (
         <Row className="m-2 bg-white px-2 py-4">
             {applicationsList.map((application) => (
-                <> {application.employee && <Col lg={6} className={`whitespace-nowrap`} key={application.id}>
-                    <div className="py-3 px-2 my-2 rounded-md overflow-hidden" style={{ boxShadow: '0.5px 0px 5px 0px rgba(0, 0, 0, 0.19)' }}>
-                        <RenderApplication application={application} />
-                    </div>
-                </Col>
-                }</>
+                <>
+                    {application.employee &&
+                        <Col lg={6} className={`whitespace-nowrap`} key={application.id}>
+                            <div className="py-3 px-2 my-2 rounded-md overflow-hidden" style={{ boxShadow: '0.5px 0px 5px 0px rgba(0, 0, 0, 0.19)' }}>
+                                <RenderApplication application={application} />
+                            </div>
+                        </Col>
+                    }
+                </>
             ))}
         </Row>
     );
@@ -184,7 +187,7 @@ const StatusBar = ({ label, value }) => {
     const backgroungColor = status ? status === 'Approved' ? '#ADD9CA' : status === 'Denied' ? '#D99898' : status === 'Pending' ? '#EEEEF0' : '' : '';
     return (
         <div className="flex-1">
-            <div className="progress" title={`${status === 'Pending' ? `Waiting for ${label} Approval` : `${status} by ${label}`} `}>
+            <div className="progress" style={{ height: '.5rem' }} title={`${status === 'Pending' ? `Waiting for ${label} Approval` : `${status} by ${label}`} `}>
                 <div className={`${status ? 'bg-[#ADD9CA]' : 'bg-[#D99898]'} progress-bar`} style={{ width: '100%', backgroundColor: backgroungColor }} role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
         </div>
