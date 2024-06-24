@@ -22,6 +22,7 @@ import AcademicInfo from "./AcademicDetials";
 import Certifications from "./Certifications";
 import IdentificationDetails from "./IdentificationDetails";
 import Loader from "../../../../../components/PageLoader";
+import getCountryFullName from "../../../../../utils/getCountryName";
 
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [userData, setUserData] = useState("");
@@ -85,7 +86,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       { title: "First Name", data: userData.first_name },
       { title: "ID Card No", data: userData?.nic },
       { title: "Contact No", data: userData?.mobile_no },
-      { title: "Nationality", data: userData?.nationality },
+      { title: "Nationality", data: getCountryFullName(userData?.nationality) },
       { title: "Father Name", data: userData?.father_name },
 
     ],
@@ -134,7 +135,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     [
       { title: "Employee Status", data: userData?.employee_status },
       { title: "Work Type", data: userData?.employee_work_type },
-      { title: "Work Location", data: userData?.employee_location },
+      { title: "Work Location", data: getCountryFullName(userData?.employee_location) },
       { title: "Direct Report To", data: userData?.direct_report },
     ],
     [
@@ -181,7 +182,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       title: "Passport Details",
       fields: [
         { title: "Passport Number", data: visa.passport_number },
-        { title: "Issuance Country", data: visa.Passport_Issuance_Country },
+        { title: "Issuance Country", data: getCountryFullName(visa.Passport_Issuance_Country) },
         { title: "Issuance Date", data: convertDateToDayMonthYear(visa.Passport_Issuance_Date) },
         { title: "Expiry Date", data: convertDateToDayMonthYear(visa.Passport_Expiry_Date) },
         {
@@ -213,7 +214,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       title: "Visa Details",
       fields: [
         { title: "Entry Permit Number", data: visa.entry_permit_number },
-        { title: "Issuance Country", data: visa.country_of_visa_issuance },
+        { title: "Issuance Country", data: getCountryFullName(visa.country_of_visa_issuance) },
         { title: "Issuance Date", data: convertDateToDayMonthYear(visa.visa_issuance_date) },
         { title: "Expiry Date", data: convertDateToDayMonthYear(visa.visa_expiry_date) },
         { title: "UID Number", data: visa.uid_number },

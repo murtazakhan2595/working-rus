@@ -228,7 +228,7 @@ const JobApplicationForm = () => {
                               <Col md="12">
                                 <FileInput
                                   name="cv"
-                                  label="Upload your resume or drag it here"
+                                  label=" resume or drag it here"
                                   acceptType=".pdf"
                                   error={props.errors?.cv}
                                   touch={props.touched?.cv}
