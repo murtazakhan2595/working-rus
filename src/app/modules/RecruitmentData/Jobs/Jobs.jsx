@@ -60,23 +60,22 @@ const JobsDataTable = () => {
     setSelectedPost(null);
   };
 
-  const handleFilterChange = (filterName, filterValue) => {
+  const handleFilterChange = (filterName, filterValue , filterCheckStatus) => {
     setFilterData((prevFilters) => {
-    //  debugger
+      //  debugger
       const updatedFilters = { ...prevFilters };
-      if (filterName !== 'status' && filterName !== 'Job_Title') {
-        if (!updatedFilters[filterName]) {
-          updatedFilters[filterName] = filterValue;
-        } else {
-          updatedFilters[filterName] = `${updatedFilters[filterName]},${filterValue}`;
-        }
-      }
-      else {
-        if (!filterValue) {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterValue;
-        }
+      // if (filterName !== 'status' && filterName !== 'id_and_Job_Title' && filterName !== 'updated_at') {
+      //   if (!updatedFilters[filterName]) {
+      //     updatedFilters[filterName] = filterValue;
+      //   } else {
+      //     updatedFilters[filterName] = `${updatedFilters[filterName]},${filterValue}`;
+      //   }
+      // }
+      // else {
+      if (!filterValue) {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterCheckStatus ? filterValue : '';
       }
       return updatedFilters;
     });
@@ -92,7 +91,7 @@ const JobsDataTable = () => {
               {
                 type: "search",
                 placeholder: "Search by ID & Job Title",
-                name: "Job_Title",
+                name: "id_and_Job_Title",
               },
               {
                 type: "sorting",

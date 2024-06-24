@@ -565,9 +565,8 @@ const FilterInput = ({ filters, onChange }) => {
               return (
                 <CheckboxMenu
                   items={filter.option}
-                  onChange={(name, value) => {
-                    debugger
-                    onChange(name, value);
+                  onChange={(name, value, filterCheckStatus) => {
+                    onChange(name, value, filterCheckStatus);
                   }}
                   values={filter.values}
                 />

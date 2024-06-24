@@ -99,7 +99,7 @@ const Tabs = ({ activeTab, onTabChange, activeJobId, changeJobFilter }) => {
   useEffect(() => {
     const loadJob = async () => {
       try {
-        const jobData = await fetchJobPosts("Open");
+        const jobData = await fetchJobPosts();
         if (jobData && jobData.length > 0) {
           const index = jobData.findIndex(obj => obj.id === activeJobId);
           setCurrentJob(index ?? 0)

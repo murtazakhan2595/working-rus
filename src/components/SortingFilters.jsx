@@ -49,8 +49,8 @@ export const SortingCategory = ({ item, onChange, values }) => {
                             name={item.name}
                             label={checkbox.label}
                             value={values && values[item.name] && values[item.name].includes(checkbox.value)}
-                            onChange={() => {
-                                onChange(item.name, checkbox.value)
+                            onChange={(field,option) => {
+                                onChange(field, checkbox.value, option)
                             }}
 
                         />
