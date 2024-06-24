@@ -3,6 +3,7 @@ import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
 import React, { useState } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
+import { formatDate } from "../../../../hooks/employee";
 
 
 const Certifications = ({ certifications,isEditable , employeeId}) => {
@@ -33,8 +34,8 @@ const Certifications = ({ certifications,isEditable , employeeId}) => {
                 {cer.certification_institute || "------"}
               </div>
               <div className="opacity-70">
-                {cer.completion_date || "00-00-0000"}{cer.expiry_date &&" - "}
-                {cer.expiry_date || ""}
+                {formatDate(cer.completion_date) || "00-00-0000"}{cer.expiry_date &&" - "}
+                {formatDate(cer.expiry_date) || ""}
               </div>
             </div>
             <div>
