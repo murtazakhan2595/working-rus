@@ -9,7 +9,7 @@ const headers = () => ({
 
 
 export const fetchJobPosts = async (filterData) => {
- 
+  filterData = filterData ?? {};
   try {
     const response = await axios.get(
       `${baseUrl}/recruitment/?search=${encodeURIComponent(

@@ -299,6 +299,7 @@ export const dropdownStyles = {
 };
 
 export const JobSortingFilters = [
+
   {
     label: "Sort by date",
     name: "sort_by_date",
@@ -335,4 +336,5 @@ export const JobSortingFilters = [
       { label: "Junior", value: "Junior_Level" },
     ],
   },
+
 ];

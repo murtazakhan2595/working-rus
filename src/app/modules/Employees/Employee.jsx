@@ -77,10 +77,7 @@ const Employee = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        let URL = `/customemp/?page=${options.page}&page_size=${options.sizePerPage}`;
-        if (filters) {
-          URL += filters;
-        }
+        let URL = `/customemp/?page=${options.page}&page_size=${options.sizePerPage}&search=${encodeURIComponent(JSON.stringify(filterData))}`;
         const employeeData = await getList(URL);
         if (isMounted) {
           setEmployeeData(employeeData);
@@ -187,6 +184,7 @@ const Employee = () => {
   };
 
   const handleFilterChange = (filterName, filterValue) => {
+    onPageChange(1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
