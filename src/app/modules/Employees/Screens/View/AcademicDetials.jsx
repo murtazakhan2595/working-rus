@@ -3,7 +3,7 @@ import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { FiDownload } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
-import { formatDate } from "../../../../hooks/employee";
+import moment from "moment";
 
 const AcademicInfo = ({ educations, isEditable,employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -35,8 +35,14 @@ const AcademicInfo = ({ educations, isEditable,employeeId }) => {
                 {edu.education_level || "------"} in {edu.program || "------"}
               </div>
               <div className="opacity-70">
-                {formatDate(edu?.edu_start_date) || "00-00-0000"} -{" "}
-                {formatDate(edu?.edu_end_date) || "00-00-0000"}
+                {moment(edu?.edu_start_date, "YYYY-MM-DD").format(
+                  "DD MMMM, YYYY"
+                )
+                || "00-00-0000"} -{" "}
+                {moment(edu?.edu_end_date, "YYYY-MM-DD").format(
+                  "DD MMMM, YYYY"
+                )
+                || "00-00-0000"}
               </div>
             </div>
             <div>

@@ -9,7 +9,6 @@ import {
   getEmployeeProfessionalExperianceData,
   getEmployeeAcademicRecordData,
   getEmployeeVisaDetailsFiles,
-  convertDateToDayMonthYear,
 } from "../../../../hooks/employee";
 import { connect } from "react-redux";
 import { FiDownload } from "react-icons/fi";
@@ -23,6 +22,7 @@ import Certifications from "./Certifications";
 import IdentificationDetails from "./IdentificationDetails";
 import Loader from "../../../../../components/PageLoader";
 import getCountryFullName from "../../../../../utils/getCountryName";
+import moment from "moment";
 
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [userData, setUserData] = useState("");
@@ -42,7 +42,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     "Content-Type": "application/json",
   };
 
-  let getDataByHooks = async () => {
+  const getDataByHooks = async () => {
     setLoading(true);
     let empData = await getEmployeeData(baseUrl, userId, headers);
     let expData = await getEmployeeProfessionalExperianceData(
@@ -88,15 +88,17 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       { title: "Contact No", data: userData?.mobile_no },
       { title: "Nationality", data: getCountryFullName(userData?.nationality) },
       { title: "Father Name", data: userData?.father_name },
-
     ],
     [
       { title: "Last Name", data: userData?.last_name },
-      { title: "Date of Birth", data: convertDateToDayMonthYear(userData?.date_of_birth) },
+      {
+        title: "Date of Birth",
+        // data: convertDateToDayMonthYear(userData?.date_of_birth),
+        data: moment(userData.date_of_birth, "YYYY-MM-DD").format("DD-MM-YYYY"),
+      },
       { title: "Email Address", data: userData?.other_email },
       { title: "Marital Status", data: userData?.marital_status },
       { title: "Mother Name", data: userData?.mother_name },
-
     ],
   ];
 
@@ -135,12 +137,18 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     [
       { title: "Employee Status", data: userData?.employee_status },
       { title: "Work Type", data: userData?.employee_work_type },
-      { title: "Work Location", data: getCountryFullName(userData?.employee_location) },
+      {
+        title: "Work Location",
+        data: getCountryFullName(userData?.employee_location),
+      },
       { title: "Direct Report To", data: userData?.direct_report },
     ],
     [
       { title: "Department Head", data: userData?.department_manager },
-      { title: "Joining Date", data: convertDateToDayMonthYear(userData?.joining_date) },
+      {
+        title: "Joining Date",
+        data: moment(userData?.joining_date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+      },
     ],
   ];
 
@@ -150,8 +158,16 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       fields: [
         { title: "Current Country ID", data: visa.living_country_id_no },
         { title: "Issuance Country", data: visa.place_of_issuance },
-        { title: "ID Issuance Date", data: convertDateToDayMonthYear(visa.id_issuance_date) },
-        { title: "ID Expiry Date", data: convertDateToDayMonthYear(visa.id_expiry_date) },
+        {
+          title: "ID Issuance Date",
+          data: moment(visa.id_issuance_date, "YYYY-MM-DD").format(
+            "DD-MM-YYYY"
+          ),
+        },
+        {
+          title: "ID Expiry Date",
+          data: moment(visa?.id_expiry_date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+        },
         {
           title: "ID Front Image",
           data: documents?.id_front?.document?.file && (
@@ -182,9 +198,22 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       title: "Passport Details",
       fields: [
         { title: "Passport Number", data: visa.passport_number },
-        { title: "Issuance Country", data: getCountryFullName(visa.Passport_Issuance_Country) },
-        { title: "Issuance Date", data: convertDateToDayMonthYear(visa.Passport_Issuance_Date) },
-        { title: "Expiry Date", data: convertDateToDayMonthYear(visa.Passport_Expiry_Date) },
+        {
+          title: "Issuance Country",
+          data: getCountryFullName(visa.Passport_Issuance_Country),
+        },
+        {
+          title: "Issuance Date",
+          data: moment(visa?.Passport_Issuance_Date, "YYYY-MM-DD").format(
+            "DD-MM-YYYY"
+          ),
+        },
+        {
+          title: "Expiry Date",
+          data: moment(visa?.Passport_Expiry_Date, "YYYY-MM-DD").format(
+            "DD-MM-YYYY"
+          ),
+        },
         {
           title: "Passport Copy",
           data: documents?.passport_copy?.document?.data && (
@@ -206,17 +235,41 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
         { title: "Card Number", data: visa.card_number },
         { title: "Insurance Policy", data: visa.insurance_policy },
         { title: "Insurance Company", data: visa.insurance_company },
-        { title: "Active Date", data: convertDateToDayMonthYear(visa.insurance_active_date) },
-        { title: "Expiry Date", data: convertDateToDayMonthYear(visa.insurance_expiry_date) },
+        {
+          title: "Active Date",
+          data: moment(visa?.insurance_active_date, "YYYY-MM-DD").format(
+            "DD-MM-YYYY"
+          ),
+        },
+        {
+          title: "Expiry Date",
+
+          data: moment(visa?.insurance_expiry_date, "YYYY-MM-DD").format(
+            "DD-MM-YYYY"
+          ),
+        },
       ],
     },
     {
       title: "Visa Details",
       fields: [
         { title: "Entry Permit Number", data: visa.entry_permit_number },
-        { title: "Issuance Country", data: getCountryFullName(visa.country_of_visa_issuance) },
-        { title: "Issuance Date", data: convertDateToDayMonthYear(visa.visa_issuance_date) },
-        { title: "Expiry Date", data: convertDateToDayMonthYear(visa.visa_expiry_date) },
+        {
+          title: "Issuance Country",
+          data: getCountryFullName(visa.country_of_visa_issuance),
+        },
+        {
+          title: "Issuance Date",
+          data: moment(visa.visa_issuance_date, "YYYY-MM-DD").format(
+            "DD-MM-YYYY"
+          ),
+        },
+        {
+          title: "Expiry Date",
+          data: moment(visa.visa_expiry_date, "YYYY-MM-DD").format(
+            "DD-MM-YYYY"
+          ),
+        },
         { title: "UID Number", data: visa.uid_number },
       ],
     },

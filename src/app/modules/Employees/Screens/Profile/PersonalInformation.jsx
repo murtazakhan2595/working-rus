@@ -27,36 +27,80 @@ const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
   label: getAllCountries()[countryCode].name,
 }));
 
-
 const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
   const formRef = React.createRef();
   const [personalInfo, setPersonalInfo] = useState({});
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    getEmployeePersonalInfoData(baseUrl, employeeId, token)
-      .then((response) => {
-        setPersonalInfo(response);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
+  // function getUserRespones(baseUrl, employeeId, token) {
+  //   getEmployeePersonalInfoData(baseUrl, employeeId, token)
+  //     .then((response) => {
+  //       setPersonalInfo(response);
+  //       setIsLoading(false);
+  //       console.log('I am then')
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       console.log('I am catch')
 
-  const handleSubmit = (data) => {
-    const personalInfrmation = getPersonalInfo(data);
+  //     });
+  // }
 
-    console.log("I am the submmited personal Information", personalInfrmation);
-    const response = saveEmployeePersonalInfoData(
-      baseUrl,
-      employeeId,
-      token,
-      personalInfrmation
-    );
-    if (response) nextstep();
+  // useEffect(() => {
+  //   getUserRespones(baseUrl, employeeId, token);
+  // }, [baseUrl, employeeId, token]);
+
+  // const handleSubmit = (data) => {
+  //   const personalInfrmation = getPersonalInfo(data);
+
+  //   const response = saveEmployeePersonalInfoData(
+  //     baseUrl,
+  //     employeeId,
+  //     token,
+  //     personalInfrmation
+  //   );
+  //   if (response) {
+  //     getUserRespones(baseUrl, employeeId, token);
+  //     nextstep();
+  //   }
+  // };
+
+  const getUserResponses = async (baseUrl, employeeId, token) => {
+    try {
+      const response = await getEmployeePersonalInfoData(baseUrl, employeeId, token);
+      setPersonalInfo(response);
+      setIsLoading(false);
+      console.log('I am then');
+    } catch (error) {
+      console.log(error);
+      console.log('I am catch');
+    }
   };
+
+  useEffect(() => {
+    getUserResponses(baseUrl, employeeId, token);
+  }, [baseUrl, employeeId, token]);
+
+  const handleSubmit = async (data) => {
+    try {
+      const personalInformation = getPersonalInfo(data);
+      const response = await saveEmployeePersonalInfoData(
+        baseUrl,
+        employeeId,
+        token,
+        personalInformation
+      );
+
+      if (response) {
+        await getUserResponses(baseUrl, employeeId, token);
+        nextstep();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   return (
     <>

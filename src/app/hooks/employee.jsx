@@ -91,6 +91,7 @@ const saveEmployeePersonalInfoData = async (
           },
         }
       );
+      console.log("patch api emp call");
 
       if (response.status === 200) return true;
     } catch (error) {
@@ -99,6 +100,8 @@ const saveEmployeePersonalInfoData = async (
     }
   }
 };
+
+
 const getEmployeeContactInfo = async (baseUrl, employeeid, token) => {
   if (employeeid) {
     try {
@@ -803,27 +806,6 @@ const saveEmployeeBankDetailsData = async (
   return false;
 };
 
-function formatDate(dateString) {
-  const date = moment(dateString, "YYYY-MM-DD", true);
-
-  if (!date.isValid()) {
-    return "Invalid date";
-  }
-
-  return date.format("D, MMMM YYYY");
-}
-
-
-function convertDateToDayMonthYear(dateString) {
-  const date = moment(dateString, 'YYYY-MM-DD', true);
-
-  if (!date.isValid()) {
-    return "";
-  }
-
-  return date.format('DD-MM-YYYY');
-}
-
 
 export {
   getEmployeeData,
@@ -849,6 +831,4 @@ export {
   getEmployeeContactInfo,
   saveEmployeeContactInfoData,
   getNewEmployeeCode,
-  formatDate,
-  convertDateToDayMonthYear
 };
