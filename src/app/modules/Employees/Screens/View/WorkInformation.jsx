@@ -3,7 +3,7 @@ import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
 
-const WorkInformation = ({ workInformation, isEditable, employeeId }) => {
+const WorkInformation = ({ workInformation, isEditable, employeeId, getDataByHooks }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
@@ -44,6 +44,7 @@ const WorkInformation = ({ workInformation, isEditable, employeeId }) => {
           openModal={showPersonalDetailCard}
           closeModal={() => {
             setShowPersonalDetailCard(false);
+            getDataByHooks()
           }}
           employeeId={employeeId}
           currentClick={8}

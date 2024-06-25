@@ -327,6 +327,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
                     </Col>
                   </Row>
                 </CardHeader>
+                
                 <CardBody style={{ maxWidth: "800px" }}>
                   <JobForm
                     isLoading={isLoading}

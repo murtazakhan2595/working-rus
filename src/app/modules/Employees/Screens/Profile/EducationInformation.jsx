@@ -48,7 +48,6 @@ const EducationInformation = ({
   }, [baseUrl, employeeId, token]);
 
   const handleSubmit = async (data) => {
-    debugger
     try {
       const response = await saveEmployeeAcademicRecordData(
         employeeId,
