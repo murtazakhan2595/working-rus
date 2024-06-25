@@ -342,3 +342,17 @@ export const JobSortingFilters = [
   },
 ];
 
+export function getManagerSelected(managers, managersList) {
+  if (managers && managersList && managersList.length > 0) {
+      managers = managers.split(', ') || [];
+      const matchingObjects = managersList.filter(obj => {
+          return managers.find(element => obj.label === element);
+      });
+      console.log(matchingObjects)
+      return matchingObjects;
+  }
+
+  return managers;
+
+}
+

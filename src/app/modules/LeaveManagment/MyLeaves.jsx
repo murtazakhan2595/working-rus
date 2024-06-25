@@ -255,7 +255,7 @@ const MyLeaves = () => {
                                         />
                                         <div className="flex items-center gap-x-3">
                                             <div className="font-lato text-[#47484C] text-[17px]">New Leave Request</div>
-                                            <Link to="/job-post" className="p-2 rounded-md bg-black" style={{ fontSize: '12px' }}><FaPlus className="text-white" /></Link>
+                                            <Link to="/leave-request" className="p-2 rounded-md bg-black" style={{ fontSize: '12px' }}><FaPlus className="text-white" /></Link>
                                         </div>
                                     </div>
                                 </Col>

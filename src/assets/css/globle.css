@@ -50,7 +50,8 @@ ul {
 }
 
 .form-control {
-    min-height: calc(3.5rem + 2px)
+    min-height: calc(3.5rem + 2px);
+    box-shadow: none;
 }
 
 .opacity-65 {
@@ -69,6 +70,7 @@ ul {
 }
 
 .custom-select-input.form-control .css-13cymwt-control,
+.custom-select-input.form-control .css-16xfy0z-control,
 .custom-select-input.form-control .css-t3ipsp-control {
     padding: .45rem .75rem .3rem;
     min-height: calc(3.5rem)

@@ -29,7 +29,7 @@ const SelectComponent = ({
         className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
           }`}
         options={options ? options : []}
-        value={options ? options.find((option) => option.value === value) : ""}
+        value={options && options.length > 0 ? options.find((option) => option.value == value) : ""}
         onChange={(selectedOption) => onChange(name, selectedOption.value)}
         placeholder={label}
         styles={{
@@ -96,7 +96,7 @@ const DateInput = ({
           name={name}
           id={name}
           minDate={minDate}
-          isDisabled={disabled}
+          disabled={disabled}
           className={`form-control ${error && touch ? "is-invalid" : ""} ${value ? 'date-floating-input' : ''}`}
           value={date && !isNaN(date.getTime()) ? date : ""}
           selected={date && !isNaN(date.getTime()) ? date : new Date()}
@@ -145,7 +145,7 @@ const TextInput = ({
           name={name}
           autoComplete="Off"
           placeholder={"Enter" + label}
-          value={value}
+          value={value ?? ''}
           disabled={disabled}
           className={error && touch ? "is-invalid" : ""}
           onChange={(option) => {
