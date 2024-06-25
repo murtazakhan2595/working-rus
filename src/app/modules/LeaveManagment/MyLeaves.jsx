@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, Link } from "react-router-dom";
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { dropdownOptions } from "data/Data";
 import { PageLoader, Header } from "components";
@@ -16,6 +16,7 @@ import {
     Col,
 } from 'reactstrap';
 import { cut, file, list } from 'assets/images';
+import { FaPlus } from "react-icons/fa";
 import { AiOutlineDownload } from "react-icons/ai";
 import { Blocks } from "./Sections";
 import {
@@ -242,7 +243,7 @@ const MyLeaves = () => {
                         <CardHeader>
                             <Row>
                                 <Col lg={12}>
-                                    <div className="py-3 px-3">
+                                    <div className="py-3 px-3 flex justify-between">
                                         <FilterInput
                                             filters={[
                                                 { type: 'search', placeholder: 'Search by Keyword', name: 'id_and_first_name' },
@@ -252,6 +253,10 @@ const MyLeaves = () => {
                                             ]}
                                             onChange={handleFilterChange}
                                         />
+                                        <div className="flex items-center gap-x-3">
+                                            <div className="font-lato text-[#47484C] text-[17px]">New Leave Request</div>
+                                            <Link to="/job-post" className="p-2 rounded-md bg-black" style={{ fontSize: '12px' }}><FaPlus className="text-white" /></Link>
+                                        </div>
                                     </div>
                                 </Col>
                             </Row>
