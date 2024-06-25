@@ -224,7 +224,6 @@ const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
           },
         }
       );
-      console.log("I am documents esponse", documents);
       if (response.status === 200) {
         if (
           response.data &&
@@ -281,7 +280,7 @@ const saveEmployeeVisaDetailData = async (
                   description: `${file.name} file`,
                   document: {
                     name: file.document.name,
-                    data: file.document.data,
+                    file: file.document.file,
                   },
                 },
                 { headers }

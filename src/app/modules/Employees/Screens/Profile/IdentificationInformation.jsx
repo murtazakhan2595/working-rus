@@ -72,7 +72,6 @@ const IdentificationInformation = ({
       id_back: data.id_back,
       insurance_card: data.insurance_card,
     };
-    data.is_filled = true;
     const response = saveEmployeeVisaDetailData(
       baseUrl,
       employeeId,

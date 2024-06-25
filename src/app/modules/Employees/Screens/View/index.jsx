@@ -23,6 +23,7 @@ import IdentificationDetails from "./IdentificationDetails";
 import Loader from "components/PageLoader";
 import {getCountryFullName} from "utils/getValuesFromTables";
 import moment from "moment";
+import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [userData, setUserData] = useState("");
@@ -211,9 +212,9 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
         },
         {
           title: "Passport Copy",
-          data: documents?.passport_copy?.document?.data && (
+          data: documents?.passport_copy?.document?.file && (
             <a
-              href={documents.passport_copy.document.data}
+              href={documents.passport_copy.document.file}
               download={documents.passport_copy.document.name}
               className="flex items-center no-underline text-black"
             >
@@ -243,12 +244,25 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
             "DD-MM-YYYY"
           ),
         },
+        {
+          title: "Insurance Card",
+          data: documents?.insurance_card?.document?.file && (
+            <a
+              href={documents.insurance_card.document.file}
+              download={documents.insurance_card.document.name}
+              className="flex items-center no-underline text-black"
+            >
+              <FiDownload />
+            </a>
+          ),
+        },
       ],
     },
     {
       title: "Visa Details",
       fields: [
         { title: "Entry Permit Number", data: visa.entry_permit_number },
+        { title: "Visa Type", data: getVisaLabel(visa.visa_type) },
         {
           title: "Issuance Country",
           data: getCountryFullName(visa.country_of_visa_issuance),
@@ -266,6 +280,54 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
           ),
         },
         { title: "UID Number", data: visa.uid_number },
+        {
+          title: "Entry Permit",
+          data: documents?.enter_permit?.document?.file && (
+            <a
+              href={documents.enter_permit.document.file}
+              download={documents.enter_permit.document.name}
+              className="flex items-center no-underline text-black"
+            >
+              <FiDownload />
+            </a>
+          ),
+        },
+        {
+          title: "Visa Page",
+          data: documents?.visa_page?.document?.file && (
+            <a
+              href={documents.visa_page.document.file}
+              download={documents.visa_page.document.name}
+              className="flex items-center no-underline text-black"
+            >
+              <FiDownload />
+            </a>
+          ),
+        },
+        {
+          title: "Medical Result",
+          data: documents?.medical?.document?.file && (
+            <a
+              href={documents.medical.document.file}
+              download={documents.medical.document.name}
+              className="flex items-center no-underline text-black"
+            >
+              <FiDownload />
+            </a>
+          ),
+        },
+        {
+          title: "ID Application",
+          data: documents?.id_application?.document?.file && (
+            <a
+              href={documents.id_application.document.file}
+              download={documents.id_application.document.name}
+              className="flex items-center no-underline text-black"
+            >
+              <FiDownload />
+            </a>
+          ),
+        },
       ],
     },
   ];

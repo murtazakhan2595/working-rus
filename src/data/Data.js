@@ -35,22 +35,27 @@ export const statusOptions = [
   { value: "Completed", label: "Completed" },
 ];
 
+
 export const visaOptions = [
-  { value: "Visit", label: "Visit Visa" },
-  { value: "Tourist", label: "Tourist visa" },
-  { value: "Residency", label: "Residency visa" },
-  { value: "Golden", label: "Golden visa" },
-  { value: "Green", label: "Green visa" },
+
+  { value: 1, label: "Visit Visa" },
+  { value: 2, label: "Tourist visa" },
+  { value: 3, label: "Residency visa" },
+  { value: 4, label: "Golden visa" },
+  { value: 5, label: "Green visa" },
+
 ];
 
 export const academicOptions = [
   {
     value: "inter",
     label: "Inter",
-  }, {
+  },
+  {
     value: "bachelors",
     label: "Bachelors",
-  }, {
+  },
+  {
     value: "masters",
     label: "Masters",
   },
@@ -301,9 +306,42 @@ export const dropdownStyles = {
 };
 
 export const JobSortingFilters = [
-  { label: 'Sort by date', name: "updated_at", options: [{ label: 'Newest First', value: 'newest_first' }, { label: "Oldest First", value: 'oldest_first' }] },
-  { label: 'Worktype', name: "Job_Type", options: [{ label: 'Remote', value: 'Remote' }, { label: "Hybrid", value: 'Hybrid' }, { label: "Onsite", value: 'Onsite' }] },
-  { label: 'Employee Type', name: "Employee_Type", options: [{ label: 'Full-Time', value: 'Full_Time' }, { label: "Internship", value: 'Internees' }, { label: "Part-time", value: 'Part_Time' }] },
-  { label: 'Job Level', name: "Work_type", options: [{ label: 'Senior', value: 'Senior_Level' }, { label: "Mid Level", value: 'Mid_Level' }, { label: "Intern", value: 'Internees' }, { label: "Junior", value: 'Junior_Level' }] },
+
+  {
+    label: "Sort by date",
+    name: "sort_by_date",
+    options: [
+      { label: "Newest First", value: "newest_first" },
+      { label: "Oldest First", value: "oldest_first" },
+    ],
+  },
+  {
+    label: "Worktype",
+    name: "Job_Type",
+    options: [
+      { label: "Remote", value: "Remote" },
+      { label: "Hybrid", value: "Hybrid" },
+      { label: "Onsite", value: "Onsite" },
+    ],
+  },
+  {
+    label: "Employee Type",
+    name: "Employee_Type",
+    options: [
+      { label: "Full-Time", value: "Full_Time" },
+      { label: "Internship", value: "Internees" },
+      { label: "Part-time", value: "Part_Time" },
+    ],
+  },
+  {
+    label: "Job Level",
+    name: "Work_type",
+    options: [
+      { label: "Senior", value: "Senior_Level" },
+      { label: "Mid Level", value: "Mid_Level" },
+      { label: "Intern", value: "Internees" },
+      { label: "Junior", value: "Junior_Level" },
+    ],
+  },
 
 ];
