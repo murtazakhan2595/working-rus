@@ -9,7 +9,7 @@ import {
   getEmployeeProfessionalExperianceData,
   getEmployeeAcademicRecordData,
   getEmployeeVisaDetailsFiles,
-} from "../../../../hooks/employee";
+} from "app/hooks/employee";
 import { connect } from "react-redux";
 import { FiDownload } from "react-icons/fi";
 import PersonalDetials from "./PersonalDetials";
@@ -20,8 +20,8 @@ import Experience from "./Experience";
 import AcademicInfo from "./AcademicDetials";
 import Certifications from "./Certifications";
 import IdentificationDetails from "./IdentificationDetails";
-import Loader from "../../../../../components/PageLoader";
-import {getCountryFullName} from "../../../../../utils/getValuesFromTables";
+import Loader from "components/PageLoader";
+import {getCountryFullName} from "utils/getValuesFromTables";
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 
@@ -38,20 +38,15 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
 
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
   const getDataByHooks = async () => {
     setLoading(true);
-    let empData = await getEmployeeData(baseUrl, userId, headers);
+    let empData = await getEmployeeData(userId);
     let expData = await getEmployeeProfessionalExperianceData(
       baseUrl,
       userId,
       token
     );
-    let cvData = await getEmployeeCVDetailData(baseUrl, userId, token);
+    let cvData = await getEmployeeCVDetailData(userId);
     let visaData = await getEmployeeVisaDetailData(baseUrl, userId, token);
     let educationData = await getEmployeeAcademicRecordData(
       baseUrl,
