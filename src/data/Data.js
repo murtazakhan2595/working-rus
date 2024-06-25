@@ -5,11 +5,12 @@ import { CiViewBoard } from "react-icons/ci";
 import { CiCircleMore } from "react-icons/ci";
 import { getAllCountries } from "countries-and-timezones";
 
-export const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
-  value: countryCode,
-  label: getAllCountries()[countryCode].name,
-}));
-
+export const countryOptions = Object.keys(getAllCountries()).map(
+  (countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name,
+  })
+);
 
 export const tasksTitle = [
   { label: "Task Name", width: "w-44" },
@@ -35,15 +36,12 @@ export const statusOptions = [
   { value: "Completed", label: "Completed" },
 ];
 
-
 export const visaOptions = [
-
   { value: 1, label: "Visit Visa" },
   { value: 2, label: "Tourist visa" },
   { value: 3, label: "Residency visa" },
   { value: 4, label: "Golden visa" },
   { value: 5, label: "Green visa" },
-
 ];
 
 export const academicOptions = [
@@ -306,7 +304,6 @@ export const dropdownStyles = {
 };
 
 export const JobSortingFilters = [
-
   {
     label: "Sort by date",
     name: "sort_by_date",
@@ -343,5 +340,5 @@ export const JobSortingFilters = [
       { label: "Junior", value: "Junior_Level" },
     ],
   },
-
 ];
+
