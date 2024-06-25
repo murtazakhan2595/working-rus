@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Button, Form, FormGroup } from "reactstrap";
+import { Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
-import logo from "../../../../../assets/images/tecbrix-logo.png";
 import {
   getEmployeeContactInfo,
   saveEmployeeContactInfoData,
-} from "../../../../hooks/employee";
+} from "app/hooks/employee";
 import {
   CustomLightOutlineButton,
   CustomDarkButton,
   TextInput,
   PhoneNumberInput,
   TextAreaInput,
-} from "../../../../../components/form-control.jsx";
-import PageLoader from "../../../../../components/PageLoader.jsx";
-import { getContactInfo } from "../../../../utils/MappingObjects/mapEmployeeData.jsx";
+} from "components/form-control.jsx";
+import {PageLoader} from "components";
+import { getContactInfo } from "app/utils/MappingObjects/mapEmployeeData.jsx";
+import {validationEmployeeContactInfoFormSchema} from 'app/utils/FormSchema/employeeFormSchema'
 
 const ContactInformation = ({
   nextstep,
-  baseUrl,
-  token,
   employeeId,
   isEditMode,
   prevStep,
@@ -30,7 +28,7 @@ const ContactInformation = ({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    getEmployeeContactInfo(baseUrl, employeeId, token)
+    getEmployeeContactInfo(employeeId)
       .then((response) => {
         setContactInfo(response);
         setIsLoading(false);
@@ -38,14 +36,12 @@ const ContactInformation = ({
       .catch((error) => {
         console.log(error);
       });
-  }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
+  }, [employeeId]); // Empty dependency array ensures this effect runs only once after the initial render
 
   const handleSubmit = (data) => {
     const ContactInformation = getContactInfo(data);
     const response = saveEmployeeContactInfoData(
-      baseUrl,
       employeeId,
-      token,
       ContactInformation
     );
     if (response) nextstep();
@@ -67,12 +63,7 @@ const ContactInformation = ({
             handleSubmit(values, resetForm);
           }}
           validate={(values) => {
-            const errors = {};
-            // for (let field in values) {
-            //   if (!values[`${field}`]) {
-            //     errors[`${field}`] = "This field is required";
-            //   }
-            // }
+            const errors = validationEmployeeContactInfoFormSchema(values);
             return errors;
           }}
         >

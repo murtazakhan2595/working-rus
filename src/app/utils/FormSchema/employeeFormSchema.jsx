@@ -42,6 +42,23 @@ const validationEmployeeInfoFormSchema = (values) => {
     errors.organization = 'Organization is required';
   return errors;
 }
+
+const validationEmployeeContactInfoFormSchema = (values) => {
+  const errors = {};
+  if(!values.emergency_first_name)
+    errors.emergency_first_name = 'First name is required';
+  if (!values.emergency_relation)
+    errors.emergency_relation = 'Contact Relation is required';
+  if (!values.emergency_country_code)
+    errors.emergency_country_code = 'Phone Country Code name is required';
+  if (!values.emergency_phone_no)
+    errors.emergency_phone_no = 'Phone number is required';
+  if (!values.current_address)
+    errors.current_address = 'Address is required';
+  if (!values.residential_address)
+    errors.residential_address = 'Address is required';
+  return errors;
+}
 const validationPersonalInfoFormSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
   last_name: Joi.string().min(3).max(40).required().label("Last Name"),
@@ -219,4 +236,5 @@ export {
   validationDepartmentInfoFormSchema,
   validationBankDetailsFormSchema,
   validationEmployeeInfoFormSchema,
+  validationEmployeeContactInfoFormSchema,
 }

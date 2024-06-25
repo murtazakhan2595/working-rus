@@ -109,16 +109,13 @@ const saveEmployeePersonalInfoData = async (
 };
 
 
-const getEmployeeContactInfo = async (baseUrl, employeeid, token) => {
+const getEmployeeContactInfo = async (employeeid) => {
   if (employeeid) {
     try {
       const response = await axios.get(
         `${baseUrl}/employeeInformationlist/${employeeid}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers:headers(),
         }
       );
       // Assuming response.data is the personal info object
@@ -135,9 +132,7 @@ const getEmployeeContactInfo = async (baseUrl, employeeid, token) => {
 };
 
 const saveEmployeeContactInfoData = async (
-  baseUrl,
   employeeid,
-  token,
   contactInfo
 ) => {
   if (employeeid) {
@@ -146,10 +141,7 @@ const saveEmployeeContactInfoData = async (
         `${baseUrl}/emp/${employeeid}`,
         contactInfo,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: headers(),
         }
       );
       if (response.status === 200) return true;
@@ -318,17 +310,14 @@ const saveEmployeeVisaDetailData = async (
   return false;
 };
 
-const getEmployeeCVDetailData = async (baseUrl, employeeid, token) => {
+const getEmployeeCVDetailData = async (employeeid) => {
   if (employeeid) {
     try {
       await axios
         .get(
           `${baseUrl}/attachment/?search={"employee_id":${employeeid},"name":"cv"}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+            headers:headers(),
           }
         )
         .then((response) => {
