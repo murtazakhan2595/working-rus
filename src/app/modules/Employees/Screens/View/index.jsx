@@ -21,7 +21,7 @@ import AcademicInfo from "./AcademicDetials";
 import Certifications from "./Certifications";
 import IdentificationDetails from "./IdentificationDetails";
 import Loader from "../../../../../components/PageLoader";
-import getCountryFullName from "../../../../../utils/getCountryName";
+import {getCountryFullName} from "../../../../../utils/getValuesFromTables";
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 

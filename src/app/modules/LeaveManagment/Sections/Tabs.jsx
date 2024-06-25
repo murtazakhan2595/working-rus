@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { IoCalendarOutline } from "react-icons/io5";
-import { jobIcon } from "../../../../../assets/images";
+import { jobIcon } from "assets/images";
 import { FaCircleArrowRight } from "react-icons/fa6";
-import { fetchJobPosts } from "../../../../hooks/recruitment";
-import { Labels } from "../../Sections";
+import { fetchJobPosts } from "app/hooks/recruitment";
 import { getEmployeeType, getWorkType, getJobType, getWorkLocation } from 'utils/getValuesFromTables';
 import moment from "moment";
 
@@ -50,18 +49,7 @@ const JobDetails = ({ job }) => {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <Labels
-            label={job.status === "live" ? "Open" : "Close"}
-            iconDot={true}
-            iconColor={`${job.status === "live" ? "bg-green-500" : "bg-red-500"
-              }`}
-            backgroungColor={`${job.status === "live" ? "bg-green-100" : "bg-red-100"
-              }`}
-          />
-          <Labels label={employeeType?.label} />
-          <Labels label={workType?.label} />
-          <Labels label={workLocation?.label} />
-          <Labels label={jobType?.label} />
+         
         </div>
       </div>
     );

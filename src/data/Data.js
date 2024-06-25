@@ -3,6 +3,13 @@ import { IoMdArrowDropdownCircle } from "react-icons/io";
 import { FiMinusCircle } from "react-icons/fi";
 import { CiViewBoard } from "react-icons/ci";
 import { CiCircleMore } from "react-icons/ci";
+import { getAllCountries } from "countries-and-timezones";
+
+export const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
+  value: countryCode,
+  label: getAllCountries()[countryCode].name,
+}));
+
 
 export const tasksTitle = [
   { label: "Task Name", width: "w-44" },
@@ -10,8 +17,6 @@ export const tasksTitle = [
   { label: "Assign By", width: "w-28" },
 
   { label: "Due Date", width: "w-28" },
-
-  // { label: "Status", width: "w-28" },
 
   { label: "List", width: "w-28" },
 
@@ -32,11 +37,13 @@ export const statusOptions = [
 
 
 export const visaOptions = [
+
   { value: 1, label: "Visit Visa" },
   { value: 2, label: "Tourist visa" },
   { value: 3, label: "Residency visa" },
   { value: 4, label: "Golden visa" },
   { value: 5, label: "Green visa" },
+
 ];
 
 export const academicOptions = [

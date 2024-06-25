@@ -9,13 +9,13 @@ import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
 import Board from "./app/modules/Board";
 import { Applications, Jobs, CreateUpdateJob, JobDescription, JobApplicationForm } from "./app/modules/RecruitmentData";
+import { LeaveApplications, MyLeaves } from "app/modules/LeaveManagment";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
 import 'react-toastify/dist/ReactToastify.css';
 import "./assets/css/globle.css";
 import axios from "axios";
-import Cookies from "universal-cookie";
 import {
   setUserLogout,
   setUserProfile,
@@ -168,9 +168,6 @@ function App() {
                 element={<CreateUpdateJob />}
               />
 
-
-              <Route path="/leave-application" element={<LeaveApplicationForm isSidebarOpen={isSidebarOpen} />} />
-
               <Route path="/leave-list" element={<LeaveApplicationListHR />} />
               <Route
                 path="/leave-request/:id"
@@ -189,7 +186,7 @@ function App() {
               <Route path="/my-team" element={<ComingSoon />} />
               <Route path="/calender" element={<ComingSoon />} />
               <Route path="/attendence" element={<ComingSoon />} />
-              <Route path="/my-leaves" element={<ComingSoon />} />
+              <Route path="/my-leaves" element={<MyLeaves />} />
               <Route path="/files-data" element={<ComingSoon />} />
               <Route path="/announcement" element={<ComingSoon />} />
               <Route path="/recognition" element={<ComingSoon />} />
@@ -215,12 +212,6 @@ function App() {
                 path="/leave-balance-hr"
                 element={
                   <LeaveBalanceHR isSidebarOpen={isSidebarOpen} />
-                }
-              />
-              <Route
-                path="/leave-application-status"
-                element={
-                  <ApplicationStatus isSidebarOpen={isSidebarOpen} />
                 }
               />
               <Route path="/leave-calender" element={<LeaveCalender />} />
@@ -263,6 +254,7 @@ function App() {
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
                   <Route path="/project/:id" element={<BoardList />} />
+                  <Route path="/leave-application" element={<LeaveApplications />} />
                 </>
               }
 
