@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import moment from "moment";
 
-const Certifications = ({ certifications,isEditable , employeeId}) => {
+const Certifications = ({ certifications,isEditable , employeeId, getDataByHooks}) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <> 
@@ -64,6 +64,7 @@ const Certifications = ({ certifications,isEditable , employeeId}) => {
         openModal={showPersonalDetailCard}
         closeModal={() => {
           setShowPersonalDetailCard(false);
+          getDataByHooks()
         }}
         employeeId={employeeId}
         currentClick={6}

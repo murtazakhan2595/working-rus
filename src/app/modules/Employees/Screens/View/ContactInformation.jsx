@@ -3,7 +3,7 @@ import { FiCornerDownRight } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 
-const ContactInformation = ({ contactInformation, isEditable, employeeId }) => {
+const ContactInformation = ({ contactInformation, isEditable, employeeId, getDataByHooks }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
 
   return (
@@ -39,6 +39,7 @@ const ContactInformation = ({ contactInformation, isEditable, employeeId }) => {
           openModal={showPersonalDetailCard}
           closeModal={() => {
             setShowPersonalDetailCard(false);
+            getDataByHooks()
           }}
           employeeId={employeeId}
           currentClick={2}
