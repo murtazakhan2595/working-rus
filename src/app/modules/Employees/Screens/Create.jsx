@@ -248,12 +248,8 @@ const CreateUpdateEmployee = ({ token, baseUrl, isEditMode, nextStep }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const headers = {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        };
         if (id) {
-            getEmployeeData(baseUrl, id, headers).then(response => {
+            getEmployeeData(id).then(response => {
                 const employeeData = getEmployeeInformation(response);
                 setFormData(employeeData);
                 setempId(`TXB-${employeeData.id.toString().padStart(4, '0')}`)
@@ -263,7 +259,7 @@ const CreateUpdateEmployee = ({ token, baseUrl, isEditMode, nextStep }) => {
                 console.log(error);
             });
         } else {
-            getNewEmployeeCode(baseUrl, headers).then(response => {
+            getNewEmployeeCode().then(response => {
                 setempId(`TXB-${response.toString().padStart(4, '0')}`)
                 setIsLoading(false)
             }).catch(error => {
@@ -271,7 +267,7 @@ const CreateUpdateEmployee = ({ token, baseUrl, isEditMode, nextStep }) => {
                 console.log(error);
             });
         }
-    }, [baseUrl, id]);
+    }, [id]);
 
     const handleSubmit = async (data) => {
         const headers = {

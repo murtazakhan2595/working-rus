@@ -118,6 +118,7 @@ const EmployeeInformation = {
     residential_address:null,
     department_name: null,
     country_code:null,
+    organization:null,
     department_position: null,
     direct_report: null,
     indirect_report: null,

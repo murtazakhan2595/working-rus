@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify"; 
-import {initialState} from '../../state/slices/UserSlice';
+import {initialState} from 'state/slices/UserSlice';
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -70,6 +70,27 @@ const getManagersList = async () => {
     return [];
 }
 
+const getOrganizationList = async () => {
+    try {
+        const response = await axios.get(`${baseUrl}/organization/`, {
+            headers:headers(),
+        })
+        if (response.status === 200) {
+            const organizationResponse = response.data;
+            const organizationList = organizationResponse.map(manager => ({
+                value: manager.id,
+                label: manager.name,
+            }))
+            return organizationList;
+        }
+        else
+            return []
+    } catch (error) {
+        console.error("Error fetching Personal Info data :", error);
+    }
+    return [];
+}
+
 const getList = async (URL) => {
     try {
         const response = await axios.get(`${baseUrl}${URL}`, { headers:headers(), })
@@ -110,4 +131,5 @@ export {
     getDesignationList,
     getList,
     deleteRecord,
+    getOrganizationList,
 }

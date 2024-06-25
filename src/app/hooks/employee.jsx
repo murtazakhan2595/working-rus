@@ -21,12 +21,19 @@ import {
   EmployeeCertifiation,
   EmployeeContactInformation,
 } from "../utils/Types/Employee";
-import moment from "moment";
+import { initialState } from 'state/slices/UserSlice';
 
-const getEmployeeData = async (baseUrl, employeeid, headers) => {
+const baseUrl = initialState.baseUrl;
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
+
+
+const getEmployeeData = async (employeeid) => {
   try {
     const response = await axios.get(`${baseUrl}/emp/${employeeid}`, {
-      headers,
+      headers: headers(),
     });
     return response.data;
   } catch (error) {
@@ -35,10 +42,10 @@ const getEmployeeData = async (baseUrl, employeeid, headers) => {
   return 0;
 };
 
-const getNewEmployeeCode = async (baseUrl, headers) => {
+const getNewEmployeeCode = async () => {
   try {
     const response = await axios.get(`${baseUrl}/lastemployee`, {
-      headers,
+      headers:headers(),
     });
     const id = response.data?.id;
     return id + 1;

@@ -538,13 +538,14 @@ const FilterInput = ({ filters, onChange }) => {
                 <Select
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className="shadow-input rounded-lg"
+                  className="shadow-input rounded-lg w-56 "
                   styles={dropdownStyles}
                   name={filter.name}
                   id={filter.name}
                   onChange={(option) => {
-                    onChange(filter.name, option.value);
+                    onChange(filter.name, option?.value);
                   }}
+                  isClearable={true}
                 />
               );
             } else if (filter.type === "date") {

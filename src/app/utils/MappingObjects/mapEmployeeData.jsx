@@ -208,6 +208,7 @@ function getEmployeeInformation(data) {
     first_name: data.first_name,
     last_name: data.last_name,
     work_email: data.work_email,
+    organization: data?.organization ?? '',
     user_role: data.user_role,
     department_name: data?.department_name ?? '',
     residential_address: data?.residential_address ?? '',

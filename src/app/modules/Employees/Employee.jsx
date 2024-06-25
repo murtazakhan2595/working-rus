@@ -71,7 +71,6 @@ const Employee = () => {
       sortOrder,
     }));
   };
-
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {

@@ -1,43 +1,45 @@
 import Joi from "joi";
 
-const validationEmployeeInfoFormSchema = (values)=>{
-  const errors={};
-  if(!values.first_name)
-    errors.first_name='First name is required';
-  if(!values.last_name)
-    errors.last_name='Last name is required';
-  if(!values.country_code)
-    errors.country_code='Phone Country Code name is required';
-  if(!values.mobile_no)
-    errors.mobile_no='Phone number is required';
-  if(!values.username)
-    errors.username='Username is required';
-  if(!values.work_email)
-    errors.work_email='Email is required';
-  if(!values.password)
-    errors.password='Password is required';
-  if(!values.user_role)
-    errors.user_role='User role is required';
-  if(!values.residential_address)
-    errors.residential_address='Address is required';
-  if(!values.department_name)
-    errors.department_name='Department is required';
-  if(!values.department_position)
-    errors.department_position='Designation is required';
-  if(!values.direct_report)
-    errors.direct_report='Manager is required';
-  if(!values.department_manager)
-    errors.department_manager='Manager is required';
-  if(!values.employee_type)
-    errors.employee_type='Employee type is required';
-  if(!values.employee_work_type)
-    errors.employee_work_type='Work type is required';
-  if(!values.employee_location)
-    errors.employee_location='Work location is required';
-  if(!values.employee_status)
-    errors.employee_status='Status is required';
-  if(!values.joining_date)
-    errors.joining_date='Joining date is required';
+const validationEmployeeInfoFormSchema = (values) => {
+  const errors = {};
+  if (!values.first_name)
+    errors.first_name = 'First name is required';
+  if (!values.last_name)
+    errors.last_name = 'Last name is required';
+  if (!values.country_code)
+    errors.country_code = 'Phone Country Code name is required';
+  if (!values.mobile_no)
+    errors.mobile_no = 'Phone number is required';
+  if (!values.username)
+    errors.username = 'Username is required';
+  if (!values.work_email)
+    errors.work_email = 'Email is required';
+  if (!values.password)
+    errors.password = 'Password is required';
+  if (!values.user_role)
+    errors.user_role = 'User role is required';
+  if (!values.residential_address)
+    errors.residential_address = 'Address is required';
+  if (!values.department_name)
+    errors.department_name = 'Department is required';
+  if (!values.department_position)
+    errors.department_position = 'Designation is required';
+  if (!values.direct_report)
+    errors.direct_report = 'Manager is required';
+  if (!values.department_manager)
+    errors.department_manager = 'Manager is required';
+  if (!values.employee_type)
+    errors.employee_type = 'Employee type is required';
+  if (!values.employee_work_type)
+    errors.employee_work_type = 'Work type is required';
+  if (!values.employee_location)
+    errors.employee_location = 'Work location is required';
+  if (!values.employee_status)
+    errors.employee_status = 'Status is required';
+  if (!values.joining_date)
+    errors.joining_date = 'Joining date is required';
+  if (!values.organization)
+    errors.organization = 'Organization is required';
   return errors;
 }
 const validationPersonalInfoFormSchema = Joi.object({

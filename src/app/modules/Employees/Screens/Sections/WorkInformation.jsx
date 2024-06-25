@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { HeadOfDepartment, employeeStatus, jobRoles, workplaceTypes, UserRoles } from '../../../../../data/Data';
+import { HeadOfDepartment, employeeStatus, jobRoles, workplaceTypes, UserRoles } from 'data/Data';
 import { getAllCountries } from 'countries-and-timezones';
 import {
     Col,
     FormGroup,
 } from 'reactstrap';
-import { SelectComponent, SelectMultiInputComponent, DateInput } from '../../../../../components/form-control'
-import { getDepartmentList, getManagersList, getDesignationList } from '../../../../hooks/general';
+import { SelectComponent, SelectMultiInputComponent, DateInput } from 'components/form-control'
+import { getDepartmentList, getManagersList, getDesignationList,getOrganizationList } from 'app/hooks/general';
 
 const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
     value: countryCode,
@@ -32,6 +32,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
     const [managers, setManagers] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [designations, setDesignations] = useState([]);
+    const [organization, setOrganization] = useState([]);
 
     useEffect(() => {
         const fetchLists = async () => {
@@ -44,6 +45,9 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
 
                 const designationResponse = await getDesignationList();
                 setDesignations(designationResponse);
+
+                const organizationResponse = await getOrganizationList();
+                setOrganization(organizationResponse);
             } catch (error) {
                 console.error(error);
             }
@@ -81,6 +85,20 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                     touch={touched.department_name}
                     value={values.department_name}
                     label={'Department'}
+                    required={true}
+                    onChange={(field, value) => {
+                        onChange(field, value);
+                    }}
+                />
+            </Col>
+            <Col md="6">
+                <SelectComponent
+                    name={'organization'}
+                    options={organization}
+                    error={errors.organization}
+                    touch={touched.organization}
+                    value={values.organization}
+                    label={'Organization'}
                     required={true}
                     onChange={(field, value) => {
                         onChange(field, value);
