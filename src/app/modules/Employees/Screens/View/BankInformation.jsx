@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { CiEdit } from "react-icons/ci";
 
-const BankInformation = ({ bankInformation ,isEditable,employeeId}) => {
+const BankInformation = ({ bankInformation ,isEditable,employeeId, getDataByHooks}) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   
   return (
@@ -38,6 +38,7 @@ const BankInformation = ({ bankInformation ,isEditable,employeeId}) => {
         openModal={showPersonalDetailCard}
         closeModal={() => {
           setShowPersonalDetailCard(false);
+          getDataByHooks()
         }}
         employeeId={employeeId}
         currentClick={3}

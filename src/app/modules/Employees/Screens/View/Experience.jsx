@@ -6,7 +6,7 @@ import { FiPlus } from "react-icons/fi";
 import { formatDate } from "../../../../hooks/employee";
 import moment from "moment";
 
-const Experience = ({ experience, isEditable, employeeId }) => {
+const Experience = ({ experience, isEditable, employeeId, getDataByHooks }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
@@ -71,6 +71,7 @@ const Experience = ({ experience, isEditable, employeeId }) => {
           openModal={showPersonalDetailCard}
           closeModal={() => {
             setShowPersonalDetailCard(false);
+            getDataByHooks()
           }}
           employeeId={employeeId}
           currentClick={4}

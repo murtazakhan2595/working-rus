@@ -21,7 +21,7 @@ import AcademicInfo from "./AcademicDetials";
 import Certifications from "./Certifications";
 import IdentificationDetails from "./IdentificationDetails";
 import Loader from "components/PageLoader";
-import {getCountryFullName} from "utils/getValuesFromTables";
+import { getCountryFullName } from "utils/getValuesFromTables";
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 
@@ -72,6 +72,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     setDocuments(documentsData);
     setLoading(false);
   };
+
   useEffect(() => {
     getDataByHooks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -383,23 +384,27 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               isEditable={profileView}
               personalInfo={personalInfo}
               userData={userData}
+              getDataByHooks={getDataByHooks}
             />
             <div className="flex gap-5 justify-between 800:flex-row flex-col">
               <ContactInformation
                 isEditable={profileView}
                 contactInformation={contactInformation}
                 employeeId={userData.id}
+                getDataByHooks={getDataByHooks}
               />
               <BankInformation
                 isEditable={profileView}
                 bankInformation={bankInformation}
                 employeeId={userData.id}
+                getDataByHooks={getDataByHooks}
               />
             </div>
             <WorkInformation
               isEditable={!profileView}
               workInformation={workInformation}
               employeeId={userData.id}
+              getDataByHooks={getDataByHooks}
             />
             {Array.isArray(experiences) && experiences?.length > 0 && (
               <Experience
@@ -407,6 +412,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
                 cv={cv}
                 experience={experiences}
                 employeeId={userData.id}
+                getDataByHooks={getDataByHooks}
               />
             )}
             {Array.isArray(educations) && educations?.length > 0 && (
@@ -414,6 +420,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
                 isEditable={profileView}
                 educations={educations}
                 employeeId={userData.id}
+                getDataByHooks={getDataByHooks}
               />
             )}
             {Array.isArray(certifications) && certifications?.length > 0 && (
@@ -421,12 +428,15 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
                 isEditable={profileView}
                 certifications={certifications}
                 employeeId={userData.id}
+                getDataByHooks={getDataByHooks}
               />
             )}
             <IdentificationDetails
               isEditable={profileView}
               identificationDetails={identificationDetails}
               employeeId={userData.id}
+              getDataByHooks={getDataByHooks}
+
             />
           </div>
         </div>

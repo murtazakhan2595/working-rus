@@ -5,7 +5,7 @@ import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
 import moment from "moment";
 
-const AcademicInfo = ({ educations, isEditable,employeeId }) => {
+const AcademicInfo = ({ educations, isEditable,employeeId, getDataByHooks }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <> 
@@ -65,6 +65,7 @@ const AcademicInfo = ({ educations, isEditable,employeeId }) => {
         openModal={showPersonalDetailCard}
         closeModal={() => {
           setShowPersonalDetailCard(false);
+          getDataByHooks()
         }}
         employeeId={employeeId}
         currentClick={5}

@@ -98,7 +98,6 @@ const saveEmployeePersonalInfoData = async (
           },
         }
       );
-      console.log("patch api emp call");
 
       if (response.status === 200) return true;
     } catch (error) {
