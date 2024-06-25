@@ -8,13 +8,10 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getLeaveApplications = async (filterData) => {
-  filterData = filterData ?? {};
+const getLeaveApplications = async (URL) => {
   try {
     const response = await axios.get(
-      `${baseUrl}/leave?ordering=date&search=${encodeURIComponent(
-        JSON.stringify(filterData)
-      )}`,
+      `${baseUrl}${URL}`,
       {
         headers: headers(),
       }
