@@ -77,6 +77,8 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     setDocuments(documentsData);
     setLoading(false);
   };
+
+  
   useEffect(() => {
     getDataByHooks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -388,6 +390,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               isEditable={profileView}
               personalInfo={personalInfo}
               userData={userData}
+              getDataByHooks={getDataByHooks}
             />
             <div className="flex gap-5 justify-between 800:flex-row flex-col">
               <ContactInformation

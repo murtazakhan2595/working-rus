@@ -2,14 +2,19 @@ import React, { useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 
-const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
+const PersonalInformation = ({
+  personalInfo,
+  userData,
+  isEditable,
+  getDataByHooks,
+}) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
       <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
         <div className="flex justify-between">
           <h2 className="text-xl">Personal Details</h2>
-          {isEditable &&
+          {isEditable && (
             <div
               className="flex gap-4 items-center"
               onClick={() => {
@@ -18,21 +23,18 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
             >
               <CiEdit className="text-2xl cursor-pointer opacity-80" />
             </div>
-          }
+          )}
         </div>
         <hr />
         <div className="flex flex-col lg:flex-row py-4">
           {/* Image Section */}
           <div className="md:w-[25%] w-full flex flex-col items-start mb-6 lg:mb-0">
             <img
-              src={
-                userData?.profile_picture?.file ||
-                userData?.profile_picture
-              }
+              src={userData?.profile_picture?.file || userData?.profile_picture}
               alt="Profile"
               className="w-24 h-24 rounded-full mb-4"
             />
-            
+
             <div className="font-semibold text-lg">
               {userData.personalInformation?.first_name}{" "}
               {userData.personalInformation?.last_name}
@@ -65,6 +67,7 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
           openModal={showPersonalDetailCard}
           closeModal={() => {
             setShowPersonalDetailCard(false);
+            getDataByHooks();
           }}
           employeeId={userData.id}
           currentClick={1}
