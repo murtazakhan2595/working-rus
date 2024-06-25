@@ -45,7 +45,7 @@ const validationEmployeeInfoFormSchema = (values) => {
 
 const validationEmployeeContactInfoFormSchema = (values) => {
   const errors = {};
-  if(!values.emergency_first_name)
+  if (!values.emergency_first_name)
     errors.emergency_first_name = 'First name is required';
   if (!values.emergency_relation)
     errors.emergency_relation = 'Contact Relation is required';
@@ -57,6 +57,30 @@ const validationEmployeeContactInfoFormSchema = (values) => {
     errors.current_address = 'Address is required';
   if (!values.residential_address)
     errors.residential_address = 'Address is required';
+  return errors;
+}
+
+const validationEmployeeExperienceFormSchema = (values) => {
+  const errors = {};
+  if (values.experiences) {
+    values.experiences.forEach((value, index) => {
+      const experienceErrors = {};
+      if (!value.disableEndDate && !value.exp_end_date)
+        experienceErrors.exp_end_date = "End Date is required";
+      if (!value.exp_start_date)
+        experienceErrors.exp_start_date = "Start Date is required";
+      if (!value.exp_organization)
+        experienceErrors.exp_organization = "Company Name is required";
+      if (!value.exp_designation)
+        experienceErrors.exp_designation = "Position is required";
+      if (!value.exp_discription)
+        experienceErrors.exp_discription = "Responsibilities is required";
+      if (Object.keys(experienceErrors).length > 0) {
+        errors.experiences = errors.experiences || [];
+        errors.experiences[index] = experienceErrors;
+      }
+    });
+  }
   return errors;
 }
 const validationPersonalInfoFormSchema = Joi.object({
@@ -237,4 +261,5 @@ export {
   validationBankDetailsFormSchema,
   validationEmployeeInfoFormSchema,
   validationEmployeeContactInfoFormSchema,
+  validationEmployeeExperienceFormSchema,
 }

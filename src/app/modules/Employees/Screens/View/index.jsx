@@ -21,7 +21,7 @@ import AcademicInfo from "./AcademicDetials";
 import Certifications from "./Certifications";
 import IdentificationDetails from "./IdentificationDetails";
 import Loader from "components/PageLoader";
-import {getCountryFullName} from "utils/getValuesFromTables";
+import { getCountryFullName } from "utils/getValuesFromTables";
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 
@@ -48,16 +48,8 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     );
     let cvData = await getEmployeeCVDetailData(userId);
     let visaData = await getEmployeeVisaDetailData(baseUrl, userId, token);
-    let educationData = await getEmployeeAcademicRecordData(
-      baseUrl,
-      userId,
-      token
-    );
-    let certificationData = await getEmployeeCerficationData(
-      baseUrl,
-      userId,
-      token
-    );
+    let educationData = await getEmployeeAcademicRecordData(userId,);
+    let certificationData = await getEmployeeCerficationData(userId,);
     let documentsData = await getEmployeeVisaDetailsFiles(
       baseUrl,
       userId,

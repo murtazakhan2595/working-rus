@@ -5,16 +5,10 @@ import {
   DateInput,
   TextAreaInput,
   TextInput,
-} from "../../../../../components/form-control";
-import { CheckBoxInput } from "../../../../../components/form-control"; 
+  CheckBoxInput
+} from "components/form-control";
 
 const Experience = ({ errors, touched, values, onChange }) => {
-  const handleCheckboxChange = (fieldName, isChecked) => {
-    onChange(fieldName, isChecked);
-    if (fieldName === "disableEndDate" && isChecked) {
-      onChange("exp_end_date", null);
-    }
-  };
 
   return (
     <>
@@ -62,7 +56,12 @@ const Experience = ({ errors, touched, values, onChange }) => {
           name={"disableEndDate"}
           value={values.disableEndDate}
           label={"Currently Working Here"}
-          onChange={handleCheckboxChange}
+          onChange={(field, value) => {
+            onChange(field, value);
+            // if (value) {
+            //   onChange("exp_end_date", null);
+            // }
+          }}
         />
       </Col>
       {!values.disableEndDate && (
