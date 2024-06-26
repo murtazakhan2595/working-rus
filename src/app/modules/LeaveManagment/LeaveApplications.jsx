@@ -33,7 +33,7 @@ const LeaveApplication = ({ userProfile }) => {
         const getApplications = async () => {
             setLoading(true);
             try {
-                const URL = `/leave?ordering=date&search=${encodeURIComponent(JSON.stringify(filterData))}`
+                const URL = `/leave?search=${encodeURIComponent(JSON.stringify(filterData))}`
                 const data = await getLeaveApplications(URL);
                 const employeeList = await getList('/emp/');
                 const applications = await Promise.all(data.map(async application => {

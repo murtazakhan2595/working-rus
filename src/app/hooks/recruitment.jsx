@@ -7,12 +7,12 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-
-export const fetchJobPosts = async (filterData) => {
+export const fetchJobPosts = async (filterData, sortData) => {
   filterData = filterData ?? {};
+  sortData = sortData && sortData === "dsc" ? "-updated_at" : "updated_at";
   try {
     const response = await axios.get(
-      `${baseUrl}/recruitment/?search=${encodeURIComponent(
+      `${baseUrl}/recruitment/?ordering=${sortData}&search=${encodeURIComponent(
         JSON.stringify(filterData)
       )}`,
       {
@@ -48,10 +48,7 @@ const getJobApplications = async (URL) => {
   }
 };
 
-export const updateApplicationStatus = async (
-  selectedApplicant,
-  option,
-) => {
+export const updateApplicationStatus = async (selectedApplicant, option) => {
   try {
     const response = await axios.patch(
       `${baseUrl}/candidate/${selectedApplicant.id}`,

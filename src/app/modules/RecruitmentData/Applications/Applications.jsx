@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { dropdownOptions } from "../../../../data/Data";
+import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
+import { dropdownOptions } from "data/Data";
 import { PageLoader, StatusLabel } from "components";
 import {
   Card,
@@ -14,31 +14,36 @@ import {
   DropdownItem,
   Row,
   Col,
-} from 'reactstrap';
-import { cut, file, list } from 'assets/images';
+} from "reactstrap";
+import { cut, file, list } from "assets/images";
 import { AiOutlineDownload } from "react-icons/ai";
 import { Blocks, Header } from "../Sections";
 import { Tabs } from "./Sections";
+import { ViewApplicantDetails } from ".";
 import {
   getJobApplications,
   updateApplicationStatus,
   downloadCV,
 } from "../../../hooks/recruitment";
-import { FilterInput } from 'components/form-control';
+import { FilterInput } from "components/form-control";
 import { BsThreeDots } from "react-icons/bs";
 import moment from "moment";
 
 const Applications = () => {
   const location = useLocation();
-  const [jobIdForFilter, setJobIdForFilter] = useState(location?.state?.jobId ?? '');
+  const [jobIdForFilter, setJobIdForFilter] = useState(
+    location?.state?.jobId ?? ""
+  );
   const [selectedRow, setSelectedRow] = useState(null);
   const [Applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [applicationStatus, setApplicationStatus] = useState("");
+  const [viewApplicationDetails, setViewApplicationDetails] = useState("");
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
-  const [filterData, setFilterData] = useState(jobIdForFilter ? { job_id: jobIdForFilter } : {});
+  const [filterData, setFilterData] = useState(
+    jobIdForFilter ? { job_id: jobIdForFilter } : {}
+  );
   const [totalApplications, setTotalApplications] = useState(0);
   const [shortlistedApplications, setShortlistedApplications] = useState(0);
   const [selectedApplications, setSelectedApplications] = useState(0);
@@ -46,8 +51,8 @@ const Applications = () => {
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
-    sortName: '',
-    sortOrder: '',
+    sortName: "",
+    sortOrder: "",
   });
   const onSizePerPageList = (sizePerPage) => {
     if (options.sizePerPage !== sizePerPage) {
@@ -71,15 +76,25 @@ const Applications = () => {
     const fetchLists = async () => {
       try {
         setIsLoading(true);
-        // const URL = `/candidateall/?search=${encodeURIComponent(`{"application_status": "${applicationStatus}", "job_id": ${id}}`)}`
-        const URL = `/candidateall/?page=${options.page}&page_size=${options.sizePerPage}&search=${encodeURIComponent(JSON.stringify(filterData))}`
+        const URL = `/candidateall/?page=${options.page}&page_size=${
+          options.sizePerPage
+        }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
         const applicationsData = await getJobApplications(URL);
         if (applicationsData) {
-          setApplications({ count: applicationsData.count, data: applicationsData.results.candidate });
+          setApplications({
+            count: applicationsData.count,
+            data: applicationsData.results.candidate,
+          });
           setTotalApplications(applicationsData.results.total_count);
-          setShortlistedApplications(applicationsData.results.shortlisted_application);
-          setSelectedApplications(applicationsData.results.selected_application);
-          setRejectedApplications(applicationsData.results.rejected_application);
+          setShortlistedApplications(
+            applicationsData.results.shortlisted_application
+          );
+          setSelectedApplications(
+            applicationsData.results.selected_application
+          );
+          setRejectedApplications(
+            applicationsData.results.rejected_application
+          );
         }
         setIsLoading(false);
       } catch (error) {
@@ -87,15 +102,12 @@ const Applications = () => {
       }
     };
     fetchLists();
-  }, [id, applicationStatus, options, filterData]);
+  }, [id, options, filterData]);
 
   const handleOptionSelect = async (applicant, option) => {
     try {
       if (applicant) {
-        const response = await updateApplicationStatus(
-          applicant,
-          option,
-        );
+        const response = await updateApplicationStatus(applicant, option);
 
         if (response.status === 200) {
           setFilterData({});
@@ -120,12 +132,16 @@ const Applications = () => {
           <BsThreeDots onClick={() => toggleDropdown(row.id)} />
         </DropdownToggle>
         <DropdownMenu right>
-          {dropdownOptions.map(option => {
+          {dropdownOptions.map((option) => {
             return (
               <>
-                <DropdownItem onClick={() => handleOptionSelect(row, option.value)}>{option.label}</DropdownItem>
+                <DropdownItem
+                  onClick={() => handleOptionSelect(row, option.value)}
+                >
+                  {option.label}
+                </DropdownItem>
               </>
-            )
+            );
           })}
         </DropdownMenu>
       </ButtonDropdown>
@@ -134,17 +150,10 @@ const Applications = () => {
 
   const renderResume = (row) => (
     <div className="flex gap-x-2 items-center justify-center">
-      <span
-        title={row?.cv}
-        className="font-lato text-base text-baseGray"
-      >
+      <span title={row?.cv} className="font-lato text-base text-baseGray">
         File
       </span>
-      <button
-        onClick={() =>
-          downloadCV(row?.cv, row?.first_name)
-        }
-      >
+      <button onClick={() => downloadCV(row?.cv, row?.first_name)}>
         <AiOutlineDownload />
       </button>
     </div>
@@ -156,8 +165,13 @@ const Applications = () => {
 
   const renderCandidate = (cell, row) => (
     <>
-      <div className="font-lato text-base text-[#323333]">
-        {cell}
+      <div
+        className="text-base text-[#323333]"
+        onClick={() => {
+          setViewApplicationDetails(row);
+        }}
+      >
+        {cell} {row.last_name}
       </div>
       <div className="font-lato text-base text-baseGray">
         {`Exp. ${row?.Year_of_Experience} years`}
@@ -184,18 +198,30 @@ const Applications = () => {
     onSizePerPageList,
     onPageChange,
     onSortChange: sortColumn,
-    paginationPosition: 'bottom',
+    paginationPosition: "bottom",
   };
-
 
   return (
     <div className="screen bg-[#F0F1F2]">
+      {viewApplicationDetails && (
+        <ViewApplicantDetails
+          applicant={viewApplicationDetails}
+          closeModel={() => {
+            setViewApplicationDetails(null);
+          }}
+          handleOptionSelect={handleOptionSelect}
+        />
+      )}
       <Header
         title="Applications"
         content={
           <FilterInput
             filters={[
-              { type: 'search', placeholder: 'Search', name: 'id_and_first_name' },
+              {
+                type: "search",
+                placeholder: "Search",
+                name: "id_and_first_name",
+              },
             ]}
             onChange={handleFilterChange}
           />
@@ -207,7 +233,9 @@ const Applications = () => {
             onTabChange={setActiveTab}
             activeTab={activeTab}
             activeJobId={jobIdForFilter}
-            changeJobFilter={(jobId) => { handleFilterChange('job_id', jobId) }}
+            changeJobFilter={(jobId) => {
+              handleFilterChange("job_id", jobId);
+            }}
           />
         </Col>
         <Col lg={6}>
@@ -246,10 +274,22 @@ const Applications = () => {
                   <div className="py-3 px-3">
                     <FilterInput
                       filters={[
-                        { type: 'search', placeholder: 'Search by Keyword', name: 'id_and_first_name' },
-                        { type: 'date', name: 'updated_at', placeholder: "Applied On" },
-                        { type: 'select', option: dropdownOptions, name: 'application_status', placeholder: "Status" },
-                        // { type: 'select', option: UserRoles, name: 'user_role', placeholder: "Role" }
+                        {
+                          type: "search",
+                          placeholder: "Search by Keyword",
+                          name: "id_and_first_name",
+                        },
+                        {
+                          type: "date",
+                          name: "updated_at",
+                          placeholder: "Applied On",
+                        },
+                        {
+                          type: "select",
+                          option: dropdownOptions,
+                          name: "application_status",
+                          placeholder: "Status",
+                        },
                       ]}
                       onChange={handleFilterChange}
                     />
@@ -276,7 +316,7 @@ const Applications = () => {
                         pagination
                         options={tableOptions}
                         fetchInfo={{ dataTotalSize: Applications?.count || 0 }}
-                        className={'bootstrap-main-table'}
+                        className={"bootstrap-main-table"}
                       >
                         <TableHeaderColumn
                           isKey
@@ -300,8 +340,12 @@ const Applications = () => {
                           width="20%"
                           dataFormat={(cell, row) => (
                             <>
-                              <div className="text-base font-lato">{cell || ''}</div>
-                              <div className="text-base font-lato">{row.email || ''}</div>
+                              <div className="text-base font-lato">
+                                {cell || ""}
+                              </div>
+                              <div className="text-base font-lato">
+                                {row.email || ""}
+                              </div>
                             </>
                           )}
                         >
@@ -326,9 +370,7 @@ const Applications = () => {
                           dataField="updated_at"
                           dataAlign="center"
                           dataFormat={(cell) => (
-                            <>
-                              {moment(cell).format('DD-MM-YYYY')}
-                            </>
+                            <>{moment(cell).format("DD-MM-YYYY")}</>
                           )}
                         >
                           Applied On
@@ -344,8 +386,10 @@ const Applications = () => {
                           dataField="application_status"
                           className="table-header-bg"
                           dataFormat={(cell) => {
-                            const role = dropdownOptions.find(obj => obj.value === cell);
-                            return (<StatusLabel status={role?.label} />);
+                            const role = dropdownOptions.find(
+                              (obj) => obj.value === cell
+                            );
+                            return <StatusLabel status={role?.label} />;
                           }}
                         >
                           Status
@@ -355,8 +399,7 @@ const Applications = () => {
                           width="42px"
                           headerAlign="right"
                           dataFormat={(cell, row) => renderAction(row)}
-                        >
-                        </TableHeaderColumn>
+                        ></TableHeaderColumn>
                       </BootstrapTable>
                     </div>
                   </Col>

@@ -28,12 +28,13 @@ const JobsDataTable = () => {
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedPost] = useState(null);
   const [filterData, setFilterData] = useState({});
+  const [sortData, setSortData] = useState("dsc");
 
   useEffect(() => {
     const getPosts = async () => {
       setLoading(true);
       try {
-        const data = await fetchJobPosts(filterData);
+        const data = await fetchJobPosts(filterData, sortData);
         setPosts(data);
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -43,7 +44,7 @@ const JobsDataTable = () => {
     };
 
     getPosts();
-  }, [filterData]);
+  }, [filterData, sortData]);
 
   const handleDotsClick = (post) => {
     setSelectedPost(post);
@@ -54,8 +55,10 @@ const JobsDataTable = () => {
   };
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
+    if (filterName === "sort_by_date") {
+      setSortData(filterCheckStatus ? filterValue : "dsc");
+    }
     setFilterData((prevFilters) => {
-        debugger
       const updatedFilters = { ...prevFilters };
       if (!filterValue || filterCheckStatus === false) {
         delete updatedFilters[filterName];

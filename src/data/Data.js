@@ -308,8 +308,8 @@ export const JobSortingFilters = [
     label: "Sort by date",
     name: "sort_by_date",
     options: [
-      { label: "Newest First", value: "newest_first" },
-      { label: "Oldest First", value: "oldest_first" },
+      { label: "Newest First", value: "dsc" },
+      { label: "Oldest First", value: "asc" },
     ],
   },
   {
