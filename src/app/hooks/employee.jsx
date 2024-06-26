@@ -21,7 +21,7 @@ import {
   EmployeeCertifiation,
   EmployeeContactInformation,
 } from "../utils/Types/Employee";
-import { initialState } from 'state/slices/UserSlice';
+import { initialState } from "state/slices/UserSlice";
 import { toast } from "react-toastify";
 import { handleLogout } from "./general";
 
@@ -30,7 +30,6 @@ const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
-
 
 const getEmployeeData = async (employeeid) => {
   try {
@@ -55,6 +54,9 @@ const getNewEmployeeCode = async () => {
     const id = response.data?.id;
     return id + 1;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching data:", error);
   }
   return EmployeeInformation;
@@ -79,6 +81,9 @@ const getEmployeePersonalInfoData = async (baseUrl, employeeid, token) => {
         return employeeData;
       }
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -106,12 +111,14 @@ const saveEmployeePersonalInfoData = async (
 
       if (response.status === 200) return true;
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
       return false;
     }
   }
 };
-
 
 const getEmployeeContactInfo = async (employeeid) => {
   if (employeeid) {
@@ -129,16 +136,16 @@ const getEmployeeContactInfo = async (employeeid) => {
         return employeeData;
       }
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching contact Info data :", error);
     }
   }
   return EmployeeContactInformation;
 };
 
-const saveEmployeeContactInfoData = async (
-  employeeid,
-  contactInfo
-) => {
+const saveEmployeeContactInfoData = async (employeeid, contactInfo) => {
   if (employeeid) {
     try {
       const response = await axios.patch(
@@ -150,6 +157,9 @@ const saveEmployeeContactInfoData = async (
       );
       if (response.status === 200) return true;
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error saving contact Info data :", error);
       return false;
     }
@@ -239,6 +249,9 @@ const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
         }
       }
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -307,6 +320,9 @@ const saveEmployeeVisaDetailData = async (
       }
       return true;
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -335,6 +351,9 @@ const getEmployeeCVDetailData = async (employeeid) => {
           }
         });
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -388,6 +407,9 @@ const saveEmployeeCVDetailData = async (
           });
       }
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -416,16 +438,16 @@ const getEmployeeProfessionalExperianceData = async (
         return employeeData;
       }
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
   return [EmployeeProfessionalExperiance];
 };
 
-const saveEmployeeProfessionalExperianceData = async (
-  employeeid,
-  payload
-) => {
+const saveEmployeeProfessionalExperianceData = async (employeeid, payload) => {
   if (employeeid && payload && payload.length > 0) {
     try {
       payload.map(async (experience, index) => {
@@ -445,6 +467,9 @@ const saveEmployeeProfessionalExperianceData = async (
             });
           }
         } catch (error) {
+          if (error?.response?.status === 401) {
+            handleLogout();
+          }
           toast.error(`Experience ${index + 1} updated unsuccessfully`, {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: 1000,
@@ -453,6 +478,9 @@ const saveEmployeeProfessionalExperianceData = async (
         }
       });
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
       return false;
     }
@@ -477,6 +505,9 @@ const deleteEmployeeProfessionalExperianceData = async (
         });
       });
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -500,6 +531,9 @@ const deleteEmployeeAcademicRecordData = async (
         });
       });
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -521,6 +555,9 @@ const getEmployeeAcademicRecordData = async (employeeid) => {
         return employeeData;
       }
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -548,6 +585,9 @@ const saveEmployeeAcademicRecordData = async (
 
       return true;
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -569,16 +609,16 @@ const getEmployeeCerficationData = async (employeeid) => {
         return employeeData;
       }
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
   return [EmployeeCertifiation];
 };
 
-const saveEmployeeCertificationData = async (
-  employeeid,
-  payloadAttachment
-) => {
+const saveEmployeeCertificationData = async (employeeid, payloadAttachment) => {
   if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
     try {
       payloadAttachment.map(async (certification) => {
@@ -598,12 +638,18 @@ const saveEmployeeCertificationData = async (
             });
           }
         } catch (error) {
+          if (error?.response?.status === 401) {
+            handleLogout();
+          }
           console.error("Error fetching Personal Info data :", error);
         }
       });
 
       return true;
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -626,6 +672,9 @@ const getEmployeeWorkInformationData = async (baseUrl, employeeid, token) => {
       console.log(employeeData);
       return employeeData;
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -654,6 +703,9 @@ const saveEmployeeWorkInformationData = async (
         return true;
       }
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
       return false;
     }
@@ -677,6 +729,9 @@ const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
       console.log(employeeData);
       return employeeData;
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
@@ -702,12 +757,14 @@ const saveEmployeeBankDetailsData = async (
           return true;
         });
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching Personal Info data :", error);
     }
   }
   return false;
 };
-
 
 export {
   getEmployeeData,

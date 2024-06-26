@@ -333,7 +333,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
           {profileView ? "My Profile" : "Profile Management"}
         </h1>
         <div
-          onClick={() => navigate(profileView ? "/" : "/employees")}
+          onClick={() => navigate(profileView ? "/" : "/profile-management")}
           className="flex cursor-pointer items-center gap-3 text-[20px]"
         >
           Go Back <FaChevronCircleLeft />

@@ -53,6 +53,9 @@ ul {
     min-height: calc(3.5rem + 2px);
     box-shadow: none;
 }
+.invalid-feedback{
+    font-size: 12px !important;
+}
 
 .opacity-65 {
     opacity: .65;

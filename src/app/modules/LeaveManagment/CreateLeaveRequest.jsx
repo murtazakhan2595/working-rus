@@ -188,7 +188,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                   <Link
                     type="button"
                     className="btn btn-light bg-transparent fw-700"
-                    to="/leave-application"
+                    to="/my-leaves"
                   >
                     <span style={{ display: "inline-block" }}>Go Back</span>
                     <FaChevronCircleLeft
@@ -230,7 +230,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                             <h2 className="text-baseGray font-lato text-lg font-semibold">
                               Application Date
                             </h2>
-                            {console.log(props.values)}
+                            {/* {console.log(props.values)} */}
                             <Row>
                               <Col md="6">
                                 <DateInput
@@ -506,7 +506,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                 <Link
                                   type="button"
                                   className="btn btn-outline-dark w-100"
-                                  to="/"
+                                  to="/my-leaves"
                                 >
                                   Cancel
                                 </Link>

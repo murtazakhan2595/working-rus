@@ -232,7 +232,7 @@ function App() {
                   <Route path="/customise-employees" element={<ComingSoon />} />
                   <Route path="/relocation" element={<ComingSoon />} />
                   <Route exact path="/create-employee" element={<CreateUpdateEmployee />} />
-                  <Route path="/edit-employee/:id" element={<CreateUpdateEmployee />} />
+                  <Route path="/edit-employee" element={<CreateUpdateEmployee />} />
                   <Route path="/profile/:id" element={<EditEmployeeProfile />} />
                   <Route path="/payroll" element={<ComingSoon />} />
                   <Route path="/attendance" element={<ComingSoon />} />

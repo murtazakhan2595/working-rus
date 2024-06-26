@@ -149,6 +149,20 @@ export const HeadOfDepartment = [
   { label: "Prakash PV - VP Sales", value: "Prakash" },
 ];
 
+export const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
+  label: (
+    <div>
+      <div style={{ fontWeight: "bold", color: "#000", marginTop: "25px" }}>
+        {manager?.label?.split(" - ")[0]}
+      </div>
+      <div style={{ fontSize: "13px", color: "#777", fontWeight: "normal" }}>
+        {manager?.label?.split(" - ")[1]}
+      </div>
+    </div>
+  ),
+  value: manager.value,
+}));
+
 export const UserRoles = [
   { value: 1, label: "Super Admin" },
   { value: 2, label: "Manager" },
@@ -350,15 +364,13 @@ export const LeaveStatus = [
 
 export function getManagerSelected(managers, managersList) {
   if (managers && managersList && managersList.length > 0) {
-      managers = managers.split(', ') || [];
-      const matchingObjects = managersList.filter(obj => {
-          return managers.find(element => obj.id === element);
-      });
-      console.log(matchingObjects)
-      return matchingObjects;
+    managers = managers.split(", ") || [];
+    const matchingObjects = managersList.filter((obj) => {
+      return managers.find((element) => parseInt(obj.value) === parseInt(element));
+    });
+    console.log(matchingObjects);
+    return matchingObjects;
   }
 
   return managers;
-
 }
-

@@ -9,6 +9,8 @@ import {
   EmployeeCertifiation,
 } from "../Types/Employee";
 import moment from "moment";
+import { getManagersList } from "app/hooks/general";
+import { getManagerSelected } from "data/Data";
 
 function mapEmployeeData(data) {
   const employee = Employee;
@@ -29,7 +31,7 @@ function getPersonalInfo(data) {
   const personalInfo = {
     first_name: data.first_name,
     last_name: data.last_name,
-    country_code: data?.country_code ?? '',
+    country_code: data?.country_code ?? "",
     mobile_no: data.mobile_no,
     date_of_birth: data.date_of_birth
       ? moment(data.date_of_birth).format("YYYY-MM-DD")
@@ -141,6 +143,7 @@ function getAcademicRecord(data) {
         education_body: record?.education_body ?? "",
       };
       educations.push(empCerficate);
+      return record;
     });
 
     return educations;
@@ -162,6 +165,7 @@ function getCertifications(data) {
         certification_body: record?.certification_body ?? "",
       };
       cerfications.push(empCerficate);
+      return record;
     });
 
     return cerfications;
@@ -201,31 +205,32 @@ function getBankDetails(data) {
   return bankDetail;
 }
 
-function getEmployeeInformation(data) {
+async function getEmployeeInformation(data) {
+  const Managers = await getManagersList();
   const employeeInformation = {
     id: data?.id ?? 0,
     username: data.username,
     first_name: data.first_name,
     last_name: data.last_name,
     work_email: data.work_email,
-    organization: data?.organization ?? '',
+    organization: data?.organization ?? "",
     user_role: data.user_role,
-    department_name: data?.department_name ?? '',
-    residential_address: data?.residential_address ?? '',
-    mobile_no: data?.mobile_no ?? '',
-    country_code: data?.country_code ?? '',
-    department_position: data?.department_position ?? '',
-    direct_report: data?.direct_report ?? '',
-    indirect_report: data?.indirect_report ?? '',
-    department_manager: data?.department_manager ?? '',
-    employee_type: data?.employee_type ?? '',
-    employee_status: data?.employee_status ?? '',
-    employee_work_type: data?.employee_work_type ?? '',
-    employee_location: data?.employee_location ?? '',
+    department_name: data?.department_name ?? "",
+    residential_address: data?.residential_address ?? "",
+    mobile_no: data?.mobile_no ?? "",
+    country_code: data?.country_code ?? "",
+    department_position: data?.department_position ?? "",
+    direct_report: data?.direct_report ?? "",
+    indirect_report: data?.indirect_report
+      ? getManagerSelected(data.indirect_report, Managers)
+      : "",
+    department_manager: data?.department_manager ?? "",
+    employee_type: data?.employee_type ?? "",
+    employee_status: data?.employee_status ?? "",
+    employee_work_type: data?.employee_work_type ?? "",
+    employee_location: data?.employee_location ?? "",
     joining_date: data?.joining_date ?? null,
-    is_indirect_report_applicable: data.indirect_report
-      ? true
-      : false,
+    is_indirect_report_applicable: data.indirect_report ? true : false,
   };
   return employeeInformation;
 }

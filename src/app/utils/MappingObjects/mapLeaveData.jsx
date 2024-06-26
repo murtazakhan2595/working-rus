@@ -10,11 +10,13 @@ async function getLavefromEmployeeInfo(data) {
     position: data?.department_position ?? "",
     department: data?.department_name ?? "",
     joining_date: data?.joining_date ?? "",
-    nationality: data?.nic ?? "",
+    nationality: data?.nationality ?? "",
     report_to: data?.indirect_report
       ? getManagerSelected(data.indirect_report, Managers)
       : "",
-    address_during_leave: "",
+    address_during_leave: data?.residential_address ?? "",
+    contact_no: data?.mobile_no ?? "",
+    country_code: data?.country_code ?? "",
   };
   return leaveInfo;
 }
