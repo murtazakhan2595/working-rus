@@ -276,7 +276,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
       }
     } catch (error) {
       console.error(`Error ${isEditMode ? "updating" : "adding"} job:`, error);
-      toast.error("An error occurred. Please try again.");
+      // toast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }

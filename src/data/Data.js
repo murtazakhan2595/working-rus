@@ -75,7 +75,7 @@ export const workTypeOptions = [
 
 export const employeeTypeOptions = [
   { value: "Internees", label: "Intern" },
-  { value: "Part_Time", label: "Part Time" },
+  { value: "Part_Tiime", label: "Part Time" },
   { value: "Full_Time", label: "Full Time" },
   { value: "Contract", label: "Contract" },
   { value: "Freelancer", label: "Freelancer" },
