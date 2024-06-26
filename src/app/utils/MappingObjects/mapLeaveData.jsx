@@ -1,27 +1,22 @@
-function getLavefromEmployeeInfo(data) {
-    const leaveInfo = {
-        employee_id: data?.id ?? '',
-        name: `${data?.first_name} ${data.last_name}`,
-        date: data?.joining_date ?? '',
-        position: data?.department_position ?? '',
-        department: data?.department_name ?? '',
-        joining_date: data?.joining_date ?? '',
-        nationality: data?.nic ?? '',
-        start_date: '',
-        end_date:  '',
-        last_work_day:  '',
-        rejoining_date: '',
-        total_leave: '',
-        leave_type:  '',
-        reason: '',
-        contact_no:  '',
-        country_code: '',
-        report_to: data?.direct_report ?? '',
-        address_during_leave: '',
-    };
-    return leaveInfo;
+import { getManagersList } from "app/hooks/general";
+import { getManagerSelected } from "data/Data";
+
+async function getLavefromEmployeeInfo(data) {
+  const Managers = await getManagersList();
+  const leaveInfo = {
+    employee_id: data?.id ?? "",
+    name: `${data?.first_name} ${data.last_name}`,
+    date: data?.joining_date ?? "",
+    position: data?.department_position ?? "",
+    department: data?.department_name ?? "",
+    joining_date: data?.joining_date ?? "",
+    nationality: data?.nic ?? "",
+    report_to: data?.indirect_report
+      ? getManagerSelected(data.indirect_report, Managers)
+      : "",
+    address_during_leave: "",
+  };
+  return leaveInfo;
 }
 
-export {
-    getLavefromEmployeeInfo,
-}
+export { getLavefromEmployeeInfo };

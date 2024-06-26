@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useLocation, useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
 import { dropdownOptions } from "data/Data";
 import { PageLoader, Header } from "components";
-import { Status } from "./Sections";
+import { Status, getDecision, StatusIcon } from "./Sections";
 import {
   Card,
   CardHeader,
@@ -18,34 +18,25 @@ import {
 } from "reactstrap";
 import { cut, file, list } from "assets/images";
 import { FaPlus } from "react-icons/fa";
-import { AiOutlineDownload } from "react-icons/ai";
+import {LeaveStatus} from 'data/Data'
 import { Blocks } from "./Sections";
 import { getLeaveApplications, getLeaveTypes } from "app/hooks/leaveManagment";
-import { FilterInput, CustomButton } from "components/form-control";
-import { BsThreeDots } from "react-icons/bs";
+import { FilterInput } from "components/form-control";
 import moment from "moment";
 import { StatusLabel } from "components";
 
 const MyLeaves = ({ userProfile }) => {
-  const location = useLocation();
-  const [jobIdForFilter, setJobIdForFilter] = useState(
-    location?.state?.jobId ?? ""
-  );
-  const [selectedRow, setSelectedRow] = useState(null);
+  
   const [Leave, setLeave] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [applicationStatus, setApplicationStatus] = useState("");
   const { id } = useParams();
   const [leaveTypes, setLeaveTypes] = useState([]);
-  const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
-  const [filterData, setFilterData] = useState(
-    jobIdForFilter ? { job_id: jobIdForFilter } : {}
-  );
-  const [totalApplications, setTotalApplications] = useState(0);
-  const [shortlistedApplications, setShortlistedApplications] = useState(0);
-  const [selectedApplications, setSelectedApplications] = useState(0);
-  const [rejectedApplications, setRejectedApplications] = useState(0);
+  const [filterData, setFilterData] = useState({});
+  const [totalApproved, setTotalApproved] = useState(0);
+  const [pendingRequests, setPendingRequests] = useState(0);
+  const [totalRequests, setTotalRequests] = useState(0);
+  const [deniedRequests, setDeniedRequests] = useState(0);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -87,16 +78,6 @@ const MyLeaves = ({ userProfile }) => {
         const applicationsData = await getLeaveApplications(URL);
         if (applicationsData) {
           setLeave(applicationsData);
-          setTotalApplications(applicationsData?.results?.total_count);
-          setShortlistedApplications(
-            applicationsData?.results?.shortlisted_application
-          );
-          setSelectedApplications(
-            applicationsData?.results?.selected_application
-          );
-          setRejectedApplications(
-            applicationsData?.results?.rejected_application
-          );
         }
         setIsLoading(false);
       } catch (error) {
@@ -104,7 +85,7 @@ const MyLeaves = ({ userProfile }) => {
       }
     };
     fetchLists();
-  }, [id, applicationStatus, options, filterData]);
+  }, [id, options, filterData]);
 
   const renderView = (row) => (
     <Link
@@ -120,23 +101,44 @@ const MyLeaves = ({ userProfile }) => {
   };
   const renderStatus = (row) => {
     const status = Status(row.status_hr);
+    const spanClassName = "text-[14px] flex justify-start items-center";
+    const itemClassName = "custom-dropdown-item py-2";
     return (
       <div>
         <ButtonDropdown
           isOpen={openDropdownRow === row.id}
           toggle={() => toggleDropdown(row.id)}
         >
-          <DropdownToggle>
+          <DropdownToggle className="border-0 shadow-none bg-transparent">
             <StatusLabel status={status} />
           </DropdownToggle>
-          <DropdownMenu right>
-            {dropdownOptions.map((option) => {
-              return (
-                <>
-                  <DropdownItem onClick={() => {}}>{option.label}</DropdownItem>
-                </>
-              );
-            })}
+          <DropdownMenu start className="p-3 ml-2">
+            <DropdownItem className={`${itemClassName} fw-bold`}>
+              <span> Your Application Status</span>
+            </DropdownItem>
+            <DropdownItem className={`${itemClassName}`}>
+              <span className={`${spanClassName}`}>
+                <StatusIcon status={"Approved"} /> Viewed
+              </span>
+            </DropdownItem>
+            <DropdownItem className={`${itemClassName}`}>
+              <span className={`${spanClassName}`}>
+                <StatusIcon status={row.status_indirect_manager} />
+                Direct Manager Approval
+              </span>
+            </DropdownItem>
+            <DropdownItem className={`${itemClassName}`}>
+              <span className={`${spanClassName}`}>
+                <StatusIcon status={row.status_hr} />
+                In-Direct Manager Approval
+              </span>
+            </DropdownItem>
+            <DropdownItem className={`${itemClassName}`}>
+              <span className={`${spanClassName}`}>
+                <StatusIcon status={row.status_hr} />
+                {getDecision(status)}
+              </span>
+            </DropdownItem>
           </DropdownMenu>
         </ButtonDropdown>
       </div>
@@ -193,25 +195,25 @@ const MyLeaves = ({ userProfile }) => {
         </Col>
         <Col lg={6}>
           <Blocks
-            blocks={[
+             blocks={[
               {
-                label: "Total applications",
-                value: totalApplications,
+                label: "Approved",
+                value: totalApproved,
                 image: file,
               },
               {
-                label: "Shortlisted applications",
-                value: shortlistedApplications,
+                label: "Pending",
+                value: pendingRequests,
                 image: list,
               },
               {
-                label: "Selected applications",
-                value: selectedApplications,
+                label: "Requests",
+                value: totalRequests,
                 image: file,
               },
               {
-                label: "Rejected applications",
-                value: rejectedApplications,
+                label: "Denied",
+                value: deniedRequests,
                 image: cut,
               },
             ]}
@@ -225,28 +227,24 @@ const MyLeaves = ({ userProfile }) => {
               <Row>
                 <Col lg={12}>
                   <div className="py-3 px-3 flex justify-between">
-                    <FilterInput
+                      <FilterInput
                       filters={[
                         {
-                          type: "search",
-                          placeholder: "Search by Keyword",
-                          name: "id_and_first_name",
-                        },
-                        {
-                          type: "date",
-                          name: "updated_at",
-                          placeholder: "Applied On",
+                          type: "select",
+                          option: leaveTypes,
+                          name: "leave_type",
+                          placeholder: "Leave Type",
                         },
                         {
                           type: "select",
-                          option: dropdownOptions,
-                          name: "application_status",
+                          option: LeaveStatus,
+                          name: "status_hr",
                           placeholder: "Status",
                         },
-                        // { type: 'select', option: UserRoles, name: 'user_role', placeholder: "Role" }
                       ]}
                       onChange={handleFilterChange}
                     />
+                    
                     <div className="flex items-center gap-x-3">
                       <div className="font-lato text-[#47484C] text-[17px]">
                         New Leave Request

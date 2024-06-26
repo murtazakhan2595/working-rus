@@ -47,7 +47,7 @@
     }
 
     th {
-      text-transform: uppercase !important;
+      text-transform: capitalize !important;
       border-bottom-width: 1px !important;
       border-left: 0px !important;
       border-right: 0px !important;

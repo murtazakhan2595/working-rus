@@ -230,7 +230,7 @@ const EmployeeForm = forwardRef(({ isLoading, formData, handleSubmit, empId, set
 function getManagerSelected(managers) {
     if (managers) {
         const matchingObjects = managers.map(obj => {
-            return obj.label;
+            return obj.value;
         });
         return matchingObjects.join(', ');
     }

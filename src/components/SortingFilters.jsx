@@ -23,12 +23,12 @@ const CheckboxDropdown = ({ items, onChange, values }) => {
                 <DropdownToggle className="custom-dropdown-toggle placeholder-[#5C5E64] rounded-md">
                     <span onClick={() => toggleDropdown()}>Sorting Filters</span>
                 </DropdownToggle>
-                <DropdownMenu right className="custom-dropdown-menu">
+                <DropdownMenu end className="custom-dropdown-menu">
                     <h5 className="mb-2"><b>Sort</b></h5>
                     {items.map(item => {
                         return (
                             <>
-                                <DropdownItem onClick={() => { }} className="custom-dropdown-item"><SortingCategory item={item} onChange={onChange} values={values} /></DropdownItem>
+                                <DropdownItem className="custom-dropdown-item"><SortingCategory item={item} onChange={onChange} values={values} /></DropdownItem>
                             </>
                         )
                     })}

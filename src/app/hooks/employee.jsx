@@ -23,6 +23,7 @@ import {
 } from "../utils/Types/Employee";
 import { initialState } from 'state/slices/UserSlice';
 import { toast } from "react-toastify";
+import { handleLogout } from "./general";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -38,6 +39,9 @@ const getEmployeeData = async (employeeid) => {
     });
     return response.data;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching data:", error);
   }
   return 0;

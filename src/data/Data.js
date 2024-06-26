@@ -342,11 +342,17 @@ export const JobSortingFilters = [
   },
 ];
 
+export const LeaveStatus = [
+  { label: "Approved", value: "Approved" },
+  { label: "Pending", value: "Pending" },
+  { label: "Denied", value: "Denied" },
+];
+
 export function getManagerSelected(managers, managersList) {
   if (managers && managersList && managersList.length > 0) {
       managers = managers.split(', ') || [];
       const matchingObjects = managersList.filter(obj => {
-          return managers.find(element => obj.label === element);
+          return managers.find(element => obj.id === element);
       });
       console.log(matchingObjects)
       return matchingObjects;

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
+import { setUserLogout } from "state/actions/UserAction";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -32,10 +33,10 @@ const getDesignationList = async () => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const departmentResponse = response.data;
-      const designationList = await departmentResponse.map((department) => ({
-        value: department.id,
-        label: department.name,
+      const designationResponse = response.data;
+      const designationList = await designationResponse.map((designation) => ({
+        value: designation.id,
+        label: designation.name,
       }));
       return designationList;
     } else return [];
@@ -71,9 +72,9 @@ const getOrganizationList = async () => {
     });
     if (response.status === 200) {
       const organizationResponse = response.data;
-      const organizationList = organizationResponse.map((manager) => ({
-        value: manager.id,
-        label: manager.name,
+      const organizationList = organizationResponse.map((organization) => ({
+        value: organization.id,
+        label: organization.name,
       }));
       return organizationList;
     } else return [];
@@ -119,6 +120,19 @@ const deleteRecord = async (URL, recordName) => {
   }
 };
 
+const handleLogout = () => {
+
+  if (window.localStorage.getItem("token")) {
+    window.location.href = "/login";
+    toast.error("Session Time Out", {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 2000,
+    });
+    window.localStorage.setItem("token", "");
+    setUserLogout();
+  }
+};
+
 export {
   getDepartmentList,
   getManagersList,
@@ -126,4 +140,5 @@ export {
   getList,
   deleteRecord,
   getOrganizationList,
+  handleLogout,
 };

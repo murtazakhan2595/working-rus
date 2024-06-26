@@ -1,6 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import { initialState } from "../../state/slices/UserSlice";
+import { initialState } from "state/slices/UserSlice";
+import { handleLogout } from "./general";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -10,16 +11,16 @@ const headers = () => ({
 
 const getLeaveApplications = async (URL) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}${URL}`,
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
     if (response.status === 200) {
       return response.data;
     } else return [];
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
@@ -32,8 +33,11 @@ const addLeaveRequest = async (values) => {
     });
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error adding job:", error);
-    throw error;
+    return false;
   }
 };
 
@@ -51,13 +55,12 @@ const getLeaveTypes = async () => {
       return leaveTypesList;
     } else return [];
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching leave types data :", error);
   }
   return [];
 };
 
-export {
-  getLeaveApplications,
-  addLeaveRequest,
-  getLeaveTypes,
-};
+export { getLeaveApplications, addLeaveRequest, getLeaveTypes };

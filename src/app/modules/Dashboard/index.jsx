@@ -7,7 +7,7 @@ import DailyTaskRpt from "./DailyTaskRpt";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { setUserLogout } from "../../../state/actions/UserAction";
+import { setUserLogout } from "state/actions/UserAction";
 import { RiArrowDownSFill } from "react-icons/ri";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {

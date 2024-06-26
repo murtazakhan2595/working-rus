@@ -73,7 +73,14 @@ ul {
 .custom-select-input.form-control .css-16xfy0z-control,
 .custom-select-input.form-control .css-t3ipsp-control {
     padding: .45rem .75rem .3rem;
-    min-height: calc(3.5rem)
+    min-height: calc(3.5rem);
+    align-items: end;
+}
+.custom-select-input.form-control .css-3w2yfm-ValueContainer{
+    padding-top: 25px !important;
+}
+.form-floating>.custom-select-input.form-control{
+    height: auto !important;
 }
 
 .react-datepicker-wrapper {
