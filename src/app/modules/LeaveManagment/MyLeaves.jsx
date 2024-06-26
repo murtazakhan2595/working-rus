@@ -4,6 +4,7 @@ import { useLocation, useParams, Link } from "react-router-dom";
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { dropdownOptions } from "data/Data";
 import { PageLoader, Header } from "components";
+import { Status } from './Sections';
 import {
     Card,
     CardHeader,
@@ -20,22 +21,23 @@ import { FaPlus } from "react-icons/fa";
 import { AiOutlineDownload } from "react-icons/ai";
 import { Blocks } from "./Sections";
 import {
-    getJobApplications,
-    updateApplicationStatus,
-    downloadCV,
-} from "app/hooks/recruitment";
-import { FilterInput } from 'components/form-control';
+    getLeaveApplications,
+    getLeaveTypes,
+} from "app/hooks/leaveManagment";
+import { FilterInput, CustomButton } from 'components/form-control';
 import { BsThreeDots } from "react-icons/bs";
 import moment from "moment";
+import { StatusLabel } from "components";
 
-const MyLeaves = () => {
+const MyLeaves = ({ userProfile }) => {
     const location = useLocation();
     const [jobIdForFilter, setJobIdForFilter] = useState(location?.state?.jobId ?? '');
     const [selectedRow, setSelectedRow] = useState(null);
-    const [Applications, setApplications] = useState([]);
+    const [Leave, setLeave] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [applicationStatus, setApplicationStatus] = useState("");
     const { id } = useParams();
+    const [leaveTypes, setLeaveTypes] = useState([]);
     const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
     const [openDropdownRow, setOpenDropdownRow] = useState(null);
     const [filterData, setFilterData] = useState(jobIdForFilter ? { job_id: jobIdForFilter } : {});
@@ -67,19 +69,25 @@ const MyLeaves = () => {
             sortOrder,
         }));
     };
+    // useEffect(() => {
+    //     setFilterData({ employee_id: userProfile.id })
+    // }, [userProfile]);
+
     useEffect(() => {
         const fetchLists = async () => {
             try {
                 setIsLoading(true);
-                // const URL = `/candidateall/?search=${encodeURIComponent(`{"application_status": "${applicationStatus}", "job_id": ${id}}`)}`
-                const URL = `/candidateall/?page=${options.page}&page_size=${options.sizePerPage}&search=${encodeURIComponent(JSON.stringify(filterData))}`
-                const applicationsData = await getJobApplications(URL);
+                const leaveTypesResponse = await getLeaveTypes();
+                setLeaveTypes(leaveTypesResponse);
+
+                const URL = `/leave?ordering=date&page=${options.page}&page_size=${options.sizePerPage}&search=${encodeURIComponent(JSON.stringify(filterData))}`
+                const applicationsData = await getLeaveApplications(URL);
                 if (applicationsData) {
-                    setApplications({ count: applicationsData.count, data: applicationsData.results.candidate });
-                    setTotalApplications(applicationsData.results.total_count);
-                    setShortlistedApplications(applicationsData.results.shortlisted_application);
-                    setSelectedApplications(applicationsData.results.selected_application);
-                    setRejectedApplications(applicationsData.results.rejected_application);
+                    setLeave(applicationsData);
+                    setTotalApplications(applicationsData?.results?.total_count);
+                    setShortlistedApplications(applicationsData?.results?.shortlisted_application);
+                    setSelectedApplications(applicationsData?.results?.selected_application);
+                    setRejectedApplications(applicationsData?.results?.rejected_application);
                 }
                 setIsLoading(false);
             } catch (error) {
@@ -89,81 +97,27 @@ const MyLeaves = () => {
         fetchLists();
     }, [id, applicationStatus, options, filterData]);
 
-    const handleOptionSelect = async (applicant, option) => {
-        try {
-            if (applicant) {
-                const response = await updateApplicationStatus(
-                    applicant,
-                    option,
-                );
 
-                if (response.status === 200) {
-                    setFilterData({});
-                } else {
-                    console.error("Failed to update application status");
-                }
-            }
-            setSelectedRow(null);
-        } catch (error) {
-            console.error("Error updating application status:", error);
-        }
-    };
-
-    const renderAction = (row) => (
-        <div>
-            <ButtonDropdown
-                isOpen={openDropdownRow === row.id}
-                toggle={() => toggleDropdown(row.id)}
-                className="float-end"
-            >
-                <DropdownToggle size="sm" className="btn-brand">
-                    <BsThreeDots onClick={() => toggleDropdown(row.id)} />
-                </DropdownToggle>
-                <DropdownMenu right>
-                    {dropdownOptions.map(option => {
-                        return (
-                            <>
-                                <DropdownItem onClick={() => handleOptionSelect(row, option.value)}>{option.label}</DropdownItem>
-                            </>
-                        )
-                    })}
-                </DropdownMenu>
-            </ButtonDropdown>
-        </div>
+    const renderView = (row) => (
+        <Link
+            className="btn btn-outline-dark bg-white text-dark shadow-none"
+            style={{ padding: '.35em .65em', fontSize: '.75em', minWidth: '100px' }}
+            role={"button"}
+        >
+            View
+        </Link>
     );
 
-    const renderResume = (row) => (
-        <div className="flex gap-x-2 items-center justify-center">
-            <span
-                title={row?.cv}
-                className="font-lato text-base text-baseGray"
-            >
-                File
-            </span>
-            <button
-                onClick={() =>
-                    downloadCV(row?.cv, row?.first_name)
-                }
-            >
-                <AiOutlineDownload />
-            </button>
-        </div>
-    );
+    const renderStatus = (row) => {
 
-    const toggleDropdown = (index) => {
-        setOpenDropdownRow(index === openDropdownRow ? null : index);
-    };
-
-    const renderCandidate = (cell, row) => (
-        <>
-            <div className="font-lato text-base text-[#323333]">
-                {cell}
+        const status = Status(row.status_hr)
+        return (
+            <div style={{ width: 'fit-content' }}>
+                <StatusLabel status={status} />
+                
             </div>
-            <div className="font-lato text-base text-baseGray">
-                {`Exp. ${row?.Year_of_Experience} years`}
-            </div>
-        </>
-    );
+        )
+    };
 
     const handleFilterChange = (filterName, filterValue) => {
         onPageChange(1);
@@ -255,7 +209,7 @@ const MyLeaves = () => {
                                         />
                                         <div className="flex items-center gap-x-3">
                                             <div className="font-lato text-[#47484C] text-[17px]">New Leave Request</div>
-                                            <Link to="/job-post" className="p-2 rounded-md bg-black" style={{ fontSize: '12px' }}><FaPlus className="text-white" /></Link>
+                                            <Link to="/leave-request" className="p-2 rounded-md bg-black" style={{ fontSize: '12px' }}><FaPlus className="text-white" /></Link>
                                         </div>
                                     </div>
                                 </Col>
@@ -273,61 +227,17 @@ const MyLeaves = () => {
                                     <Col lg={12}>
                                         <div>
                                             <BootstrapTable
-                                                data={Applications?.data || []}
+                                                data={Leave || []}
                                                 version="4"
-                                                hover
                                                 remote
-                                                pagination
                                                 options={tableOptions}
-                                                fetchInfo={{ dataTotalSize: Applications?.count || 0 }}
+                                                fetchInfo={{ dataTotalSize: Leave?.length || 0 }}
                                                 className={'bootstrap-main-table'}
                                             >
                                                 <TableHeaderColumn
                                                     isKey
-                                                    dataField="id"
-                                                    className="table-header-bg text-center"
-                                                    headerAlign="center"
-                                                    dataAlign="center"
-                                                >
-                                                    Candidate ID
-                                                </TableHeaderColumn>
-                                                <TableHeaderColumn
-                                                    dataField="first_name"
                                                     className="table-header-bg"
-                                                    dataFormat={renderCandidate}
-                                                >
-                                                    Candidate
-                                                </TableHeaderColumn>
-                                                <TableHeaderColumn
-                                                    dataField="phone_number"
-                                                    className="table-header-bg"
-                                                    width="20%"
-                                                    dataFormat={(cell, row) => (
-                                                        <>
-                                                            <div className="text-base font-lato">{cell || ''}</div>
-                                                            <div className="text-base font-lato">{row.email || ''}</div>
-                                                        </>
-                                                    )}
-                                                >
-                                                    Phone no/Email
-                                                </TableHeaderColumn>
-                                                <TableHeaderColumn
-                                                    dataField="current_salary"
-                                                    dataSort
-                                                    className="table-header-bg"
-                                                >
-                                                    Current Salary
-                                                </TableHeaderColumn>
-                                                <TableHeaderColumn
-                                                    dataField="expected_salary"
-                                                    dataSort
-                                                    className="table-header-bg"
-                                                >
-                                                    Expected Salary
-                                                </TableHeaderColumn>
-                                                <TableHeaderColumn
-                                                    className="table-header-bg"
-                                                    dataField="updated_at"
+                                                    dataField="start_date"
                                                     dataAlign="center"
                                                     dataFormat={(cell) => (
                                                         <>
@@ -335,30 +245,53 @@ const MyLeaves = () => {
                                                         </>
                                                     )}
                                                 >
-                                                    Applied On
+                                                    Start Date
                                                 </TableHeaderColumn>
                                                 <TableHeaderColumn
+                                                    className="table-header-bg"
+                                                    dataField="end_date"
+                                                    dataAlign="center"
+                                                    dataFormat={(cell) => (
+                                                        <>
+                                                            {moment(cell).format('DD-MM-YYYY')}
+                                                        </>
+                                                    )}
+                                                >
+                                                    End Date
+                                                </TableHeaderColumn>
+                                                <TableHeaderColumn
+                                                    dataField="leave_type"
                                                     className="table-header-bg"
                                                     dataAlign="center"
-                                                    dataFormat={(cell, row) => renderResume(row)}
+                                                    dataFormat={(cell) => {
+                                                        const leaveType = leaveTypes.find(obj => obj.value === cell);
+                                                        return (leaveType ? leaveType.label ?? '' : '');
+                                                    }}
                                                 >
-                                                    Resume
+                                                    Leave Type
                                                 </TableHeaderColumn>
                                                 <TableHeaderColumn
-                                                    dataField="application_status"
-                                                    className="table-header-bg"
-                                                    dataFormat={(cell) => {
-                                                        const role = dropdownOptions.find(obj => obj.value === cell);
-                                                        return (<></>);
-                                                    }}
+                                                    dataField="total_leave"
+                                                    className="table-header-bg text-center"
+                                                    headerAlign="center"
+                                                    dataAlign="center"
+                                                >
+                                                    Total Days
+                                                </TableHeaderColumn>
+                                                <TableHeaderColumn
+                                                    className="table-header-bg text-center"
+                                                    headerAlign="center"
+                                                    dataAlign="center"
+                                                    dataFormat={(cell, row) => renderStatus(row)}
                                                 >
                                                     Status
                                                 </TableHeaderColumn>
+
                                                 <TableHeaderColumn
-                                                    className="table-header-bg text-right"
-                                                    width="42px"
-                                                    headerAlign="right"
-                                                    dataFormat={(cell, row) => renderAction(row)}
+                                                    className="table-header-bg text-center"
+                                                    dataAlign="center"
+                                                    headerAlign="center"
+                                                    dataFormat={(cell, row) => renderView(row)}
                                                 >
                                                 </TableHeaderColumn>
                                             </BootstrapTable>
@@ -376,7 +309,7 @@ const MyLeaves = () => {
 
 const mapStateToProps = (state) => {
     return {
-        token: state.user.token,
+        userProfile: state.user.userProfile,
         baseUrl: state.user.baseUrl,
     };
 };

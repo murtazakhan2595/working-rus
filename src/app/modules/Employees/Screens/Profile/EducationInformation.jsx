@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from "react";
 import {
-  CardHeader,
-  CardBody,
   Row,
   Col,
   Button,
   Form,
-  FormGroup,
 } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
   getEmployeeAcademicRecordData,
   saveEmployeeAcademicRecordData,
-} from "../../../../hooks/employee.jsx";
-import PageLoader from "../../../../../components/PageLoader.jsx";
-import { EmployeeAcademicRecord } from "../../../../utils/Types/Employee";
+} from "app/hooks/employee.jsx";
+import PageLoader from "components/PageLoader.jsx";
+import { EmployeeAcademicRecord } from "app/utils/Types/Employee";
 import {
   DateInput,
   SelectComponent,
@@ -23,17 +20,8 @@ import {
   CustomDarkButton,
   CustomLightOutlineButton,
   FileInput,
-} from "../../../../../components/form-control";
-import { educationTypeOptions } from "../../../../../data/Data.js";
-
-// Helper function to format dates
-const formatDate = (date) => {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
+} from "components/form-control";
+import { educationTypeOptions } from "data/Data.js";
 
 const EducationInformation = ({
   nextstep,
@@ -48,14 +36,10 @@ const EducationInformation = ({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    getEmployeeAcademicRecordData(baseUrl, employeeId, token)
+    getEmployeeAcademicRecordData(employeeId)
       .then((response) => {
         // Process the response to include the document name
-        const processedEducations = response.map((education) => ({
-          ...education,
-          education_body: education.education_body?.name || "",
-        }));
-        setEducations(processedEducations);
+        setEducations(response);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -64,22 +48,10 @@ const EducationInformation = ({
   }, [baseUrl, employeeId, token]);
 
   const handleSubmit = async (data) => {
-    // Format dates before submitting
-    const formattedData = {
-      ...data,
-      educations: data.educations.map((education) => ({
-        ...education,
-        edu_start_date: formatDate(education.edu_start_date),
-        edu_end_date: formatDate(education.edu_end_date),
-      })),
-    };
-
     try {
       const response = await saveEmployeeAcademicRecordData(
-        baseUrl,
         employeeId,
-        token,
-        formattedData.educations
+        data.educations
       );
       if (response) nextstep();
     } catch (error) {
@@ -116,6 +88,7 @@ const EducationInformation = ({
                       props.values.educations.length > 0 &&
                       props.values.educations.map((education, index) => (
                         <React.Fragment key={index}>
+                          {console.log(education)}
                           <Col md="12">
                             <h5 className="fw-700 mb-3 mt-4">
                               Education {index + 1}
@@ -303,4 +276,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(EducationInformation);
-

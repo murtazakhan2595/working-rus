@@ -50,7 +50,8 @@ ul {
 }
 
 .form-control {
-    min-height: calc(3.5rem + 2px)
+    min-height: calc(3.5rem + 2px);
+    box-shadow: none;
 }
 
 .opacity-65 {
@@ -69,6 +70,7 @@ ul {
 }
 
 .custom-select-input.form-control .css-13cymwt-control,
+.custom-select-input.form-control .css-16xfy0z-control,
 .custom-select-input.form-control .css-t3ipsp-control {
     padding: .45rem .75rem .3rem;
     min-height: calc(3.5rem)
@@ -122,9 +124,8 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
     color: #D5D912 !important
 }
 
-.label-primary-7D11EA {
-    background-color: #e8d8f9 !important;
-    color: #7D11EA !important
+.label-Denied {
+    background-color: #F4E4EB !important;
 }
 
 .label-green-28D9AC {
@@ -158,8 +159,7 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
 }
 
 .label-success {
-    background-color: #e7faed !important;
-    color: #2FD115 !important;
+    background-color: #CCEFE3 !important;
 }
 
 .label-overdue {
@@ -173,8 +173,7 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
 }
 
 .label-Pending {
-    background-color: #fff2e7 !important;
-    color: #fe7c18 !important
+    background-color: #E6E7EB !important;
 }
 
 /* ------- From Step 1 ------- */

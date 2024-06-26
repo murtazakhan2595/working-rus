@@ -5,7 +5,6 @@ import { Formik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { connect } from "react-redux";
-import { getAllCountries } from "countries-and-timezones";
 import {
   TextInput,
   SelectComponent,
@@ -17,27 +16,52 @@ import {
   getDesignationList,
   getManagersList,
   getDepartmentList,
-  getOrganizationList,
 } from "app/hooks/general";
+import { getEmployeeData } from 'app/hooks/employee';
 import { addLeaveRequest } from "app/hooks/leaveManagment";
 import { getLeaveTypes } from "app/hooks/leaveManagment";
 import { FaChevronCircleLeft } from "react-icons/fa";
+import { countryOptions } from "data/Data";
+import { getLavefromEmployeeInfo } from 'app/utils/MappingObjects/mapLeaveData';
+import { Leave } from 'app/utils/Types/LeaveManagment';
 
-const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
-  value: countryCode,
-  label: getAllCountries()[countryCode].name,
-}));
 
-const CreateLeaveRequest = ({ token, baseUrl }) => {
+const CreateLeaveRequest = ({ userProfile }) => {
   const { id } = useParams();
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [managers, setManagers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
-  const [organization, setOrganization] = useState([]);
+  const [leaveForm, setLeaveForm] = useState({});
   const [leaveTypes, setLeaveTypes] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      try {
+        const employeeResponse = await getEmployeeData(userProfile.id);
+        const leaveData = getLavefromEmployeeInfo(employeeResponse);
+        setLeaveForm(leaveData);
+
+        // If you need to update form fields directly
+        if (formRef.current) {
+          formRef.current.setFieldValue("employee_id", leaveData.employee_id || '');
+          formRef.current.setFieldValue("name", `${employeeResponse.first_name || ''} ${employeeResponse.last_name || ''}`);
+          formRef.current.setFieldValue("date", employeeResponse.joining_date || '');
+          formRef.current.setFieldValue("position", employeeResponse.department_position || '');
+          formRef.current.setFieldValue("department", employeeResponse.department_name || '');
+          formRef.current.setFieldValue("joining_date", employeeResponse.joining_date || '');
+          formRef.current.setFieldValue("nationality", employeeResponse.nationality || '');
+          formRef.current.setFieldValue("report_to", employeeResponse.direct_report || '');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchEmployeeData();
+  }, [userProfile]);
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -51,11 +75,9 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
         const designationResponse = await getDesignationList();
         setDesignations(designationResponse);
 
-        const organizationResponse = await getOrganizationList();
-        setOrganization(organizationResponse);
-
         const leaveTypesResponse = await getLeaveTypes();
         setLeaveTypes(leaveTypesResponse);
+
       } catch (error) {
         console.error(error);
       }
@@ -64,30 +86,7 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
     fetchLists();
   }, []);
 
-  console.log("i am leave types", leaveTypes);
-
-  const initialValues = {
-    employee_id: "",
-    name: "",
-    date: "",
-    position: "",
-    department: "",
-    joining_date: "",
-    nationality: "",
-    start_date: "",
-    end_date: "",
-    last_work_day: "",
-    rejoining_date: "",
-    total_leave: "",
-    leave_type: "",
-    reason: "",
-    contact_no: "",
-    country_code: "",
-    report_to: "",
-    address_during_leave: "",
-  };
-
-  const handleSubmit = async (values, resetForm) => {
+  const handleSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
     try {
       // Extract the value from the report_to field
@@ -95,10 +94,10 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
         ...values,
         report_to: values.report_to.value,
       };
-      await addLeaveRequest(baseUrl, modifiedValues, token);
+      await addLeaveRequest(modifiedValues);
       toast.success("Form submitted successfully!");
       resetForm();
-      navigate("/jobs");
+      navigate("/my-leaves");
     } catch (error) {
       toast.error("Form submission failed.");
     } finally {
@@ -150,11 +149,10 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
                   <Row>
                     <Col lg={12}>
                       <Formik
-                        initialValues={initialValues}
+                        initialValues={leaveForm}
+                        enableReinitialize={true}  // Ensure Formik updates initialValues when leaveForm changes
                         innerRef={formRef}
-                        onSubmit={(values, { resetForm }) => {
-                          handleSubmit(values, resetForm);
-                        }}
+                        onSubmit={handleSubmit}
                         validate={(values) => {
                           const errors = {};
                           // Add your validation logic here
@@ -168,11 +166,13 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
                             </h2>
                             <Row>
                               <Col md="6">
+                                {console.log(props.values)}
                                 <TextInput
                                   name="employee_id"
                                   error={props.errors.employee_id}
                                   touch={props.touched.employee_id}
-                                  value={props.values.employee_id}
+                                  value={props.values.employee_id ? `TXB-${props.values.employee_id.toString().padStart(4, '0')}` : ''}
+                                  disabled={true}
                                   label="Employee ID"
                                   required={true}
                                   onChange={(field, value) => {
@@ -189,6 +189,7 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
                                   touch={props.touched.name}
                                   value={props.values.name}
                                   label="Name"
+                                  disabled={true}
                                   required={true}
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
@@ -210,24 +211,13 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
                                 />
                               </Col>
                               <Col md="6">
-                                {/* <TextInput
-                                  name="position"
-                                  error={props.errors.position}
-                                  touch={props.touched.position}
-                                  value={props.values.position}
-                                  label="Position"
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                /> */}
-
                                 <SelectComponent
                                   name="position"
                                   options={designations}
                                   error={props.errors.position}
                                   touch={props.touched.position}
                                   value={props.values.position}
+                                  disabled={true}
                                   label="Position"
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
@@ -241,6 +231,7 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
                                   error={props.errors.department}
                                   touch={props.touched.department}
                                   value={props.values.department}
+                                  disabled={true}
                                   label="Department"
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
@@ -254,6 +245,7 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
                                   touch={props.touched.joining_date}
                                   value={props.values.joining_date}
                                   label="Joining Date"
+                                  disabled={true}
                                   required={true}
                                   minDate={new Date()}
                                   onChange={(field, value) => {
@@ -268,6 +260,7 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
                                   error={props.errors.nationality}
                                   touch={props.touched.nationality}
                                   value={props.values.nationality}
+                                  disabled={true}
                                   label="Nationality"
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
@@ -301,7 +294,7 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
                                   value={props.values.end_date}
                                   label="End Date"
                                   required={true}
-                                  minDate={new Date()}
+                                  minDate={new Date(props.values.start_date) || new Date() }
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
@@ -454,7 +447,7 @@ const CreateLeaveRequest = ({ token, baseUrl }) => {
 
 const mapStateToProps = (state) => {
   return {
-    token: state.user.token,
+    userProfile: state.user.userProfile,
     baseUrl: state.user.baseUrl,
   };
 };

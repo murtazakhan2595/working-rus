@@ -29,7 +29,7 @@ const SelectComponent = ({
         className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
           }`}
         options={options ? options : []}
-        value={options ? options.find((option) => option.value === value) : ""}
+        value={options && options.length > 0 ? options.find((option) => option.value == value) : ""}
         onChange={(selectedOption) => onChange(name, selectedOption.value)}
         placeholder={label}
         styles={{
@@ -96,7 +96,7 @@ const DateInput = ({
           name={name}
           id={name}
           minDate={minDate}
-          isDisabled={disabled}
+          disabled={disabled}
           className={`form-control ${error && touch ? "is-invalid" : ""} ${value ? 'date-floating-input' : ''}`}
           value={date && !isNaN(date.getTime()) ? date : ""}
           selected={date && !isNaN(date.getTime()) ? date : new Date()}
@@ -145,7 +145,7 @@ const TextInput = ({
           name={name}
           autoComplete="Off"
           placeholder={"Enter" + label}
-          value={value}
+          value={value ?? ''}
           disabled={disabled}
           className={error && touch ? "is-invalid" : ""}
           onChange={(option) => {
@@ -406,13 +406,13 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
 const FileInput = ({
   value,
   error,
-  setImageError,
   onChange,
   touch,
   name,
   label,
   acceptType,
 }) => {
+  console.log(value)
   return (
     <>
       <div
@@ -426,6 +426,11 @@ const FileInput = ({
         <label
           htmlFor={name}
           className="cursor-pointer opacity-70 rounded-lg text-input mt-3"
+          style={{
+            width: 'fit-content',
+            margin: 'auto',
+            position: 'relative'
+          }}
         >
           <input
             id={name}
@@ -457,6 +462,7 @@ const FileInput = ({
             }}
             style={{ position: "relative" }}
           />
+          {value?.name && <span style={{ fontSize: '13px', width: '176px', left: '140px' }} className="bg-[#F5F5FA] absolute">{value?.name}</span>}
         </label>
         <br />
       </div>

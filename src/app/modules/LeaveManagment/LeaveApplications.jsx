@@ -33,7 +33,8 @@ const LeaveApplication = ({ userProfile }) => {
         const getApplications = async () => {
             setLoading(true);
             try {
-                const data = await getLeaveApplications(filterData, userProfile);
+                const URL = `/leave?ordering=date&search=${encodeURIComponent(JSON.stringify(filterData))}`
+                const data = await getLeaveApplications(URL);
                 const employeeList = await getList('/emp/');
                 const applications = await Promise.all(data.map(async application => {
                     const employee = employeeList.find(obj => obj.id === application.employee_id);

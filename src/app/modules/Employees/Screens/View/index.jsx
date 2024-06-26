@@ -48,16 +48,8 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     );
     let cvData = await getEmployeeCVDetailData(userId);
     let visaData = await getEmployeeVisaDetailData(baseUrl, userId, token);
-    let educationData = await getEmployeeAcademicRecordData(
-      baseUrl,
-      userId,
-      token
-    );
-    let certificationData = await getEmployeeCerficationData(
-      baseUrl,
-      userId,
-      token
-    );
+    let educationData = await getEmployeeAcademicRecordData(userId,);
+    let certificationData = await getEmployeeCerficationData(userId,);
     let documentsData = await getEmployeeVisaDetailsFiles(
       baseUrl,
       userId,

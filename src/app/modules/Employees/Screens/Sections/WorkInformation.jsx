@@ -8,25 +8,8 @@ import {
 } from 'reactstrap';
 import { SelectComponent, SelectMultiInputComponent, DateInput } from 'components/form-control'
 import { getDepartmentList, getManagersList, getDesignationList,getOrganizationList } from 'app/hooks/general';
+import {getManagerSelected,countryOptions} from 'data/Data'
 
-const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
-    value: countryCode,
-    label: getAllCountries()[countryCode].name
-}));
-
-function getManagerSelected(managers, managersList) {
-    if (managers && managersList && managersList.length > 0) {
-        managers = managers.split(', ') || [];
-        const matchingObjects = managersList.filter(obj => {
-            return managers.find(element => obj.label === element);
-        });
-        console.log(matchingObjects)
-        return matchingObjects;
-    }
-
-    return managers;
-
-}
 
 const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) => {
     const [managers, setManagers] = useState([]);

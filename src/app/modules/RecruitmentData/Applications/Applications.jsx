@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { dropdownOptions } from "../../../../data/Data";
-import PageLoader from "../../../../components/PageLoader";
+import { PageLoader, StatusLabel } from "components";
 import {
   Card,
   CardHeader,
@@ -15,16 +15,16 @@ import {
   Row,
   Col,
 } from 'reactstrap';
-import { cut, file, list } from '../../../../assets/images';
+import { cut, file, list } from 'assets/images';
 import { AiOutlineDownload } from "react-icons/ai";
 import { Blocks, Header } from "../Sections";
-import { Tabs, StatusLabel } from "./Sections";
+import { Tabs } from "./Sections";
 import {
   getJobApplications,
   updateApplicationStatus,
   downloadCV,
 } from "../../../hooks/recruitment";
-import { FilterInput } from '../../../../components/form-control';
+import { FilterInput } from 'components/form-control';
 import { BsThreeDots } from "react-icons/bs";
 import moment from "moment";
 

@@ -1,36 +1,28 @@
 import React, { useState, useEffect } from "react";
 import {
-  CardHeader,
-  CardBody,
   Row,
   Col,
   Button,
   Form,
-  FormGroup,
 } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
   getEmployeeCerficationData,
   saveEmployeeCertificationData,
-} from "../../../../hooks/employee.jsx";
-import PageLoader from "../../../../../components/PageLoader.jsx";
-import { EmployeeCertifiation } from "../../../../utils/Types/Employee";
-import logo from "../../../../../assets/images/tecbrix-logo.png";
+} from "app/hooks/employee.jsx";
+import PageLoader from "components/PageLoader.jsx";
+import { EmployeeCertifiation } from "app/utils/Types/Employee";
 import {
-  CustomButton,
   DateInput,
-  SelectComponent,
   TextInput,
   CustomDarkButton,
   CustomLightOutlineButton,
-} from "../../../../../components/form-control";
-import { FileInput } from "../../../../../components/form-control.jsx";
+} from "components/form-control";
+import { FileInput } from "components/form-control.jsx";
 
 const CertificationsInformation = ({
   nextstep,
-  baseUrl,
-  token,
   employeeId,
   isEditMode,
   prevStep,
@@ -41,7 +33,7 @@ const CertificationsInformation = ({
 
   useEffect(() => {
     console.log("Fetching certification data...");
-    getEmployeeCerficationData(baseUrl, employeeId, token)
+    getEmployeeCerficationData(employeeId)
       .then((response) => {
         console.log("Certification data fetched:", response);
         setCertifications(response);
@@ -50,15 +42,13 @@ const CertificationsInformation = ({
       .catch((error) => {
         console.log("Error fetching certification data:", error);
       });
-  }, [baseUrl, employeeId, token]);
+  }, [ employeeId]);
 
   const handleSubmit = async (data) => {
     console.log("Submitting data:", data);
     try {
       const response = await saveEmployeeCertificationData(
-        baseUrl,
         employeeId,
-        token,
         data.certifications
       );
       console.log("Save response:", response);

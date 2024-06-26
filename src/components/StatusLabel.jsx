@@ -14,18 +14,20 @@ const StatusLabel = ({ status }) => {
         classname = 'label-warning-D5D912';
     } else if (status === 'Rejected') {
         classname = 'label-danger';
-    } else if (status === 'Declined') {
-        classname = 'label-primary-7D11EA';
-    } else if (status === 'Selected') {
+    } else if (status === 'Declined' || status === 'Denied') {
+        classname = 'label-Denied';
+    } else if (status === 'Selected' || status === 'Approved') {
         classname = 'label-success';
     } else if (status === 'Shortlisted') {
         classname = 'label-green-28D9AC';
+    } else if (status === 'Pending') {
+        classname = 'label-Pending';
     } else {
         classname = 'label-draft';
     }
     return (
         <>
-            <span className={`p-2 ${classname} badge`}>
+            <span className={`p-2 ${classname} badge`} style={{ color: '#323333', minWidth: '100px' }}>
                 {status}
             </span>
         </>
