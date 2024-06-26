@@ -55,20 +55,13 @@ const JobsDataTable = () => {
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
     setFilterData((prevFilters) => {
-      //  debugger
+        debugger
       const updatedFilters = { ...prevFilters };
-      // if (filterName !== 'status' && filterName !== 'id_and_Job_Title' && filterName !== 'updated_at') {
-      //   if (!updatedFilters[filterName]) {
-      //     updatedFilters[filterName] = filterValue;
-      //   } else {
-      //     updatedFilters[filterName] = `${updatedFilters[filterName]},${filterValue}`;
-      //   }
-      // }
-      // else {
-      if (!filterValue) {
+      if (!filterValue || filterCheckStatus === false) {
         delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] = filterCheckStatus ? filterValue : "";
+        updatedFilters[filterName] =
+          filterCheckStatus === false ? "" : filterValue;
       }
       return updatedFilters;
     });
@@ -138,19 +131,27 @@ const JobsDataTable = () => {
 const RenderJobs = ({ jobsList, handleDotsClick }) => {
   return (
     <div className="m-2 bg-white">
-      {jobsList?.results.map((job) => (
-        <div className={`whitespace-nowrap`} key={job.id}>
-          <div className="px-4 pt-5">
-            <RenderJob job={job} handleDotsClick={handleDotsClick} />
+      {jobsList?.results && jobsList.results.length > 0 ? (
+        jobsList?.results.map((job) => (
+          <div className={`whitespace-nowrap`} key={job.id}>
+            <div className="px-4 pt-5">
+              <RenderJob job={job} handleDotsClick={handleDotsClick} />
+            </div>
           </div>
+        ))
+      ) : (
+        <div
+          className="flex justify-center items-center"
+          style={{ minHeight: "20vh" }}
+        >
+          No records to display
         </div>
-      ))}
+      )}
     </div>
   );
 };
 
 const RenderJob = ({ job, handleDotsClick }) => {
-  console.log(" i am job", job);
   const employeeType = getEmployeeType(job.Employee_Type);
   const workType = getWorkType(job.Work_type);
   const workLocation = getWorkLocation(job.location);
@@ -206,10 +207,10 @@ const RenderJob = ({ job, handleDotsClick }) => {
               job.status === "live" ? "bg-green-100" : "bg-red-100"
             }`}
           />
-          <Labels label={employeeType?.label} />
-          <Labels label={workType?.label} />
-          <Labels label={workLocation?.label} />
-          <Labels label={jobType?.label} />
+          <Labels label={employeeType} />
+          <Labels label={workType} />
+          <Labels label={workLocation} />
+          <Labels label={jobType} />
         </div>
       </div>
     </div>

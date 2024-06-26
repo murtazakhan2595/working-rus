@@ -58,10 +58,10 @@ const JobDetails = ({ job }) => {
             backgroungColor={`${job.status === "live" ? "bg-green-100" : "bg-red-100"
               }`}
           />
-          <Labels label={employeeType?.label} />
-          <Labels label={workType?.label} />
-          <Labels label={workLocation?.label} />
-          <Labels label={jobType?.label} />
+          <Labels label={employeeType} />
+          <Labels label={workType} />
+          <Labels label={workLocation} />
+          <Labels label={jobType} />
         </div>
       </div>
     );

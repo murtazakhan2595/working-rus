@@ -221,7 +221,7 @@ const JobForm = forwardRef(
                         <Link
                           type="button"
                           className="btn btn-outline-dark w-100"
-                          to="/profile-management"
+                          to="/jobs"
                         >
                           Cancel
                         </Link>

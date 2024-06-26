@@ -33,11 +33,7 @@ function getWorkLocation(workLocation) {
   );
   return response ? response.label : "";
 }
-function getFilterList(userRole) {
-  // if(userRole === 1)
-  const filterList = { status_hr: "" };
-  return filterList;
-}
+
 // Function to fetch department list
 const fetchDepartmentList = async () => {
   try {

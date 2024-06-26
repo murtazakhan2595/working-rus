@@ -177,6 +177,7 @@ const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
           type="checkbox"
           checked={value}
           value={value}
+          style={{boxShadow:'none'}}
           disabled={disabled}
           onChange={() => {
             onChange(name, !value);
