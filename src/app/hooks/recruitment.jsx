@@ -1,5 +1,6 @@
 import axios from "axios";
-import { initialState } from "../../state/slices/UserSlice";
+import { initialState } from "state/slices/UserSlice";
+import { JobDetail } from "app/utils/Types/Recruitment.jsx";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -26,13 +27,13 @@ export const fetchJobPosts = async (filterData, sortData) => {
   }
 };
 
-export const fetchJobById = async (baseUrl, id) => {
+export const fetchJobById = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/recruitment/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching job:", error);
-    throw error;
+    return JobDetail;
   }
 };
 

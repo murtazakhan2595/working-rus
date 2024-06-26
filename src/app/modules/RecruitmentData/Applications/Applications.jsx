@@ -166,7 +166,7 @@ const Applications = () => {
   const renderCandidate = (cell, row) => (
     <>
       <div
-        className="text-base text-[#323333]"
+        className="text-base text-[#323333] cursor-pointer"
         onClick={() => {
           setViewApplicationDetails(row);
         }}

@@ -22,7 +22,7 @@ import PageLoader from "../../../../components/PageLoader.jsx";
 import { connect } from "react-redux";
 import { addJob, updateJob } from "../../../hooks/recruitment.jsx";
 import { Header } from "../Sections/index.js";
-import { JobDetail } from "../../../utils/Types/Recruitment.jsx";
+import { JobDetail } from "app/utils/Types/Recruitment.jsx";
 
 const JobForm = forwardRef(
   ({ isLoading, formData, handleSubmit, isEditMode, id }, formRef) => {

@@ -17,14 +17,14 @@ const JobDescription = ({ baseUrl }) => {
   useEffect(() => {
     const getJobDetails = async () => {
       try {
-        const data = await fetchJobById(baseUrl, id);
+        const data = await fetchJobById(id);
         setJobDetails(data);
       } catch (error) {
         console.error("Error fetching job details:", error);
       }
     };
     getJobDetails();
-  }, [baseUrl, id]);
+  }, [id]);
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "numeric", day: "numeric" };
