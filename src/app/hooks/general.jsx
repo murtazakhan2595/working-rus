@@ -27,6 +27,7 @@ const getDepartmentList = async () => {
   }
   return [];
 };
+
 const getDesignationList = async () => {
   try {
     const response = await axios.get(`${baseUrl}/designation/`, {

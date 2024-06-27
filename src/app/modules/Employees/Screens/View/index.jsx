@@ -24,9 +24,13 @@ import Loader from "components/PageLoader";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
+import {
+  DepartmentName,
+  getDepartmentName,
+} from "../../../../../utils/getValuesFromTables";
 
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
-  const [userData, setUserData] = useState("");
+  const [userData, setUserData] = useState({});
   const [educations, setEducations] = useState([{}]);
   const [certifications, setCertifications] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);
@@ -40,28 +44,33 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
 
   const getDataByHooks = async () => {
     setLoading(true);
-    let empData = await getEmployeeData(userId);
-    let expData = await getEmployeeProfessionalExperianceData(
-      baseUrl,
-      userId,
-      token
-    );
-    let cvData = await getEmployeeCVDetailData(userId);
-    let visaData = await getEmployeeVisaDetailData(baseUrl, userId, token);
-    let educationData = await getEmployeeAcademicRecordData(userId,);
-    let certificationData = await getEmployeeCerficationData(userId,);
-    let documentsData = await getEmployeeVisaDetailsFiles(
-      baseUrl,
-      userId,
-      token
-    );
-    setUserData(empData);
-    setExperiences(expData);
-    setCV(cvData);
-    setVisa(visaData);
-    setEducations(educationData);
-    setCertifications(certificationData);
-    setDocuments(documentsData);
+    try {
+      let empData = await getEmployeeData(userId);
+      let expData = await getEmployeeProfessionalExperianceData(
+        baseUrl,
+        userId,
+        token
+      );
+      let cvData = await getEmployeeCVDetailData(userId);
+      let visaData = await getEmployeeVisaDetailData(baseUrl, userId, token);
+      let educationData = await getEmployeeAcademicRecordData(userId);
+      let certificationData = await getEmployeeCerficationData(userId);
+      let documentsData = await getEmployeeVisaDetailsFiles(
+        baseUrl,
+        userId,
+        token
+      );
+
+      setUserData(empData);
+      setExperiences(expData);
+      setCV(cvData);
+      setVisa(visaData);
+      setEducations(educationData);
+      setCertifications(certificationData);
+      setDocuments(documentsData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
     setLoading(false);
   };
 
@@ -82,7 +91,6 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       { title: "Last Name", data: userData?.last_name },
       {
         title: "Date of Birth",
-        // data: convertDateToDayMonthYear(userData?.date_of_birth),
         data: moment(userData.date_of_birth, "YYYY-MM-DD").format("DD-MM-YYYY"),
       },
       { title: "Email Address", data: userData?.other_email },
@@ -100,10 +108,8 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
         userData?.emergency_first_name + " " + userData?.emergency_last_name,
     },
     { title: "Relation", sub: true, data: userData?.emergency_relation },
-    { title: "Permenent Address", data: userData?.residential_address },
-    // { title: "Postal Code", sub : true,  data: "" },
+    { title: "Permanent Address", data: userData?.residential_address },
     { title: "Present Address", data: userData?.current_address },
-    // { title: "Postal Code", sub : true , data: "" },
   ];
 
   const bankInformation = [
@@ -118,7 +124,11 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
 
   const workInformation = [
     [
-      { title: "Department", data: userData?.department_name },
+      {
+        title: "Department",
+        data: <DepartmentName value={userData?.department_name} />,
+      },
+
       { title: "Position", data: userData?.department_position },
       { title: "Work Email", data: userData?.work_email },
       { title: "Employee Type", data: userData?.employee_type },
@@ -428,7 +438,6 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               identificationDetails={identificationDetails}
               employeeId={userData.id}
               getDataByHooks={getDataByHooks}
-
             />
           </div>
         </div>
