@@ -1,4 +1,3 @@
-
 import {
   workTypeOptions,
   employeeTypeOptions,
@@ -34,20 +33,19 @@ function getWorkLocation(workLocation) {
   );
   return response ? response.label : "";
 }
-function LeaveType({value}) {
+function LeaveType({ value }) {
   const LeaveTypes = useSelector((state) => state.common.leaveTypes);
   const response = LeaveTypes.find((option) => option.value === value);
   return <>{response ? response.label : "N/A"}</>;
 }
 // Function to get department name from department value
-function DepartmentName({value}) {
+function DepartmentName({ value }) {
   const departments = useSelector((state) => state.common.departments);
   const department = departments.find(
     (option) => option.value === parseInt(value)
   );
   return <>{department ? department.label : "N/A"}</>;
 }
-
 
 export {
   getCountryFullName,

@@ -24,7 +24,10 @@ import Loader from "components/PageLoader";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
-import { getDepartmentName } from "../../../../../utils/getValuesFromTables";
+import {
+  DepartmentName,
+  getDepartmentName,
+} from "../../../../../utils/getValuesFromTables";
 
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [userData, setUserData] = useState({});
@@ -35,6 +38,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [documents, setDocuments] = useState({});
   const [visa, setVisa] = useState({});
   const [loading, setLoading] = useState(false);
+  const [departmentName, setDepartmentName] = useState("");
   const { id } = useParams();
   const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
@@ -123,7 +127,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     [
       {
         title: "Department",
-        data: userData?.department_name,
+        data: <DepartmentName value={userData?.department_name} />,
       },
 
       { title: "Position", data: userData?.department_position },
