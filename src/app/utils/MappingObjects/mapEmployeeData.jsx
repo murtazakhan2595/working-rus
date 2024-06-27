@@ -219,8 +219,10 @@ async function getEmployeeInformation(data) {
     residential_address: data?.residential_address ?? "",
     mobile_no: data?.mobile_no ?? "",
     country_code: data?.country_code ?? "",
-    department_position: data?.department_position ?? "",
-    direct_report: data?.direct_report ?? "",
+    department_position: data?.department_position
+      ? parseInt(data?.department_position)
+      : "",
+    direct_report: data?.direct_report ? parseInt(data?.direct_report) : "",
     indirect_report: data?.indirect_report
       ? getManagerSelected(data.indirect_report, Managers)
       : "",
@@ -229,8 +231,9 @@ async function getEmployeeInformation(data) {
     employee_status: data?.employee_status ?? "",
     employee_work_type: data?.employee_work_type ?? "",
     employee_location: data?.employee_location ?? "",
-    joining_date: data?.joining_date ?? null,
+    joining_date: data?.joining_date ?? '',
     is_indirect_report_applicable: data.indirect_report ? true : false,
+    password: data?.password ?? "",
   };
   return employeeInformation;
 }

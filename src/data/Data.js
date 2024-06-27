@@ -368,7 +368,6 @@ export function getManagerSelected(managers, managersList) {
     const matchingObjects = managersList.filter((obj) => {
       return managers.find((element) => parseInt(obj.value) === parseInt(element));
     });
-    console.log(matchingObjects);
     return matchingObjects;
   }
 
