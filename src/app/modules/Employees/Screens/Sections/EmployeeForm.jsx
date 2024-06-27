@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Row,
-  Col,
-  Button,
-  Form,
-  Label,
-  FormGroup,
-  Input,
-} from "reactstrap";
+import { Row, Col, Button, Form, Label, FormGroup, Input } from "reactstrap";
 import { PageLoader } from "components";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
@@ -187,13 +179,18 @@ const EmployeeForm = ({
                 handleSubmit(values, resetForm);
               }}
               validate={(values) => {
-                const errors = validationEmployeeInfoFormSchema(values , isEditMode);
+                const errors = validationEmployeeInfoFormSchema(
+                  values,
+                  isEditMode
+                );
+                console.log(errors);
                 return errors;
               }}
             >
               {(props) => (
                 <Form onSubmit={props.handleSubmit}>
                   <Row>
+                    {/* {console.log(props.values)} */}
                     {!isEditMode && (
                       <>
                         <Col md="12">
@@ -270,7 +267,7 @@ const EmployeeForm = ({
                           <FormGroup floating>
                             <Input
                               type="password"
-                              maxLength="100"
+                              maxLength="20"
                               id="password"
                               name="password"
                               autoComplete="Off"
@@ -278,7 +275,11 @@ const EmployeeForm = ({
                               onChange={(option) => {
                                 props.handleChange("password")(option);
                               }}
-                              value={props.values.password}
+                              value={
+                                props.values?.password?.length <= 20
+                                  ? props.values.password
+                                  : ""
+                              }
                               className={
                                 props.errors?.password && props.touched.password
                                   ? "is-invalid"
@@ -378,7 +379,7 @@ const EmployeeForm = ({
                           options={designations}
                           error={props.errors?.department_position}
                           touch={props.touched.department_position}
-                          value={parseInt(props.values.department_position)}
+                          value={props.values.department_position}
                           label={"Designation"}
                           required={true}
                           onChange={(field, value) => {
@@ -504,7 +505,6 @@ const EmployeeForm = ({
                         />
                       </Col>
                     </>
-                    
                   </Row>
                   <Row>
                     {!isEditMode && (
