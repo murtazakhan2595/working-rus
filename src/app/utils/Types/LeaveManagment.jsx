@@ -1,7 +1,7 @@
 const Leave = {
     employee_id: "",
     name: "",
-    date: "",
+    date: new Date(),
     position: "",
     department: "",
     joining_date: "",

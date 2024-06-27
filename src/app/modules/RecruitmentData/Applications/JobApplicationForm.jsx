@@ -174,6 +174,19 @@ const JobApplicationForm = () => {
                               </Col>
                               <Col md="6">
                                 <TextInput
+                                  name="notice_period"
+                                  error={props.errors.notice_period}
+                                  touch={props.touched.notice_period}
+                                  value={props.values.notice_period}
+                                  label="Notice Period"
+                                  onChange={(field, value) => {
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  required={true}
+                                />
+                              </Col>
+                              <Col md="6">
+                                <TextInput
                                   name="Year_of_Experience"
                                   error={props.errors.Year_of_Experience}
                                   touch={props.touched.Year_of_Experience}
@@ -182,6 +195,7 @@ const JobApplicationForm = () => {
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
+                                  required={true}
                                   regEx={/^[0-9.]+$/}
                                 />
                               </Col>

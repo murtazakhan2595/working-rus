@@ -1,64 +1,53 @@
 import Joi from "joi";
 
-const validationEmployeeInfoFormSchema = (values) => {
+const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   const errors = {};
-  if (!values.first_name)
-    errors.first_name = 'First name is required';
-  if (!values.last_name)
-    errors.last_name = 'Last name is required';
-  if (!values.country_code)
-    errors.country_code = 'Phone Country Code name is required';
-  if (!values.mobile_no)
-    errors.mobile_no = 'Phone number is required';
-  if (!values.username)
-    errors.username = 'Username is required';
-  if (!values.work_email)
-    errors.work_email = 'Email is required';
-  if (!values.password)
-    errors.password = 'Password is required';
-  if (!values.user_role)
-    errors.user_role = 'User role is required';
-  if (!values.residential_address)
-    errors.residential_address = 'Address is required';
+  if (!isEditMode) {
+    if (!values.first_name) errors.first_name = "First name is required";
+    if (!values.last_name) errors.last_name = "Last name is required";
+    if (!values.country_code)
+      errors.country_code = "Phone Country Code name is required";
+    if (!values.mobile_no) errors.mobile_no = "Phone number is required";
+    if (!values.username) errors.username = "Username is required";
+    if (!values.work_email) errors.work_email = "Email is required";
+    if (!values.password) errors.password = "Password is required";
+    if (!values.residential_address)
+      errors.residential_address = "Address is required";
+  }
+  if (!values.user_role) errors.user_role = "User role is required";
   if (!values.department_name)
-    errors.department_name = 'Department is required';
+    errors.department_name = "Department is required";
   if (!values.department_position)
-    errors.department_position = 'Designation is required';
-  if (!values.direct_report)
-    errors.direct_report = 'Manager is required';
+    errors.department_position = "Designation is required";
+  if (!values.direct_report) errors.direct_report = "Manager is required";
   if (!values.department_manager)
-    errors.department_manager = 'Manager is required';
-  if (!values.employee_type)
-    errors.employee_type = 'Employee type is required';
+    errors.department_manager = "Manager is required";
+  if (!values.employee_type) errors.employee_type = "Employee type is required";
   if (!values.employee_work_type)
-    errors.employee_work_type = 'Work type is required';
+    errors.employee_work_type = "Work type is required";
   if (!values.employee_location)
-    errors.employee_location = 'Work location is required';
-  if (!values.employee_status)
-    errors.employee_status = 'Status is required';
-  if (!values.joining_date)
-    errors.joining_date = 'Joining date is required';
-  if (!values.organization)
-    errors.organization = 'Organization is required';
+    errors.employee_location = "Work location is required";
+  if (!values.employee_status) errors.employee_status = "Status is required";
+  if (!values.joining_date) errors.joining_date = "Joining date is required";
+  if (!values.organization) errors.organization = "Organization is required";
   return errors;
-}
+};
 
 const validationEmployeeContactInfoFormSchema = (values) => {
   const errors = {};
   if (!values.emergency_first_name)
-    errors.emergency_first_name = 'First name is required';
+    errors.emergency_first_name = "First name is required";
   if (!values.emergency_relation)
-    errors.emergency_relation = 'Contact Relation is required';
+    errors.emergency_relation = "Contact Relation is required";
   if (!values.emergency_country_code)
-    errors.emergency_country_code = 'Phone Country Code name is required';
+    errors.emergency_country_code = "Phone Country Code name is required";
   if (!values.emergency_phone_no)
-    errors.emergency_phone_no = 'Phone number is required';
-  if (!values.current_address)
-    errors.current_address = 'Address is required';
+    errors.emergency_phone_no = "Phone number is required";
+  if (!values.current_address) errors.current_address = "Address is required";
   if (!values.residential_address)
-    errors.residential_address = 'Address is required';
+    errors.residential_address = "Address is required";
   return errors;
-}
+};
 
 const validationEmployeeExperienceFormSchema = (values) => {
   const errors = {};
@@ -82,7 +71,7 @@ const validationEmployeeExperienceFormSchema = (values) => {
     });
   }
   return errors;
-}
+};
 const validationPersonalInfoFormSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
   last_name: Joi.string().min(3).max(40).required().label("Last Name"),
@@ -91,7 +80,11 @@ const validationPersonalInfoFormSchema = Joi.object({
   country_code: Joi.string().max(6).required().label("Country Code"),
   mobile_no: Joi.string().required().label("Phone Number"),
   date_of_birth: Joi.string().required().label("DOB"),
-  marital_status: Joi.string().min(3).max(20).required().label("Marital Status"),
+  marital_status: Joi.string()
+    .min(3)
+    .max(20)
+    .required()
+    .label("Marital Status"),
   nationality: Joi.string().min(3).max(20).required().label("Nationality"),
   email: Joi.string()
     .email({ tlds: { allow: false } })
@@ -140,7 +133,6 @@ const validationPersonalInfoFormSchema = Joi.object({
     }),
 });
 
-
 const validationAcademicRecordSchema = Joi.object({
   education_level: Joi.string().required().label("Education Level"),
   program: Joi.string().required().label("Program"),
@@ -148,52 +140,53 @@ const validationAcademicRecordSchema = Joi.object({
   edu_start_date: Joi.string().required().label("Start Date"),
   edu_end_date: Joi.string().required().label("End Date"),
   education_body: Joi.object({
-    file: Joi.string().required().label('Education Document'),
-    name: Joi.string().required().label('File Name')
-  }).required().label('Education Body')
+    file: Joi.string().required().label("Education Document"),
+    name: Joi.string().required().label("File Name"),
+  })
+    .required()
+    .label("Education Body"),
 });
 
 const validationDepartmentInfoFormSchema = Joi.object({
-  department_name: Joi.string()
-    .required()
-    .label('Department Name')
-    .messages({
-      "string.empty": `Department Name is required`,
-    }),
+  department_name: Joi.string().required().label("Department Name").messages({
+    "string.empty": `Department Name is required`,
+  }),
   department_position: Joi.string()
     .regex(/^[a-zA-Z\s]+$/)
     .required()
-    .label('Position')
+    .label("Position")
     .messages({
       "string.empty": `Position is required`,
       "string.pattern.base": `Position must only contain letters and spaces`,
     }),
-  employee_status: Joi.string().required().label('Employee status')
-    .messages({
-      "string.empty": `Employee Status is required`,
-    }),
-  employee_work_type: Joi.string().required().label('Work Type')
-    .messages({
-      "string.empty": `Work Type is required`,
-    }),
-  employee_location: Joi.string().required().label('Employee Location')
+  employee_status: Joi.string().required().label("Employee status").messages({
+    "string.empty": `Employee Status is required`,
+  }),
+  employee_work_type: Joi.string().required().label("Work Type").messages({
+    "string.empty": `Work Type is required`,
+  }),
+  employee_location: Joi.string()
+    .required()
+    .label("Employee Location")
     .messages({
       "string.empty": `Employee Location is required`,
     }),
-  employee_type: Joi.string().required().label('Employee type')
-    .messages({
-      "string.empty": `Employee type is required`,
-    }),
-  department_manager: Joi.string().required().label('Department Manger').messages({
-    "string.empty": `Department Manger is required`,
+  employee_type: Joi.string().required().label("Employee type").messages({
+    "string.empty": `Employee type is required`,
   }),
+  department_manager: Joi.string()
+    .required()
+    .label("Department Manger")
+    .messages({
+      "string.empty": `Department Manger is required`,
+    }),
   joining_date: Joi.string()
     .regex(/^\d{2}-\d{2}-\d{4}$/) // Matches "DD-MM-YYYY" format
     .required()
-    .label('Joining Date')
+    .label("Joining Date")
     .messages({
-      'string.empty': 'Joining Date is required',
-      'string.pattern.base': 'Joining Date must be in "DD-MM-YYYY" format',
+      "string.empty": "Joining Date is required",
+      "string.pattern.base": 'Joining Date must be in "DD-MM-YYYY" format',
     }),
   direct_report: Joi.string().required(),
 });
@@ -262,4 +255,4 @@ export {
   validationEmployeeInfoFormSchema,
   validationEmployeeContactInfoFormSchema,
   validationEmployeeExperienceFormSchema,
-}
+};

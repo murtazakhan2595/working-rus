@@ -149,6 +149,20 @@ export const HeadOfDepartment = [
   { label: "Prakash PV - VP Sales", value: "Prakash" },
 ];
 
+export const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
+  label: (
+    <div>
+      <div style={{ fontWeight: "bold", color: "#000", marginTop: "25px" }}>
+        {manager?.label?.split(" - ")[0]}
+      </div>
+      <div style={{ fontSize: "13px", color: "#777", fontWeight: "normal" }}>
+        {manager?.label?.split(" - ")[1]}
+      </div>
+    </div>
+  ),
+  value: manager.value,
+}));
+
 export const UserRoles = [
   { value: 1, label: "Super Admin" },
   { value: 2, label: "Manager" },
@@ -308,8 +322,8 @@ export const JobSortingFilters = [
     label: "Sort by date",
     name: "sort_by_date",
     options: [
-      { label: "Newest First", value: "newest_first" },
-      { label: "Oldest First", value: "oldest_first" },
+      { label: "Newest First", value: "dsc" },
+      { label: "Oldest First", value: "asc" },
     ],
   },
   {
@@ -342,17 +356,21 @@ export const JobSortingFilters = [
   },
 ];
 
+export const LeaveStatus = [
+  { label: "Approved", value: "Approved" },
+  { label: "Pending", value: "Pending" },
+  { label: "Denied", value: "Denied" },
+];
+
 export function getManagerSelected(managers, managersList) {
   if (managers && managersList && managersList.length > 0) {
-      managers = managers.split(', ') || [];
-      const matchingObjects = managersList.filter(obj => {
-          return managers.find(element => obj.label === element);
-      });
-      console.log(matchingObjects)
-      return matchingObjects;
+    managers = managers.split(", ") || [];
+    const matchingObjects = managersList.filter((obj) => {
+      return managers.find((element) => parseInt(obj.value) === parseInt(element));
+    });
+    console.log(matchingObjects);
+    return matchingObjects;
   }
 
   return managers;
-
 }
-

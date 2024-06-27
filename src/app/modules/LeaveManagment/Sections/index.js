@@ -1,9 +1,5 @@
 import Tabs from "./Tabs";
-import Status from "./Status";
+import { Status, getDecision, StatusIcon } from "./Status";
 import Blocks from "./Blocks";
 
-export {
-    Tabs,
-    Status,
-    Blocks,
-}
+export { Tabs, Status, Blocks, getDecision, StatusIcon };

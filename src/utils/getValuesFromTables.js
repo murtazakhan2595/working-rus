@@ -1,4 +1,5 @@
 import { getDepartmentList } from "app/hooks/general";
+import { getLeaveTypes } from "app/hooks/leaveManagment";
 import {
   workTypeOptions,
   employeeTypeOptions,
@@ -6,7 +7,6 @@ import {
   locationTypeOptions,
   countryOptions,
 } from "data/Data";
-import { useEffect } from "react";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -33,35 +33,18 @@ function getWorkLocation(workLocation) {
   );
   return response ? response.label : "";
 }
-function getFilterList(userRole) {
-  // if(userRole === 1)
-  const filterList = { status_hr: "" };
-  return filterList;
-}
-// Function to fetch department list
-const fetchDepartmentList = async () => {
-  try {
-    const response = await getDepartmentList();
-    console.log("dept response", response);
-    return response; // Return the fetched department data
-  } catch (error) {
-    console.error("Error fetching department list:", error);
-    return []; // Return an empty array in case of error
-  }
+const getLeaveType = async (leaveType, LeaveTypes) => {
+ // const LeaveTypes = await getLeaveTypes();
+  const response = LeaveTypes.find((option) => option.value === leaveType);
+  return response ? response.label : "";
 };
-
 // Function to get department name from department value
 const getDepartmentName = async (departmentValue) => {
-  try {
-    const departmentList = await fetchDepartmentList();
-    const department = departmentList.find(
-      (option) => option.value === departmentValue
-    );
-    return department ? department.label : null;
-  } catch (error) {
-    console.error("Error getting department name:", error);
-    return null; // Return null in case of error
-  }
+  const departmentList = await getDepartmentList();
+  const department = departmentList.find(
+    (option) => option.value === departmentValue
+  );
+  return department ? department.label : null;
 };
 
 export {
@@ -71,4 +54,5 @@ export {
   getJobType,
   getWorkLocation,
   getDepartmentName,
+  getLeaveType,
 };

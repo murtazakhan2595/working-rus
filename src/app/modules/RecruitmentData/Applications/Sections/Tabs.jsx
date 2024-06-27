@@ -4,7 +4,12 @@ import { jobIcon } from "../../../../../assets/images";
 import { FaCircleArrowRight } from "react-icons/fa6";
 import { fetchJobPosts } from "../../../../hooks/recruitment";
 import { Labels } from "../../Sections";
-import { getEmployeeType, getWorkType, getJobType, getWorkLocation } from 'utils/getValuesFromTables';
+import {
+  getEmployeeType,
+  getWorkType,
+  getJobType,
+  getWorkLocation,
+} from "utils/getValuesFromTables";
 import moment from "moment";
 
 const Message = ({ message }) => {
@@ -29,21 +34,21 @@ const JobDetails = ({ job }) => {
       ? moment(job?.Deadline).format("DD MMMM YYYY")
       : "N/A";
 
-    console.log(formattedDeadline, formattedUpdatedAt)
+    console.log(formattedDeadline, formattedUpdatedAt);
 
     return (
-      <div className="flex flex-col justify-between gap-y-12">
+      <div className="flex flex-col justify-between gap-y-12 text-baseGray ">
         <div className="flex justify-between">
           <div className="flex items-center gap-x-2">
             <img src={jobIcon} alt="Job Icon" />
             <div>
-              <p className="font-lato text-baseGray text-base">{job?.id}</p>
-              <h3 className="font-lato text-[20px] text-baseGray font-bold">
+              <p className="text-base">{job?.id}</p>
+              <h3 className="text-[20px] font-bold text-capitalize">
                 {job?.Job_Title}
               </h3>
             </div>
           </div>
-          <div className="font-lato text-base text-baseGray flex items-center gap-x-2">
+          <div className="text-base flex items-center gap-x-2">
             <IoCalendarOutline className="text-lg" />
             {/* {`${job?.updated_at?.slice(0, 10)} to ${job?.Deadline} `} */}
             {`${formattedUpdatedAt} - ${formattedDeadline} `}
@@ -53,15 +58,17 @@ const JobDetails = ({ job }) => {
           <Labels
             label={job.status === "live" ? "Open" : "Close"}
             iconDot={true}
-            iconColor={`${job.status === "live" ? "bg-green-500" : "bg-red-500"
-              }`}
-            backgroungColor={`${job.status === "live" ? "bg-green-100" : "bg-red-100"
-              }`}
+            iconColor={`${
+              job.status === "live" ? "bg-green-500" : "bg-red-500"
+            }`}
+            backgroungColor={`${
+              job.status === "live" ? "bg-green-100" : "bg-red-100"
+            }`}
           />
-          <Labels label={employeeType?.label} />
-          <Labels label={workType?.label} />
-          <Labels label={workLocation?.label} />
-          <Labels label={jobType?.label} />
+          <Labels label={employeeType} />
+          <Labels label={workType} />
+          <Labels label={workLocation} />
+          <Labels label={jobType} />
         </div>
       </div>
     );
@@ -99,10 +106,12 @@ const Tabs = ({ activeTab, onTabChange, activeJobId, changeJobFilter }) => {
     const loadJob = async () => {
       try {
         const jobData = await fetchJobPosts();
-        if (jobData && jobData.length > 0) {
-          const index = jobData.findIndex((obj) => obj.id === activeJobId);
+        if (jobData.results && jobData.results.length > 0) {
+          const index = jobData.results.findIndex(
+            (obj) => obj.id === activeJobId
+          );
           setCurrentJob(index ?? 0);
-          setJobs(jobData);
+          setJobs(jobData.results);
         }
       } catch (error) {
         console.error("Error fetching job:", error);
@@ -125,10 +134,11 @@ const Tabs = ({ activeTab, onTabChange, activeJobId, changeJobFilter }) => {
               return (
                 <button
                   key={tab}
-                  className={`py-1 px-2 ${activeTab === index
-                    ? "border-b-2 border-[#35B6E9] text-baseGray text-base"
-                    : "text-gray-500"
-                    }`}
+                  className={`py-1 px-2 ${
+                    activeTab === index
+                      ? "border-b-2 border-[#35B6E9] text-base"
+                      : "text-gray-500"
+                  }`}
                   onClick={() => handleTabChange(index)}
                 >
                   {tab}

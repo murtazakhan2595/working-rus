@@ -49,10 +49,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
         ),
         value: manager.value
     }));
-    if (values.direct_report && typeof values.direct_report === 'string') {
-        const managerList = getManagerSelected(values.direct_report, managers);
-        onChange('direct_report', managerList)
-    }
+
     if (values.indirect_report && typeof values.indirect_report === 'string') {
         const managerList = getManagerSelected(values.indirect_report, managers);
         onChange('indirect_report', managerList)
@@ -179,7 +176,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
             </Col>
 
             <Col md={6}>
-                <SelectMultiInputComponent
+                <SelectComponent
                     name={'direct_report'}
                     options={managers}
                     error={errors.direct_report}

@@ -27,7 +27,7 @@ const StatusLabel = ({ status }) => {
     }
     return (
         <>
-            <span className={`p-2 ${classname} badge`} style={{ color: '#323333', minWidth: '100px' }}>
+            <span className={`p-2 ${classname} badge`} style={{ color: '#323333', minWidth: '100px', fontWeight:'normal' }}>
                 {status}
             </span>
         </>

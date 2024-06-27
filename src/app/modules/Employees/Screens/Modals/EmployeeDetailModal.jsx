@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, } from 'reactstrap';
 import { PersonalInformation, ContactInformation, BankInformation, ExperienceInformation, EducationInformation, CertificationsInformation, IdentificationInformation } from '../Profile';
-import CreateUpdateEmployee from '../Create';
+import EmployeeForm from '../Sections/EmployeeForm';
 function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, }) {
     const getTitle = () => {
         if (currentClick === 1)
@@ -98,13 +98,20 @@ function EmployeeDetailModal({ openModal, closeModal, employeeId, currentClick, 
                         />
                     )}
                     {currentClick === 8 &&
-                        <CreateUpdateEmployee
-                            employeeId={employeeId}
-                            nextstep={() => {
-                                closeModal();
-                            }}
-                            isEditMode={true}
-                        />
+                        // <CreateUpdateEmployee
+                        //     employeeId={employeeId}
+                        //     nextstep={() => {
+                        //         closeModal();
+                        //     }}
+                        //     isEditMode={true}
+                        // />
+                        <EmployeeForm
+                        id={employeeId}
+                        nextstep={() => {
+                            closeModal();
+                        }}
+                        isEditMode={true}
+        />
                     }
                 </ModalBody>
             </Modal>

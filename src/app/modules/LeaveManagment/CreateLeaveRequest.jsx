@@ -9,6 +9,7 @@ import {
   TextInput,
   SelectComponent,
   PhoneNumberInput,
+  SelectMultiInputComponent,
   DateInput,
 } from "components/form-control.jsx";
 import PageLoader from "components/PageLoader.jsx";
@@ -17,43 +18,78 @@ import {
   getManagersList,
   getDepartmentList,
 } from "app/hooks/general";
-import { getEmployeeData } from 'app/hooks/employee';
+import { getEmployeeData } from "app/hooks/employee";
 import { addLeaveRequest } from "app/hooks/leaveManagment";
 import { getLeaveTypes } from "app/hooks/leaveManagment";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import { countryOptions } from "data/Data";
-import { getLavefromEmployeeInfo } from 'app/utils/MappingObjects/mapLeaveData';
-import { Leave } from 'app/utils/Types/LeaveManagment';
-
+import { getLavefromEmployeeInfo } from "app/utils/MappingObjects/mapLeaveData";
+import { Leave } from "app/utils/Types/LeaveManagment";
+import moment from "moment";
+import { validationLeaveRequestFormSchema } from "app/utils/FormSchema/leaveManagmentFormSchema";
+function getManagerSelected(managers) {
+  if (managers) {
+    const matchingObjects = managers.map((obj) => {
+      return obj.value;
+    });
+    return matchingObjects.join(", ");
+  }
+  return "";
+}
 
 const CreateLeaveRequest = ({ userProfile }) => {
-  const { id } = useParams();
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
-  const [managers, setManagers] = useState([]);
-  const [departments, setDepartments] = useState([]);
-  const [designations, setDesignations] = useState([]);
-  const [leaveForm, setLeaveForm] = useState({});
-  const [leaveTypes, setLeaveTypes] = useState([]);
+  const [leaveForm, setLeaveForm] = useState(Leave);
+  const [Managers, setManagers] = useState([]);
+  const [Departments, setDepartments] = useState([]);
+  const [Designations, setDesignations] = useState([]);
+  const [LeaveTypes, setLeaveTypes] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
       try {
         const employeeResponse = await getEmployeeData(userProfile.id);
-        const leaveData = getLavefromEmployeeInfo(employeeResponse);
-        setLeaveForm(leaveData);
+        const leaveData = await getLavefromEmployeeInfo(employeeResponse);
+        setLeaveForm({ ...Leave, ...leaveData });
 
         // If you need to update form fields directly
         if (formRef.current) {
-          formRef.current.setFieldValue("employee_id", leaveData.employee_id || '');
-          formRef.current.setFieldValue("name", `${employeeResponse.first_name || ''} ${employeeResponse.last_name || ''}`);
-          formRef.current.setFieldValue("date", employeeResponse.joining_date || '');
-          formRef.current.setFieldValue("position", employeeResponse.department_position || '');
-          formRef.current.setFieldValue("department", employeeResponse.department_name || '');
-          formRef.current.setFieldValue("joining_date", employeeResponse.joining_date || '');
-          formRef.current.setFieldValue("nationality", employeeResponse.nationality || '');
-          formRef.current.setFieldValue("report_to", employeeResponse.direct_report || '');
+          formRef.current.setFieldValue(
+            "employee_id",
+            leaveData.employee_id || ""
+          );
+          formRef.current.setFieldValue(
+            "name",
+            `${employeeResponse.first_name || ""} ${
+              employeeResponse.last_name || ""
+            }`
+          );
+          formRef.current.setFieldValue(
+            "date",
+            employeeResponse.joining_date || ""
+          );
+          formRef.current.setFieldValue(
+            "position",
+            employeeResponse.department_position || ""
+          );
+          formRef.current.setFieldValue(
+            "department",
+            employeeResponse.department_name || ""
+          );
+          formRef.current.setFieldValue(
+            "joining_date",
+            employeeResponse.joining_date || ""
+          );
+          formRef.current.setFieldValue(
+            "nationality",
+            employeeResponse.nationality || ""
+          );
+          formRef.current.setFieldValue(
+            "report_to",
+            employeeResponse.direct_report || ""
+          );
         }
       } catch (error) {
         console.error(error);
@@ -62,7 +98,6 @@ const CreateLeaveRequest = ({ userProfile }) => {
 
     fetchEmployeeData();
   }, [userProfile]);
-
   useEffect(() => {
     const fetchLists = async () => {
       try {
@@ -77,7 +112,6 @@ const CreateLeaveRequest = ({ userProfile }) => {
 
         const leaveTypesResponse = await getLeaveTypes();
         setLeaveTypes(leaveTypesResponse);
-
       } catch (error) {
         console.error(error);
       }
@@ -92,16 +126,48 @@ const CreateLeaveRequest = ({ userProfile }) => {
       // Extract the value from the report_to field
       const modifiedValues = {
         ...values,
-        report_to: values.report_to.value,
+        report_to: getManagerSelected(values.report_to.value),
       };
-      await addLeaveRequest(modifiedValues);
-      toast.success("Form submitted successfully!");
-      resetForm();
-      navigate("/my-leaves");
+      const response = await addLeaveRequest(modifiedValues);
+      if (response) {
+        toast.success("Form submitted successfully!");
+        resetForm();
+        navigate("/my-leaves");
+      } else {
+        toast.error("Form submission failed.");
+      }
     } catch (error) {
       toast.error("Form submission failed.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const setLeaveDays = (totalLeave, startDate) => {
+    startDate = startDate ? new Date(moment(startDate)) : null;
+    if (!isNaN(startDate.getTime()) && totalLeave) {
+      let endDate = moment(startDate); // Initialize endDate to startDate
+      let workingDaysAdded = 0;
+      while (workingDaysAdded <= totalLeave) {
+        // Check if the current day is a weekday
+        if (endDate.isoWeekday() !== 6 && endDate.isoWeekday() !== 7) {
+          workingDaysAdded++;
+        }
+        if (workingDaysAdded < totalLeave) {
+          endDate.add(1, "days");
+        }
+      }
+      const lastWorkingDay = moment(endDate).subtract(1, "days");
+      const rejoiningDate = moment(endDate).add(1, "days");
+      formRef.current.setFieldValue("end_date", endDate.format("YYYY-MM-DD"));
+      formRef.current.setFieldValue(
+        "rejoining_date",
+        rejoiningDate.format("YYYY-MM-DD")
+      );
+      formRef.current.setFieldValue(
+        "last_work_day",
+        lastWorkingDay.format("YYYY-MM-DD")
+      );
     }
   };
 
@@ -122,7 +188,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                   <Link
                     type="button"
                     className="btn btn-light bg-transparent fw-700"
-                    to="/leave-application"
+                    to="/my-leaves"
                   >
                     <span style={{ display: "inline-block" }}>Go Back</span>
                     <FaChevronCircleLeft
@@ -150,17 +216,38 @@ const CreateLeaveRequest = ({ userProfile }) => {
                     <Col lg={12}>
                       <Formik
                         initialValues={leaveForm}
-                        enableReinitialize={true}  // Ensure Formik updates initialValues when leaveForm changes
+                        enableReinitialize={true} // Ensure Formik updates initialValues when leaveForm changes
                         innerRef={formRef}
                         onSubmit={handleSubmit}
                         validate={(values) => {
-                          const errors = {};
-                          // Add your validation logic here
+                          const errors =
+                            validationLeaveRequestFormSchema(values);
                           return errors;
                         }}
                       >
                         {(props) => (
                           <Form onSubmit={props.handleSubmit}>
+                            <h2 className="text-baseGray font-lato text-lg font-semibold">
+                              Application Date
+                            </h2>
+                            {/* {console.log(props.values)} */}
+                            <Row>
+                              <Col md="6">
+                                <DateInput
+                                  name="date"
+                                  error={props.errors.date}
+                                  touch={props.touched.date}
+                                  value={props.values.date}
+                                  label="Date"
+                                  required={true}
+                                  minDate={new Date()}
+                                  onChange={(field, value) => {
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  disabled={true}
+                                />
+                              </Col>
+                            </Row>
                             <h2 className="text-baseGray font-lato text-lg font-semibold">
                               Employee Details
                             </h2>
@@ -171,7 +258,13 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                   name="employee_id"
                                   error={props.errors.employee_id}
                                   touch={props.touched.employee_id}
-                                  value={props.values.employee_id ? `TXB-${props.values.employee_id.toString().padStart(4, '0')}` : ''}
+                                  value={
+                                    props.values.employee_id
+                                      ? `TXB-${props.values.employee_id
+                                          .toString()
+                                          .padStart(4, "0")}`
+                                      : ""
+                                  }
                                   disabled={true}
                                   label="Employee ID"
                                   required={true}
@@ -197,26 +290,12 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                 />
                               </Col>
                               <Col md="6">
-                                <DateInput
-                                  name="date"
-                                  error={props.errors.date}
-                                  touch={props.touched.date}
-                                  value={props.values.date}
-                                  label="Date"
-                                  required={true}
-                                  minDate={new Date()}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
                                 <SelectComponent
                                   name="position"
-                                  options={designations}
+                                  options={Designations}
                                   error={props.errors.position}
                                   touch={props.touched.position}
-                                  value={props.values.position}
+                                  value={parseInt(props.values.position)}
                                   disabled={true}
                                   label="Position"
                                   onChange={(field, value) => {
@@ -227,7 +306,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                               <Col md="6">
                                 <SelectComponent
                                   name="department"
-                                  options={departments}
+                                  options={Departments}
                                   error={props.errors.department}
                                   touch={props.touched.department}
                                   value={props.values.department}
@@ -283,6 +362,10 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                   minDate={new Date()}
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
+                                    setLeaveDays(
+                                      props.values.total_leave,
+                                      value
+                                    );
                                   }}
                                 />
                               </Col>
@@ -294,7 +377,10 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                   value={props.values.end_date}
                                   label="End Date"
                                   required={true}
-                                  minDate={new Date(props.values.start_date) || new Date() }
+                                  minDate={
+                                    new Date(props.values.start_date) ||
+                                    new Date()
+                                  }
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
@@ -338,17 +424,23 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                   label="Total Leave"
                                   required={true}
                                   onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
+                                    props.setFieldValue(field, parseInt(value));
+                                    setLeaveDays(
+                                      parseInt(value),
+                                      props.values.start_date
+                                    );
                                   }}
+                                  regEx={/^[0-9]+$/}
                                 />
                               </Col>
                               <Col md="6">
                                 <SelectComponent
                                   name="leave_type"
-                                  options={leaveTypes}
+                                  options={LeaveTypes}
                                   error={props.errors.leave_type}
                                   touch={props.touched.leave_type}
                                   value={props.values.leave_type}
+                                  required={true}
                                   label="Leave Type"
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
@@ -384,13 +476,13 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                 />
                               </Col>
                               <Col md="6">
-                                <SelectComponent
+                                <SelectMultiInputComponent
                                   name="report_to"
-                                  options={managers}
+                                  options={Managers}
                                   error={props.errors.report_to}
                                   touch={props.touched.report_to}
                                   value={props.values.report_to}
-                                  label="Report To"
+                                  label="Reporting Manager"
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
@@ -403,7 +495,6 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                   touch={props.touched.address_during_leave}
                                   value={props.values.address_during_leave}
                                   label="Address During Leave"
-                                  required={true}
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
@@ -415,7 +506,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                 <Link
                                   type="button"
                                   className="btn btn-outline-dark w-100"
-                                  to="/"
+                                  to="/my-leaves"
                                 >
                                   Cancel
                                 </Link>

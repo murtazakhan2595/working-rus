@@ -1,5 +1,6 @@
 import axios from "axios";
-import { initialState } from "../../state/slices/UserSlice";
+import { initialState } from "state/slices/UserSlice";
+import { JobDetail } from "app/utils/Types/Recruitment.jsx";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -7,12 +8,12 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-
-export const fetchJobPosts = async (filterData) => {
+export const fetchJobPosts = async (filterData, sortData) => {
   filterData = filterData ?? {};
+  sortData = sortData && sortData === "dsc" ? "-updated_at" : "updated_at";
   try {
     const response = await axios.get(
-      `${baseUrl}/recruitment/?search=${encodeURIComponent(
+      `${baseUrl}/recruitment/?ordering=${sortData}&search=${encodeURIComponent(
         JSON.stringify(filterData)
       )}`,
       {
@@ -26,13 +27,13 @@ export const fetchJobPosts = async (filterData) => {
   }
 };
 
-export const fetchJobById = async (baseUrl, id) => {
+export const fetchJobById = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/recruitment/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching job:", error);
-    throw error;
+    return JobDetail;
   }
 };
 
@@ -48,10 +49,7 @@ const getJobApplications = async (URL) => {
   }
 };
 
-export const updateApplicationStatus = async (
-  selectedApplicant,
-  option,
-) => {
+export const updateApplicationStatus = async (selectedApplicant, option) => {
   try {
     const response = await axios.patch(
       `${baseUrl}/candidate/${selectedApplicant.id}`,

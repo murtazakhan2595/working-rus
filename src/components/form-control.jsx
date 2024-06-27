@@ -9,7 +9,7 @@ import { TfiFiles } from "react-icons/tfi";
 import { dropdownStyles } from "../data/Data";
 import { IoIosSearch } from "react-icons/io";
 import { countryCodesOptions } from "../data/CountryCode";
-import CheckboxMenu from './SortingFilters';
+import CheckboxMenu from "./SortingFilters";
 const SelectComponent = ({
   name,
   value,
@@ -19,19 +19,25 @@ const SelectComponent = ({
   options,
   label,
   disabled,
+  required,
 }) => {
   return (
-    <FormGroup>
+    <FormGroup floating>
       <Select
         name={name}
         isDisabled={disabled}
         id={name}
-        className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
-          }`}
+        className={`custom-select-input form-control ${
+          error && touch ? "is-invalid" : ""
+        }`}
         options={options ? options : []}
-        value={options && options.length > 0 ? options.find((option) => option.value == value) : ""}
+        value={
+          options && options.length > 0
+            ? options.find((option) => option.value === value)
+            : ""
+        }
         onChange={(selectedOption) => onChange(name, selectedOption.value)}
-        placeholder={label}
+        placeholder={`Select ${label}`}
         styles={{
           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
           menu: (base) => ({ ...base, zIndex: 9999 }),
@@ -39,6 +45,12 @@ const SelectComponent = ({
         }}
         menuPortalTarget={document.body}
       />
+      <Label
+        className={`text-baseGray ${value ? "date-floating-label" : ""}`}
+        for={name}
+      >
+        {required && <span className="text-danger">* </span>} {label}
+      </Label>
 
       {error && touch && <div className="invalid-feedback">{error}</div>}
     </FormGroup>
@@ -56,22 +68,29 @@ const SelectMultiInputComponent = ({
   required,
 }) => {
   return (
-    <FormGroup>
+    <FormGroup floating>
       <Select
         name={name}
         id={name}
         isDisabled={disabled}
-        className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
-          }`}
+        className={`custom-select-input form-control ${
+          error && touch ? "is-invalid" : ""
+        }`}
         options={options ? options : []}
         value={value ? value : ""}
         onChange={(selectedOption) => {
           onChange(name, selectedOption);
         }}
-        placeholder={`${required ? '*' : ''}${label}`}
+        placeholder={`Select ${label}`}
         isMulti={true}
         noOptionsMessage={() => "No such employee found"}
       />
+      <Label
+        className={`text-baseGray ${value ? "date-floating-label" : ""}`}
+        for={name}
+      >
+        {required && <span className="text-danger">* </span>} {label}
+      </Label>
       {error && touch && <div className="invalid-feedback">{error}</div>}
     </FormGroup>
   );
@@ -97,11 +116,13 @@ const DateInput = ({
           id={name}
           minDate={minDate}
           disabled={disabled}
-          className={`form-control ${error && touch ? "is-invalid" : ""} ${value ? 'date-floating-input' : ''}`}
+          className={`form-control ${error && touch ? "is-invalid" : ""} ${
+            value ? "date-floating-input" : ""
+          }`}
           value={date && !isNaN(date.getTime()) ? date : ""}
           selected={date && !isNaN(date.getTime()) ? date : new Date()}
           dropdownMode="select"
-          placeholder={`${required ? '*' : ''}${label}`}
+          placeholder={`${required ? "*" : ""}${label}`}
           onChange={(value) => {
             if (value) {
               value = moment(value).format("YYYY-MM-DD");
@@ -114,7 +135,12 @@ const DateInput = ({
           showYearDropdown
           dateFormat="dd-MM-yyyy"
         />
-        <Label className={`text-baseGray ${value ? 'date-floating-label' : ''}`} for={name}>{label}</Label>
+        <Label
+          className={`text-baseGray ${value ? "date-floating-label" : ""}`}
+          for={name}
+        >
+          {required && <span className="text-danger">* </span>} {label}
+        </Label>
         {error && touch && (
           <div className="invalid-feedback d-block">{error}</div>
         )}
@@ -122,7 +148,6 @@ const DateInput = ({
     </>
   );
 };
-
 
 const TextInput = ({
   name,
@@ -145,13 +170,15 @@ const TextInput = ({
           name={name}
           autoComplete="Off"
           placeholder={"Enter" + label}
-          value={value ?? ''}
+          value={value ?? ""}
           disabled={disabled}
           className={error && touch ? "is-invalid" : ""}
           onChange={(option) => {
             const value = option.target.value;
             if (regEx) {
-              if (!value || regEx.test(value)) { onChange(name, value) }
+              if (!value || regEx.test(value)) {
+                onChange(name, value);
+              }
             } else {
               onChange(name, value);
             }
@@ -177,6 +204,7 @@ const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
           type="checkbox"
           checked={value}
           value={value}
+          style={{ boxShadow: "none" }}
           disabled={disabled}
           onChange={() => {
             onChange(name, !value);
@@ -204,25 +232,31 @@ const PhoneNumberInput = ({
     <>
       <div className="d-flex">
         <Col sm={4} className="">
-          <Select
-            name={countryCodeName}
-            isDisabled={disabled}
-            id={countryCodeName}
-            className={`custom-select-input form-control ${error && touch ? "is-invalid" : ""
+          <FormGroup floating>
+            <Select
+              name={countryCodeName}
+              isDisabled={disabled}
+              id={countryCodeName}
+              className={`custom-select-input form-control ${
+                error && touch ? "is-invalid" : ""
               }`}
-            options={countryCodesOptions ? countryCodesOptions : []}
-            value={
-              countryCodesOptions
-                ? countryCodesOptions.find(
-                  (option) => option.value === countryCode
-                )
-                : ""
-            }
-            onChange={(selectedOption) =>
-              onChange(countryCodeName, selectedOption.value)
-            }
-            placeholder={"Code"}
-          />
+              options={countryCodesOptions ? countryCodesOptions : []}
+              value={
+                countryCodesOptions
+                  ? countryCodesOptions.find(
+                      (option) => option.value === countryCode
+                    )
+                  : ""
+              }
+              onChange={(selectedOption) =>
+                onChange(countryCodeName, selectedOption.value)
+              }
+              placeholder={"Code"}
+            />
+            <Label className="text-baseGray" htmlFor="address">
+              Code
+            </Label>
+          </FormGroup>
         </Col>
         <Col sm={8} className="">
           <FormGroup floating>
@@ -237,9 +271,10 @@ const PhoneNumberInput = ({
                 const regExTelephone = /^[0-9-]+$/;
                 let value = option.target.value;
                 value = value.replace(countryCode, "");
-                if (value.includes("+")) { value = ""; }
-                if (!value || regExTelephone.test(value))
-                  onChange(name, value);
+                if (value.includes("+")) {
+                  value = "";
+                }
+                if (!value || regExTelephone.test(value)) onChange(name, value);
               }}
             />
             <Label className="text-baseGray" htmlFor="address">
@@ -412,7 +447,7 @@ const FileInput = ({
   label,
   acceptType,
 }) => {
-  console.log(value)
+  console.log(value);
   return (
     <>
       <div
@@ -427,9 +462,9 @@ const FileInput = ({
           htmlFor={name}
           className="cursor-pointer opacity-70 rounded-lg text-input mt-3"
           style={{
-            width: 'fit-content',
-            margin: 'auto',
-            position: 'relative'
+            width: "fit-content",
+            margin: "auto",
+            position: "relative",
           }}
         >
           <input
@@ -462,7 +497,14 @@ const FileInput = ({
             }}
             style={{ position: "relative" }}
           />
-          {value?.name && <span style={{ fontSize: '13px', width: '176px', left: '140px' }} className="bg-[#F5F5FA] absolute">{value?.name}</span>}
+          {value?.name && (
+            <span
+              style={{ fontSize: "13px", width: "176px", left: "140px" }}
+              className="bg-[#F5F5FA] absolute"
+            >
+              {value?.name}
+            </span>
+          )}
         </label>
         <br />
       </div>

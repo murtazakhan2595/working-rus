@@ -17,14 +17,11 @@ import "./style.css";
 import EmpDataHeader from "./Screens/Sections/Header.jsx";
 import { BsThreeDots } from "react-icons/bs";
 import tie from "../../../assets/images/tie.png";
-import profile from "../../../assets/images/profile.png";
-import active from "../../../assets/images/active.png";
-import {
-  FilterInput,
-  CustomDarkButton,
-} from "../../../components/form-control.jsx";
-import { UserRoles } from "../../../data/Data.js";
-import { useNavigate } from "react-router-dom";
+import profile from "assets/images/profile.png";
+import active from "assets/images/active.png";
+import { FilterInput, CustomDarkButton } from "components/form-control.jsx";
+import { UserRoles } from "data/Data.js";
+import { useNavigate, Link } from "react-router-dom";
 import {
   getDepartmentList,
   getDesignationList,
@@ -51,7 +48,6 @@ const Employee = () => {
     sortOrder: "",
   });
 
-
   const onSizePerPageList = (sizePerPage) => {
     if (options.sizePerPage !== sizePerPage) {
       setOptions((prevOptions) => ({ ...prevOptions, sizePerPage }));
@@ -76,7 +72,9 @@ const Employee = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        let URL = `/customemp/?page=${options.page}&page_size=${options.sizePerPage}&search=${encodeURIComponent(JSON.stringify(filterData))}`;
+        let URL = `/customemp/?page=${options.page}&page_size=${
+          options.sizePerPage
+        }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
         const employeeData = await getList(URL);
         if (isMounted) {
           setEmployeeData(employeeData);
@@ -160,8 +158,10 @@ const Employee = () => {
         <DropdownItem onClick={() => navigate(`/profile/${row.id}`)}>
           Edit Profile
         </DropdownItem>
-        <DropdownItem onClick={() => navigate(`/edit-employee/${row.id}`)}>
-          Edit Employee
+        <DropdownItem>
+          <Link to="/edit-employee" state={{ id: row.id }}>
+            Edit Employee
+          </Link>
         </DropdownItem>
         <DropdownItem onClick={() => navigate(`/user/${row.id}`)}>
           View Profile
@@ -203,7 +203,6 @@ const Employee = () => {
     });
   };
 
-  
   return (
     <div className="screen">
       <EmpDataHeader
