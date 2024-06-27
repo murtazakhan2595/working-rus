@@ -63,13 +63,6 @@ function EmployeeName({ value }) {
   return <>{employee ? employee.label : "N/A"}</>;
 }
 
-function DesignationName({ value }) {
-  const designations = useSelector((state) => state.common.designations);
-  const designation = designations.find(
-    (option) => option.value === parseInt(value)
-  );
-  return <>{designation ? designation.label : "N/A"}</>;
-}
 
 function ManagerName({ value }) {
   const managers = useSelector((state) => state.common.reportingManagers);
@@ -89,6 +82,5 @@ export {
   DesignationName,
   ManagerName,
   LeaveType,
-  DesignationName,
   EmployeeName,
 };
