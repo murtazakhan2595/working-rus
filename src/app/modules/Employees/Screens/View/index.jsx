@@ -35,7 +35,6 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [documents, setDocuments] = useState({});
   const [visa, setVisa] = useState({});
   const [loading, setLoading] = useState(false);
-  const [departmentName, setDepartmentName] = useState("");
   const { id } = useParams();
   const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
@@ -66,10 +65,6 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       setEducations(educationData);
       setCertifications(certificationData);
       setDocuments(documentsData);
-
-      // Fetch the department name after setting the user data
-      const departmentName = await getDepartmentName(empData.department_name);
-      setDepartmentName(departmentName);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -128,7 +123,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     [
       {
         title: "Department",
-        data: departmentName,
+        data: userData?.department_name,
       },
 
       { title: "Position", data: userData?.department_position },
