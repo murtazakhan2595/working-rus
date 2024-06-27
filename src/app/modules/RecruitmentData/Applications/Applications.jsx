@@ -327,6 +327,7 @@ const Applications = () => {
                         >
                           Candidate ID
                         </TableHeaderColumn>
+
                         <TableHeaderColumn
                           dataField="first_name"
                           className="table-header-bg"
@@ -334,6 +335,7 @@ const Applications = () => {
                         >
                           Candidate
                         </TableHeaderColumn>
+
                         <TableHeaderColumn
                           dataField="phone_number"
                           className="table-header-bg"
@@ -351,6 +353,7 @@ const Applications = () => {
                         >
                           Phone no/Email
                         </TableHeaderColumn>
+
                         <TableHeaderColumn
                           dataField="current_salary"
                           dataSort
@@ -358,6 +361,7 @@ const Applications = () => {
                         >
                           Current Salary
                         </TableHeaderColumn>
+
                         <TableHeaderColumn
                           dataField="expected_salary"
                           dataSort
@@ -365,6 +369,7 @@ const Applications = () => {
                         >
                           Expected Salary
                         </TableHeaderColumn>
+
                         <TableHeaderColumn
                           className="table-header-bg"
                           dataField="updated_at"
