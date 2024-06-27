@@ -34,18 +34,21 @@ function getWorkLocation(workLocation) {
   return response ? response.label : "";
 }
 const getLeaveType = async (leaveType, LeaveTypes) => {
- // const LeaveTypes = await getLeaveTypes();
+  // const LeaveTypes = await getLeaveTypes();
   const response = LeaveTypes.find((option) => option.value === leaveType);
   return response ? response.label : "";
 };
 // Function to get department name from department value
 const getDepartmentName = async (departmentValue) => {
+  console.log("I am department value", departmentValue);
   const departmentList = await getDepartmentList();
-  const department = departmentList.find(
+  const department = departmentList?.find(
     (option) => option.value === departmentValue
   );
+  console.log("I am departments", departmentList);
   return department ? department.label : null;
 };
+
 
 export {
   getCountryFullName,
