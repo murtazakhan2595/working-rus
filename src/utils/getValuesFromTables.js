@@ -34,6 +34,7 @@ function getWorkLocation(workLocation) {
   );
   return response ? response.label : "";
 }
+
 const getLeaveType = async (leaveType, LeaveTypes) => {
   // const LeaveTypes = await getLeaveTypes();
   const response = LeaveTypes.find((option) => option.value === leaveType);
@@ -49,6 +50,7 @@ const getDepartmentName = async (departmentValue) => {
   console.log("I am departments", departmentList);
   return department ? department.label : null;
 };
+
 function LeaveType(value) {
   const LeaveTypes = useSelector((state) => state.common.leaveTypes);
   const response = LeaveTypes.find((option) => option.value === value);
