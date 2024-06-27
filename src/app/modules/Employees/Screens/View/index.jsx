@@ -38,7 +38,6 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [documents, setDocuments] = useState({});
   const [visa, setVisa] = useState({});
   const [loading, setLoading] = useState(false);
-  const [departmentName, setDepartmentName] = useState("");
   const { id } = useParams();
   const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
