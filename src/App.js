@@ -31,7 +31,7 @@ import {
   setUserProfile,
   setToken,
 } from "./state/slices/UserSlice.js";
-
+import { handleUpdateProfile } from "data/Data";
 import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
@@ -73,16 +73,16 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleUpdateProfile = (data) => {
-    let updateProfile = {
-      id: data.id,
-      username: data.username,
-      is_filled: data.is_filled,
-      role: data.user_role,
-    };
-    // setUserProfile(updateProfile);
-    dispatch(setUserProfile(updateProfile));
-  };
+  // const handleUpdateProfile = (data) => {
+  //   let updateProfile = {
+  //     id: data.id,
+  //     username: data.username,
+  //     is_filled: data.is_filled,
+  //     role: data.user_role,
+  //   };
+  //   // setUserProfile(updateProfile);
+  //   dispatch(setUserProfile(updateProfile));
+  // };
 
   const getProfile = async () => {
     try {
@@ -97,7 +97,7 @@ function App() {
         if (!response.data.is_filled) {
           navigate("/create-profile");
         }
-        handleUpdateProfile(response.data);
+        handleUpdateProfile(dispatch, response.data);
         dispatch(setToken(token));
         window.localStorage.setItem("token", token);
         setLoading(false);
@@ -138,7 +138,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    setUserRole(userProfile.role);
+    setUserRole(userProfile.user_role);
   }, [userProfile]);
 
   if (loading) {

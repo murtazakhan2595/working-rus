@@ -43,7 +43,6 @@ function Login() {
 
   const handleUpdateProfile = (data) => {
     dispatch(setUserProfile(data));
-    
     dispatch(fetchDepartments());
     dispatch(fetchLeaveTypes());
     dispatch(fetchDesignations());

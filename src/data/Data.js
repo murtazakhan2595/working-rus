@@ -4,6 +4,17 @@ import { FiMinusCircle } from "react-icons/fi";
 import { CiViewBoard } from "react-icons/ci";
 import { CiCircleMore } from "react-icons/ci";
 import { getAllCountries } from "countries-and-timezones";
+import {
+  fetchDepartments,
+  fetchLeaveTypes,
+  fetchDesignations,
+} from "state/slices/CommonSlice";
+import {
+  setUserLogout,
+  setUserProfile,
+  setToken,
+} from "state/slices/UserSlice.js";
+  import {fetchEmployees} from 'state/slices/EmpSlice'
 
 export const countryOptions = Object.keys(getAllCountries()).map(
   (countryCode) => ({
@@ -366,10 +377,20 @@ export function getManagerSelected(managers, managersList) {
   if (managers && managersList && managersList.length > 0) {
     managers = managers.split(", ") || [];
     const matchingObjects = managersList.filter((obj) => {
-      return managers.find((element) => parseInt(obj.value) === parseInt(element));
+      return managers.find(
+        (element) => parseInt(obj.value) === parseInt(element)
+      );
     });
     return matchingObjects;
   }
 
   return managers;
 }
+
+export const handleUpdateProfile = (dispatch, data) => {
+  dispatch(setUserProfile(data));
+  dispatch(fetchEmployees());
+  dispatch(fetchDepartments());
+  dispatch(fetchLeaveTypes());
+  dispatch(fetchDesignations());
+};

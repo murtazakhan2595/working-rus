@@ -23,7 +23,11 @@ import { getLeaveApplications, getLeaveTypes } from "app/hooks/leaveManagment";
 import { EmployeeNameInfo } from "components";
 import moment from "moment";
 import { StatusLabel } from "components";
-import { DepartmentName, LeaveType } from "utils/getValuesFromTables";
+import {
+  DepartmentName,
+  LeaveType,
+  EmployeeName,
+} from "utils/getValuesFromTables";
 
 const RenderAllApplications = ({ applicationsList }) => {
   const Leave = applicationsList;
@@ -73,9 +77,6 @@ const RenderAllApplications = ({ applicationsList }) => {
                 className="table-header-bg"
                 dataField="id"
                 dataAlign="center"
-                //   dataFormat={(cell) => (
-                //     <>{moment(cell).format("DD-MM-YYYY")}</>
-                //   )}
               >
                 ID
               </TableHeaderColumn>
@@ -83,7 +84,9 @@ const RenderAllApplications = ({ applicationsList }) => {
                 className="table-header-bg"
                 dataField="report_to"
                 dataAlign="center"
-                // dataFormat={(cell) => <>{moment(cell).format("DD-MM-YYYY")}</>}
+                dataFormat={(cell) => {
+                  return <EmployeeName value={cell} />;
+                }}
               >
                 Report To
               </TableHeaderColumn>

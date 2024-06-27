@@ -66,6 +66,25 @@ const getManagersList = async () => {
   return [];
 };
 
+const getEmployeeList = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/emp/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const employeeResponse = response.data;
+      const employeeList = employeeResponse.map((employee) => ({
+        value: employee.id,
+        label: `${employee.first_name} ${employee.last_name}`,
+      }));
+      return employeeList;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
 const getOrganizationList = async () => {
   try {
     const response = await axios.get(`${baseUrl}/organization/`, {
@@ -122,7 +141,6 @@ const deleteRecord = async (URL, recordName) => {
 };
 
 const handleLogout = () => {
-
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
     toast.error("Session Time Out", {
@@ -141,5 +159,6 @@ export {
   getList,
   deleteRecord,
   getOrganizationList,
+  getEmployeeList,
   handleLogout,
 };

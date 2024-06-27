@@ -55,6 +55,14 @@ function DesignationName({ value }) {
   return <>{designation ? designation.label : "N/A"}</>;
 }
 
+function EmployeeName({ value }) {
+  const employees = useSelector((state) => state.emp.employees);
+  const employee = employees.find(
+    (option) => option.value === parseInt(value)
+  );
+  return <>{employee ? employee.label : "N/A"}</>;
+}
+
 export {
   getCountryFullName,
   getEmployeeType,
@@ -64,4 +72,5 @@ export {
   DepartmentName,
   LeaveType,
   DesignationName,
+  EmployeeName,
 };
