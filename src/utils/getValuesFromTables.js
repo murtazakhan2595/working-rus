@@ -1,5 +1,4 @@
-import { getDepartmentList } from "app/hooks/general";
-import { getLeaveTypes } from "app/hooks/leaveManagment";
+import { getDepartmentList } from "../utils/";
 import {
   workTypeOptions,
   employeeTypeOptions,
@@ -7,6 +6,8 @@ import {
   locationTypeOptions,
   countryOptions,
 } from "data/Data";
+import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -48,6 +49,19 @@ const getDepartmentName = async (departmentValue) => {
   console.log("I am departments", departmentList);
   return department ? department.label : null;
 };
+function LeaveType(value) {
+  const LeaveTypes = useSelector((state) => state.common.leaveTypes);
+  const response = LeaveTypes.find((option) => option.value === value);
+  return <>{response ? response.label : "N/A"}</>;
+}
+// Function to get department name from department value
+function DepartmentName(value) {
+  const departments = useSelector((state) => state.common.departments);
+  const department = departments.find(
+    (option) => option.value === parseInt(value)
+  );
+  return <>{department ? department.label : "N/A"}</>;
+}
 
 
 export {
@@ -56,6 +70,6 @@ export {
   getWorkType,
   getJobType,
   getWorkLocation,
-  getDepartmentName,
-  getLeaveType,
+  DepartmentName,
+  LeaveType,
 };

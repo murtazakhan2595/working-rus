@@ -7,7 +7,9 @@ async function getLavefromEmployeeInfo(data) {
     employee_id: data?.id ?? "",
     name: `${data?.first_name} ${data.last_name}`,
     date: data?.joining_date ?? "",
-    position: data?.department_position ?? "",
+    position: data?.department_position
+      ? parseInt(data?.department_position)
+      : "",
     department: data?.department_name ?? "",
     joining_date: data?.joining_date ?? "",
     nationality: data?.nationality ?? "",

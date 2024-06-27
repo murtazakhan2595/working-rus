@@ -21,6 +21,7 @@ import {
   setUserProfile,
   setToken,
 } from "./state/slices/UserSlice.js";
+import { fetchDepartments,fetchLeaveTypes } from 'state/slices/CommonSlice'; // Adjust the path accordingly
 import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
@@ -71,6 +72,8 @@ function App() {
     };
     // setUserProfile(updateProfile);
     dispatch(setUserProfile(updateProfile));
+    dispatch(fetchDepartments());
+    dispatch(fetchLeaveTypes());
   };
 
   const getProfile = async () => {
