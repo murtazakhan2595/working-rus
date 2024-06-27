@@ -5,8 +5,7 @@ import {
   locationTypeOptions,
   countryOptions,
 } from "data/Data";
-import { connect } from "react-redux";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -33,18 +32,27 @@ function getWorkLocation(workLocation) {
   );
   return response ? response.label : "";
 }
-function LeaveType({value}) {
+function LeaveType({ value }) {
   const LeaveTypes = useSelector((state) => state.common.leaveTypes);
-  const response = LeaveTypes.find((option) => option.value === value);
+  const response = LeaveTypes.find(
+    (option) => option.value === parseInt(value)
+  );
   return <>{response ? response.label : "N/A"}</>;
 }
 // Function to get department name from department value
-function DepartmentName({value}) {
+function DepartmentName({ value }) {
   const departments = useSelector((state) => state.common.departments);
   const department = departments.find(
     (option) => option.value === parseInt(value)
   );
   return <>{department ? department.label : "N/A"}</>;
+}
+function DesignationName({ value }) {
+  const designations = useSelector((state) => state.common.designations);
+  const designation = designations.find(
+    (option) => option.value === parseInt(value)
+  );
+  return <>{designation ? designation.label : "N/A"}</>;
 }
 
 export {
@@ -55,4 +63,5 @@ export {
   getWorkLocation,
   DepartmentName,
   LeaveType,
+  DesignationName,
 };

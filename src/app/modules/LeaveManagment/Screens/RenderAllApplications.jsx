@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
 import { PageLoader, Header } from "components";
-import { Status, getDecision, StatusIcon } from "../Sections";
+import { Status, getDecision, StatusIcon, RenderStatus } from "../Sections";
 import {
   Card,
   CardHeader,
@@ -20,7 +20,7 @@ import { FaPlus } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
 import { Blocks } from "../Sections";
 import { getLeaveApplications, getLeaveTypes } from "app/hooks/leaveManagment";
-import { FilterInput } from "components/form-control";
+import { EmployeeNameInfo } from "components";
 import moment from "moment";
 import { StatusLabel } from "components";
 import { DepartmentName, LeaveType } from "utils/getValuesFromTables";
@@ -41,51 +41,6 @@ const RenderAllApplications = ({ applicationsList }) => {
   const toggleDropdown = (index) => {
     setOpenDropdownRow(index === openDropdownRow ? null : index);
   };
-  const renderStatus = (row) => {
-    const status = Status(row.status_hr);
-    const spanClassName = "text-[14px] flex justify-start items-center";
-    const itemClassName = "custom-dropdown-item py-2";
-    return (
-      <div>
-        <ButtonDropdown
-          isOpen={openDropdownRow === row.id}
-          toggle={() => toggleDropdown(row.id)}
-        >
-          <DropdownToggle className="border-0 shadow-none bg-transparent">
-            <StatusLabel status={status} />
-          </DropdownToggle>
-          <DropdownMenu start className="p-3 ml-2">
-            <DropdownItem className={`${itemClassName} fw-bold`}>
-              <span> Your Application Status</span>
-            </DropdownItem>
-            <DropdownItem className={`${itemClassName}`}>
-              <span className={`${spanClassName}`}>
-                <StatusIcon status={"Approved"} /> Viewed
-              </span>
-            </DropdownItem>
-            <DropdownItem className={`${itemClassName}`}>
-              <span className={`${spanClassName}`}>
-                <StatusIcon status={row.status_indirect_manager} />
-                Direct Manager Approval
-              </span>
-            </DropdownItem>
-            <DropdownItem className={`${itemClassName}`}>
-              <span className={`${spanClassName}`}>
-                <StatusIcon status={row.status_hr} />
-                In-Direct Manager Approval
-              </span>
-            </DropdownItem>
-            <DropdownItem className={`${itemClassName}`}>
-              <span className={`${spanClassName}`}>
-                <StatusIcon status={row.status_hr} />
-                {getDecision(status)}
-              </span>
-            </DropdownItem>
-          </DropdownMenu>
-        </ButtonDropdown>
-      </div>
-    );
-  };
 
   return (
     <div className="m-2 bg-white px-2 py-4">
@@ -99,22 +54,40 @@ const RenderAllApplications = ({ applicationsList }) => {
               className={"bootstrap-main-table"}
             >
               <TableHeaderColumn
+                className="table-header-bg"
+                dataField="employee_id"
+                dataAlign="center"
+                width="15%"
+                dataFormat={(cell, row) => (
+                  <EmployeeNameInfo
+                    name={row.name}
+                    department={row.department_name}
+                    position={row.position}
+                  />
+                )}
+              >
+                Employees
+              </TableHeaderColumn>
+              <TableHeaderColumn
                 isKey
                 className="table-header-bg"
-                dataField="start_date"
+                dataField="id"
                 dataAlign="center"
-                dataFormat={(cell) => <>{moment(cell).format("DD-MM-YYYY")}</>}
+                //   dataFormat={(cell) => (
+                //     <>{moment(cell).format("DD-MM-YYYY")}</>
+                //   )}
               >
-                Start Date
+                ID
               </TableHeaderColumn>
               <TableHeaderColumn
                 className="table-header-bg"
-                dataField="end_date"
+                dataField="report_to"
                 dataAlign="center"
-                dataFormat={(cell) => <>{moment(cell).format("DD-MM-YYYY")}</>}
+                // dataFormat={(cell) => <>{moment(cell).format("DD-MM-YYYY")}</>}
               >
-                End Date
+                Report To
               </TableHeaderColumn>
+
               <TableHeaderColumn
                 dataField="leave_type"
                 className="table-header-bg"
@@ -131,13 +104,33 @@ const RenderAllApplications = ({ applicationsList }) => {
                 headerAlign="center"
                 dataAlign="center"
               >
-                Total Days
+                No. of Leaves
               </TableHeaderColumn>
+              <TableHeaderColumn
+                className="table-header-bg"
+                dataField="start_date"
+                dataAlign="center"
+                dataFormat={(cell) => <>{moment(cell).format("DD-MM-YYYY")}</>}
+              >
+                Start Date
+              </TableHeaderColumn>
+
+              <TableHeaderColumn
+                className="table-header-bg"
+                dataField="end_date"
+                dataAlign="center"
+                dataFormat={(cell) => <>{moment(cell).format("DD-MM-YYYY")}</>}
+              >
+                End Date
+              </TableHeaderColumn>
+
               <TableHeaderColumn
                 className="table-header-bg text-center overflow-visible"
                 headerAlign="center"
                 dataAlign="center"
-                dataFormat={(cell, row) => renderStatus(row)}
+                dataFormat={(cell, row) => {
+                  return <RenderStatus row={row} />;
+                }}
               >
                 Status
               </TableHeaderColumn>

@@ -3,6 +3,7 @@ import { BsCircleFill } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 
 export const Status = (status) => {
+  if (!status) return "";
   if (status.includes("Approved")) return "Approved";
   else if (status.includes("Denied")) return "Denied";
   else if (status.includes("Pending")) return "Pending";

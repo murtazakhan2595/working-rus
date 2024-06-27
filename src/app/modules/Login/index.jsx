@@ -14,6 +14,11 @@ import { setUserProfile, setToken } from "../../../state/slices/UserSlice";
 import OfflinePopUp from "./OfflinePopUp";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import {
+  fetchDepartments,
+  fetchLeaveTypes,
+  fetchDesignations,
+} from "state/slices/CommonSlice";
 
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
@@ -38,6 +43,10 @@ function Login() {
 
   const handleUpdateProfile = (data) => {
     dispatch(setUserProfile(data));
+    
+    dispatch(fetchDepartments());
+    dispatch(fetchLeaveTypes());
+    dispatch(fetchDesignations());
   };
 
   const handleCheckboxChange = (e) => {

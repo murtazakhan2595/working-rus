@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getDepartmentList } from "app/hooks/general";
+import { getDepartmentList,getDesignationList } from "app/hooks/general";
 import { getLeaveTypes } from 'app/hooks/leaveManagment';
 
 // Define the initial state
 const initialState = {
     departments: [],
     leaveTypes: [],
+    designations:[],
     apiStatus: 'idle',
     error: null,
 };
@@ -29,6 +30,19 @@ export const fetchLeaveTypes = createAsyncThunk(
     async () => {
         try {
             const response = await getLeaveTypes();
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+);
+
+// Define the thunk to fetch designations
+export const fetchDesignations = createAsyncThunk(
+    'departments/fetchDesignations',
+    async () => {
+        try {
+            const response = await getDesignationList();
             return response;
         } catch (error) {
             throw error;
@@ -63,7 +77,14 @@ const commonSlice = createSlice({
                 state.apiStatus = 'succeeded';
                 state.leaveTypes = action.payload;
             })
-            .addCase(fetchLeaveTypes.rejected, (state, action) => {
+            .addCase(fetchDesignations.pending, (state) => {
+                state.apiStatus = 'loading';
+            })
+            .addCase(fetchDesignations.fulfilled, (state, action) => {
+                state.apiStatus = 'succeeded';
+                state.designations = action.payload;
+            })
+            .addCase(fetchDesignations.rejected, (state, action) => {
                 state.apiStatus = 'failed';
                 state.error = action.error.message;
             });
