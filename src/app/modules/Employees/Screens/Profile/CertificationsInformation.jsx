@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Row,
-  Col,
-  Button,
-  Form,
-} from "reactstrap";
+import { Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
@@ -42,7 +37,7 @@ const CertificationsInformation = ({
       .catch((error) => {
         console.log("Error fetching certification data:", error);
       });
-  }, [ employeeId]);
+  }, [employeeId]);
 
   const handleSubmit = async (data) => {
     console.log("Submitting data:", data);
@@ -186,9 +181,7 @@ const CertificationsInformation = ({
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
-                                  label={
-                                    "Certification or drag it here"
-                                  }
+                                  label={"Certification or drag it here"}
                                   required
                                   error={
                                     props.errors.certifications &&
@@ -209,7 +202,7 @@ const CertificationsInformation = ({
                     <Col md="12" className="text-left">
                       <Button
                         type="button"
-                        className="btn btn-outline-dark my-3 bg-white"
+                        className="btn btn-outline-dark my-3"
                         onClick={() => {
                           const length = props.values?.certifications?.length;
                           const index = length ? length : 0;
@@ -217,6 +210,12 @@ const CertificationsInformation = ({
                             `certifications[${index}]`,
                             EmployeeCertifiation
                           );
+                        }}
+                        tyle={{
+                          color: "black",
+                          ":hover": {
+                            color: "black",
+                          },
                         }}
                       >
                         + Add Another

@@ -26,6 +26,8 @@ import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 import {
   DepartmentName,
+  DesignationName,
+  ManagerName,
   getDepartmentName,
 } from "../../../../../utils/getValuesFromTables";
 
@@ -129,7 +131,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
         data: <DepartmentName value={userData?.department_name} />,
       },
 
-      { title: "Position", data: userData?.department_position },
+      {
+        title: "Position",
+        data: <DesignationName value={userData?.department_position} />,
+      },
       { title: "Work Email", data: userData?.work_email },
       { title: "Employee Type", data: userData?.employee_type },
     ],
@@ -140,7 +145,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
         title: "Work Location",
         data: getCountryFullName(userData?.employee_location),
       },
-      { title: "Direct Report To", data: userData?.direct_report },
+      {
+        title: "Direct Report To",
+        data: <ManagerName value={userData?.direct_report} />,
+      },
     ],
     [
       { title: "Department Head", data: userData?.department_manager },

@@ -63,6 +63,15 @@ function EmployeeName({ value }) {
   return <>{employee ? employee.label : "N/A"}</>;
 }
 
+
+function ManagerName({ value }) {
+  const managers = useSelector((state) => state.common.reportingManagers);
+  const manager = managers.find(
+    (option) => option.value === parseInt(value)
+  );
+  return <>{manager ? manager.label : "N/A"}</>;
+}
+
 export {
   getCountryFullName,
   getEmployeeType,
@@ -70,7 +79,8 @@ export {
   getJobType,
   getWorkLocation,
   DepartmentName,
-  LeaveType,
   DesignationName,
+  ManagerName,
+  LeaveType,
   EmployeeName,
 };
