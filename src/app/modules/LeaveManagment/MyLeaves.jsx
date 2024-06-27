@@ -61,9 +61,9 @@ const MyLeaves = ({ userProfile }) => {
       sortOrder,
     }));
   };
-  // useEffect(() => {
-  //     setFilterData({ employee_id: userProfile.id })
-  // }, [userProfile]);
+  useEffect(() => {
+      setFilterData({ employee_id: userProfile.id })
+  }, [userProfile]);
 
   useEffect(() => {
     const fetchLists = async () => {
