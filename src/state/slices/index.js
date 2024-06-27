@@ -10,6 +10,7 @@ import GetAssigneDtr from './GetAssigneDtr';
 import UpdateDtrSlice from './UpdateDtrSlice';
 import FilterSlice from './FilterSlice';
 import GetTeamDtrSlice from './GetTeamDtrSlice';
+import CommonSlice from './CommonSlice'
 
 const rootReducer = combineReducers({
   user: userSlice,
@@ -22,7 +23,8 @@ const rootReducer = combineReducers({
   getAssigne: GetAssigneDtr,
   updateDtr: UpdateDtrSlice,
   filters: FilterSlice,
-  teamDtr: GetTeamDtrSlice
+  teamDtr: GetTeamDtrSlice,
+  common: CommonSlice,
 });
 
 export default rootReducer;
