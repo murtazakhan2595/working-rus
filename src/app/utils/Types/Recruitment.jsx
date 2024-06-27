@@ -26,7 +26,7 @@ const ApplicationDetail = {
   current_salary: "",
   expected_salary: "",
   availability_for_interview: null,
-  application_status: "Pending",
+  application_status: "pending",
   notice_period:null,
 };
 
