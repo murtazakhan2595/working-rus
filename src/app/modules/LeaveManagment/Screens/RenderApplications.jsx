@@ -3,6 +3,7 @@ import moment from "moment";
 import { Row, Col, Button } from "reactstrap";
 import { DepartmentName, LeaveType } from "utils/getValuesFromTables";
 import { Status, getDecision, StatusIcon } from "../Sections";
+import { EmployeeNameInfo } from "components";
 
 const RenderApplications = ({ applicationsList, activeTab }) => {
   return (
@@ -47,20 +48,11 @@ const RenderApplication = ({ application }) => {
   return (
     <Row style={{ whiteSpace: "break-spaces" }}>
       <Col md={5} className="mb-3">
-        <div className="flex items-center">
-          <div className="bg-[#BE24A5] text-[#FAFBFC] flex font-semibold text-lg items-center justify-center rounded-full w-10 h-10">
-            {application?.name?.toUpperCase().charAt(0)}
-            {application?.last_name?.toUpperCase().charAt(0)}
-          </div>
-          <div className="flex flex-col ml-2">
-            <div className="text-base font-bold leading-normal text-[#323333]">
-              {`${application?.name}`}
-            </div>
-            <div className="text-base">
-              <DepartmentName value={application?.position} />
-            </div>
-          </div>
-        </div>
+        <EmployeeNameInfo
+          name={application?.name}
+          department={application?.department_name}
+          position={application?.position}
+        />
       </Col>
       <Col md={2} className="mb-3">
         <div>{application.total_leave} days</div>

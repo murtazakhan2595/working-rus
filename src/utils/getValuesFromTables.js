@@ -5,8 +5,7 @@ import {
   locationTypeOptions,
   countryOptions,
 } from "data/Data";
-import { connect } from "react-redux";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -35,7 +34,9 @@ function getWorkLocation(workLocation) {
 }
 function LeaveType({ value }) {
   const LeaveTypes = useSelector((state) => state.common.leaveTypes);
-  const response = LeaveTypes.find((option) => option.value === value);
+  const response = LeaveTypes.find(
+    (option) => option.value === parseInt(value)
+  );
   return <>{response ? response.label : "N/A"}</>;
 }
 // Function to get department name from department value
@@ -45,6 +46,21 @@ function DepartmentName({ value }) {
     (option) => option.value === parseInt(value)
   );
   return <>{department ? department.label : "N/A"}</>;
+}
+function DesignationName({ value }) {
+  const designations = useSelector((state) => state.common.designations);
+  const designation = designations.find(
+    (option) => option.value === parseInt(value)
+  );
+  return <>{designation ? designation.label : "N/A"}</>;
+}
+
+function EmployeeName({ value }) {
+  const employees = useSelector((state) => state.emp.employees);
+  const employee = employees.find(
+    (option) => option.value === parseInt(value)
+  );
+  return <>{employee ? employee.label : "N/A"}</>;
 }
 
 function DesignationName({ value }) {
@@ -73,4 +89,6 @@ export {
   DesignationName,
   ManagerName,
   LeaveType,
+  DesignationName,
+  EmployeeName,
 };

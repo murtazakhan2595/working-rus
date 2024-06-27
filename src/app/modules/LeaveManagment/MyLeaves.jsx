@@ -4,7 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
 import { dropdownOptions } from "data/Data";
 import { PageLoader, Header } from "components";
-import { Status, getDecision, StatusIcon } from "./Sections";
+import { Status, getDecision, StatusIcon, RenderStatus } from "./Sections";
 import {
   Card,
   CardHeader,
@@ -18,15 +18,15 @@ import {
 } from "reactstrap";
 import { cut, file, list } from "assets/images";
 import { FaPlus } from "react-icons/fa";
-import {LeaveStatus} from 'data/Data'
+import { LeaveStatus } from "data/Data";
 import { Blocks } from "./Sections";
 import { getLeaveApplications, getLeaveTypes } from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import moment from "moment";
 import { StatusLabel } from "components";
+import { LeaveType } from "utils/getValuesFromTables";
 
 const MyLeaves = ({ userProfile }) => {
-  
   const [Leave, setLeave] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { id } = useParams();
@@ -62,7 +62,7 @@ const MyLeaves = ({ userProfile }) => {
     }));
   };
   useEffect(() => {
-      setFilterData({ employee_id: userProfile.id })
+    setFilterData({ employee_id: userProfile.id });
   }, [userProfile]);
 
   useEffect(() => {
@@ -195,7 +195,7 @@ const MyLeaves = ({ userProfile }) => {
         </Col>
         <Col lg={6}>
           <Blocks
-             blocks={[
+            blocks={[
               {
                 label: "Approved",
                 value: totalApproved,
@@ -227,7 +227,7 @@ const MyLeaves = ({ userProfile }) => {
               <Row>
                 <Col lg={12}>
                   <div className="py-3 px-3 flex justify-between">
-                      <FilterInput
+                    <FilterInput
                       filters={[
                         {
                           type: "select",
@@ -244,7 +244,7 @@ const MyLeaves = ({ userProfile }) => {
                       ]}
                       onChange={handleFilterChange}
                     />
-                    
+
                     <div className="flex items-center gap-x-3">
                       <div className="font-lato text-[#47484C] text-[17px]">
                         New Leave Request
@@ -306,10 +306,7 @@ const MyLeaves = ({ userProfile }) => {
                           className="table-header-bg"
                           dataAlign="center"
                           dataFormat={(cell) => {
-                            const leaveType = leaveTypes.find(
-                              (obj) => obj.value === cell
-                            );
-                            return leaveType ? leaveType.label ?? "" : "";
+                            return <LeaveType value={cell} />;
                           }}
                         >
                           Leave Type
@@ -326,7 +323,9 @@ const MyLeaves = ({ userProfile }) => {
                           className="table-header-bg text-center overflow-visible"
                           headerAlign="center"
                           dataAlign="center"
-                          dataFormat={(cell, row) => renderStatus(row)}
+                          dataFormat={(cell, row) => {
+                            return <RenderStatus row={row} />;
+                          }}
                         >
                           Status
                         </TableHeaderColumn>

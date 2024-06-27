@@ -14,6 +14,12 @@ import { setUserProfile, setToken } from "../../../state/slices/UserSlice";
 import OfflinePopUp from "./OfflinePopUp";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import {
+  fetchDepartments,
+  fetchLeaveTypes,
+  fetchDesignations,
+} from "state/slices/CommonSlice";
+import { handleUpdateProfile } from "data/Data";
 
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
@@ -36,9 +42,12 @@ function Login() {
   const [isPopupVisible, setPopupVisible] = useState(!navigator.onLine);
   const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
 
-  const handleUpdateProfile = (data) => {
-    dispatch(setUserProfile(data));
-  };
+  // const handleUpdateProfile = (data) => {
+  //   dispatch(setUserProfile(data));
+  //   dispatch(fetchDepartments());
+  //   dispatch(fetchLeaveTypes());
+  //   dispatch(fetchDesignations());
+  // };
 
   const handleCheckboxChange = (e) => {
     setIsChecked(e.target.checked);
@@ -92,7 +101,7 @@ function Login() {
           };
 
           // Update the user profile in the Redux store
-          handleUpdateProfile(userProfile);
+          handleUpdateProfile(dispatch, userProfile);
 
           // Update the token in the Redux store
           dispatch(setToken(token));
