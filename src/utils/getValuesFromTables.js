@@ -47,6 +47,22 @@ function DepartmentName({ value }) {
   return <>{department ? department.label : "N/A"}</>;
 }
 
+function DesignationName({ value }) {
+  const designations = useSelector((state) => state.common.designations);
+  const designation = designations.find(
+    (option) => option.value === parseInt(value)
+  );
+  return <>{designation ? designation.label : "N/A"}</>;
+}
+
+function ManagerName({ value }) {
+  const managers = useSelector((state) => state.common.reportingManagers);
+  const manager = managers.find(
+    (option) => option.value === parseInt(value)
+  );
+  return <>{manager ? manager.label : "N/A"}</>;
+}
+
 export {
   getCountryFullName,
   getEmployeeType,
@@ -54,5 +70,7 @@ export {
   getJobType,
   getWorkLocation,
   DepartmentName,
+  DesignationName,
+  ManagerName,
   LeaveType,
 };

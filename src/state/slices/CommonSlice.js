@@ -1,18 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getDepartmentList } from "app/hooks/general";
+import { getDepartmentList, getDesignationList, getManagersList } from "app/hooks/general";
 import { getLeaveTypes } from 'app/hooks/leaveManagment';
 
 // Define the initial state
 const initialState = {
     departments: [],
     leaveTypes: [],
+    designations: [],
+    reportingManagers: [],
     apiStatus: 'idle',
     error: null,
 };
 
 // Define the thunk to fetch departments
 export const fetchDepartments = createAsyncThunk(
-    'departments/fetchDepartments',
+    'common/fetchDepartments',
     async () => {
         try {
             const response = await getDepartmentList();
@@ -25,7 +27,7 @@ export const fetchDepartments = createAsyncThunk(
 
 // Define the thunk to fetch leave types
 export const fetchLeaveTypes = createAsyncThunk(
-    'departments/fetchLeaveTypes',
+    'common/fetchLeaveTypes',
     async () => {
         try {
             const response = await getLeaveTypes();
@@ -36,15 +38,42 @@ export const fetchLeaveTypes = createAsyncThunk(
     }
 );
 
+// Define the thunk to fetch designations
+export const fetchDesignations = createAsyncThunk(
+    'common/fetchDesignations',
+    async () => {
+        try {
+            const response = await getDesignationList();
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+);
+
+// Define the thunk to fetch reporting managers
+export const fetchReportingManagers = createAsyncThunk(
+    'common/fetchReportingManagers',
+    async () => {
+        try {
+            const response = await getManagersList();
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+);
+
 // Define the slice
 const commonSlice = createSlice({
-    name: 'departments',
+    name: 'common',
     initialState,
     reducers: {
         // Any synchronous actions can be added here
     },
     extraReducers: (builder) => {
         builder
+            // Departments
             .addCase(fetchDepartments.pending, (state) => {
                 state.apiStatus = 'loading';
             })
@@ -56,6 +85,7 @@ const commonSlice = createSlice({
                 state.apiStatus = 'failed';
                 state.error = action.error.message;
             })
+            // Leave Types
             .addCase(fetchLeaveTypes.pending, (state) => {
                 state.apiStatus = 'loading';
             })
@@ -66,9 +96,34 @@ const commonSlice = createSlice({
             .addCase(fetchLeaveTypes.rejected, (state, action) => {
                 state.apiStatus = 'failed';
                 state.error = action.error.message;
+            })
+            // Designations
+            .addCase(fetchDesignations.pending, (state) => {
+                state.apiStatus = 'loading';
+            })
+            .addCase(fetchDesignations.fulfilled, (state, action) => {
+                state.apiStatus = 'succeeded';
+                state.designations = action.payload;
+            })
+            .addCase(fetchDesignations.rejected, (state, action) => {
+                state.apiStatus = 'failed';
+                state.error = action.error.message;
+            })
+            // Reporting Managers
+            .addCase(fetchReportingManagers.pending, (state) => {
+                state.apiStatus = 'loading';
+            })
+            .addCase(fetchReportingManagers.fulfilled, (state, action) => {
+                state.apiStatus = 'succeeded';
+                state.reportingManagers = action.payload;
+            })
+            .addCase(fetchReportingManagers.rejected, (state, action) => {
+                state.apiStatus = 'failed';
+                state.error = action.error.message;
             });
     },
 });
 
 // Export the reducer
 export default commonSlice.reducer;
+
