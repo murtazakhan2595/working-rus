@@ -19,6 +19,7 @@ import {
   LeaveApplications,
   MyLeaves,
   CreateLeaveRequest,
+  LeaveAllotement,
 } from "app/modules/LeaveManagment";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
@@ -36,7 +37,6 @@ import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
 import Employee from "./app/modules/Employees/Employee.jsx";
-import LeaveApplicationListHR from "./app/modules/LeaveApplication/LeaveApplicationListHR.jsx";
 import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
 import LeaveRequestHR from "./app/modules/LeaveApplication/LeaveRequestHR.jsx";
 import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestManager.jsx";
@@ -138,7 +138,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    setUserRole(userProfile.user_role);
+    setUserRole(userProfile.role);
   }, [userProfile]);
 
   if (loading) {
@@ -189,7 +189,7 @@ function App() {
 
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
 
-              <Route path="/leave-list" element={<LeaveApplicationListHR />} />
+              <Route path="/leave-allotement" element={<LeaveAllotement />} />
               <Route
                 path="/leave-request/:id"
                 element={<LeaveRequestManager isSidebarOpen={isSidebarOpen} />}

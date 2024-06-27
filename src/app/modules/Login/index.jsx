@@ -93,15 +93,8 @@ function Login() {
         });
 
         if (userProfileResponse.status === 200) {
-          const userProfile = {
-            id: userProfileResponse.data.id,
-            username: userProfileResponse.data.username,
-            is_filled: userProfileResponse.data.is_filled,
-            role: userProfileResponse.data.user_role,
-          };
-
           // Update the user profile in the Redux store
-          handleUpdateProfile(dispatch, userProfile);
+          handleUpdateProfile(dispatch, userProfileResponse.data);
 
           // Update the token in the Redux store
           dispatch(setToken(token));
@@ -124,7 +117,7 @@ function Login() {
             autoClose: 1000,
           });
 
-          if (userProfile.is_filled) {
+          if (userProfileResponse.data.is_filled) {
             navigate("/");
           } else {
             navigate("/create-profile");

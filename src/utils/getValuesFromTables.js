@@ -65,7 +65,7 @@ function EmployeeName({ value }) {
 
 
 function ManagerName({ value }) {
-  const managers = useSelector((state) => state.common.reportingManagers);
+  const managers = useSelector((state) => state.emp.reportingManagers);
   const manager = managers.find(
     (option) => option.value === parseInt(value)
   );

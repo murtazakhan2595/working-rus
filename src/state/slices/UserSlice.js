@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const initialState = {
   userProfile: {
@@ -10,21 +10,25 @@ export const initialState = {
   isLogin: null,
   sidebarRefresh: false,
   token: "",
-  baseUrl:
-    window.location.href.startsWith("https://hrms.tecbrix.cloud")
+  baseUrl: window.location.href.startsWith("https://hrms.tecbrix.cloud")
     ? "https://hrms.tecbrix.cloud:8080/api"
     : window.location.href.startsWith("http://localhost")
     ? "https://staging-hrms-be.tecbrix.cloud/api"
-    : "https://staging-hrms-be.tecbrix.cloud/api"
+    : "https://staging-hrms-be.tecbrix.cloud/api",
 };
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     setUserProfile(state, action) {
       state.isLogin = true;
-      state.userProfile = action.payload;
+      state.userProfile = {
+        id: action.payload.id,
+        username: action.payload.username,
+        is_filled: action.payload.is_filled,
+        role: action.payload.user_role,
+      };
     },
     setUserLogout(state) {
       state.isLogin = false;
@@ -33,7 +37,7 @@ const userSlice = createSlice({
         id: 0,
         username: null,
         is_filled: null,
-        role: null
+        role: null,
       };
     },
     setToken(state, action) {
@@ -41,9 +45,10 @@ const userSlice = createSlice({
     },
     setSidebarRefresh(state, action) {
       state.sidebarRefresh = action.payload;
-    }
-  }
+    },
+  },
 });
 
-export const { setUserProfile, setUserLogout, setToken, setSidebarRefresh } = userSlice.actions;
+export const { setUserProfile, setUserLogout, setToken, setSidebarRefresh } =
+  userSlice.actions;
 export default userSlice.reducer;

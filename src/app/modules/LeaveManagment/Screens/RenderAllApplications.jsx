@@ -83,7 +83,8 @@ const RenderAllApplications = ({ applicationsList }) => {
               <TableHeaderColumn
                 className="table-header-bg"
                 dataField="report_to"
-                dataAlign="center"
+                headerAlign="left"
+                dataAlign="left"
                 dataFormat={(cell) => {
                   return <EmployeeName value={cell} />;
                 }}
@@ -129,10 +130,11 @@ const RenderAllApplications = ({ applicationsList }) => {
 
               <TableHeaderColumn
                 className="table-header-bg text-center overflow-visible"
+                dataField="status_hr"
                 headerAlign="center"
                 dataAlign="center"
                 dataFormat={(cell, row) => {
-                  return <RenderStatus row={row} />;
+                  return <StatusLabel status={Status(cell)} />;
                 }}
               >
                 Status
@@ -142,7 +144,9 @@ const RenderAllApplications = ({ applicationsList }) => {
                 className="table-header-bg text-center"
                 dataAlign="center"
                 headerAlign="center"
-                dataFormat={(cell, row) => renderView(row)}
+                dataFormat={(cell, row) => {
+                  return <RenderStatus row={row} />;
+                }}
               ></TableHeaderColumn>
             </BootstrapTable>
           </div>

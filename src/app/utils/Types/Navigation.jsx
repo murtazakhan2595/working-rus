@@ -318,7 +318,7 @@ function getNavigation(userRole, projects) {
                 ? [
                   {
                     name: "Leave Status",
-                    url: "/leave-list",
+                    url: "/leave-allotement",
                   },
                 ]
                 : []),

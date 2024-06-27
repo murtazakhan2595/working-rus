@@ -10,11 +10,9 @@ import {
   fetchDesignations,
 } from "state/slices/CommonSlice";
 import {
-  setUserLogout,
   setUserProfile,
-  setToken,
 } from "state/slices/UserSlice.js";
-  import {fetchEmployees} from 'state/slices/EmpSlice'
+import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
 
 export const countryOptions = Object.keys(getAllCountries()).map(
   (countryCode) => ({
@@ -393,4 +391,5 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(fetchDepartments());
   dispatch(fetchLeaveTypes());
   dispatch(fetchDesignations());
+  dispatch(fetchReportingManagers());
 };

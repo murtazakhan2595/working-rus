@@ -25,7 +25,10 @@ const RenderApplications = ({ applicationsList, activeTab }) => {
                       boxShadow: "0.5px 0px 5px 0px rgba(0, 0, 0, 0.19)",
                     }}
                   >
-                    <RenderApplication application={application} />
+                    <RenderApplication
+                      application={application}
+                      activeTab={activeTab}
+                    />
                   </div>
                 </Col>
               )}
@@ -44,7 +47,7 @@ const RenderApplications = ({ applicationsList, activeTab }) => {
   );
 };
 
-const RenderApplication = ({ application }) => {
+const RenderApplication = ({ application, activeTab }) => {
   return (
     <Row style={{ whiteSpace: "break-spaces" }}>
       <Col md={5} className="mb-3">
@@ -65,25 +68,57 @@ const RenderApplication = ({ application }) => {
       </Col>
       <Col md={5} className="mb-3">
         <div>
-          <LeaveType value={application?.leave_type} />
+          <b>
+            <LeaveType value={application?.leave_type} />
+          </b>
           <br />
           {application?.reason}
         </div>
       </Col>
       <Col md={7} className="mb-3">
         <div className="flex justify-end gap-2">
-          <Button
-            className="btn btn-outline-danger bg-white shadow-none"
-            style={{ color: "#dc3545" }}
-          >
-            Deny
-          </Button>
-          <Button
-            className="btn btn-outline-success bg-white shadow-none"
-            style={{ color: "#198754" }}
-          >
-            Approve
-          </Button>
+          {activeTab === "Approved" && (
+            <Button
+              className="btn bg-[#E6F2EE] shadow-none "
+              style={{
+                color: "#ACADB0",
+                borderColor: "#AEC7BE",
+                backgroundColor: "#E6F2EE",
+                width: "200px",
+              }}
+            >
+              Approved
+            </Button>
+          )}
+          {activeTab === "Rejected" && (
+            <Button
+              className="btn shadow-none"
+              style={{
+                color: "#ACADB0",
+                borderColor: "#EABFBC",
+                backgroundColor: "#F2DCDA",
+                width: "200px",
+              }}
+            >
+              Denied
+            </Button>
+          )}
+          {activeTab === "Pending" && (
+            <Button
+              className="btn btn-outline-danger bg-white shadow-none"
+              style={{ color: "#dc3545" }}
+            >
+              Deny
+            </Button>
+          )}
+          {activeTab === "Pending" && (
+            <Button
+              className="btn btn-outline-success bg-white shadow-none"
+              style={{ color: "#198754" }}
+            >
+              Approve
+            </Button>
+          )}
           <Button
             className="btn btn-outline-primary bg-white border-0 shadow-none"
             style={{ color: "#0d6efd" }}
