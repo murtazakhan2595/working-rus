@@ -581,6 +581,19 @@ const FilterInput = ({ filters, onChange }) => {
                   />
                 </div>
               );
+            } else if (filter.type === "text") {
+              return (
+                <input
+                  type="text"
+                  placeholder={filter.placeholder}
+                  className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
+                  name={filter.name}
+                  id={filter.name}
+                  onChange={(option) => {
+                    onChange(filter.name, option.target.value);
+                  }}
+                />
+              );
             } else if (filter.type === "select") {
               return (
                 <Select

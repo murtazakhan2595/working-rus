@@ -4,10 +4,11 @@ import { Link } from "react-router-dom";
 import { IoCalendarOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import LeaveAllotementForm from "./LeaveAllotementForm";
+import AllotLeaves from "./Screens/AllotLeaves";
 import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
 import { getList } from "app/hooks/general";
 import { BsBoxArrowUpRight } from "react-icons/bs";
+import { CiEdit } from "react-icons/ci";
 import { PiDotsThreeOutlineFill } from "react-icons/pi";
 import { EmployeeNameInfo, Header, PageLoader } from "components";
 import {
@@ -21,20 +22,10 @@ import moment from "moment";
 import { LiaBriefcaseSolid } from "react-icons/lia";
 import { LeaveStatus } from "data/Data";
 import { FilterInput } from "components/form-control";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Row,
-  Col,
-} from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { FaPlus } from "react-icons/fa";
 
-const LeaveAllotement = () => {
+const LeaveAllotement = ({ departments, designations }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [openLeaveAllotment, setOpenLeaveAllotment] = useState(null);
   const [filterData, setFilterData] = useState({});
@@ -68,8 +59,8 @@ const LeaveAllotement = () => {
     };
   }, []);
 
-  const handleDotsClick = (post) => {
-    setOpenLeaveAllotment(post);
+  const handleAllotLeaves = (employeeLeaveTypes) => {
+    setOpenLeaveAllotment(employeeLeaveTypes);
   };
 
   const closeModal = () => {
@@ -94,9 +85,9 @@ const LeaveAllotement = () => {
       <Header title="Employee Leave Allotement" />
       {openLeaveAllotment && (
         <Col md={6}>
-          <LeaveAllotementForm
-            employee={openLeaveAllotment}
-            onClose={closeModal}
+          <AllotLeaves
+            employeeData={openLeaveAllotment}
+            closeModel={closeModal}
           />
         </Col>
       )}
@@ -106,42 +97,39 @@ const LeaveAllotement = () => {
             <CardHeader>
               <Row>
                 <Col lg={12}>
-                  <div className="py-3 px-3 flex justify-between">
+                  <div className="py-3 px-3">
                     <FilterInput
                       filters={[
                         {
-                          type: "select",
-                          option: leaveTypes,
-                          name: "leave_type",
-                          placeholder: "Leave Type",
+                          type: "text",
+                          placeholder: "Search by ID",
+                          name: "id",
+                        },
+                        {
+                          type: "text",
+                          placeholder: "Search by Name",
+                          name: "first_name",
                         },
                         {
                           type: "select",
-                          option: LeaveStatus,
-                          name: "status_hr",
-                          placeholder: "Status",
+                          option: departments,
+                          name: "department_name",
+                          placeholder: "Department",
+                        },
+                        {
+                          type: "select",
+                          option: designations,
+                          name: "department_position",
+                          placeholder: "Designation",
                         },
                       ]}
                       onChange={handleFilterChange}
                     />
-
-                    <div className="flex items-center gap-x-3">
-                      <div className="font-lato text-[#47484C] text-[17px]">
-                        New Leave Request
-                      </div>
-                      <Link
-                        to="/leave-request"
-                        className="p-2 rounded-md bg-black"
-                        style={{ fontSize: "12px" }}
-                      >
-                        <FaPlus className="text-white" />
-                      </Link>
-                    </div>
                   </div>
                 </Col>
               </Row>
             </CardHeader>
-            <CardBody>
+            <CardBody className="pt-0">
               {isLoading ? (
                 <Row>
                   <Col lg={12}>
@@ -154,7 +142,7 @@ const LeaveAllotement = () => {
                     <div>
                       <RenderEmployees
                         employeeList={employeeList}
-                        handleDotsClick={handleDotsClick}
+                        handleAllotLeaves={handleAllotLeaves}
                       />
                     </div>
                   </Col>
@@ -168,18 +156,20 @@ const LeaveAllotement = () => {
   );
 };
 
-const RenderEmployees = ({ employeeList, handleDotsClick }) => {
+const RenderEmployees = ({ employeeList, handleAllotLeaves }) => {
   return (
     <div className="m-2 bg-white">
       {employeeList && employeeList.length > 0 ? (
         employeeList.map((employee) => (
           <div className={`whitespace-nowrap`} key={employee.id}>
-            <div className="px-4 pt-5">
-              <RenderEmployee
-                employee={employee}
-                handleDotsClick={handleDotsClick}
-              />
-            </div>
+            {employee.id && (
+              <div className="px-4 pt-5">
+                <RenderEmployee
+                  employee={employee}
+                  handleAllotLeaves={handleAllotLeaves}
+                />
+              </div>
+            )}
           </div>
         ))
       ) : (
@@ -194,7 +184,7 @@ const RenderEmployees = ({ employeeList, handleDotsClick }) => {
   );
 };
 
-const RenderEmployee = ({ employee, handleDotsClick }) => {
+const RenderEmployee = ({ employee, handleAllotLeaves }) => {
   const [employeeLeaveTypes, setEmployeeLeaveTypes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
@@ -202,9 +192,16 @@ const RenderEmployee = ({ employee, handleDotsClick }) => {
       setIsLoading(true);
       try {
         const data = await getEmployeeLeaveTypes({
-          employee_id: employee.employee_id,
+          employee_id: employee.id,
         });
-        setEmployeeLeaveTypes(data);
+        setEmployeeLeaveTypes({
+          data: data.results,
+          leaveTypes: data.count,
+          allotedLeave: data.results.reduce(
+            (sum, leave) => sum + leave.total_alloted_leaves,
+            0
+          ),
+        });
       } catch (error) {
         console.error("Error fetching employeeLeaveTypes:", error);
       } finally {
@@ -220,15 +217,23 @@ const RenderEmployee = ({ employee, handleDotsClick }) => {
         name={`${employee.first_name} ${employee.last_name}`}
         department={employee.department_name}
         position={employee.department_position}
+        id={employee.id}
+        leaveTypes={employeeLeaveTypes.leaveTypes}
+        allotedLeave={employeeLeaveTypes.allotedLeave}
       />
       <div className="text-base text-baseGray flex items-center gap-x-4">
-        <Link
-          to="/applicants"
-          state={{ employeeId: employee.id }}
-          className="border px-3 py-2 rounded-md border-gray-400"
+        <div
+          className="border px-3 py-2 rounded-md border-gray-400 flex cursor-pointer"
+          onClick={() => {
+            handleAllotLeaves({
+              ...employee,
+              ...{ employeeLeaveDetails: employeeLeaveTypes.data },
+            });
+          }}
         >
-          View applications
-        </Link>
+          <CiEdit className="text-2xl cursor-pointer opacity-80 mr-2" />
+          Allot leaves
+        </div>
       </div>
     </div>
   );
@@ -236,8 +241,8 @@ const RenderEmployee = ({ employee, handleDotsClick }) => {
 
 const mapStateToProps = (state) => {
   return {
-    token: state.user.token,
-    employeeList: state.emp.employees,
+    designations: state.common.designations,
+    departments: state.common.departments,
   };
 };
 
