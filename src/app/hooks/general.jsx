@@ -112,6 +112,9 @@ const getList = async (URL) => {
     if (response.status === 200) return response.data;
     else return [];
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
