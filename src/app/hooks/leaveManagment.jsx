@@ -43,11 +43,11 @@ const addLeaveRequest = async (values) => {
 
 const getLeaveTypes = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/leavecomponents/`, {
+    const response = await axios.get(`${baseUrl}/employeeleavetypes/`, {
       headers: headers(),
     });
     if (response.status === 200) {
-      const leaveTypeResponse = response.data;
+      const leaveTypeResponse = response.data?.results;
       const leaveTypesList = leaveTypeResponse.map((type) => ({
         value: type.id,
         label: type.name,
