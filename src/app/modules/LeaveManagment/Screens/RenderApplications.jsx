@@ -4,6 +4,8 @@ import { Row, Col, Button } from "reactstrap";
 import { DepartmentName, LeaveType } from "utils/getValuesFromTables";
 import { Status, getDecision, StatusIcon } from "../Sections";
 import { EmployeeNameInfo } from "components";
+import { useState } from "react";
+import ViewLeaveDetails from "../Sections/ViewLeaveDetails";
 
 const RenderApplications = ({ applicationsList, activeTab }) => {
   return (
@@ -48,6 +50,19 @@ const RenderApplications = ({ applicationsList, activeTab }) => {
 };
 
 const RenderApplication = ({ application, activeTab }) => {
+  console.log("i am application", application);
+  const [selectedLeave, setSelectedLeave] = useState(null);
+
+  const handleLeaveDetails = (appDetails) => {
+    setSelectedLeave(appDetails);
+  };
+
+
+  const closeModal = () => {
+    setSelectedLeave(null);
+  };
+
+
   return (
     <Row style={{ whiteSpace: "break-spaces" }}>
       <Col md={5} className="mb-3">
@@ -122,6 +137,9 @@ const RenderApplication = ({ application, activeTab }) => {
           <Button
             className="btn btn-outline-primary bg-white border-0 shadow-none"
             style={{ color: "#0d6efd" }}
+            onClick={() => {
+              handleLeaveDetails(application);
+            }}
           >
             Detail
           </Button>
@@ -142,6 +160,13 @@ const RenderApplication = ({ application, activeTab }) => {
           <StatusBar label={"HR"} value={application?.status_hr} />
         </div>
       </Col>
+
+
+      {selectedLeave && (
+          <Col md={6}>
+            <ViewLeaveDetails application={selectedLeave} onClose={closeModal} />
+          </Col>
+        )}
     </Row>
   );
 };
