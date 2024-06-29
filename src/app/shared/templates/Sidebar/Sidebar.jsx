@@ -1,27 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { IoIosSearch, IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { MdOutlineLogout } from "react-icons/md";
-import { AiOutlinePlus } from "react-icons/ai";
 import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
-  FaChevronLeft,
-  FaChevronRight,
 } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
-import { Outlet, Link, useNavigate, NavLink } from "react-router-dom";
-import logo from "../../../../assets/images/logo.png";
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import logo from "assets/images/logo.png";
 import { connect } from "react-redux";
-import ProjectModel from "./ProjectModel";
-import Cookies from "universal-cookie";
 import axios from "axios";
 import { BsPersonGear } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { toggleDropdown } from "../../../../state/slices/DropdownSlice";
-import getNavigation from "../../../utils/Types/Navigation";
-import { setUserLogout } from "../../../../state/actions/UserAction";
+import { toggleDropdown } from "state/slices/DropdownSlice";
+import getNavigation from "app/utils/Types/Navigation";
+import { setUserLogout } from "state/actions/UserAction";
 import NavigationMenue from "./NavigationMenue";
 
 const Sidebar = ({
@@ -32,39 +26,12 @@ const Sidebar = ({
   userProfile,
   sidebarRefresh,
 }) => {
-  const normalLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"
-    } items-center gap-x-1 text-[#5C5E64] hover:border hover:border-blue-300 text-[10px]`;
-  const activeLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"
-    } items-center gap-x-1 bg-[#DAEFF8] text-[#5C5E64]`;
-  // const ComingActiveLink = `flex rounded-md my-1 py-1.5 ${!isSidebarOpen ? "px-1" : "px-4"} items-center gap-x-1 text-[#5C5E64]`;
 
-  const navigate = useNavigate();
-  const cookies = new Cookies();
-  const [isModelOpen, setisModelOpen] = useState(false);
-  const [projects, setProjects] = useState([]);
-  const [nextPage, setNextPage] = useState("");
-  const [previousPage, setPreviousPage] = useState("");
-  const [projectsCount, setProjectCount] = useState(0);
   const [profileImage, setProfileImage] = useState(null);
   const [employee, setEmployee] = useState(null);
   const [Navigation, setNavigation] = useState(null);
   const {
-    isDbOpen,
-    isServiceHubOpen,
-    isRecruitmentOpen,
-    isPerformanceOpen,
-    isPayrollOpen,
-    isPeopleEngagementOpen,
-    isPersonalDevelopmentOpen,
-    isLeaveOpen,
-    isProjectOpen,
     isProfileOpen,
-    isDtrOpen,
-    isTransferOpen,
-    isLetterRequestOpen,
-    isTodoOpen,
-    isDevelopmentPlanOpen,
-    isSettingsOpen,
   } = useSelector((state) => state.dropdown);
   const dispatch = useDispatch();
   const handleToggleDropdown = (dropdownName) => {
@@ -73,56 +40,6 @@ const Sidebar = ({
   const handleSidebarToggle = () => {
     setIsSidebarOpen((prev) => !prev);
   };
-
-  const closeProjectModal = () => {
-    setisModelOpen(false);
-  };
-
-  const dropdownOpen = {
-    HRDatabase: isDbOpen,
-    serviceHub: isServiceHubOpen,
-    Recruitment: isRecruitmentOpen,
-    LeaveManagement: isLeaveOpen,
-    performance: isPerformanceOpen,
-    payrollAndAttendance: isPayrollOpen,
-    peopleEngagement: isPeopleEngagementOpen,
-    personalDevelopment: isPersonalDevelopmentOpen,
-    dtr: isDtrOpen,
-    transfer: isTransferOpen,
-    letterRequest: isLetterRequestOpen,
-    todo: isTodoOpen,
-    developmentPlan: isDevelopmentPlanOpen,
-    settings: isSettingsOpen,
-  };
-
-  const getProjects = async (
-    url = `${baseUrl}/project/${userProfile.role === 1 || userProfile.role === 2
-      ? ""
-      : `?search={"project_members":[${userProfile.id}]}`
-      }`
-  ) => {
-    try {
-      await axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            setProjects(response.data);
-            setNavigation(getNavigation(employee.user_role, response.data));
-            setProjectCount(response.data.count);
-            setNextPage(response.data.next);
-            setPreviousPage(response.data.previous);
-          }
-        });
-    } catch (error) { }
-  };
-
-  useEffect(() => {
-    getProjects();
-  }, [isModelOpen, sidebarRefresh]);
 
   const fetchData = async () => {
     const employeeResponse = await axios.get(
@@ -135,7 +52,7 @@ const Sidebar = ({
     );
     const employeeData = employeeResponse.data;
     setEmployee(employeeData);
-    setNavigation(getNavigation(employeeData.user_role, projects));
+    setNavigation(getNavigation(employeeData.user_role));
     setProfileImage(
       employeeResponse.data?.profile_picture?.file ||
       employeeResponse.data?.profile_picture
@@ -192,8 +109,6 @@ const Sidebar = ({
 
         <Outlet isSidebarOpen={isSidebarOpen} />
       </div>
-
-      {isModelOpen && <ProjectModel onClose={closeProjectModal} />}
     </>
   );
 };

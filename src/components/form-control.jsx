@@ -340,10 +340,10 @@ const CustomButton = ({ label, onClick, disabled }) => {
   );
 };
 
-const CustomDarkButton = ({ label, onClick, disabled, style }) => {
+const CustomDarkButton = ({ label, onClick, disabled, style, className }) => {
   return (
     <Button
-      className="btn btn-dark"
+      className={`btn btn-dark ${className ?? ""}`}
       onClick={onClick}
       disabled={disabled}
       style={style}
@@ -560,6 +560,8 @@ const TextAreaInput = ({
 };
 
 const FilterInput = ({ filters, onChange }) => {
+  const classNamesStyle =
+    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md";
   return (
     <>
       <div className="flex items-center gap-x-3">
@@ -572,7 +574,7 @@ const FilterInput = ({ filters, onChange }) => {
                   <input
                     type="search"
                     placeholder={filter.placeholder}
-                    className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-10 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
+                    className={`${filter.className ?? classNamesStyle} pl-10`}
                     name={filter.name}
                     id={filter.name}
                     onChange={(option) => {
@@ -586,7 +588,7 @@ const FilterInput = ({ filters, onChange }) => {
                 <input
                   type="text"
                   placeholder={filter.placeholder}
-                  className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
+                  className={filter.className ?? classNamesStyle}
                   name={filter.name}
                   id={filter.name}
                   onChange={(option) => {
@@ -614,7 +616,8 @@ const FilterInput = ({ filters, onChange }) => {
                 <input
                   type="date"
                   placeholder={filter.placeholder}
-                  className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 px-3 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
+                  //                  className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 px-3 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
+                  className={filter.className ?? classNamesStyle}
                   name={filter.name}
                   id={filter.name}
                   dateFormat="dd-mm-yyyy"
@@ -633,6 +636,7 @@ const FilterInput = ({ filters, onChange }) => {
                   values={filter.values}
                   mainHeading={filter.mainHeading}
                   label={filter.placeholder}
+                  className={filter.className ?? classNamesStyle}
                 />
               );
             } else {

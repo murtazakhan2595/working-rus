@@ -7,7 +7,14 @@ import {
 } from "reactstrap";
 import { CheckBoxInput } from "./form-control";
 
-const CheckboxDropdown = ({ items, onChange, values, mainHeading, label }) => {
+const CheckboxDropdown = ({
+  items,
+  onChange,
+  values,
+  mainHeading,
+  label,
+  className,
+}) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(false);
 
   const toggleDropdown = () => {
@@ -21,7 +28,11 @@ const CheckboxDropdown = ({ items, onChange, values, mainHeading, label }) => {
         toggle={() => {}}
         className="float-end"
       >
-        <DropdownToggle className="custom-dropdown-toggle placeholder-[#5C5E64] rounded-md">
+        <DropdownToggle
+          className={`${
+            className ?? "custom-dropdown-toggle"
+          } placeholder-[#5C5E64] rounded-md`}
+        >
           <span onClick={() => toggleDropdown()}>{label}</span>
         </DropdownToggle>
         <DropdownMenu end className="custom-dropdown-menu">

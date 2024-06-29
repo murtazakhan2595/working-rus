@@ -25,7 +25,10 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
 
   const handleSubmit = (values, resetForm) => {
     console.log(values);
-    const response = allotLeavesToEmployee(employeeData.id, values.employeeLeaveDetails);
+    const response = allotLeavesToEmployee(
+      employeeData.id,
+      values.employeeLeaveDetails
+    );
     if (response) {
       resetForm();
       closeModel();
@@ -105,6 +108,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
                 name: "sorting",
                 placeholder: "Filters",
                 values: filterData,
+                className: "custom-dropdown-toggle-filter",
               },
             ]}
             onChange={handleFilterChange}
@@ -127,7 +131,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
         >
           {(props) => (
             <Form onSubmit={props.handleSubmit}>
-              <Row>
+              <Row className="mx-1">
                 {filterData?.leave_type &&
                   filterData?.leave_type.length > 0 &&
                   filterData?.leave_type.map((leave_type) => {
@@ -172,6 +176,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
                       props.handleSubmit();
                     }}
                     label={`Allot`}
+                    className="w-100"  
                   />
                 </Col>
               </Row>
@@ -187,7 +192,7 @@ const AllotLeave = ({ leaveType, errors, touched, values, onChange }) => {
   return (
     <>
       <Row
-        className="mb-4 shadow-sm"
+        className="mb-4 shadow-sm mx-1"
         style={{
           border: "1px solid #DADADA",
           borderRadius: "9px",
@@ -196,11 +201,14 @@ const AllotLeave = ({ leaveType, errors, touched, values, onChange }) => {
         }}
       >
         <Col md="6">
-          <div className="text-[20px] text-center">
+          <div
+            className="text-[18px] text-center"
+            style={{ marginTop: "12px" }}
+          >
             <LeaveType value={leaveType} />
           </div>
         </Col>
-        <Col md="6" className="force-white-bg">
+        <Col md="6" className="force-white-bg p-0">
           <TextInput
             name={"total_alloted_leaves"}
             error={errors?.total_alloted_leaves}

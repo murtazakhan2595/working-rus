@@ -51,7 +51,7 @@ ul {
 
 .form-control {
     min-height: calc(3.5rem + 2px);
-    box-shadow: none;
+    box-shadow: none !important;
 }
 .invalid-feedback{
     font-size: 12px !important;
@@ -238,6 +238,17 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
     outline: none !important;
 }
 
+.custom-dropdown-toggle-filter {
+    background-color: transparent !important;
+   /* // padding: .5rem 1rem !important; */
+    box-shadow: none !important;
+    border: 1px solid #323333 !important;
+    width: 10rem !important;
+    border-radius: 0.375rem !important;
+    color: #323333 !important;
+    outline: none !important;
+}
+
 .custom-dropdown-menu {
     margin-top: 5px !important;
     color: #1e2125 !important;
@@ -259,4 +270,6 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
 
 .force-white-bg .form-floating>.form-control  {
     background-color: #fff !important;
+    border: 1px solid #323333 !important;
+
 }
