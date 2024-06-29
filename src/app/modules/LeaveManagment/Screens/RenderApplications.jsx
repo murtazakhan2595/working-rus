@@ -164,7 +164,7 @@ const RenderApplication = ({ application, activeTab }) => {
 
       {selectedLeave && (
           <Col md={6}>
-            <ViewLeaveDetails application={selectedLeave} onClose={closeModal} />
+            <ViewLeaveDetails application={application} onClose={closeModal} />
           </Col>
         )}
     </Row>

@@ -57,6 +57,7 @@ import ComingSoon from "./app/modules/comingSoon/ComingSoon.jsx";
 import PageLoader from "./components/PageLoader.jsx";
 import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
+import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -196,6 +197,7 @@ function App() {
               />
               <Route path="/leave-balance" element={<LeaveBalance />} />
               <Route path="/leave-request" element={<CreateLeaveRequest />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route
                 path="/leave-application-status"
                 element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
