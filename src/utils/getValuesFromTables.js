@@ -39,6 +39,10 @@ function LeaveType({ value }) {
   );
   return <>{response ? response.label : "N/A"}</>;
 }
+function LeaveTypeOfEmployee({ value, list }) {
+  const response = list.find((option) => option.value === parseInt(value));
+  return <>{response ? response.label : "N/A"}</>;
+}
 // Function to get department name from department value
 function DepartmentName({ value }) {
   const departments = useSelector((state) => state.common.departments);
@@ -57,18 +61,13 @@ function DesignationName({ value }) {
 
 function EmployeeName({ value }) {
   const employees = useSelector((state) => state.emp.employees);
-  const employee = employees.find(
-    (option) => option.value === parseInt(value)
-  );
+  const employee = employees.find((option) => option.value === parseInt(value));
   return <>{employee ? employee.label : "N/A"}</>;
 }
 
-
 function ManagerName({ value }) {
   const managers = useSelector((state) => state.emp.reportingManagers);
-  const manager = managers.find(
-    (option) => option.value === parseInt(value)
-  );
+  const manager = managers.find((option) => option.value === parseInt(value));
   return <>{manager ? manager.label : "N/A"}</>;
 }
 
@@ -82,5 +81,6 @@ export {
   DesignationName,
   ManagerName,
   LeaveType,
+  LeaveTypeOfEmployee,
   EmployeeName,
 };

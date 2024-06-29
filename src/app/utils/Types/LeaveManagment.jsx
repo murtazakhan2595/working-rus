@@ -1,7 +1,8 @@
+import moment from "moment";
 const Leave = {
     employee_id: "",
     name: "",
-    date: new Date(),
+    date: moment(new Date()).format('YYYY-MM-DD'),
     position: "",
     department: "",
     joining_date: "",

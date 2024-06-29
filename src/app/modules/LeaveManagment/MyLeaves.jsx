@@ -20,17 +20,20 @@ import { cut, file, list } from "assets/images";
 import { FaPlus } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
 import { Blocks } from "./Sections";
-import { getLeaveApplications, getLeaveTypes } from "app/hooks/leaveManagment";
+import {
+  getLeaveApplications,
+  getEmployeeLeaveTypes,
+} from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import moment from "moment";
 import { StatusLabel } from "components";
-import { LeaveType } from "utils/getValuesFromTables";
+import { LeaveTypeOfEmployee } from "utils/getValuesFromTables";
+import { getEmployeeLeavesTypesList } from "utils/Lists";
 
-const MyLeaves = ({ userProfile }) => {
+const MyLeaves = ({ userProfile, leaveTypes }) => {
   const [Leave, setLeave] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { id } = useParams();
-  const [leaveTypes, setLeaveTypes] = useState([]);
+  const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const [filterData, setFilterData] = useState({});
   const [totalApproved, setTotalApproved] = useState(0);
@@ -69,9 +72,6 @@ const MyLeaves = ({ userProfile }) => {
     const fetchLists = async () => {
       try {
         setIsLoading(true);
-        const leaveTypesResponse = await getLeaveTypes();
-        setLeaveTypes(leaveTypesResponse);
-
         const URL = `/leave?ordering=date&page=${options.page}&page_size=${
           options.sizePerPage
         }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
@@ -85,21 +85,25 @@ const MyLeaves = ({ userProfile }) => {
       }
     };
     fetchLists();
-  }, [id, options, filterData]);
+  }, [options, filterData]);
 
-  const renderView = (row) => (
-    <Link
-      className="btn btn-outline-dark bg-white text-dark shadow-none"
-      style={{ padding: ".35em .65em", fontSize: ".75em", minWidth: "100px" }}
-      role={"button"}
-    >
-      View
-    </Link>
-  );
-  const toggleDropdown = (index) => {
-    setOpenDropdownRow(index === openDropdownRow ? null : index);
-  };
-
+  useEffect(() => {
+    const fetchLists = async () => {
+      try {
+        setIsLoading(true);
+        const leaveTypesResponse = await getEmployeeLeaveTypes({
+          employee_id: userProfile.id,
+        });
+        setLeaveTypesOfEmployee(
+          getEmployeeLeavesTypesList(leaveTypes, leaveTypesResponse.results)
+        );
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      }
+    };
+    fetchLists();
+  }, [leaveTypes, userProfile]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange(1);
@@ -187,7 +191,7 @@ const MyLeaves = ({ userProfile }) => {
                       filters={[
                         {
                           type: "select",
-                          option: leaveTypes,
+                          option: leaveTypesOfEmployee,
                           name: "leave_type",
                           placeholder: "Leave Type",
                         },
@@ -262,7 +266,7 @@ const MyLeaves = ({ userProfile }) => {
                           className="table-header-bg"
                           dataAlign="center"
                           dataFormat={(cell) => {
-                            return <LeaveType value={cell} />;
+                            return <LeaveTypeOfEmployee value={cell} list={leaveTypesOfEmployee} />;
                           }}
                         >
                           Leave Type
@@ -277,10 +281,11 @@ const MyLeaves = ({ userProfile }) => {
                         </TableHeaderColumn>
                         <TableHeaderColumn
                           className="table-header-bg text-center overflow-visible"
+                          dataField="status_hr"
                           headerAlign="center"
                           dataAlign="center"
                           dataFormat={(cell, row) => {
-                            return <RenderStatus row={row} />;
+                            return <StatusLabel status={Status(cell)} />;
                           }}
                         >
                           Status
@@ -290,7 +295,9 @@ const MyLeaves = ({ userProfile }) => {
                           className="table-header-bg text-center"
                           dataAlign="center"
                           headerAlign="center"
-                          dataFormat={(cell, row) => renderView(row)}
+                          dataFormat={(cell, row) => {
+                            return <RenderStatus row={row} />;
+                          }}
                         ></TableHeaderColumn>
                       </BootstrapTable>
                     </div>
@@ -308,7 +315,7 @@ const MyLeaves = ({ userProfile }) => {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
-    baseUrl: state.user.baseUrl,
+    leaveTypes: state.common.leaveTypes,
   };
 };
 

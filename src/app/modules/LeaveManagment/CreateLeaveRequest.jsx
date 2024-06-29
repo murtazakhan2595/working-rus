@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardBody, Row, Col, Button, Form, CardHeader } from "reactstrap";
 import { Formik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
@@ -11,44 +11,46 @@ import {
   PhoneNumberInput,
   SelectMultiInputComponent,
   DateInput,
+  TextAreaInput
 } from "components/form-control.jsx";
-import PageLoader from "components/PageLoader.jsx";
-import {
-  getDesignationList,
-  getManagersList,
-  getDepartmentList,
-} from "app/hooks/general";
+import { PageLoader } from "components";
+
 import { getEmployeeData } from "app/hooks/employee";
 import { addLeaveRequest } from "app/hooks/leaveManagment";
-import { getLeaveTypes } from "app/hooks/leaveManagment";
+import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import { countryOptions } from "data/Data";
 import { getLavefromEmployeeInfo } from "app/utils/MappingObjects/mapLeaveData";
 import { Leave } from "app/utils/Types/LeaveManagment";
 import moment from "moment";
 import { validationLeaveRequestFormSchema } from "app/utils/FormSchema/leaveManagmentFormSchema";
+import { getEmployeeLeavesTypesList } from "utils/Lists";
 function getManagerSelected(managers) {
   if (managers) {
     const matchingObjects = managers.map((obj) => {
       return obj.value;
     });
-    return matchingObjects.join(", ");
+    return matchingObjects;
   }
   return "";
 }
 
-const CreateLeaveRequest = ({ userProfile }) => {
+const CreateLeaveRequest = ({
+  userProfile,
+  managers,
+  departments,
+  designations,
+  leaveTypes,
+}) => {
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [leaveForm, setLeaveForm] = useState(Leave);
-  const [Managers, setManagers] = useState([]);
-  const [Departments, setDepartments] = useState([]);
-  const [Designations, setDesignations] = useState([]);
-  const [LeaveTypes, setLeaveTypes] = useState([]);
   const navigate = useNavigate();
+  const [employeeLeaveTypes, setEmployeeLeaveTypes] = useState([]);
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
+      setIsLoading(true);
       try {
         const employeeResponse = await getEmployeeData(userProfile.id);
         const leaveData = await getLavefromEmployeeInfo(employeeResponse);
@@ -56,69 +58,36 @@ const CreateLeaveRequest = ({ userProfile }) => {
 
         // If you need to update form fields directly
         if (formRef.current) {
-          formRef.current.setFieldValue(
-            "employee_id",
-            leaveData.employee_id || ""
-          );
-          formRef.current.setFieldValue(
-            "name",
-            `${employeeResponse.first_name || ""} ${
-              employeeResponse.last_name || ""
-            }`
-          );
-          formRef.current.setFieldValue(
-            "date",
-            employeeResponse.joining_date || ""
-          );
-          formRef.current.setFieldValue(
-            "position",
-            employeeResponse.department_position || ""
-          );
-          formRef.current.setFieldValue(
-            "department",
-            employeeResponse.department_name || ""
-          );
-          formRef.current.setFieldValue(
-            "joining_date",
-            employeeResponse.joining_date || ""
-          );
-          formRef.current.setFieldValue(
-            "nationality",
-            employeeResponse.nationality || ""
-          );
-          formRef.current.setFieldValue(
-            "report_to",
-            employeeResponse.direct_report || ""
-          );
+          for (const [field, value] of Object.entries(leaveData)) {
+            formRef.current.setFieldValue(field, value || "");
+          }
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchEmployeeData();
   }, [userProfile]);
+
+  const getPosts = async () => {
+    try {
+      const data = await getEmployeeLeaveTypes({
+        employee_id: userProfile.id,
+      });
+      setEmployeeLeaveTypes(
+        getEmployeeLeavesTypesList(leaveTypes, data.results)
+      );
+    } catch (error) {
+      console.error("Error fetching employeeLeaveTypes:", error);
+    } finally {
+    }
+  };
   useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const departmentResponse = await getDepartmentList();
-        setDepartments(departmentResponse);
-
-        const managerResponse = await getManagersList();
-        setManagers(managerResponse);
-
-        const designationResponse = await getDesignationList();
-        setDesignations(designationResponse);
-
-        const leaveTypesResponse = await getLeaveTypes();
-        setLeaveTypes(leaveTypesResponse);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchLists();
-  }, []);
+    getPosts();
+  }, [userProfile, leaveTypes]);
 
   const handleSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
@@ -126,7 +95,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
       // Extract the value from the report_to field
       const modifiedValues = {
         ...values,
-        report_to: getManagerSelected(values.report_to.value),
+        indirect_report_to: getManagerSelected(values.indirect_report_to),
       };
       const response = await addLeaveRequest(modifiedValues);
       if (response) {
@@ -292,7 +261,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                               <Col md="6">
                                 <SelectComponent
                                   name="position"
-                                  options={Designations}
+                                  options={designations}
                                   error={props.errors.position}
                                   touch={props.touched.position}
                                   value={parseInt(props.values.position)}
@@ -306,7 +275,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                               <Col md="6">
                                 <SelectComponent
                                   name="department"
-                                  options={Departments}
+                                  options={departments}
                                   error={props.errors.department}
                                   touch={props.touched.department}
                                   value={props.values.department}
@@ -436,7 +405,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                               <Col md="6">
                                 <SelectComponent
                                   name="leave_type"
-                                  options={LeaveTypes}
+                                  options={employeeLeaveTypes}
                                   error={props.errors.leave_type}
                                   touch={props.touched.leave_type}
                                   value={props.values.leave_type}
@@ -448,7 +417,7 @@ const CreateLeaveRequest = ({ userProfile }) => {
                                 />
                               </Col>
                               <Col md="12">
-                                <TextInput
+                                <TextAreaInput
                                   name="reason"
                                   error={props.errors.reason}
                                   touch={props.touched.reason}
@@ -477,11 +446,11 @@ const CreateLeaveRequest = ({ userProfile }) => {
                               </Col>
                               <Col md="6">
                                 <SelectMultiInputComponent
-                                  name="report_to"
-                                  options={Managers}
-                                  error={props.errors.report_to}
-                                  touch={props.touched.report_to}
-                                  value={props.values.report_to}
+                                  name="indirect_report_to"
+                                  options={managers}
+                                  error={props.errors.indirect_report_to}
+                                  touch={props.touched.indirect_report_to}
+                                  value={props.values.indirect_report_to}
                                   label="Reporting Manager"
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
@@ -539,7 +508,10 @@ const CreateLeaveRequest = ({ userProfile }) => {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
-    baseUrl: state.user.baseUrl,
+    leaveTypes: state.common.leaveTypes,
+    departments: state.common.departments,
+    designations: state.common.designations,
+    managers: state.emp.reportingManagers,
   };
 };
 
