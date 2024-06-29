@@ -1,5 +1,6 @@
+import { getLeaveApplications } from "app/hooks/leaveManagment";
 import moment from "moment";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   IoArrowForward,
   IoChevronBack,
@@ -39,7 +40,7 @@ const ViewLeaveDetails = ({ onClose, application }) => {
         <div class="mb-1 flex items-center justify-between">
           <div className="flex items-center gap-x-2">
             <p class="text-capitalize text-base text-baseGray mb-3">
-              {application?.employee_id} |{""}
+              ID:{application?.employee_id} |{""}
             </p>
             <p class="text-capitalize text-base text-baseGray mb-3">
               {application?.position} |{" "}
