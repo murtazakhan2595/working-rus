@@ -5,15 +5,15 @@ import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
 import { PageLoader, Header } from "components";
 import { Status, getDecision, StatusIcon, RenderStatus } from "../Sections";
 import {
-    Card,
-    CardHeader,
-    CardBody,
-    ButtonDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem,
-    Row,
-    Col,
+  Card,
+  CardHeader,
+  CardBody,
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Row,
+  Col,
 
 } from "reactstrap";
 
@@ -22,11 +22,11 @@ import employee from "../../../../assets/images/employee.svg";
 import time from "../../../../assets/images/time.svg";
 import cross from "../../../../assets/images/cross.svg";
 import {
-    FaCheckCircle,
-    FaClock,
-    FaPlus,
-    FaTimesCircle,
-    FaUser,
+  FaCheckCircle,
+  FaClock,
+  FaPlus,
+  FaTimesCircle,
+  FaUser,
 
 } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
@@ -36,117 +36,131 @@ import { EmployeeNameInfo } from "components";
 import moment from "moment";
 import { StatusLabel } from "components";
 import {
-    DepartmentName,
-    LeaveType,
-    EmployeeName,
+  DepartmentName,
+  LeaveType,
+  EmployeeName,
 
 } from "utils/getValuesFromTables";
+import Select from 'react-select';
 
 import StatusCard from "../Sections/StatusCard";
 
 const RenderAllApplications = ({ applicationsList }) => {
-    const Leave = applicationsList;
-    const [openDropdownRow, setOpenDropdownRow] = useState(null);
-    const renderView = (row) => (
+  const Leave = applicationsList;
+  const [openDropdownRow, setOpenDropdownRow] = useState(null);
+  const renderView = (row) => (
 
-        <Link className="btn btn-outline-dark bg-white text-dark shadow-none"
-            style={{ padding: ".35em .65em", fontSize: ".75em", minWidth: "100px" }}
-            role={"button"}
-        >View</Link>
+    <Link className="btn btn-outline-dark bg-white text-dark shadow-none"
+      style={{ padding: ".35em .65em", fontSize: ".75em", minWidth: "100px" }}
+      role={"button"}
+    >View</Link>
 
-    );
+  );
 
-    const toggleDropdown = (index) => {
-        setOpenDropdownRow(index === openDropdownRow ? null : index);
-    };
+  const toggleDropdown = (index) => {
+    setOpenDropdownRow(index === openDropdownRow ? null : index);
+  };
 
-    return (
+  const options = [
+    { value: 'annual', label: 'Annual Leave' },
+    { value: 'sick', label: 'Sick Leave' },
+    { value: 'maternity', label: 'Maternity Leave' },
+    { value: 'casual', label: 'Casual Leave' }
+];
 
-        <>
-            <div className="flex justify-center items-center">
-                <div className="w-full flex flex-col md:flex-row gap-4">
-                    <div className="bg-white md:w-[60%] flex items-center rounded-lg">
-                        {/* Left section */}
-                        <div className="md:w-[45%] px-4 py-2 rounded-lg">
-                            <h2 className="text-base font-lato text-baseGray font-semibold mb-2">
-                                My Leave Allowance
-                            </h2>
-                            <div className="text-3xl font-bold text-[#00A8F0] mb-6">
-                                25 days
-                            </div>
-                            <div className="mb-2">
-                                <label className="block text-gray-700 mb-2">Leave Year</label>
-                                <select className="w-full p-2 border border-gray-300 rounded">
-                                    <option>22-04-24 - 22-04-24</option>
-                                </select>
+  return (
 
-                            </div>
-                            <div className="mb-2">
-                                <label className="block text-gray-700 mb-2">Leave Type</label>
-                                <select className="w-full p-2 border border-gray-300 rounded">
-                                    <option>Annual Leave</option>
-                                    <option>Sick Leave</option>
-                                    <option>Maternity Leave</option>
-                                    <option>Casual Leave</option>
-                                </select>
-                            </div>
-                        </div>
+    <>
+      <div className="flex justify-center items-center">
+        <div className="w-full flex flex-col md:flex-row gap-4">
+          <div className="bg-white md:w-[60%] flex items-center rounded-lg">
+            {/* Left section */}
+            <div className="md:w-[45%] px-4 py-2 rounded-lg">
+              <h2 className="text-base font-lato text-baseGray font-semibold mb-2">
+                My Leave Allowance
+              </h2>
+              <div className="text-3xl font-bold text-[#00A8F0] mb-6">
+                25 days
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700 mb-2">Leave Year</label>
+                <select className="w-full p-2 border border-gray-300 rounded">
+                  <option>22-04-24 - 22-04-24</option>
+                </select>
 
-                        {/* Center section */}
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700 mb-2">Leave Type</label>
+                <Select
+                  className="w-full"
+                  options={options}
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      padding: '2px',
+                      borderColor: 'gray',
+                      borderRadius: '5px'
+                    })
+                  }}
+                />
+              </div>
+            </div>
 
-                        <div className="md:w-[55%] flex flex-col md:flex-row items-center justify-around">
-                            <div className="flex flex-col items-center mb-6 md:mb-0">
-                                <h3 className="text-base font-lato text-baseGray font-medium mb-2">
-                                    Leaves Remaining
-                                </h3>
-                                <div className="relative">
-                                    <div className="w-32 h-32 rounded-full border-4 border-gray-200 flex items-center justify-center text-2xl font-bold text-gray-600">
-                                        05
-                                    </div>
-                                    <div
-                                        className="absolute inset-0 w-32 h-32 rounded-full border-4 border-[#00A8F0]"
-                                        style={{ clipPath: "inset(0 0 0 20%)" }}
+            {/* Center section */}
 
-                                    ></div>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-center">
-                                <h3 className="text-base font-lato text-baseGray font-medium mb-2">
-                                    Leaves Used
-                                </h3>
-                                <div className="relative">
-                                    <div className="w-32 h-32 rounded-full border-4 border-gray-200 flex items-center justify-center text-2xl font-bold text-gray-600">
-                                        08
-                                    </div>
-                                    <div
-                                        className="absolute inset-0 w-32 h-32 rounded-full border-4 border-[#556CBF]"
-                                        style={{ clipPath: "inset(0 70% 0 0)" }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div className="md:w-[55%] flex flex-col md:flex-row items-center justify-around">
+              <div className="flex flex-col items-center mb-6 md:mb-0">
+                <h3 className="text-base font-lato text-baseGray font-medium mb-2">
+                  Leaves Remaining
+                </h3>
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-full border-4 border-gray-200 flex items-center justify-center text-2xl font-bold text-gray-600">
+                    05
+                  </div>
+                  <div
+                    className="absolute inset-0 w-32 h-32 rounded-full border-4 border-[#00A8F0]"
+                    style={{ clipPath: "inset(0 0 0 20%)" }}
 
-                    {/* right */}
-
-                    <div className="md:w-[45%] flex justify-center items-center">
-                        <div className="grid grid-cols-2 gap-2 h-full w-full max-w-5xl">
-                            <StatusCard icon={checked} count={6} label={'Approved'} />
-                            <StatusCard icon={time} count={1} label={'Pending'} />
-                            <StatusCard icon={employee} count={8} label={'Request'} />
-                            <StatusCard icon={cross} count={1} label={'Denied'} />
-
-                        </div>
-
-                    </div>
-
+                  ></div>
                 </div>
+              </div>
+              <div className="flex flex-col items-center">
+                <h3 className="text-base font-lato text-baseGray font-medium mb-2">
+                  Leaves Used
+                </h3>
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-full border-4 border-gray-200 flex items-center justify-center text-2xl font-bold text-gray-600">
+                    08
+                  </div>
+                  <div
+                    className="absolute inset-0 w-32 h-32 rounded-full border-4 border-[#556CBF]"
+                    style={{ clipPath: "inset(0 70% 0 0)" }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* right */}
+
+          <div className="md:w-[45%] flex justify-center items-center">
+            <div className="grid grid-cols-2 gap-2 h-full w-full max-w-5xl">
+              <StatusCard icon={checked} count={6} label={'Approved'} />
+              <StatusCard icon={time} count={1} label={'Pending'} />
+              <StatusCard icon={employee} count={8} label={'Request'} />
+              <StatusCard icon={cross} count={1} label={'Denied'} />
 
             </div>
 
-            <div className="m-2 bg-white px-2 py-4">
+          </div>
 
-                {/* <Row>
+        </div>
+
+      </div>
+
+      <div className="m-2 bg-white px-2 py-4">
+
+        {/* <Row>
 
         <Col lg={12}>
 
@@ -346,11 +360,11 @@ const RenderAllApplications = ({ applicationsList }) => {
 
       </Row> */}
 
-            </div>
+      </div>
 
-        </>
+    </>
 
-    );
+  );
 
 };
 
