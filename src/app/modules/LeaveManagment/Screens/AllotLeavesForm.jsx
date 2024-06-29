@@ -1,40 +1,85 @@
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
-import React, { useState, useRef, forwardRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
 import {
   TextInput,
-  SelectComponent,
+  CustomDarkButton,
   DateInput,
   FileInput,
   PhoneNumberInput,
   EmailInput,
   FilterInput,
 } from "components/form-control.jsx";
-import { countryOptions } from "data/Data";
-const AllotLeavesForm = ({ employeeData }) => {
+import { LeaveType } from "utils/getValuesFromTables";
+import { allotLeavesToEmployee } from "app/hooks/leaveManagment.jsx";
+
+const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
   const formRef = useRef();
   const [showEdit, setShowEdit] = useState(false);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState(
+    employeeData.employeeLeaveDetails
+  );
 
-  const handleEditClick = () => {
-    setShowEdit(true);
+  const handleSubmit = (values, resetForm) => {
+    console.log(values);
+    const response = allotLeavesToEmployee(employeeData.id, values.employeeLeaveDetails);
+    if (response) {
+      resetForm();
+      closeModel();
+    }
   };
+
+  useEffect(() => {
+    setFilterData({
+      leave_type: employeeData.employeeLeaveDetails.map(
+        (item) => item.leave_type
+      ),
+    });
+  }, [leaveTypes]);
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (!filterValue || filterCheckStatus === false) {
-        delete updatedFilters[filterName];
+      if (filterCheckStatus) {
+        updatedFilters[filterName].push(filterValue);
       } else {
-        updatedFilters[filterName] =
-          filterCheckStatus === false ? "" : filterValue;
+        updatedFilters[filterName] = updatedFilters[filterName].filter(
+          (item) => item !== filterValue
+        );
+        removeLeaveType(filterValue);
       }
       return updatedFilters;
     });
   };
+
+  const addNewLeaveType = (leave_type) => {
+    if (formRef.current) {
+      formRef.current.setFieldValue("employeeLeaveDetails", [
+        ...formRef.current.values.employeeLeaveDetails,
+        {
+          employee_id: employeeData.id,
+          leave_type: leave_type,
+          left_leave: 0,
+          total_alloted_leaves: 0,
+          used_leave: 0,
+        },
+      ]);
+    }
+  };
+  const removeLeaveType = (leave_type) => {
+    if (formRef.current) {
+      formRef.current.setFieldValue(
+        "employeeLeaveDetails",
+        formRef.current.values.employeeLeaveDetails.filter(
+          (item) => item.leave_type !== leave_type
+        )
+      );
+    }
+  };
+
   return (
     <>
       <div className="flex align-bottom justify-between my-4">
@@ -48,7 +93,7 @@ const AllotLeavesForm = ({ employeeData }) => {
             <DepartmentName value={employeeData.department_name} />
           </div>
           <div className="text-baseGray text-left mt-3">
-            Jan {new Date().getFullYear()} to Dec{new Date().getFullYear()}
+            Jan {new Date().getFullYear()} to Dec {new Date().getFullYear()}
           </div>
         </div>
         <div className="flex items-end">
@@ -56,9 +101,9 @@ const AllotLeavesForm = ({ employeeData }) => {
             filters={[
               {
                 type: "sorting",
-                option: [],
+                option: [{ name: "leave_type", options: leaveTypes }],
                 name: "sorting",
-                placeholder: "Sort By",
+                placeholder: "Filters",
                 values: filterData,
               },
             ]}
@@ -68,183 +113,66 @@ const AllotLeavesForm = ({ employeeData }) => {
       </div>
       <div>
         <Formik
-          initialValues={employeeData}
+          initialValues={{
+            employeeLeaveDetails: employeeData.employeeLeaveDetails,
+          }}
           innerRef={formRef}
           onSubmit={(values, { resetForm }) => {
-            //handleSubmit(values, resetForm);
+            handleSubmit(values, resetForm);
           }}
           validate={(values) => {
             const errors = {};
-
             return errors;
           }}
         >
           {(props) => (
             <Form onSubmit={props.handleSubmit}>
               <Row>
-                <Col md="6">
-                  <TextInput
-                    name="first_name"
-                    error={props.errors.first_name}
-                    touch={props.touched.first_name}
-                    value={props.values.first_name}
-                    label="First Name"
-                    required={true}
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-                <Col md="6">
-                  <TextInput
-                    name="last_name"
-                    error={props.errors.last_name}
-                    touch={props.touched.last_name}
-                    value={props.values.last_name}
-                    label="Last Name"
-                    required={true}
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-                <Col md={12}>
-                  <SelectComponent
-                    name={"location"}
-                    options={countryOptions}
-                    error={props.errors.location}
-                    touch={props.touched.location}
-                    value={props.values.location}
-                    label={"Location"}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </Col>
-                <Col md={6}>
-                  <PhoneNumberInput
-                    name={"phone_number"}
-                    error={props.errors.phone_number}
-                    touch={props.touched.phone_number}
-                    value={props.values.phone_number}
-                    label={"Contact no."}
-                    countryCode={props.values.country_code}
-                    countryCodeName={"country_code"}
-                    required={true}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </Col>
-                <Col md="6">
-                  <EmailInput
-                    name={"email"}
-                    error={props.errors.email}
-                    touch={props.touched.email}
-                    value={props.values.email}
-                    label={"Email"}
-                    required={true}
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-                <Col md="6">
-                  <TextInput
-                    name="notice_period"
-                    error={props.errors.notice_period}
-                    touch={props.touched.notice_period}
-                    value={props.values.notice_period}
-                    label="Notice Period"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                    required={true}
-                  />
-                </Col>
-                <Col md="6">
-                  <TextInput
-                    name="Year_of_Experience"
-                    error={props.errors.Year_of_Experience}
-                    touch={props.touched.Year_of_Experience}
-                    value={props.values.Year_of_Experience}
-                    label="Experience (in years)"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                    required={true}
-                    regEx={/^[0-9.]+$/}
-                  />
-                </Col>
-                <Col md="6">
-                  <TextInput
-                    name="current_salary"
-                    error={props.errors.current_salary}
-                    touch={props.touched.current_salary}
-                    value={props.values.current_salary}
-                    label="Current Salary"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                    regEx={/^[0-9.]+$/}
-                  />
-                </Col>
-                <Col md="6">
-                  <TextInput
-                    name="expected_salary"
-                    error={props.errors.expected_salary}
-                    touch={props.touched.expected_salary}
-                    value={props.values.expected_salary}
-                    label="Expected Salary"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                    regEx={/^[0-9.]+$/}
-                  />
-                </Col>
-                <Col md="6">
-                  <DateInput
-                    name="availability_for_interview"
-                    error={props.errors.availability_for_interview}
-                    touch={props.touched.availability_for_interview}
-                    value={props.values.availability_for_interview}
-                    label="Availability for interview"
-                    required={true}
-                    minDate={new Date()}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </Col>
-                <Col md="12">
-                  <FileInput
-                    name="cv"
-                    label=" resume or drag it here"
-                    acceptType=".pdf"
-                    error={props.errors?.cv}
-                    touch={props.touched?.cv}
-                    value={props.values?.cv}
-                    required={true}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </Col>
+                {filterData?.leave_type &&
+                  filterData?.leave_type.length > 0 &&
+                  filterData?.leave_type.map((leave_type) => {
+                    const index = props.values?.employeeLeaveDetails.findIndex(
+                      (obj) => obj.leave_type === leave_type
+                    );
+                    if (index === -1) {
+                      addNewLeaveType(leave_type);
+                    }
+                    console.log(props.values?.employeeLeaveDetails, index);
+                    return (
+                      <React.Fragment key={index}>
+                        <AllotLeave
+                          leaveType={leave_type}
+                          values={props.values?.employeeLeaveDetails[index]}
+                          errors={
+                            props.errors?.employeeLeaveDetails
+                              ? props.errors?.employeeLeaveDetails[index]
+                              : {}
+                          }
+                          touched={
+                            props.touched?.employeeLeaveDetails
+                              ? props.touched?.employeeLeaveDetails[index]
+                              : {}
+                          }
+                          onChange={(field, value) => {
+                            props.setFieldValue(
+                              `employeeLeaveDetails[${index}].${field}`,
+                              value
+                            );
+                          }}
+                        />
+                      </React.Fragment>
+                    );
+                  })}
               </Row>
+              <hr />
               <Row>
-                <Col md="2">
-                  <Link
-                    type="button"
-                    className="btn btn-outline-dark w-100"
-                    to="/jobs"
-                  >
-                    Cancel
-                  </Link>
-                </Col>
-                <Col md="4">
-                  <Button type="submit" className="btn btn-dark w-100">
-                    {"Submit"}
-                  </Button>
+                <Col md="6" className="text-right">
+                  <CustomDarkButton
+                    onClick={() => {
+                      props.handleSubmit();
+                    }}
+                    label={`Allot`}
+                  />
                 </Col>
               </Row>
             </Form>
@@ -255,9 +183,44 @@ const AllotLeavesForm = ({ employeeData }) => {
   );
 };
 
+const AllotLeave = ({ leaveType, errors, touched, values, onChange }) => {
+  return (
+    <>
+      <Row
+        className="mb-4 shadow-sm"
+        style={{
+          border: "1px solid #DADADA",
+          borderRadius: "9px",
+          padding: "4px",
+          height: "67px",
+        }}
+      >
+        <Col md="6">
+          <div className="text-[20px] text-center">
+            <LeaveType value={leaveType} />
+          </div>
+        </Col>
+        <Col md="6" className="force-white-bg">
+          <TextInput
+            name={"total_alloted_leaves"}
+            error={errors?.total_alloted_leaves}
+            touch={touched?.total_alloted_leaves}
+            value={values?.total_alloted_leaves}
+            label={"No. of leaves"}
+            required={true}
+            onChange={(field, value) => {
+              onChange(field, value);
+            }}
+          />
+        </Col>
+      </Row>
+    </>
+  );
+};
+
 const mapStateToProps = (state) => {
   return {
-    token: state.user.token,
+    leaveTypes: state.common.leaveTypes,
     baseUrl: state.user.baseUrl,
   };
 };

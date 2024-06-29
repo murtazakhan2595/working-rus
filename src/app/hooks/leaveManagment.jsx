@@ -66,14 +66,40 @@ const addLeaveRequest = async (values) => {
     return false;
   }
 };
+const allotLeavesToEmployee = async (employeeId,payload) => {
+  if (payload && payload.length > 0) {
+    try {
+      payload.map(async (leaveType, index) => {
+        leaveType.employee_id = employeeId;
+        if (leaveType?.id) {
+          await axios.patch(`${baseUrl}/employeeleavetypes/${leaveType.id}`, leaveType, {
+            headers: headers(),
+          });
+        } else {
+          await axios.post(`${baseUrl}/employeeleavetypes/`, leaveType, {
+            headers: headers(),
+          });
+        }
+      });
+      toast.success("Leaves Alloted Successfully");
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+      return false;
+    }
+  }
+  return true;
+};
 
 const getLeaveTypes = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/employeeleavetypes/`, {
+    const response = await axios.get(`${baseUrl}/leavecomponents/`, {
       headers: headers(),
     });
     if (response.status === 200) {
-      const leaveTypeResponse = response.data?.results;
+      const leaveTypeResponse = response.data;
       const leaveTypesList = leaveTypeResponse.map((type) => ({
         value: type.id,
         label: type.name,
@@ -94,4 +120,5 @@ export {
   addLeaveRequest,
   getLeaveTypes,
   getEmployeeLeaveTypes,
+  allotLeavesToEmployee,
 };

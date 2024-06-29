@@ -88,6 +88,7 @@ const JobsDataTable = () => {
                 name: "sorting",
                 placeholder: "Sort By",
                 values: filterData,
+                mainHeading: "Sort",
               },
             ]}
             onChange={handleFilterChange}

@@ -631,6 +631,8 @@ const FilterInput = ({ filters, onChange }) => {
                     onChange(name, value, filterCheckStatus);
                   }}
                   values={filter.values}
+                  mainHeading={filter.mainHeading}
+                  label={filter.placeholder}
                 />
               );
             } else {

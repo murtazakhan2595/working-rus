@@ -36,7 +36,6 @@ const Employee = () => {
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [filterData, setFilterData] = useState({});
-  const [filters, setFilters] = useState("");
   const [totalEmployee, setTotalEmployee] = useState(0);
   const [activeEmployee, setActiveEmployee] = useState(0);
   const [totalManagers, setTotalManager] = useState(0);
@@ -97,7 +96,7 @@ const Employee = () => {
     return () => {
       isMounted = false;
     };
-  }, [options, filters]);
+  }, [options, filterData]);
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -190,14 +189,6 @@ const Employee = () => {
         delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
-      }
-      if (Object.keys(updatedFilters).length > 0) {
-        const filters = Object.entries(updatedFilters)
-          .map(([key, value]) => `"${key}":"${value}"`)
-          .join(",");
-        setFilters(`&search={${filters}}`);
-      } else {
-        setFilters(null);
       }
       return updatedFilters;
     });

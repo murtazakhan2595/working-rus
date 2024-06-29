@@ -32,54 +32,53 @@ const LeaveAllotement = ({ departments, designations }) => {
   const [employeeList, setEmployeeData] = useState([]);
   const [leaveTypes, setLeaveTypes] = useState([]);
 
+  const getPosts = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      let URL = `/customemp/?search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+      const employeeData = await getList(URL);
+      if (isMounted) {
+        setEmployeeData(employeeData.results.employees);
+      }
+    } catch (error) {
+      console.error("Error fetching employeeLeaveTypes:", error);
+    } finally {
+      if (isMounted) {
+        setIsLoading(false);
+      }
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
-    const getPosts = async () => {
-      setIsLoading(true);
-      try {
-        let URL = `/customemp/?search=${encodeURIComponent(
-          JSON.stringify(filterData)
-        )}`;
-        const employeeData = await getList(URL);
-        if (isMounted) {
-          setEmployeeData(employeeData.results.employees);
-        }
-      } catch (error) {
-        console.error("Error fetching employeeLeaveTypes:", error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    getPosts();
+    getPosts(isMounted);
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [filterData]);
+
+  const closeModal = () => {
+    setOpenLeaveAllotment(null);
+    getPosts(true);
+  };
 
   const handleAllotLeaves = (employeeLeaveTypes) => {
     setOpenLeaveAllotment(employeeLeaveTypes);
   };
 
-  const closeModal = () => {
-    setOpenLeaveAllotment(null);
-  };
-
-  const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
+  const handleFilterChange = (filterName, filterValue) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (!filterValue || filterCheckStatus === false) {
+      if (filterValue === "") {
         delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] =
-          filterCheckStatus === false ? "" : filterValue;
+        updatedFilters[filterName] = filterValue;
       }
       return updatedFilters;
     });
   };
-  console.log(filterData);
   return (
     <div className="screen bg-[#F0F1F2]">
       <Header title="Employee Leave Allotement" />

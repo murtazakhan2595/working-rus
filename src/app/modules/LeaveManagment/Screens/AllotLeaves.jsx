@@ -14,7 +14,6 @@ import { FilterInput } from "components/form-control";
 import AllotLeavesForm from "./AllotLeavesForm";
 
 const AllotLeaves = ({ employeeData, closeModel }) => {
-    console.log(employeeData);  
   const [showEdit, setShowEdit] = useState(false);
 
   const handleEditClick = () => {
@@ -25,8 +24,8 @@ const AllotLeaves = ({ employeeData, closeModel }) => {
     setShowEdit(false);
   };
   return (
-    <div className="fixed top-0 text-baseGray right-0 w-[50%] h-full z-10 overflow-y-auto hideScroll pl-10">
-      <div className="bg-white h-auto shadow-lg p-10">
+    <div className="fixed top-0 text-baseGray right-0 w-[60%] h-full z-10 overflow-y-auto hideScroll pl-10">
+      <div className="h-auto p-10 bg-[#FAFBFC]">
         <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
           <h2 className="font-bold text-xl ">Leave allotment</h2>
           <div className="flex justify-center ">
@@ -44,7 +43,7 @@ const AllotLeaves = ({ employeeData, closeModel }) => {
             }}
           />
         </div>
-        <AllotLeavesForm employeeData ={employeeData}/>
+        <AllotLeavesForm employeeData ={employeeData} closeModel={closeModel}/>
       </div>
     </div>
   );
