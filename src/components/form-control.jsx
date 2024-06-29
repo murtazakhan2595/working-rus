@@ -573,8 +573,9 @@ const FilterInput = ({ filters, onChange }) => {
                   <IoIosSearch className="absolute top-3 left-3 text-baseGray" />
                   <input
                     type="search"
+                    style={{paddingLeft: "2.5rem"}}
                     placeholder={filter.placeholder}
-                    className={`${filter.className ?? classNamesStyle} pl-10`}
+                    className={`${filter.className ?? classNamesStyle}`}
                     name={filter.name}
                     id={filter.name}
                     onChange={(option) => {

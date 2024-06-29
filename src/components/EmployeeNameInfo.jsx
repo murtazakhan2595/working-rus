@@ -24,9 +24,9 @@ const EmployeeNameInfo = ({
             <DesignationName value={position} /> |{" "}
             <DepartmentName value={department} />
           </div>
-          <div>ID: {id}</div>
-          <div>{allotedLeave} Leaves allotted</div>
-          <div>{leaveTypes} Leave types</div>
+          {id && <div>ID: {id}</div>}
+          {allotedLeave && <div>{allotedLeave} Leaves allotted</div>}
+          {leaveTypes && <div>{leaveTypes} Leave types</div>}
         </div>
       </div>
     </div>

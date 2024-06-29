@@ -9,7 +9,7 @@ import { HiOutlineDocumentReport } from "react-icons/hi";
 import buble from "../../../assets/images/buble.png";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 
-function getNavigation(userRole) {  
+function getNavigation(userRole) {
   const Navigation = {
     items: [
       ...[
@@ -304,6 +304,16 @@ function getNavigation(userRole) {
                   ? [
                       {
                         name: "Leave Status",
+                        url: "/leave-status",
+                      },
+                    ]
+                  : []),
+                ...(userRole === 1 ||
+                userRole === 2 ||
+                userRole === 3
+                  ? [
+                      {
+                        name: "Leave Allotement",
                         url: "/leave-allotement",
                       },
                     ]

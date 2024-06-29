@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 import { IoCalendarOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AllotLeaves from "./Screens/AllotLeaves";
-import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
+import RenderEmployeesLeaveAllotement from "./Screens/RenderEmployeesLeaveAllotement";
 import { getList } from "app/hooks/general";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
@@ -27,7 +26,6 @@ import { FaPlus } from "react-icons/fa";
 
 const LeaveAllotement = ({ departments, designations }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [openLeaveAllotment, setOpenLeaveAllotment] = useState(null);
   const [filterData, setFilterData] = useState({});
   const [employeeList, setEmployeeData] = useState([]);
   const [leaveTypes, setLeaveTypes] = useState([]);
@@ -59,14 +57,9 @@ const LeaveAllotement = ({ departments, designations }) => {
     };
   }, [filterData]);
 
-  const closeModal = () => {
-    setOpenLeaveAllotment(null);
-    getPosts(true);
-  };
+  
 
-  const handleAllotLeaves = (employeeLeaveTypes) => {
-    setOpenLeaveAllotment(employeeLeaveTypes);
-  };
+  
 
   const handleFilterChange = (filterName, filterValue) => {
     setFilterData((prevFilters) => {
@@ -82,14 +75,7 @@ const LeaveAllotement = ({ departments, designations }) => {
   return (
     <div className="screen bg-[#F0F1F2]">
       <Header title="Employee Leave Allotement" />
-      {openLeaveAllotment && (
-        <Col md={6}>
-          <AllotLeaves
-            employeeData={openLeaveAllotment}
-            closeModel={closeModal}
-          />
-        </Col>
-      )}
+     
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
@@ -141,7 +127,6 @@ const LeaveAllotement = ({ departments, designations }) => {
                     <div>
                       <RenderEmployees
                         employeeList={employeeList}
-                        handleAllotLeaves={handleAllotLeaves}
                       />
                     </div>
                   </Col>
@@ -155,7 +140,7 @@ const LeaveAllotement = ({ departments, designations }) => {
   );
 };
 
-const RenderEmployees = ({ employeeList, handleAllotLeaves }) => {
+const RenderEmployees = ({ employeeList }) => {
   return (
     <div className="m-2 bg-white">
       {employeeList && employeeList.length > 0 ? (
@@ -163,9 +148,9 @@ const RenderEmployees = ({ employeeList, handleAllotLeaves }) => {
           <div className={`whitespace-nowrap`} key={employee.id}>
             {employee.id && (
               <div className="px-4 pt-5">
-                <RenderEmployee
+                <RenderEmployeesLeaveAllotement
                   employee={employee}
-                  handleAllotLeaves={handleAllotLeaves}
+                  employeeList={employeeList}
                 />
               </div>
             )}
@@ -183,60 +168,6 @@ const RenderEmployees = ({ employeeList, handleAllotLeaves }) => {
   );
 };
 
-const RenderEmployee = ({ employee, handleAllotLeaves }) => {
-  const [employeeLeaveTypes, setEmployeeLeaveTypes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const getPosts = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getEmployeeLeaveTypes({
-          employee_id: employee.id,
-        });
-        setEmployeeLeaveTypes({
-          data: data.results,
-          leaveTypes: data.count,
-          allotedLeave: data.results.reduce(
-            (sum, leave) => sum + leave.total_alloted_leaves,
-            0
-          ),
-        });
-      } catch (error) {
-        console.error("Error fetching employeeLeaveTypes:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getPosts();
-  }, []);
-  return (
-    <div className="flex flex-row justify-between gap-y-10 border-b px-2 pb-4">
-      <EmployeeNameInfo
-        name={`${employee.first_name} ${employee.last_name}`}
-        department={employee.department_name}
-        position={employee.department_position}
-        id={employee.id}
-        leaveTypes={employeeLeaveTypes.leaveTypes}
-        allotedLeave={employeeLeaveTypes.allotedLeave}
-      />
-      <div className="text-base text-baseGray flex items-center gap-x-4">
-        <div
-          className="border px-3 py-2 rounded-md border-gray-400 flex cursor-pointer"
-          onClick={() => {
-            handleAllotLeaves({
-              ...employee,
-              ...{ employeeLeaveDetails: employeeLeaveTypes.data },
-            });
-          }}
-        >
-          <CiEdit className="text-2xl cursor-pointer opacity-80 mr-2" />
-          Allot leaves
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const mapStateToProps = (state) => {
   return {
