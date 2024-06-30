@@ -25,7 +25,7 @@ import { useNavigate, Link } from "react-router-dom";
 import {
   getDepartmentList,
   getDesignationList,
-  getList,
+  getEmployeeCustomList,
   deleteRecord,
 } from "../../hooks/general.jsx";
 
@@ -71,17 +71,15 @@ const Employee = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        let URL = `/customemp/?page=${options.page}&page_size=${
-          options.sizePerPage
-        }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
-        const employeeData = await getList(URL);
+        const employeeData = await getEmployeeCustomList({
+          options,
+          filterData,
+        });
         if (isMounted) {
           setEmployeeData(employeeData);
-          if (employeeData && employeeData.results) {
-            setActiveEmployee(employeeData.results.active_employees);
-            setTotalEmployee(employeeData.results.total_employees);
-            setTotalManager(employeeData.results.total_managers);
-          }
+          setActiveEmployee(employeeData?.ActiveEmployee || 0);
+          setTotalEmployee(employeeData?.TotalEmployee || 0);
+          setTotalManager(employeeData?.TotalManager || 0);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -273,7 +271,7 @@ const Employee = () => {
                   <Col lg={12}>
                     <div>
                       <BootstrapTable
-                        data={employeeData?.results?.employees || []}
+                        data={employeeData?.results || []}
                         version="4"
                         hover
                         remote

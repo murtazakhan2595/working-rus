@@ -5,7 +5,7 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RenderEmployeesLeaveAllotement from "./Screens/RenderEmployeesLeaveAllotement";
-import { getList } from "app/hooks/general";
+import { getEmployeeCustomList } from "app/hooks/general";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { PiDotsThreeOutlineFill } from "react-icons/pi";
@@ -36,9 +36,9 @@ const LeaveAllotement = ({ departments, designations }) => {
       let URL = `/customemp/?search=${encodeURIComponent(
         JSON.stringify(filterData)
       )}`;
-      const employeeData = await getList(URL);
+      const employeeData = await getEmployeeCustomList({ filterData });
       if (isMounted) {
-        setEmployeeData(employeeData.results.employees);
+        setEmployeeData(employeeData.results);
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
@@ -57,10 +57,6 @@ const LeaveAllotement = ({ departments, designations }) => {
     };
   }, [filterData]);
 
-  
-
-  
-
   const handleFilterChange = (filterName, filterValue) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -75,7 +71,7 @@ const LeaveAllotement = ({ departments, designations }) => {
   return (
     <div className="screen bg-[#F0F1F2]">
       <Header title="Employee Leave Allotement" />
-     
+
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
@@ -125,9 +121,7 @@ const LeaveAllotement = ({ departments, designations }) => {
                 <Row>
                   <Col lg={12}>
                     <div>
-                      <RenderEmployees
-                        employeeList={employeeList}
-                      />
+                      <RenderEmployees employeeList={employeeList} />
                     </div>
                   </Col>
                 </Row>
@@ -167,7 +161,6 @@ const RenderEmployees = ({ employeeList }) => {
     </div>
   );
 };
-
 
 const mapStateToProps = (state) => {
   return {

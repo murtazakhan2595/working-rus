@@ -561,7 +561,7 @@ const TextAreaInput = ({
 
 const FilterInput = ({ filters, onChange }) => {
   const classNamesStyle =
-    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md";
+    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
   return (
     <>
       <div className="flex items-center gap-x-3">
@@ -602,7 +602,7 @@ const FilterInput = ({ filters, onChange }) => {
                 <Select
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className="shadow-input rounded-lg w-56 "
+                  className="shadow-input rounded-lg"
                   styles={dropdownStyles}
                   name={filter.name}
                   id={filter.name}

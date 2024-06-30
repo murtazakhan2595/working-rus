@@ -20,6 +20,7 @@ import {
   MyLeaves,
   CreateLeaveRequest,
   LeaveAllotement,
+  LeaveHistory,
 } from "app/modules/LeaveManagment";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
@@ -215,6 +216,7 @@ function App() {
               <Route path="/recognition" element={<ComingSoon />} />
               <Route path="/my-travel-details" element={<ComingSoon />} />
               <Route path="/letter-request" element={<ComingSoon />} />
+              <Route path="/leave-history" element={<LeaveHistory />} />
               <Route
                 path="/leave-balance-manager"
                 element={<LeaveBalanceManager isSidebarOpen={isSidebarOpen} />}
@@ -270,6 +272,7 @@ function App() {
                   <Route path="/attendance" element={<ComingSoon />} />
                   <Route path="/development-plan" element={<ComingSoon />} />
                   <Route path="/user/:id" element={<ViewEmployee />} />
+                
                 </>
               )}
               {(userRole === 1 || userRole === 2 || userRole === 3) && (

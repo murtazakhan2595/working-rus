@@ -293,7 +293,7 @@ function getNavigation(userRole) {
                   ? [
                       {
                         name: "Leave History",
-                        url: "/leave-calender",
+                        url: "/leave-history",
                       },
                     ]
                   : []),

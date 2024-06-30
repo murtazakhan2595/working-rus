@@ -65,6 +65,11 @@ function EmployeeName({ value }) {
   return <>{employee ? employee.label : "N/A"}</>;
 }
 
+function EmployeeID({ value }) {
+  const employee = value ? `TXB-${value.toString().padStart(4, "0")}` : 'N/A';
+  return <>{employee}</>;
+}
+
 function ManagerName({ value }) {
   const managers = useSelector((state) => state.emp.reportingManagers);
   const manager = managers.find((option) => option.value === parseInt(value));
@@ -83,4 +88,5 @@ export {
   LeaveType,
   LeaveTypeOfEmployee,
   EmployeeName,
+  EmployeeID,
 };
