@@ -29,11 +29,8 @@ const RenderEmployeesLeaveAllotement = ({ employee, employeeList }) => {
         employee_id: employee.id,
       });
       setEmployeeLeaveTypes({
-        leaveTypes: data.count,
-        allotedLeave: data.results.reduce(
-          (sum, leave) => sum + leave.total_alloted_leaves,
-          0
-        ),
+        leaveTypes: data.leaveTypes,
+        allotedLeave: data.allotedLeaves,
       });
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);

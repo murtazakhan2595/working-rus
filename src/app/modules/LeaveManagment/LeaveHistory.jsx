@@ -16,7 +16,7 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import { EmployeeID } from "utils/getValuesFromTables";
+import { EmployeeID, ManagerName } from "utils/getValuesFromTables";
 import { cut, file, list } from "assets/images";
 import { FaPlus } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
@@ -83,7 +83,7 @@ const LeaveHistory = ({
           filterData,
         });
         if (isMounted) {
-          setEmployeeData(employeeData);
+          fetchEmployessLeavesDetails(employeeData);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -100,42 +100,35 @@ const LeaveHistory = ({
     };
   }, [options, filterData]);
 
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        setIsLoading(true);
-        const URL = `/leave?ordering=date&page=${options.page}&page_size=${
-          options.sizePerPage
-        }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
-        const applicationsData = await getLeaveApplications(URL);
-        if (applicationsData) {
-          setLeave(applicationsData);
-        }
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-      }
-    };
-    fetchLists();
-  }, [options, filterData]);
-
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        setIsLoading(true);
-        const leaveTypesResponse = await getEmployeeLeaveTypes({
-          employee_id: userProfile.id,
-        });
-        setLeaveTypesOfEmployee(
-          getEmployeeLeavesTypesList(leaveTypes, leaveTypesResponse.results)
+  const fetchEmployessLeavesDetails = async (employeeData) => {
+    try {
+      setIsLoading(true);
+      const employeeList = employeeData?.results || [];
+      if (employeeList && employeeList.length > 0) {
+        const updatedEmployeeList = await Promise.all(
+          employeeList.map(async (employee) => {
+            const leaveTypeResponse = await getEmployeeLeaveTypes({
+              employee_id: employee.id,
+            });
+            const leavesData = {
+              leaveTypes: leaveTypeResponse.leaveTypes,
+              allotedLeaves: leaveTypeResponse.allotedLeaves,
+              remainingLeaves: leaveTypeResponse.remainingLeaves,
+              usedLeaves: leaveTypeResponse.usedLeaves,
+            };
+            return { ...employee, ...leavesData };
+          })
         );
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
+        setEmployeeData({ ...employeeData, results: updatedEmployeeList });
       }
-    };
-    fetchLists();
-  }, [leaveTypes, userProfile]);
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  console.log(employeeData);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange(1);
@@ -157,6 +150,13 @@ const LeaveHistory = ({
     onPageChange,
     onSortChange: sortColumn,
     paginationPosition: "bottom",
+  };
+
+  const tableExpandRowOptions = {
+    renderer: (row) => <ExpandedRowContent row={row} />,
+    showExpandColumn: true,
+    expandColumnPosition: "bottom", // 'left' or 'right'
+    expandBy: "row", // 'row' or 'column'
   };
 
   return (
@@ -233,12 +233,14 @@ const LeaveHistory = ({
                         options={tableOptions}
                         fetchInfo={{ dataTotalSize: employeeData?.count || 0 }}
                         className={"bootstrap-main-table"}
+                        pagination
+                        expandRow={tableExpandRowOptions}
                       >
                         <TableHeaderColumn
                           className="table-header-bg"
                           dataField="employee_id"
                           dataAlign="center"
-                          width="20%"
+                          width="25%"
                           dataFormat={(cell, row) => (
                             <EmployeeNameInfo
                               name={`${row.first_name} ${row.last_name}`}
@@ -260,6 +262,49 @@ const LeaveHistory = ({
                         >
                           ID
                         </TableHeaderColumn>
+                        <TableHeaderColumn
+                          tdStyle={{ whiteSpace: "normal" }}
+                          dataField="direct_report"
+                          className="table-header-bg"
+                          dataAlign="center"
+                          dataFormat={(cell) => {
+                            return <ManagerName value={cell} />;
+                          }}
+                        >
+                          Report To
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                          tdStyle={{ whiteSpace: "normal" }}
+                          dataField="leaveTypes"
+                          dataAlign="center"
+                          className="table-header-bg"
+                        >
+                          Leaves Type
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                          tdStyle={{ whiteSpace: "normal" }}
+                          dataField="allotedLeaves"
+                          dataAlign="center"
+                          className="table-header-bg"
+                        >
+                          Leaves Alloted
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                          tdStyle={{ whiteSpace: "normal" }}
+                          dataAlign="center"
+                          dataField="usedLeaves"
+                          className="table-header-bg"
+                        >
+                          Leaves Used
+                        </TableHeaderColumn>
+                        <TableHeaderColumn
+                          tdStyle={{ whiteSpace: "normal" }}
+                          dataField="remainingLeaves"
+                          dataAlign="center"
+                          className="table-header-bg"
+                        >
+                          Remaining Leaves
+                        </TableHeaderColumn>
                       </BootstrapTable>
                     </div>
                   </Col>
@@ -273,6 +318,16 @@ const LeaveHistory = ({
   );
 };
 
+const ExpandedRowContent = ({ row }) => {
+    return (
+      <div>
+        <p><strong>Email:</strong> {row.first_name}</p>
+        <p><strong>Phone:</strong> {row.last_name}</p>
+        {/* Add other details as needed */}
+      </div>
+    );
+  };
+  
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
