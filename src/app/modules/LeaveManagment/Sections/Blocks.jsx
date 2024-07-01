@@ -1,32 +1,19 @@
-import React from "react";
-import { Row, Col } from 'reactstrap';
+import React from 'react'
 
-const Blocks = ({ blocks }) => {
+const Block = ({ icon, count, label }) => {
     return (
-        <Row className="flex items-center">
-            {blocks && blocks.map((block, index) => (
-                <SubBlock key={index} label={block.label} value={block.value} image={block.image} />
-            ))}
-        </Row>
-    );
-};
-
-const SubBlock = ({ label, value, image }) => {
-    return (
-        <Col md={6} className="mb-2">
-            <div className="bg-[#FAFBFC] rounded-[20px] px-3 py-4 flex gap-x-[20px]">
-                <img src={image} alt="icon" />
+        <div className="flex items-center justify-between bg-white px-4 py-6 rounded-lg shadow-md">
+            <div className="flex justify-between w-full gap-x-3">
+                <img src={icon} alt="" />
                 <div>
-                    <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">
-                        {label}
-                    </h4>
-                    <h2 className="font-lato text-2xl text-[#323333] font-normal leading-normal">
-                        {value}
-                    </h2>
+                    <div className="text-4xl font-bold text-center text-[#323333]">{count}</div>
+                    <div className="text-baseGray font-lato text-lg">{label}</div>
                 </div>
             </div>
-        </Col>
-    );
-};
+        </div>
+    )
+}
 
-export default Blocks;
+export default Block;
+
+

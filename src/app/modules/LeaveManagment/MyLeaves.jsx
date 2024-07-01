@@ -19,12 +19,19 @@ import {
 import { cut, file, list } from "assets/images";
 import { FaPlus } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
-import { Blocks } from "./Sections";
 import { getLeaveApplications, getLeaveTypes } from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import moment from "moment";
 import { StatusLabel } from "components";
 import { LeaveType } from "utils/getValuesFromTables";
+import checked from "../../../assets/images/checked.svg";
+import employee from "../../../assets/images/employee.svg";
+import time from "../../../assets/images/time.svg";
+import cross from "../../../assets/images/cross.svg";
+import Select from 'react-select';
+import Block from "./Sections/Blocks";
+import LeaveCount from "./Sections/LeaveCount";
+
 
 const MyLeaves = ({ userProfile }) => {
   const [Leave, setLeave] = useState([]);
@@ -72,9 +79,8 @@ const MyLeaves = ({ userProfile }) => {
         const leaveTypesResponse = await getLeaveTypes();
         setLeaveTypes(leaveTypesResponse);
 
-        const URL = `/leave?ordering=date&page=${options.page}&page_size=${
-          options.sizePerPage
-        }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
+        const URL = `/leave?ordering=date&page=${options.page}&page_size=${options.sizePerPage
+          }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
         const applicationsData = await getLeaveApplications(URL);
         if (applicationsData) {
           setLeave(applicationsData);
@@ -140,14 +146,14 @@ const MyLeaves = ({ userProfile }) => {
           />
         }
       />
-      <Row className="mb-5">
+      {/* <Row className="mb-5">
         <Col lg={6}>
-          {/* <Tabs
+          <Tabs
                         onTabChange={setActiveTab}
                         activeTab={activeTab}
                         activeJobId={jobIdForFilter}
                         changeJobFilter={(jobId) => { handleFilterChange('job_id', jobId) }}
-                    /> */}
+                    />
         </Col>
         <Col lg={6}>
           <Blocks
@@ -175,7 +181,72 @@ const MyLeaves = ({ userProfile }) => {
             ]}
           />
         </Col>
-      </Row>
+      </Row> */}
+      <div className="w-full flex flex-col md:flex-row gap-4 mb-4">
+        <div className="bg-white md:w-[60%] flex items-center rounded-lg">
+          {/* Left section */}
+          <div className="md:w-[45%] px-4 py-2 rounded-lg">
+            <h2 className="text-base font-lato text-baseGray font-semibold mb-2">
+              My Leave Allowance
+            </h2>
+            <div className="text-3xl font-bold text-[#00A8F0] mb-6">
+              25 days
+            </div>
+            <div className="mb-2">
+              <label className="block text-gray-700 mb-2">Leave Year</label>
+              <select className="w-full p-2 border border-gray-300 rounded">
+                <option>22-04-24 - 22-04-24</option>
+              </select>
+
+            </div>
+            <div className="mb-2">
+              <label className="block text-gray-700 mb-2">Leave Type</label>
+              <FilterInput
+                filters={[
+                  {
+                    type: "select",
+                    option: leaveTypes,
+                    name: "leave_type",
+                    placeholder: "Leave Type",
+                  }
+                ]}
+                onChange={handleFilterChange}
+              />
+            </div>
+          </div>
+
+          {/* Center section */}
+
+          <div className="md:w-[55%] flex flex-col md:flex-row items-center justify-around">
+            <LeaveCount
+              title="Leaves Remaining"
+              leaveCount="05"
+              borderColor="#00A8F0"
+              clipPath="inset(0 0 0 20%)"
+            />
+            <LeaveCount
+              title="Leaves Used"
+              leaveCount="08"
+              borderColor="#556CBF"
+              clipPath="inset(0 70% 0 0)"
+            />
+          </div>
+        </div>
+
+        {/* right */}
+
+        <div className="md:w-[45%] flex justify-center items-center">
+          <div className="grid grid-cols-2 gap-2 h-full w-full max-w-5xl">
+            <Block icon={checked} count={6} label={'Approved'} />
+            <Block icon={time} count={1} label={'Pending'} />
+            <Block icon={employee} count={8} label={'Request'} />
+            <Block icon={cross} count={1} label={'Denied'} />
+
+          </div>
+
+        </div>
+
+      </div>
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
@@ -228,7 +299,7 @@ const MyLeaves = ({ userProfile }) => {
                 <Row>
                   <Col lg={12}>
                     <div>
-                      <BootstrapTable
+                      {/* <BootstrapTable
                         data={Leave || []}
                         version="4"
                         remote
@@ -292,7 +363,7 @@ const MyLeaves = ({ userProfile }) => {
                           headerAlign="center"
                           dataFormat={(cell, row) => renderView(row)}
                         ></TableHeaderColumn>
-                      </BootstrapTable>
+                      </BootstrapTable> */}
                     </div>
                   </Col>
                 </Row>
