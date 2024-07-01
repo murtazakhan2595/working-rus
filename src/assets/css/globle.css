@@ -86,6 +86,10 @@ ul {
     height: auto !important;
 }
 
+.form-floating>.form-control:not(:placeholder-shown)~label::after{
+    background: transparent;
+}
+
 .react-datepicker-wrapper {
     width: 100%;
 }

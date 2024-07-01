@@ -76,7 +76,7 @@ const Applications = () => {
     const fetchLists = async () => {
       try {
         setIsLoading(true);
-        const URL = `/candidateall/?page=${options.page}&page_size=${
+        const URL = `/candidateall/?ordering=updated_at&page=${options.page}&page_size=${
           options.sizePerPage
         }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
         const applicationsData = await getJobApplications(URL);
@@ -308,7 +308,7 @@ const Applications = () => {
                 <Row>
                   <Col lg={12}>
                     <div>
-                      <BootstrapTable
+                      {/* <BootstrapTable
                         data={Applications?.data || []}
                         version="4"
                         hover
@@ -405,7 +405,7 @@ const Applications = () => {
                           headerAlign="right"
                           dataFormat={(cell, row) => renderAction(row)}
                         ></TableHeaderColumn>
-                      </BootstrapTable>
+                      </BootstrapTable> */}
                     </div>
                   </Col>
                 </Row>

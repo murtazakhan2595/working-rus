@@ -141,7 +141,7 @@ const CertificationsInformation = ({
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
-                                  label={"Certification Body"}
+                                  label={"Certification Institute"}
                                 />
                               </div>
                               {/* <div className="w-full md:w-[97.5%] bg-[#E5E5F0] flex justify-center items-center h-40">

@@ -2,8 +2,54 @@ import React, { useState } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
+import {
+  DepartmentName,
+  DesignationName,
+  ManagerName,
+  getCountryFullName,
+} from "utils/getValuesFromTables";
+import moment from "moment";
 
-const WorkInformation = ({ workInformation, isEditable, employeeId, getDataByHooks }) => {
+const WorkInformation = ({
+  userData,
+  isEditable,
+  employeeId,
+  getDataByHooks,
+}) => {
+  const workInformation = [
+    [
+      {
+        title: "Department",
+        data: <DepartmentName value={userData?.department_name} />,
+      },
+
+      {
+        title: "Position",
+        data: <DesignationName value={userData?.department_position} />,
+      },
+      { title: "Work Email", data: userData?.work_email },
+      { title: "Employee Type", data: userData?.employee_type },
+    ],
+    [
+      { title: "Employee Status", data: userData?.employee_status },
+      { title: "Work Type", data: userData?.employee_work_type },
+      {
+        title: "Work Location",
+        data: getCountryFullName(userData?.employee_location),
+      },
+      {
+        title: "Direct Report To",
+        data: <ManagerName value={userData?.direct_report} />,
+      },
+    ],
+    [
+      { title: "Department Head", data: userData?.department_manager },
+      {
+        title: "Joining Date",
+        data: moment(userData?.joining_date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+      },
+    ],
+  ];
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
@@ -12,11 +58,15 @@ const WorkInformation = ({ workInformation, isEditable, employeeId, getDataByHoo
           <h2 className="text-xl">Work Information</h2>
           {isEditable && (
             <div className="flex gap-4 items-center">
-
               <FiPlus className="text-2xl cursor-pointer opacity-80" />
-              <div onClick={() => {
-                setShowPersonalDetailCard(true);
-              }}>  <CiEdit className="text-2xl cursor-pointer opacity-80" /></div>
+              <div
+                onClick={() => {
+                  setShowPersonalDetailCard(true);
+                }}
+              >
+                {" "}
+                <CiEdit className="text-2xl cursor-pointer opacity-80" />
+              </div>
             </div>
           )}
         </div>
@@ -32,7 +82,9 @@ const WorkInformation = ({ workInformation, isEditable, employeeId, getDataByHoo
                   <div className="opacity-60 w-1/2 1100:w-[35%]">
                     {info.title}
                   </div>
-                  <div className="w-1/2 1100:w-[65%]">{info.data || "-----"}</div>
+                  <div className="w-1/2 1100:w-[65%]">
+                    {info.data || "-----"}
+                  </div>
                 </div>
               ))}
             </div>
@@ -44,7 +96,7 @@ const WorkInformation = ({ workInformation, isEditable, employeeId, getDataByHoo
           openModal={showPersonalDetailCard}
           closeModal={() => {
             setShowPersonalDetailCard(false);
-            getDataByHooks()
+            getDataByHooks();
           }}
           employeeId={employeeId}
           currentClick={8}

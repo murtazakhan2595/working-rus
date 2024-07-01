@@ -24,12 +24,7 @@ import Loader from "components/PageLoader";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
-import {
-  DepartmentName,
-  DesignationName,
-  ManagerName,
-  getDepartmentName,
-} from "../../../../../utils/getValuesFromTables";
+
 
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [userData, setUserData] = useState({});
@@ -122,41 +117,6 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     { title: "Branch Address", data: userData?.branch_address },
     { title: "Branch Code", data: userData?.branch_code },
     { title: "Swift Code", data: userData?.swift_code },
-  ];
-
-  const workInformation = [
-    [
-      {
-        title: "Department",
-        data: <DepartmentName value={userData?.department_name} />,
-      },
-
-      {
-        title: "Position",
-        data: <DesignationName value={userData?.department_position} />,
-      },
-      { title: "Work Email", data: userData?.work_email },
-      { title: "Employee Type", data: userData?.employee_type },
-    ],
-    [
-      { title: "Employee Status", data: userData?.employee_status },
-      { title: "Work Type", data: userData?.employee_work_type },
-      {
-        title: "Work Location",
-        data: getCountryFullName(userData?.employee_location),
-      },
-      {
-        title: "Direct Report To",
-        data: <ManagerName value={userData?.direct_report} />,
-      },
-    ],
-    [
-      { title: "Department Head", data: userData?.department_manager },
-      {
-        title: "Joining Date",
-        data: moment(userData?.joining_date, "YYYY-MM-DD").format("DD-MM-YYYY"),
-      },
-    ],
   ];
 
   const identificationDetails = [
@@ -412,7 +372,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
             </div>
             <WorkInformation
               isEditable={!profileView}
-              workInformation={workInformation}
+              userData={userData}
               employeeId={userData.id}
               getDataByHooks={getDataByHooks}
             />
