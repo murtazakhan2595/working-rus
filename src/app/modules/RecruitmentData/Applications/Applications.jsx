@@ -308,7 +308,7 @@ const Applications = () => {
                 <Row>
                   <Col lg={12}>
                     <div>
-                      {/* <BootstrapTable
+                      <BootstrapTable
                         data={Applications?.data || []}
                         version="4"
                         hover
@@ -405,7 +405,7 @@ const Applications = () => {
                           headerAlign="right"
                           dataFormat={(cell, row) => renderAction(row)}
                         ></TableHeaderColumn>
-                      </BootstrapTable> */}
+                      </BootstrapTable>
                     </div>
                   </Col>
                 </Row>
