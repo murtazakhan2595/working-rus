@@ -1,0 +1,118 @@
+/* // react-bootstrap-table styles */
+.table-container {
+  margin-bottom: 15px !important;
+
+  .custom-table {
+    border-radius: 0 !important;
+    border-top-width: 0px !important;
+    border-left: none !important;
+    border-right: none !important;
+
+    thead {
+      tr {
+        border-radius: 10px 10px 0px 0px;
+        background-color: #ebeced;
+        border: none !important;
+
+        th {
+          text-transform: capitalize !important;
+          border-bottom-width: 2px !important;
+          border-color: white !important;
+          border-left: 0px !important;
+          border-right: 0px !important;
+          background: transparent;
+          white-space: pre-line;
+          text-align: center;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        border-color: #dadada;
+        background-color: #fafbfc;
+        td {
+          vertical-align: middle;
+          border-left: 0px !important;
+          border-right: 0px !important;
+          background: transparent;
+          white-space: pre-line;
+          text-align: center;
+
+          .btn-group {
+            position: inherit !important;
+          }
+
+          .btn-brand {
+            border-radius: 100% !important;
+            width: 30px;
+            height: 30px;
+            background-color: #f0f1f2;
+            border: none;
+            color: #5c5e64;
+          }
+        }
+      }
+    }
+    tfoot {
+      tr {
+        td {
+          border: none !important;
+          .btn-brand {
+            border-radius: 4px !important;
+            border: none;
+          }
+        }
+      }
+    }
+  }
+
+  .cursor-pointer td {
+    overflow: hidden;
+  }
+
+  .react-bs-table-tool-bar {
+    .btn {
+      border-radius: 0 !important;
+    }
+
+    .react-bs-table-search-form {
+      margin-bottom: 15px !important;
+    }
+  }
+
+  .table-pagination {
+    margin-bottom: 1rem;
+
+    ul {
+      margin-bottom: 0px;
+    }
+
+    .btn.dropdown-toggle {
+      border-radius: 15 !important;
+    }
+
+    .page-link {
+      color: #6c757d;
+      background-color: #fafbfc;
+    }
+
+    .page-item.active .page-link {
+      background-color: #6c757d;
+      border-color: #6c757d;
+      color: white;
+    }
+  }
+}
+
+.dropdown-menu.show {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0px 6.65px 5.32px 0px #00000007;
+}
+
+/* form labels z-index */
+
+.form-floating > label {
+  z-index: 0;
+}

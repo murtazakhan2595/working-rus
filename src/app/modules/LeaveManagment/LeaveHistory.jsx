@@ -1,78 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useParams, Link } from "react-router-dom";
-import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
-import { dropdownOptions } from "data/Data";
-import { PageLoader, Header, EmployeeNameInfo } from "components";
-import { Status, getDecision, StatusIcon, RenderStatus } from "./Sections";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Row,
-  Col,
-} from "reactstrap";
-import { EmployeeID, ManagerName } from "utils/getValuesFromTables";
-import { cut, file, list } from "assets/images";
-import { FaPlus } from "react-icons/fa";
-import { LeaveStatus } from "data/Data";
-import { Blocks } from "./Sections";
-import {
-  getLeaveApplications,
-  getEmployeeLeaveTypes,
-} from "app/hooks/leaveManagment";
+import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
+import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
 import { getEmployeeCustomList } from "app/hooks/general";
 import { FilterInput } from "components/form-control";
-import moment from "moment";
-import { StatusLabel } from "components";
-import { LeaveTypeOfEmployee } from "utils/getValuesFromTables";
-import { getEmployeeLeavesTypesList } from "utils/Lists";
+import {
+  EmployeeID,
+  ManagerName,
+  DepartmentName,
+  DesignationName,
+  LeaveTypeOfEmployee,
+} from "utils/getValuesFromTables";
+import { LeaveHistoryColumns } from "app/utils/Types/TableColumns";
+import { getLeavesTypeNameList } from "utils/Lists";
+import { PageLoader, Header, BarChart, Table } from "components";
 
-const LeaveHistory = ({
-  userProfile,
-  leaveTypes,
-  designations,
-  departments,
-}) => {
-  const [Leave, setLeave] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
+const LeaveHistory = ({ leaveTypes, designations, departments }) => {
   const [employeeData, setEmployeeData] = useState([]);
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
-  const [totalApproved, setTotalApproved] = useState(0);
-  const [pendingRequests, setPendingRequests] = useState(0);
-  const [totalRequests, setTotalRequests] = useState(0);
-  const [deniedRequests, setDeniedRequests] = useState(0);
+  const [expandedRow, setExpandedRow] = useState(null);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
-    sortName: "",
-    sortOrder: "",
   });
-  const onSizePerPageList = (sizePerPage) => {
-    if (options.sizePerPage !== sizePerPage) {
-      setOptions((prevOptions) => ({ ...prevOptions, sizePerPage }));
+  const onPageChange = (name, value) => {
+    const pageOptions = options;
+    debugger;
+    if (pageOptions[name] !== value) {
+      pageOptions[name] = value;
+      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
-  const onPageChange = (page, sizePerPage) => {
-    if (options.page !== page) {
-      setOptions((prevOptions) => ({ ...prevOptions, page }));
-    }
-  };
-
-  const sortColumn = (sortName, sortOrder) => {
-    setOptions((prevOptions) => ({
-      ...prevOptions,
-      sortName,
-      sortOrder,
-    }));
-  };
-
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
@@ -83,7 +42,7 @@ const LeaveHistory = ({
           filterData,
         });
         if (isMounted) {
-          fetchEmployessLeavesDetails(employeeData);
+          fetchEmployeesWithLeaveDetails(employeeData);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -100,7 +59,7 @@ const LeaveHistory = ({
     };
   }, [options, filterData]);
 
-  const fetchEmployessLeavesDetails = async (employeeData) => {
+  const fetchEmployeesWithLeaveDetails = async (employeeData) => {
     try {
       setIsLoading(true);
       const employeeList = employeeData?.results || [];
@@ -128,10 +87,8 @@ const LeaveHistory = ({
     }
   };
 
-  console.log(employeeData);
-
   const handleFilterChange = (filterName, filterValue) => {
-    onPageChange(1);
+    onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -143,20 +100,30 @@ const LeaveHistory = ({
     });
   };
 
+  const renderExpandedContent = (row) => {
+    return (
+      <BarChart
+        categories={getLeavesTypeNameList(leaveTypes)}
+        series={[
+          {
+            name: "Leaves Used",
+            data: [5, 10, 15, 20, 25],
+          },
+          {
+            name: "Total Leave",
+            data: [15, 25, 35, 45, 55],
+          },
+        ]}
+      />
+    );
+  };
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
-    onSizePerPageList,
-    onPageChange,
-    onSortChange: sortColumn,
-    paginationPosition: "bottom",
-  };
-
-  const tableExpandRowOptions = {
-    renderer: (row) => <ExpandedRowContent row={row} />,
-    showExpandColumn: true,
-    expandColumnPosition: "bottom", // 'left' or 'right'
-    expandBy: "row", // 'row' or 'column'
+    onPageChange: (name, value) => {
+      onPageChange(name, value);
+    },
   };
 
   return (
@@ -193,7 +160,6 @@ const LeaveHistory = ({
                         onChange={handleFilterChange}
                       />
                     </div>
-
                     <div className="py-3 px-3">
                       <FilterInput
                         filters={[
@@ -224,89 +190,16 @@ const LeaveHistory = ({
                 </Row>
               ) : (
                 <Row>
-                  <Col lg={12}>
-                    <div>
-                      <BootstrapTable
-                        data={employeeData?.results || []}
-                        version="4"
-                        remote
-                        options={tableOptions}
-                        fetchInfo={{ dataTotalSize: employeeData?.count || 0 }}
-                        className={"bootstrap-main-table"}
-                        pagination
-                        expandRow={tableExpandRowOptions}
-                      >
-                        <TableHeaderColumn
-                          className="table-header-bg"
-                          dataField="employee_id"
-                          dataAlign="center"
-                          width="25%"
-                          dataFormat={(cell, row) => (
-                            <EmployeeNameInfo
-                              name={`${row.first_name} ${row.last_name}`}
-                              department={row.department_name}
-                              position={row.department_position}
-                            />
-                          )}
-                        >
-                          Employees
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          tdStyle={{ whiteSpace: "normal" }}
-                          isKey
-                          dataField="id"
-                          dataFormat={(cell) => {
-                            return <EmployeeID value={cell} />;
-                          }}
-                          className="table-header-bg"
-                        >
-                          ID
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          tdStyle={{ whiteSpace: "normal" }}
-                          dataField="direct_report"
-                          className="table-header-bg"
-                          dataAlign="center"
-                          dataFormat={(cell) => {
-                            return <ManagerName value={cell} />;
-                          }}
-                        >
-                          Report To
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          tdStyle={{ whiteSpace: "normal" }}
-                          dataField="leaveTypes"
-                          dataAlign="center"
-                          className="table-header-bg"
-                        >
-                          Leaves Type
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          tdStyle={{ whiteSpace: "normal" }}
-                          dataField="allotedLeaves"
-                          dataAlign="center"
-                          className="table-header-bg"
-                        >
-                          Leaves Alloted
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          tdStyle={{ whiteSpace: "normal" }}
-                          dataAlign="center"
-                          dataField="usedLeaves"
-                          className="table-header-bg"
-                        >
-                          Leaves Used
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          tdStyle={{ whiteSpace: "normal" }}
-                          dataField="remainingLeaves"
-                          dataAlign="center"
-                          className="table-header-bg"
-                        >
-                          Remaining Leaves
-                        </TableHeaderColumn>
-                      </BootstrapTable>
-                    </div>
+                  <Col lg={12} className="react-bs-table-container">
+                    <Table
+                      data={employeeData.results || []}
+                      columns={LeaveHistoryColumns}
+                      rowExpand={true}
+                      renderExpandedContent={renderExpandedContent}
+                      dataTotalSize={employeeData.count || 0}
+                      s
+                      tableOptions={tableOptions}
+                    />
                   </Col>
                 </Row>
               )}
@@ -318,23 +211,11 @@ const LeaveHistory = ({
   );
 };
 
-const ExpandedRowContent = ({ row }) => {
-    return (
-      <div>
-        <p><strong>Email:</strong> {row.first_name}</p>
-        <p><strong>Phone:</strong> {row.last_name}</p>
-        {/* Add other details as needed */}
-      </div>
-    );
-  };
-  
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    leaveTypes: state.common.leaveTypes,
-    designations: state.common.designations,
-    departments: state.common.departments,
-  };
-};
+const mapStateToProps = (state) => ({
+  userProfile: state.user.userProfile,
+  leaveTypes: state.common.leaveTypes,
+  designations: state.common.designations,
+  departments: state.common.departments,
+});
 
 export default connect(mapStateToProps)(LeaveHistory);

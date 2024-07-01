@@ -6,5 +6,11 @@ export function getEmployeeLeavesTypesList(LeaveTypes, employeeLeaveType) {
       label: leaveType ? leaveType.label : "Unknown",
     };
   });
-  return employeeLeaveTypeList
+  return employeeLeaveTypeList;
+}
+export function getLeavesTypeNameList(LeaveTypes) {
+  const LeaveTypeNameList = LeaveTypes.map((leaveType) => {
+    return leaveType ? leaveType.label : "Unknown";
+  });
+  return LeaveTypeNameList;
 }
