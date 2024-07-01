@@ -14,9 +14,8 @@ import {
   DropdownItem,
   Row,
   Col,
-
 } from "reactstrap";
-
+import { EmployeeID } from "utils/getValuesFromTables";
 import checked from "../../../../assets/images/checked.svg";
 import employee from "../../../../assets/images/employee.svg";
 import time from "../../../../assets/images/time.svg";
@@ -27,7 +26,6 @@ import {
   FaPlus,
   FaTimesCircle,
   FaUser,
-
 } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
 import { Blocks } from "../Sections";
@@ -39,33 +37,30 @@ import {
   DepartmentName,
   LeaveType,
   EmployeeName,
-
 } from "utils/getValuesFromTables";
-
 
 const RenderAllApplications = ({ applicationsList }) => {
   const Leave = applicationsList;
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const renderView = (row) => (
-
-    <Link className="btn btn-outline-dark bg-white text-dark shadow-none"
+    <Link
+      className="btn btn-outline-dark bg-white text-dark shadow-none"
       style={{ padding: ".35em .65em", fontSize: ".75em", minWidth: "100px" }}
       role={"button"}
-    >View</Link>
-
+    >
+      View
+    </Link>
   );
 
   const toggleDropdown = (index) => {
     setOpenDropdownRow(index === openDropdownRow ? null : index);
   };
 
-  return (
 
+  return (
     <>
 
-
       <div className="m-2 bg-white px-2 py-4">
-
         {/* <Row>
 
         <Col lg={12}>
@@ -123,6 +118,9 @@ const RenderAllApplications = ({ applicationsList }) => {
                 dataField="id"
 
                 dataAlign="center"
+                dataFormat={(cell) => {
+                            return <EmployeeID value={cell} />;
+                          }}
 
               >
 
@@ -265,13 +263,9 @@ const RenderAllApplications = ({ applicationsList }) => {
         </Col>
 
       </Row> */}
-
       </div>
-
     </>
-
   );
-
 };
 
 export default RenderAllApplications;

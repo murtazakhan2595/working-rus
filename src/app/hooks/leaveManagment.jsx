@@ -2,6 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { handleLogout } from "./general";
+import { EmployeeLeaveTypesList } from "app/utils/Types/LeaveManagment";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -26,8 +27,7 @@ const getLeaveApplications = async (URL) => {
   return [];
 };
 
-const getEmployeeLeaveTypes = async (filterData) => {
-  filterData = filterData ? filterData : {};
+const getEmployeeLeaveTypes = async (filterData = {}) => {
   try {
     const response = await axios.get(
       `${baseUrl}/employeeleavetypes?search=${encodeURIComponent(
@@ -35,21 +35,39 @@ const getEmployeeLeaveTypes = async (filterData) => {
       )}`,
       { headers: headers() }
     );
+
     if (response.status === 200) {
-      const leaveTypeResponse = response.data;
-      const employeeLeaveTypes = {
-        count: leaveTypeResponse.count,
-        results: leaveTypeResponse.results,
+      const { count, results = [] } = response.data; // Destructure and provide default value
+
+      // Calculating sums in one pass
+      const { allotedLeaves, remainingLeaves, usedLeaves } = results.reduce(
+        (emp, leave) => {
+          emp.allotedLeaves += leave.total_alloted_leaves || 0;
+          emp.remainingLeaves += leave.left_leave || 0;
+          emp.usedLeaves += leave.used_leave || 0;
+          return emp;
+        },
+        { allotedLeaves: 0, remainingLeaves: 0, usedLeaves: 0 }
+      );
+
+      return {
+        count,
+        results,
+        leaveTypes: count,
+        allotedLeaves,
+        remainingLeaves,
+        usedLeaves,
       };
-      return employeeLeaveTypes;
+    } else {
+      return EmployeeLeaveTypesList; 
     }
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();
     }
-    console.error("Error fetching Personal Info data :", error);
+    console.error("Error fetching Employee Leave Types data:", error);
+    return EmployeeLeaveTypesList;
   }
-  return [];
 };
 
 const addLeaveRequest = async (values) => {
@@ -66,15 +84,19 @@ const addLeaveRequest = async (values) => {
     return false;
   }
 };
-const allotLeavesToEmployee = async (employeeId,payload) => {
+const allotLeavesToEmployee = async (employeeId, payload) => {
   if (payload && payload.length > 0) {
     try {
       payload.map(async (leaveType, index) => {
         leaveType.employee_id = employeeId;
         if (leaveType?.id) {
-          await axios.patch(`${baseUrl}/employeeleavetypes/${leaveType.id}`, leaveType, {
-            headers: headers(),
-          });
+          await axios.patch(
+            `${baseUrl}/employeeleavetypes/${leaveType.id}`,
+            leaveType,
+            {
+              headers: headers(),
+            }
+          );
         } else {
           await axios.post(`${baseUrl}/employeeleavetypes/`, leaveType, {
             headers: headers(),
