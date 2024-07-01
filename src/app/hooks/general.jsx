@@ -2,6 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { setUserLogout } from "state/actions/UserAction";
+import { EmployeeListData } from "app/utils/Types/General";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -104,6 +105,37 @@ const getOrganizationList = async () => {
   return [];
 };
 
+const getEmployeeCustomList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/customemp/?${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const employeeDataResponse = response.data.results;
+      const employeeData = {
+        count: employeeDataResponse.total_count,
+        results: employeeDataResponse.employees,
+        ActiveEmployee: employeeDataResponse.total_employees,
+        TotalEmployee: employeeDataResponse.active_employees,
+        TotalManager: employeeDataResponse.total_managers,
+      };
+      return employeeData;
+    } else return EmployeeListData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return EmployeeListData;
+};
+
 const getList = async (URL) => {
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -164,4 +196,5 @@ export {
   getOrganizationList,
   getEmployeeList,
   handleLogout,
+  getEmployeeCustomList,
 };

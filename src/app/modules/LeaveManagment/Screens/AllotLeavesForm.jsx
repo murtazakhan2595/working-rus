@@ -1,30 +1,40 @@
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
 import React, { useState, useRef, useEffect } from "react";
-import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
+import {  Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import {
   TextInput,
   CustomDarkButton,
-  DateInput,
-  FileInput,
-  PhoneNumberInput,
-  EmailInput,
   FilterInput,
 } from "components/form-control.jsx";
 import { LeaveType } from "utils/getValuesFromTables";
-import { allotLeavesToEmployee } from "app/hooks/leaveManagment.jsx";
+import { allotLeavesToEmployee ,getEmployeeLeaveTypes} from "app/hooks/leaveManagment";
 
 const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
   const formRef = useRef();
-  const [showEdit, setShowEdit] = useState(false);
-  const [filterData, setFilterData] = useState(
-    employeeData.employeeLeaveDetails
-  );
+  const [filterData, setFilterData] = useState({ leave_type: [] });
+
+  const [employeeLeaveTypes, setEmployeeLeaveTypes] = useState([]);
+  const getPosts = async () => {
+    try {
+      const data = await getEmployeeLeaveTypes({
+        employee_id: employeeData.id,
+      });
+      setEmployeeLeaveTypes(data.results);
+      if (formRef.current) {
+        formRef.current.setFieldValue("employeeLeaveDetails", data.results);
+      }
+    } catch (error) {
+      console.error("Error fetching employeeLeaveTypes:", error);
+    } finally {
+    }
+  };
+  useEffect(() => {
+    getPosts();
+  }, [employeeData]);
 
   const handleSubmit = (values, resetForm) => {
-    console.log(values);
     const response = allotLeavesToEmployee(
       employeeData.id,
       values.employeeLeaveDetails
@@ -36,12 +46,16 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
   };
 
   useEffect(() => {
-    setFilterData({
-      leave_type: employeeData.employeeLeaveDetails.map(
-        (item) => item.leave_type
-      ),
-    });
-  }, [leaveTypes]);
+    if (employeeLeaveTypes && employeeLeaveTypes.length > 0) {
+      setFilterData({
+        leave_type: employeeLeaveTypes.map((item) => item.leave_type),
+      });
+    } else {
+      setFilterData({
+        leave_type: [],
+      });
+    }
+  }, [leaveTypes, employeeLeaveTypes]);
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
     setFilterData((prevFilters) => {
@@ -115,12 +129,13 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
           />
         </div>
       </div>
-      <div>
+      <div className="mt-5">
         <Formik
           initialValues={{
-            employeeLeaveDetails: employeeData.employeeLeaveDetails,
+            employeeLeaveDetails: employeeLeaveTypes,
           }}
           innerRef={formRef}
+          enableReinitialize
           onSubmit={(values, { resetForm }) => {
             handleSubmit(values, resetForm);
           }}
@@ -130,8 +145,12 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
           }}
         >
           {(props) => (
-            <Form onSubmit={props.handleSubmit}>
-              <Row className="mx-1">
+            <Form
+              onSubmit={props.handleSubmit}
+              className="flex flex-col justify-between"
+              style={{ minHeight: "calc(100vh - 350px)" }}
+            >
+              <Row className="mx-0">
                 {filterData?.leave_type &&
                   filterData?.leave_type.length > 0 &&
                   filterData?.leave_type.map((leave_type) => {
@@ -141,7 +160,6 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
                     if (index === -1) {
                       addNewLeaveType(leave_type);
                     }
-                    console.log(props.values?.employeeLeaveDetails, index);
                     return (
                       <React.Fragment key={index}>
                         <AllotLeave
@@ -168,7 +186,6 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
                     );
                   })}
               </Row>
-              <hr />
               <Row>
                 <Col md="6" className="text-right">
                   <CustomDarkButton
@@ -176,7 +193,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
                       props.handleSubmit();
                     }}
                     label={`Allot`}
-                    className="w-100"  
+                    className="w-100"
                   />
                 </Col>
               </Row>
@@ -192,7 +209,7 @@ const AllotLeave = ({ leaveType, errors, touched, values, onChange }) => {
   return (
     <>
       <Row
-        className="mb-4 shadow-sm mx-1"
+        className="mb-4 shadow-sm mx-0"
         style={{
           border: "1px solid #DADADA",
           borderRadius: "9px",

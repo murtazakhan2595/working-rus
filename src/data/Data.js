@@ -9,9 +9,7 @@ import {
   fetchLeaveTypes,
   fetchDesignations,
 } from "state/slices/CommonSlice";
-import {
-  setUserProfile,
-} from "state/slices/UserSlice.js";
+import { setUserProfile } from "state/slices/UserSlice.js";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
 
 export const countryOptions = Object.keys(getAllCountries()).map(
@@ -301,6 +299,7 @@ export const dropdownStyles = {
     backgroundColor: "#fafbfc",
     border: "none",
     boxShadow: "none",
+    minWidth: "8rem",
   }),
   option: (provided, state) => ({
     ...provided,
