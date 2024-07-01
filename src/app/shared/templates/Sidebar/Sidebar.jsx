@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { MdOutlineLogout } from "react-icons/md";
+import { MdOutlineLogout, MdOutlineNotificationsNone } from "react-icons/md";
 import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
@@ -17,6 +17,7 @@ import { toggleDropdown } from "state/slices/DropdownSlice";
 import getNavigation from "app/utils/Types/Navigation";
 import { setUserLogout } from "state/actions/UserAction";
 import NavigationMenue from "./NavigationMenue";
+import Notifications from "./Notifications/Notifications";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -62,6 +63,7 @@ const Sidebar = ({
   useEffect(() => {
     fetchData();
   }, []);
+
 
   return (
     <>
@@ -113,10 +115,28 @@ const Sidebar = ({
   );
 };
 
+// render notifications
+
+
 const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDropdown, isProfileOpen }) => {
+
+  const [showNotifications, setShowNotifications] = useState(false);
+
   const navigate = useNavigate();
+  const handleShowNotifications = () => {
+    setShowNotifications(prev => !prev)
+  }
+
+  const handleClose = () => {
+    setShowNotifications(false)
+  }
   return (
     <div className="pb-2 mx-2">
+      <div className="flex items-center gap-x-3 text-[#5C5E64] flex-grow ml-2 cursor-pointer" onClick={handleShowNotifications}>
+        <MdOutlineNotificationsNone className="text-xl" />
+        <div className={`flex-grow text-[14px] ${isSidebarOpen ? 'block' : 'hidden'}`}>Notifications</div>
+      </div>
+      {showNotifications && <Notifications onClose={handleClose} />}
       <div
         className={`${isSidebarOpen
           ? "bg-white rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1"
