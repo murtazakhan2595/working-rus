@@ -20,7 +20,7 @@ import { cut, file, list } from "assets/images";
 import { FaPlus } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
 
-import { getLeaveApplications, getLeaveTypes } from "app/hooks/leaveManagment";
+import { getLeaveApplications, getLeaveTypes} from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import moment from "moment";
 import { StatusLabel } from "components";
@@ -32,6 +32,9 @@ import cross from "../../../assets/images/cross.svg";
 import Select from 'react-select';
 import Block from "./Sections/Blocks";
 import LeaveCount from "./Sections/LeaveCount";
+import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
+import { getEmployeeLeavesTypesList } from "utils/Lists";
+import { LeaveTypeOfEmployee } from "utils/getValuesFromTables";
 
 
 
@@ -73,28 +76,6 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
     setFilterData({ employee_id: userProfile.id });
   }, [userProfile]);
 
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        setIsLoading(true);
-
-        const leaveTypesResponse = await getLeaveTypes();
-        setLeaveTypes(leaveTypesResponse);
-
-        const URL = `/leave?ordering=date&page=${options.page}&page_size=${options.sizePerPage
-          }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
-
-        const applicationsData = await getLeaveApplications(URL);
-        if (applicationsData) {
-          setLeave(applicationsData);
-        }
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-      }
-    };
-    fetchLists();
-  }, [options, filterData]);
 
   useEffect(() => {
     const fetchLists = async () => {
