@@ -299,7 +299,7 @@ const MyLeaves = ({ userProfile }) => {
                 <Row>
                   <Col lg={12}>
                     <div>
-                      {/* <BootstrapTable
+                      <BootstrapTable
                         data={Leave || []}
                         version="4"
                         remote
@@ -363,7 +363,7 @@ const MyLeaves = ({ userProfile }) => {
                           headerAlign="center"
                           dataFormat={(cell, row) => renderView(row)}
                         ></TableHeaderColumn>
-                      </BootstrapTable> */}
+                      </BootstrapTable>
                     </div>
                   </Col>
                 </Row>

@@ -66,7 +66,7 @@ const RenderAllApplications = ({ applicationsList }) => {
 
       <div className="m-2 bg-white px-2 py-4">
 
-        {/* <Row>
+         <Row>
 
         <Col lg={12}>
 
@@ -264,7 +264,7 @@ const RenderAllApplications = ({ applicationsList }) => {
 
         </Col>
 
-      </Row> */}
+      </Row> 
 
       </div>
 
