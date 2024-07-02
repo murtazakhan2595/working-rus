@@ -91,9 +91,7 @@ const getEmployeePersonalInfoData = async (baseUrl, employeeid, token) => {
 };
 
 const saveEmployeePersonalInfoData = async (
-  baseUrl,
   employeeid,
-  token,
   personalInfo
 ) => {
   if (employeeid) {
@@ -102,10 +100,7 @@ const saveEmployeePersonalInfoData = async (
         `${baseUrl}/emp/${employeeid}`,
         personalInfo,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: headers(),
         }
       );
 
@@ -258,6 +253,7 @@ const saveEmployeeVisaDetailData = async (
   if (employeeid) {
     visaDetail.employee_id = employeeid;
     try {
+      debugger
       if (visaDetail.id) {
         await axios.patch(
           `${baseUrl}/employeevisadetail/${visaDetail.id}`,

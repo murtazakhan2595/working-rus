@@ -38,8 +38,6 @@ const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
 
 const IdentificationInformation = ({
   nextstep,
-  baseUrl,
-  token,
   employeeId,
   isEditMode,
   prevStep,
@@ -77,9 +75,7 @@ const IdentificationInformation = ({
       nextstep();
       let personalInfrmation = { is_filled: true };
       const newResponse = saveEmployeePersonalInfoData(
-        baseUrl,
         employeeId,
-        token,
         personalInfrmation
       );
       resetForm();

@@ -50,9 +50,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
     const personalInfrmation = getPersonalInfo(data);
 
     const response = saveEmployeePersonalInfoData(
-      baseUrl,
       employeeId,
-      token,
       personalInfrmation
     );
     if (response) nextstep();
