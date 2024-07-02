@@ -43,43 +43,68 @@ const IdentificationInformation = ({
   prevStep,
 }) => {
   const formRef = React.createRef();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [visaDetails, setVisaDetails] = useState({});
 
   useEffect(() => {
-    getEmployeeVisaDetailData(employeeId)
-      .then((response) => {
+    const fetchVisaDetails = async () => {
+      setIsLoading(true);
+      try {
+        const response = await getEmployeeVisaDetailData(employeeId);
         setVisaDetails(response);
+      } catch (error) {
+        console.error("Error fetching visa details:", error);
+      } finally {
         setIsLoading(false);
-      })
-      .catch((error) => {
-         setIsLoading(false)
-        console.log(error);
-      });
-  }, [employeeId]);
-
-  const handleSubmit = (data, resetForm) => {
-    const documents = {
-      passport_copy: data.passport_copy,
-      enter_permit: data.enter_permit,
-      visa_page: data.visa_page,
-      medical: data.medical,
-      id_application: data.id_application,
-      id_front: data.id_front,
-      id_back: data.id_back,
-      insurance_card: data.insurance_card,
+      }
     };
-    const response = saveEmployeeVisaDetailData(employeeId, data, documents);
-    if (response) {
-      nextstep();
-      let personalInfrmation = { is_filled: true };
-      const newResponse = saveEmployeePersonalInfoData(
+
+    fetchVisaDetails();
+  }, [employeeId]);
+  const handleSubmit = async (data, resetForm) => {
+    setIsLoading(true);
+    try {
+      const documents = {
+        passport_copy: data.passport_copy,
+        enter_permit: data.enter_permit,
+        visa_page: data.visa_page,
+        medical: data.medical,
+        id_application: data.id_application,
+        id_front: data.id_front,
+        id_back: data.id_back,
+        insurance_card: data.insurance_card,
+      };
+
+      // Remove document fields from the data
+      const {
+        passport_copy,
+        enter_permit,
+        visa_page,
+        medical,
+        id_application,
+        id_front,
+        id_back,
+        insurance_card,
+        ...payLoad
+      } = data;
+
+      const response = await saveEmployeeVisaDetailData(
         employeeId,
-        personalInfrmation
+        payLoad,
+        documents
       );
-      resetForm();
-      console.log(newResponse);
+
+      if (response) {
+        nextstep();
+        const personalInformation = { is_filled: true };
+        await saveEmployeePersonalInfoData(employeeId, personalInformation);
+        resetForm();
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.error("Error in handleSubmit:", error);
     }
   };
 

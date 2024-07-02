@@ -31,7 +31,6 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [certifications, setCertifications] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);
   const [cv, setCV] = useState({});
-  const [documents, setDocuments] = useState({});
   const [visa, setVisa] = useState({});
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
@@ -42,16 +41,11 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     setLoading(true);
     try {
       let empData = await getEmployeeData(userId);
-      let expData = await getEmployeeProfessionalExperianceData(
-        baseUrl,
-        userId,
-        token
-      );
+      let expData = await getEmployeeProfessionalExperianceData(userId);
       let cvData = await getEmployeeCVDetailData(userId);
       let visaData = await getEmployeeVisaDetailData(userId);
       let educationData = await getEmployeeAcademicRecordData(userId);
       let certificationData = await getEmployeeCerficationData(userId);
-      let documentsData = await getEmployeeVisaDetailsFiles(userId);
 
       setUserData(empData);
       setExperiences(expData);
@@ -59,7 +53,6 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       setVisa(visaData);
       setEducations(educationData);
       setCertifications(certificationData);
-      setDocuments(documentsData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -135,10 +128,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
           },
           {
             title: "ID Front Image",
-            data: documents?.id_front?.document?.file && (
+            data: visa?.id_front?.document?.file && (
               <a
-                href={documents.id_front.document.file}
-                download={documents.id_front.document.name}
+                href={visa.id_front.document.file}
+                download={visa.id_front.document.name}
                 className="flex items-center no-underline text-black"
               >
                 <FiDownload />
@@ -147,10 +140,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
           },
           {
             title: "ID Back Image",
-            data: documents?.id_back?.document?.file && (
+            data: visa?.id_back?.document?.file && (
               <a
-                href={documents.id_back.document.file}
-                download={documents.id_back.document.name}
+                href={visa.id_back.document.file}
+                download={visa.id_back.document.name}
                 className="flex items-center no-underline text-black"
               >
                 <FiDownload />
@@ -184,10 +177,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               },
               {
                 title: "Passport Copy",
-                data: documents?.passport_copy?.document?.file && (
+                data: visa?.passport_copy?.document?.file && (
                   <a
-                    href={documents.passport_copy.document.file}
-                    download={documents.passport_copy.document.name}
+                    href={visa.passport_copy.document.file}
+                    download={visa.passport_copy.document.name}
                     className="flex items-center no-underline text-black"
                   >
                     <FiDownload />
@@ -222,10 +215,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               },
               {
                 title: "Insurance Card",
-                data: documents?.insurance_card?.document?.file && (
+                data: visa?.insurance_card?.document?.file && (
                   <a
-                    href={documents.insurance_card.document.file}
-                    download={documents.insurance_card.document.name}
+                    href={visa.insurance_card.document.file}
+                    download={visa.insurance_card.document.name}
                     className="flex items-center no-underline text-black"
                   >
                     <FiDownload />
@@ -262,10 +255,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               { title: "UID Number", data: visa.uid_number },
               {
                 title: "Entry Permit",
-                data: documents?.enter_permit?.document?.file && (
+                data: visa?.enter_permit?.document?.file && (
                   <a
-                    href={documents.enter_permit.document.file}
-                    download={documents.enter_permit.document.name}
+                    href={visa.enter_permit.document.file}
+                    download={visa.enter_permit.document.name}
                     className="flex items-center no-underline text-black"
                   >
                     <FiDownload />
@@ -274,10 +267,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               },
               {
                 title: "Visa Page",
-                data: documents?.visa_page?.document?.file && (
+                data: visa?.visa_page?.document?.file && (
                   <a
-                    href={documents.visa_page.document.file}
-                    download={documents.visa_page.document.name}
+                    href={visa.visa_page.document.file}
+                    download={visa.visa_page.document.name}
                     className="flex items-center no-underline text-black"
                   >
                     <FiDownload />
@@ -286,10 +279,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               },
               {
                 title: "Medical Result",
-                data: documents?.medical?.document?.file && (
+                data: visa?.medical?.document?.file && (
                   <a
-                    href={documents.medical.document.file}
-                    download={documents.medical.document.name}
+                    href={visa.medical.document.file}
+                    download={visa.medical.document.name}
                     className="flex items-center no-underline text-black"
                   >
                     <FiDownload />
@@ -298,10 +291,10 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               },
               {
                 title: "ID Application",
-                data: documents?.id_application?.document?.file && (
+                data: visa?.id_application?.document?.file && (
                   <a
-                    href={documents.id_application.document.file}
-                    download={documents.id_application.document.name}
+                    href={visa.id_application.document.file}
+                    download={visa.id_application.document.name}
                     className="flex items-center no-underline text-black"
                   >
                     <FiDownload />
