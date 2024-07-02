@@ -14,7 +14,7 @@ const getLeaveApplications = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/leave/?${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/leave/?order=date&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -94,12 +94,23 @@ const getEmployeeLeaveTypes = async (filterData = {}) => {
   }
 };
 
-const addLeaveRequest = async (values) => {
+const addLeaveRequest = async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/leave/`, values, {
-      headers: headers(),
-    });
-    return response;
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/leave/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      return response;
+    } else {
+      const response = await axios.post(`${baseUrl}/leave/`, payload, {
+        headers: headers(),
+      });
+      return response;
+    }
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();

@@ -13,19 +13,18 @@ const LeaveApplication = ({}) => {
   const [loading, setLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [activeTab, setActiveTab] = useState("Pending");
+  const getApplications = async () => {
+    setLoading(true);
+    try {
+      const data = await getLeaveApplications({ filterData });
+      setApplications(data);
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const getApplications = async () => {
-      setLoading(true);
-      try {
-        const data = await getLeaveApplications({ filterData });
-        setApplications(data);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     getApplications();
   }, [filterData]);
 
@@ -83,6 +82,7 @@ const LeaveApplication = ({}) => {
                 <RenderApplications
                   applicationsList={applications?.results || []}
                   activeTab={activeTab}
+                  reload={getApplications}
                 />
               )}
             </>

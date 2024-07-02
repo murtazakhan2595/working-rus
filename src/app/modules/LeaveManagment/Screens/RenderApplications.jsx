@@ -1,13 +1,16 @@
 import "react-toastify/dist/ReactToastify.css";
 import moment from "moment";
 import { Row, Col, Button } from "reactstrap";
-import { DepartmentName, LeaveType } from "utils/getValuesFromTables";
-import { Status, getDecision, StatusIcon } from "../Sections";
+import { LeaveType } from "utils/getValuesFromTables";
+import { Status } from "../Sections";
 import { EmployeeNameInfo } from "components";
 import { useState } from "react";
 import ViewLeaveDetails from "../Sections/ViewLeaveDetails";
+import { addLeaveRequest } from "app/hooks/leaveManagment";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
-const RenderApplications = ({ applicationsList, activeTab }) => {
+const RenderApplications = ({ applicationsList, activeTab, reload }) => {
   return (
     <Row className="m-2 bg-white px-2 py-4">
       {applicationsList ? (
@@ -30,6 +33,7 @@ const RenderApplications = ({ applicationsList, activeTab }) => {
                     <RenderApplication
                       application={application}
                       activeTab={activeTab}
+                      reload={reload}
                     />
                   </div>
                 </Col>
@@ -49,20 +53,38 @@ const RenderApplications = ({ applicationsList, activeTab }) => {
   );
 };
 
-const RenderApplication = ({ application, activeTab }) => {
-  console.log("i am application", application);
+const RenderApplication = ({ application, activeTab, reload }) => {
+  const loggedInUser = useSelector((state) => state.user.userProfile);
   const [selectedLeave, setSelectedLeave] = useState(null);
-
   const handleLeaveDetails = (appDetails) => {
     setSelectedLeave(appDetails);
   };
-
-
   const closeModal = () => {
     setSelectedLeave(null);
   };
 
-
+  const handleApprove = async (status) => {
+    try {
+      const payload = application;
+      let field = "";
+      if (loggedInUser.role === 1 || loggedInUser.role === 3) {
+        field = "status_hr";
+      }
+      if (field) {
+        payload[field] = status;
+      }
+      const response = await addLeaveRequest(payload);
+      if (response) {
+        toast.success(`Application ${status} Successfully!`);
+        reload();
+      } else {
+        toast.error(`Application Could not be ${status}"`);
+      }
+    } catch (error) {
+      toast.error(`Application Could not be ${status}"`);
+    } finally {
+    }
+  };
   return (
     <Row style={{ whiteSpace: "break-spaces" }}>
       <Col md={5} className="mb-3">
@@ -122,6 +144,9 @@ const RenderApplication = ({ application, activeTab }) => {
             <Button
               className="btn btn-outline-danger bg-white shadow-none"
               style={{ color: "#dc3545" }}
+              onClick={() => {
+                handleApprove("Denied");
+              }}
             >
               Deny
             </Button>
@@ -130,6 +155,9 @@ const RenderApplication = ({ application, activeTab }) => {
             <Button
               className="btn btn-outline-success bg-white shadow-none"
               style={{ color: "#198754" }}
+              onClick={() => {
+                handleApprove("Approved");
+              }}
             >
               Approve
             </Button>
@@ -161,12 +189,11 @@ const RenderApplication = ({ application, activeTab }) => {
         </div>
       </Col>
 
-
       {selectedLeave && (
-          <Col md={6}>
-            <ViewLeaveDetails application={application} onClose={closeModal} />
-          </Col>
-        )}
+        <Col md={6}>
+          <ViewLeaveDetails application={application} onClose={closeModal} />
+        </Col>
+      )}
     </Row>
   );
 };
