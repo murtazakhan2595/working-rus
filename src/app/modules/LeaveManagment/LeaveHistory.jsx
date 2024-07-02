@@ -4,13 +4,6 @@ import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
 import { getEmployeeCustomList } from "app/hooks/general";
 import { FilterInput } from "components/form-control";
-import {
-  EmployeeID,
-  ManagerName,
-  DepartmentName,
-  DesignationName,
-  LeaveTypeOfEmployee,
-} from "utils/getValuesFromTables";
 import { LeaveHistoryColumns } from "app/utils/Types/TableColumns";
 import { getLeavesTypeNameList,getEmployeeLeavesAgainsLeaveType } from "utils/Lists";
 import { PageLoader, Header, BarChart, Table } from "components";
@@ -193,7 +186,6 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                       rowExpand={true}
                       renderExpandedContent={renderExpandedContent}
                       dataTotalSize={employeeData.count || 0}
-                      s
                       tableOptions={tableOptions}
                     />
                   </Col>

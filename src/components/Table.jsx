@@ -9,6 +9,7 @@ import {
   DropdownMenu,
 } from "reactstrap";
 import "./style.css";
+
 const Table = ({
   columns,
   data,
@@ -19,20 +20,16 @@ const Table = ({
   renderExpandedContent,
 }) => {
   const [expandedRow, setExpandedRow] = useState(null);
-  const [options, setOptions] = useState({
+  const options = {
     page: tableOptions.page,
     sizePerPage: tableOptions.sizePerPage,
-  });
+  };
 
   const toggleExpandRow = (rowId) => {
     setExpandedRow(expandedRow === rowId ? null : rowId);
   };
 
   const handlePageChange = (name, page) => {
-    setOptions((prevOptions) => ({
-      ...prevOptions,
-      page,
-    }));
     if (tableOptions.onPageChange) {
       tableOptions.onPageChange(name, page);
     }
@@ -44,7 +41,12 @@ const Table = ({
         <thead>
           <tr>
             {columns.map((column, index) => (
-              <th key={index}>{column.text}</th>
+              <th
+                key={index}
+                style={column.width ? { width: `${column.width}` } : {}}
+              >
+                {column.text}
+              </th>
             ))}
           </tr>
         </thead>
@@ -57,18 +59,19 @@ const Table = ({
                 }}
               >
                 {columns.map((column, index) => (
-                  <td key={index}>
+                  <td
+                    key={index}
+                    style={column.width ? { width: `${column.width}` } : {}}
+                  >
                     {column.formatter
                       ? column.formatter(row[column.dataField], row)
                       : row[column.dataField]}
                   </td>
                 ))}
               </tr>
-              {expandedRow === row.id && (
-                <tr style={{background:'white'}}>
-                  <td colSpan={columns.length}>
-                    {renderExpandedContent(row)}
-                  </td>
+              {expandedRow === row.id && rowExpand && (
+                <tr style={{ background: "white" }}>
+                  <td colSpan={columns.length}>{renderExpandedContent(row)}</td>
                 </tr>
               )}
             </React.Fragment>
@@ -90,6 +93,7 @@ const Table = ({
     </div>
   );
 };
+
 const CustomPagination = ({
   currentPage,
   dataTotalSize,
@@ -166,7 +170,7 @@ const CustomPagePagination = ({
   };
 
   return (
-    <div class="table-pagination">
+    <div className="table-pagination">
       <Pagination>
         <PaginationItem disabled={currentPage === 1}>
           <PaginationLink first href="#" onClick={() => handlePageClick(1)} />

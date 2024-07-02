@@ -4,8 +4,10 @@ import {
   jobTypeOptions,
   locationTypeOptions,
   countryOptions,
+  UserRoles,
 } from "data/Data";
 import { useSelector } from "react-redux";
+
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -15,6 +17,12 @@ function getCountryFullName(countryCode) {
 function getEmployeeType(employeeType) {
   const response = employeeTypeOptions.find(
     (option) => option.value === employeeType
+  );
+  return response ? response.label : "";
+}
+function UserRole({value}) {
+  const response = UserRoles.find(
+    (option) => option.value === parseInt(value)
   );
   return response ? response.label : "";
 }
@@ -89,4 +97,5 @@ export {
   LeaveTypeOfEmployee,
   EmployeeName,
   EmployeeID,
+  UserRole,
 };

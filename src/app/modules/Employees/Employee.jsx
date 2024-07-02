@@ -4,35 +4,28 @@ import {
   Card,
   CardHeader,
   CardBody,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Row,
   Col,
 } from "reactstrap";
-import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
-import PageLoader from "../../../components/PageLoader.jsx";
+import { EmployeeColumns } from "app/utils/Types/TableColumns";
+import { PageLoader, Table } from "components";
 import "./style.css";
 import EmpDataHeader from "./Screens/Sections/Header.jsx";
-import { BsThreeDots } from "react-icons/bs";
-import tie from "../../../assets/images/tie.png";
+import tie from "assets/images/tie.png";
 import profile from "assets/images/profile.png";
 import active from "assets/images/active.png";
 import { FilterInput, CustomDarkButton } from "components/form-control.jsx";
 import { UserRoles } from "data/Data.js";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   getDepartmentList,
   getDesignationList,
   getEmployeeCustomList,
-  deleteRecord,
-} from "../../hooks/general.jsx";
+} from "app/hooks/general.jsx";
 
 const Employee = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState([]);
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [filterData, setFilterData] = useState({});
@@ -43,29 +36,15 @@ const Employee = () => {
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
-    sortName: "",
-    sortOrder: "",
   });
-
-  const onSizePerPageList = (sizePerPage) => {
-    if (options.sizePerPage !== sizePerPage) {
-      setOptions((prevOptions) => ({ ...prevOptions, sizePerPage }));
+  const onPageChange = (name, value) => {
+    const pageOptions = options;
+    if (pageOptions[name] !== value) {
+      pageOptions[name] = value;
+      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
 
-  const onPageChange = (page, sizePerPage) => {
-    if (options.page !== page) {
-      setOptions((prevOptions) => ({ ...prevOptions, page }));
-    }
-  };
-
-  const sortColumn = (sortName, sortOrder) => {
-    setOptions((prevOptions) => ({
-      ...prevOptions,
-      sortName,
-      sortOrder,
-    }));
-  };
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
@@ -111,76 +90,14 @@ const Employee = () => {
     fetchLists();
   }, []);
 
-  const handleDelete = async (employeeId) => {
-    setIsLoading(true);
-    try {
-      const URL = `/emp/${employeeId}`;
-      await deleteRecord(URL, "Employee");
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const renderName = (cell, row) => (
-    <div className="flex items-center">
-      <div className="bg-[#BE24A5] text-[#FAFBFC] flex font-lato font-semibold text-lg items-center justify-center rounded-full w-10 h-10">
-        {row.first_name.toUpperCase().charAt(0)}
-        {row.last_name.toUpperCase().charAt(0)}
-      </div>
-      <div className="flex flex-col ml-2">
-        <div className="text-base font-bold leading-normal text-[#323333] font-lato">
-          {`${row.first_name} ${row.last_name}`}
-        </div>
-        <div className="text-base font-lato">{`${row.department_position}`}</div>
-      </div>
-    </div>
-  );
-
-  const toggleDropdown = (index) => {
-    setOpenDropdownRow(index === openDropdownRow ? null : index);
-  };
-
-  const renderAction = (row) => (
-    <ButtonDropdown
-      isOpen={openDropdownRow === row.id}
-      toggle={() => toggleDropdown(row.id)}
-      className="float-end"
-    >
-      <DropdownToggle size="sm" className="btn-brand">
-        <BsThreeDots />
-      </DropdownToggle>
-      <DropdownMenu end>
-        <DropdownItem onClick={() => navigate(`/profile/${row.id}`)}>
-          Edit Profile
-        </DropdownItem>
-        <DropdownItem>
-          <Link to="/edit-employee" state={{ id: row.id }}>
-            Edit Employee
-          </Link>
-        </DropdownItem>
-        <DropdownItem onClick={() => navigate(`/user/${row.id}`)}>
-          View Profile
-        </DropdownItem>
-        <DropdownItem onClick={() => handleDelete(row.id)}>
-          Delete Employee
-        </DropdownItem>
-      </DropdownMenu>
-    </ButtonDropdown>
-  );
-
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
-    onSizePerPageList,
-    onPageChange,
-    onSortChange: sortColumn,
-    paginationPosition: "bottom",
+    onPageChange: onPageChange,
   };
 
   const handleFilterChange = (filterName, filterValue) => {
-    onPageChange(1);
+    onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -270,93 +187,12 @@ const Employee = () => {
                 <Row>
                   <Col lg={12}>
                     <div>
-                      <BootstrapTable
-                        data={employeeData?.results || []}
-                        version="4"
-                        hover
-                        remote
-                        pagination
-                        options={tableOptions}
-                        fetchInfo={{ dataTotalSize: employeeData?.count || 0 }}
-                        className={"bootstrap-main-table"}
-                      >
-                        <TableHeaderColumn
-                          tdStyle={{ whiteSpace: "normal" }}
-                          isKey
-                          dataField="id"
-                          dataSort
-                          dataFormat={(cell) =>
-                            `TXB-${cell.toString().padStart(4, "0")}`
-                          }
-                          className="table-header-bg"
-                        >
-                          ID
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          dataField="name"
-                          dataSort
-                          className="table-header-bg"
-                          dataFormat={renderName}
-                          width="20%"
-                        >
-                          Name
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          dataField="user_role"
-                          dataSort
-                          className="table-header-bg"
-                          dataFormat={(cell) => {
-                            const role = UserRoles.find(
-                              (obj) => obj.value === cell
-                            );
-                            return role?.label ?? "";
-                          }}
-                        >
-                          Role
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          dataField="username"
-                          dataSort
-                          className="table-header-bg"
-                        >
-                          Username
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          dataField="phone"
-                          dataSort
-                          className="table-header-bg"
-                          width="20%"
-                          dataFormat={(cell, row) => (
-                            <>
-                              <div className="text-base font-lato">
-                                {row.mobile_no || ""}
-                              </div>
-                              <div className="text-base font-lato">
-                                {row.work_email || ""}
-                              </div>
-                            </>
-                          )}
-                        >
-                          Phone no/Email
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          className="table-header-bg text-right"
-                          dataField="employee_status"
-                          headerAlign="right"
-                          dataAlign="right"
-                          width="10%"
-                        >
-                          Status
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          columnClassName="text-right"
-                          className="table-header-bg text-right"
-                          headerAlign="right"
-                          dataFormat={(cell, row) => renderAction(row)}
-                        >
-                          Action
-                        </TableHeaderColumn>
-                      </BootstrapTable>
+                      <Table
+                        data={employeeData.results || []}
+                        columns={EmployeeColumns}
+                        dataTotalSize={employeeData.count || 0}
+                        tableOptions={tableOptions}
+                      />
                     </div>
                   </Col>
                 </Row>
