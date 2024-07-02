@@ -166,43 +166,40 @@ const saveEmployeeContactInfoData = async (employeeid, contactInfo) => {
   }
 };
 
-const getEmployeeVisaDetailsFiles = async (baseUrl, id, token) => {
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
+const getEmployeeVisaDetailsFiles = async (id) => {
+  
   const responseArray = await Promise.all([
     axios.get(
       `${baseUrl}/attachment/?search={"employee_id":${id},"name":"passport_copy"}`,
-      { headers }
+      { headers:headers(), }
     ),
     axios.get(
       `${baseUrl}/attachment/?search={"employee_id":${id},"name":"enter_permit"}`,
-      { headers }
+      { headers:headers(), }
     ),
     axios.get(
       `${baseUrl}/attachment/?search={"employee_id":${id},"name":"visa_page"}`,
-      { headers }
+      { headers:headers(), }
     ),
     axios.get(
       `${baseUrl}/attachment/?search={"employee_id":${id},"name":"medical"}`,
-      { headers }
+      { headers:headers(), }
     ),
     axios.get(
       `${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_application"}`,
-      { headers }
+      { headers:headers(), }
     ),
     axios.get(
       `${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_front"}`,
-      { headers }
+      { headers:headers(), }
     ),
     axios.get(
       `${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_back"}`,
-      { headers }
+      { headers :headers(),}
     ),
     axios.get(
       `${baseUrl}/attachment/?search={"employee_id":${id},"name":"insurance_card"}`,
-      { headers }
+      { headers:headers(), }
     ),
   ]);
 
@@ -221,21 +218,16 @@ const getEmployeeVisaDetailsFiles = async (baseUrl, id, token) => {
   return documents;
 };
 
-const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
+const getEmployeeVisaDetailData = async (employeeid) => {
   if (employeeid) {
     try {
       const documents = await getEmployeeVisaDetailsFiles(
-        baseUrl,
         employeeid,
-        token
       );
       const response = await axios.get(
         `${baseUrl}/employeevisadetail/?search={"employee_id":${employeeid}}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: headers(),
         }
       );
       if (response.status === 200) {

@@ -7,6 +7,7 @@ export default function BarChart({ categories, series }) {
     series: series,
     options: {
       chart: {
+        stacked: true,
         toolbar: {
           show: false,
         },
@@ -18,12 +19,11 @@ export default function BarChart({ categories, series }) {
       dataLabels: {
         enabled: false,
       },
-      colors: ["#25A8E0", "#EBECED"], // Custom colors for each series
+      colors: ["#25A8E0", "#d3d5d7"], // Custom colors for each series
       plotOptions: {
         bar: {
           columnWidth: "15px", // Adjust bar width
-          borderRadius: 4, // Adjust bar border radius
-          stacked: true,
+          borderRadius: 3, // Adjust bar border radius
         },
       },
       xaxis: {
@@ -59,6 +59,10 @@ export default function BarChart({ categories, series }) {
       },
       fill: {
         opacity: 1,
+      },
+      legend: {
+        position: 'right',
+        offsetX: 40
       },
       tooltip: {
         theme: "light",

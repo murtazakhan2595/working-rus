@@ -12,7 +12,7 @@ import {
   LeaveTypeOfEmployee,
 } from "utils/getValuesFromTables";
 import { LeaveHistoryColumns } from "app/utils/Types/TableColumns";
-import { getLeavesTypeNameList } from "utils/Lists";
+import { getLeavesTypeNameList,getEmployeeLeavesAgainsLeaveType } from "utils/Lists";
 import { PageLoader, Header, BarChart, Table } from "components";
 
 const LeaveHistory = ({ leaveTypes, designations, departments }) => {
@@ -26,7 +26,6 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
   });
   const onPageChange = (name, value) => {
     const pageOptions = options;
-    debugger;
     if (pageOptions[name] !== value) {
       pageOptions[name] = value;
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
@@ -74,6 +73,7 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
               allotedLeaves: leaveTypeResponse.allotedLeaves,
               remainingLeaves: leaveTypeResponse.remainingLeaves,
               usedLeaves: leaveTypeResponse.usedLeaves,
+              leaveTypeList:leaveTypeResponse.results,
             };
             return { ...employee, ...leavesData };
           })
@@ -101,19 +101,13 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
   };
 
   const renderExpandedContent = (row) => {
-    return (
+   const leavesInfo = getEmployeeLeavesAgainsLeaveType(row.leaveTypeList,leaveTypes);
+   const series = [{name:"Leaves Used",data:leavesInfo.usedLeaves ||[]},{name:"Total Leaves",data:leavesInfo.totalLeaves ||[]}];
+   console.log(series) 
+   return (
       <BarChart
         categories={getLeavesTypeNameList(leaveTypes)}
-        series={[
-          {
-            name: "Leaves Used",
-            data: [5, 10, 15, 20, 25],
-          },
-          {
-            name: "Total Leave",
-            data: [15, 25, 35, 45, 55],
-          },
-        ]}
+        series={series}
       />
     );
   };
@@ -166,12 +160,14 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                           {
                             type: "date",
                             placeholder: "From",
+                            value: filterData['from'],
                             name: "from",
                           },
                           {
                             type: "date",
                             name: "to",
                             placeholder: "To",
+                            value: filterData['to'],
                           },
                         ]}
                         onChange={handleFilterChange}

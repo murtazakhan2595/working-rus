@@ -45,21 +45,21 @@ const IdentificationInformation = ({
   prevStep,
 }) => {
   const formRef = React.createRef();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [visaDetails, setVisaDetails] = useState(false);
+  const [visaDetails, setVisaDetails] = useState({});
 
   useEffect(() => {
-    getEmployeeVisaDetailData(baseUrl, employeeId, token)
+    getEmployeeVisaDetailData(employeeId)
       .then((response) => {
         setVisaDetails(response);
         setIsLoading(false);
       })
       .catch((error) => {
-        //  setIsLoading(false)
+         setIsLoading(false)
         console.log(error);
       });
-  }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
+  }, [employeeId]);
 
   const handleSubmit = (data, resetForm) => {
     const documents = {

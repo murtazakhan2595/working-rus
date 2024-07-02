@@ -122,7 +122,7 @@ const DateInput = ({
           value={date && !isNaN(date.getTime()) ? date : ""}
           selected={date && !isNaN(date.getTime()) ? date : new Date()}
           dropdownMode="select"
-          placeholder={`${required ? "*" : ""}${label}`}
+          placeholder={`${label}`}
           onChange={(value) => {
             if (value) {
               value = moment(value).format("YYYY-MM-DD");
@@ -499,7 +499,12 @@ const FileInput = ({
           />
           {value?.name && (
             <span
-              style={{ fontSize: "13px", width: "176px", left: "140px" }}
+              style={{
+                fontSize: "13px",
+                width: "176px",
+                left: "140px",
+                minHeight: "40px",
+              }}
               className="bg-[#F5F5FA] absolute"
             >
               {value?.name}
@@ -573,7 +578,7 @@ const FilterInput = ({ filters, onChange }) => {
                   <IoIosSearch className="absolute top-3 left-3 text-baseGray" />
                   <input
                     type="search"
-                    style={{paddingLeft: "2.5rem"}}
+                    style={{ paddingLeft: "2.5rem" }}
                     placeholder={filter.placeholder}
                     className={`${filter.className ?? classNamesStyle}`}
                     name={filter.name}
@@ -613,18 +618,27 @@ const FilterInput = ({ filters, onChange }) => {
                 />
               );
             } else if (filter.type === "date") {
+              const date = filter.value ? new Date(moment(filter.value)) : null;
               return (
-                <input
-                  type="date"
-                  placeholder={filter.placeholder}
-                  //                  className="focus:outline-none focus:border-non bg-[#FAFBFC] py-2 px-3 shadow-input placeholder-[#5C5E64] border-none w-56 rounded-md"
-                  className={filter.className ?? classNamesStyle}
+                <DatePicker
                   name={filter.name}
                   id={filter.name}
-                  dateFormat="dd-mm-yyyy"
-                  onChange={(option) => {
-                    onChange(filter.name, option.target.value);
+                  className={`${filter.className ?? classNamesStyle}`}
+                  value={date && !isNaN(date.getTime()) ? date : ""}
+                  selected={date && !isNaN(date.getTime()) ? date : ''}
+                  dropdownMode="select"
+                  placeholder={`${filter.placeholder}`}
+                  onChange={(value) => {
+                    if (value) {
+                      value = moment(value).format("YYYY-MM-DD");
+                      onChange(filter.name, value);
+                    } else {
+                      onChange(filter.name, null);
+                    }
                   }}
+                  showMonthDropdown
+                  showYearDropdown
+                  dateFormat="dd-MM-yyyy"
                 />
               );
             } else if (filter.type === "sorting") {
