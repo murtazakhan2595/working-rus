@@ -1,13 +1,14 @@
 import {
   EmployeeID,
   ManagerName,
-  DepartmentName,
-  DesignationName,
+  LeaveType,
   LeaveTypeOfEmployee,
   UserRole,
 } from "utils/getValuesFromTables";
-import { EmployeeNameInfo } from "components";
+import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
+import { Status, RenderStatus } from "app/modules/LeaveManagment/Sections";
+import moment from "moment";
 
 export const LeaveHistoryColumns = [
   {
@@ -58,7 +59,7 @@ export const EmployeeColumns = [
   {
     dataField: "name",
     text: "Employees",
-    width:"25%",
+    width: "25%",
     formatter: (cell, row) => (
       <EmployeeNameInfo
         name={`${row.first_name} ${row.last_name}`}
@@ -95,5 +96,91 @@ export const EmployeeColumns = [
     dataField: "",
     text: "",
     formatter: (cell, row) => <EmployeeAction row={row} />,
+  },
+];
+
+export const MyLeavesColumns = [
+  {
+    dataField: "start_date",
+    text: "Start Date",
+    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+  },
+  {
+    dataField: "end_date",
+    text: "End Date",
+    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+  },
+  {
+    dataField: "leave_type",
+    text: "Leave Type",
+    formatter: (cell, row) => <LeaveTypeOfEmployee value={cell} list={[]} />,
+  },
+
+  {
+    dataField: "total_leave",
+    text: "Total Days",
+  },
+  {
+    dataField: "status_hr",
+    text: "Status",
+    formatter: (cell) => <StatusLabel status={Status(cell)} />,
+  },
+  {
+    dataField: "",
+    text: "",
+    formatter: (cell, row) => <RenderStatus row={row} />,
+  },
+];
+
+export const AllLeavesApplicationColumns = [
+  {
+    dataField: "employee_id",
+    text: "Employees",
+    formatter: (cell, row) => (
+      <EmployeeNameInfo
+        name={`${row.name}`}
+        department={row.department_name}
+        position={row.position}
+      />
+    ),
+  },
+  {
+    dataField: "employee_id",
+    text: "ID",
+    formatter: (cell, row) => <EmployeeID value={cell} />,
+  },
+  {
+    dataField: "report_to",
+    text: "Report To",
+    formatter: (cell, row) => <ManagerName value={cell} />,
+  },
+  {
+    dataField: "leave_type",
+    text: "Leave Type",
+    formatter: (cell, row) => <LeaveType value={cell} list={[]} />,
+  },
+  {
+    dataField: "total_leave",
+    text: "No. of Leaves",
+  },
+  {
+    dataField: "start_date",
+    text: "Start Date",
+    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+  },
+  {
+    dataField: "end_date",
+    text: "End Date",
+    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+  },
+  {
+    dataField: "status_hr",
+    text: "Status",
+    formatter: (cell) => <StatusLabel status={Status(cell)} />,
+  },
+  {
+    dataField: "",
+    text: "",
+    formatter: (cell, row) => <RenderStatus row={row} />,
   },
 ];

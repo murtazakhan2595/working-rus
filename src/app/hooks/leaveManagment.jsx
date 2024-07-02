@@ -10,14 +10,38 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getLeaveApplications = async (URL) => {
+const getLeaveApplications = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/leave/?${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
-      return response.data;
-    } else return [];
+      const data = response.data;
+      const LeaveData = { count: data.length || 0, results: data };
+      // const updatedData = await Promise.all(
+      //   data.map(async (leave) => {
+      //     const leaveTypeList = await getEmployeeLeaveTypes({
+      //       employee_id: leave.employee_id,
+      //     });
+      //     const leaveType = leaveTypeList.find(
+      //       (obj) => obj.id === leave.leave_type
+      //     );
+      //     return {
+      //       ...leave,
+      //       employee_leave_type: leaveType?.leave_type ?? "",
+      //     };
+      //   })
+      // );
+      return LeaveData;
+    } else {
+      return [];
+    }
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();
@@ -59,7 +83,7 @@ const getEmployeeLeaveTypes = async (filterData = {}) => {
         usedLeaves,
       };
     } else {
-      return EmployeeLeaveTypesList; 
+      return EmployeeLeaveTypesList;
     }
   } catch (error) {
     if (error?.response?.status === 401) {

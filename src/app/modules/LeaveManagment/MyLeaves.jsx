@@ -1,48 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useParams, Link } from "react-router-dom";
-import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
-import { dropdownOptions } from "data/Data";
+import { Link } from "react-router-dom";
 import { PageLoader, Header } from "components";
-import { Status, getDecision, StatusIcon, RenderStatus } from "./Sections";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Row,
-  Col,
-} from "reactstrap";
-import { cut, file, list } from "assets/images";
+import { MyLeavesColumns } from "app/utils/Types/TableColumns";
+import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { FaPlus } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
 
-import { getLeaveApplications, getLeaveTypes} from "app/hooks/leaveManagment";
+import { getLeaveApplications } from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
-import moment from "moment";
-import { StatusLabel } from "components";
-import { LeaveType } from "utils/getValuesFromTables";
+import { Table } from "components";
 import checked from "../../../assets/images/checked.svg";
 import employee from "../../../assets/images/employee.svg";
 import time from "../../../assets/images/time.svg";
 import cross from "../../../assets/images/cross.svg";
-import Select from 'react-select';
 import Block from "./Sections/Blocks";
 import LeaveCount from "./Sections/LeaveCount";
 import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
 import { getEmployeeLeavesTypesList } from "utils/Lists";
-import { LeaveTypeOfEmployee } from "utils/getValuesFromTables";
-
-
 
 const MyLeaves = ({ userProfile, leaveTypes }) => {
   const [Leave, setLeave] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const [filterData, setFilterData] = useState({});
   const [totalApproved, setTotalApproved] = useState(0);
   const [pendingRequests, setPendingRequests] = useState(0);
@@ -51,31 +31,38 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
-    sortName: "",
-    sortOrder: "",
   });
-  const onSizePerPageList = (sizePerPage) => {
-    if (options.sizePerPage !== sizePerPage) {
-      setOptions((prevOptions) => ({ ...prevOptions, sizePerPage }));
-    }
-  };
-  const onPageChange = (page, sizePerPage) => {
-    if (options.page !== page) {
-      setOptions((prevOptions) => ({ ...prevOptions, page }));
+  const onPageChange = (name, value) => {
+    const pageOptions = options;
+    if (pageOptions[name] !== value) {
+      pageOptions[name] = value;
+      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
 
-  const sortColumn = (sortName, sortOrder) => {
-    setOptions((prevOptions) => ({
-      ...prevOptions,
-      sortName,
-      sortOrder,
-    }));
-  };
   useEffect(() => {
     setFilterData({ employee_id: userProfile.id });
   }, [userProfile]);
 
+  useEffect(() => {
+    const fetchdata = async () => {
+      try {
+        setIsLoading(true);
+        const applicationsData = await getLeaveApplications({
+          options,
+          filterData,
+        });
+        if (applicationsData) {
+          setLeave(applicationsData);
+        }
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      }
+    };
+    fetchdata();
+  }, [options, filterData]);
+  console.log(Leave);
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -96,7 +83,7 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
   }, [leaveTypes, userProfile]);
 
   const handleFilterChange = (filterName, filterValue) => {
-    onPageChange(1);
+    onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -111,10 +98,7 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
-    onSizePerPageList,
-    onPageChange,
-    onSortChange: sortColumn,
-    paginationPosition: "bottom",
+    onPageChange: onPageChange,
   };
 
   return (
@@ -134,42 +118,6 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
           />
         }
       />
-      {/* <Row className="mb-5">
-        <Col lg={6}>
-          <Tabs
-                        onTabChange={setActiveTab}
-                        activeTab={activeTab}
-                        activeJobId={jobIdForFilter}
-                        changeJobFilter={(jobId) => { handleFilterChange('job_id', jobId) }}
-                    />
-        </Col>
-        <Col lg={6}>
-          <Blocks
-            blocks={[
-              {
-                label: "Approved",
-                value: totalApproved,
-                image: file,
-              },
-              {
-                label: "Pending",
-                value: pendingRequests,
-                image: list,
-              },
-              {
-                label: "Requests",
-                value: totalRequests,
-                image: file,
-              },
-              {
-                label: "Denied",
-                value: deniedRequests,
-                image: cut,
-              },
-            ]}
-          />
-        </Col>
-      </Row> */}
       <div className="w-full flex flex-col md:flex-row gap-4 mb-4">
         <div className="bg-white md:w-[60%] flex items-center rounded-lg">
           {/* Left section */}
@@ -185,7 +133,6 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
               <select className="w-full p-2 border border-gray-300 rounded">
                 <option>22-04-24 - 22-04-24</option>
               </select>
-
             </div>
             <div className="mb-2">
               <label className="block text-gray-700 mb-2">Leave Type</label>
@@ -196,7 +143,7 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
                     option: leaveTypes,
                     name: "leave_type",
                     placeholder: "Leave Type",
-                  }
+                  },
                 ]}
                 onChange={handleFilterChange}
               />
@@ -225,15 +172,12 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
 
         <div className="md:w-[45%] flex justify-center items-center">
           <div className="grid grid-cols-2 gap-2 h-full w-full max-w-5xl">
-            <Block icon={checked} count={6} label={'Approved'} />
-            <Block icon={time} count={1} label={'Pending'} />
-            <Block icon={employee} count={8} label={'Request'} />
-            <Block icon={cross} count={1} label={'Denied'} />
-
+            <Block icon={checked} count={6} label={"Approved"} />
+            <Block icon={time} count={1} label={"Pending"} />
+            <Block icon={employee} count={8} label={"Request"} />
+            <Block icon={cross} count={1} label={"Denied"} />
           </div>
-
         </div>
-
       </div>
       <Row>
         <Col lg={12} className="mx-auto">
@@ -287,74 +231,13 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
                 <Row>
                   <Col lg={12}>
                     <div>
-                      <BootstrapTable
-                        data={Leave || []}
-                        version="4"
-                        remote
-                        options={tableOptions}
-                        fetchInfo={{ dataTotalSize: Leave?.length || 0 }}
-                        className={"bootstrap-main-table"}
-                      >
-                        <TableHeaderColumn
-                          isKey
-                          className="table-header-bg"
-                          dataField="start_date"
-                          dataAlign="center"
-                          dataFormat={(cell) => (
-                            <>{moment(cell).format("DD-MM-YYYY")}</>
-                          )}
-                        >
-                          Start Date
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          className="table-header-bg"
-                          dataField="end_date"
-                          dataAlign="center"
-                          dataFormat={(cell) => (
-                            <>{moment(cell).format("DD-MM-YYYY")}</>
-                          )}
-                        >
-                          End Date
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          dataField="leave_type"
-                          className="table-header-bg"
-                          dataAlign="center"
-                          dataFormat={(cell) => {
-                            return <LeaveTypeOfEmployee value={cell} list={leaveTypesOfEmployee} />;
-                          }}
-                        >
-                          Leave Type
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          dataField="total_leave"
-                          className="table-header-bg text-center"
-                          headerAlign="center"
-                          dataAlign="center"
-                        >
-                          Total Days
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          className="table-header-bg text-center overflow-visible"
-                          dataField="status_hr"
-                          headerAlign="center"
-                          dataAlign="center"
-                          dataFormat={(cell, row) => {
-                            return <StatusLabel status={Status(cell)} />;
-                          }}
-                        >
-                          Status
-                        </TableHeaderColumn>
-
-                        <TableHeaderColumn
-                          className="table-header-bg text-center"
-                          dataAlign="center"
-                          headerAlign="center"
-                          dataFormat={(cell, row) => {
-                            return <RenderStatus row={row} />;
-                          }}
-                        ></TableHeaderColumn>
-                      </BootstrapTable>
+                      <Table
+                        data={Leave?.results || []}
+                        columns={MyLeavesColumns}
+                        pagination={true}
+                        dataTotalSize={Leave?.count || 0}
+                        tableOptions={tableOptions}
+                      />
                     </div>
                   </Col>
                 </Row>

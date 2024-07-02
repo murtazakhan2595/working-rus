@@ -3,11 +3,8 @@ import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getLeaveApplications } from "app/hooks/leaveManagment";
 import { Tabs, Header, PageLoader } from "components";
-import moment from "moment";
 import { FilterInput } from "components/form-control";
-import { Row, Col, Button } from "reactstrap";
-import { DepartmentName, LeaveType } from "utils/getValuesFromTables";
-import { Status, getDecision, StatusIcon } from "./Sections";
+import { Row, Col } from "reactstrap";
 import RenderApplications from "./Screens/RenderApplications";
 import RenderAllApplications from "./Screens/RenderAllApplications";
 
@@ -20,10 +17,7 @@ const LeaveApplication = ({}) => {
     const getApplications = async () => {
       setLoading(true);
       try {
-        const URL = `/leave?search=${encodeURIComponent(
-          JSON.stringify(filterData)
-        )}`;
-        const data = await getLeaveApplications(URL);
+        const data = await getLeaveApplications({ filterData });
         setApplications(data);
       } catch (error) {
         console.error("Error fetching applications:", error);
@@ -47,7 +41,6 @@ const LeaveApplication = ({}) => {
       return updatedFilters;
     });
   };
-  console.log(filterData);
   return (
     <div className="screen bg-[#F0F1F2]">
       <Header
@@ -66,11 +59,6 @@ const LeaveApplication = ({}) => {
         }
       />
       <Row className="bg-[#F0F1F2] relative">
-        {/* {selectedJob && (
-                    <Col md={6}>
-                        <ViewJobDetails application={selectedJob} onClose={closeModal} />
-                    </Col>
-                )} */}
         <Col lg={12}>
           <div className="rounded-top bg-white p-2 m-2">
             <Tabs
@@ -93,7 +81,7 @@ const LeaveApplication = ({}) => {
                 />
               ) : (
                 <RenderApplications
-                  applicationsList={applications}
+                  applicationsList={applications?.results || []}
                   activeTab={activeTab}
                 />
               )}

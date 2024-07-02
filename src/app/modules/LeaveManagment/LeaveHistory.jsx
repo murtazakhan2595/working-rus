@@ -108,9 +108,7 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
-    onPageChange: (name, value) => {
-      onPageChange(name, value);
-    },
+    onPageChange:onPageChange,
   };
 
   return (
@@ -184,6 +182,7 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                       data={employeeData.results || []}
                       columns={LeaveHistoryColumns}
                       rowExpand={true}
+                      pagination={true}
                       renderExpandedContent={renderExpandedContent}
                       dataTotalSize={employeeData.count || 0}
                       tableOptions={tableOptions}

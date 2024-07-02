@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Row,
-  Col,
-} from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { EmployeeColumns } from "app/utils/Types/TableColumns";
 import { PageLoader, Table } from "components";
 import "./style.css";
@@ -190,6 +184,7 @@ const Employee = () => {
                       <Table
                         data={employeeData.results || []}
                         columns={EmployeeColumns}
+                        pagination={true}
                         dataTotalSize={employeeData.count || 0}
                         tableOptions={tableOptions}
                       />

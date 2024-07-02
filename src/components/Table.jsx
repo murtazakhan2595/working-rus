@@ -18,11 +18,12 @@ const Table = ({
   className,
   rowExpand,
   renderExpandedContent,
+  pagination,
 }) => {
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
-    page: tableOptions.page,
-    sizePerPage: tableOptions.sizePerPage,
+    page: tableOptions?.page ?? 1,
+    sizePerPage: tableOptions?.sizePerPage ?? 10,
   };
 
   const toggleExpandRow = (rowId) => {
@@ -51,44 +52,54 @@ const Table = ({
           </tr>
         </thead>
         <tbody>
-          {data.map((row) => (
-            <React.Fragment key={row.id}>
-              <tr
-                onClick={() => {
-                  if (rowExpand) toggleExpandRow(row.id);
-                }}
-              >
-                {columns.map((column, index) => (
-                  <td
-                    key={index}
-                    style={column.width ? { width: `${column.width}` } : {}}
-                  >
-                    {column.formatter
-                      ? column.formatter(row[column.dataField], row)
-                      : row[column.dataField]}
-                  </td>
-                ))}
-              </tr>
-              {expandedRow === row.id && rowExpand && (
-                <tr style={{ background: "white" }}>
-                  <td colSpan={columns.length}>{renderExpandedContent(row)}</td>
+          {data && data.length > 0 ? (
+            data.map((row) => (
+              <React.Fragment key={row.id}>
+                <tr
+                  onClick={() => {
+                    if (rowExpand) toggleExpandRow(row.id);
+                  }}
+                >
+                  {columns.map((column, index) => (
+                    <td
+                      key={index}
+                      style={column.width ? { width: `${column.width}` } : {}}
+                    >
+                      {column.formatter
+                        ? column.formatter(row[column.dataField], row)
+                        : row[column.dataField]}
+                    </td>
+                  ))}
                 </tr>
-              )}
-            </React.Fragment>
-          ))}
+                {expandedRow === row.id && rowExpand && (
+                  <tr style={{ background: "white" }}>
+                    <td colSpan={columns.length}>
+                      {renderExpandedContent(row)}
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length} className="text-center">No records to display</td>
+            </tr>
+          )}
         </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan={columns.length}>
-              <CustomPagination
-                currentPage={options.page}
-                dataTotalSize={dataTotalSize}
-                sizePerPage={options.sizePerPage}
-                onPageChange={handlePageChange}
-              />
-            </td>
-          </tr>
-        </tfoot>
+        {pagination && (
+          <tfoot>
+            <tr>
+              <td colSpan={columns.length}>
+                <CustomPagination
+                  currentPage={options.page}
+                  dataTotalSize={dataTotalSize}
+                  sizePerPage={options.sizePerPage}
+                  onPageChange={handlePageChange}
+                />
+              </td>
+            </tr>
+          </tfoot>
+        )}
       </table>
     </div>
   );
