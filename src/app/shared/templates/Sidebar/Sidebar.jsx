@@ -88,7 +88,7 @@ const Sidebar = ({
               TECBRIX
             </h1>
           </div>
-          <div className={`mx-2 hideScroll ${isSidebarOpen ? "overflow-y-auto overflow-x-visible" : ""}`} style={{ height: `calc(100vh - ${isSidebarOpen ? isProfileOpen ? '245px' : '175px' : '155px'}` }}>
+          <div className={`mx-2 hideScroll ${isSidebarOpen ? "overflow-y-auto overflow-x-visible" : ""}`} style={{ height: `calc(100vh - ${isSidebarOpen ? isProfileOpen ? '290px' : '220px' : '200px'}` }}>
             <NavigationMenue navigation={Navigation} isSidebarOpen={isSidebarOpen} sidebarRefresh={sidebarRefresh} />
           </div>
 
@@ -132,7 +132,7 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
   }
   return (
     <div className="pb-2 mx-2">
-      <div className="flex items-center gap-x-3 text-[#5C5E64] flex-grow ml-2 cursor-pointer" onClick={handleShowNotifications}>
+      <div className="flex items-center gap-x-3 text-[#5C5E64] flex-grow ml-2 cursor-pointer my-3" onClick={handleShowNotifications}>
         <MdOutlineNotificationsNone className="text-xl" />
         <div className={`flex-grow text-[14px] ${isSidebarOpen ? 'block' : 'hidden'}`}>Notifications</div>
       </div>

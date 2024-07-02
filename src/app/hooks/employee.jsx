@@ -259,16 +259,10 @@ const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
 };
 
 const saveEmployeeVisaDetailData = async (
-  baseUrl,
   employeeid,
-  token,
   visaDetail,
   visaDetailsFiles
 ) => {
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
   if (employeeid) {
     visaDetail.employee_id = employeeid;
     try {
@@ -276,11 +270,11 @@ const saveEmployeeVisaDetailData = async (
         await axios.patch(
           `${baseUrl}/employeevisadetail/${visaDetail.id}`,
           visaDetail,
-          { headers }
+          { headers: headers() }
         );
       } else {
         await axios.post(`${baseUrl}/employeevisadetail/`, visaDetail, {
-          headers,
+          headers: headers(),
         });
       }
 
@@ -300,7 +294,7 @@ const saveEmployeeVisaDetailData = async (
                     file: file.document.file,
                   },
                 },
-                { headers }
+                { headers: headers() }
               );
             } else {
               // Otherwise, post a new attachment
@@ -312,7 +306,7 @@ const saveEmployeeVisaDetailData = async (
                   description: `${file.name} file`,
                   document: file,
                 },
-                { headers }
+                { headers: headers() }
               );
             }
           }
@@ -324,6 +318,7 @@ const saveEmployeeVisaDetailData = async (
         handleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
+      return false;
     }
   }
   return false;
@@ -642,6 +637,7 @@ const saveEmployeeCertificationData = async (employeeid, payloadAttachment) => {
             handleLogout();
           }
           console.error("Error fetching Personal Info data :", error);
+          return false;
         }
       });
 

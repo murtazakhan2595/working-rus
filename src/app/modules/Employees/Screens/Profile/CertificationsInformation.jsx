@@ -202,7 +202,7 @@ const CertificationsInformation = ({
                     <Col md="12" className="text-left">
                       <Button
                         type="button"
-                        className="btn btn-outline-dark my-3"
+                        className="btn btn-outline-dark my-3 bg-white text-dark"
                         onClick={() => {
                           const length = props.values?.certifications?.length;
                           const index = length ? length : 0;
@@ -210,12 +210,6 @@ const CertificationsInformation = ({
                             `certifications[${index}]`,
                             EmployeeCertifiation
                           );
-                        }}
-                        tyle={{
-                          color: "black",
-                          ":hover": {
-                            color: "black",
-                          },
                         }}
                       >
                         + Add Another

@@ -25,7 +25,6 @@ import { getCountryFullName } from "utils/getValuesFromTables";
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 
-
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [userData, setUserData] = useState({});
   const [educations, setEducations] = useState([{}]);
@@ -120,187 +119,203 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   ];
 
   const identificationDetails = [
-    {
-      title: "ID Details",
-      fields: [
-        { title: "Current Country ID", data: visa.living_country_id_no },
-        { title: "Issuance Country", data: visa.place_of_issuance },
-        {
-          title: "ID Issuance Date",
-          data: moment(visa.id_issuance_date, "YYYY-MM-DD").format(
-            "DD-MM-YYYY"
-          ),
-        },
-        {
-          title: "ID Expiry Date",
-          data: moment(visa?.id_expiry_date, "YYYY-MM-DD").format("DD-MM-YYYY"),
-        },
-        {
-          title: "ID Front Image",
-          data: documents?.id_front?.document?.file && (
-            <a
-              href={documents.id_front.document.file}
-              download={documents.id_front.document.name}
-              className="flex items-center no-underline text-black"
-            >
-              <FiDownload />
-            </a>
-          ),
-        },
-        {
-          title: "ID Back Image",
-          data: documents?.id_back?.document?.file && (
-            <a
-              href={documents.id_back.document.file}
-              download={documents.id_back.document.name}
-              className="flex items-center no-underline text-black"
-            >
-              <FiDownload />
-            </a>
-          ),
-        },
-      ],
-    },
-    {
-      title: "Passport Details",
-      fields: [
-        { title: "Passport Number", data: visa.passport_number },
-        {
-          title: "Issuance Country",
-          data: getCountryFullName(visa.Passport_Issuance_Country),
-        },
-        {
-          title: "Issuance Date",
-          data: moment(visa?.Passport_Issuance_Date, "YYYY-MM-DD").format(
-            "DD-MM-YYYY"
-          ),
-        },
-        {
-          title: "Expiry Date",
-          data: moment(visa?.Passport_Expiry_Date, "YYYY-MM-DD").format(
-            "DD-MM-YYYY"
-          ),
-        },
-        {
-          title: "Passport Copy",
-          data: documents?.passport_copy?.document?.file && (
-            <a
-              href={documents.passport_copy.document.file}
-              download={documents.passport_copy.document.name}
-              className="flex items-center no-underline text-black"
-            >
-              <FiDownload />
-            </a>
-          ),
-        },
-      ],
-    },
-    {
-      title: "Insurance Details",
-      fields: [
-        { title: "DHA ID", data: visa.dha_id },
-        { title: "Card Number", data: visa.card_number },
-        { title: "Insurance Policy", data: visa.insurance_policy },
-        { title: "Insurance Company", data: visa.insurance_company },
-        {
-          title: "Active Date",
-          data: moment(visa?.insurance_active_date, "YYYY-MM-DD").format(
-            "DD-MM-YYYY"
-          ),
-        },
-        {
-          title: "Expiry Date",
+    ...[
+      {
+        title: "ID Details",
+        fields: [
+          { title: "Current Country ID", data: visa.living_country_id_no },
+          { title: "Issuance Country", data: visa.place_of_issuance },
+          {
+            title: "ID Issuance Date",
+            data: moment(visa.id_issuance_date, "YYYY-MM-DD").format(
+              "DD-MM-YYYY"
+            ),
+          },
+          {
+            title: "ID Expiry Date",
+            data: moment(visa?.id_expiry_date, "YYYY-MM-DD").format(
+              "DD-MM-YYYY"
+            ),
+          },
+          {
+            title: "ID Front Image",
+            data: documents?.id_front?.document?.file && (
+              <a
+                href={documents.id_front.document.file}
+                download={documents.id_front.document.name}
+                className="flex items-center no-underline text-black"
+              >
+                <FiDownload />
+              </a>
+            ),
+          },
+          {
+            title: "ID Back Image",
+            data: documents?.id_back?.document?.file && (
+              <a
+                href={documents.id_back.document.file}
+                download={documents.id_back.document.name}
+                className="flex items-center no-underline text-black"
+              >
+                <FiDownload />
+              </a>
+            ),
+          },
+        ],
+      },
+    ],
+    ...(visa.is_passport_applicable
+      ? [
+          {
+            title: "Passport Details",
+            fields: [
+              { title: "Passport Number", data: visa.passport_number },
+              {
+                title: "Issuance Country",
+                data: getCountryFullName(visa.Passport_Issuance_Country),
+              },
+              {
+                title: "Issuance Date",
+                data: moment(visa?.Passport_Issuance_Date, "YYYY-MM-DD").format(
+                  "DD-MM-YYYY"
+                ),
+              },
+              {
+                title: "Expiry Date",
+                data: moment(visa?.Passport_Expiry_Date, "YYYY-MM-DD").format(
+                  "DD-MM-YYYY"
+                ),
+              },
+              {
+                title: "Passport Copy",
+                data: documents?.passport_copy?.document?.file && (
+                  <a
+                    href={documents.passport_copy.document.file}
+                    download={documents.passport_copy.document.name}
+                    className="flex items-center no-underline text-black"
+                  >
+                    <FiDownload />
+                  </a>
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
+    ...(visa.is_insurance_applicable
+      ? [
+          {
+            title: "Insurance Details",
+            fields: [
+              { title: "DHA ID", data: visa.dha_id },
+              { title: "Card Number", data: visa.card_number },
+              { title: "Insurance Policy", data: visa.insurance_policy },
+              { title: "Insurance Company", data: visa.insurance_company },
+              {
+                title: "Active Date",
+                data: moment(visa?.insurance_active_date, "YYYY-MM-DD").format(
+                  "DD-MM-YYYY"
+                ),
+              },
+              {
+                title: "Expiry Date",
 
-          data: moment(visa?.insurance_expiry_date, "YYYY-MM-DD").format(
-            "DD-MM-YYYY"
-          ),
-        },
-        {
-          title: "Insurance Card",
-          data: documents?.insurance_card?.document?.file && (
-            <a
-              href={documents.insurance_card.document.file}
-              download={documents.insurance_card.document.name}
-              className="flex items-center no-underline text-black"
-            >
-              <FiDownload />
-            </a>
-          ),
-        },
-      ],
-    },
-    {
-      title: "Visa Details",
-      fields: [
-        { title: "Entry Permit Number", data: visa.entry_permit_number },
-        { title: "Visa Type", data: getVisaLabel(visa.visa_type) },
-        {
-          title: "Issuance Country",
-          data: getCountryFullName(visa.country_of_visa_issuance),
-        },
-        {
-          title: "Issuance Date",
-          data: moment(visa.visa_issuance_date, "YYYY-MM-DD").format(
-            "DD-MM-YYYY"
-          ),
-        },
-        {
-          title: "Expiry Date",
-          data: moment(visa.visa_expiry_date, "YYYY-MM-DD").format(
-            "DD-MM-YYYY"
-          ),
-        },
-        { title: "UID Number", data: visa.uid_number },
-        {
-          title: "Entry Permit",
-          data: documents?.enter_permit?.document?.file && (
-            <a
-              href={documents.enter_permit.document.file}
-              download={documents.enter_permit.document.name}
-              className="flex items-center no-underline text-black"
-            >
-              <FiDownload />
-            </a>
-          ),
-        },
-        {
-          title: "Visa Page",
-          data: documents?.visa_page?.document?.file && (
-            <a
-              href={documents.visa_page.document.file}
-              download={documents.visa_page.document.name}
-              className="flex items-center no-underline text-black"
-            >
-              <FiDownload />
-            </a>
-          ),
-        },
-        {
-          title: "Medical Result",
-          data: documents?.medical?.document?.file && (
-            <a
-              href={documents.medical.document.file}
-              download={documents.medical.document.name}
-              className="flex items-center no-underline text-black"
-            >
-              <FiDownload />
-            </a>
-          ),
-        },
-        {
-          title: "ID Application",
-          data: documents?.id_application?.document?.file && (
-            <a
-              href={documents.id_application.document.file}
-              download={documents.id_application.document.name}
-              className="flex items-center no-underline text-black"
-            >
-              <FiDownload />
-            </a>
-          ),
-        },
-      ],
-    },
+                data: moment(visa?.insurance_expiry_date, "YYYY-MM-DD").format(
+                  "DD-MM-YYYY"
+                ),
+              },
+              {
+                title: "Insurance Card",
+                data: documents?.insurance_card?.document?.file && (
+                  <a
+                    href={documents.insurance_card.document.file}
+                    download={documents.insurance_card.document.name}
+                    className="flex items-center no-underline text-black"
+                  >
+                    <FiDownload />
+                  </a>
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
+    ...(visa.is_visa_applicable
+      ? [
+          {
+            title: "Visa Details",
+            fields: [
+              { title: "Entry Permit Number", data: visa.entry_permit_number },
+              { title: "Visa Type", data: getVisaLabel(visa.visa_type) },
+              {
+                title: "Issuance Country",
+                data: getCountryFullName(visa.country_of_visa_issuance),
+              },
+              {
+                title: "Issuance Date",
+                data: moment(visa.visa_issuance_date, "YYYY-MM-DD").format(
+                  "DD-MM-YYYY"
+                ),
+              },
+              {
+                title: "Expiry Date",
+                data: moment(visa.visa_expiry_date, "YYYY-MM-DD").format(
+                  "DD-MM-YYYY"
+                ),
+              },
+              { title: "UID Number", data: visa.uid_number },
+              {
+                title: "Entry Permit",
+                data: documents?.enter_permit?.document?.file && (
+                  <a
+                    href={documents.enter_permit.document.file}
+                    download={documents.enter_permit.document.name}
+                    className="flex items-center no-underline text-black"
+                  >
+                    <FiDownload />
+                  </a>
+                ),
+              },
+              {
+                title: "Visa Page",
+                data: documents?.visa_page?.document?.file && (
+                  <a
+                    href={documents.visa_page.document.file}
+                    download={documents.visa_page.document.name}
+                    className="flex items-center no-underline text-black"
+                  >
+                    <FiDownload />
+                  </a>
+                ),
+              },
+              {
+                title: "Medical Result",
+                data: documents?.medical?.document?.file && (
+                  <a
+                    href={documents.medical.document.file}
+                    download={documents.medical.document.name}
+                    className="flex items-center no-underline text-black"
+                  >
+                    <FiDownload />
+                  </a>
+                ),
+              },
+              {
+                title: "ID Application",
+                data: documents?.id_application?.document?.file && (
+                  <a
+                    href={documents.id_application.document.file}
+                    download={documents.id_application.document.name}
+                    className="flex items-center no-underline text-black"
+                  >
+                    <FiDownload />
+                  </a>
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
   return (

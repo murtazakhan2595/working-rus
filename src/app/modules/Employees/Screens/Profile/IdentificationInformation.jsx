@@ -61,7 +61,7 @@ const IdentificationInformation = ({
       });
   }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
-  const handleSubmit = (data) => {
+  const handleSubmit = (data, resetForm) => {
     const documents = {
       passport_copy: data.passport_copy,
       enter_permit: data.enter_permit,
@@ -72,24 +72,19 @@ const IdentificationInformation = ({
       id_back: data.id_back,
       insurance_card: data.insurance_card,
     };
-    const response = saveEmployeeVisaDetailData(
-      baseUrl,
-      employeeId,
-      token,
-      data,
-      documents
-    );
-    if (response) nextstep();
-
-    let personalInfrmation = { is_filled: true };
-    const newResponse = saveEmployeePersonalInfoData(
-      baseUrl,
-      employeeId,
-      token,
-      personalInfrmation
-    );
-
-    console.log(newResponse);
+    const response = saveEmployeeVisaDetailData(employeeId, data, documents);
+    if (response) {
+      nextstep();
+      let personalInfrmation = { is_filled: true };
+      const newResponse = saveEmployeePersonalInfoData(
+        baseUrl,
+        employeeId,
+        token,
+        personalInfrmation
+      );
+      resetForm();
+      console.log(newResponse);
+    }
   };
 
   return (
