@@ -11,10 +11,32 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 const RenderApplications = ({ applicationsList, activeTab, reload }) => {
+  const [selectedLeaveIndex, setSelectedLeaveIndex] = useState(null);
+
+  const handleLeaveDetails = (index) => {
+    setSelectedLeaveIndex(index);
+  };
+
+  const closeModal = () => {
+    setSelectedLeaveIndex(null);
+  };
+
+  const handleNext = () => {
+    if (selectedLeaveIndex < applicationsList.length - 1) {
+      setSelectedLeaveIndex(selectedLeaveIndex + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (selectedLeaveIndex > 0) {
+      setSelectedLeaveIndex(selectedLeaveIndex - 1);
+    }
+  };
+
   return (
     <Row className="m-2 bg-white px-2 py-4">
       {applicationsList ? (
-        applicationsList.map((application) => {
+        applicationsList.map((application, index) => {
           const status = Status(application.status_hr);
           return (
             <>
@@ -34,6 +56,7 @@ const RenderApplications = ({ applicationsList, activeTab, reload }) => {
                       application={application}
                       activeTab={activeTab}
                       reload={reload}
+                      onDetails={() => handleLeaveDetails(index)}
                     />
                   </div>
                 </Col>
@@ -49,20 +72,22 @@ const RenderApplications = ({ applicationsList, activeTab, reload }) => {
           No records to display
         </div>
       )}
+      {selectedLeaveIndex !== null && (
+        <ViewLeaveDetails
+          application={applicationsList[selectedLeaveIndex]}
+          onClose={closeModal}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          disableNext={selectedLeaveIndex >= applicationsList.length - 1}
+          disablePrevious={selectedLeaveIndex <= 0}
+        />
+      )}
     </Row>
   );
 };
 
-const RenderApplication = ({ application, activeTab, reload }) => {
+const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
   const loggedInUser = useSelector((state) => state.user.userProfile);
-  const [selectedLeave, setSelectedLeave] = useState(null);
-  const handleLeaveDetails = (appDetails) => {
-    setSelectedLeave(appDetails);
-  };
-  const closeModal = () => {
-    setSelectedLeave(null);
-  };
-
   const handleApprove = async (status) => {
     try {
       const payload = application;
@@ -82,9 +107,9 @@ const RenderApplication = ({ application, activeTab, reload }) => {
       }
     } catch (error) {
       toast.error(`Application Could not be ${status}"`);
-    } finally {
     }
   };
+
   return (
     <Row style={{ whiteSpace: "break-spaces" }}>
       <Col md={5} className="mb-3">
@@ -165,9 +190,7 @@ const RenderApplication = ({ application, activeTab, reload }) => {
           <Button
             className="btn btn-outline-primary bg-white border-0 shadow-none"
             style={{ color: "#0d6efd" }}
-            onClick={() => {
-              handleLeaveDetails(application);
-            }}
+            onClick={onDetails}
           >
             Detail
           </Button>
@@ -188,12 +211,6 @@ const RenderApplication = ({ application, activeTab, reload }) => {
           <StatusBar label={"HR"} value={application?.status_hr} />
         </div>
       </Col>
-
-      {selectedLeave && (
-        <Col md={6}>
-          <ViewLeaveDetails application={application} onClose={closeModal} />
-        </Col>
-      )}
     </Row>
   );
 };
@@ -242,3 +259,4 @@ const StatusBar = ({ label, value }) => {
 };
 
 export default RenderApplications;
+
