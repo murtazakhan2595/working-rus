@@ -13,12 +13,12 @@ export const getDTRAll = createAsyncThunk(
     'dtrs/getDTRAll',
     async (_, { getState }) => {
         try {
-            const { token } = getState().user;
+            const { token, baseUrl } = getState().user;
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
-            const response = await axios.get('https://hrms-1886226759.eu-west-1.elb.amazonaws.com:8080/api/dtr/', { headers });
+            const response = await axios.get(`${baseUrl}/dtr/`, { headers });
              console.log('testing all dtrs', response.data);
             return response.data;
         } catch (error) {

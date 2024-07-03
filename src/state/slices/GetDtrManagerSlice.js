@@ -3,23 +3,23 @@ import axios from 'axios';
 
 // Define the initial state
 const initialState = {
-    dtr: null,
+    teamDtrs: [],
     apiStatus: 'idle',
     error: null,
 };
 
 // Define the thunk to fetch DTR by employee ID
-export const fetchDTRByEmployeeId = createAsyncThunk(
-    'dtr/fetchDTRByEmployeeId',
-    async (employeeId, { getState }) => {
+export const fetchDTRByManagerId = createAsyncThunk(
+    'dtr/fetchDTRByManagerId',
+    async (_, { getState }) => {
         try {
-            const { token, baseUrl } = getState().user;
+            const { token, baseUrl, userProfile } = getState().user;
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
             // Modify the URL to include query parameters for employee ID
-            const response = await axios.get(`${baseUrl}/dtr/?search={"assigne":[${employeeId}]}`, { headers });
+            const response = await axios.get(`${baseUrl}/dtr/?search={"assigne":[${userProfile?.id}]}`, { headers });
             return response.data;
         } catch (error) {
             throw error;
@@ -28,29 +28,29 @@ export const fetchDTRByEmployeeId = createAsyncThunk(
 );
 
 // Define the slice
-const dtrSlice = createSlice({
+const dtrManagerSlice = createSlice({
     name: 'dtr',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // When the fetchDTRByEmployeeId thunk is pending
-            .addCase(fetchDTRByEmployeeId.pending, (state) => {
+            // When the fetchDTRByManagerId thunk is pending
+            .addCase(fetchDTRByManagerId.pending, (state) => {
                 state.apiStatus = 'loading';
             })
-            // When the fetchDTRByEmployeeId thunk is fulfilled
-            .addCase(fetchDTRByEmployeeId.fulfilled, (state, action) => {
+            // When the fetchDTRByManagerId thunk is fulfilled
+            .addCase(fetchDTRByManagerId.fulfilled, (state, action) => {
                 state.apiStatus = 'succeeded';
                 state.dtr = action.payload;
                 console.log('Fetched DTR:', action.payload);
             })
-            // When the fetchDTRByEmployeeId thunk is rejected
-            .addCase(fetchDTRByEmployeeId.rejected, (state, action) => {
+            // When the fetchDTRByManagerId thunk is rejected
+            .addCase(fetchDTRByManagerId.rejected, (state, action) => {
                 state.apiStatus = 'failed';
                 state.error = action.error.message;
             });
     },
 });
 
-// Export the reducer and the fetchDTRByEmployeeId thunk
-export default dtrSlice.reducer;
+// Export the reducer and the fetchDTRByManagerId thunk
+export default dtrManagerSlice.reducer;

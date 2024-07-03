@@ -2,6 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isDbOpen: false,
+  isServiceHubOpen: false,
+  isPerformanceOpen: false,
+  isPeopleEngagementOpen: false,
+  isPersonalDevelopmentOpen: false,
+  isPayrollOpen: false,
   isRecruitmentOpen: false,
   isLeaveOpen: false,
   isProjectOpen: false,
