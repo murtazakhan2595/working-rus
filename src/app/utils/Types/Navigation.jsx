@@ -384,8 +384,8 @@ function getNavigation(userRole) {
                 ...(userRole === 1 || userRole === 2 || userRole === 3
                   ? [
                       {
-                        name: "Referals",
-                        url: "/referals",
+                        name: "Referrals",
+                        url: "/referrals",
                       },
                     ]
                   : []),
