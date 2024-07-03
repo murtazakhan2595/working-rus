@@ -22,6 +22,7 @@ import {
   FileInput,
 } from "components/form-control";
 import { educationTypeOptions } from "data/Data.js";
+import { Link } from "react-router-dom";
 
 const EducationInformation = ({
   nextstep,
@@ -220,9 +221,9 @@ const EducationInformation = ({
                         </React.Fragment>
                       ))}
                     <Col md="12" className="text-left">
-                      <Button
+                      <Link
                         type="button"
-                        className="btn btn-outline-dark my-3 bg-white"
+                        className="btn btn-outline-dark"
                         onClick={() => {
                           const length = props.values?.educations?.length;
                           const index = length ? length : 0;
@@ -233,7 +234,7 @@ const EducationInformation = ({
                         }}
                       >
                         + Add Another
-                      </Button>
+                      </Link>
                     </Col>
                   </Row>
                   <hr />
