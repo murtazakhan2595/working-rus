@@ -36,7 +36,7 @@ body {
 }
 
 .roundScroll::-webkit-scrollbar {
-  width: 10px;
+  width: 7px;
 }
 
 .roundScroll::-webkit-scrollbar-track {
@@ -77,17 +77,17 @@ body {
 
 .roundScroll::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background-color: #202f75;
-  outline: 1px solid #1976d246;
+  background-color: #bcc0cc;
+  outline: 1px solid #bcc0cc;
 }
 
 /* scroll style 2 */
 .roundScrollsm::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 
 .roundScrollsm::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
+  box-shadow: inset 0 0 6px #bcc0cc;
   border-radius: 10px;
 }
 
@@ -112,7 +112,6 @@ body {
   background-color: #202f75;
   outline: 1px solid #1976d246;
 }
-  
 
 .ql-toolbar.ql-snow {
   border: none !important;
@@ -158,29 +157,31 @@ body {
   border: 2px solid white !important;
 }
 
-
 /* custom react select */
 /* For Chrome, Edge, and Safari */
 ::-webkit-scrollbar {
-    width: 10px; 
+  width: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #202f75; 
-    border-radius: 5px; 
+  background-color: #202f75;
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #202f75; 
+  background-color: #202f75;
 }
-
-
 
 /* profile box shadow */
 
 /* CSS */
 .shadow-bottom {
-  box-shadow: 0px 100px 80px 0px rgba(0, 0, 0, 0.07), 0px 41.778px 33.422px 0px rgba(0, 0, 0, 0.05), 0px 22.336px 17.869px 0px rgba(0, 0, 0, 0.04), 0px 12.522px 10.017px 0px rgba(0, 0, 0, 0.04), 0px 6.65px 5.32px 0px rgba(0, 0, 0, 0.03), 0px 2.767px 2.214px 0px rgba(0, 0, 0, 0.02);
+  box-shadow: 0px 100px 80px 0px rgba(0, 0, 0, 0.07),
+    0px 41.778px 33.422px 0px rgba(0, 0, 0, 0.05),
+    0px 22.336px 17.869px 0px rgba(0, 0, 0, 0.04),
+    0px 12.522px 10.017px 0px rgba(0, 0, 0, 0.04),
+    0px 6.65px 5.32px 0px rgba(0, 0, 0, 0.03),
+    0px 2.767px 2.214px 0px rgba(0, 0, 0, 0.02);
 }
 /* Input Shad */
 .shadow-input {
@@ -212,4 +213,3 @@ body {
   background: #9099a2;  
   border-radius: 8px;  
 }
-

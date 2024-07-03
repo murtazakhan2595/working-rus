@@ -66,7 +66,6 @@ export const academicOptions = [
   },
 ];
 
-
 export const jobTypeOptions = [
   { value: "Remote", label: "Remote" },
   { value: "Onsite", label: "Onsite" },
@@ -88,7 +87,6 @@ export const employeeTypeOptions = [
   { value: "Contract", label: "Contract" },
   { value: "Freelancer", label: "Freelancer" },
 ];
-
 
 export const educationTypeOptions = [
   { value: "Bachelor", label: "Bachelor" },
@@ -144,7 +142,6 @@ export const jobsStatusOptions = [
   { label: "Expired", value: "expired" },
 ];
 
-
 export const HeadOfDepartment = [
   { label: "Naveed Rahman - CEO", value: "Naveed" },
   { label: "Komal Zaman - Peoples Teams Head", value: "Komal" },
@@ -181,58 +178,111 @@ export const UserRoles = [
 ];
 
 export const employeeStatus = [
-  { label: 'Active', value: 'Active' },
-  { label: 'Terminated', value: 'Terminated' },
-  { label: 'Deceased', value: 'Deceased' },
-  { label: 'Resigned', value: 'Resigned' },
-  { label: 'Probation', value: 'Probation' },
-  { label: 'Notice Period', value: 'Notice Period' },
-  { label: 'Exit', value: 'Exit' },
-  { label: 'Absconded', value: 'Absconded' },
-  { label: 'Legal Case', value: 'Legal Case' }
+  { label: "Active", value: "Active" },
+  { label: "Terminated", value: "Terminated" },
+  { label: "Deceased", value: "Deceased" },
+  { label: "Resigned", value: "Resigned" },
+  { label: "Probation", value: "Probation" },
+  { label: "Notice Period", value: "Notice Period" },
+  { label: "Exit", value: "Exit" },
+  { label: "Absconded", value: "Absconded" },
+  { label: "Legal Case", value: "Legal Case" },
 ];
-
 
 export const jobRoles = [
-  { label: 'Intern', value: 'Intern' },
-  { label: 'Part-Time', value: 'Part-Time' },
-  { label: 'Full-Time', value: 'Full-Time' },
-  { label: 'Contract', value: 'Contract' },
-  { label: 'Freelancer', value: 'Freelancer' }
+  { label: "Intern", value: "Intern" },
+  { label: "Part-Time", value: "Part-Time" },
+  { label: "Full-Time", value: "Full-Time" },
+  { label: "Contract", value: "Contract" },
+  { label: "Freelancer", value: "Freelancer" },
 ];
-
 
 export const department = [
-  { label: 'Project Management', value: 'Project_management' },
-  { label: 'Sales', value: 'Sales' },
-  { label: 'Operations', value: 'Operations' },
-  { label: 'Design', value: 'Design' },
-  { label: 'Marketing', value: 'Marketing' },
-  { label: 'Frontend', value: 'Frontend' },
-  { label: 'Backend', value: 'Backend' },
-  { label: 'Presales', value: 'Presales' },
-  { label: 'HR', value: 'HR' },
-  { label: 'Accounts', value: 'Accounts' }
-]
-
+  { label: "Project Management", value: "Project_management" },
+  { label: "Sales", value: "Sales" },
+  { label: "Operations", value: "Operations" },
+  { label: "Design", value: "Design" },
+  { label: "Marketing", value: "Marketing" },
+  { label: "Frontend", value: "Frontend" },
+  { label: "Backend", value: "Backend" },
+  { label: "Presales", value: "Presales" },
+  { label: "HR", value: "HR" },
+  { label: "Accounts", value: "Accounts" },
+];
 
 export const typeOptions = [
-  { value: "Project", label: <div className="flex items-center gap-x-2"><CiViewBoard className="text-2xl text-[#FF61C0]" />Project</div> },
-  { value: "Miscellaneous", label: <div className="flex items-center gap-x-2"><CiCircleMore className="text-2xl text-[#935AF2]" />Miscellaneous</div> },
+  {
+    value: "Project",
+    label: (
+      <div className="flex items-center gap-x-2">
+        <CiViewBoard className="text-2xl text-[#FF61C0]" />
+        Project
+      </div>
+    ),
+  },
+  {
+    value: "Miscellaneous",
+    label: (
+      <div className="flex items-center gap-x-2">
+        <CiCircleMore className="text-2xl text-[#935AF2]" />
+        Miscellaneous
+      </div>
+    ),
+  },
 ];
-
 
 export const priority2Options = [
-  { value: "Low", label: <div className="flex items-center gap-x-2 text-baseGray "><IoMdArrowDropdownCircle className="text-2xl" /> Low</div> },
-  { value: "Medium", label: <div className="flex items-center gap-x-2 text-yellow-500"><FiMinusCircle  className="text-xl" /> Medium</div> },
-  { value: "High", label: <div className="flex items-center gap-x-2 text-red-500"><IoMdArrowDropupCircle className="text-2xl" /> High</div> },
+  {
+    value: "Low",
+    label: (
+      <div className="flex items-center gap-x-2 text-baseGray ">
+        <IoMdArrowDropdownCircle className="text-2xl" /> Low
+      </div>
+    ),
+  },
+  {
+    value: "Medium",
+    label: (
+      <div className="flex items-center gap-x-2 text-yellow-500">
+        <FiMinusCircle className="text-xl" /> Medium
+      </div>
+    ),
+  },
+  {
+    value: "High",
+    label: (
+      <div className="flex items-center gap-x-2 text-red-500">
+        <IoMdArrowDropupCircle className="text-2xl" /> High
+      </div>
+    ),
+  },
 ];
 
-
 export const status2Options = [
-  { value: "Pending", label: <div className="bg-[#DADADA] text-[#5C5E64] rounded-md py-0.5 px-2">Pending</div> },
-  { value: "Inprogress", label: <div className="bg-[#FFE8CD] text-[#FF9A1F] rounded-md py-0.5 px-2">In Progress</div> },
-  { value: "Completed", label: <div className="bg-[#CCEFE3] text-[#5B8C7B] rounded-md py-0.5 px-2">Completed</div> },
+  {
+    value: "Pending",
+    label: (
+      <div className="bg-[#DADADA] text-[#5C5E64] rounded-md py-0.5 px-2">
+        Pending
+      </div>
+    ),
+  },
+  {
+    value: "Inprogress",
+    label: (
+      <div className="bg-[#FFE8CD] text-[#FF9A1F] rounded-md py-0.5 px-2">
+        In Progress
+      </div>
+    ),
+  },
+  {
+    value: "Completed",
+    label: (
+      <div className="bg-[#CCEFE3] text-[#5B8C7B] rounded-md py-0.5 px-2">
+        Completed
+      </div>
+    ),
+  },
 ];
 
 export const workplaceTypes = [
