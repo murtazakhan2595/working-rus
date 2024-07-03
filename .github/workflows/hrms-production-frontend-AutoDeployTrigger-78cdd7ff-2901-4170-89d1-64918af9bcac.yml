@@ -1,4 +1,4 @@
-name: Trigger auto deployment for hrms-production-frontend
+name: Azure-HRMS-Production-Frontend
 
 # When this action will be executed
 on:
