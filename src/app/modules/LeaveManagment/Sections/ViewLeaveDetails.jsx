@@ -46,7 +46,7 @@ const ViewLeaveDetails = ({
   };
 
   return (
-    <div className="fixed top-0 right-0 w-[50%] h-full z-10 overflow-y-auto hideScroll pl-10">
+    <div className="fixed top-0 right-0 max-w-[50%] w-[50%] h-full z-10 overflow-y-auto hideScroll pl-10">
       <div className="bg-white h-full fixed top-0 right-0  shadow-lg p-10">
         <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
           <h2 className="font-bold text-xl ">Details</h2>
@@ -165,7 +165,7 @@ const ViewLeaveDetails = ({
 
         <div className="flex justify-end items-center">
           <Link
-            // to={`/applicants/${job?.id}`}
+            to={`/leave-history/${application?.employee_id}`}
             className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2"
           >
             View History
