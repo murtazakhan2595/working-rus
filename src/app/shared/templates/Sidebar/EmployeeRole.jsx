@@ -357,9 +357,9 @@ const EmployeeRole = ({ isSidebarOpen }) => {
                 </div>
                 {!isSidebarOpen && (
                     <div className="absolute rounded-lg border border-gray-1 top-96 ml-20
-  bg-white w-44 text-base
-  invisible opacity-20 -translate-x-3 transition-all
-  group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+                                            bg-white w-44 text-base
+                                            invisible opacity-20 -translate-x-3 transition-all
+                                            group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
 
                         <div className="flex flex-col rounded-lg bg-white">
                             <NavLink to="/coming-soon"
@@ -383,9 +383,12 @@ const EmployeeRole = ({ isSidebarOpen }) => {
                             <NavLink to="/coming-soon"
                                 className={({ isActive }) => isActive ? ComingActiveLink : normalLink}
                             >
+                               
                                 <p className="text-sm">Leave Balance</p>
-                            </div>
-                        </Link>
+                            </NavLink>
+                        </div>
+                    </div>)}
+                            
                     </li>
 
             {(isPersonalDevelopmentOpen && isSidebarOpen) &&
