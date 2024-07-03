@@ -189,7 +189,6 @@ const validationDepartmentInfoFormSchema = Joi.object({
       "string.pattern.base": 'Joining Date must be in "DD-MM-YYYY" format',
     }),
   direct_report: Joi.string().required(),
-  indirect_report: Joi.string().required(),
 });
 
 const validationBankDetailsFormSchema = Joi.object({
