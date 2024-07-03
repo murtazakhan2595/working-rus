@@ -13,10 +13,13 @@ import { priority2Options, status2Options, statusOptions, typeOptions } from "..
 import Select from "react-select";
 import { updateTask } from "../../../state/slices/UpdateDtrSlice";
 import { fetchDTRByEmployeeId } from "../../../state/slices/GetDtrSlice";
-import SuccessPopup from "./SuccessPop";
+import { getDTRAll } from "../../../state/slices/GetDtrAllSlice";
 
 
-const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filteredAssignToUsers, onClose }) => {
+const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filteredAssignToUsers, onClose, handleDtrClick }) => {
+
+
+    console.log('i am the task on modal open', task);
 
     const userProfile = useSelector(state => state.user.userProfile);
 
@@ -24,8 +27,7 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
     const userId = userProfile.id;
 
     const [formData, setFormData] = useState(task);
-    const [assignToUser, setAssignToUser] = useState({});
-    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [assignToUser, setAssignToUser] = useState(task.employee_id);
 
     const dispatch = useDispatch();
     const empDropdown = useSelector(state => state.modal.isEmpDropdownOpen);
@@ -51,21 +53,32 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
 
     const handleUpdateTask = async (e) => {
         e.preventDefault();
-    
+
         try {
-            console.log("Updating task:", formData);
-            await dispatch(updateTask(formData)); // Dispatch the updateTask action with formData
+            const updatedFormData = { ...formData, assigne: assignToUser };
+
+            console.log(updatedFormData)
+
+            // Dispatch the updateTask action with the updated formData
+            const response = await dispatch(updateTask(updatedFormData));
+
+            // Dispatch the updateTask action with formData
+            console.log('i am update response', response);
+            onClose(); // Close the modal after successful update
             console.log("Task updated successfully!");
             // Ensure that the update was successful before showing the success popup
-            setShowSuccessPopup(true); // Show success pop-up after successful API call
+            // setShowSuccessPopup(true); // Show success pop-up after successful API call
             dispatch(fetchDTRByEmployeeId(userId)); // Fetch updated data after successful update
-            onClose(); // Close the modal after successful update
+            dispatch(getDTRAll());
+            if (response) {
+                handleDtrClick(response.payload.assigne)
+            }
         } catch (error) {
             console.error("Error updating task:", error);
             // Handle error (e.g., show error message)
         }
     };
-    
+
     // const handleUpdateTask = async (e) => {
     //     e.preventDefault();
 
@@ -95,12 +108,10 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
 
     return (
         <>
-            {showSuccessPopup && (
-                <SuccessPopup onClose={() => setShowSuccessPopup(false)} heading="DTR Submitted" message="Your daily task report was successfully submitted." />
-            )}
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[95vh] relative">
-                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-4 lg:mb-4">Update Task</h2>
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50
+             z-50 w-screen overflow-y-auto scroll h-screen">
+                <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[100vh] relative">
+                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-3 lg:mb-3">Update Task</h2>
                     <button onClick={() => onClose()} className="absolute top-6 right-8"><RxCross2 /></button>
                     <form onSubmit={handleUpdateTask}>
                         <label htmlFor="task" className="text-[18px] font-lato font-semibold text-baseGray">Title</label>
@@ -132,11 +143,12 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
                             </div>
                             <div className="flex lg:flex-col lg:gap-y-2.5 lg:w-[60%]">
                                 <div className="flex mt-2 gap-2">
-                                    {formData.assigne && (
+                                    {assignToUser && (
                                         <div className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-pink-500 border-2">
                                             <span className="text-white text-sm flex justify-center items-center plus-icon w-9 h-9">
                                                 {/* {assignToUser?.username?.toUpperCase().slice(0, 2)} */}
-                                                {getReportingManager(formData.assigne)}
+                                                {/* {getReportingManager(formData.assigne)} */}
+                                                {getReportingManager(assignToUser)}
                                             </span>
                                         </div>
                                     )}
@@ -177,12 +189,10 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
                                                         {filteredAssignToUsers.map((user) => (
                                                             <div
                                                                 onClick={() => {
-                                                                    // setAssignToUser({
-                                                                    //     id: user.id,
-                                                                    //     username: user.username,
-                                                                    // });
+                                                                    // Set the selected user as the new assignee
                                                                     setAssignToUser(user.id);
-                                                                    dispatch(closeEmpDropdown())
+                                                                    // Close the dropdown after selecting
+                                                                    dispatch(closeEmpDropdown());
                                                                 }}
                                                                 className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
                                                                 key={user.id}
@@ -283,6 +293,7 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
                                         handleUpdate("priorty", selectedOption.value)
                                     }}
                                     required
+                                    menuPlacement="auto"
                                     styles={{
                                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                                         control: (provided) => ({
@@ -364,7 +375,7 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
                             </div>
                         </div>
 
-                        <button type="submit" className="mt-8 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Update</button>
+                        <button type="submit" className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Update</button>
                     </form>
                 </div>
             </div>

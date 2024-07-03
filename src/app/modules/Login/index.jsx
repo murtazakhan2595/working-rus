@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
-import loginBg from "../.././../assets/images/login-bg.png";
+// import loginBg from "../.././../assets/images/login-bg.png";
+import cover from "../.././../assets/images/cover.png";
 import logo from "../.././../assets/images/tecbrix-logo.png";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { connect } from "react-redux";
 import { setUserProfile, setToken } from "../../../state/slices/UserSlice";
@@ -167,32 +168,25 @@ function Login() {
   }, []);
 
   return (
-    <div
-      className="h-screen"
-      style={{
-        backgroundImage: `url(${loginBg})`,
-        backgroundSize: "100% 100%",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-        overflowY: "hidden",
-      }}
-    >
-      <img
-        src={logo}
-        className="ml-6 mt-4 w-[150px] h-auto md:w-[160px] md:h-auto"
-        alt="Tecbrix logo"
-      />
-      <div className="flex justify-center items-center min-h-[80vh]">
-        <div className="flex justify-center items-center min-h-full">
-          <div className="md:mx-auto md:w-fit w-full max-w-md">
+    <div className="h-screen flex justify-center">
+      <div className="w-full md:w-[65%] flex flex-col min-h-full p-3 md:p-5 lg:p-7">
+        <div className="flex justify-start items-start">
+          <img
+            src={logo}
+            className="w-[142px] h-auto md:h-auto lg:pl-5"
+            alt="Tecbrix logo"
+          />
+        </div>
+        <div className="flex justify-center items-center flex-grow">
+          <div className="md:mx-auto w-full max-w-md lg:max-w-xl">
             <form
-              className="space-y-3 bg-white my-2 lg:py-10 py-6 rounded-3xl px-8 m-6 max-w-800 border border-gray-100 shadow-md"
+              className="space-y-3 my-2 lg:py-10 md:py-6 md:px-8 md:m-6"
               onSubmit={handleSubmit}
               method="POST"
             >
-              <div className="w-80">
-                <h2 className="text-[#1176BC] text-center text-2xl lg:text-3xl font-montserrat font-[700] leading-9 pb-4 tracking-tight">
-                  Login Account
+              <div className="lg:block mx-auto">
+                <h2 className="text-[#323333] text-center text-2xl lg:text-4xl font-lato font-bold leading-9 pb-4 tracking-tight">
+                  Log In
                 </h2>
                 <p className="font-roboto text-center text-[#5C5E64] font-normal text-base lg:mb-10">
                   It's nice to see you again!
@@ -264,19 +258,16 @@ function Login() {
               <div className="flex items-center gap-x-4">
                 <button
                   type="submit"
-                  className="flex justify-center items-center w-full mt-6 rounded-md bg-gradient-to-b from-[#25A5DE] to-[#1176BC] px-3 py-1.5 text-sm md:text-lg font-semibold 
-    leading-8 text-white shadow-sm hover:bg-cyan-900 focus-visible:outline focus-visible:outline-2 
-    focus-visible:outline-offset-2 focus-visible:outline-indigo-600 font-montserrat relative"
+                  className="flex h-11 text-white justify-center items-center w-full font-normal rounded-xl bg-black px-3 py-1.5 text-sm md:text-lg leading-8 font-lato lg:text-base"
                   disabled={isLoading} // Disable button when loading
                 >
                   {isLoading ? (
                     <span className="animate-pulse">Logging in...</span>
                   ) : (
-                    <span>Login</span>
+                    <span>Log In</span>
                   )}
                 </button>
               </div>
-
 
               <div className="flex pb-2 items-center">
                 <input
@@ -289,7 +280,7 @@ function Login() {
                 />
                 <label
                   htmlFor="keepSignedIn"
-                  className=" justify-start font-medium text-sm text-gray text-[#1176BC] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
+                  className="justify-start font-medium text-sm text-gray text-[#5C5E64] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
                 >
                   <span
                     className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${
@@ -315,7 +306,7 @@ function Login() {
                       </svg>
                     )}
                   </span>
-                  Keep me Signed In
+                  Keep me signed in
                 </label>
               </div>
             </form>
@@ -331,20 +322,11 @@ function Login() {
       <div className="w-0 md:w-1/2 lg:w-[35%] bg-gray-500 h-full">
         <img src={cover} alt="Meeting" className="object-cover w-full h-full" />
       </div>
+
       {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}
       <ToastContainer />
     </div>
   );
 }
-
-// const mapStateToProps = (state) => {
-//   return {
-//     userProfile: state.user.userProfile,
-//     token: state.user.token,
-//     baseUrl: state.user.baseUrl,
-//   };
-// };
-
-// export default connect(mapStateToProps, { setUserProfile, setToken })(Login);
 
 export default Login;
