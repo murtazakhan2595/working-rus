@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useNavigate } from "react-router-dom";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-bootstrap-table/dist/react-bootstrap-table-all.min.css";
@@ -129,6 +128,7 @@ function App() {
       } else {
         console.error("Error fetching data:", error);
       }
+      setLoading(false);
     }
   };
 
@@ -327,17 +327,4 @@ function App() {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    baseUrl: state.user.baseUrl,
-    isLogin: state.user.isLogin,
-  };
-};
-
-// export default connect(mapStateToProps, {
-//   setUserLogout,
-//   setUserProfile,
-//   setToken,
-// })(App);
 export default App;

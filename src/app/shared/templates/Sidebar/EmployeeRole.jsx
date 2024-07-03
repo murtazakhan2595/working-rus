@@ -31,7 +31,7 @@ const EmployeeRole = ({ isSidebarOpen }) => {
                     <div className={`flex mb-3 mt-5 rounded-md py-2 t px-2 items-center gap-1 hover:bg-[#DAEFF8] ${location.pathname === "/" ? "bg-[#DAEFF8] text-[#0D2282]" : "text-[#5C5E64]"
                         }`}>
                         <div className={`text-xl ${!isSidebarOpen ? 'ml-[10px]' : ''}`}>
-                            <LiaHomeSolid />
+                            {/* <LiaHomeSolid /> */}
                         </div>
                         <p className={`overflow-hidden transition-all ${isSidebarOpen ? 'w-28' : 'w-0'}`}>Home</p>
                     </div>
