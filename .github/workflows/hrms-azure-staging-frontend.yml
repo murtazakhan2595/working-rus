@@ -1,4 +1,4 @@
-name: Azure Staging Deployment 
+name: Azure-HRMS-Staging-Frontend
 
 # When this action will be executed
 on:
