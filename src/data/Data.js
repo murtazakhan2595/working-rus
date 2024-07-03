@@ -3,6 +3,21 @@ import { IoMdArrowDropdownCircle } from "react-icons/io";
 import { FiMinusCircle } from "react-icons/fi";
 import { CiViewBoard } from "react-icons/ci";
 import { CiCircleMore } from "react-icons/ci";
+import { getAllCountries } from "countries-and-timezones";
+import {
+  fetchDepartments,
+  fetchLeaveTypes,
+  fetchDesignations,
+} from "state/slices/CommonSlice";
+import { setUserProfile } from "state/slices/UserSlice.js";
+import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
+
+export const countryOptions = Object.keys(getAllCountries()).map(
+  (countryCode) => ({
+    value: countryCode,
+    label: getAllCountries()[countryCode].name,
+  })
+);
 
 export const tasksTitle = [
   { label: "Task Name", width: "w-44" },
@@ -10,8 +25,6 @@ export const tasksTitle = [
   { label: "Assign By", width: "w-28" },
 
   { label: "Due Date", width: "w-28" },
-
-  // { label: "Status", width: "w-28" },
 
   { label: "List", width: "w-28" },
 
@@ -31,20 +44,23 @@ export const statusOptions = [
 ];
 
 export const visaOptions = [
-  { value: "Visit", label: "Visit Visa" },
-  { value: "Tourist", label: "Tourist visa" },
-  { value: "Residency", label: "Residency visa" },
-  { value: "Golden", label: "Golden visa" },
-  { value: "Green", label: "Green visa" },
-  // { value: "partner visa", label: "Partner visa" },
+  { value: 1, label: "Visit Visa" },
+  { value: 2, label: "Tourist visa" },
+  { value: 3, label: "Residency visa" },
+  { value: 4, label: "Golden visa" },
+  { value: 5, label: "Green visa" },
 ];
 
 export const academicOptions = [
   {
     value: "inter",
     label: "Inter",
+  },
+  {
     value: "bachelors",
     label: "Bachelors",
+  },
+  {
     value: "masters",
     label: "Masters",
   },
@@ -78,6 +94,11 @@ export const educationTypeOptions = [
   { value: "Bachelor", label: "Bachelor" },
   { value: "Master", label: "Master" },
   { value: "Intermediate", label: "Intermediate" },
+];
+
+export const maritalStatus = [
+  { value: "Single", label: "Single" },
+  { value: "Married", label: "Married" },
 ];
 
 export const locationTypeOptions = [
@@ -125,19 +146,39 @@ export const jobsStatusOptions = [
 
 
 export const HeadOfDepartment = [
-  { label: 'Naveed Rahman - CEO', value: 'Naveed' },
-  { label: 'Komal Zaman - Peoples Teams Head', value: 'Komal' },
-  { label: 'Farhan Hayder  - HR Manager', value: 'Farhan' },
-  { label: 'Arshad Ali - BD & Sales', value: 'Arshad Ali' },
-  { label: 'Haris Zaheer - Pre-Sales', value: 'Haris' },
-  { label: 'Sadia Sharafat - Project Management', value: 'Sadia' },
-  { label: 'Asra Fatima - Front End Lead', value: 'Asra' },
-  { label: 'Muhammad Shujat Hussain - Backend Lead', value: 'Shujat' },
-  { label: 'Faisal Iqbal - Operations', value: 'Faisal' },
-  { label: 'Imran Shafi - Marketing', value: 'Imran' },
-  { label: 'Prakash PV - VP Sales', value: 'Prakash' },
+  { label: "Naveed Rahman - CEO", value: "Naveed" },
+  { label: "Komal Zaman - Peoples Teams Head", value: "Komal" },
+  { label: "Farhan Hayder  - HR Manager", value: "Farhan" },
+  { label: "Arshad Ali - BD & Sales", value: "Arshad Ali" },
+  { label: "Haris Zaheer - Pre-Sales", value: "Haris" },
+  { label: "Sadia Sharafat - Project Management", value: "Sadia" },
+  { label: "Asra Fatima - Front End Lead", value: "Asra" },
+  { label: "Muhammad Shujat Hussain - Backend Lead", value: "Shujat" },
+  { label: "Faisal Iqbal - Operations", value: "Faisal" },
+  { label: "Imran Shafi - Marketing", value: "Imran" },
+  { label: "Prakash PV - VP Sales", value: "Prakash" },
 ];
 
+export const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
+  label: (
+    <div>
+      <div style={{ fontWeight: "bold", color: "#000", marginTop: "25px" }}>
+        {manager?.label?.split(" - ")[0]}
+      </div>
+      <div style={{ fontSize: "13px", color: "#777", fontWeight: "normal" }}>
+        {manager?.label?.split(" - ")[1]}
+      </div>
+    </div>
+  ),
+  value: manager.value,
+}));
+
+export const UserRoles = [
+  { value: 1, label: "Super Admin" },
+  { value: 2, label: "Manager" },
+  { value: 3, label: "HR" },
+  { value: 4, label: "Employee" },
+];
 
 export const employeeStatus = [
   { label: 'Active', value: 'Active' },
@@ -193,3 +234,111 @@ export const status2Options = [
   { value: "Inprogress", label: <div className="bg-[#FFE8CD] text-[#FF9A1F] rounded-md py-0.5 px-2">In Progress</div> },
   { value: "Completed", label: <div className="bg-[#CCEFE3] text-[#5B8C7B] rounded-md py-0.5 px-2">Completed</div> },
 ];
+
+export const workplaceTypes = [
+  { label: "Remote", value: "REMOTE" },
+  { label: "Work from home", value: "Work_From_Home" },
+  { label: "Hybrid", value: "Hybrid" },
+  { label: "Onsite", value: "ON_SITE" },
+];
+
+export const dropdownStyles = {
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+  control: (provided, state) => ({
+    ...provided,
+    backgroundColor: "#fafbfc",
+    border: "none",
+    boxShadow: "none",
+    minWidth: "8rem",
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    fontSize: "16px",
+    fontWeight: state.isSelected ? "bold" : "normal",
+    color: state.isSelected ? "#000" : "#777",
+    padding: "8px 12px",
+    backgroundColor: state.isSelected ? "#FAFBFC" : "#FAFBFC",
+  }),
+  menu: (provided) => ({
+    ...provided,
+    borderRadius: "8px",
+    overflow: "hidden",
+  }),
+  scrollbarWidth: (base) => ({
+    ...base,
+    borderRadius: "8px",
+    backgroundColor: "#FAFBFC",
+  }),
+  dropdownIndicator: (provided) => ({
+    ...provided,
+    color: "#555",
+  }),
+};
+
+export const JobSortingFilters = [
+  {
+    label: "Sort by date",
+    name: "sort_by_date",
+    options: [
+      { label: "Newest First", value: "dsc" },
+      { label: "Oldest First", value: "asc" },
+    ],
+  },
+  {
+    label: "Worktype",
+    name: "Job_Type",
+    options: [
+      { label: "Remote", value: "Remote" },
+      { label: "Hybrid", value: "Hybrid" },
+      { label: "Onsite", value: "Onsite" },
+    ],
+  },
+  {
+    label: "Employee Type",
+    name: "Employee_Type",
+    options: [
+      { label: "Full-Time", value: "Full_Time" },
+      { label: "Internship", value: "Internees" },
+      { label: "Part-time", value: "Part_Time" },
+    ],
+  },
+  {
+    label: "Job Level",
+    name: "Work_type",
+    options: [
+      { label: "Senior", value: "Senior_Level" },
+      { label: "Mid Level", value: "Mid_Level" },
+      { label: "Intern", value: "Internees" },
+      { label: "Junior", value: "Junior_Level" },
+    ],
+  },
+];
+
+export const LeaveStatus = [
+  { label: "Approved", value: "Approved" },
+  { label: "Pending", value: "Pending" },
+  { label: "Denied", value: "Denied" },
+];
+
+export function getManagerSelected(managers, managersList) {
+  if (managers && managersList && managersList.length > 0) {
+    managers = managers.split(", ") || [];
+    const matchingObjects = managersList.filter((obj) => {
+      return managers.find(
+        (element) => parseInt(obj.value) === parseInt(element)
+      );
+    });
+    return matchingObjects;
+  }
+
+  return managers;
+}
+
+export const handleUpdateProfile = (dispatch, data) => {
+  dispatch(setUserProfile(data));
+  dispatch(fetchEmployees());
+  dispatch(fetchDepartments());
+  dispatch(fetchLeaveTypes());
+  dispatch(fetchDesignations());
+  dispatch(fetchReportingManagers());
+};

@@ -13,10 +13,18 @@ import { setUserProfile, setToken } from "../../../state/slices/UserSlice";
 import OfflinePopUp from "./OfflinePopUp";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import {
+  fetchDepartments,
+  fetchLeaveTypes,
+  fetchDesignations,
+} from "state/slices/CommonSlice";
+import { handleUpdateProfile } from "data/Data";
 
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
-  let baseUrl = useSelector(state => state.user.baseUrl);
+  let isLogin = useSelector((state) => state.user.isLogin);
+  let baseUrl = useSelector((state) => state.user.baseUrl);
+
   let dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -33,10 +41,12 @@ function Login() {
   const [isPopupVisible, setPopupVisible] = useState(!navigator.onLine);
   const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
 
-  const handleUpdateProfile = (data) => {
-    let updateProfile = { id: data.id, username: data.username };
-    dispatch(setUserProfile(updateProfile));
-  };
+  // const handleUpdateProfile = (data) => {
+  //   dispatch(setUserProfile(data));
+  //   dispatch(fetchDepartments());
+  //   dispatch(fetchLeaveTypes());
+  //   dispatch(fetchDesignations());
+  // };
 
   const handleCheckboxChange = (e) => {
     setIsChecked(e.target.checked);
@@ -72,7 +82,7 @@ function Login() {
         const token = response.data.access;
 
         // Save the token in cookies
-        cookies.set("token", token, { path: "*" });
+        window.localStorage.setItem("token", token);
 
         // Fetch user profile with the obtained token
         const userProfileResponse = await axios.get(`${baseUrl}/user/`, {
@@ -82,13 +92,8 @@ function Login() {
         });
 
         if (userProfileResponse.status === 200) {
-          const userProfile = {
-            id: userProfileResponse.data.id,
-            username: userProfileResponse.data.username,
-          };
-
           // Update the user profile in the Redux store
-          handleUpdateProfile(userProfile);
+          handleUpdateProfile(dispatch, userProfileResponse.data);
 
           // Update the token in the Redux store
           dispatch(setToken(token));
@@ -111,10 +116,11 @@ function Login() {
             autoClose: 1000,
           });
 
-          // Navigate to the desired location after a delay (e.g., 2 seconds)
-          setTimeout(() => {
+          if (userProfileResponse.data.is_filled) {
             navigate("/");
-          }, 2000);
+          } else {
+            navigate("/create-profile");
+          }
           return;
         }
       }
@@ -122,8 +128,8 @@ function Login() {
       // Simulating a response delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
-      console.log(error?.response?.data?.detail ?? 'Login Failed')
-      toast.error(error?.response?.data?.detail ?? 'Login Failed', {
+      console.log(error?.response?.data?.detail ?? "Login Failed");
+      toast.error(error?.response?.data?.detail ?? "Login Failed", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
@@ -188,53 +194,71 @@ function Login() {
                 <h2 className="text-[#1176BC] text-center text-2xl lg:text-3xl font-montserrat font-[700] leading-9 pb-4 tracking-tight">
                   Login Account
                 </h2>
-              </div>
-              <div>
-                <div className="mt-2">
-                  <input
-                    required
-                    name="username"
-                    type="text"
-                    autoComplete="username"
-                    title="Enter Your Username"
-                    placeholder="Username"
-                    value={values.username}
-                    onChange={handleChange}
-                    className="bg-zinc-100 w-full rounded-md py-2 my-1 text-gray-900 placeholder-style
-   placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-montserrat"
-                  />
-                  <div className="text-sm text-rose-500">{errors.username}</div>
-                </div>
+                <p className="font-roboto text-center text-[#5C5E64] font-normal text-base lg:mb-10">
+                  It's nice to see you again!
+                </p>
               </div>
 
-              <div>
-                <div className="mt-4 relative">
-                  <input
-                    required
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    autoComplete="current-password"
-                    title="Enter Your Password"
-                    value={values.password}
-                    onChange={handleChange}
-                    className="bg-zinc-100 w-full rounded-md py-2 text-gray-900 placeholder-style placeholder:text-gray-400 border-l-8 border-[#25A8E0] placeholder:mx-2 pl-2  sm:leading-8 focus:outline-none md:text-base text-sm font-montserrat"
-                  />
+              <div className="">
+                <label
+                  htmlFor="username"
+                  className="text-[#323333] font-normal font-lato text-base"
+                >
+                  Login ID*
+                </label>
+                <input
+                  required
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  title="Enter Your Username"
+                  value={values.username}
+                  onChange={handleChange}
+                  className="w-full rounded-xl py-2 my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
+                />
+                <div className="text-sm text-rose-500">{errors.username}</div>
+              </div>
 
-                  <button
-                    type="button"
-                    onClick={handlePasswordVisibility}
-                    className={`absolute top-0 right-2 translate-y-[70%] ${showPassword ? "text-gray-400" : ""
-                      }`}
+              <div className="relative">
+                <div className="flex justify-between items-center">
+                  <label
+                    htmlFor="password"
+                    className="text-[#323333] font-normal font-lato text-base"
                   >
-                    {showPassword ? (
-                      <BiShow className="text-gray-400" />
-                    ) : (
-                      <TbEyeClosed className="text-gray-400" />
-                    )}
-                  </button>
-                  <div className="text-sm text-rose-500">{errors.password}</div>
+                    Password*
+                  </label>
+                  <NavLink
+                    to="/forgot-password"
+                    className="text-[#323333] font-normal font-lato text-base underline underline-offset-4"
+                  >
+                    Forgot your password?
+                  </NavLink>
                 </div>
+                <input
+                  required
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  title="Enter Your Password"
+                  value={values.password}
+                  onChange={handleChange}
+                  className="w-full rounded-xl my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
+                />
+
+                <button
+                  type="button"
+                  onClick={handlePasswordVisibility}
+                  className={`absolute inset-y-12 right-2 flex items-center ${
+                    showPassword ? "text-gray-400" : ""
+                  }`}
+                >
+                  {showPassword ? (
+                    <BiShow className="text-gray-400" />
+                  ) : (
+                    <TbEyeClosed className="text-gray-400" />
+                  )}
+                </button>
+                <div className="text-sm text-rose-500">{errors.password}</div>
               </div>
 
               <div className="flex items-center gap-x-4">
@@ -268,8 +292,9 @@ function Login() {
                   className=" justify-start font-medium text-sm text-gray text-[#1176BC] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
                 >
                   <span
-                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${isChecked ? "bg-[#25A8E0]" : "bg-[#EBEBEB]"
-                      } transition-all duration-300`}
+                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${
+                      isChecked ? "bg-[#5C5E64]" : "bg-[#EBEBEB]"
+                    } transition-all duration-300`}
                     style={{
                       border: "none",
                     }}
@@ -296,6 +321,15 @@ function Login() {
             </form>
           </div>
         </div>
+        <div className="flex justify-start items-start">
+          <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
+            © 2024 TecBrix
+          </p>
+        </div>
+      </div>
+
+      <div className="w-0 md:w-1/2 lg:w-[35%] bg-gray-500 h-full">
+        <img src={cover} alt="Meeting" className="object-cover w-full h-full" />
       </div>
       {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}
       <ToastContainer />

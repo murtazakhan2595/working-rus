@@ -1,561 +1,763 @@
 import axios from "axios";
 import {
-    mapEmployeeData, getPersonalInfo, getVisaDetails, getCVDetails, getProfessionalExperiance, getAcademicRecord,
-    getDepartmentInfo,
-    getBankDetails,
-    getCertifications,
-} from '../utils/MappingObjects/mapEmployeeData'
+  getPersonalInfo,
+  getVisaDetails,
+  getCVDetails,
+  getProfessionalExperiance,
+  getAcademicRecord,
+  getWorkInformation,
+  getBankDetails,
+  getCertifications,
+  getContactInfo,
+} from "../utils/MappingObjects/mapEmployeeData";
 import {
-    EmployeeCVDetails, Employee, EmployeePersonalInformation, EmployeeVisaDetails, EmployeeProfessionalExperiance, EmployeeAcademicRecord,
-    EmployeeDepartmentInfo,
-    EmployeeBankDetails,
-    EmployeeCertifiation,
-} from '../utils/Types/Employee'
-import moment from "moment";
+  EmployeeCVDetails,
+  EmployeeInformation,
+  EmployeePersonalInformation,
+  EmployeeVisaDetails,
+  EmployeeProfessionalExperiance,
+  EmployeeDepartmentInfo,
+  EmployeeBankDetails,
+  EmployeeCertifiation,
+  EmployeeContactInformation,
+} from "../utils/Types/Employee";
+import { initialState } from "state/slices/UserSlice";
+import { toast } from "react-toastify";
+import { handleLogout } from "./general";
 
+const baseUrl = initialState.baseUrl;
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
 
-const getEmployeeData = async (baseUrl, employeeid, headers) => {
-    try {
-        const response = await axios.get(`${baseUrl}/emp/${employeeid}`, {
-            headers,
-        });
-        const employeeData = mapEmployeeData(response.data);
-        return employeeData;
-    } catch (error) {
-        console.error("Error fetching data:", error);
+const getEmployeeData = async (employeeid) => {
+  try {
+    const response = await axios.get(`${baseUrl}/emp/${employeeid}`, {
+      headers: headers(),
+    });
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
     }
-    return Employee;
-}
+    console.error("Error fetching data:", error);
+  }
+  return 0;
+};
+
+const getNewEmployeeCode = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/lastemployee`, {
+      headers: headers(),
+    });
+    const id = response.data?.id;
+    return id + 1;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching data:", error);
+  }
+  return EmployeeInformation;
+};
 
 const getEmployeePersonalInfoData = async (baseUrl, employeeid, token) => {
-    if (employeeid) {
-        try {
-            await axios.get(`${baseUrl}/employeeInformationlist/${employeeid}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then((response) => {
-                const employeeData = getPersonalInfo(response.data);
-                console.log(employeeData);
-                return employeeData;
-            });
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
+  if (employeeid) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/employeeInformationlist/${employeeid}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
+      );
+      // Assuming response.data is the personal info object
+      if (response.status === 200) {
+        const employeeData = getPersonalInfo(response.data);
+        console.log(employeeData);
+        return employeeData;
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
     }
-    return EmployeePersonalInformation;
-}
+  }
+  return EmployeePersonalInformation;
+};
 
-const saveEmployeePersonalInfoData = async (baseUrl, employeeid, token, personalInfo) => {
-    if (employeeid) {
-        try {
-            await axios.patch(`${baseUrl}/emp/${employeeid}`, personalInfo, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then((response) => {
-                return response.status;
-            });
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-            return false;
+const saveEmployeePersonalInfoData = async (employeeid, personalInfo) => {
+  if (employeeid) {
+    try {
+      const response = await axios.patch(
+        `${baseUrl}/emp/${employeeid}`,
+        personalInfo,
+        {
+          headers: headers(),
         }
+      );
+
+      if (response.status === 200) return true;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+      return false;
     }
-}
-const getEmployeeVisaDetailsFiles = async (baseUrl, id, token) => {
-    const headers = {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-    };
-    const responseArray = await Promise.all([
-        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"passport_copy"}`, { headers }),
-        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"enter_permit"}`, { headers }),
-        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"visa_page"}`, { headers }),
-        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"medical"}`, { headers }),
-        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_application"}`, { headers }),
-        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_front"}`, { headers }),
-        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_back"}`, { headers }),
-        axios.get(`${baseUrl}/attachment/?search={"employee_id":${id},"name":"insurance_card"}`, { headers })
-    ]);
+  }
+};
 
-    // Construct an object mapping document names to their responses
-    const documents = {
-        passport_copy: responseArray[0].data[0],
-        enter_permit: responseArray[1].data[0],
-        visa_page: responseArray[2].data[0],
-        medical: responseArray[3].data[0],
-        id_application: responseArray[4].data[0],
-        id_front: responseArray[5].data[0],
-        id_back: responseArray[6].data[0],
-        insurance_card: responseArray[7].data[0]
-    };
-
-    return documents;
-}
-
-const getEmployeeVisaDetailData = async (baseUrl, employeeid, token) => {
-    if (employeeid) {
-        try {
-            await axios.get(`${baseUrl}/employeevisadetail/?search={\"employee_id\":${employeeid}}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then(async (response) => {
-                if (response.status === 200) {
-                    if (response.data && response.data.results && response.data.results.length > 0) {
-                        const employeeData = getVisaDetails(response.data.results[0]);
-                        return employeeData;
-                    }
-                }
-            });
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
+const getEmployeeContactInfo = async (employeeid) => {
+  if (employeeid) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/employeeInformationlist/${employeeid}`,
+        {
+          headers: headers(),
         }
+      );
+      // Assuming response.data is the personal info object
+      if (response.status === 200) {
+        const employeeData = getContactInfo(response.data);
+        console.log(employeeData);
+        return employeeData;
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching contact Info data :", error);
     }
-    return EmployeeVisaDetails;
-}
+  }
+  return EmployeeContactInformation;
+};
 
-const saveEmployeeVisaDetailData = async (baseUrl, employeeid, token, visaDetail, visaDetailsFiles) => {
-    const headers = {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-    };
-    if (employeeid) {
-        visaDetail.employee_id = employeeid;
-        try {
-            if (visaDetail.id) {
-                await axios.patch(`${baseUrl}/employeevisadetail/${visaDetail.id}`, visaDetail, { headers })
+const saveEmployeeContactInfoData = async (employeeid, contactInfo) => {
+  if (employeeid) {
+    try {
+      const response = await axios.patch(
+        `${baseUrl}/emp/${employeeid}`,
+        contactInfo,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) return true;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error saving contact Info data :", error);
+      return false;
+    }
+  }
+};
+
+const getEmployeeVisaDetailsFiles = async (id) => {
+  const responseArray = await Promise.all([
+    axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"passport_copy"}`,
+      { headers: headers() }
+    ),
+    axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"enter_permit"}`,
+      { headers: headers() }
+    ),
+    axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"visa_page"}`,
+      { headers: headers() }
+    ),
+    axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"medical"}`,
+      { headers: headers() }
+    ),
+    axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_application"}`,
+      { headers: headers() }
+    ),
+    axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_front"}`,
+      { headers: headers() }
+    ),
+    axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"id_back"}`,
+      { headers: headers() }
+    ),
+    axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"insurance_card"}`,
+      { headers: headers() }
+    ),
+  ]);
+
+  // Construct an object mapping document names to their responses
+  const documents = {
+    passport_copy: responseArray[0].data[0],
+    enter_permit: responseArray[1].data[0],
+    visa_page: responseArray[2].data[0],
+    medical: responseArray[3].data[0],
+    id_application: responseArray[4].data[0],
+    id_front: responseArray[5].data[0],
+    id_back: responseArray[6].data[0],
+    insurance_card: responseArray[7].data[0],
+  };
+
+  return documents;
+};
+
+const getEmployeeVisaDetailData = async (employeeid) => {
+  if (employeeid) {
+    try {
+      const documents = await getEmployeeVisaDetailsFiles(employeeid);
+      const response = await axios.get(
+        `${baseUrl}/employeevisadetail/?search={"employee_id":${employeeid}}`,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        if (
+          response.data &&
+          response.data.results &&
+          response.data.results.length > 0
+        ) {
+          const employeeData = getVisaDetails(response.data.results[0]);
+          return { ...employeeData, ...documents };
+        }
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return EmployeeVisaDetails;
+};
+
+const saveEmployeeVisaDetailData = async (
+  employeeid,
+  visaDetail,
+  visaDetailsFiles
+) => {
+  if (employeeid) {
+    visaDetail.employee_id = employeeid;
+    try {
+      if (visaDetail.id) {
+        await axios.patch(
+          `${baseUrl}/employeevisadetail/${visaDetail.id}`,
+          visaDetail,
+          { headers: headers() }
+        );
+      } else {
+        await axios.post(`${baseUrl}/employeevisadetail/`, visaDetail, {
+          headers: headers(),
+        });
+      }
+
+      for (const key in visaDetailsFiles) {
+        if (visaDetailsFiles.hasOwnProperty(key)) {
+          const file = visaDetailsFiles[key];
+          if (file) {
+            if (file?.id) {
+              await axios.patch(
+                `${baseUrl}/attachment/${file?.id}`,
+                {
+                  employee_id: employeeid,
+                  name: key,
+                  description: `${file.name} file`,
+                  document: {
+                    name: file.document.name,
+                    file: file.document.file,
+                  },
+                },
+                { headers: headers() }
+              );
             } else {
-                await axios.post(`${baseUrl}/employeevisadetail/`, visaDetail, { headers, })
+              // Otherwise, post a new attachment
+              await axios.post(
+                `${baseUrl}/attachment/`,
+                {
+                  employee_id: employeeid,
+                  name: key,
+                  description: `${file.name} file`,
+                  document: file,
+                },
+                { headers: headers() }
+              );
             }
+          }
+        }
+      }
+      return true;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+      return false;
+    }
+  }
+  return false;
+};
 
-            for (const key in visaDetailsFiles) {
-                if (visaDetailsFiles.hasOwnProperty(key)) {
-                    const file = visaDetailsFiles[key];
-                    if (file) {
-                        if (file?.id) {
-                            await axios.patch(`${baseUrl}/attachment/${file?.id}`, {
-                                employee_id: employeeid,
-                                name: key,
-                                description: `${file.name} file`,
-                                document: {
-                                    name: file.document.name,
-                                    data: file.document.data,
-                                },
-                            }, { headers });
-                        } else {
-                            // Otherwise, post a new attachment
-                            await axios.post(`${baseUrl}/attachment/`, {
-                                employee_id: employeeid,
-                                name: key,
-                                description: `${file.name} file`,
-                                document: file,
-                            }, { headers });
-                        }
-                    }
+const getEmployeeCVDetailData = async (employeeid) => {
+  if (employeeid) {
+    try {
+      await axios
+        .get(
+          `${baseUrl}/attachment/?search={"employee_id":${employeeid},"name":"cv"}`,
+          {
+            headers: headers(),
+          }
+        )
+        .then((response) => {
+          if (
+            response.status === 200 &&
+            response.data &&
+            response.data.length > 0
+          ) {
+            const employeeData = getCVDetails(response.data[0]);
+            console.log(employeeData);
+            return employeeData;
+          }
+        });
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return EmployeeCVDetails;
+};
 
-                }
+const saveEmployeeCVDetailData = async (
+  baseUrl,
+  employeeid,
+  token,
+  payload
+) => {
+  if (employeeid) {
+    const cv = payload.cv;
+    const existingCVId = payload.existingCVId;
+    try {
+      if (existingCVId) {
+        await axios
+          .patch(
+            `${baseUrl}/attachment/${existingCVId}`,
+            { document: cv },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
             }
+          )
+          .then(() => {
             return true;
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
-    }
-    return false;
-}
-
-const getEmployeeCVDetailData = async (baseUrl, employeeid, token) => {
-    if (employeeid) {
-        try {
-            await axios.get(`${baseUrl}/attachment/?search={"employee_id":${employeeid},"name":"cv"}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then((response) => {
-                if (response.status === 200 && response.data && response.data.length > 0) {
-                    const employeeData = getCVDetails(response.data[0]);
-                    console.log(employeeData);
-                    return employeeData;
-                }
-            });
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
-    }
-    return EmployeeCVDetails;
-}
-
-const saveEmployeeCVDetailData = async (baseUrl, employeeid, token, payload) => {
-    if (employeeid) {
-        const cv = payload.cv;
-        const existingCVId = payload.existingCVId
-        try {
-            if (existingCVId) {
-                await axios.patch(`${baseUrl}/attachment/${existingCVId}`, { document: cv, }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }).then(() => {
-                    return true;
-                });
-            } else {
-                await axios.post(`${baseUrl}/attachment/`, {
-                    employee_id: employeeid,
-                    name: "cv",
-                    description: "Curriculum Vitae",
-                    document: cv,
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }).then(() => {
-                    return true;
-                });
+          });
+      } else {
+        await axios
+          .post(
+            `${baseUrl}/attachment/`,
+            {
+              employee_id: employeeid,
+              name: "cv",
+              description: "Curriculum Vitae",
+              document: cv,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
             }
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
-    }
-    return false;
-}
-
-const getEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token) => {
-    if (employeeid) {
-        try {
-            const response = await axios.get(`${baseUrl}/experience/?search={\"employee_id\":${employeeid}}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            })
-            if (response.status === 200) {
-                const employeeData = await getProfessionalExperiance(response.data);
-                console.log(employeeData);
-                return employeeData;
-            }
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
-    }
-    return [EmployeeProfessionalExperiance];
-}
-
-const saveEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token, payload) => {
-    if (employeeid && payload && payload.length > 0) {
-        try {
-            payload.map(async (experience) => {
-                experience.employee_id = employeeid;
-                if (experience?.id) {
-                    await axios.patch(`${baseUrl}/experience/${experience.id}`, experience, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    });
-
-                } else {
-                    await axios.post(`${baseUrl}/experience/`, experience, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    });
-                }
-            });
+          )
+          .then(() => {
             return true;
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
+          });
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
     }
-    return false;
-}
+  }
+  return false;
+};
 
-const deleteEmployeeProfessionalExperianceData = async (baseUrl, employeeid, token, payload) => {
-    if (employeeid && payload && payload.length > 0) {
+const getEmployeeProfessionalExperianceData = async (employeeid) => {
+  if (employeeid) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/experience/?search={"employee_id":${employeeid}}`,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        const employeeData = await getProfessionalExperiance(response.data);
+        console.log(employeeData);
+        return employeeData;
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return [EmployeeProfessionalExperiance];
+};
+
+const saveEmployeeProfessionalExperianceData = async (employeeid, payload) => {
+  if (employeeid && payload && payload.length > 0) {
+    try {
+      payload.map(async (experience, index) => {
+        experience.employee_id = employeeid;
         try {
-            payload.map(async (experience) => {
-                await axios.delete(`${baseUrl}/experience/${experience}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                });
+          if (experience?.id) {
+            await axios.patch(
+              `${baseUrl}/experience/${experience.id}`,
+              experience,
+              {
+                headers: headers(),
+              }
+            );
+          } else {
+            await axios.post(`${baseUrl}/experience/`, experience, {
+              headers: headers(),
             });
+          }
         } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
+          if (error?.response?.status === 401) {
+            handleLogout();
+          }
+          toast.error(`Experience ${index + 1} updated unsuccessfully`, {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1000,
+          });
+          console.error("Error fetching Personal Info data :", error);
         }
+      });
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+      return false;
     }
-    return false;
-}
+  }
+  return true;
+};
 
-const deleteEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payload) => {
-    if (employeeid && payload && payload.length > 0) {
+const deleteEmployeeProfessionalExperianceData = async (
+  baseUrl,
+  employeeid,
+  token,
+  payload
+) => {
+  if (employeeid && payload && payload.length > 0) {
+    try {
+      payload.map(async (experience) => {
+        await axios.delete(`${baseUrl}/experience/${experience}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      });
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return false;
+};
+
+const deleteEmployeeAcademicRecordData = async (
+  baseUrl,
+  employeeid,
+  token,
+  payload
+) => {
+  if (employeeid && payload && payload.length > 0) {
+    try {
+      payload.map(async (certification) => {
+        await axios.delete(`${baseUrl}/certification/${certification}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      });
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return false;
+};
+
+const getEmployeeAcademicRecordData = async (employeeid) => {
+  if (employeeid) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/education/?search={"employee_id":${employeeid}}`,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        const employeeData = getAcademicRecord(response.data);
+        console.log(employeeData);
+        return employeeData;
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return [EmployeeCertifiation];
+};
+
+const saveEmployeeAcademicRecordData = async (
+  employeeid,
+  payloadAttachment
+) => {
+  if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
+    try {
+      payloadAttachment.map(async (education) => {
+        education.employee_id = employeeid;
+        if (education?.id) {
+          await axios.patch(`${baseUrl}/education/${education.id}`, education, {
+            headers: headers(),
+          });
+        } else {
+          await axios.post(`${baseUrl}/education/`, education, {
+            headers: headers(),
+          });
+        }
+      });
+
+      return true;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return false;
+};
+
+const getEmployeeCerficationData = async (employeeid) => {
+  if (employeeid) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/certification/?search={"employee_id":${employeeid}}`,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        const employeeData = getCertifications(response.data);
+        console.log(employeeData);
+        return employeeData;
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return [EmployeeCertifiation];
+};
+
+const saveEmployeeCertificationData = async (employeeid, payloadAttachment) => {
+  if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
+    try {
+      payloadAttachment.map(async (certification) => {
+        certification.employee_id = employeeid;
         try {
-            payload.map(async (certification) => {
-                await axios.delete(`${baseUrl}/certification/${certification}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                });
+          if (certification?.id) {
+            await axios.patch(
+              `${baseUrl}/certification/${certification.id}`,
+              certification,
+              {
+                headers: headers(),
+              }
+            );
+          } else {
+            await axios.post(`${baseUrl}/certification/`, certification, {
+              headers: headers(),
             });
+          }
         } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
+          if (error?.response?.status === 401) {
+            handleLogout();
+          }
+          console.error("Error fetching Personal Info data :", error);
+          return false;
         }
+      });
+
+      return true;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
     }
-    return false;
-}
+  }
+  return false;
+};
 
-const getEmployeeAcademicRecordData = async (baseUrl, employeeid, token) => {
-    if (employeeid) {
-        try {
-            await axios.get(`${baseUrl}/education/?search={\"employee_id\":${employeeid}}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then(async (response) => {
-                if (response.status === 200 && response.data && response.data.length > 0) {
-                    await axios.get(`${baseUrl}/attachment/?search={"employee_id":${employeeid},"name":"acadmicDoc"}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    }).then(res => {
-                        const academicRecord = response.data[0]
-                        if (res.status === 200 && res.data && res.data.length > 0)
-                            academicRecord.certificate = res.data[0]
-                        const employeeData = getAcademicRecord(academicRecord);
-                        console.log(employeeData);
-                        return employeeData;
-                    });
-                }
-            });
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
+const getEmployeeWorkInformationData = async (baseUrl, employeeid, token) => {
+  if (employeeid) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/employeeDepartmentlist/${employeeid}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
+      );
+      const employeeData = getWorkInformation(response.data);
+      console.log(employeeData);
+      return employeeData;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
     }
-    return EmployeeAcademicRecord;
-}
+  }
+  return EmployeeDepartmentInfo;
+};
 
-const saveEmployeeAcademicRecordData = async (baseUrl, employeeid, token, payload, academicDoc) => {
-
-    if (employeeid) {
-        try {
-            if (payload.id) {
-                await axios.patch(`${baseUrl}/education/${payload.id}`, payload, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                })
-            } else {
-                delete payload.id
-                await axios.post(`${baseUrl}/education/`, payload, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                });
-            }
-            if (academicDoc) {
-                if (payload.certificate?.hasOwnProperty("id")) {
-                    await axios.patch(`${baseUrl}/attachment/${payload.certificate.id}`, academicDoc, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    });
-                }
-                else {
-                    await axios.post(`${baseUrl}/attachment/`, academicDoc, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    });
-
-                }
-            }
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
+const saveEmployeeWorkInformationData = async (
+  baseUrl,
+  employeeid,
+  token,
+  payload
+) => {
+  if (employeeid) {
+    try {
+      const response = await axios.patch(
+        `${baseUrl}/emp/${employeeid}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
+      );
+      if (response.status === 200) {
+        return true;
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+      return false;
     }
-    return false;
-}
-
-const getEmployeeCerficationData = async (baseUrl, employeeid, token) => {
-    if (employeeid) {
-        try {
-            const response = await axios.get(`${baseUrl}/certification/?search={\"employee_id\":${employeeid}}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            if (response.status === 200) {
-                const employeeData = getCertifications(response.data);
-                console.log(employeeData);
-                return employeeData;
-            }
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
-    }
-    return [EmployeeCertifiation];
-}
-
-const saveEmployeeCertificationData = async (baseUrl, employeeid, token, payloadAttachment) => {
-    if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
-        try {
-            payloadAttachment.map(async (certification) => {
-                certification.employee_id = employeeid
-                if (certification?.id) {
-                    await axios.patch(
-                        `${baseUrl}/certification/${certification.id}`,
-                        certification,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                "Content-Type": "application/json",
-                            },
-                        }
-                    );
-
-                } else {
-                    await axios.post(`${baseUrl}/certification/`, certification, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    })
-                }
-            });
-
-            return false;
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
-    }
-    return false;
-}
-
-const getEmployeeDepartemtInfoData = async (baseUrl, employeeid, token) => {
-    if (employeeid) {
-        try {
-            await axios.get(`${baseUrl}/employeeDepartmentlist/${employeeid}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then((response) => {
-                const employeeData = getDepartmentInfo(response.data);
-                console.log(employeeData);
-                return employeeData;
-            });
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
-    }
-    return EmployeeDepartmentInfo;
-}
-
-const saveEmployeeDepartemtInfoData = async (baseUrl, employeeid, token, payload) => {
-    if (employeeid) {
-        try {
-            await axios.patch(`${baseUrl}/emp/${employeeid}`, payload, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then(() => {
-                return true;
-            });
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
-    }
-    return false;
-}
+  }
+};
 
 const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
-    if (employeeid) {
-        try {
-            await axios.get(`${baseUrl}/employeebanklist/${employeeid}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then((response) => {
-                const employeeData = getBankDetails(response.data);
-                console.log(employeeData);
-                return employeeData;
-            });
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
+  if (employeeid) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/employeebanklist/${employeeid}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-    }
-    return EmployeeBankDetails;
-}
+      );
 
-const saveEmployeeBankDetailsData = async (baseUrl, employeeid, token, payload) => {
-    if (employeeid) {
-        try {
-            await axios.patch(`${baseUrl}/emp/${employeeid}`, payload, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }).then(() => {
-                return true;
-            });
-
-        } catch (error) {
-            console.error("Error fetching Personal Info data :", error);
-        }
+      const employeeData = getBankDetails(response.data);
+      console.log(employeeData);
+      return employeeData;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
     }
-    return false;
-}
+  }
+  return EmployeeBankDetails;
+};
+
+const saveEmployeeBankDetailsData = async (
+  baseUrl,
+  employeeid,
+  token,
+  payload
+) => {
+  if (employeeid) {
+    try {
+      await axios
+        .patch(`${baseUrl}/emp/${employeeid}`, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+        .then(() => {
+          return true;
+        });
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return false;
+};
 
 export {
-    getEmployeeData,
-    getEmployeePersonalInfoData,
-    saveEmployeePersonalInfoData,
-    getEmployeeVisaDetailData,
-    saveEmployeeVisaDetailData,
-    saveEmployeeCVDetailData,
-    getEmployeeCVDetailData,
-    getEmployeeProfessionalExperianceData,
-    saveEmployeeProfessionalExperianceData,
-    getEmployeeAcademicRecordData,
-    saveEmployeeAcademicRecordData,
-    saveEmployeeDepartemtInfoData,
-    getEmployeeDepartemtInfoData,
-    getEmployeeBankDetailsData,
-    saveEmployeeBankDetailsData,
-    getEmployeeCerficationData,
-    saveEmployeeCertificationData,
-    getEmployeeVisaDetailsFiles,
-    deleteEmployeeProfessionalExperianceData,
-    deleteEmployeeAcademicRecordData,
-}
+  getEmployeeData,
+  getEmployeePersonalInfoData,
+  saveEmployeePersonalInfoData,
+  getEmployeeVisaDetailData,
+  saveEmployeeVisaDetailData,
+  saveEmployeeCVDetailData,
+  getEmployeeCVDetailData,
+  getEmployeeProfessionalExperianceData,
+  saveEmployeeProfessionalExperianceData,
+  getEmployeeAcademicRecordData,
+  saveEmployeeAcademicRecordData,
+  saveEmployeeWorkInformationData,
+  getEmployeeWorkInformationData,
+  getEmployeeBankDetailsData,
+  saveEmployeeBankDetailsData,
+  getEmployeeCerficationData,
+  saveEmployeeCertificationData,
+  getEmployeeVisaDetailsFiles,
+  deleteEmployeeProfessionalExperianceData,
+  deleteEmployeeAcademicRecordData,
+  getEmployeeContactInfo,
+  saveEmployeeContactInfoData,
+  getNewEmployeeCode,
+};

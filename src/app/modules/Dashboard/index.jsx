@@ -7,7 +7,7 @@ import DailyTaskRpt from "./DailyTaskRpt";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { setUserLogout } from "../../../state/actions/UserAction";
+import { setUserLogout } from "state/actions/UserAction";
 import { RiArrowDownSFill } from "react-icons/ri";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
@@ -23,9 +23,9 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
   };
 
   const handleLogout = () => {
-    cookies.set("token", "", { path: "*" });
+    window.localStorage.setItem("token","")
     setUserLogout();
-    navigate("/");
+    navigate("/login");
   };
   return (
     <>
@@ -33,7 +33,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
 
       <div
         className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll
-         ${isSidebarOpen ? "3xl:w-[92%] xl:w-[86%] w-[100%]" : "3xl:w-[100%] xl:w-[100%] w-[100%]"
+         ${isSidebarOpen ? "3xl:w-[92%] xl:w-[100%] w-[100%]" : "3xl:w-[100%] xl:w-[100%] w-[100%]"
           }`}
       >
         {/***********************   Dashboard Header   **********************************/}

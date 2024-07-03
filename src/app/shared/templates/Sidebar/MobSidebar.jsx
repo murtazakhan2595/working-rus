@@ -663,34 +663,28 @@ const MobSidebar = ({
                     ))}
                   </div>
                 </div>
-              </>
-            )} */}
-            <hr className="opacity-40" />
 
-            <li
-              onClick={() => {
-                cookies.set("token", "", { path: "*" });
-                setUserLogout();
-                navigate("/");
-              }}
-              className="flex mb-3 mt-5  rounded-md py-2 px-4 items-center gap-1"
-            >
-              <MdLock className="text-white text-xl" />{" "}
-              <p className="text-white">Logout</p>
-            </li>
-          </ul>
-          {/* Sidebar collapse button */}
-          <button
-            className={`bg-[#283b91] text-white z-10 p-2 absolute ${isSidebarOpen ? "left-56" : "left-0"
-              } rounded-e-lg top-0 mt-4 mr-4`}
-            onClick={handleSidebarToggle}
-          >
-            {isSidebarOpen ? (
-              <TbLayoutSidebarLeftCollapse className="text-xl" />
-            ) : (
-              <TbLayoutSidebarRightCollapse className="text-xl" />
-            )}
-          </button>
+                {(isProfileOpen && isSidebarOpen) && (
+                  <div className="flex flex-col gap-y-1 mt-2">
+                    <Link to="/profile" className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]">
+                      <p>Profile Settings</p>
+                      <BsPersonGear />
+                    </Link>
+                    <div className="flex items-center cursor-pointer justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+                      onClick={() => {
+                        window.localStorage.setItem("token","")
+                        setUserLogout();
+                        navigate("/");
+                      }}>
+                      <p>Logout</p>
+                      <MdOutlineLogout />
+                    </div>
+                  </div>
+                )}
+              </li>
+            </div>
+          </div>
+
         </div>
 
         <button

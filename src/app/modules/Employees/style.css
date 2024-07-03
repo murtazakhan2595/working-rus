@@ -1,0 +1,130 @@
+.customer-invoice-screen {
+
+  .status-panel {
+    border: 1px solid #e4e7ea;
+  }
+
+  .btn-group {
+    .btn {
+      color: #ffffff !important;
+    }
+  }
+
+  .badge {
+    padding: 0.4em 0.6em;
+    font-size: 90%;
+  }
+
+}
+
+/* // react-bootstrap-table styles */
+.react-bs-table-container {
+  margin-bottom: 15px !important;
+
+  .react-bs-table {
+    border-radius: 0 !important;
+    border-top-width: 0px !important;
+    border-left: none !important;
+    border-right: none !important;
+
+    td {
+      vertical-align: middle;
+      border-left: 0px !important;
+      border-right: 0px !important;
+
+      .btn-group {
+        position: inherit !important;
+      }
+
+      .btn-brand {
+        border-radius: 100% !important;
+        width: 30px;
+        height: 30px;
+        background-color: #F0F1F2;
+        border: none;
+        color: #5C5E64;
+      }
+    }
+
+    th {
+      text-transform: capitalize !important;
+      border-bottom-width: 1px !important;
+      border-left: 0px !important;
+      border-right: 0px !important;
+    }
+  }
+
+  .cursor-pointer td {
+    overflow: hidden;
+  }
+
+  .react-bs-table-tool-bar {
+    .btn {
+      border-radius: 0 !important;
+    }
+
+    .react-bs-table-search-form {
+      margin-bottom: 15px !important;
+    }
+  }
+
+  .react-bs-table-pagination {
+    margin-bottom: 1rem;
+
+    ul {
+      margin-bottom: 0px;
+    }
+
+    .btn.dropdown-toggle {
+      border-radius: 15 !important;
+    }
+
+    .page-link {
+      color: #6c757d;
+      background-color: #FAFBFC;
+    }
+
+    .page-item.active .page-link {
+      background-color: #6c757d;
+      border-color: #6c757d;
+      color: white;
+    }
+  }
+}
+
+.react-bs-table table th {
+  white-space: pre-line;
+}
+
+.react-bs-table table td {
+  white-space: pre-line;
+}
+
+.react-bs-table table tbody tr {
+  border-color: #DADADA;
+  background-color: #FAFBFC;
+}
+
+.react-bs-container-header {
+  border-radius: 10px 10px 0px 0px;
+  background-color: #EBECED;
+  border: none !important;
+}
+
+.table>:not(:first-child),
+.react-bs-table table thead tr {
+  border: none !important
+}
+
+.dropdown-menu.show {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0px 6.65px 5.32px 0px #00000007;
+}
+
+
+/* form labels z-index */
+
+.form-floating>label {
+  z-index: 0;
+}
