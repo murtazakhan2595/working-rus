@@ -46,8 +46,8 @@ const ViewLeaveDetails = ({
   };
 
   return (
-    <div className="fixed top-0 right-0 w-[45%] h-full z-10 overflow-y-auto hideScroll pl-10">
-      <div className="bg-white h-auto shadow-lg p-10">
+    <div className="fixed top-0 right-0 w-[50%] h-full z-10 overflow-y-auto hideScroll pl-10">
+      <div className="bg-white h-full fixed top-0 right-0  shadow-lg p-10">
         <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
           <h2 className="font-bold text-xl ">Details</h2>
           <div className="flex justify-center ">
