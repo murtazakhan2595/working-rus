@@ -11,7 +11,7 @@ import {
   PhoneNumberInput,
   SelectMultiInputComponent,
   DateInput,
-  TextAreaInput
+  TextAreaInput,
 } from "components/form-control.jsx";
 import { PageLoader } from "components";
 
@@ -47,6 +47,9 @@ const CreateLeaveRequest = ({
   const [leaveForm, setLeaveForm] = useState(Leave);
   const navigate = useNavigate();
   const [employeeLeaveTypes, setEmployeeLeaveTypes] = useState([]);
+  const [employeeLeaveTypesInfo, setEmployeeLeaveTypesInfo] = useState({});
+  const [selectedLeaveTypeInfo, setSelectedLeaveTypeInfo] = useState({});
+  const [allowedLeaves, setAllowedLeaves] = useState(0);
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -77,6 +80,7 @@ const CreateLeaveRequest = ({
       const data = await getEmployeeLeaveTypes({
         employee_id: userProfile.id,
       });
+      setEmployeeLeaveTypesInfo(data.results);
       setEmployeeLeaveTypes(
         getEmployeeLeavesTypesList(leaveTypes, data.results)
       );
@@ -88,6 +92,32 @@ const CreateLeaveRequest = ({
   useEffect(() => {
     getPosts();
   }, [userProfile, leaveTypes]);
+
+  const getAllotedLeaveInfo = (leaveType, props) => {
+    debugger;
+    const alloted_leaves_info = employeeLeaveTypesInfo.find(
+      (obj) => obj.id === leaveType
+    );
+    setSelectedLeaveTypeInfo(alloted_leaves_info);
+    calculateAllowedLeaves(
+      alloted_leaves_info,
+      props.values.total_leave,
+      props
+    );
+  };
+  const calculateAllowedLeaves = (alloted_leaves_info, total_leaves, props) => {
+    debugger;
+    if (alloted_leaves_info && total_leaves) {
+      const requested_leave = total_leaves;
+      const alloted_leaves = alloted_leaves_info.total_alloted_leaves;
+      const used_leaves = alloted_leaves_info.used_leave;
+      const left_leave = alloted_leaves_info.left_leave;
+      setAllowedLeaves(left_leave);
+      props.setFieldValue("total_alloted_leave", alloted_leaves);
+      props.setFieldValue("left_leave", left_leave - requested_leave);
+      props.setFieldValue("used_leave", used_leaves + requested_leave);
+    }
+  };
 
   const handleSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
@@ -114,7 +144,7 @@ const CreateLeaveRequest = ({
 
   const setLeaveDays = (totalLeave, startDate) => {
     startDate = startDate ? new Date(moment(startDate)) : null;
-    if (!isNaN(startDate.getTime()) && totalLeave) {
+    if (startDate && !isNaN(startDate.getTime()) && totalLeave) {
       let endDate = moment(startDate); // Initialize endDate to startDate
       let workingDaysAdded = 0;
       while (workingDaysAdded <= totalLeave) {
@@ -189,8 +219,10 @@ const CreateLeaveRequest = ({
                         innerRef={formRef}
                         onSubmit={handleSubmit}
                         validate={(values) => {
-                          const errors =
-                            validationLeaveRequestFormSchema(values);
+                          const errors = validationLeaveRequestFormSchema(
+                            values,
+                            allowedLeaves
+                          );
                           return errors;
                         }}
                       >
@@ -394,6 +426,11 @@ const CreateLeaveRequest = ({
                                   required={true}
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, parseInt(value));
+                                    calculateAllowedLeaves(
+                                      selectedLeaveTypeInfo,
+                                      parseInt(value),
+                                      props
+                                    );
                                     setLeaveDays(
                                       parseInt(value),
                                       props.values.start_date
@@ -413,6 +450,7 @@ const CreateLeaveRequest = ({
                                   label="Leave Type"
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
+                                    getAllotedLeaveInfo(value, props);
                                   }}
                                 />
                               </Col>
