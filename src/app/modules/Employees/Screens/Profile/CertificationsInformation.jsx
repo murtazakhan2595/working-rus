@@ -15,6 +15,7 @@ import {
   CustomLightOutlineButton,
 } from "components/form-control";
 import { FileInput } from "components/form-control.jsx";
+import { Link } from "react-router-dom";
 
 const CertificationsInformation = ({
   nextstep,
@@ -200,9 +201,9 @@ const CertificationsInformation = ({
                         )
                       )}
                     <Col md="12" className="text-left">
-                      <Button
+                      <Link
                         type="button"
-                        className="btn btn-outline-dark my-3 bg-white text-dark"
+                        className="btn btn-outline-dark"
                         onClick={() => {
                           const length = props.values?.certifications?.length;
                           const index = length ? length : 0;
@@ -213,7 +214,7 @@ const CertificationsInformation = ({
                         }}
                       >
                         + Add Another
-                      </Button>
+                      </Link>
                     </Col>
                   </Row>
                   <hr />
