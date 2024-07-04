@@ -46,8 +46,8 @@ const ViewLeaveDetails = ({
   };
 
   return (
-    <div className="fixed top-0 right-0 max-w-[50%] w-[50%] h-full z-10 overflow-y-auto hideScroll pl-10">
-      <div className="bg-white h-full fixed top-0 right-0  shadow-lg p-10">
+    <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll pl-10">
+      <div className="bg-white h-full fixed  max-w-[35%] w-[35%] top-0 right-0  shadow-lg p-10">
         <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
           <h2 className="font-bold text-xl ">Details</h2>
           <div className="flex justify-center ">
@@ -184,7 +184,7 @@ const ViewLeaveDetails = ({
           application?.status_manager !== "Approved by Manager" && (
             <div className="flex gap-x-6 items-center mt-4">
               <button
-                className="px-3 py-2 rounded-md border flex items-center gap-x-2 justify-center"
+                className="px-3 py-2 rounded-md flex items-center gap-x-2 justify-center btn btn-outline-danger"
                 style={{ width: "150px", height: "40px" }}
                 onClick={() => {
                   handleApprove("Denied");
@@ -193,7 +193,7 @@ const ViewLeaveDetails = ({
                 Deny
               </button>
               <button
-                className="border px-3 py-2 rounded-md flex items-center justify-center gap-x-2"
+                className="px-3 py-2 rounded-md flex items-center justify-center gap-x-2 btn btn-outline-success"
                 style={{ width: "150px", height: "40px" }}
                 onClick={() => {
                   handleApprove("Approved");
