@@ -95,7 +95,7 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                 error={props.errors.bank_name}
                                                 touch={props.touched.bank_name}
                                                 value={props.values.bank_name}
-                                                label={'Branch Name'}
+                                                label={'Bank Name'}
                                                 required={true}
                                                 onChange={(field, value) => {
                                                     props.handleChange(field,)(value);
