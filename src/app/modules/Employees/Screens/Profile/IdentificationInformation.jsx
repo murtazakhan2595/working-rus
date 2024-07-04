@@ -549,7 +549,7 @@ const IdentificationInformation = ({
                             }}
                           />
                         </Col>
-                        <Col md={6}>
+                        {/* <Col md={6}>
                           <DateInput
                             name={"Passport_Issuance_Date"}
                             error={props.errors.Passport_Issuance_Date}
@@ -560,7 +560,7 @@ const IdentificationInformation = ({
                               props.setFieldValue(field, value);
                             }}
                           />
-                        </Col>
+                        </Col> */}
                         <Col md={6}>
                           <DateInput
                             name={"insurance_active_date"}

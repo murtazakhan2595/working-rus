@@ -535,7 +535,7 @@ const TextAreaInput = ({
       <FormGroup floating>
         <Input
           type="textarea"
-          maxLength={maxLength ?? "100"}
+          // maxLength={maxLength ?? "100"}
           id={name}
           name={name}
           autoComplete="Off"
