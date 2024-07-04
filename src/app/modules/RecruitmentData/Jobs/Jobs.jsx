@@ -168,7 +168,7 @@ const RenderJob = ({ job, handleDotsClick }) => {
           <div>
             <p className="text-baseGray text-base">{job.id}</p>
             <h3
-              className="text-[20px] text-baseGray font-bold"
+              className="text-[20px] text-baseGray font-bold cursor-pointer"
               onClick={() => {
                 handleDotsClick(job);
               }}
