@@ -8,18 +8,18 @@ const EmployeeNameInfo = ({
   allotedLeave,
 }) => {
   return (
-    <div className="flex items-start">
+    <div className="flex items-start pr-3">
       <div
         className="bg-[#BE24A5] text-[#FAFBFC] flex font-semibold text-md items-center justify-center rounded-full w-10 h-10"
         style={{ minWidth: "40px" }}
       >
         {name?.toUpperCase().charAt(0)}
       </div>
-      <div className="flex flex-col ml-2">
+      <div className="flex flex-col ml-2 whitespace-break-spaces flex-wrap">
         <div className="text-base font-bold leading-normal text-[#323333] text-left text-capitalize">
           {`${name ?? "N/A"}`}
         </div>
-        <div className="text-baseGray text-left flex justify-between gap-3">
+        <div className="text-baseGray text-left flex justify-between gap-x-3 gap-y-1 flex-wrap">
           <div>
             <DesignationName value={position} /> |{" "}
             <DepartmentName value={department} />

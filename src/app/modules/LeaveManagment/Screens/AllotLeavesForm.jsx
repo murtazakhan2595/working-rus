@@ -101,7 +101,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
   return (
     <>
       <div className="flex align-bottom justify-between my-4">
-        <div>
+        <div className="whitespace-break-spaces">
           <div className="font-bold leading-normal text-[#323333] text-left text-capitalize text-[25px]">
             {employeeData.first_name} {employeeData.last_name}
           </div>

@@ -566,10 +566,10 @@ const TextAreaInput = ({
 
 const FilterInput = ({ filters, onChange }) => {
   const classNamesStyle =
-    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
+    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md w-56";
   return (
     <>
-      <div className="flex items-center gap-x-3">
+      <div className="flex items-center gap-x-3 gap-y-3 flex-wrap">
         {filters &&
           filters.map((filter, index) => {
             if (filter.type === "search") {
@@ -607,7 +607,7 @@ const FilterInput = ({ filters, onChange }) => {
                 <Select
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className="shadow-input rounded-lg"
+                  className="shadow-input rounded-lg w-56"
                   styles={dropdownStyles}
                   name={filter.name}
                   id={filter.name}

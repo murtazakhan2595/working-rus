@@ -84,7 +84,7 @@ const RenderEmployeesLeaveAllotement = ({ employee, employeeList }) => {
           />
         </Col>
       )}{" "}
-      <div className="flex flex-row justify-between gap-y-10 border-b px-2 pb-4">
+      <div className="flex flex-row justify-between flex-wrap gap-x-10 gap-y-5 border-b px-2 pb-4">
         <EmployeeNameInfo
           name={`${employee.first_name} ${employee.last_name}`}
           department={employee.department_name}
@@ -111,7 +111,7 @@ const RenderEmployeesLeaveAllotement = ({ employee, employeeList }) => {
 
 const AllotLeaves = ({ employeeData, closeModel, next, previous }) => {
   return (
-    <div className="fixed top-0 text-baseGray right-0 w-[40%] h-full z-10 overflow-y-auto hideScroll pl-10">
+    <div className="fixed top-0 text-baseGray right-0 w-[650px] h-full z-10 overflow-y-auto hideScroll pl-10">
       <div className="h-auto p-10 bg-[#FAFBFC]" style={{ minHeight: "100vh" }}>
         <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
           <h2 className="font-bold text-xl ">Leave allotment</h2>
