@@ -8,8 +8,8 @@ const validationLeaveRequestFormSchema = (values, allowedLeaves) => {
   if (!values.leave_type) errors.leave_type = "Leave type is required";
   if (!values.reason) errors.reason = "Reason is required";
   if (!values.contact_no) errors.contact_no = "Contact No. is required";
-  if (values.total_leave && values.total_leave > allowedLeaves)
-    errors.total_leave = `${allowedLeaves} leaves are allowed only.`;
+  if (values.total_leave && values.total_leave > allowedLeaves.left_leave)
+    errors.total_leave = `${allowedLeaves.left_leave} leaves are allowed only.`;
   return errors;
 };
 

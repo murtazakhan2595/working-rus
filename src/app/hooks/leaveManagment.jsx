@@ -14,7 +14,7 @@ const getLeaveApplications = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/leave/?order=date&${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/leave/?order=-date&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -124,7 +124,6 @@ const addLeaveRequest = async (payload) => {
 };
 
 const deleteLeaveRequest = async (payload) => {
-  debugger;
   try {
     if (payload) {
       const response = await axios.delete(`${baseUrl}/leave/${payload}`, {

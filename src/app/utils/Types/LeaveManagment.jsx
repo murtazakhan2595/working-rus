@@ -18,9 +18,6 @@ const Leave = {
   country_code: "",
   report_to: "",
   address_during_leave: "",
-  total_alloted_leave:0,
-  left_leave:0,
-  used_leave:0,
 };
 
 const EmployeeLeaveTypesList = {
