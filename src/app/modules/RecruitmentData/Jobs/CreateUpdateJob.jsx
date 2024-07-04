@@ -182,7 +182,7 @@ const JobForm = forwardRef(
                           label="Deadline"
                           required
                           onChange={(field, value) => {
-                            props.handleChange(field)(value);
+                            props.setFieldValue(field, value);
                           }}
                         />
                       </Col>
@@ -198,7 +198,7 @@ const JobForm = forwardRef(
                           label="Job Requirement"
                           required
                           onChange={(field, value) => {
-                            props.handleChange(field)(value);
+                            props.setFieldValue(field, value);
                           }}
                         />
                       </Col>
@@ -327,7 +327,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
                     </Col>
                   </Row>
                 </CardHeader>
-                
+
                 <CardBody style={{ maxWidth: "800px" }}>
                   <JobForm
                     isLoading={isLoading}

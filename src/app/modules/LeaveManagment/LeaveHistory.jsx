@@ -12,7 +12,6 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
   const [employeeData, setEmployeeData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
-  const [expandedRow, setExpandedRow] = useState(null);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,

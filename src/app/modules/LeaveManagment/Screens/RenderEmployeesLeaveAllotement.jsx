@@ -90,8 +90,8 @@ const RenderEmployeesLeaveAllotement = ({ employee, employeeList }) => {
           department={employee.department_name}
           position={employee.department_position}
           id={employee.id}
-          leaveTypes={employeeLeaveTypes.leaveTypes}
-          allotedLeave={employeeLeaveTypes.allotedLeave}
+          leaveTypes={`${employeeLeaveTypes.leaveTypes}`}
+          allotedLeave={`${employeeLeaveTypes.allotedLeave}`}
         />
         <div className="text-base text-baseGray flex items-center gap-x-4">
           <div
