@@ -30,7 +30,6 @@ export function getEmployeeLeavesAgainsLeaveType(
 
   // Map through LeaveTypes to populate the arrays
   LeaveTypes.forEach((leaveType) => {
-    debugger
     const leaves = employeeLeavesType.find(
       (obj) => obj.leave_type === leaveType.value
     );
@@ -44,3 +43,11 @@ export function getEmployeeLeavesAgainsLeaveType(
   // Return the results as an object
   return { usedLeaves, remainingLeaves, totalLeaves };
 }
+
+export const YearsDropdownList = (StartYear, EndYear) => {
+  const years = [];
+  for (let year = StartYear; year <= EndYear; year++) {
+    years.push({ label: year, value: year });
+  }
+  return years;
+};

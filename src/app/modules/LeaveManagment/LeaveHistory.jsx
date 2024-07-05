@@ -5,7 +5,11 @@ import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
 import { getEmployeeCustomList } from "app/hooks/general";
 import { FilterInput } from "components/form-control";
 import { LeaveHistoryColumns } from "app/utils/Types/TableColumns";
-import { getLeavesTypeNameList,getEmployeeLeavesAgainsLeaveType } from "utils/Lists";
+import {
+  getLeavesTypeNameList,
+  getEmployeeLeavesAgainsLeaveType,
+} from "utils/Lists";
+import { YearsDropdownList } from "utils/Lists";
 import { PageLoader, Header, BarChart, Table } from "components";
 
 const LeaveHistory = ({ leaveTypes, designations, departments }) => {
@@ -60,12 +64,21 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
             const leaveTypeResponse = await getEmployeeLeaveTypes({
               employee_id: employee.id,
             });
+            const leaveTypeInfo =
+              leaveTypeResponse &&
+              leaveTypeResponse.results &&
+              leaveTypeResponse.results.length > 0
+                ? leaveTypeResponse.results[0]
+                : null;
+
             const leavesData = {
-              leaveTypes: leaveTypeResponse.leaveTypes,
-              allotedLeaves: leaveTypeResponse.allotedLeaves,
-              remainingLeaves: leaveTypeResponse.remainingLeaves,
-              usedLeaves: leaveTypeResponse.usedLeaves,
-              leaveTypeList:leaveTypeResponse.results,
+              leaveType: leaveTypeInfo ? leaveTypeInfo.leave_type : "",
+              allotedLeaves: leaveTypeInfo
+                ? leaveTypeInfo.total_alloted_leaves
+                : "",
+              remainingLeaves: leaveTypeInfo ? leaveTypeInfo.left_leave : "",
+              usedLeaves: leaveTypeInfo ? leaveTypeInfo.used_leave : "",
+              leaveTypeList: leaveTypeResponse.results,
             };
             return { ...employee, ...leavesData };
           })
@@ -78,7 +91,6 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
       setIsLoading(false);
     }
   };
-
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
@@ -93,10 +105,15 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
   };
 
   const renderExpandedContent = (row) => {
-   const leavesInfo = getEmployeeLeavesAgainsLeaveType(row.leaveTypeList,leaveTypes);
-   const series = [{name:"Leaves Used",data:leavesInfo.usedLeaves ||[]},{name:"Total Leaves",data:leavesInfo.totalLeaves ||[]}];
-   console.log(series) 
-   return (
+    const leavesInfo = getEmployeeLeavesAgainsLeaveType(
+      row.leaveTypeList,
+      leaveTypes
+    );
+    const series = [
+      { name: "Leaves Used", data: leavesInfo.usedLeaves || [] },
+      { name: "Total Leaves", data: leavesInfo.totalLeaves || [] },
+    ];
+    return (
       <BarChart
         categories={getLeavesTypeNameList(leaveTypes)}
         series={series}
@@ -107,7 +124,16 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
-    onPageChange:onPageChange,
+    onPageChange: onPageChange,
+  };
+
+  const updateLeaveType = (rowId, leaveType) => {
+    setEmployeeData((prevData) => {
+      const updatedResults = prevData.results.map((row) =>
+        row.id === rowId ? { ...row, ...leaveType } : row
+      );
+      return { ...prevData, results: updatedResults };
+    });
   };
 
   return (
@@ -148,16 +174,18 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                       <FilterInput
                         filters={[
                           {
-                            type: "date",
+                            type: "select",
                             placeholder: "From",
-                            value: filterData['from'],
                             name: "from",
+                            option: YearsDropdownList(2000, 2070),
+                            width: "auto",
                           },
                           {
-                            type: "date",
+                            type: "select",
                             name: "to",
                             placeholder: "To",
-                            value: filterData['to'],
+                            option: YearsDropdownList(2000, 2070),
+                            with: "auto",
                           },
                         ]}
                         onChange={handleFilterChange}
@@ -179,7 +207,7 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                   <Col lg={12} className="react-bs-table-container">
                     <Table
                       data={employeeData.results || []}
-                      columns={LeaveHistoryColumns}
+                      columns={LeaveHistoryColumns(updateLeaveType)}
                       rowExpand={true}
                       pagination={true}
                       renderExpandedContent={renderExpandedContent}

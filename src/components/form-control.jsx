@@ -128,7 +128,7 @@ const DateInput = ({
               value = moment(value).format("YYYY-MM-DD");
               onChange(name, value);
             } else {
-              onChange(name, '');
+              onChange(name, "");
             }
           }}
           showMonthDropdown
@@ -609,7 +609,9 @@ const FilterInput = ({ filters, onChange }) => {
                   key={index}
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className="shadow-input rounded-lg w-56"
+                  className={`shadow-input rounded-lg ${
+                    filter.width ? filter.width : "w-56"
+                  }`}
                   styles={dropdownStyles}
                   name={filter.name}
                   id={filter.name}
@@ -627,9 +629,7 @@ const FilterInput = ({ filters, onChange }) => {
                     key={index}
                     name={filter.name}
                     id={filter.name}
-                    className={`${filter.className ?? classNamesStyle}`}
-                    value={date && !isNaN(date.getTime()) ? date : ""}
-                    selected={date && !isNaN(date.getTime()) ? date : ""}
+                    //  className={`${filter.className ?? classNamesStyle}`}
                     dropdownMode="select"
                     placeholder={`${filter.placeholder}`}
                     onChange={(value) => {

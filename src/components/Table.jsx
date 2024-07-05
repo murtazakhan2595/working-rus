@@ -9,6 +9,7 @@ import {
   DropdownMenu,
 } from "reactstrap";
 import "./style.css";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 const Table = ({
   columns,
@@ -139,7 +140,7 @@ const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
     <div>
       <ButtonDropdown isOpen={openDropdownRow} toggle={() => toggleDropdown()}>
         <DropdownToggle className="btn-brand">
-          <span>{sizePerPage}</span>
+          <span className="flex">{sizePerPage} <IoMdArrowDropdown style={{ margin: "auto" }} /></span>
         </DropdownToggle>
         <DropdownMenu end>
           <DropdownItem onClick={() => handleSizeClick(10)}>10</DropdownItem>

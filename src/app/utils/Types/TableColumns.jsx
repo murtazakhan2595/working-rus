@@ -7,10 +7,14 @@ import {
 } from "utils/getValuesFromTables";
 import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
-import { Status, RenderStatus } from "app/modules/LeaveManagment/Sections";
+import {
+  Status,
+  RenderStatus,
+  RenderLeaveType,
+} from "app/modules/LeaveManagment/Sections";
 import moment from "moment";
 
-export const LeaveHistoryColumns = [
+export const LeaveHistoryColumns = (updateLeaveType) => [
   {
     dataField: "name",
     text: "Employees",
@@ -35,6 +39,9 @@ export const LeaveHistoryColumns = [
   {
     dataField: "leaveTypes",
     text: "Leaves Type",
+    formatter: (cell, row) => (
+      <RenderLeaveType row={row} updateLeaveType={updateLeaveType} />
+    ),
   },
   {
     dataField: "allotedLeaves",
