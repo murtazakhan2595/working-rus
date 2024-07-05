@@ -1,4 +1,4 @@
-name: Azure-HRMS-Production-Frontend
+name: Production Environment - Github Actions
 
 # When this action will be executed
 on:
