@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Button, Form } from "reactstrap";
+import { Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
   getEmployeeCerficationData,
   saveEmployeeCertificationData,
+  deleteEmployeeCertificateData, // Import the delete function
 } from "app/hooks/employee.jsx";
 import PageLoader from "components/PageLoader.jsx";
 import { EmployeeCertifiation } from "app/utils/Types/Employee";
@@ -13,12 +14,15 @@ import {
   TextInput,
   CustomDarkButton,
   CustomLightOutlineButton,
+  FileInput,
 } from "components/form-control";
-import { FileInput } from "components/form-control.jsx";
 import { Link } from "react-router-dom";
+import { FaTimes } from "react-icons/fa"; // Import the close icon from react-icons
 
 const CertificationsInformation = ({
   nextstep,
+  baseUrl,
+  token,
   employeeId,
   isEditMode,
   prevStep,
@@ -38,7 +42,7 @@ const CertificationsInformation = ({
       .catch((error) => {
         console.log("Error fetching certification data:", error);
       });
-  }, [employeeId]);
+  }, [baseUrl, employeeId, token]);
 
   const handleSubmit = async (data) => {
     console.log("Submitting data:", data);
@@ -51,6 +55,17 @@ const CertificationsInformation = ({
       if (response) nextstep();
     } catch (error) {
       console.error("Error saving certifications:", error);
+    }
+  };
+
+  const handleDelete = async (certificationId, index, props) => {
+    try {
+      await deleteEmployeeCertificateData(baseUrl, employeeId, token, [certificationId]);
+      const newCertifications = [...props.values.certifications];
+      newCertifications.splice(index, 1);
+      props.setFieldValue('certifications', newCertifications);
+    } catch (error) {
+      console.error("Error deleting certification:", error);
     }
   };
 
@@ -74,20 +89,6 @@ const CertificationsInformation = ({
               }}
               validate={(values) => {
                 const errors = {};
-                // if (values.certifications) {
-                //   values.certifications.forEach((value, index) => {
-                //     const certificationErrors = {};
-                //     Object.keys(value).forEach((field) => {
-                //       if (!value[field]) {
-                //         certificationErrors[field] = "This field is required";
-                //       }
-                //     });
-                //     if (Object.keys(certificationErrors).length > 0) {
-                //       errors.certifications = errors.certifications || [];
-                //       errors.certifications[index] = certificationErrors;
-                //     }
-                //   });
-                // }
                 return errors;
               }}
             >
@@ -100,9 +101,15 @@ const CertificationsInformation = ({
                         (certification, index) => (
                           <React.Fragment key={index}>
                             <Col md="12">
-                              <h5 className="fw-700 mb-3 mt-4">
-                                Certification {index + 1}
-                              </h5>
+                              <div className="d-flex justify-content-between align-items-center">
+                                <h5 className="fw-700 mb-3 mt-4">
+                                  Certification {index + 1}
+                                </h5>
+                                <FaTimes
+                                  className="cursor-pointer"
+                                  onClick={() => handleDelete(certification.id, index, props)}
+                                />
+                              </div>
                             </Col>
                             <div className="flex flex-wrap gap-x-3">
                               <div className="w-full md:w-[48%]">
@@ -145,37 +152,8 @@ const CertificationsInformation = ({
                                   label={"Certification Institute"}
                                 />
                               </div>
-                              {/* <div className="w-full md:w-[97.5%] bg-[#E5E5F0] flex justify-center items-center h-40">
-                                <input
-                                  type="file"
-                                  name={`certifications[${index}].certification_body`}
-                                  onChange={(e) => {
-                                    props.setFieldValue(
-                                      `certifications[${index}].certification_body`,
-                                      e.currentTarget.files[0]
-                                    );
-                                  }}
-                                />
-                              </div> */}
                               <div className="w-full">
                                 <FileInput
-                                  // name={`certifications[${index}].certification_body`}
-                                  // value={certification.certification_body}
-                                  // onChange={(field, value) => {
-                                  //   props.setFieldValue(field, value);
-                                  // }}
-                                  // label={"Certification Body"}
-                                  // required
-                                  // error={
-                                  //   props.errors.certifications &&
-                                  //   props.errors.certifications[index]
-                                  //     ?.certification_body
-                                  // }
-                                  // touched={
-                                  //   props.touched.certifications &&
-                                  //   props.touched.certifications[index]
-                                  //     ?.certification_body
-                                  // }
                                   acceptType=".pdf"
                                   name={`certifications[${index}].certification_body`}
                                   value={certification.certification_body}
