@@ -94,7 +94,7 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
       let field = "";
       if (loggedInUser.role === 1 || loggedInUser.role === 3) {
         field = "status_hr";
-      }
+        payload[field] = status;   }
       if (field) {
         payload[field] = status;
       }
