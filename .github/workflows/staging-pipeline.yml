@@ -1,4 +1,4 @@
-name: Azure-HRMS-Staging-Frontend
+name: Staging Environment - Github Actions
 
 # When this action will be executed
 on:
