@@ -39,7 +39,40 @@ const getAllProjects = async (payload) => {
   return [];
 };
 
-
-export {
-  getAllProjects,
+const addProject = async (payload) => {
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/project/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Project Updated!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+      return response;
+    } else {
+      const response = await axios.post(`${baseUrl}/project/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        toast.success("Project Added!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding job:", error);
+    return false;
+  }
 };
+
+export { getAllProjects, addProject };

@@ -70,7 +70,7 @@ function DesignationName({ value }) {
 function EmployeeName({ value }) {
   const employees = useSelector((state) => state.emp.employees);
   const employee = employees.find((option) => option.value === parseInt(value));
-  return <>{employee ? employee.label : "N/A"}</>;
+  return <>{employee ? employee.name : "N/A"}</>;
 }
 
 function EmployeeID({ value }) {

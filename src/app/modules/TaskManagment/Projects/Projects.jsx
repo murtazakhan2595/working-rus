@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getAllProjects } from "app/hooks/taskManagment";
 import { LeaveAllotmentColumns } from "app/utils/Types/TableColumns";
@@ -7,9 +7,9 @@ import { Table, Header, PageLoader } from "components";
 import { FilterInput } from "components/form-control";
 import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { CiCirclePlus } from "react-icons/ci";
-import ProjectModel from "./ProjectModel";
+import ProjectModel from "./CreateProjectModel";
 
-const Projects = ({ departments, designations }) => {
+const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [AllProjects, setAllProjects] = useState([]);
@@ -69,15 +69,20 @@ const Projects = ({ departments, designations }) => {
               ) : (
                 <Row className="m-0">
                   {showProjectModal && (
-                    <ProjectModel toggleAddProject={toggleAddProject} />
+                    <ProjectModel onClose={toggleAddProject} />
                   )}
-                  <Col lg={4} className="py-3">
-                    <RenderProject toggleAddProject={toggleAddProject} />
-                  </Col>
+                  {userProfile.role !== 4 && (
+                    <Col lg={4} className="py-3">
+                      <RenderProject toggleAddProject={toggleAddProject} />
+                    </Col>
+                  )}
                   {AllProjects.count > 0 &&
                     AllProjects.results.map((project, index) => (
                       <Col lg={4} key={index} className="py-3">
-                        <RenderProject project={project} toggleAddProject={toggleAddProject} />
+                        <RenderProject
+                          project={project}
+                          toggleAddProject={toggleAddProject}
+                        />
                       </Col>
                     ))}
                 </Row>
@@ -90,7 +95,7 @@ const Projects = ({ departments, designations }) => {
   );
 };
 
-const RenderProject = ({ project ,toggleAddProject}) => {
+const RenderProject = ({ project, toggleAddProject }) => {
   return (
     <div
       className={`${
@@ -101,11 +106,11 @@ const RenderProject = ({ project ,toggleAddProject}) => {
         <div>
           <img src={project.image} alt="project" />
           <h2>{project.name}</h2>
-          <p>{project.description}</p>
+          <p dangerouslySetInnerHTML={{ __html: project.description }} />
         </div>
       ) : (
         <div
-          className="flex items-center flex-col"
+          className="flex items-center flex-col cursor-pointer"
           onClick={() => {
             toggleAddProject();
           }}
@@ -120,8 +125,7 @@ const RenderProject = ({ project ,toggleAddProject}) => {
 
 const mapStateToProps = (state) => {
   return {
-    designations: state.common.designations,
-    departments: state.common.departments,
+    userProfile: state.user.userProfile,
   };
 };
 

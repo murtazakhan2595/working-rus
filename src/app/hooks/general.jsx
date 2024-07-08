@@ -76,7 +76,8 @@ const getEmployeeList = async () => {
       const employeeResponse = response.data?.results?.employees ?? [];
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
-        label: `${employee.first_name} ${employee.last_name}`,
+        label: `${employee.username}`,
+        name: `${employee.first_name} ${employee.last_name}`,
       }));
       return employeeList;
     } else return [];

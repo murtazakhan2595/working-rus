@@ -4,7 +4,7 @@ const Project = {
   description: "",
   start_date: "",
   end_date: "",
-  project_members: "",
+  project_members: [],
 };
 
 export { Project };

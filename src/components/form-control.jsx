@@ -597,12 +597,12 @@ const TextAreaEditorInput = ({
             },
           }}
           disabled={disabled}
-          className={`mh-[200px] pt-5 ${error && touch ? "is-invalid" : ""}`}
+          className={`rounded ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {
             onChange(name, option);
           }}
         />
-        <Label className="text-baseGray pt-3" htmlFor="address">
+        <Label className="text-baseGray pt-4 mt-1" htmlFor="address">
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
