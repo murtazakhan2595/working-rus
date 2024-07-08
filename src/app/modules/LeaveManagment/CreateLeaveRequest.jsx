@@ -11,13 +11,16 @@ import {
   PhoneNumberInput,
   SelectMultiInputComponent,
   DateInput,
-  TextAreaInput
+  TextAreaInput,
 } from "components/form-control.jsx";
 import { PageLoader } from "components";
 
 import { getEmployeeData } from "app/hooks/employee";
 import { addLeaveRequest } from "app/hooks/leaveManagment";
-import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
+import {
+  getEmployeeLeaveTypes,
+  allotLeavesToEmployee,
+} from "app/hooks/leaveManagment";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import { countryOptions } from "data/Data";
 import { getLavefromEmployeeInfo } from "app/utils/MappingObjects/mapLeaveData";
@@ -47,6 +50,9 @@ const CreateLeaveRequest = ({
   const [leaveForm, setLeaveForm] = useState(Leave);
   const navigate = useNavigate();
   const [employeeLeaveTypes, setEmployeeLeaveTypes] = useState([]);
+  const [employeeLeaveTypesInfo, setEmployeeLeaveTypesInfo] = useState({});
+  const [selectedLeaveTypeInfo, setSelectedLeaveTypeInfo] = useState({});
+  const [leavesInfo, setLeavesInfo] = useState(0);
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -77,6 +83,7 @@ const CreateLeaveRequest = ({
       const data = await getEmployeeLeaveTypes({
         employee_id: userProfile.id,
       });
+      setEmployeeLeaveTypesInfo(data.results);
       setEmployeeLeaveTypes(
         getEmployeeLeavesTypesList(leaveTypes, data.results)
       );
@@ -89,6 +96,32 @@ const CreateLeaveRequest = ({
     getPosts();
   }, [userProfile, leaveTypes]);
 
+  const getAllotedLeaveInfo = (leaveType, props) => {
+    const alloted_leaves_info = employeeLeaveTypesInfo.find(
+      (obj) => obj.id === leaveType
+    );
+    setSelectedLeaveTypeInfo(alloted_leaves_info);
+    calculateAllowedLeaves(
+      alloted_leaves_info,
+      props.values.total_leave,
+      props
+    );
+  };
+  const calculateAllowedLeaves = (alloted_leaves_info, total_leaves) => {
+    if (alloted_leaves_info && total_leaves) {
+      const requested_leave = parseInt(total_leaves);
+      const used_leaves = alloted_leaves_info.used_leave;
+      const left_leave = alloted_leaves_info.left_leave;
+      setLeavesInfo({
+        ...alloted_leaves_info,
+        ...{
+          left_leave: left_leave - requested_leave,
+          used_leave: used_leaves + requested_leave,
+        },
+      });
+    }
+  };
+
   const handleSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
     try {
@@ -99,9 +132,15 @@ const CreateLeaveRequest = ({
       };
       const response = await addLeaveRequest(modifiedValues);
       if (response) {
-        toast.success("Form submitted successfully!");
-        resetForm();
-        navigate("/my-leaves");
+        const leaveResponse = await allotLeavesToEmployee(
+          userProfile.id,
+          [leavesInfo]
+        );
+        if (leaveResponse) {
+          toast.success("Form submitted successfully!");
+          resetForm();
+          navigate("/my-leaves");
+        }
       } else {
         toast.error("Form submission failed.");
       }
@@ -114,7 +153,7 @@ const CreateLeaveRequest = ({
 
   const setLeaveDays = (totalLeave, startDate) => {
     startDate = startDate ? new Date(moment(startDate)) : null;
-    if (!isNaN(startDate.getTime()) && totalLeave) {
+    if (startDate && !isNaN(startDate.getTime()) && totalLeave) {
       let endDate = moment(startDate); // Initialize endDate to startDate
       let workingDaysAdded = 0;
       while (workingDaysAdded <= totalLeave) {
@@ -189,8 +228,10 @@ const CreateLeaveRequest = ({
                         innerRef={formRef}
                         onSubmit={handleSubmit}
                         validate={(values) => {
-                          const errors =
-                            validationLeaveRequestFormSchema(values);
+                          const errors = validationLeaveRequestFormSchema(
+                            values,
+                            selectedLeaveTypeInfo
+                          );
                           return errors;
                         }}
                       >
@@ -393,11 +434,22 @@ const CreateLeaveRequest = ({
                                   label="Total Leave"
                                   required={true}
                                   onChange={(field, value) => {
-                                    props.setFieldValue(field, parseInt(value));
-                                    setLeaveDays(
-                                      parseInt(value),
-                                      props.values.start_date
-                                    );
+                                    if (value) {
+                                      props.setFieldValue(
+                                        field,
+                                        parseInt(value)
+                                      );
+                                      calculateAllowedLeaves(
+                                        selectedLeaveTypeInfo,
+                                        parseInt(value),
+                                        props
+                                      );
+                                      setLeaveDays(
+                                        parseInt(value),
+                                        props.values.start_date
+                                      );
+                                    }
+                                    props.setFieldValue(field, value);
                                   }}
                                   regEx={/^[0-9]+$/}
                                 />
@@ -413,6 +465,7 @@ const CreateLeaveRequest = ({
                                   label="Leave Type"
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
+                                    getAllotedLeaveInfo(value, props);
                                   }}
                                 />
                               </Col>

@@ -14,7 +14,7 @@ const getLeaveApplications = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/leave/?order=date&${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/leave/?order=-date&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -23,7 +23,10 @@ const getLeaveApplications = async (payload) => {
     });
     if (response.status === 200) {
       const data = response.data;
-      const LeaveData = { count: data.length || 0, results: data };
+      const LeaveData = {
+        count: data.count,
+        results: data.results.leaves,
+      };
       // const updatedData = await Promise.all(
       //   data.map(async (leave) => {
       //     const leaveTypeList = await getEmployeeLeaveTypes({
@@ -119,6 +122,24 @@ const addLeaveRequest = async (payload) => {
     return false;
   }
 };
+
+const deleteLeaveRequest = async (payload) => {
+  try {
+    if (payload) {
+      const response = await axios.delete(`${baseUrl}/leave/${payload}`, {
+        headers: headers(),
+      });
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding job:", error);
+    return false;
+  }
+};
+
 const allotLeavesToEmployee = async (employeeId, payload) => {
   if (payload && payload.length > 0) {
     try {
@@ -178,4 +199,5 @@ export {
   getLeaveTypes,
   getEmployeeLeaveTypes,
   allotLeavesToEmployee,
+  deleteLeaveRequest,
 };

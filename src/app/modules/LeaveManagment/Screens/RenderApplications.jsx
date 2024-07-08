@@ -91,12 +91,10 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
   const handleApprove = async (status) => {
     try {
       const payload = application;
-      let field = "";
       if (loggedInUser.role === 1 || loggedInUser.role === 3) {
-        field = "status_hr";
-      }
-      if (field) {
-        payload[field] = status;
+        payload['status_hr'] = `${status} by HR`;
+      }else if(loggedInUser.role===2){
+        payload['status_hr'] = `${status} by HR`;
       }
       const response = await addLeaveRequest(payload);
       if (response) {
@@ -129,7 +127,7 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
         </div>
       </Col>
       <Col md={5} className="mb-3">
-        <div>
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap">
           <b>
             <LeaveType value={application?.leave_type} />
           </b>
@@ -138,7 +136,7 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
         </div>
       </Col>
       <Col md={7} className="mb-3">
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 flex-wrap">
           {activeTab === "Approved" && (
             <Button
               className="btn bg-[#E6F2EE] shadow-none "
@@ -170,7 +168,7 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
               className="btn btn-outline-danger bg-white shadow-none"
               style={{ color: "#dc3545" }}
               onClick={() => {
-                handleApprove("Denied");
+                handleApprove("Declined");
               }}
             >
               Deny

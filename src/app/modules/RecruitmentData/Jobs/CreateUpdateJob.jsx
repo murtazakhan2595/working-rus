@@ -25,12 +25,12 @@ import { Header } from "../Sections/index.js";
 import { JobDetail } from "app/utils/Types/Recruitment.jsx";
 
 const JobForm = forwardRef(
-  ({ isLoading, formData, handleSubmit, isEditMode, id }, formRef) => {
+  ({ isLoading, formData, handleSubmit, isEditMode, id, onClose }, formRef) => {
     const initialValues = {
       JobDetail,
       ...formData,
     };
-
+    const navigate = useNavigate();
     return (
       <>
         {isLoading ? (
@@ -182,7 +182,7 @@ const JobForm = forwardRef(
                           label="Deadline"
                           required
                           onChange={(field, value) => {
-                            props.handleChange(field)(value);
+                            props.setFieldValue(field, value);
                           }}
                         />
                       </Col>
@@ -198,7 +198,7 @@ const JobForm = forwardRef(
                           label="Job Requirement"
                           required
                           onChange={(field, value) => {
-                            props.handleChange(field)(value);
+                            props.setFieldValue(field, value);
                           }}
                         />
                       </Col>
@@ -218,13 +218,16 @@ const JobForm = forwardRef(
                     </Row>
                     <Row>
                       <Col md="2">
-                        <Link
+                        <div
                           type="button"
                           className="btn btn-outline-dark w-100"
                           to="/jobs"
+                          onClick={() => {
+                            isEditMode ? onClose() : navigate("/jobs");
+                          }}
                         >
                           Cancel
-                        </Link>
+                        </div>
                       </Col>
                       <Col md="4">
                         <Button type="submit" className="btn btn-dark w-100">
@@ -264,7 +267,8 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
         toast.success(`Job ${isEditMode ? "updated" : "added"} successfully!`, {
           autoClose: 1000,
         });
-        onClose();
+        if (isEditMode) onClose();
+        else navigate("/jobs");
 
         if (!isEditMode) {
           formRef.current.resetForm();
@@ -292,6 +296,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
           formRef={formRef}
           isEditMode={isEditMode}
           id={id}
+          onClose={onClose}
         />
       ) : (
         <div className="screen bg-[#F0F1F2]">
@@ -327,7 +332,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
                     </Col>
                   </Row>
                 </CardHeader>
-                
+
                 <CardBody style={{ maxWidth: "800px" }}>
                   <JobForm
                     isLoading={isLoading}

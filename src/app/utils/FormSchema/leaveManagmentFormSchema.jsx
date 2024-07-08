@@ -1,4 +1,4 @@
-const validationLeaveRequestFormSchema = (values) => {
+const validationLeaveRequestFormSchema = (values, allowedLeaves) => {
   const errors = {};
   if (!values.start_date) errors.start_date = "Start date is required";
   if (!values.end_date) errors.end_date = "End date is required";
@@ -8,10 +8,9 @@ const validationLeaveRequestFormSchema = (values) => {
   if (!values.leave_type) errors.leave_type = "Leave type is required";
   if (!values.reason) errors.reason = "Reason is required";
   if (!values.contact_no) errors.contact_no = "Contact No. is required";
+  if (values.total_leave && values.total_leave > allowedLeaves.left_leave)
+    errors.total_leave = `${allowedLeaves.left_leave} leaves are allowed only.`;
   return errors;
 };
 
-
-export {
-  validationLeaveRequestFormSchema,
-};
+export { validationLeaveRequestFormSchema };

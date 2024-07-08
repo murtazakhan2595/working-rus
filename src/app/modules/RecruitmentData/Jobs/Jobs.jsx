@@ -30,19 +30,19 @@ const JobsDataTable = () => {
   const [filterData, setFilterData] = useState({});
   const [sortData, setSortData] = useState("dsc");
 
+  const getPosts = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchJobPosts(filterData, sortData);
+      setPosts(data);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   useEffect(() => {
-    const getPosts = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchJobPosts(filterData, sortData);
-        setPosts(data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     getPosts();
   }, [filterData, sortData]);
 
@@ -51,6 +51,7 @@ const JobsDataTable = () => {
   };
 
   const closeModal = () => {
+    getPosts();
     setSelectedPost(null);
   };
 
@@ -98,7 +99,7 @@ const JobsDataTable = () => {
       <Row className="bg-[#F0F1F2] relative">
         {selectedJob && (
           <Col md={6}>
-            <ViewJobDetails job={selectedJob} onClose={closeModal} />
+            <ViewJobDetails jobId={selectedJob.id} onClose={closeModal} />
           </Col>
         )}
         <Col lg={12}>
@@ -168,7 +169,7 @@ const RenderJob = ({ job, handleDotsClick }) => {
           <div>
             <p className="text-baseGray text-base">{job.id}</p>
             <h3
-              className="text-[20px] text-baseGray font-bold"
+              className="text-[20px] text-baseGray font-bold cursor-pointer"
               onClick={() => {
                 handleDotsClick(job);
               }}
@@ -191,8 +192,8 @@ const RenderJob = ({ job, handleDotsClick }) => {
           <PiDotsThreeOutlineFill className="text-xl cursor-pointer opacity-80" />
         </div>
       </div>
-      <div className="flex items-center justify-between">
-        <div className="text-base text-baseGray flex items-center gap-x-2">
+      <div className="flex items-start justify-between ">
+        <div className="text-base text-baseGray flex items-center gap-x-2 py-2">
           <IoCalendarOutline className="text-lg" />
           {`${moment(job.updated_at).format("DD-MM-YYYY")} to ${moment(
             job.Deadline
@@ -200,7 +201,7 @@ const RenderJob = ({ job, handleDotsClick }) => {
           <LiaBriefcaseSolid className="text-lg" />
           {job.total_applications} applications
         </div>
-        <div className="flex justify-between items-center gap-x-2">
+        <div className="flex justify-end items-center gap-x-2 gap-y-2 flex-wrap">
           <Labels
             label={job.status === "live" ? "Open" : "Close"}
             iconDot={true}

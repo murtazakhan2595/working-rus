@@ -128,7 +128,7 @@ const DateInput = ({
               value = moment(value).format("YYYY-MM-DD");
               onChange(name, value);
             } else {
-              onChange(name, null);
+              onChange(name, "");
             }
           }}
           showMonthDropdown
@@ -535,7 +535,7 @@ const TextAreaInput = ({
       <FormGroup floating>
         <Input
           type="textarea"
-          maxLength={maxLength ?? "100"}
+          // maxLength={maxLength ?? "100"}
           id={name}
           name={name}
           autoComplete="Off"
@@ -566,15 +566,15 @@ const TextAreaInput = ({
 
 const FilterInput = ({ filters, onChange }) => {
   const classNamesStyle =
-    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
+    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md w-56";
   return (
     <>
-      <div className="flex items-center gap-x-3">
+      <div className="flex items-center gap-x-3 gap-y-3 flex-wrap">
         {filters &&
           filters.map((filter, index) => {
             if (filter.type === "search") {
               return (
-                <div className="relative">
+                <div className="relative" key={index}>
                   <IoIosSearch className="absolute top-3 left-3 text-baseGray" />
                   <input
                     type="search"
@@ -592,6 +592,7 @@ const FilterInput = ({ filters, onChange }) => {
             } else if (filter.type === "text") {
               return (
                 <input
+                  key={index}
                   type="text"
                   placeholder={filter.placeholder}
                   className={filter.className ?? classNamesStyle}
@@ -605,9 +606,12 @@ const FilterInput = ({ filters, onChange }) => {
             } else if (filter.type === "select") {
               return (
                 <Select
+                  key={index}
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className="shadow-input rounded-lg"
+                  className={`shadow-input rounded-lg ${
+                    filter.width ? filter.width : "w-56"
+                  }`}
                   styles={dropdownStyles}
                   name={filter.name}
                   id={filter.name}
@@ -620,30 +624,32 @@ const FilterInput = ({ filters, onChange }) => {
             } else if (filter.type === "date") {
               const date = filter.value ? new Date(moment(filter.value)) : null;
               return (
-                <DatePicker
-                  name={filter.name}
-                  id={filter.name}
-                  className={`${filter.className ?? classNamesStyle}`}
-                  value={date && !isNaN(date.getTime()) ? date : ""}
-                  selected={date && !isNaN(date.getTime()) ? date : ''}
-                  dropdownMode="select"
-                  placeholder={`${filter.placeholder}`}
-                  onChange={(value) => {
-                    if (value) {
-                      value = moment(value).format("YYYY-MM-DD");
-                      onChange(filter.name, value);
-                    } else {
-                      onChange(filter.name, null);
-                    }
-                  }}
-                  showMonthDropdown
-                  showYearDropdown
-                  dateFormat="dd-MM-yyyy"
-                />
+                <div style={{ width: "fit-content" }}>
+                  <DatePicker
+                    key={index}
+                    name={filter.name}
+                    id={filter.name}
+                    //  className={`${filter.className ?? classNamesStyle}`}
+                    dropdownMode="select"
+                    placeholder={`${filter.placeholder}`}
+                    onChange={(value) => {
+                      if (value) {
+                        value = moment(value).format("YYYY-MM-DD");
+                        onChange(filter.name, value);
+                      } else {
+                        onChange(filter.name, null);
+                      }
+                    }}
+                    showMonthDropdown
+                    showYearDropdown
+                    dateFormat="dd-MM-yyyy"
+                  />
+                </div>
               );
             } else if (filter.type === "sorting") {
               return (
                 <CheckboxMenu
+                  key={index}
                   items={filter.option}
                   onChange={(name, value, filterCheckStatus) => {
                     onChange(name, value, filterCheckStatus);
@@ -655,7 +661,7 @@ const FilterInput = ({ filters, onChange }) => {
                 />
               );
             } else {
-              return <></>;
+              return <div key={index}></div>;
             }
           })}
       </div>

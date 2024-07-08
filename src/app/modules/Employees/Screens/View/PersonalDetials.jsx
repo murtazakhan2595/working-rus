@@ -44,7 +44,7 @@ const PersonalInformation = ({
             </div>
           </div>
           {/* Personal Info Sections */}
-          <div className="lg:w-2/3 w-full flex flex-col lg:flex-row gap-8 overflow-auto no-scrollbar">
+          <div className="w-full flex flex-col lg:flex-row gap-8 overflow-visible no-scrollbar whitespace-break-spaces">
             {personalInfo.map((infoGroup, index) => (
               <div key={index} className="w-full flex flex-col gap-4">
                 {infoGroup.map((info) => (

@@ -69,11 +69,11 @@ const getManagersList = async () => {
 
 const getEmployeeList = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/emp/`, {
+    const response = await axios.get(`${baseUrl}/customemp/`, {
       headers: headers(),
     });
     if (response.status === 200) {
-      const employeeResponse = response.data;
+      const employeeResponse = response.data?.results?.employees ?? [];
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
         label: `${employee.first_name} ${employee.last_name}`,

@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  Row,
-  Col,
-  Button,
-  Form,
-} from "reactstrap";
+import { Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
   getEmployeeAcademicRecordData,
   saveEmployeeAcademicRecordData,
+  deleteEmployeeAcademicRecordData, // Import the delete function
 } from "app/hooks/employee.jsx";
 import PageLoader from "components/PageLoader.jsx";
 import { EmployeeAcademicRecord } from "app/utils/Types/Employee";
@@ -23,6 +19,7 @@ import {
 } from "components/form-control";
 import { educationTypeOptions } from "data/Data.js";
 import { Link } from "react-router-dom";
+import { FaTimes } from "react-icons/fa"; // Import the close icon from react-icons
 
 const EducationInformation = ({
   nextstep,
@@ -39,7 +36,6 @@ const EducationInformation = ({
   useEffect(() => {
     getEmployeeAcademicRecordData(employeeId)
       .then((response) => {
-        // Process the response to include the document name
         setEducations(response);
         setIsLoading(false);
       })
@@ -57,6 +53,19 @@ const EducationInformation = ({
       if (response) nextstep();
     } catch (error) {
       console.error("Error saving academic records:", error);
+    }
+  };
+
+  const handleDelete = async (educationId, index, props) => {
+    try {
+      await deleteEmployeeAcademicRecordData(baseUrl, employeeId, token, [
+        educationId,
+      ]);
+      const newEducations = [...props.values.educations];
+      newEducations.splice(index, 1);
+      props.setFieldValue("educations", newEducations);
+    } catch (error) {
+      console.error("Error deleting education:", error);
     }
   };
 
@@ -89,11 +98,18 @@ const EducationInformation = ({
                       props.values.educations.length > 0 &&
                       props.values.educations.map((education, index) => (
                         <React.Fragment key={index}>
-                          {console.log(education)}
                           <Col md="12">
-                            <h5 className="fw-700 mb-3 mt-4">
-                              Education {index + 1}
-                            </h5>
+                            <div className="d-flex justify-content-between align-items-center">
+                              <h5 className="fw-700 mb-3 mt-4">
+                                Education {index + 1}
+                              </h5>
+                              <FaTimes
+                                className="cursor-pointer"
+                                onClick={() =>
+                                  handleDelete(education.id, index, props)
+                                }
+                              />
+                            </div>
                           </Col>
                           <div className="flex flex-wrap gap-x-3">
                             <div className="w-full md:w-[48%] z-0">

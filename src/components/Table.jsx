@@ -9,6 +9,7 @@ import {
   DropdownMenu,
 } from "reactstrap";
 import "./style.css";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 const Table = ({
   columns,
@@ -19,6 +20,8 @@ const Table = ({
   rowExpand,
   renderExpandedContent,
   pagination,
+  hideTableHeader,
+  dataStyle,
 }) => {
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
@@ -39,18 +42,20 @@ const Table = ({
   return (
     <div className={`table-container ${className}`}>
       <table className="table custom-table">
-        <thead>
-          <tr>
-            {columns.map((column, index) => (
-              <th
-                key={index}
-                style={column.width ? { width: `${column.width}` } : {}}
-              >
-                {column.text}
-              </th>
-            ))}
-          </tr>
-        </thead>
+        {!hideTableHeader && (
+          <thead>
+            <tr>
+              {columns.map((column, index) => (
+                <th
+                  key={index}
+                  style={column.width ? { width: `${column.width}` } : {}}
+                >
+                  {column.text}
+                </th>
+              ))}
+            </tr>
+          </thead>
+        )}
         <tbody>
           {data && data.length > 0 ? (
             data.map((row) => (
@@ -63,15 +68,24 @@ const Table = ({
                   {columns.map((column, index) => (
                     <td
                       key={index}
-                      style={column.width ? { width: `${column.width}` } : {}}
+                      style={
+                        column.width
+                          ? { width: `${column.width}` }
+                          : dataStyle
+                          ? dataStyle
+                          : {}
+                      }
+                      onClick={() => {
+                        if (column.roWExpandOnClick) toggleExpandRow(row.id);
+                      }}
                     >
                       {column.formatter
-                        ? column.formatter(row[column.dataField], row)
+                        ? column.formatter(row[column.dataField], row, data)
                         : row[column.dataField]}
                     </td>
                   ))}
                 </tr>
-                {expandedRow === row.id && rowExpand && (
+                {expandedRow === row.id && (
                   <tr style={{ background: "white" }}>
                     <td colSpan={columns.length}>
                       {renderExpandedContent(row)}
@@ -82,7 +96,9 @@ const Table = ({
             ))
           ) : (
             <tr>
-              <td colSpan={columns.length} className="text-center">No records to display</td>
+              <td colSpan={columns.length} className="text-center">
+                No records to display
+              </td>
             </tr>
           )}
         </tbody>
@@ -133,13 +149,16 @@ const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
     setOpenDropdownRow(!openDropdownRow);
   };
   const handleSizeClick = (size) => {
+    onPageChange("page", 1);
     onPageChange("sizePerPage", size);
   };
   return (
     <div>
       <ButtonDropdown isOpen={openDropdownRow} toggle={() => toggleDropdown()}>
         <DropdownToggle className="btn-brand">
-          <span>{sizePerPage}</span>
+          <span className="flex">
+            {sizePerPage} <IoMdArrowDropdown style={{ margin: "auto" }} />
+          </span>
         </DropdownToggle>
         <DropdownMenu end>
           <DropdownItem onClick={() => handleSizeClick(10)}>10</DropdownItem>

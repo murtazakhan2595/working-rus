@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
 import React, { useState, useRef, useEffect } from "react";
-import {  Row, Col, Form } from "reactstrap";
+import { Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import {
   TextInput,
@@ -9,7 +9,10 @@ import {
   FilterInput,
 } from "components/form-control.jsx";
 import { LeaveType } from "utils/getValuesFromTables";
-import { allotLeavesToEmployee ,getEmployeeLeaveTypes} from "app/hooks/leaveManagment";
+import {
+  allotLeavesToEmployee,
+  getEmployeeLeaveTypes,
+} from "app/hooks/leaveManagment";
 
 const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
   const formRef = useRef();
@@ -79,9 +82,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
         {
           employee_id: employeeData.id,
           leave_type: leave_type,
-          left_leave: 0,
-          total_alloted_leaves: 0,
-          used_leave: 0,
+          used_leaves: 0,
         },
       ]);
     }
@@ -100,7 +101,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
   return (
     <>
       <div className="flex align-bottom justify-between my-4">
-        <div>
+        <div className="whitespace-break-spaces">
           <div className="font-bold leading-normal text-[#323333] text-left text-capitalize text-[25px]">
             {employeeData.first_name} {employeeData.last_name}
           </div>
@@ -234,8 +235,23 @@ const AllotLeave = ({ leaveType, errors, touched, values, onChange }) => {
             label={"No. of leaves"}
             required={true}
             onChange={(field, value) => {
-              onChange(field, value);
+              if (value) {
+                value = parseInt(value);
+                onChange(field, value);
+                console.log(values.left_leave);
+                if (!values.left_leave) {
+                  onChange("left_leave", value);
+                } else {
+                  const used_leaves = values.used_leave || 0;
+                  const leaves_left = value - used_leaves;
+                  onChange("left_leave", leaves_left);
+                }
+              } else {
+                onChange("left_leave", "");
+                onChange(field, "");
+              }
             }}
+            regEx={/^[0-9-]+$/}
           />
         </Col>
       </Row>

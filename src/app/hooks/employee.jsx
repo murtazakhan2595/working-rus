@@ -483,7 +483,33 @@ const deleteEmployeeProfessionalExperianceData = async (
   return false;
 };
 
-const deleteEmployeeAcademicRecordData = async (
+// const deleteEmployeeAcademicRecordData = async (
+//   baseUrl,
+//   employeeid,
+//   token,
+//   payload
+// ) => {
+//   if (employeeid && payload && payload.length > 0) {
+//     try {
+//       payload.map(async (certification) => {
+//         await axios.delete(`${baseUrl}/certification/${certification}`, {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             "Content-Type": "application/json",
+//           },
+//         });
+//       });
+//     } catch (error) {
+//       if (error?.response?.status === 401) {
+//         handleLogout();
+//       }
+//       console.error("Error fetching Personal Info data :", error);
+//     }
+//   }
+//   return false;
+// };
+
+const deleteEmployeeCertificateData = async (
   baseUrl,
   employeeid,
   token,
@@ -493,6 +519,32 @@ const deleteEmployeeAcademicRecordData = async (
     try {
       payload.map(async (certification) => {
         await axios.delete(`${baseUrl}/certification/${certification}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      });
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+  }
+  return false;
+};
+
+const deleteEmployeeAcademicRecordData = async (
+  baseUrl,
+  employeeid,
+  token,
+  payload
+) => {
+  if (employeeid && payload && payload.length > 0) {
+    try {
+      payload.map(async (education) => {
+        await axios.delete(`${baseUrl}/education/${education}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -760,4 +812,5 @@ export {
   getEmployeeContactInfo,
   saveEmployeeContactInfoData,
   getNewEmployeeCode,
+  deleteEmployeeCertificateData
 };
