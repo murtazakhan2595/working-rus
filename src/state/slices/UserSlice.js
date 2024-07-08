@@ -1,5 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const URLS = [
+  {
+    Frontend: "https://hrms.tecbrix.cloud",
+    Backend: "https://hrms.tecbrix.cloud:8080/api",
+  },
+  {
+    Frontend: "https://staging-hrms-fe.tecbrix.cloud",
+    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
+  },
+  {
+    Frontend:
+      "https://hrms-production-frontend.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/",
+    Backend:
+      "https://hrms-production-backend.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/",
+  },
+];
+
+const getBaseUrl = () => {
+  let baseUrl = "";
+  URLS.forEach((url) => {
+    if (window.location.href.startsWith(url.Frontend)) {
+      baseUrl = url.Backend;
+    }
+  });
+  return baseUrl;
+};
+
 export const initialState = {
   userProfile: {
     id: 0,
@@ -10,11 +37,7 @@ export const initialState = {
   isLogin: null,
   sidebarRefresh: false,
   token: "",
-  baseUrl: window.location.href.startsWith("https://hrms.tecbrix.cloud")
-    ? "https://hrms.tecbrix.cloud:8080/api"
-    : window.location.href.startsWith("http://localhost")
-    ? "https://staging-hrms-be.tecbrix.cloud/api"
-    : "https://staging-hrms-be.tecbrix.cloud/api",
+  baseUrl: getBaseUrl(),
 };
 
 const userSlice = createSlice({
