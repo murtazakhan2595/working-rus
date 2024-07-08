@@ -6,7 +6,11 @@ const URLS = [
     Backend: "https://hrms.tecbrix.cloud:8080/api",
   },
   {
-    Frontend: "https://staging-hrms-fe.tecbrix.cloud",
+    Frontend: "https://staging-hrms.tecbrix.cloud",
+    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
+  },
+  {
+    Frontend: "http://localhost:3000",
     Backend: "https://staging-hrms-be.tecbrix.cloud/api",
   },
   {
@@ -18,13 +22,13 @@ const URLS = [
 ];
 
 const getBaseUrl = () => {
-  let baseUrl = "";
+  let baseUrl = null;
   URLS.forEach((url) => {
     if (window.location.href.startsWith(url.Frontend)) {
       baseUrl = url.Backend;
     }
   });
-  return baseUrl;
+  return baseUrl ?? "https://staging-hrms-be.tecbrix.cloud/api";
 };
 
 export const initialState = {
