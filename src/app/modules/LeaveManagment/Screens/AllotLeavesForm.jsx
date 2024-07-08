@@ -235,7 +235,6 @@ const AllotLeave = ({ leaveType, errors, touched, values, onChange }) => {
             label={"No. of leaves"}
             required={true}
             onChange={(field, value) => {
-              debugger;
               if (value) {
                 value = parseInt(value);
                 onChange(field, value);

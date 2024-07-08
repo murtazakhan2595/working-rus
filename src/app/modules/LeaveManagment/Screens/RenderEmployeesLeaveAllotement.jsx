@@ -1,19 +1,10 @@
 import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
-import { EmployeeNameInfo, Header, PageLoader } from "components";
-import { LuExternalLink } from "react-icons/lu";
-import { Link } from "react-router-dom";
+import { EmployeeNameInfo } from "components";
 import { CiEdit } from "react-icons/ci";
-import { PiBriefcaseThin } from "react-icons/pi";
-import { IoArrowForward } from "react-icons/io5";
-import { PiDotsThreeOutlineFill } from "react-icons/pi";
-import { convertToK } from "../../../../utils/ConvertToK";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
-import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
-import moment from "moment";
-import { FilterInput } from "components/form-control";
+import { Col } from "reactstrap";
 import AllotLeavesForm from "./AllotLeavesForm";
 
 const RenderEmployeesLeaveAllotement = ({ employee, employeeList }) => {
@@ -83,16 +74,21 @@ const RenderEmployeesLeaveAllotement = ({ employee, employeeList }) => {
             previous={previous}
           />
         </Col>
-      )}{" "}
-      <div className="flex flex-row justify-between flex-wrap gap-x-10 gap-y-5 border-b px-2 pb-4">
-        <EmployeeNameInfo
-          name={`${employee.first_name} ${employee.last_name}`}
-          department={employee.department_name}
-          position={employee.department_position}
-          id={employee.id}
-          leaveTypes={`${employeeLeaveTypes.leaveTypes}`}
-          allotedLeave={`${employeeLeaveTypes.allotedLeave}`}
-        />
+      )}
+      <div className="flex flex-row justify-between flex-wrap gap-x-10 gap-y-5 px-2 pb-4 mt-3">
+        <div
+          className=""
+          style={{ maxWidth: "calc(100% - 11.7rem)", minWidth: "420px" }}
+        >
+          <EmployeeNameInfo
+            name={`${employee.first_name} ${employee.last_name}`}
+            department={employee.department_name}
+            position={employee.department_position}
+            id={employee.id}
+            leaveTypes={`${employeeLeaveTypes.leaveTypes}`}
+            allotedLeave={`${employeeLeaveTypes.allotedLeave}`}
+          />
+        </div>
         <div className="text-base text-baseGray flex items-center gap-x-4">
           <div
             className="border px-3 py-2 rounded-md border-gray-400 flex cursor-pointer"

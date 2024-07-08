@@ -1,4 +1,4 @@
-import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
+import { DepartmentName, DesignationName  } from "utils/getValuesFromTables";
 const EmployeeNameInfo = ({
   name,
   department,
@@ -19,7 +19,7 @@ const EmployeeNameInfo = ({
         <div className="text-base font-bold leading-normal text-[#323333] text-left text-capitalize">
           {`${name ?? "N/A"}`}
         </div>
-        <div className="text-baseGray text-left flex justify-between gap-x-3 gap-y-1 flex-wrap">
+        <div className="text-baseGray text-left flex justify-start gap-x-5 gap-y-1 flex-wrap">
           <div>
             <DesignationName value={position} /> |{" "}
             <DepartmentName value={department} />

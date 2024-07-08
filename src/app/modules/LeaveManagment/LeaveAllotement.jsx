@@ -1,44 +1,34 @@
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { IoCalendarOutline } from "react-icons/io5";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import RenderEmployeesLeaveAllotement from "./Screens/RenderEmployeesLeaveAllotement";
 import { getEmployeeCustomList } from "app/hooks/general";
-import { BsBoxArrowUpRight } from "react-icons/bs";
-import { CiEdit } from "react-icons/ci";
-import { PiDotsThreeOutlineFill } from "react-icons/pi";
-import { EmployeeNameInfo, Header, PageLoader } from "components";
-import {
-  getEmployeeType,
-  getWorkType,
-  getemployeeType,
-  getWorkLocation,
-} from "utils/getValuesFromTables";
-import { employeeSortingFilters } from "data/Data";
-import moment from "moment";
-import { LiaBriefcaseSolid } from "react-icons/lia";
-import { LeaveStatus } from "data/Data";
+import { LeaveAllotmentColumns } from "app/utils/Types/TableColumns";
+import { Table, Header, PageLoader } from "components";
 import { FilterInput } from "components/form-control";
 import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
-import { FaPlus } from "react-icons/fa";
 
 const LeaveAllotement = ({ departments, designations }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [employeeList, setEmployeeData] = useState([]);
-  const [leaveTypes, setLeaveTypes] = useState([]);
+  const [options, setOptions] = useState({
+    page: 1,
+    sizePerPage: 10,
+  });
+  const onPageChange = (name, value) => {
+    const pageOptions = options;
+    if (pageOptions[name] !== value) {
+      pageOptions[name] = value;
+      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
+    }
+  };
 
   const getPosts = async (isMounted) => {
     setIsLoading(true);
     try {
-      let URL = `/customemp/?search=${encodeURIComponent(
-        JSON.stringify(filterData)
-      )}`;
-      const employeeData = await getEmployeeCustomList({ filterData });
+      const employeeData = await getEmployeeCustomList({ options, filterData });
       if (isMounted) {
-        setEmployeeData(employeeData.results);
+        setEmployeeData(employeeData);
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
@@ -55,9 +45,10 @@ const LeaveAllotement = ({ departments, designations }) => {
     return () => {
       isMounted = false;
     };
-  }, [filterData]);
+  }, [filterData, options]);
 
   const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -68,10 +59,16 @@ const LeaveAllotement = ({ departments, designations }) => {
       return updatedFilters;
     });
   };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+  };
+
   return (
     <div className="screen bg-[#F0F1F2]">
       <Header title="Employee Leave Allotement" />
-
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
@@ -119,10 +116,16 @@ const LeaveAllotement = ({ departments, designations }) => {
                 </Row>
               ) : (
                 <Row>
-                  <Col lg={12}>
-                    <div>
-                      <RenderEmployees employeeList={employeeList} />
-                    </div>
+                  <Col lg={12} className="mt-5 mx-2">
+                    <Table
+                      data={employeeList.results || []}
+                      columns={LeaveAllotmentColumns}
+                      hideTableHeader={true}
+                      pagination={true}
+                      dataTotalSize={employeeList.count || 0}
+                      tableOptions={tableOptions}
+                      dataStyle={{ backgroundColor: "white" }}
+                    />
                   </Col>
                 </Row>
               )}
@@ -130,34 +133,6 @@ const LeaveAllotement = ({ departments, designations }) => {
           </Card>
         </Col>
       </Row>
-    </div>
-  );
-};
-
-const RenderEmployees = ({ employeeList }) => {
-  return (
-    <div className="m-2 bg-white">
-      {employeeList && employeeList.length > 0 ? (
-        employeeList.map((employee) => (
-          <div className={`whitespace-nowrap`} key={employee.id}>
-            {employee.id && (
-              <div className="px-4 pt-5">
-                <RenderEmployeesLeaveAllotement
-                  employee={employee}
-                  employeeList={employeeList}
-                />
-              </div>
-            )}
-          </div>
-        ))
-      ) : (
-        <div
-          className="flex justify-center items-center"
-          style={{ minHeight: "20vh" }}
-        >
-          No records to display
-        </div>
-      )}
     </div>
   );
 };

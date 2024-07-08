@@ -13,6 +13,8 @@ import {
   RenderLeaveType,
 } from "app/modules/LeaveManagment/Sections";
 import moment from "moment";
+import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
+import { IoIosArrowDown } from "react-icons/io";
 
 export const LeaveHistoryColumns = (updateLeaveType) => [
   {
@@ -54,6 +56,12 @@ export const LeaveHistoryColumns = (updateLeaveType) => [
   {
     dataField: "remainingLeaves",
     text: "Remaining Leaves",
+  },
+  {
+    dataField: "",
+    text: "",
+    formatter: (cell) =>  <IoIosArrowDown className="cursor-pointer" />,
+    roWExpandOnClick: true,
   },
 ];
 
@@ -189,5 +197,15 @@ export const AllLeavesApplicationColumns = [
     dataField: "",
     text: "",
     formatter: (cell, row) => <RenderStatus row={row} />,
+  },
+];
+
+export const LeaveAllotmentColumns = [
+  {
+    dataField: "employee_id",
+    text: "",
+    formatter: (cell, row, list) => (
+      <RenderEmployeesLeaveAllotement employee={row} employeeList={list} />
+    ),
   },
 ];

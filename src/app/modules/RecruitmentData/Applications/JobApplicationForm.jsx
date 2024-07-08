@@ -38,7 +38,6 @@ const JobApplicationForm = () => {
   const navigate = useNavigate();
   const formData = { ...ApplicationDetail, ...{ job_id: id } };
   const handleSubmit = async (values) => {
-    debugger
     setIsLoading(true);
     try {
       let response;

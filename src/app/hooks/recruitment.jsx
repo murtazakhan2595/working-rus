@@ -103,6 +103,17 @@ export const addJob = async (baseUrl, values, token) => {
     throw error;
   }
 };
+export const getJobById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
+      headers: headers(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error adding job:", error);
+    return false;
+  }
+};
 
 export const addApplication = async (values) => {
   try {
@@ -117,9 +128,6 @@ export const addApplication = async (values) => {
 };
 
 export const updateJob = async (baseUrl, values, id) => {
-  console.log("I am id from recruitment.jsx", id);
-  console.log("i am values from recruitment.jsx", values);
-
   try {
     const response = await axios.patch(`${baseUrl}/recruitment/${values}`, id, {
       headers: headers(),

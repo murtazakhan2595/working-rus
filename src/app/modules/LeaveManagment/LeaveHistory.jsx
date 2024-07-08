@@ -185,7 +185,7 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                             name: "to",
                             placeholder: "To",
                             option: YearsDropdownList(2000, 2070),
-                            with: "auto",
+                            width: "auto",
                           },
                         ]}
                         onChange={handleFilterChange}
@@ -204,11 +204,11 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                 </Row>
               ) : (
                 <Row>
-                  <Col lg={12} className="react-bs-table-container">
+                  <Col lg={12}>
                     <Table
                       data={employeeData.results || []}
                       columns={LeaveHistoryColumns(updateLeaveType)}
-                      rowExpand={true}
+                      rowExpand={false}
                       pagination={true}
                       renderExpandedContent={renderExpandedContent}
                       dataTotalSize={employeeData.count || 0}
