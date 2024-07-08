@@ -17,7 +17,7 @@ const URLS = [
     Frontend:
       "https://hrms-production-frontend.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/",
     Backend:
-      "https://hrms-production-backend.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/",
+      "https://hrms-production-backend.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/api",
   },
 ];
 
