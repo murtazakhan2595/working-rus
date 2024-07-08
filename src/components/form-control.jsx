@@ -9,6 +9,7 @@ import { TfiFiles } from "react-icons/tfi";
 import { dropdownStyles } from "../data/Data";
 import { IoIosSearch } from "react-icons/io";
 import { countryCodesOptions } from "../data/CountryCode";
+import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
 const SelectComponent = ({
   name,
@@ -539,7 +540,7 @@ const TextAreaInput = ({
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter" + label}
+          placeholder={"Enter " + label}
           value={value}
           rows={5}
           disabled={disabled}
@@ -554,6 +555,54 @@ const TextAreaInput = ({
           }}
         />
         <Label className="text-baseGray" htmlFor="address">
+          {required && <span className="text-danger">* </span>}
+          {label}
+        </Label>
+
+        {error && touch && <div className="invalid-feedback">{error}</div>}
+      </FormGroup>
+    </>
+  );
+};
+const TextAreaEditorInput = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  disabled,
+  required,
+  regEx,
+  maxLength,
+}) => {
+  return (
+    <>
+      <FormGroup floating>
+        <ReactQuill
+          type="textarea"
+          id={name}
+          name={name}
+          autoComplete="Off"
+          placeholder={"Enter " + label}
+          value={value}
+          modules={{
+            toolbar: {
+              container: [
+                ["bold", "italic", "underline"],
+                [{ list: "ordered" }, { list: "bullet" }],
+                ["link"],
+                [{ align: "" }, { align: "center" }, { align: "right" }],
+              ],
+            },
+          }}
+          disabled={disabled}
+          className={`mh-[200px] pt-5 ${error && touch ? "is-invalid" : ""}`}
+          onChange={(option) => {
+            onChange(name, option);
+          }}
+        />
+        <Label className="text-baseGray pt-3" htmlFor="address">
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
@@ -683,4 +732,5 @@ export {
   FilterInput,
   CustomLightOutlineButton,
   CheckBoxInput,
+  TextAreaEditorInput,
 };

@@ -8,7 +8,7 @@ import {
   SelectComponent,
   DateInput,
   TextAreaInput,
-} from "../../../../components/form-control.jsx";
+} from "components/form-control.jsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -17,8 +17,8 @@ import {
   jobTypeOptions,
   locationTypeOptions,
   workTypeOptions,
-} from "../../../../data/Data.js";
-import PageLoader from "../../../../components/PageLoader.jsx";
+} from "data/Data.js";
+import PageLoader from "components/PageLoader.jsx";
 import { connect } from "react-redux";
 import { addJob, updateJob } from "../../../hooks/recruitment.jsx";
 import { Header } from "../Sections/index.js";

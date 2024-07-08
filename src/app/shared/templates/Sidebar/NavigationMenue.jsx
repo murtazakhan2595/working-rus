@@ -13,7 +13,6 @@ import { FaAngleDown } from "react-icons/fa6";
 import { Outlet, Link, useNavigate, NavLink } from "react-router-dom";
 import logo from "../../../../assets/images/logo.png";
 import { connect } from "react-redux";
-import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { BsPersonGear } from "react-icons/bs";

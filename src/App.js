@@ -22,6 +22,7 @@ import {
   LeaveAllotement,
   LeaveHistory,
 } from "app/modules/LeaveManagment";
+import {Projects} from "app/modules/TaskManagment";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
@@ -191,7 +192,6 @@ function App() {
 
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
 
-              <Route path="/leave-allotement" element={<LeaveAllotement />} />
               <Route
                 path="/leave-request/:id"
                 element={<LeaveRequestManager isSidebarOpen={isSidebarOpen} />}
@@ -261,6 +261,11 @@ function App() {
                     element={<CreateUpdateEmployee />}
                   />
                   <Route
+                    path="/leave-allotement"
+                    element={<LeaveAllotement />}
+                  />
+
+                  <Route
                     path="/edit-employee"
                     element={<CreateUpdateEmployee />}
                   />
@@ -272,7 +277,6 @@ function App() {
                   <Route path="/attendance" element={<ComingSoon />} />
                   <Route path="/development-plan" element={<ComingSoon />} />
                   <Route path="/user/:id" element={<ViewEmployee />} />
-                
                 </>
               )}
               {(userRole === 1 || userRole === 2 || userRole === 3) && (
@@ -292,6 +296,7 @@ function App() {
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
                   <Route path="/project/:id" element={<BoardList />} />
+                  <Route path="/projects" element={<Projects />} />
                   <Route
                     path="/leave-application"
                     element={<LeaveApplications />}

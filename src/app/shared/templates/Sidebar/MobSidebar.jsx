@@ -6,7 +6,6 @@ import { Outlet, Link, useNavigate, useLocation, NavLink } from "react-router-do
 import sidebg from "./sidebarBG.png";
 import { setUserLogout } from "../../../../state/actions/UserAction";
 import { connect } from "react-redux";
-import ProjectModel from "./ProjectModel";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -858,7 +857,6 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
         </button >
         <Outlet isSidebarOpen={false} />
       </div>
-      {isModelOpen && <ProjectModel onClose={closeProjectModal} />}
     </>
   );
 };
