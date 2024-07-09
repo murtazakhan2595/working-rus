@@ -13,6 +13,8 @@ import moment from "moment";
 import { getRandomColor } from "utils/getValuesFromTables";
 import { EmployeeName } from "utils/getValuesFromTables";
 import CustomDropdown from "../sections/CutsomDropdown";
+import ViewBoardDetails from "../sections/ViewBoardDetails";
+import EditProjectModal from "../sections/EditBoardDetails";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -108,15 +110,29 @@ const RenderProject = ({ project, toggleAddProject }) => {
   const remainingCount = projectMembers.length - displayedMembers.length;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isRemainingDropdownOpen, setIsRemainingDropdownOpen] = useState(false);
+   const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
+   const [isEditMode, setIsEditMode] = useState(false);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+   const closeModal = () => {
+     setIsViewBoardDetails(false);
+     setIsEditMode(false);
+   };
+   const EditDetails = () => {
+    setIsDropdownOpen(false)
+    setIsEditMode(true);
+   }
+   const viewDetails = () => {
+    setIsDropdownOpen(false)
+    setIsViewBoardDetails(true);
+   }
 
   const dropdownOptions = [
-    { label: 'Edit Details', onClick: () => console.log('Edit Details clicked') },
-    { label: 'View Details', onClick: () => console.log('View Details clicked') },
-    { label: 'Delete', onClick: () => console.log('Delete clicked') },
+    { label: "Edit Details", onClick: EditDetails },
+    { label: "View Details", onClick: viewDetails },
+    { label: "Delete", onClick: () => console.log("Delete clicked") },
   ];
 
   return (

@@ -3,6 +3,8 @@ import { RxCross2 } from "react-icons/rx";
 import { CiEdit } from "react-icons/ci";
 import dots from "assets/images/dots.svg";
 import { EmployeeName } from "utils/getValuesFromTables";
+import { getRandomColor } from "utils/getValuesFromTables";
+
 
 const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
   const openEditProjectModal= () => {
@@ -29,23 +31,23 @@ const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
                 </div>
               </div>
             </div>
-            <button
-              className="h-9 justify-end items-center gap-4 flex"
-              onClick={openEditProjectModal}
-            >
-              <div className="px-3 py-2 rounded border border-zinc-600 justify-center items-center gap-2 flex">
+            <div className="h-9 justify-end items-center gap-4 flex">
+              <button
+                className="px-3 py-2 rounded border border-zinc-600 justify-center items-center gap-2 flex"
+                onClick={openEditProjectModal}
+              >
                 <CiEdit className="text-2xl cursor-pointer opacity-80" />
                 <div className="text-zinc-600 text-base font-medium  leading-tight">
                   Edit Job
                 </div>
-              </div>
+              </button>
               <img
                 src={dots}
                 alt=""
                 onClick={() => {}}
                 className="cursor-pointer"
               />
-            </button>
+            </div>
           </div>
         </div>
         <div className="flex flex-col text-base text-zinc-800">
@@ -66,8 +68,13 @@ const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
             {project.project_members &&
               project.project_members.length > 0 &&
               project.project_members.map((member, index) => (
-                <div key={index}>
-                  <Members member={member} />
+                <div
+                  key={index}
+                  className={`w-[35px] h-[35px] p-3 ${getRandomColor()} rounded-[100px] justify-center items-center gap-2.5 inline-flex`}
+                >
+                  <div className="text-zinc-100 text-sm font-normal font-['Lato']">
+                    HP
+                  </div>
                 </div>
               ))}
           </div>
@@ -79,21 +86,3 @@ const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
 
 export default ViewBoardDetails;
 
-
-const Members = ({ member }) => {
-  const employeeName = EmployeeName({ value: member });
-  const name = employeeName.props.children;
-  return (
-    <div
-      className="flex items-center bg-[#EEEEF0] rounded-full"
-      title={name}
-    >
-      <div
-        className="bg-[#BE24A5] text-[#FAFBFC] flex font-semibold text-md items-center justify-center rounded-full w-10 h-10"
-        style={{ minWidth: "40px" }}
-      >
-        {name?.toUpperCase().charAt(0)}
-      </div>
-    </div>
-  );
-};
