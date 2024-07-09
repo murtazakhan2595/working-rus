@@ -67,10 +67,13 @@ function DesignationName({ value }) {
   return <>{designation ? designation.label : "N/A"}</>;
 }
 
-function EmployeeName({ value }) {
+function EmployeeName({ value, length }) {
   const employees = useSelector((state) => state.emp.employees);
   const employee = employees.find((option) => option.value === parseInt(value));
-  return <>{employee ? employee.name : "N/A"}</>;
+  const employeeName = employee ? employee.name?.toUpperCase() : "N/A";
+  const displayedName = length ? employeeName.slice(0, length) : employeeName;
+
+  return <>{displayedName}</>;
 }
 
 function EmployeeID({ value }) {
@@ -83,6 +86,22 @@ function ManagerName({ value }) {
   const manager = managers.find((option) => option.value === parseInt(value));
   return <>{manager ? manager.label : "N/A"}</>;
 }
+
+
+// Utility function to get a random color from a list
+const getRandomColor = () => {
+  const colors = [
+    'bg-pink-500',
+    'bg-yellow-500',
+    'bg-green-500',
+    'bg-blue-500',
+    'bg-purple-500',
+    'bg-red-500',
+    'bg-indigo-500'
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
 
 export {
   getCountryFullName,
@@ -98,4 +117,5 @@ export {
   EmployeeName,
   EmployeeID,
   UserRole,
+  getRandomColor
 };
