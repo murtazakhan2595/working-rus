@@ -19,7 +19,6 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     errors.department_name = "Department is required";
   if (!values.department_position)
     errors.department_position = "Designation is required";
-  if (!values.direct_report) errors.direct_report = "Manager is required";
   if (!values.department_manager)
     errors.department_manager = "Manager is required";
   if (!values.employee_type) errors.employee_type = "Employee type is required";

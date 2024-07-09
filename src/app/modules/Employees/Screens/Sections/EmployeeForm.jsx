@@ -455,7 +455,6 @@ const EmployeeForm = ({
                           error={props.errors?.direct_report}
                           touch={props.touched.direct_report}
                           value={props.values.direct_report}
-                          required={true}
                           label={"Direct Report"}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
@@ -470,7 +469,6 @@ const EmployeeForm = ({
                           error={props.errors?.indirect_report}
                           touch={props.touched.indirect_report}
                           value={props.values.indirect_report}
-                          required={true}
                           label={"Indirect Report"}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
