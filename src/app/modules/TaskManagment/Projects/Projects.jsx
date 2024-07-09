@@ -8,12 +8,16 @@ import { FilterInput } from "components/form-control";
 import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { CiCirclePlus } from "react-icons/ci";
 import ProjectModel from "./CreateProjectModel";
+import ViewBoardDetails from "../sections/ViewBoardDetails";
+import EditProjectModal from "../sections/EditBoardDetails";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [AllProjects, setAllProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  
+
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
@@ -54,7 +58,7 @@ const Projects = ({ userProfile }) => {
   };
 
   return (
-    <div className="screen bg-[#F0F1F2]">
+    <div className="screen bg-[#F0F1F2] ">
       <Header title="All Projects" />
       <Row>
         <Col lg={12} className="mx-auto">
@@ -96,6 +100,15 @@ const Projects = ({ userProfile }) => {
 };
 
 const RenderProject = ({ project, toggleAddProject }) => {
+  const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  console.log("I am project", project)
+  console.log("isViewBoardDetails", isViewBoardDetails);
+
+  const closeModal = () => {
+    setIsViewBoardDetails(false);
+    setIsEditMode(false)
+  };
   return (
     <div
       className={`${
@@ -107,6 +120,8 @@ const RenderProject = ({ project, toggleAddProject }) => {
           <img src={project.image} alt="project" />
           <h2>{project.name}</h2>
           <p dangerouslySetInnerHTML={{ __html: project.description }} />
+          <button onClick={() => setIsViewBoardDetails(true)}>view</button>
+          <button onClick={() => setIsEditMode(true)}>edit</button>
         </div>
       ) : (
         <div
@@ -118,6 +133,18 @@ const RenderProject = ({ project, toggleAddProject }) => {
           <CiCirclePlus className="w-[30px] h-[30px]" />
           <span>Add New Project</span>
         </div>
+      )}
+      {isViewBoardDetails && project && (
+        <ViewBoardDetails
+          project={project}
+          onClose={closeModal}
+          onEdit={() => setIsEditMode(true)}
+          // isEditMode={isEditMode}
+          setIsEditMode={setIsEditMode}
+        />
+      )}
+      {isEditMode && project && (
+        <EditProjectModal project={project} onClose={closeModal} />
       )}
     </div>
   );
