@@ -124,7 +124,7 @@ const RenderProject = ({ project, toggleAddProject }) => {
       } rounded h-100 flex justify-center tems-center`}
     >
       {project ? (
-        <div className="bg-[#FAFBFC] rounded-lg p-4 flex flex-col space-y-4 w-full relative">
+        <div className="bg-[#FAFBFC] rounded-[10px] p-4 flex flex-col space-y-4 w-full relative">
           <div className="flex justify-between">
             <img
               className="w-20 h-20 rounded-full object-cover"
