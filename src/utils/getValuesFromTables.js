@@ -8,7 +8,6 @@ import {
 } from "data/Data";
 import { useSelector } from "react-redux";
 
-
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
   return country ? country.label : null;
@@ -20,10 +19,8 @@ function getEmployeeType(employeeType) {
   );
   return response ? response.label : "";
 }
-function UserRole({value}) {
-  const response = UserRoles.find(
-    (option) => option.value === parseInt(value)
-  );
+function UserRole({ value }) {
+  const response = UserRoles.find((option) => option.value === parseInt(value));
   return response ? response.label : "";
 }
 function getWorkType(workType) {
@@ -59,6 +56,11 @@ function DepartmentName({ value }) {
   );
   return <>{department ? department.label : "N/A"}</>;
 }
+function ProjectName({ value }) {
+  const projects = useSelector((state) => state.common.projects);
+  const project = projects.find((option) => option.value === parseInt(value));
+  return <>{project ? project.label : "N/A"}</>;
+}
 function DesignationName({ value }) {
   const designations = useSelector((state) => state.common.designations);
   const designation = designations.find(
@@ -77,7 +79,7 @@ function EmployeeName({ value, length }) {
 }
 
 function EmployeeID({ value }) {
-  const employee = value ? `TXB-${value.toString().padStart(4, "0")}` : 'N/A';
+  const employee = value ? `TXB-${value.toString().padStart(4, "0")}` : "N/A";
   return <>{employee}</>;
 }
 
@@ -87,21 +89,19 @@ function ManagerName({ value }) {
   return <>{manager ? manager.label : "N/A"}</>;
 }
 
-
 // Utility function to get a random color from a list
 const getRandomColor = () => {
   const colors = [
-    'bg-pink-500',
-    'bg-yellow-500',
-    'bg-green-500',
-    'bg-blue-500',
-    'bg-purple-500',
-    'bg-red-500',
-    'bg-indigo-500'
+    "bg-pink-500",
+    "bg-yellow-500",
+    "bg-green-500",
+    "bg-blue-500",
+    "bg-purple-500",
+    "bg-red-500",
+    "bg-indigo-500",
   ];
   return colors[Math.floor(Math.random() * colors.length)];
 };
-
 
 export {
   getCountryFullName,
@@ -117,5 +117,6 @@ export {
   EmployeeName,
   EmployeeID,
   UserRole,
-  getRandomColor
+  getRandomColor,
+  ProjectName,
 };

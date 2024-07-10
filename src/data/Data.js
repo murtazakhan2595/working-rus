@@ -8,6 +8,7 @@ import {
   fetchDepartments,
   fetchLeaveTypes,
   fetchDesignations,
+  fetchProjects,
 } from "state/slices/CommonSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
@@ -391,4 +392,5 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(fetchLeaveTypes());
   dispatch(fetchDesignations());
   dispatch(fetchReportingManagers());
+  dispatch(fetchProjects());
 };
