@@ -38,11 +38,9 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
       .then((response) => {
         setPersonalInfo(response);
         setIsLoading(false);
-        console.log("I am then");
       })
       .catch((error) => {
         console.log(error);
-        console.log("I am catch");
       });
   }, [baseUrl, employeeId, token]);
 
