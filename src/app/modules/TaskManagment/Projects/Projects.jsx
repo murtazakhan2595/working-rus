@@ -8,20 +8,20 @@ import { FilterInput } from "components/form-control";
 import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { CiCirclePlus } from "react-icons/ci";
 import ProjectModel from "./CreateProjectModel";
+import { useNavigate } from "react-router-dom";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import moment from "moment";
-import { getRandomColor } from "utils/getValuesFromTables";
 import { EmployeeName } from "utils/getValuesFromTables";
-import CustomDropdown from "../sections/CutsomDropdown";
-import ViewBoardDetails from "../sections/ViewBoardDetails";
-import EditProjectModal from "../sections/EditBoardDetails";
+import CustomDropdown from "../Sections/CutsomDropdown";
+import { MembersList } from "../Sections";
+import ViewBoardDetails from "../Sections/ViewBoardDetails";
+import EditProjectModal from "../Sections/EditBoardDetails";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [AllProjects, setAllProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
-  
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -109,25 +109,28 @@ const RenderProject = ({ project, toggleAddProject }) => {
   const displayedMembers = projectMembers.slice(0, 3);
   const remainingCount = projectMembers.length - displayedMembers.length;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isRemainingDropdownOpen, setIsRemainingDropdownOpen] = useState(false);
-   const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
-   const [isEditMode, setIsEditMode] = useState(false);
-
+  const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const navigate = useNavigate();
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-   const closeModal = () => {
-     setIsViewBoardDetails(false);
-     setIsEditMode(false);
-   };
-   const EditDetails = () => {
-    setIsDropdownOpen(false)
+  const closeModal = () => {
+    setIsViewBoardDetails(false);
+    setIsEditMode(false);
+  };
+  const EditDetails = () => {
+    setIsDropdownOpen(false);
     setIsEditMode(true);
-   }
-   const viewDetails = () => {
-    setIsDropdownOpen(false)
+  };
+  const viewDetails = () => {
+    setIsDropdownOpen(false);
     setIsViewBoardDetails(true);
-   }
+  };
+
+  const navigateToBoard = () => {
+    navigate(`/project-board/${project.id}`);
+  };
 
   const dropdownOptions = [
     { label: "Edit Details", onClick: EditDetails },
@@ -149,13 +152,18 @@ const RenderProject = ({ project, toggleAddProject }) => {
               src="https://via.placeholder.com/180"
               alt="Profile"
             />
-             <CustomDropdown
+            <CustomDropdown
               isOpen={isDropdownOpen}
               toggleDropdown={toggleDropdown}
               options={dropdownOptions}
             />
           </div>
-          <div className="flex justify-between">
+          <div
+            className="flex justify-between"
+            onClick={() => {
+              navigateToBoard();
+            }}
+          >
             <div>
               <h2 className="text-base font-lato text-[#323333] font-semibold">
                 {project?.name}
@@ -165,24 +173,7 @@ const RenderProject = ({ project, toggleAddProject }) => {
                 {moment(project?.start_date).format("DD-MM-YY")}
               </p>
             </div>
-            <div className="flex -space-x-2.5 h-10">
-              {displayedMembers.map((member) => (
-                <span
-                  className={`${getRandomColor()} font-lato flex justify-center items-center text-[10.5px] font-bold text-[#FAFBFC] w-8 h-8 rounded-full`}
-                  key={member}
-                >
-                  <EmployeeName value={member} length={2} />
-                </span>
-              ))}
-              {remainingCount > 0 && (
-                <span
-                  className="bg-[#B6E5F9] font-lato flex justify-center items-center text-[10.5px] font-bold text-[#0D2282] w-8 h-8 rounded-full"
-                  key="remaining-count"
-                >
-                  +{remainingCount}
-                </span>
-              )}
-            </div>
+            <MembersList projectMembers={projectMembers} />
           </div>
         </div>
       ) : (

@@ -1,2 +1,3 @@
 import Members from "./Member";
-export { Members };
+import MembersList from "./MenberList";
+export { Members,MembersList };

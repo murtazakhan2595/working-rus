@@ -106,6 +106,31 @@ const getOrganizationList = async () => {
   return [];
 };
 
+const getProjectsList = async () => {
+  const URL = `/project/`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const projectResponse = response.data;
+      const projectList = projectResponse.map((project) => ({
+        value: project.id,
+        label: project.name,
+      }));
+      return projectList;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
 const getEmployeeCustomList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -198,4 +223,5 @@ export {
   getEmployeeList,
   handleLogout,
   getEmployeeCustomList,
+  getProjectsList,
 };
