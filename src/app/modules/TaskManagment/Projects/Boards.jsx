@@ -5,7 +5,7 @@ import { Table, Header, PageLoader } from "components";
 import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { getRandomColor } from "utils/getValuesFromTables";
 import { EmployeeName } from "utils/getValuesFromTables";
-import CustomBoardDropdown from "../sections/CustomBoardDropdown";
+import CustomBoardDropdown from "../Sections/CustomBoardDropdown";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { RxPlus } from "react-icons/rx";
 import highpriority from "assets/images/highpriority.svg";

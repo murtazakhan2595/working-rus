@@ -1,2 +1,3 @@
 import {Projects} from "./Projects";
-export {Projects};
+import { Board } from "./Boards";
+export {Projects,Board};

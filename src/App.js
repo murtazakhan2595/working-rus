@@ -7,7 +7,7 @@ import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
-import Board from "./app/modules/Board";
+import Boardd from "./app/modules/Board";
 import {
   Applications,
   Jobs,
@@ -22,7 +22,7 @@ import {
   LeaveAllotement,
   LeaveHistory,
 } from "app/modules/LeaveManagment";
-import {Projects} from "app/modules/TaskManagment";
+import { Projects, Board } from "app/modules/TaskManagment";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
@@ -180,10 +180,8 @@ function App() {
                 path="/"
                 element={<Dashboard isSidebarOpen={isSidebarOpen} />}
               />
-              <Route
-                path="/board/:id"
-                element={<Board isSidebarOpen={isSidebarOpen} />}
-              />
+              <Route path="/board/:id" element={<Boardd />} />
+              <Route path="/project-board/:projectId" element={<Board />} />
               <Route
                 path="/my-profile"
                 element={<ViewEmployee profileView />}

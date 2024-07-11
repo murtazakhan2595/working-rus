@@ -2,6 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { handleLogout } from "./general";
+import { Project } from "app/utils/Types/TaskManagment";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -27,6 +28,35 @@ const getAllProjects = async (payload) => {
         results: data,
       };
       return ProjectsData;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+const getAllBoards = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/board/?order=-date&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const data = response.data;
+      const BoardsData = {
+        count: data.length,
+        results: data,
+      };
+      return BoardsData;
     } else {
       return [];
     }
@@ -75,4 +105,54 @@ const addProject = async (payload) => {
   }
 };
 
-export { getAllProjects, addProject };
+const getProjectById = async (projectId) => {
+  try {
+    if (projectId) {
+      const response = await axios.get(`${baseUrl}/project/${projectId}`, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        return Project;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding job:", error);
+    return Project;
+  }
+};
+
+const deleteProject = async (projectId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/project/${projectId}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      toast.success("Project Deleted!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error deleting project:", error);
+    toast.error("Error deleting project!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
+
+export {
+  getAllProjects,
+  addProject,
+  getAllBoards,
+  getProjectById,
+  deleteProject,
+};

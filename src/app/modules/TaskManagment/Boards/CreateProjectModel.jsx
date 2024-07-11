@@ -11,7 +11,7 @@ import { Members } from "../Sections";
 import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
-import { addProject ,getProjectById} from "app/hooks/taskManagment";
+import { addProject } from "app/hooks/taskManagment";
 import {
   TextInput,
   SelectComponent,
@@ -20,36 +20,12 @@ import {
 } from "components/form-control.jsx";
 import { Project } from "app/utils/Types/TaskManagment";
 
-const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
+const ProjectModal = ({ employees, onClose, isEditMode }) => {
   const formRef = useRef();
   const navigate = useNavigate();
   const [initialValues, setInitialValues] = useState(Project);
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const fetchData = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const projectDetails = await getProjectById(projectId);
-      if (isMounted) {
-        setInitialValues(projectDetails);
-      }
-    } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
-    } finally {
-      if (isMounted) {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    if (projectId && isEditMode) fetchData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [projectId]);
 
   const handleSubmit = async (formData) => {
     setIsLoading(true);
@@ -87,7 +63,6 @@ const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
               <Formik
                 initialValues={initialValues}
                 innerRef={formRef}
-                enableReinitialize={true}
                 onSubmit={(values, { resetForm }) => {
                   handleSubmit(values, resetForm);
                 }}
@@ -101,7 +76,7 @@ const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
                   <Form onSubmit={props.handleSubmit}>
                     <Row className="m-0">
                       <Col md="12">
-                        <h5 className="fw-700 mb-3 mt-4">{isEditMode ? 'Edit' : 'Add New'} Project</h5>
+                        <h5 className="fw-700 mb-3 mt-4">Add New Project</h5>
                       </Col>
                       <Col md="12">
                         <TextInput
@@ -183,7 +158,7 @@ const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
                           className="btn btn-outline-dark w-100"
                           to="/jobs"
                           onClick={() => {
-                            onClose();
+                            isEditMode ? onClose() : navigate("/jobs");
                           }}
                         >
                           Cancel
