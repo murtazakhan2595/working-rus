@@ -14,13 +14,19 @@ import { FaPlus } from "react-icons/fa";
 import { getRandomColor } from "utils/getValuesFromTables";
 import { EmployeeName } from "utils/getValuesFromTables";
 import { FiFilter } from "react-icons/fi";
-import ViewBoardDetails from "../Sections/ViewBoardDetails";
+import { RxPlus } from "react-icons/rx";
 import EditProjectModal from "../Sections/EditBoardDetails";
 import { useParams, Link } from "react-router-dom";
 import RenderProject from "./Sections/RenderProject";
 import { MembersList } from "../Sections";
 import {AddNewListModel} from "./Sections";
-import BoardLists from "./BoardLists";
+import { BsThreeDotsVertical } from "react-icons/bs";
+
+import highpriority from "assets/images/highpriority.svg";
+import lowpriority from "assets/images/lowpriority.svg";
+import TimeIcon from "assets/images/timeIcon";
+import message from "assets/images/message.svg";
+import attachmentsIcon from "assets/images/attachments.svg";
 
 const Board = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -129,17 +135,12 @@ const Board = ({ userProfile }) => {
                   </Col>
                 </Row>
               ) : (
-                <Row className="m-0">
-                  {showProjectModal && (
-                    <ProjectModel onClose={toggleAddProject} />
-                  )}
-                  {AllBoards.count > 0 &&
+                <div className="flex gap-5 overflow-x-auto">
+                    {AllBoards.count > 0 &&
                     AllBoards.results.map((board, index) => (
-                      <Col lg={4} key={index} className="py-3">
-                        <BoardLists board={board} />
-                      </Col>
+                      <TaskColumn key={index} {...board} />
                     ))}
-                </Row>
+                  </div>
               )}
             </CardBody>
           </Card>
@@ -148,6 +149,152 @@ const Board = ({ userProfile }) => {
     </div>
   );
 };
+
+const TaskColumn = ({ title, color, count, cards }) => {
+  return (
+    <div className="flex flex-col min-w-[290px] ">
+      <div className="flex flex-col ">
+        <header className="flex gap-5 justify-between pl-5 w-full">
+          <div className="flex gap-4">
+            <h2 className="flex gap-2 text-base font-bold text-zinc-800">
+              <div
+                className={`shrink-0 my-auto w-2 h-2 ${color} rounded-full`}
+              />
+              <span>{title}</span>
+            </h2>
+            <span className="justify-center p-0.5 text-sm leading-6 whitespace-nowrap bg-white rounded text-zinc-600">
+              {count}
+            </span>
+          </div>
+          <BsThreeDotsVertical className="text-[#757880]" onClick={() => {}} />
+        </header>
+        <button className="flex gap-2 justify-center items-center px-5 py-2 mt-10 text-base font-medium bg-white rounded border border-solid border-zinc-300 text-zinc-600">
+          <RxPlus className=" text-xl" />
+          <span>Add Card</span>
+        </button>
+        {cards.map((card, index) => (
+          <TaskCard key={index} {...card} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
+const TaskCard = ({
+  title,
+  description,
+  dueDate,
+  status,
+  comments,
+  attachments,
+  priority,
+  project_members,
+  completed,
+}) => {
+  console.log(status, "status");
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "amber":
+        return "text-amber-500 bg-orange-100";
+      case "red":
+        return "text-white bg-red-600";
+      default:
+        return "bg-neutral-200 text-zinc-600";
+    }
+  };
+
+  const getPriorityIcon = (priority) => {
+    console.log(priority, "priority")
+    if (priority === "high") {
+      return (
+        <div className="flex justify-center items-center px-1.5 pt-1 pb-0.5 rounded-[100px]">
+          <img loading="lazy" src={highpriority} alt="" />
+        </div>
+      );
+    }
+    return (
+      <div className="flex justify-center items-center px-1.5 pt-1 pb-0.5  rounded-[100px]">
+        <img
+          loading="lazy"
+          src={lowpriority}
+          alt=""
+        />
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col px-5 pt-5 mt-6 w-full bg-white rounded-lg shadow-sm">
+      <div className="flex gap-3 justify-between items-center py-0.5 ">
+        {getPriorityIcon(priority)}
+        <BsThreeDotsVertical className="text-[#757880]" onClick={() => {}} />
+      </div>
+      <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
+        <h3 className="text-base font-bold">{title}</h3>
+        <p className="mt-3 text-sm leading-5">{description}</p>
+      </div>
+      <footer className="flex justify-between py-5">
+        <div className="flex gap-1 items-center">
+          <div className="flex -space-x-2.5">
+            {project_members.slice(0, 2).map((member) => (
+              <span
+                className={`${getRandomColor()} font-lato flex justify-center items-center text-[7.7px] font-bold text-[#FAFBFC] w-5 h-5 rounded-full`}
+                key={member}
+              >
+                <EmployeeName value={member} length={2} />
+              </span>
+            ))}
+          </div>
+          <FaPlus className="text-black p-1 bg-[#e3e3e3] text-center text-xl font-normal rounded-full cursor-pointer" />
+        </div>
+        <div className="flex gap-2 items-center text-xs text-zinc-600">
+          {dueDate && (
+            <div
+              className={`flex gap-1 justify-center items-center self-stretch px-1.5 py-1 text-xs leading-6 rounded ${getStatusClass(
+                status
+              )}`}
+            >
+              <TimeIcon
+                color={
+                  status === "amber"
+                    ? "#FF9A1F"
+                    : status === "red"
+                    ? "#fff"
+                    : "#5C5E64"
+                }
+              />
+              <div className="my-auto">{dueDate}</div>
+            </div>
+          )}
+          {comments !== null && (
+            <div className="flex gap-0.5 items-center self-stretch my-auto whitespace-nowrap">
+              <img
+                loading="lazy"
+                src={message}
+                className="shrink-0 self-start w-3 aspect-square"
+                alt=""
+              />
+              <div>{comments}</div>
+            </div>
+          )}
+          {attachments !== null && (
+            <div className="flex items-center gap-0.5 self-stretch my-auto whitespace-nowrap">
+              <img
+                loading="lazy"
+                src={attachmentsIcon}
+                className="shrink-0 self-start w-3 aspect-square"
+                alt=""
+              />
+              <div>{attachments}</div>
+            </div>
+          )}
+        </div>
+      </footer>
+    </div>
+  );
+};
+
 
 const mapStateToProps = (state) => {
   return {
