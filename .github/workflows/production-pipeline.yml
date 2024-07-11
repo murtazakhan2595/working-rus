@@ -8,7 +8,7 @@ on:
       [ main ]
     paths:
     - '**'
-    - '.github/workflows/hrms-production-frontend-AutoDeployTrigger-78cdd7ff-2901-4170-89d1-64918af9bcac.yml'
+    - '.github/workflows/production-pipeline.yml'
 
   # Allow manual trigger 
   workflow_dispatch:      
