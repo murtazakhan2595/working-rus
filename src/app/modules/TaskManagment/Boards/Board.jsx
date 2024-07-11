@@ -34,7 +34,6 @@ const Board = ({ userProfile }) => {
   const [projectData, setProjectData] = useState(Project);
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
-  const [showProjectModal, setShowProjectModal] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   console.log(projectId);
 
