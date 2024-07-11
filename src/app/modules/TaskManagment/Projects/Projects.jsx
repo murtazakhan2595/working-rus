@@ -15,7 +15,6 @@ import {
   MembersList,
   CustomDropdown,
   ViewBoardDetails,
-  EditProjectModal,
   ConfirmationModal,
 } from "../Sections";
 

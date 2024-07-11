@@ -37,17 +37,12 @@ import {
 import { handleUpdateProfile } from "data/Data";
 import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
-import LeaveApplicationForm from "./app/modules/LeaveApplication/LeaveApplicationForm.jsx";
 import Employee from "./app/modules/Employees/Employee.jsx";
 import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
-import LeaveRequestHR from "./app/modules/LeaveApplication/LeaveRequestHR.jsx";
-import LeaveRequestManager from "./app/modules/LeaveApplication/LeaveRequestManager.jsx";
 import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
 import { EditEmployeeProfile } from "./app/modules/Employees/Screens/Profile";
 import Test from "./app/modules/Profile/Test.jsx";
 import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
-import LeaveBalanceManager from "./app/modules/LeaveApplication/LeaveBalanceManager.jsx";
-import ApplicationStatus from "./app/modules/LeaveApplication/ApplicationStatus.jsx";
 import LeaveBalanceHR from "./app/modules/LeaveApplication/LeaveBalanceHR.jsx";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -189,22 +184,9 @@ function App() {
               <Route exact path="/test" element={<Test />} />
 
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-
-              <Route
-                path="/leave-request/:id"
-                element={<LeaveRequestManager isSidebarOpen={isSidebarOpen} />}
-              />
               <Route path="/leave-balance" element={<LeaveBalance />} />
               <Route path="/leave-request" element={<CreateLeaveRequest />} />
               <Route path="/notifications" element={<Notifications />} />
-              <Route
-                path="/leave-application-status"
-                element={<ApplicationStatus isSidebarOpen={isSidebarOpen} />}
-              />
-              <Route
-                path="/leave-request-hr/:id"
-                element={<LeaveRequestHR isSidebarOpen={isSidebarOpen} />}
-              />
               <Route path="/my-team" element={<ComingSoon />} />
               <Route path="/calender" element={<ComingSoon />} />
               <Route path="/attendence" element={<ComingSoon />} />
@@ -215,10 +197,6 @@ function App() {
               <Route path="/my-travel-details" element={<ComingSoon />} />
               <Route path="/letter-request" element={<ComingSoon />} />
               <Route path="/leave-history" element={<LeaveHistory />} />
-              <Route
-                path="/leave-balance-manager"
-                element={<LeaveBalanceManager isSidebarOpen={isSidebarOpen} />}
-              />
               <Route
                 path="/leave-balance-employee"
                 element={<LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />}
