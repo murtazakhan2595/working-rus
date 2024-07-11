@@ -38,8 +38,6 @@ const validationEmployeeContactInfoFormSchema = (values) => {
     errors.emergency_first_name = "First name is required";
   if (!values.emergency_relation)
     errors.emergency_relation = "Contact Relation is required";
-  if (!values.emergency_country_code)
-    errors.emergency_country_code = "Phone Country Code name is required";
   if (!values.emergency_phone_no)
     errors.emergency_phone_no = "Phone number is required";
   if (!values.current_address) errors.current_address = "Address is required";
