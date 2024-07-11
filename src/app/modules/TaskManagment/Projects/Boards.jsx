@@ -17,8 +17,6 @@ import attachmentsIcon from "assets/images/attachments.svg";
 import AddNewListModel from "./AddNewListModel";
 import { FiFilter } from "react-icons/fi";
 
-
-
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -145,6 +143,7 @@ const Projects = ({ userProfile }) => {
   ];
   return (
     <div className="screen bg-[#F0F1F2] ">
+     
       <Header title="My Boards" />
       <Row>
         <Col lg={12} className="mx-auto">

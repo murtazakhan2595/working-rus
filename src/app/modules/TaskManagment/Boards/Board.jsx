@@ -27,6 +27,8 @@ import lowpriority from "assets/images/lowpriority.svg";
 import TimeIcon from "assets/images/timeIcon";
 import message from "assets/images/message.svg";
 import attachmentsIcon from "assets/images/attachments.svg";
+import EditCard from "./EditCard";
+
 
 const Board = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +38,8 @@ const Board = ({ userProfile }) => {
   const [AllBoards, setAllBoards] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
+  const [isEditCardOpen, setIsEditCardOpen] = useState(true);
+
   console.log(projectId);
 
   const fetchData = async (isMounted) => {
@@ -46,7 +50,7 @@ const Board = ({ userProfile }) => {
       });
       const projectDetails = await getProjectById(projectId);
       if (isMounted) {
-        setAllBoards(boardsData);
+        setAllBoards(boardsData );
         setProjectData(projectDetails);
       }
     } catch (error) {
@@ -87,14 +91,22 @@ const Board = ({ userProfile }) => {
 
   return (
     <div className="screen bg-[#F0F1F2] ">
+      {isEditCardOpen && (
+        <EditCard
+          onClose={() => {
+            setIsEditCardOpen(false);
+          }}
+        />
+      )}
       <Header title="My Boards" />
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
             <CardBody className="py-3">
-            {showAddNewListModel && (
-                    <AddNewListModel onClose={toggleAddProjectModal} />
-                  )} <div className="flex flex-row justify-between">
+              {showAddNewListModel && (
+                <AddNewListModel onClose={toggleAddProjectModal} />
+              )}{" "}
+              <div className="flex flex-row justify-between">
                 <RenderProject projectId={projectId} />
                 <div className="flex flex-wrap justify-end gap-2">
                   <MembersList projectMembers={projectData.project_members} />
@@ -136,11 +148,11 @@ const Board = ({ userProfile }) => {
                 </Row>
               ) : (
                 <div className="flex gap-5 overflow-x-auto">
-                    {AllBoards.count > 0 &&
-                    AllBoards.results.map((board, index) => (
+                  {AllBoards.count > 0 &&
+                    AllBoards?.results?.map((board, index) => (
                       <TaskColumn key={index} {...board} />
                     ))}
-                  </div>
+                </div>
               )}
             </CardBody>
           </Card>
@@ -172,7 +184,7 @@ const TaskColumn = ({ title, color, count, cards }) => {
           <RxPlus className=" text-xl" />
           <span>Add Card</span>
         </button>
-        {cards.map((card, index) => (
+        {cards?.map((card, index) => (
           <TaskCard key={index} {...card} />
         ))}
       </div>
