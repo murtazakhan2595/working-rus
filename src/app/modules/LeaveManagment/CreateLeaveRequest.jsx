@@ -497,7 +497,7 @@ const CreateLeaveRequest = ({
                                   }}
                                 />
                               </Col>
-                              <Col md="6">
+                              {/* <Col md="6">
                                 <SelectMultiInputComponent
                                   name="indirect_report_to"
                                   options={managers}
@@ -509,7 +509,7 @@ const CreateLeaveRequest = ({
                                     props.setFieldValue(field, value);
                                   }}
                                 />
-                              </Col>
+                              </Col> */}
                               <Col md="12">
                                 <TextInput
                                   name="address_during_leave"
