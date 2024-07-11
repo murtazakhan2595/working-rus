@@ -7,6 +7,6 @@ const Project = {
   project_members: [],
 };
 const AddList ={
-  title:""
+  name:""
 }
 export { Project, AddList };
