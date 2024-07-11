@@ -69,6 +69,41 @@ const getAllBoards = async (payload) => {
   return [];
 };
 
+const addBoard = async (payload) => {
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/board/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Project Updated!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+      return response;
+    } else {
+      const response = await axios.post(`${baseUrl}/board/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        toast.success("List Added!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding job:", error);
+    return false;
+  }
+};
 const addProject = async (payload) => {
   try {
     if (payload?.id) {
@@ -155,4 +190,5 @@ export {
   getAllBoards,
   getProjectById,
   deleteProject,
+  addBoard
 };

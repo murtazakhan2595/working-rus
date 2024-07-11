@@ -6,7 +6,7 @@ const MembersList = ({ projectMembers }) => {
   const displayedMembers = projectMembers.slice(0, 3);
   const remainingCount = projectMembers.length - displayedMembers.length;
   return (
-    <div className="flex -space-x-2.5 h-10">
+    <div className="flex -space-x-2.5 h-10 items-center">
       {displayedMembers.map((member) => (
         <span
           className={`${getRandomColor()} font-lato flex justify-center items-center text-[10.5px] font-bold text-[#FAFBFC] w-8 h-8 rounded-full`}

@@ -19,7 +19,7 @@ import EditProjectModal from "../Sections/EditBoardDetails";
 import { useParams, Link } from "react-router-dom";
 import RenderProject from "./Sections/RenderProject";
 import { MembersList } from "../Sections";
-import {AddNewListModel} from "./Sections";
+import { AddNewListModel } from "./Sections";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 import highpriority from "assets/images/highpriority.svg";
@@ -30,11 +30,10 @@ import attachmentsIcon from "assets/images/attachments.svg";
 
 const Board = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [projectId, setProjectId] = useState(useParams()?.projectId || null);
+  const projectId = useParams()?.projectId || null;
   const [projectData, setProjectData] = useState(Project);
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
-  const [showProjectModal, setShowProjectModal] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   console.log(projectId);
 
@@ -77,11 +76,10 @@ const Board = ({ userProfile }) => {
       return updatedFilters;
     });
   };
-  const toggleAddProject = () => {
-    setShowProjectModal(!showProjectModal);
-  };
-
-  const toggleAddProjectModal = () => {
+  const toggleAddBoardModal = () => {
+    if (showAddNewListModel) {
+      fetchData(true);
+    }
     setshowAddNewListModel(!showAddNewListModel);
   };
 
@@ -92,15 +90,21 @@ const Board = ({ userProfile }) => {
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
             <CardBody className="py-3">
-            {showAddNewListModel && (
-                    <AddNewListModel onClose={toggleAddProjectModal} />
-                  )} <div className="flex flex-row justify-between">
+              {showAddNewListModel && (
+                <AddNewListModel
+                  projectId={projectId}
+                  onClose={toggleAddBoardModal}
+                />
+              )}
+              <div className="flex flex-row justify-between items-center mb-5">
                 <RenderProject projectId={projectId} />
                 <div className="flex flex-wrap justify-end gap-2">
-                  <MembersList projectMembers={projectData.project_members} />
+                  <MembersList
+                    projectMembers={projectData?.project_members || null}
+                  />
                   <Button
-                    onClick={toggleAddProjectModal}
-                    className="p-2 rounded-md btn-dark d-flex gap-1 items-center justify-center"
+                    onClick={toggleAddBoardModal}
+                    className="rounded-md btn-dark d-flex gap-1 items-center justify-center"
                   >
                     <FaPlus
                       className="text-white"
@@ -136,11 +140,11 @@ const Board = ({ userProfile }) => {
                 </Row>
               ) : (
                 <div className="flex gap-5 overflow-x-auto">
-                    {AllBoards.count > 0 &&
+                  {AllBoards.count > 0 &&
                     AllBoards.results.map((board, index) => (
-                      <TaskColumn key={index} {...board} />
+                      <TaskColumn key={index} board={board} />
                     ))}
-                  </div>
+                </div>
               )}
             </CardBody>
           </Card>
@@ -150,7 +154,7 @@ const Board = ({ userProfile }) => {
   );
 };
 
-const TaskColumn = ({ title, color, count, cards }) => {
+const TaskColumn = ({ color, count, board }) => {
   return (
     <div className="flex flex-col min-w-[290px] ">
       <div className="flex flex-col ">
@@ -160,7 +164,7 @@ const TaskColumn = ({ title, color, count, cards }) => {
               <div
                 className={`shrink-0 my-auto w-2 h-2 ${color} rounded-full`}
               />
-              <span>{title}</span>
+              <span>{board.name}</span>
             </h2>
             <span className="justify-center p-0.5 text-sm leading-6 whitespace-nowrap bg-white rounded text-zinc-600">
               {count}
@@ -172,14 +176,13 @@ const TaskColumn = ({ title, color, count, cards }) => {
           <RxPlus className=" text-xl" />
           <span>Add Card</span>
         </button>
-        {cards.map((card, index) => (
-          <TaskCard key={index} {...card} />
-        ))}
+        {board &&
+          board.length > 0 &&
+          board.map((card, index) => <TaskCard key={index} {...card} />)}
       </div>
     </div>
   );
 };
-
 
 const TaskCard = ({
   title,
@@ -205,7 +208,7 @@ const TaskCard = ({
   };
 
   const getPriorityIcon = (priority) => {
-    console.log(priority, "priority")
+    console.log(priority, "priority");
     if (priority === "high") {
       return (
         <div className="flex justify-center items-center px-1.5 pt-1 pb-0.5 rounded-[100px]">
@@ -215,11 +218,7 @@ const TaskCard = ({
     }
     return (
       <div className="flex justify-center items-center px-1.5 pt-1 pb-0.5  rounded-[100px]">
-        <img
-          loading="lazy"
-          src={lowpriority}
-          alt=""
-        />
+        <img loading="lazy" src={lowpriority} alt="" />
       </div>
     );
   };
@@ -294,7 +293,6 @@ const TaskCard = ({
     </div>
   );
 };
-
 
 const mapStateToProps = (state) => {
   return {
