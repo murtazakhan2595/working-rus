@@ -11,11 +11,13 @@ import ProjectModel from "./CreateProjectModel";
 import { useNavigate } from "react-router-dom";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import moment from "moment";
-import { MembersList } from "../Sections";
-import CustomDropdown from "../Sections/CutsomDropdown";
-import ViewBoardDetails from "../Sections/ViewBoardDetails";
-import EditProjectModal from "../Sections/EditBoardDetails";
-import ConfirmationModal from "../Sections/ConfirmationModal";
+import {
+  MembersList,
+  CustomDropdown,
+  ViewBoardDetails,
+  EditProjectModal,
+  ConfirmationModal,
+} from "../Sections";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
