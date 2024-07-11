@@ -1,17 +1,44 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { RxCross2 } from "react-icons/rx";
 import { Card, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
 import { TextInput } from "components/form-control.jsx";
-import { addBoard } from "app/hooks/taskManagment";
+import { addBoard, getBoardById } from "app/hooks/taskManagment";
 import { AddList } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 
-const AddNewListModel = ({ onClose,projectId }) => {
+const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
   const formRef = useRef();
-  const [initialValues, setInitialValues] = useState({...AddList,...{project_id:projectId}});
+  const [initialValues, setInitialValues] = useState({
+    ...AddList,
+    ...{ project_id: projectId },
+  });
   const [isLoading, setIsLoading] = useState(false);
+
+  const fetchData = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      const BoardDetails = await getBoardById(boardId);
+      if (isMounted) {
+        setInitialValues(BoardDetails);
+      }
+    } catch (error) {
+      console.error("Error fetching employeeLeaveTypes:", error);
+    } finally {
+      if (isMounted) {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (boardId && isEditMode) fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [boardId]);
 
   const handleSubmit = async (formData) => {
     console.log(formData);

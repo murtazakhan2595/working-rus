@@ -39,6 +39,35 @@ const getAllProjects = async (payload) => {
   }
   return [];
 };
+const getTaskByBoardId = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/project/?${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const data = response.data;
+      const ProjectsData = {
+        count: data.length,
+        results: data,
+      };
+      return ProjectsData;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
 const getAllBoards = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -161,6 +190,27 @@ const getProjectById = async (projectId) => {
   }
 };
 
+const getBoardById = async (boardId) => {
+  try {
+    if (boardId) {
+      const response = await axios.get(`${baseUrl}/board/${boardId}`, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        return Project;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding job:", error);
+    return Project;
+  }
+};
+
 const deleteProject = async (projectId) => {
   try {
     const response = await axios.delete(`${baseUrl}/project/${projectId}`, {
@@ -189,6 +239,8 @@ export {
   addProject,
   getAllBoards,
   getProjectById,
+  getBoardById,
   deleteProject,
-  addBoard
+  addBoard,
+  getTaskByBoardId
 };

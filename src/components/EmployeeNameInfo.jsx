@@ -1,4 +1,4 @@
-import { DepartmentName, DesignationName  } from "utils/getValuesFromTables";
+import { DepartmentName, DesignationName, getRandomColor } from "utils/getValuesFromTables";
 const EmployeeNameInfo = ({
   name,
   department,
@@ -10,7 +10,7 @@ const EmployeeNameInfo = ({
   return (
     <div className="flex items-start pr-3">
       <div
-        className="bg-[#BE24A5] text-[#FAFBFC] flex font-semibold text-md items-center justify-center rounded-full w-10 h-10"
+        className= {`${getRandomColor()} text-[#FAFBFC] flex font-semibold text-md items-center justify-center rounded-full w-10 h-10`}
         style={{ minWidth: "40px" }}
       >
         {name?.toUpperCase().charAt(0)}

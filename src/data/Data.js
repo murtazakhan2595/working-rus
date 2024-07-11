@@ -364,6 +364,43 @@ export const JobSortingFilters = [
     ],
   },
 ];
+export const TaskSortingFilters = [
+  {
+    label: "",
+    name: "complted",
+    options: [
+      { label: "Finished", value: "" },
+      { label: "Unfinished task", value: "asc" },
+    ],
+  },
+  {
+    label: "Members",
+    name: "members",
+    options: [
+      { label: "No Members", value: "" },
+      { label: "Selected Members", value: "asc" },
+    ],
+  },
+  {
+    label: "Due Date",
+    name: "due_Dates",
+    options: [
+      { label: "No dates", value: "Remote" },
+      { label: "Overdates", value: "Hybrid" },
+      { label: "Due the next day", value: "Onsite" },
+    ],
+  },
+  {
+    label: "Priority",
+    name: "priority",
+    options: [
+      { label: "No priority", value: "Full_Time" },
+      { label: "High", value: "Internees" },
+      { label: "Medium", value: "Part_Time" },
+      { label: "Low", value: "Part_Time" },
+    ],
+  },
+];
 
 export const LeaveStatus = [
   { label: "Approved", value: "Approved" },

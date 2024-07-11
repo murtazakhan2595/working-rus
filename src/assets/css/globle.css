@@ -76,6 +76,13 @@ ul {
   min-height: calc(3.5rem);
   align-items: end;
 }
+
+.custom-select-input.form-control.items-center .css-13cymwt-control,
+.custom-select-input.form-control.items-center .css-16xfy0z-control,
+.custom-select-input.form-control.items-center .css-t3ipsp-control {
+  align-items: center !important;
+}
+
 .custom-select-input.form-control .css-3w2yfm-ValueContainer {
   padding-top: 25px !important;
 }
