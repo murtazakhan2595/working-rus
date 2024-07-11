@@ -16,7 +16,6 @@ import {
 import {PageLoader} from "components";
 import { getContactInfo } from "app/utils/MappingObjects/mapEmployeeData.jsx";
 import {validationEmployeeContactInfoFormSchema} from 'app/utils/FormSchema/employeeFormSchema'
-import { countryCodes } from "data/CountryCode";
 
 const ContactInformation = ({
   nextstep,
@@ -31,14 +30,6 @@ const ContactInformation = ({
   useEffect(() => {
     getEmployeeContactInfo(employeeId)
       .then((response) => {
-        // split emergency phone number into country code and number
-        if (response.emergency_phone_no) {
-          const result = extractCountryCodeAndNumber(
-            response.emergency_phone_no
-          );
-          response.emergency_country_code = result[0];
-          response.emergency_phone_no = result[1];
-        }
         setContactInfo(response);
         setIsLoading(false);
       })
@@ -47,26 +38,12 @@ const ContactInformation = ({
       });
   }, [employeeId]); // Empty dependency array ensures this effect runs only once after the initial render
 
-  function extractCountryCodeAndNumber(phoneNumber) {
-    for (let i = 0; i < countryCodes.length; i++) {
-      const dialCode = countryCodes[i].dial_code;
-      if (phoneNumber.startsWith(dialCode)) {
-        const countryCode = dialCode;
-        const number = phoneNumber.substring(dialCode.length);
-        return [countryCode, number];
-      }
-    }
-    // Return null or handle if no matching country code found
-    return null;
-  }
-
   const handleSubmit = (data) => {
     const ContactInformation = getContactInfo(data);
     const response = saveEmployeeContactInfoData(
       employeeId,
       ContactInformation
     );
-    console.log("response", response);
     if (response) nextstep();
   };
 
