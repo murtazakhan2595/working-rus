@@ -68,6 +68,29 @@ const getAllBoards = async (payload) => {
   }
   return [];
 };
+const getAllTasks = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  console.log("filterData", filterData)
+  const URL = `/task/?order=-date${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const data = response.data;
+      console.log("get all tasks", data)
+      return data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching task data :", error);
+  }
+  return [];
+};
 
 const addBoard = async (payload) => {
   try {
@@ -139,6 +162,42 @@ const addProject = async (payload) => {
     return false;
   }
 };
+const addTask = async (payload) => {
+  console.log("addtask payload", payload)
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/task/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Project Updated!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+      return response;
+    } else {
+      const response = await axios.post(`${baseUrl}/task/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        toast.success("Project Added!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding task:", error);
+    return false;
+  }
+};
 
 const getProjectById = async (projectId) => {
   try {
@@ -161,6 +220,27 @@ const getProjectById = async (projectId) => {
   }
 };
 
+const getTaskById = async (taskId) => {
+  try {
+    if (taskId) {
+      const response = await axios.get(`${baseUrl}/tasks/${taskId}`, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        console.log("get task by id", response.data)
+        return response.data;
+      } else {
+        return {};
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding job:", error);
+    return {};
+  }
+};
 const deleteProject = async (projectId) => {
   try {
     const response = await axios.delete(`${baseUrl}/project/${projectId}`, {
@@ -190,5 +270,8 @@ export {
   getAllBoards,
   getProjectById,
   deleteProject,
-  addBoard
+  addBoard,
+  getAllTasks,
+  addTask,
+  getTaskById
 };

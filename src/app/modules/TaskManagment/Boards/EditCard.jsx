@@ -1,7 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RxCross2, RxPlus } from "react-icons/rx";
 import { CiEdit } from "react-icons/ci";
 import dots from "assets/images/dots.svg";
+import { toast, ToastContainer } from "react-toastify";
+
 import { EmployeeName } from "utils/getValuesFromTables";
 import { connect } from "react-redux";
 import { Members } from "../Sections";
@@ -27,10 +29,22 @@ import calender from "assets/images/calender.svg";
 import members from "assets/images/members.svg";
 import priority from "assets/images/priority.svg";
 import { dropdownOptions } from 'data/Data';
+import {
+  addTask,
+  getTaskById,
+} from "app/hooks/taskManagment";
 
-const EditCard = ({ onClose, employees }) => {
+
+const EditCard = ({
+  onClose,
+  employees,
+  isEditMode,
+  boardId,
+  projectId,
+  cardId,
+}) => {
   const card = {
-    title: "",
+    name: "",
     description: "",
     due_date: "",
     priority: "",
@@ -45,32 +59,76 @@ const EditCard = ({ onClose, employees }) => {
     { label: "Low", icon: lowpriorityIcon, value: "Low" },
     { label: "Medium", icon: mediumpriorityIcon, value: "Medium" },
   ];
+  const priorityMapping = {
+    High: 1,
+    Medium: 2,
+    Low: 3,
+  };
 
-  const [initialValues, setInitialValues] = useState(card);
+  const [initialValues, setInitialValues] = useState({
+    ...card,
+    board_id: boardId,
+    project_id: projectId,
+  });
   const [membersOpen, setMembersOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
+  const fetchData = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      const cardDetails = await getTaskById(cardId);
+      if (isMounted) {
+        console.log("cardDetails", cardDetails)
+        setInitialValues(cardDetails);
+      }
+    } catch (error) {
+      console.error("Error fetching employeeLeaveTypes:", error);
+    } finally {
+      if (isMounted) {
+        setIsLoading(false);
+      }
+    }
+  };
   const formRef = useRef();
 
   const handleSubmit = async (formData) => {
-    console.log("formData", formData);
+    setIsLoading(true);
+    try {
+      const response = await addTask({
+        ...formData,
+        priority: priorityMapping[formData.priority],
+      });
+      if (response) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(error.response.data.detail, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+    useEffect(() => {
+      let isMounted = true;
+      if (cardId && isEditMode) fetchData(isMounted);
+      return () => {
+        isMounted = false;
+      };
+    }, [cardId]);
 
   return (
     <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll ">
       <div className="bg-white h-full fixed  max-w-[35%] w-[35%] top-0 right-0  shadow px-[50px] py-10 flex flex-col gap-7 overflow-y-auto hideScroll">
         <div className="flex-col justify-start items-start gap-2.5 flex">
-          <RxCross2
-            className="cursor-pointer self-end"
-            onClick={() => {
-              onClose();
-            }}
-          />
+          <RxCross2 className="cursor-pointer self-end" onClick={onClose} />
           <div className="flex gap-4 items-center text-xl font-bold text-zinc-800">
             <FaChevronLeft
-              onClick={() => {}}
-              className="text-zinc-800 text-[0.65rem] text-xs "
+              onClick={onClose}
+              className="text-zinc-800 text-[0.65rem] text-xs cursor-pointer"
             />
-            <div>Edit Card</div>
+            <div>{isEditMode ? "Edit " : "Add"} Card</div>
           </div>
         </div>
         <Row>
@@ -91,10 +149,10 @@ const EditCard = ({ onClose, employees }) => {
                   <Row className="m-0 ">
                     <Col md="12" className="mb-0 p-0">
                       <TextInput
-                        name="title"
-                        error={props.errors.title}
-                        touch={props.touched.title}
-                        value={props.values.title}
+                        name="name"
+                        error={props.errors.name}
+                        touch={props.touched.name}
+                        value={props.values.name}
                         label="Title"
                         required={true}
                         onChange={(field, value) => {
@@ -108,6 +166,7 @@ const EditCard = ({ onClose, employees }) => {
                         error={props.errors.description}
                         touch={props.touched.description}
                         value={props.values.description}
+                        required
                         label="Description"
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
@@ -119,11 +178,7 @@ const EditCard = ({ onClose, employees }) => {
                         {" "}
                         <div className="flex gap-5">
                           <div className="flex items-center gap-2.5  text-lg font-medium leading-4 text-zinc-600">
-                            <img
-                              loading="lazy"
-                              src={calender}
-                              alt=""
-                            />
+                            <img loading="lazy" src={calender} alt="" />
                             <div>Due Date</div>
                           </div>
                           <DateInput

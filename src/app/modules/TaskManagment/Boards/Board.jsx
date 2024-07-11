@@ -5,7 +5,11 @@ import { Project } from "app/utils/Types/TaskManagment";
 import { Table, Header, PageLoader } from "components";
 import { FilterInput } from "components/form-control";
 import { Card, CardHeader, CardBody, Row, Col, Button } from "reactstrap";
-import { getAllBoards, getProjectById } from "app/hooks/taskManagment";
+import {
+  getAllBoards,
+  getProjectById,
+  getAllTasks,
+} from "app/hooks/taskManagment";
 import { JobSortingFilters } from "data/Data";
 import { FaPlus } from "react-icons/fa";
 import { getRandomColor } from "utils/getValuesFromTables";
@@ -32,8 +36,7 @@ const Board = ({ userProfile }) => {
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
-  const [isEditCardOpen, setIsEditCardOpen] = useState(true);
-
+  
   console.log(projectId);
 
   const fetchData = async (isMounted) => {
@@ -47,6 +50,7 @@ const Board = ({ userProfile }) => {
         setAllBoards(boardsData );
         setProjectData(projectDetails);
       }
+
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
     } finally {
@@ -55,6 +59,7 @@ const Board = ({ userProfile }) => {
       }
     }
   };
+ 
 
   useEffect(() => {
     let isMounted = true;
@@ -84,13 +89,6 @@ const Board = ({ userProfile }) => {
 
   return (
     <div className="screen bg-[#F0F1F2] ">
-      {isEditCardOpen && (
-        <EditCard
-          onClose={() => {
-            setIsEditCardOpen(false);
-          }}
-        />
-      )}
       <Header title="My Boards" />
       <Row>
         <Col lg={12} className="mx-auto">
@@ -161,8 +159,45 @@ const Board = ({ userProfile }) => {
 };
 
 const TaskColumn = ({ color, count, board }) => {
+  const [isEditCardOpen, setIsEditCardOpen] = useState(false);
+  console.log(isEditCardOpen, "isEditCardOpen")
+  const [allTasks, setAllTasks] = useState([]);
+    const fetchData = async (isMounted) => {
+      try {
+        const tasksData = await getAllTasks({
+          filterData: { board_id: board.id },
+        });
+        if (isMounted) {
+          setAllTasks(tasksData);
+        }
+      } catch (error) {
+        console.error("Error fetching employeeLeaveTypes:", error);
+      }
+    };
+
+    useEffect(() => {
+      let isMounted = true;
+      fetchData(isMounted);
+      return () => {
+        isMounted = false;
+      };
+    }, [board.id]);
+
+    const closeEditCard=() => {
+      console.log("edit card closed")
+            setIsEditCardOpen(false);
+    }
+          
   return (
     <div className="flex flex-col min-w-[290px] ">
+      {isEditCardOpen && (
+        <EditCard
+          onClose={closeEditCard}
+          isEditMode={false}
+          boardId={board.id}
+          projectId={board.project_id}
+        />
+      )}
       <div className="flex flex-col ">
         <header className="flex gap-5 justify-between pl-5 w-full">
           <div className="flex gap-4">
@@ -178,30 +213,35 @@ const TaskColumn = ({ color, count, board }) => {
           </div>
           <BsThreeDotsVertical className="text-[#757880]" onClick={() => {}} />
         </header>
-        <button className="flex gap-2 justify-center items-center px-5 py-2 mt-10 text-base font-medium bg-white rounded border border-solid border-zinc-300 text-zinc-600">
+        <button
+          className="flex gap-2 justify-center items-center px-5 py-2 mt-10 text-base font-medium bg-white rounded border border-solid border-zinc-300 text-zinc-600"
+          onClick={() => setIsEditCardOpen(true)}
+        >
           <RxPlus className=" text-xl" />
           <span>Add Card</span>
         </button>
-        {board &&
-          board.length > 0 &&
-          board.map((card, index) => <TaskCard key={index} {...card} />)}
+        {allTasks &&
+          allTasks.length > 0 &&
+          allTasks.map((card, index) => (
+            <TaskCard
+              key={index}
+              card={card}
+              isEditCardOpen={isEditCardOpen}
+              setIsEditCardOpen={setIsEditCardOpen}
+              closeEditCard={closeEditCard}
+            />
+          ))}
       </div>
     </div>
   );
 };
 
 const TaskCard = ({
-  title,
-  description,
-  dueDate,
-  status,
-  comments,
-  attachments,
-  priority,
-  project_members,
-  completed,
+  card,
+  isEditCardOpen,
+  closeEditCard,
+  setIsEditCardOpen,
 }) => {
-  console.log(status, "status");
   const getStatusClass = (status) => {
     switch (status) {
       case "amber":
@@ -214,8 +254,7 @@ const TaskCard = ({
   };
 
   const getPriorityIcon = (priority) => {
-    console.log(priority, "priority");
-    if (priority === "high") {
+    if (priority === "1") {
       return (
         <div className="flex justify-center items-center px-1.5 pt-1 pb-0.5 rounded-[100px]">
           <img loading="lazy" src={highpriority} alt="" />
@@ -230,19 +269,24 @@ const TaskCard = ({
   };
 
   return (
-    <div className="flex flex-col px-5 pt-5 mt-6 w-full bg-white rounded-lg shadow-sm">
+    <div
+      className="flex flex-col px-5 pt-5 mt-6 w-full bg-white rounded-lg shadow-sm"
+    >
+      {isEditCardOpen && (
+        <EditCard onClose={()=>{setIsEditCardOpen(false)}} isEditMode={true} cardId={card.id} />
+      )}
       <div className="flex gap-3 justify-between items-center py-0.5 ">
-        {getPriorityIcon(priority)}
+        {getPriorityIcon(card.priority)}
         <BsThreeDotsVertical className="text-[#757880]" onClick={() => {}} />
       </div>
       <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
-        <h3 className="text-base font-bold">{title}</h3>
-        <p className="mt-3 text-sm leading-5">{description}</p>
+        <h3 className="text-base font-bold">{card.name}</h3>
+        <p className="mt-3 text-sm leading-5">{card.description}</p>
       </div>
       <footer className="flex justify-between py-5">
         <div className="flex gap-1 items-center">
           <div className="flex -space-x-2.5">
-            {project_members.slice(0, 2).map((member) => (
+            {card.card_members?.slice(0, 2).map((member) => (
               <span
                 className={`${getRandomColor()} font-lato flex justify-center items-center text-[7.7px] font-bold text-[#FAFBFC] w-5 h-5 rounded-full`}
                 key={member}
@@ -254,25 +298,25 @@ const TaskCard = ({
           <FaPlus className="text-black p-1 bg-[#e3e3e3] text-center text-xl font-normal rounded-full cursor-pointer" />
         </div>
         <div className="flex gap-2 items-center text-xs text-zinc-600">
-          {dueDate && (
+          {card.dueDate && (
             <div
               className={`flex gap-1 justify-center items-center self-stretch px-1.5 py-1 text-xs leading-6 rounded ${getStatusClass(
-                status
+                card.status
               )}`}
             >
               <TimeIcon
                 color={
-                  status === "amber"
+                  card.status === "amber"
                     ? "#FF9A1F"
-                    : status === "red"
+                    : card.status === "red"
                     ? "#fff"
                     : "#5C5E64"
                 }
               />
-              <div className="my-auto">{dueDate}</div>
+              <div className="my-auto">{card.dueDate}</div>
             </div>
           )}
-          {comments !== null && (
+          {card.comments && (
             <div className="flex gap-0.5 items-center self-stretch my-auto whitespace-nowrap">
               <img
                 loading="lazy"
@@ -280,10 +324,10 @@ const TaskCard = ({
                 className="shrink-0 self-start w-3 aspect-square"
                 alt=""
               />
-              <div>{comments}</div>
+              <div>{card.comments}</div>
             </div>
           )}
-          {attachments !== null && (
+          {card.attachments && (
             <div className="flex items-center gap-0.5 self-stretch my-auto whitespace-nowrap">
               <img
                 loading="lazy"
@@ -291,7 +335,7 @@ const TaskCard = ({
                 className="shrink-0 self-start w-3 aspect-square"
                 alt=""
               />
-              <div>{attachments}</div>
+              <div>{card.attachments}</div>
             </div>
           )}
         </div>
