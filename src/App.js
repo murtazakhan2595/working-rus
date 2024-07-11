@@ -22,7 +22,7 @@ import {
   LeaveAllotement,
   LeaveHistory,
 } from "app/modules/LeaveManagment";
-import { Projects,Board } from "app/modules/TaskManagment";
+import { Projects, Board } from "app/modules/TaskManagment";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";

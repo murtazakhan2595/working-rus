@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { getAllProjects } from "app/hooks/taskManagment";
+import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
 import { LeaveAllotmentColumns } from "app/utils/Types/TableColumns";
 import { Table, Header, PageLoader } from "components";
 import { FilterInput } from "components/form-control";
@@ -11,10 +11,11 @@ import ProjectModel from "./CreateProjectModel";
 import { useNavigate } from "react-router-dom";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import moment from "moment";
-import { EmployeeName } from "utils/getValuesFromTables";
-import CustomDropdown from "../sections/CutsomDropdown";
-import ViewBoardDetails from "../sections/ViewBoardDetails";
-import EditProjectModal from "../sections/EditBoardDetails";
+import { MembersList } from "../Sections";
+import CustomDropdown from "../Sections/CutsomDropdown";
+import ViewBoardDetails from "../Sections/ViewBoardDetails";
+import EditProjectModal from "../Sections/EditBoardDetails";
+import ConfirmationModal from "../Sections/ConfirmationModal";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -58,8 +59,13 @@ const Projects = ({ userProfile }) => {
     });
   };
 
-  const toggleAddProject = () => {
-    setShowProjectModal(!showProjectModal);
+  const toggleAddProject = (projectId) => {
+    debugger;
+    if (showProjectModal) {
+      fetchData(true);
+    }
+    console.log(projectId, !showProjectModal);
+    setShowProjectModal(projectId ?? !showProjectModal);
   };
 
   const handleDeleteSuccess = () => {
@@ -82,17 +88,31 @@ const Projects = ({ userProfile }) => {
               ) : (
                 <Row className="m-0">
                   {showProjectModal && (
-                    <ProjectModel onClose={toggleAddProject} />
+                    // <ProjectModel onClose={toggleAddProject} />
+                    <ProjectModel
+                      projectId={showProjectModal || null}
+                      isEditMode={!showProjectModal}
+                      onClose={() => {
+                        toggleAddProject();
+                      }}
+                    />
                   )}
                   {userProfile.role !== 4 && (
                     <Col lg={4} className="py-3">
-                      <RenderProject toggleAddProject={toggleAddProject} onDeleteSuccess={handleDeleteSuccess} />
+                      <RenderProject
+                        toggleAddProject={toggleAddProject}
+                        onDeleteSuccess={handleDeleteSuccess}
+                      />
                     </Col>
                   )}
                   {AllProjects.count > 0 &&
                     AllProjects.results.map((project, index) => (
                       <Col lg={4} key={index} className="py-3">
-                        <RenderProject project={project} toggleAddProject={toggleAddProject} onDeleteSuccess={handleDeleteSuccess} />
+                        <RenderProject
+                          project={project}
+                          toggleAddProject={toggleAddProject}
+                          onDeleteSuccess={handleDeleteSuccess}
+                        />
                       </Col>
                     ))}
                 </Row>
@@ -106,40 +126,62 @@ const Projects = ({ userProfile }) => {
 };
 
 const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
+  const navigate = useNavigate();
   const projectMembers = project?.project_members || [];
   const displayedMembers = projectMembers.slice(0, 3);
   const remainingCount = projectMembers.length - displayedMembers.length;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isRemainingDropdownOpen, setIsRemainingDropdownOpen] = useState(false);
-   const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
-   const [isEditMode, setIsEditMode] = useState(false);
+  const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-   const closeModal = () => {
-     setIsViewBoardDetails(false);
-     setIsEditMode(false);
-   };
-   const EditDetails = () => {
-    setIsDropdownOpen(false)
+  const closeModal = () => {
+    setIsViewBoardDetails(false);
+    setIsEditMode(false);
+  };
+  const EditDetails = () => {
+    setIsDropdownOpen(false);
     setIsEditMode(true);
-   }
-   const viewDetails = () => {
-    setIsDropdownOpen(false)
+  };
+  const viewDetails = () => {
+    setIsDropdownOpen(false);
     setIsViewBoardDetails(true);
-   }
+  };
 
+  const handleDelete = () => {
+    setIsDropdownOpen(false);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    const response = await deleteProject(project.id);
+    if (response && response.status === 200) {
+      onDeleteSuccess();
+    }
+    setIsDeleteModalOpen(false);
+  };
   const dropdownOptions = [
-    { label: 'Edit Details', onClick: EditDetails },
-    { label: 'View Details', onClick: viewDetails },
-    { label: 'Delete', onClick: handleDelete },
+    {
+      label: "Edit Details",
+      onClick: () => {
+        toggleAddProject(project.id);
+      },
+    },
+    { label: "View Details", onClick: viewDetails },
+    { label: "Delete", onClick: handleDelete },
   ];
+
+  const navigateToBoard = () => {
+    navigate(`/project-board/${project.id}`);
+  };
 
   return (
     <div
       className={`${
-        project ? 'projectCard-shadow' : 'border border-dark'
+        project ? "projectCard-shadow" : "border border-dark"
       } rounded h-100 flex justify-center items-center`}
     >
       {project ? (
@@ -167,8 +209,8 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
                 {project?.name}
               </h2>
               <p className="text-[11px] font-lato text-[#989CA6]">
-                Created by Hani Hassan |{' '}
-                {moment(project?.start_date).format('DD-MM-YY')}
+                Created by Hani Hassan |{" "}
+                {moment(project?.start_date).format("DD-MM-YY")}
               </p>
             </div>
             <MembersList projectMembers={projectMembers} />
@@ -194,7 +236,11 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
         />
       )}
       {isEditMode && project && (
-        <EditProjectModal project={project} onClose={closeModal} />
+        <ProjectModel
+          projectId={project.id}
+          isEditMode={true}
+          onClose={closeModal}
+        />
       )}
       {isDeleteModalOpen && (
         <ConfirmationModal

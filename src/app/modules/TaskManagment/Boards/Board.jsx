@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Project } from "app/utils/Types/TaskManagment";
 import { Table, Header, PageLoader } from "components";
 import { FilterInput } from "components/form-control";
-import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col, Button } from "reactstrap";
 import { getAllBoards, getProjectById } from "app/hooks/taskManagment";
 import { CiCirclePlus } from "react-icons/ci";
 import ProjectModel from "./CreateProjectModel";
@@ -13,12 +13,13 @@ import moment from "moment";
 import { FaPlus } from "react-icons/fa";
 import { getRandomColor } from "utils/getValuesFromTables";
 import { EmployeeName } from "utils/getValuesFromTables";
-import CustomDropdown from "../Sections/CutsomDropdown";
+import { FiFilter } from "react-icons/fi";
 import ViewBoardDetails from "../Sections/ViewBoardDetails";
 import EditProjectModal from "../Sections/EditBoardDetails";
 import { useParams, Link } from "react-router-dom";
 import RenderProject from "./Sections/RenderProject";
 import { MembersList } from "../Sections";
+import {AddNewListModel} from "./Sections";
 import BoardLists from "./BoardLists";
 
 const Board = ({ userProfile }) => {
@@ -28,6 +29,7 @@ const Board = ({ userProfile }) => {
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   console.log(projectId);
 
   const fetchData = async (isMounted) => {
@@ -73,6 +75,10 @@ const Board = ({ userProfile }) => {
     setShowProjectModal(!showProjectModal);
   };
 
+  const toggleAddProjectModal = () => {
+    setshowAddNewListModel(!showAddNewListModel);
+  };
+
   return (
     <div className="screen bg-[#F0F1F2] ">
       <Header title="My Boards" />
@@ -80,27 +86,33 @@ const Board = ({ userProfile }) => {
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
             <CardBody className="py-3">
-              <div className="flex flex-row justify-between">
+            {showAddNewListModel && (
+                    <AddNewListModel onClose={toggleAddProjectModal} />
+                  )} <div className="flex flex-row justify-between">
                 <RenderProject projectId={projectId} />
                 <div className="flex flex-wrap justify-end gap-2">
                   <MembersList projectMembers={projectData.project_members} />
-                  <Link
-                    to="/job-post"
-                    className="p-2 rounded-md btn btn-dark d-flex gap-1 items-center justify-center"
+                  <Button
+                    onClick={toggleAddProjectModal}
+                    className="p-2 rounded-md btn-dark d-flex gap-1 items-center justify-center"
                   >
                     <FaPlus
                       className="text-white"
-                      style={{ fontSize: "1px" }}
+                      style={{ fontSize: "12px" }}
                     />
                     Add List
-                  </Link>
+                  </Button>
                   <FilterInput
                     filters={[
                       {
                         type: "sorting",
                         option: JobSortingFilters,
                         name: "sorting",
-                        placeholder: "Sort By",
+                        placeholder: (
+                          <span className="d-flex justify-center items-center gap-1">
+                            <FiFilter /> Filter
+                          </span>
+                        ),
                         values: filterData,
                         className: "custom-dropdown-toggle-filter",
                         mainHeading: "Sort",
@@ -124,9 +136,7 @@ const Board = ({ userProfile }) => {
                   {AllBoards.count > 0 &&
                     AllBoards.results.map((board, index) => (
                       <Col lg={4} key={index} className="py-3">
-                        <BoardLists
-                          board={board}
-                        />
+                        <BoardLists board={board} />
                       </Col>
                     ))}
                 </Row>

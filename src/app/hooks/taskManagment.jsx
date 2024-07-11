@@ -126,4 +126,33 @@ const getProjectById = async (projectId) => {
   }
 };
 
-export { getAllProjects, addProject, getAllBoards ,getProjectById};
+const deleteProject = async (projectId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/project/${projectId}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      toast.success("Project Deleted!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error deleting project:", error);
+    toast.error("Error deleting project!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
+
+export {
+  getAllProjects,
+  addProject,
+  getAllBoards,
+  getProjectById,
+  deleteProject,
+};
