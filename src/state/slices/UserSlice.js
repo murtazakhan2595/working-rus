@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const URLS = [
   {
     Frontend: "https://hrms.tecbrix.cloud",
-    Backend: "https://hrms.tecbrix.cloud:8080/api",
+    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
   },
   {
     Frontend: "https://staging-hrms.tecbrix.cloud",
