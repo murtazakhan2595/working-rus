@@ -26,10 +26,11 @@ import lowpriority from "assets/images/lowpriority.svg";
 import TimeIcon from "assets/images/timeIcon";
 import message from "assets/images/message.svg";
 import attachmentsIcon from "assets/images/attachments.svg";
-import CreateAndUpdateCard from "./CreateAndUpdateCard";
+import EditCard from "./EditCard";
 
 
 const TaskCard = ({
+  projectId,
   task,
   title,
   description,
@@ -41,6 +42,26 @@ const TaskCard = ({
   project_members,
   completed,
 }) => {
+  console.log("task", task)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isEditCardOpen, setIsEditCardOpen] = useState(false);
+  const editDetails = () => {
+    setIsDropdownOpen(false);
+    setIsEditCardOpen(true);
+  };
+  const dropdownOptions = [
+    {
+      label: "Edit Details",
+      onClick: () => {
+        editDetails();
+      },
+    },
+    { label: "View Details", onClick: ()=>{} },
+    { label: "Delete", onClick: ()=>{} },
+  ];
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
   const getStatusClass = (status) => {
     switch (status) {
       case "amber":
@@ -66,17 +87,37 @@ const TaskCard = ({
       </div>
     );
   };
+  const closeEditCard = () => {
+    setIsEditCardOpen(false);
+  }
 
   return (
     <div className="flex flex-col p-3 mt-6 w-full bg-white rounded-lg shadow">
+      {isEditCardOpen && (
+        <EditCard cardId={task.id} projectId={projectId} onClose={closeEditCard}/>
+      )}
       <div className="flex gap-3 justify-between items-center py-0.5 ">
-        {priorityOptions.find((option) => option.value === task?.priority)?.label}
-        <BsThreeDotsVertical className="text-[#757880]" onClick={() => {}} />
+        {
+          priorityOptions.find((option) => option.value === task?.priority)
+            ?.label
+        }
+        {/* <BsThreeDotsVertical
+          className="text-[#757880] cursor-pointer"
+          onClick={toggleDropdown}
+        /> */}
+        <CustomDropdown
+          isOpen={isDropdownOpen}
+          toggleDropdown={toggleDropdown}
+          options={dropdownOptions}
+        />
       </div>
       <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
         <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
-        <p className="text-sm leading-5 truncate-text" style={{maxHeight:'100px'}}>
-        <div dangerouslySetInnerHTML={{ __html: task?.description }} />
+        <p
+          className="text-sm leading-5 truncate-text"
+          style={{ maxHeight: "100px" }}
+        >
+          <div dangerouslySetInnerHTML={{ __html: task?.description }} />
         </p>
       </div>
       <footer className="flex justify-between py-2">

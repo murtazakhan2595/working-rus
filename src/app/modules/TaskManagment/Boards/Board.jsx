@@ -18,7 +18,14 @@ import { useParams, Link } from "react-router-dom";
 import RenderProject from "./Sections/RenderProject";
 import { CustomDropdown } from "../Sections";
 import { AddNewListModel, MembersDropdown } from "./Sections";
-import CreateAndUpdateCard from "./CreateAndUpdateCard";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import highpriority from "assets/images/highpriority.svg";
+import lowpriority from "assets/images/lowpriority.svg";
+import TimeIcon from "assets/images/timeIcon";
+import message from "assets/images/message.svg";
+import attachmentsIcon from "assets/images/attachments.svg";
+
+import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
 import { getRandomColor } from "utils/getValuesFromTables";
 
@@ -37,9 +44,10 @@ const Board = ({ userProfile }) => {
       });
       const projectDetails = await getProjectById(projectId);
       if (isMounted) {
-        setAllBoards(boardsData);
+        setAllBoards(boardsData );
         setProjectData(projectDetails);
       }
+
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
     } finally {
@@ -48,6 +56,7 @@ const Board = ({ userProfile }) => {
       }
     }
   };
+ 
 
   useEffect(() => {
     let isMounted = true;
@@ -134,7 +143,11 @@ const Board = ({ userProfile }) => {
                 <div className="flex gap-5 overflow-x-auto">
                   {AllBoards.count > 0 &&
                     AllBoards.results.map((board, index) => (
-                      <TaskColumn key={index} board={board} />
+                      <TaskColumn
+                        key={index}
+                        board={board}
+                        projectId={projectId}
+                      />
                     ))}
                 </div>
               )}
@@ -146,7 +159,8 @@ const Board = ({ userProfile }) => {
   );
 };
 
-const TaskColumn = ({ color, count, board }) => {
+const TaskColumn = ({ color, count, board, projectId }) => {
+  console.log(board.id, projectId)
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -206,7 +220,7 @@ const TaskColumn = ({ color, count, board }) => {
               {tasks?.count}
             </span>
           </div>
-          
+
           <CustomDropdown
             isOpen={isDropdownOpen}
             toggleDropdown={() => {
@@ -226,10 +240,16 @@ const TaskColumn = ({ color, count, board }) => {
         </button>
         {tasks &&
           tasks.count > 0 &&
-          tasks.results.map((task, index) => <TaskCard key={index} task={task} />)}
+          tasks.results.map((task, index) => (
+            <TaskCard key={index} task={task} projectId={projectId} boardId={board.id}/>
+          ))}
       </div>
       {openCreateCard && (
-        <CreateAndUpdateCard onClose={() => setOpenCreateCard(false)} />
+        <CreateCard
+          onClose={() => setOpenCreateCard(false)}
+          boardId={board.id}
+          projectId={projectId}
+        />
       )}
       {showAddNewListModel && (
         <AddNewListModel

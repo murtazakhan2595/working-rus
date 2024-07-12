@@ -21,6 +21,7 @@ import {
 import { Project } from "app/utils/Types/TaskManagment";
 
 const ProjectModal = ({ employees, onClose, isEditMode }) => {
+  console.log("employeesssss", employees)
   const formRef = useRef();
   const navigate = useNavigate();
   const [initialValues, setInitialValues] = useState(Project);
