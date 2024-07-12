@@ -9,4 +9,11 @@ const Project = {
 const AddList ={
   name:""
 }
-export { Project, AddList };
+const CardTypes = {
+  name: "",
+  description: "",
+  end_date: "",
+  priority: "",
+  card_members: [],
+};
+export { Project, AddList, CardTypes };

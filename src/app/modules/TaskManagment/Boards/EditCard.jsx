@@ -1,17 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { RxCross2, RxPlus } from "react-icons/rx";
-import { CiEdit } from "react-icons/ci";
-import dots from "assets/images/dots.svg";
 import { toast, ToastContainer } from "react-toastify";
 
-import { EmployeeName } from "utils/getValuesFromTables";
 import { connect } from "react-redux";
 import { Members } from "../Sections";
 import {
-  FaAngleDoubleLeft,
-  FaAngleDoubleRight,
   FaChevronLeft,
-  FaChevronRight,
 } from "react-icons/fa";
 import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
@@ -28,11 +22,12 @@ import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import calender from "assets/images/calender.svg";
 import members from "assets/images/members.svg";
 import priority from "assets/images/priority.svg";
-import { dropdownOptions } from 'data/Data';
 import {
   addTask,
   getTaskById,
 } from "app/hooks/taskManagment";
+import { CardTypes } from "app/utils/Types/TaskManagment";
+
 
 
 const EditCard = ({
@@ -43,14 +38,7 @@ const EditCard = ({
   projectId,
   cardId,
 }) => {
-  console.log("cardID", cardId)
-  const card = {
-    name: "",
-    description: "",
-    due_date: "",
-    priority: "",
-    card_members: [],
-  };
+
   const dropdownOptions = [
     {
       label: "High",
@@ -71,7 +59,7 @@ const EditCard = ({
 
 
   const [initialValues, setInitialValues] = useState({
-    ...card,
+    ...CardTypes,
     board_id: boardId,
     project_id: projectId,
   });
@@ -84,7 +72,6 @@ const EditCard = ({
     try {
       const cardDetails = await getTaskById(cardId);
       if (isMounted) {
-        console.log("cardDetails", cardDetails)
 
         setInitialValues({...cardDetails, priority: reversePriorityMapping[cardDetails.priority]});
       }
@@ -190,10 +177,10 @@ const EditCard = ({
                             <div>Due Date</div>
                           </div>
                           <DateInput
-                            name="due_date"
-                            error={props.errors.due_date}
-                            touch={props.touched.due_date}
-                            value={props.values.due_date}
+                            name="end_date"
+                            error={props.errors.end_date}
+                            touch={props.touched.end_date}
+                            value={props.values.end_date}
                             label="Date"
                             minDate={new Date()}
                             onChange={(field, value) => {
