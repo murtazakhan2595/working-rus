@@ -38,6 +38,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
   return (
     <Formik
       initialValues={initialValues}
+      enableReinitialize={true}
       innerRef={formRef}
       onSubmit={(values, { resetForm }) => {
         handleSubmit(values, resetForm);

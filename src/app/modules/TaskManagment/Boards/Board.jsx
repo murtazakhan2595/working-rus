@@ -24,7 +24,6 @@ import lowpriority from "assets/images/lowpriority.svg";
 import TimeIcon from "assets/images/timeIcon";
 import message from "assets/images/message.svg";
 import attachmentsIcon from "assets/images/attachments.svg";
-import EditCard from "./EditCard";
 
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
@@ -241,7 +240,9 @@ const TaskColumn = ({ color, count, board, projectId }) => {
         </button>
         {tasks &&
           tasks.count > 0 &&
-          tasks.results.map((task, index) => <TaskCard key={index} task={task} />)}
+          tasks.results.map((task, index) => (
+            <TaskCard key={index} task={task} projectId={projectId} boardId={board.id}/>
+          ))}
       </div>
       {openCreateCard && (
         <CreateCard

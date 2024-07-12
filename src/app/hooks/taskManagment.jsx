@@ -296,7 +296,7 @@ const deleteProject = async (projectId) => {
 const getTaskById = async (taskId) => {
   try {
     if (taskId) {
-      const response = await axios.get(`${baseUrl}/tasks/${taskId}`, {
+      const response = await axios.get(`${baseUrl}/task/${taskId}`, {
         headers: headers(),
       });
       if (response.status === 200) {
@@ -310,7 +310,7 @@ const getTaskById = async (taskId) => {
     if (error?.response?.status === 401) {
       handleLogout();
     }
-    console.error("Error adding job:", error);
+    console.error("Error getting task:", error);
     return {};
   }
 };

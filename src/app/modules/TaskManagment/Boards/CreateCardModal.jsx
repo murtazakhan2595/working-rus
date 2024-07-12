@@ -12,6 +12,7 @@ import CreateAndEditCardForm from "../Sections/CreateAndEditCardForm";
 import { addTask, getTaskById } from "app/hooks/taskManagment";
 
 const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [initialValues, setInitialValues] = useState({
     ...CardTypes,
     board_id: boardId,
