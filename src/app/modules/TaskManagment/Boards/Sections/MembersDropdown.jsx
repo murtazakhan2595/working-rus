@@ -29,7 +29,6 @@ const MembersDropdown = ({ members }) => {
           <DropdownMenu start className="p-3 ml-2 w-[250px]" >
             {employees && members.map((member) => {
                 const employee = employees.find((emp) => emp.value === parseInt(member));
-                console.log(employee)
               return (
                 <DropdownItem className={`${itemClassName}`} >
                   <span>

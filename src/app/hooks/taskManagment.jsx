@@ -43,7 +43,7 @@ const getTaskByBoardId = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/project/?${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/task/?${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
