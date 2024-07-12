@@ -12,8 +12,11 @@ const AddList ={
 const CardTypes = {
   name: "",
   description: "",
+  start_date:"",
   end_date: "",
   priority: "",
+  created_by:"",
   card_members: [],
+  attachments: [],
 };
 export { Project, AddList, CardTypes };

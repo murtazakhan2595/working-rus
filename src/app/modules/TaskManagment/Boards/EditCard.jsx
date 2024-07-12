@@ -27,7 +27,7 @@ import {
   getTaskById,
 } from "app/hooks/taskManagment";
 import { CardTypes } from "app/utils/Types/TaskManagment";
-
+import CreateAndEditCardForm from "../Sections/CreateAndEditCardForm";
 
 
 const EditCard = ({
@@ -125,7 +125,13 @@ const EditCard = ({
             <div>{isEditMode ? "Edit " : "Add"} Card</div>
           </div>
         </div>
-        <Row>
+        <CreateAndEditCardForm
+          initialValues={initialValues}
+          employees={employees}
+          handleSubmit={handleSubmit}
+          onClose={onClose}
+        />
+        {/* <Row>
           <Col lg={12}>
             <Formik
               initialValues={initialValues}
@@ -285,7 +291,6 @@ const EditCard = ({
                       <div
                         type="button"
                         className="btn btn-outline-dark w-100"
-                        to="/jobs"
                         onClick={() => {
                           onClose();
                         }}
@@ -303,7 +308,7 @@ const EditCard = ({
               )}
             </Formik>
           </Col>
-        </Row>
+        </Row> */}
       </div>
     </div>
   );

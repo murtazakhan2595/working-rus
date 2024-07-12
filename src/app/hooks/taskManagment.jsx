@@ -293,6 +293,28 @@ const deleteProject = async (projectId) => {
   }
 };
 
+const getTaskById = async (taskId) => {
+  try {
+    if (taskId) {
+      const response = await axios.get(`${baseUrl}/tasks/${taskId}`, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        console.log("get task by id", response.data);
+        return response.data;
+      } else {
+        return {};
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding job:", error);
+    return {};
+  }
+};
+
 export {
   getAllProjects,
   addProject,
