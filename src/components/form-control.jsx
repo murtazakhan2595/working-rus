@@ -29,8 +29,8 @@ const SelectComponent = ({
         isDisabled={disabled}
         id={name}
         className={`custom-select-input form-control ${
-          error && touch ? "is-invalid" : ""
-        }`}
+          !value ? "items-center" : ""
+        } ${error && touch ? "is-invalid" : ""}`}
         options={options ? options : []}
         value={
           options && options.length > 0
@@ -38,7 +38,7 @@ const SelectComponent = ({
             : ""
         }
         onChange={(selectedOption) => onChange(name, selectedOption.value)}
-        placeholder={`Select ${label}`}
+        placeholder={`${label}`}
         styles={{
           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
           menu: (base) => ({ ...base, zIndex: 9999 }),
@@ -46,12 +46,14 @@ const SelectComponent = ({
         }}
         menuPortalTarget={document.body}
       />
-      <Label
-        className={`text-baseGray ${value ? "date-floating-label" : ""}`}
-        for={name}
-      >
-        {required && <span className="text-danger">* </span>} {label}
-      </Label>
+      {value && (
+        <Label
+          className={`text-baseGray ${value ? "date-floating-label" : ""}`}
+          for={name}
+        >
+          {required && <span className="text-danger">* </span>} {label}
+        </Label>
+      )}
 
       {error && touch && <div className="invalid-feedback">{error}</div>}
     </FormGroup>

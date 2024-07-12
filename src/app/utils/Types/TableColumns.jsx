@@ -126,9 +126,8 @@ export const MyLeavesColumns = [
     formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
   },
   {
-    dataField: "leave_type",
+    dataField: "leave_component_name",
     text: "Leave Type",
-    formatter: (cell, row) => <LeaveTypeOfEmployee value={cell} list={[]} />,
   },
 
   {
@@ -170,9 +169,8 @@ export const AllLeavesApplicationColumns = [
     formatter: (cell, row) => <ManagerName value={cell} />,
   },
   {
-    dataField: "leave_type",
+    dataField: "leave_component_name",
     text: "Leave Type",
-    formatter: (cell, row) => <LeaveType value={cell} list={[]} />,
   },
   {
     dataField: "total_leave",

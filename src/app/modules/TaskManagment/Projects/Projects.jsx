@@ -61,11 +61,9 @@ const Projects = ({ userProfile }) => {
   };
 
   const toggleAddProject = (projectId) => {
-    debugger;
     if (showProjectModal) {
       fetchData(true);
     }
-    console.log(projectId, !showProjectModal);
     setShowProjectModal(projectId ?? !showProjectModal);
   };
 
@@ -92,7 +90,7 @@ const Projects = ({ userProfile }) => {
                     // <ProjectModel onClose={toggleAddProject} />
                     <ProjectModel
                       projectId={showProjectModal || null}
-                      isEditMode={!showProjectModal}
+                      isEditMode={typeof showProjectModal === "number"}
                       onClose={() => {
                         toggleAddProject();
                       }}
@@ -168,7 +166,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
     {
       label: "Edit Details",
       onClick: () => {
-        toggleAddProject(project.id);
+        toggleAddProject(parseInt(project.id));
       },
     },
     { label: "View Details", onClick: viewDetails },

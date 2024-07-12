@@ -4,13 +4,13 @@ import "react-toastify/dist/ReactToastify.css";
 import { Project } from "app/utils/Types/TaskManagment";
 import { Table, Header, PageLoader } from "components";
 import { FilterInput } from "components/form-control";
-import { Card, CardHeader, CardBody, Row, Col, Button } from "reactstrap";
+import { Card, CardBody, Row, Col, Button } from "reactstrap";
 import {
   getAllBoards,
   getProjectById,
-  getAllTasks,
+  getTaskByBoardId,
 } from "app/hooks/taskManagment";
-import { JobSortingFilters } from "data/Data";
+import { TaskSortingFilters } from "data/Data";
 import { FaPlus } from "react-icons/fa";
 import { getRandomColor } from "utils/getValuesFromTables";
 import { EmployeeName } from "utils/getValuesFromTables";
@@ -18,8 +18,8 @@ import { FiFilter } from "react-icons/fi";
 import { RxPlus } from "react-icons/rx";
 import { useParams, Link } from "react-router-dom";
 import RenderProject from "./Sections/RenderProject";
-import { MembersList } from "../Sections";
-import { AddNewListModel } from "./Sections";
+import { CustomDropdown } from "../Sections";
+import { AddNewListModel, MembersDropdown } from "./Sections";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import highpriority from "assets/images/highpriority.svg";
 import lowpriority from "assets/images/lowpriority.svg";
@@ -28,6 +28,7 @@ import message from "assets/images/message.svg";
 import attachmentsIcon from "assets/images/attachments.svg";
 import EditCard from "./EditCard";
 
+import CreateAndUpdateCard from "./CreateAndUpdateCard";
 
 const Board = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -102,13 +103,13 @@ const Board = ({ userProfile }) => {
               )}
               <div className="flex flex-row justify-between items-center mb-5">
                 <RenderProject projectId={projectId} />
-                <div className="flex flex-wrap justify-end gap-2">
-                  <MembersList
-                    projectMembers={projectData?.project_members || null}
+                <div className="flex flex-wrap justify-end gap-2 items-center">
+                  <MembersDropdown
+                    members={projectData?.project_members || []}
                   />
                   <Button
                     onClick={toggleAddBoardModal}
-                    className="rounded-md btn-dark d-flex gap-1 items-center justify-center"
+                    className="rounded-md btn-dark d-flex gap-1 items-center justify-center h-[37.6px]"
                   >
                     <FaPlus
                       className="text-white"
@@ -120,7 +121,7 @@ const Board = ({ userProfile }) => {
                     filters={[
                       {
                         type: "sorting",
-                        option: JobSortingFilters,
+                        option: TaskSortingFilters,
                         name: "sorting",
                         placeholder: (
                           <span className="d-flex justify-center items-center gap-1">
@@ -129,7 +130,7 @@ const Board = ({ userProfile }) => {
                         ),
                         values: filterData,
                         className: "custom-dropdown-toggle-filter",
-                        mainHeading: "Sort",
+                        mainHeading: "Manage Filters",
                       },
                     ]}
                     onChange={handleFilterChange}
@@ -159,34 +160,47 @@ const Board = ({ userProfile }) => {
 };
 
 const TaskColumn = ({ color, count, board }) => {
-  const [isEditCardOpen, setIsEditCardOpen] = useState(false);
-  const [allTasks, setAllTasks] = useState([]);
-    const fetchData = async (isMounted) => {
-      try {
-        const tasksData = await getAllTasks({
-          filterData: { board_id: board.id },
-        });
-        if (isMounted) {
-          setAllTasks(tasksData);
-        }
-      } catch (error) {
-        console.error("Error fetching employeeLeaveTypes:", error);
+  const [openCreateCard, setOpenCreateCard] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showAddNewListModel, setshowAddNewListModel] = useState(false);
+
+  const fetchData = async (isMounted) => {
+    try {
+      const TaskData = await getTaskByBoardId({
+        filterData: { board_id: [board.id] },
+      });
+      if (isMounted) {
+        setTasks(TaskData);
       }
-    };
-
-    useEffect(() => {
-      let isMounted = true;
-      fetchData(isMounted);
-      return () => {
-        isMounted = false;
-      };
-    }, [board.id]);
-
-    const closeEditCard=() => {
-      console.log("edit card closed")
-            setIsEditCardOpen(false);
+    } catch (error) {
+      console.error("Error fetching employeeLeaveTypes:", error);
     }
-          
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const dropdownOptions = [
+    {
+      label: "Edit",
+      onClick: () => {
+        setshowAddNewListModel(true);
+      },
+    },
+    {
+      label: "Delete",
+      onClick: () => {
+        console.log("hk");
+      },
+    },
+  ];
+
   return (
     <div className="flex flex-col min-w-[290px] ">
       {isEditCardOpen && (
@@ -210,11 +224,20 @@ const TaskColumn = ({ color, count, board }) => {
               {count}
             </span>
           </div>
-          <BsThreeDotsVertical className="text-[#757880]" onClick={() => {}} />
+          
+          <CustomDropdown
+            isOpen={isDropdownOpen}
+            toggleDropdown={() => {
+              setIsDropdownOpen(!isDropdownOpen);
+            }}
+            options={dropdownOptions}
+          />
         </header>
         <button
           className="flex gap-2 justify-center items-center px-5 py-2 mt-10 text-base font-medium bg-white rounded border border-solid border-zinc-300 text-zinc-600"
-          onClick={() => setIsEditCardOpen(true)}
+          onClick={() => {
+            setOpenCreateCard(true);
+          }}
         >
           <RxPlus className=" text-xl" />
           <span>Add Card</span>
@@ -228,6 +251,18 @@ const TaskColumn = ({ color, count, board }) => {
             />
           ))}
       </div>
+      {openCreateCard && (
+        <CreateAndUpdateCard onClose={() => setOpenCreateCard(false)} />
+      )}
+      {showAddNewListModel && (
+        <AddNewListModel
+          boardId={board.id}
+          onClose={() => {
+            setshowAddNewListModel(false);
+          }}
+          isEditMode={true}
+        />
+      )}
     </div>
   );
 };
