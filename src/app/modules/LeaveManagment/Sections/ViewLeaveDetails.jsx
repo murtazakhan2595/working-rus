@@ -122,7 +122,7 @@ const ViewLeaveDetails = ({
           <div>
             <p className="text-[14px] font-normal text-baseGray">Leave Type</p>
             <p className="text-base font-semibold text-baseGray">
-              {application?.leave_type}
+              {application?.leave_component_name}
             </p>
           </div>
           <div>
@@ -152,7 +152,7 @@ const ViewLeaveDetails = ({
           <div>
             <p className="text-[14px] font-normal text-baseGray">Contact no</p>
             <p className="text-base font-semibold text-baseGray">
-              {application?.contact_no}
+              {application?.contact}
             </p>
           </div>
           <div>
