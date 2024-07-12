@@ -50,11 +50,10 @@ const JobDetails = ({ job }) => {
           </div>
           <div className="text-base flex items-center gap-x-2">
             <IoCalendarOutline className="text-lg" />
-            {/* {`${job?.updated_at?.slice(0, 10)} to ${job?.Deadline} `} */}
             {`${formattedUpdatedAt} - ${formattedDeadline} `}
           </div>
         </div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-start items-center flex-wrap gap-3">
           <Labels
             label={job.status === "live" ? "Open" : "Close"}
             iconDot={true}

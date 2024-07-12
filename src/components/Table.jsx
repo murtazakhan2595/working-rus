@@ -63,10 +63,13 @@ const Table = ({
                 <tr
                   onClick={() => {
                     if (rowExpand) toggleExpandRow(row.id);
+                    else if (tableOptions.onRowClick)
+                      tableOptions.onRowClick(row);
                   }}
                 >
                   {columns.map((column, index) => (
                     <td
+                      className={`${column.onClick ? "cursor-pointer" : ""}`}
                       key={index}
                       style={
                         column.width
@@ -77,6 +80,7 @@ const Table = ({
                       }
                       onClick={() => {
                         if (column.roWExpandOnClick) toggleExpandRow(row.id);
+                        else if (column.onClick) column.onClick(row);
                       }}
                     >
                       {column.formatter

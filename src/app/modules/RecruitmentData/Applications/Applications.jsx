@@ -1,46 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
 import { dropdownOptions } from "data/Data";
-import { PageLoader, StatusLabel } from "components";
+import { PageLoader, Table } from "components";
 import {
   Card,
   CardHeader,
   CardBody,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Row,
   Col,
 } from "reactstrap";
 import { cut, file, list } from "assets/images";
-import { AiOutlineDownload } from "react-icons/ai";
 import { Blocks, Header } from "../Sections";
 import { Tabs } from "./Sections";
 import { ViewApplicantDetails } from ".";
 import {
   getJobApplications,
   updateApplicationStatus,
-  downloadCV,
 } from "../../../hooks/recruitment";
 import { FilterInput } from "components/form-control";
-import { BsThreeDots } from "react-icons/bs";
-import moment from "moment";
+import { AllJobApplicationColumns } from "app/utils/Types/TableColumns";
 
 const Applications = () => {
   const location = useLocation();
-  const [jobIdForFilter, setJobIdForFilter] = useState(
-    location?.state?.jobId ?? ""
-  );
-  const [selectedRow, setSelectedRow] = useState(null);
+  const jobIdForFilter = location?.state?.jobId ?? "";
   const [Applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewApplicationDetails, setViewApplicationDetails] = useState("");
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const [filterData, setFilterData] = useState(
     jobIdForFilter ? { job_id: jobIdForFilter } : {}
   );
@@ -51,34 +39,23 @@ const Applications = () => {
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
-    sortName: "",
-    sortOrder: "",
   });
-  const onSizePerPageList = (sizePerPage) => {
-    if (options.sizePerPage !== sizePerPage) {
-      setOptions((prevOptions) => ({ ...prevOptions, sizePerPage }));
+  const onPageChange = (name, value) => {
+    const pageOptions = options;
+    if (pageOptions[name] !== value) {
+      pageOptions[name] = value;
+      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
-  };
-  const onPageChange = (page, sizePerPage) => {
-    if (options.page !== page) {
-      setOptions((prevOptions) => ({ ...prevOptions, page }));
-    }
-  };
-
-  const sortColumn = (sortName, sortOrder) => {
-    setOptions((prevOptions) => ({
-      ...prevOptions,
-      sortName,
-      sortOrder,
-    }));
   };
   useEffect(() => {
     const fetchLists = async () => {
       try {
         setIsLoading(true);
-        const URL = `/candidateall/?ordering=updated_at&page=${options.page}&page_size=${
-          options.sizePerPage
-        }&search=${encodeURIComponent(JSON.stringify(filterData))}`;
+        const URL = `/candidateall/?ordering=updated_at&page=${
+          options.page
+        }&page_size=${options.sizePerPage}&search=${encodeURIComponent(
+          JSON.stringify(filterData)
+        )}`;
         const applicationsData = await getJobApplications(URL);
         if (applicationsData) {
           setApplications({
@@ -115,72 +92,12 @@ const Applications = () => {
           console.error("Failed to update application status");
         }
       }
-      setSelectedRow(null);
     } catch (error) {
       console.error("Error updating application status:", error);
     }
   };
-
-  const renderAction = (row) => (
-    <div>
-      <ButtonDropdown
-        isOpen={openDropdownRow === row.id}
-        toggle={() => toggleDropdown(row.id)}
-        className="float-end"
-      >
-        <DropdownToggle size="sm" className="btn-brand">
-          <BsThreeDots onClick={() => toggleDropdown(row.id)} />
-        </DropdownToggle>
-        <DropdownMenu right>
-          {dropdownOptions.map((option) => {
-            return (
-              <>
-                <DropdownItem
-                  onClick={() => handleOptionSelect(row, option.value)}
-                >
-                  {option.label}
-                </DropdownItem>
-              </>
-            );
-          })}
-        </DropdownMenu>
-      </ButtonDropdown>
-    </div>
-  );
-
-  const renderResume = (row) => (
-    <div className="flex gap-x-2 items-center justify-center">
-      <span title={row?.cv} className="font-lato text-base text-baseGray">
-        File
-      </span>
-      <button onClick={() => downloadCV(row?.cv, row?.first_name)}>
-        <AiOutlineDownload />
-      </button>
-    </div>
-  );
-
-  const toggleDropdown = (index) => {
-    setOpenDropdownRow(index === openDropdownRow ? null : index);
-  };
-
-  const renderCandidate = (cell, row) => (
-    <>
-      <div
-        className="text-base text-[#323333] cursor-pointer"
-        onClick={() => {
-          setViewApplicationDetails(row);
-        }}
-      >
-        {cell} {row.last_name}
-      </div>
-      <div className="font-lato text-base text-baseGray">
-        {`Exp. ${row?.Year_of_Experience} years`}
-      </div>
-    </>
-  );
-
   const handleFilterChange = (filterName, filterValue) => {
-    onPageChange(1);
+    onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -195,10 +112,7 @@ const Applications = () => {
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
-    onSizePerPageList,
-    onPageChange,
-    onSortChange: sortColumn,
-    paginationPosition: "bottom",
+    onPageChange: onPageChange,
   };
 
   return (
@@ -308,104 +222,16 @@ const Applications = () => {
                 <Row>
                   <Col lg={12}>
                     <div>
-                      <BootstrapTable
+                      <Table
                         data={Applications?.data || []}
-                        version="4"
-                        hover
-                        remote
-                        pagination
-                        options={tableOptions}
-                        fetchInfo={{ dataTotalSize: Applications?.count || 0 }}
-                        className={"bootstrap-main-table"}
-                      >
-                        <TableHeaderColumn
-                          isKey
-                          dataField="id"
-                          className="table-header-bg text-center"
-                          headerAlign="center"
-                          dataAlign="center"
-                        >
-                          Candidate ID
-                        </TableHeaderColumn>
-
-                        <TableHeaderColumn
-                          dataField="first_name"
-                          className="table-header-bg"
-                          dataFormat={renderCandidate}
-                        >
-                          Candidate
-                        </TableHeaderColumn>
-
-                        <TableHeaderColumn
-                          dataField="phone_number"
-                          className="table-header-bg"
-                          width="20%"
-                          dataFormat={(cell, row) => (
-                            <>
-                              <div className="text-base font-lato">
-                                {cell || ""}
-                              </div>
-                              <div className="text-base font-lato">
-                                {row.email || ""}
-                              </div>
-                            </>
-                          )}
-                        >
-                          Phone no/Email
-                        </TableHeaderColumn>
-
-                        <TableHeaderColumn
-                          dataField="current_salary"
-                          dataSort
-                          className="table-header-bg"
-                        >
-                          Current Salary
-                        </TableHeaderColumn>
-
-                        <TableHeaderColumn
-                          dataField="expected_salary"
-                          dataSort
-                          className="table-header-bg"
-                        >
-                          Expected Salary
-                        </TableHeaderColumn>
-
-                        <TableHeaderColumn
-                          className="table-header-bg"
-                          dataField="updated_at"
-                          dataAlign="center"
-                          dataFormat={(cell) => (
-                            <>{moment(cell).format("DD-MM-YYYY")}</>
-                          )}
-                        >
-                          Applied On
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          className="table-header-bg"
-                          dataAlign="center"
-                          dataFormat={(cell, row) => renderResume(row)}
-                        >
-                          Resume
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          dataField="application_status"
-                          className="table-header-bg"
-                          dataFormat={(cell) => {
-                            const role = dropdownOptions.find(
-                              (obj) => obj.value === cell
-                            );
-                            return <StatusLabel status={role?.label} />;
-                          }}
-                        >
-                          Status
-                        </TableHeaderColumn>
-                        <TableHeaderColumn
-                          className="table-header-bg text-right"
-                          width="42px"
-                          headerAlign="right"
-                          dataFormat={(cell, row) => renderAction(row)}
-                        ></TableHeaderColumn>
-                      </BootstrapTable>
+                        columns={AllJobApplicationColumns(
+                          handleOptionSelect,
+                          setViewApplicationDetails
+                        )}
+                        pagination={true}
+                        dataTotalSize={Applications?.count || 0}
+                        tableOptions={tableOptions}
+                      />
                     </div>
                   </Col>
                 </Row>
