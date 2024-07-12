@@ -160,7 +160,6 @@ const Board = ({ userProfile }) => {
 
 const TaskColumn = ({ color, count, board }) => {
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
-  console.log(isEditCardOpen, "isEditCardOpen")
   const [allTasks, setAllTasks] = useState([]);
     const fetchData = async (isMounted) => {
       try {
@@ -226,9 +225,6 @@ const TaskColumn = ({ color, count, board }) => {
             <TaskCard
               key={index}
               card={card}
-              isEditCardOpen={isEditCardOpen}
-              setIsEditCardOpen={setIsEditCardOpen}
-              closeEditCard={closeEditCard}
             />
           ))}
       </div>
@@ -238,10 +234,8 @@ const TaskColumn = ({ color, count, board }) => {
 
 const TaskCard = ({
   card,
-  isEditCardOpen,
-  closeEditCard,
-  setIsEditCardOpen,
 }) => {
+  const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const getStatusClass = (status) => {
     switch (status) {
       case "amber":
@@ -280,7 +274,7 @@ const TaskCard = ({
         <BsThreeDotsVertical className="text-[#757880]" onClick={() => {}} />
       </div>
       <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
-        <h3 className="text-base font-bold">{card.name}</h3>
+        <h3 className="text-base font-bold" onClick={()=>setIsEditCardOpen(true)}>{card.name}</h3>
         <p className="mt-3 text-sm leading-5">{card.description}</p>
       </div>
       <footer className="flex justify-between py-5">

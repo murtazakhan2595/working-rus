@@ -43,6 +43,7 @@ const EditCard = ({
   projectId,
   cardId,
 }) => {
+  console.log("cardID", cardId)
   const card = {
     name: "",
     description: "",
@@ -64,6 +65,10 @@ const EditCard = ({
     Medium: 2,
     Low: 3,
   };
+  const reversePriorityMapping = Object.fromEntries(
+    Object.entries(priorityMapping).map(([key, value]) => [value, key])
+  );
+
 
   const [initialValues, setInitialValues] = useState({
     ...card,
@@ -72,6 +77,7 @@ const EditCard = ({
   });
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  console.log("initialValues", initialValues)
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -79,7 +85,8 @@ const EditCard = ({
       const cardDetails = await getTaskById(cardId);
       if (isMounted) {
         console.log("cardDetails", cardDetails)
-        setInitialValues(cardDetails);
+
+        setInitialValues({...cardDetails, priority: reversePriorityMapping[cardDetails.priority]});
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
@@ -136,6 +143,7 @@ const EditCard = ({
             <Formik
               initialValues={initialValues}
               innerRef={formRef}
+              enableReinitialize={true}
               onSubmit={(values, { resetForm }) => {
                 handleSubmit(values, resetForm);
               }}
@@ -217,6 +225,7 @@ const EditCard = ({
                             options={dropdownOptions}
                             error={props.errors.priority}
                             touch={props.touched.priority}
+                            value={props.values.priority}
                             label="Priority"
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
