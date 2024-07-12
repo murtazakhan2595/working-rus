@@ -30,6 +30,7 @@ ul {
 .card {
   border-radius: 8px;
   padding: 45px 35px;
+  border: none;
 }
 
 .card-header {
@@ -114,6 +115,14 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
 .file-input input[type="file"]::file-selector-button {
   width: 136px;
   color: transparent;
+}
+
+.truncate-text{
+  overflow: hidden; /* Hide the overflow */
+  display: -webkit-box; /* Necessary for webkit browsers */
+  -webkit-line-clamp: 5; /* Number of lines to display before truncating */
+  -webkit-box-orient: vertical; /* Set box orientation to vertical */
+  white-space: normal; /* Allow normal white-space handling */
 }
 
 /* Faked label styles and icon */
