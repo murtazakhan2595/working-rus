@@ -165,7 +165,7 @@ const ViewLeaveDetails = ({
 
         <div className="flex justify-end items-center">
           <Link
-            to={`/leave-history/${application?.employee_id}`}
+            to={`/leave-history`}
             className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2"
           >
             View History
