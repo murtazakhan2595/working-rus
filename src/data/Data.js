@@ -157,6 +157,8 @@ export const HeadOfDepartment = [
   { label: "Prakash PV - VP Sales", value: "Prakash" },
 ];
 
+
+
 export const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
   label: (
     <div>
@@ -231,6 +233,19 @@ export const typeOptions = [
     ),
   },
 ];
+
+export const formatNumber = (num) => {
+  const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
+  let unit = 0;
+
+  while (num >= 1000 && unit < units.length - 1) {
+    num /= 1000;
+    unit++;
+  }
+
+  return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(num) + units[unit];
+};
+
 
 export const priority2Options = [
   {

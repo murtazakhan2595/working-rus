@@ -6,7 +6,7 @@ import {
   UserRole,
 } from "utils/getValuesFromTables";
 import {RenderJobApplicationActions} from "app/modules/RecruitmentData/Applications/Sections";
-import { dropdownOptions } from "data/Data";
+import { dropdownOptions,formatNumber } from "data/Data";
 import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
 import {
@@ -186,10 +186,13 @@ export const AllJobApplicationColumns = (handleOptionSelect,setViewApplicationDe
   {
     dataField: "current_salary",
     text: "Current Salary",
+    formatter: (cell) => <>{formatNumber(cell)}</>,
+
   },
   {
     dataField: "expected_salary",
     text: "Expected Salary",
+    formatter: (cell) => <>{formatNumber(cell)}</>,
   },
   {
     dataField: "updated_at",
