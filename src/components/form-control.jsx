@@ -162,13 +162,14 @@ const TextInput = ({
   disabled,
   required,
   regEx,
+  maxLength,
 }) => {
   return (
     <>
       <FormGroup floating>
         <Input
           type="text"
-          maxLength="100"
+          maxLength={maxLength ?? "100"}
           id={name}
           name={name}
           autoComplete="Off"
@@ -538,7 +539,7 @@ const TextAreaInput = ({
       <FormGroup floating>
         <Input
           type="textarea"
-          // maxLength={maxLength ?? "100"}
+          maxLength={maxLength ?? "5000"}
           id={name}
           name={name}
           autoComplete="Off"
@@ -546,7 +547,7 @@ const TextAreaInput = ({
           value={value}
           rows={5}
           disabled={disabled}
-          className={error && touch ? "is-invalid" : ""}
+          className={`h-auto ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {
             const value = option.target.value;
             if (regEx) {

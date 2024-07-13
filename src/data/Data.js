@@ -157,8 +157,6 @@ export const HeadOfDepartment = [
   { label: "Prakash PV - VP Sales", value: "Prakash" },
 ];
 
-
-
 export const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
   label: (
     <div>
@@ -243,9 +241,14 @@ export const formatNumber = (num) => {
     unit++;
   }
 
-  return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(num) + units[unit];
-};
+  // Use Intl.NumberFormat to format the number with 2 decimal places
+  const formattedNumber = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
 
+  return formattedNumber + units[unit];
+};
 
 export const priority2Options = [
   {
