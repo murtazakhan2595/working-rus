@@ -1,6 +1,8 @@
-import { EmployeeName, getRandomColor } from "utils/getValuesFromTables";
+import { EmployeeName } from "utils/getValuesFromTables";
 import { IoIosArrowDown } from "react-icons/io";
 import React, { useState } from "react";
+import {getRandomColor} from "utils/renderValues"
+
 
 const Members = ({ member, isEditMode, removeMember }) => {
   const [isOpen, setIsOpen] = useState(false);

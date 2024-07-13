@@ -3,7 +3,7 @@ import { RxCross2 } from "react-icons/rx";
 import { CiEdit } from "react-icons/ci";
 import dots from "assets/images/dots.svg";
 import { EmployeeName } from "utils/getValuesFromTables";
-import { getRandomColor } from "utils/getValuesFromTables";
+import { getRandomColor } from "utils/renderValues";
 
 
 const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {

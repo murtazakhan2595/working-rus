@@ -22,7 +22,7 @@ import { CustomDropdown } from "../Sections";
 import { AddNewListModel, MembersDropdown } from "./Sections";
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
-import { getRandomColor } from "utils/getValuesFromTables";
+import {getRandomColor} from "utils/renderValues"
 
 const Board = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -235,7 +235,7 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
               <div
-                className={`shrink-0 my-auto w-2 h-2 ${getRandomColor()} rounded-full`}
+                className={`shrink-0 my-auto w-2 h-2 ${getRandomColor(board.name?.charAt(0))} rounded-full`}
               />
               <span>{board.name}</span>
             </h2>
