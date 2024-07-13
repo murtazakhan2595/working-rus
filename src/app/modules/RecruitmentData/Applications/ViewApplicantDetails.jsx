@@ -4,6 +4,7 @@ import pdfIcon from "assets/images/pdfIcon.svg";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import { AiOutlineDownload } from "react-icons/ai";
+import { formatNumber } from "data/Data";
 import moment from "moment";
 import { Labels } from "../Sections";
 import { RenderJobApplicationActions } from "./Sections";
@@ -56,7 +57,7 @@ const ViewApplicantDetails = ({
       className="fixed top-0 text-baseGray right-0 w-[95%] h-[100vh] z-10 overflow-y-auto pl-10 hideScroll"
       style={{ maxWidth: "700px" }}
     >
-      <div className="bg-white h-auto p-10" style={{ minHeight: "99vh" }}>
+      <div className="bg-white h-auto p-10" style={{ minHeight: "100vh" }}>
         <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
           <h2 className="font-bold text-xl ">Applicant details</h2>
           <div className="flex justify-center ">
@@ -107,7 +108,7 @@ const ViewApplicantDetails = ({
           <Labels label={`${applicant?.Year_of_Experience} Years`} />
           <Labels
             label={
-              applicant?.current_salary ? `$${applicant?.current_salary}` : ""
+              applicant?.current_salary ? `$${formatNumber(applicant?.current_salary)}` : ""
             }
           />
           <Labels label={getCountryFullName(applicant?.location)} />
@@ -129,7 +130,7 @@ const ViewApplicantDetails = ({
           />
           <ApplicantDetail
             label={"Expected Salary"}
-            value={applicant?.expected_salary}
+            value={formatNumber(applicant?.expected_salary)}
           />
           <ApplicantDetail
             label={"Notice Period"}
@@ -143,7 +144,7 @@ const ViewApplicantDetails = ({
 
         <div className="mt-3">
           <h3 className="font-bold text-base text-[#323333]">
-            Job Description
+            Resume
           </h3>
 
           <div className="bg-[#F0F1F2] rounded-lg p-2 flex justify-between items-center">
