@@ -10,6 +10,7 @@ import {
   getProjectById,
   getTaskByBoardId,
   deleteBoard,
+  moveTask
 } from "app/hooks/taskManagment";
 import { TaskSortingFilters } from "data/Data";
 import { FaPlus } from "react-icons/fa";
@@ -19,13 +20,6 @@ import { useParams, Link } from "react-router-dom";
 import RenderProject from "./Sections/RenderProject";
 import { CustomDropdown } from "../Sections";
 import { AddNewListModel, MembersDropdown } from "./Sections";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import highpriority from "assets/images/highpriority.svg";
-import lowpriority from "assets/images/lowpriority.svg";
-import TimeIcon from "assets/images/timeIcon";
-import message from "assets/images/message.svg";
-import attachmentsIcon from "assets/images/attachments.svg";
-
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
 import { getRandomColor } from "utils/getValuesFromTables";
@@ -162,7 +156,6 @@ const Board = ({ userProfile }) => {
 };
 
 const TaskColumn = ({ reloadData, board, projectId }) => {
-  console.log(board.id, projectId);
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -178,7 +171,7 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
         setTasks(TaskData);
       }
     } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
+      console.error("Error fetching tasks:", error);
     }
   };
 
@@ -189,6 +182,26 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
       isMounted = false;
     };
   }, []);
+
+  const handleDragStart = (e, taskId) => {
+    e.dataTransfer.setData("taskId", taskId);
+    e.dataTransfer.setData("sourceBoardId", board.id);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData("taskId");
+    const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
+
+    if (sourceBoardId !== board.id) {
+      await moveTask({id:taskId, board_id:board.id});
+      reloadData();
+    }
+  };
 
   const dropdownOptions = [
     {
@@ -212,7 +225,11 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
   };
 
   return (
-    <div className="flex flex-col min-w-[290px] mb-5">
+    <div
+      className="flex flex-col min-w-[290px] mb-5"
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       <div className="flex flex-col ">
         <header className="flex gap-5 justify-between pl-5 w-full">
           <div className="flex gap-4">
@@ -255,6 +272,7 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
               reloadData={() => {
                 fetchData(true);
               }}
+              onDragStart={handleDragStart}
             />
           ))}
       </div>
@@ -291,8 +309,6 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
     </div>
   );
 };
-
-
 
 const mapStateToProps = (state) => {
   return {

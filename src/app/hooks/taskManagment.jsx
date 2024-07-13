@@ -99,15 +99,17 @@ const getAllBoards = async (payload) => {
 };
 const getAllTasks = async (payload) => {
   const filterData = payload?.filterData ?? {};
-  console.log("filterData", filterData)
-  const URL = `/task/?order=-date${encodeURIComponent(JSON.stringify(filterData))}`;
+  console.log("filterData", filterData);
+  const URL = `/task/?order=-date${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const data = response.data;
-      console.log("get all tasks", data)
+      console.log("get all tasks", data);
       return data;
     } else {
       return [];
@@ -192,7 +194,7 @@ const addProject = async (payload) => {
   }
 };
 const addTask = async (payload) => {
-  console.log("addtask payload", payload)
+  console.log("addtask payload", payload);
   try {
     if (payload?.id) {
       const response = await axios.patch(
@@ -217,6 +219,26 @@ const addTask = async (payload) => {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding task:", error);
+    return false;
+  }
+};
+const moveTask = async (payload) => {
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/task/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
       return response;
     }
   } catch (error) {
@@ -372,4 +394,5 @@ export {
   getTaskById,
   deleteTask,
   deleteBoard,
+  moveTask,
 };

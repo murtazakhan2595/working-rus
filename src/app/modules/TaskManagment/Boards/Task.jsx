@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
-import {ConfirmationModal}  from "components";
+import { ConfirmationModal } from "components";
 import { BiComment } from "react-icons/bi";
 import { getStatusClass, getStatusIconColor } from "./Sections";
 import { CustomDropdown, MembersList } from "../Sections";
@@ -12,7 +12,7 @@ import TimeIcon from "assets/images/timeIcon";
 import EditCard from "./EditCard";
 import moment from "moment";
 
-const TaskCard = ({ projectId, task, reloadData }) => {
+const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -21,6 +21,7 @@ const TaskCard = ({ projectId, task, reloadData }) => {
     setIsDropdownOpen(false);
     setIsEditCardOpen(true);
   };
+
   const dropdownOptions = [
     {
       label: "Edit Details",
@@ -36,6 +37,7 @@ const TaskCard = ({ projectId, task, reloadData }) => {
       },
     },
   ];
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -49,7 +51,11 @@ const TaskCard = ({ projectId, task, reloadData }) => {
   };
 
   return (
-    <div className="flex flex-col p-3 mt-6 w-full bg-white rounded-lg shadow">
+    <div
+      className="flex flex-col p-3 mt-6 w-full bg-white rounded-lg shadow"
+      draggable
+      onDragStart={(e) => onDragStart(e, task.id)}
+    >
       {isEditCardOpen && (
         <EditCard
           cardId={task.id}
@@ -92,11 +98,6 @@ const TaskCard = ({ projectId, task, reloadData }) => {
           <div className="flex -space-x-2.5">
             <MembersList members={task?.assigned_to} />
           </div>
-          {/* <div className="w-8 h-8 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2">
-            <span className="text-white text-2xl flex justify-center items-center plus-icon w-8 h-8">
-              <RxPlus />
-            </span>
-          </div> */}
         </div>
         <div className="flex gap-2 items-center text-zinc-600">
           {task?.end_date && (
