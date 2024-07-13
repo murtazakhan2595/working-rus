@@ -58,7 +58,7 @@ const Table = ({
         )}
         <tbody>
           {data && data.length > 0 ? (
-            data.map((row) => (
+            data.map((row,recordIndex) => (
               <React.Fragment key={row.id}>
                 <tr
                   onClick={() => {
@@ -80,11 +80,17 @@ const Table = ({
                       }
                       onClick={() => {
                         if (column.roWExpandOnClick) toggleExpandRow(row.id);
-                        else if (column.onClick) column.onClick(row);
+                        else if (column.onClick)
+                          column.onClick(recordIndex, data, row);
                       }}
                     >
                       {column.formatter
-                        ? column.formatter(row[column.dataField], row, data)
+                        ? column.formatter(
+                            row[column.dataField],
+                            row,
+                            data,
+                            index
+                          )
                         : row[column.dataField]}
                     </td>
                   ))}

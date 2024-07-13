@@ -5,8 +5,8 @@ import {
   LeaveTypeOfEmployee,
   UserRole,
 } from "utils/getValuesFromTables";
-import {RenderJobApplicationActions} from "app/modules/RecruitmentData/Applications/Sections";
-import { dropdownOptions,formatNumber } from "data/Data";
+import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
+import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
 import {
@@ -17,9 +17,7 @@ import {
 import moment from "moment";
 import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
 import { IoIosArrowDown } from "react-icons/io";
-import {
-  downloadCV,
-} from "app/hooks/recruitment";
+import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
 
 export const LeaveHistoryColumns = (updateLeaveType) => [
@@ -152,7 +150,10 @@ export const MyLeavesColumns = [
   },
 ];
 
-export const AllJobApplicationColumns = (handleOptionSelect,setViewApplicationDetails) => [
+export const AllJobApplicationColumns = (
+  handleOptionSelect,
+  setViewApplicationDetails
+) => [
   {
     dataField: "id",
     text: "Candidate ID",
@@ -171,7 +172,9 @@ export const AllJobApplicationColumns = (handleOptionSelect,setViewApplicationDe
         </div>
       </>
     ),
-    onClick : (row) => setViewApplicationDetails(row)
+    onClick: (index, list) => {
+      setViewApplicationDetails({ index, list });
+    },
   },
   {
     dataField: "phone_number",
@@ -187,7 +190,6 @@ export const AllJobApplicationColumns = (handleOptionSelect,setViewApplicationDe
     dataField: "current_salary",
     text: "Current Salary",
     formatter: (cell) => <>{formatNumber(cell)}</>,
-
   },
   {
     dataField: "expected_salary",
@@ -202,7 +204,7 @@ export const AllJobApplicationColumns = (handleOptionSelect,setViewApplicationDe
   {
     dataField: "",
     text: "Resume",
-    formatter: (cell,row) => (
+    formatter: (cell, row) => (
       <>
         <div className="flex gap-x-2 items-center justify-center">
           <span title={row?.cv} className="font-lato text-base text-baseGray">
@@ -226,7 +228,12 @@ export const AllJobApplicationColumns = (handleOptionSelect,setViewApplicationDe
   {
     dataField: "",
     text: "",
-    formatter: (cell, row) => <RenderJobApplicationActions row={row} handleOptionSelect={handleOptionSelect} />,
+    formatter: (cell, row) => (
+      <RenderJobApplicationActions
+        row={row}
+        handleOptionSelect={handleOptionSelect}
+      />
+    ),
   },
 ];
 export const AllLeavesApplicationColumns = [

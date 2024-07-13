@@ -26,7 +26,7 @@ const Applications = () => {
   const jobIdForFilter = location?.state?.jobId ?? "";
   const [Applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [viewApplicationDetails, setViewApplicationDetails] = useState("");
+  const [viewApplicationDetails, setViewApplicationDetails] = useState(null);
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
   const [filterData, setFilterData] = useState(
@@ -119,11 +119,12 @@ const Applications = () => {
     <div className="screen bg-[#F0F1F2]">
       {viewApplicationDetails && (
         <ViewApplicantDetails
-          applicant={viewApplicationDetails}
+        applicantIndex={viewApplicationDetails?.index}
           closeModel={() => {
             setViewApplicationDetails(null);
           }}
           handleOptionSelect={handleOptionSelect}
+          applicationsList={viewApplicationDetails?.list}
         />
       )}
       <Header
