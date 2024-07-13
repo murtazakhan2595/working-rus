@@ -1,10 +1,10 @@
 import { EmployeeName } from "utils/getValuesFromTables";
 import { getRandomColor } from "utils/getValuesFromTables";
 
-const MembersList = ({ projectMembers }) => {
-  if (!projectMembers) return <></>;
-  const displayedMembers = projectMembers.slice(0, 3);
-  const remainingCount = projectMembers.length - displayedMembers.length;
+const MembersList = ({ members }) => {
+  if (!members) return <></>;
+  const displayedMembers = members.slice(0, 3);
+  const remainingCount = members.length - displayedMembers.length;
   return (
     <div className="flex -space-x-2.5 h-10 items-center">
       {displayedMembers.map((member) => (

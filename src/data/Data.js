@@ -32,12 +32,6 @@ export const tasksTitle = [
   { label: "Priority", width: "w-28" },
 ];
 
-export const priorityOptions = [
-  { value: 3, label: "🟢 Low" },
-  { value: 2, label: "🌕 Medium" },
-  { value: 1, label: "🔴 High" },
-];
-
 export const statusOptions = [
   { value: "To Do", label: "Todo" },
   { value: "In Progress", label: "In Progress" },
@@ -250,9 +244,9 @@ export const formatNumber = (num) => {
   return formattedNumber + units[unit];
 };
 
-export const priority2Options = [
+export const PriorityList = [
   {
-    value: "Low",
+    value: 3,
     label: (
       <div className="flex items-center gap-x-2 text-baseGray ">
         <IoMdArrowDropdownCircle className="text-2xl" /> Low
@@ -260,7 +254,7 @@ export const priority2Options = [
     ),
   },
   {
-    value: "Medium",
+    value: 2,
     label: (
       <div className="flex items-center gap-x-2 text-yellow-500">
         <FiMinusCircle className="text-xl" /> Medium
@@ -268,7 +262,7 @@ export const priority2Options = [
     ),
   },
   {
-    value: "High",
+    value: 1,
     label: (
       <div className="flex items-center gap-x-2 text-red-500">
         <IoMdArrowDropupCircle className="text-2xl" /> High

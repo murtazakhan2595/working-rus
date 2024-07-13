@@ -2,13 +2,14 @@ import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { Project } from "app/utils/Types/TaskManagment";
-import { Header, PageLoader } from "components";
+import { Header, PageLoader, ConfirmationModal } from "components";
 import { FilterInput } from "components/form-control";
 import { Card, CardBody, Row, Col, Button } from "reactstrap";
 import {
   getAllBoards,
   getProjectById,
   getTaskByBoardId,
+  deleteBoard,
 } from "app/hooks/taskManagment";
 import { TaskSortingFilters } from "data/Data";
 import { FaPlus } from "react-icons/fa";
@@ -44,10 +45,9 @@ const Board = ({ userProfile }) => {
       });
       const projectDetails = await getProjectById(projectId);
       if (isMounted) {
-        setAllBoards(boardsData );
+        setAllBoards(boardsData);
         setProjectData(projectDetails);
       }
-
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
     } finally {
@@ -56,7 +56,6 @@ const Board = ({ userProfile }) => {
       }
     }
   };
- 
 
   useEffect(() => {
     let isMounted = true;
@@ -89,7 +88,7 @@ const Board = ({ userProfile }) => {
       <Header title="My Boards" />
       <Row>
         <Col lg={12} className="mx-auto">
-          <Card className="p-0" style={{background:"#FAFBFC"}}>
+          <Card className="p-0" style={{ background: "#FAFBFC" }}>
             <CardBody className="py-3">
               {showAddNewListModel && (
                 <AddNewListModel
@@ -147,6 +146,9 @@ const Board = ({ userProfile }) => {
                         key={index}
                         board={board}
                         projectId={projectId}
+                        reloadData={() => {
+                          fetchData(true);
+                        }}
                       />
                     ))}
                 </div>
@@ -159,12 +161,13 @@ const Board = ({ userProfile }) => {
   );
 };
 
-const TaskColumn = ({ color, count, board, projectId }) => {
-  console.log(board.id, projectId)
+const TaskColumn = ({ reloadData, board, projectId }) => {
+  console.log(board.id, projectId);
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchData = async (isMounted) => {
     try {
@@ -197,13 +200,16 @@ const TaskColumn = ({ color, count, board, projectId }) => {
     {
       label: "Delete",
       onClick: () => {
-        console.log("hk");
+        setIsDeleteModalOpen(true);
       },
     },
   ];
 
-  console.log(tasks, "status");
-
+  const confirmDelete = async () => {
+    await deleteBoard(board.id);
+    reloadData();
+    setIsDeleteModalOpen(false);
+  };
 
   return (
     <div className="flex flex-col min-w-[290px] mb-5">
@@ -241,12 +247,23 @@ const TaskColumn = ({ color, count, board, projectId }) => {
         {tasks &&
           tasks.count > 0 &&
           tasks.results.map((task, index) => (
-            <TaskCard key={index} task={task} projectId={projectId} boardId={board.id}/>
+            <TaskCard
+              key={index}
+              task={task}
+              projectId={projectId}
+              boardId={board.id}
+              reloadData={() => {
+                fetchData(true);
+              }}
+            />
           ))}
       </div>
       {openCreateCard && (
         <CreateCard
-          onClose={() => setOpenCreateCard(false)}
+          onClose={() => {
+            setOpenCreateCard(false);
+            reloadData();
+          }}
           boardId={board.id}
           projectId={projectId}
         />
@@ -256,13 +273,25 @@ const TaskColumn = ({ color, count, board, projectId }) => {
           boardId={board.id}
           onClose={() => {
             setshowAddNewListModel(false);
+            reloadData();
           }}
           isEditMode={true}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <ConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            // reloadData();
+          }}
+          onDelete={confirmDelete}
         />
       )}
     </div>
   );
 };
+
 
 
 const mapStateToProps = (state) => {

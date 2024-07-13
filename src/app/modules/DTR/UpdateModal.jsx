@@ -9,7 +9,7 @@ import { RxCross2, RxPlus } from "react-icons/rx";
 import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { TbCircleDashed } from "react-icons/tb";
-import { priority2Options, status2Options, statusOptions, typeOptions } from "../../../data/Data";
+import { PriorityList, status2Options, statusOptions, typeOptions } from "../../../data/Data";
 import Select from "react-select";
 import { updateTask } from "../../../state/slices/UpdateDtrSlice";
 import { fetchDTRByEmployeeId } from "../../../state/slices/GetDtrSlice";
@@ -280,10 +280,10 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
                                 />
                                 <Select
                                     name="priorty"
-                                    value={priority2Options.find(
+                                    value={PriorityList.find(
                                         (opt) => opt.value === formData.priorty
                                     )}
-                                    options={priority2Options}
+                                    options={PriorityList}
                                     className="w-[60%]"
                                     isSearchable={false}
                                     // onChange={(selectedOption) => {

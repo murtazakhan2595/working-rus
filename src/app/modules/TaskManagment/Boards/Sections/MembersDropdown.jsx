@@ -24,7 +24,7 @@ const MembersDropdown = ({ members }) => {
           toggle={() => toggleDropdown()}
         >
           <DropdownToggle className="border-0 shadow-none bg-transparent">
-            <MembersList projectMembers={members} />
+            <MembersList members={members} />
           </DropdownToggle>
           <DropdownMenu start className="p-3 ml-2 w-[250px]" >
             {employees && members.map((member) => {
@@ -44,7 +44,7 @@ const MembersDropdown = ({ members }) => {
           </DropdownMenu>
         </ButtonDropdown>
       ) : (
-        <MembersList projectMembers={members} />
+        <MembersList members={members} />
       )}
     </>
   );

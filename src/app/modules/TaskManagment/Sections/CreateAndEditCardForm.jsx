@@ -14,7 +14,7 @@ import highpriorityIcon from "assets/images/highpriority.svg";
 import lowpriorityIcon from "assets/images/lowpriority.svg";
 import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import plus from "assets/images/plus.svg";
-import { CardTypes } from "app/utils/Types/TaskManagment";
+import { PriorityList } from "data/Data";
 import Members from "./Member";
 
 const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose }) => {
@@ -124,7 +124,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 <Col md="6" className="mb-0">
                   <SelectComponent
                     name="priority"
-                    options={dropdownOptions}
+                    options={PriorityList}
                     error={props.errors.priority}
                     touch={props.touched.priority}
                     value={props.values.priority}
@@ -182,9 +182,9 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 </Col>
                 <Col md="6" className="mb-3">
                   <div className="flex justify-start gap-2 items-center h-100">
-                    {props.values.card_members &&
-                      props.values.card_members.length > 0 &&
-                      props.values.card_members.map((member, index) => (
+                    {props.values.assigned_to &&
+                      props.values.assigned_to.length > 0 &&
+                      props.values.assigned_to.map((member, index) => (
                         <div key={index}>
                           <Members member={member} />
                         </div>
@@ -205,15 +205,15 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
               {membersOpen && (
                 <Col md="12" className="mb-3 w-full b">
                   <SelectComponent
-                    name="card_members"
+                    name="assigned_to"
                     options={employees}
-                    error={props.errors.card_members}
-                    touch={props.touched.card_members}
+                    error={props.errors.assigned_to}
+                    touch={props.touched.assigned_to}
                     label="Card Members"
                     required
                     onChange={(field, value) => {
                       setMembersOpen(false);
-                      const members = props.values.card_members || [];
+                      const members = props.values.assigned_to || [];
                       members.push(value);
                       props.setFieldValue(field, members);
                     }}

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
 import { LeaveAllotmentColumns } from "app/utils/Types/TableColumns";
-import { Table, Header, PageLoader } from "components";
+import { Header, PageLoader,ConfirmationModal } from "components";
 import { FilterInput } from "components/form-control";
 import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { CiCirclePlus } from "react-icons/ci";
@@ -15,7 +15,6 @@ import {
   MembersList,
   CustomDropdown,
   ViewBoardDetails,
-  ConfirmationModal,
 } from "../Sections";
 
 const Projects = ({ userProfile }) => {
@@ -141,10 +140,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
     setIsViewBoardDetails(false);
     setIsEditMode(false);
   };
-  const EditDetails = () => {
-    setIsDropdownOpen(false);
-    setIsEditMode(true);
-  };
+  
   const viewDetails = () => {
     setIsDropdownOpen(false);
     setIsViewBoardDetails(true);
@@ -212,7 +208,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
                 {moment(project?.start_date).format("DD-MM-YY")}
               </p>
             </div>
-            <MembersList projectMembers={projectMembers} />
+            <MembersList members={projectMembers} />
           </div>
         </div>
       ) : (

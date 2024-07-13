@@ -132,7 +132,7 @@ const addBoard = async (payload) => {
         }
       );
       if (response.status === 200) {
-        toast.success("Project Updated!", {
+        toast.success("List Updated!", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
@@ -187,7 +187,7 @@ const addProject = async (payload) => {
     if (error?.response?.status === 401) {
       handleLogout();
     }
-    console.error("Error adding job:", error);
+    console.error("Error adding project:", error);
     return false;
   }
 };
@@ -203,7 +203,7 @@ const addTask = async (payload) => {
         }
       );
       if (response.status === 200) {
-        toast.success("Project Updated!", {
+        toast.success("Task Updated!", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
@@ -213,7 +213,7 @@ const addTask = async (payload) => {
         headers: headers(),
       });
       if (response.status === 201) {
-        toast.success("Project Added!", {
+        toast.success("Task Added!", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
@@ -292,6 +292,50 @@ const deleteProject = async (projectId) => {
     return false;
   }
 };
+const deleteBoard = async (taskId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/board/${taskId}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      toast.success("Bard Deleted!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error deleting board:", error);
+    toast.error("Error deleting board!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
+const deleteTask = async (taskId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/task/${taskId}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      toast.success("Task Deleted!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error deleting task:", error);
+    toast.error("Error deleting task!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
 
 const getTaskById = async (taskId) => {
   try {
@@ -326,4 +370,6 @@ export {
   getTaskByBoardId,
   addTask,
   getTaskById,
+  deleteTask,
+  deleteBoard,
 };

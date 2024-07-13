@@ -116,7 +116,7 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
                         </Col>
                         <Col md="3">
                           <Button type="submit" className="btn btn-dark w-100">
-                            Add
+                            {boardId ? "Update" : "Add"}
                           </Button>
                         </Col>
                       </Row>

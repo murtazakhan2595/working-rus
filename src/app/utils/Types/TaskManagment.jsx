@@ -16,7 +16,7 @@ const CardTypes = {
   end_date: "",
   priority: "",
   created_by:"",
-  card_members: [],
+  assigned_to: [],
   attachments: [],
 };
 export { Project, AddList, CardTypes };
