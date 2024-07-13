@@ -242,8 +242,8 @@ const PhoneNumberInput = ({
               isDisabled={disabled}
               id={countryCodeName}
               className={`custom-select-input form-control ${
-                error && touch ? "is-invalid" : ""
-              }`}
+                !countryCode ? "items-center" : ""
+              } ${error && touch ? "is-invalid" : ""}`}
               options={countryCodesOptions ? countryCodesOptions : []}
               value={
                 countryCodesOptions
@@ -257,9 +257,11 @@ const PhoneNumberInput = ({
               }
               placeholder={"Code"}
             />
-            <Label className="text-baseGray" htmlFor="address">
-              Code
-            </Label>
+            {countryCode && (
+              <Label className="text-baseGray" htmlFor="address">
+                Code
+              </Label>
+            )}
           </FormGroup>
         </Col>
         <Col sm={8} className="">
@@ -533,6 +535,7 @@ const TextAreaInput = ({
   required,
   regEx,
   maxLength,
+  maxRows,
 }) => {
   return (
     <>
@@ -545,7 +548,7 @@ const TextAreaInput = ({
           autoComplete="Off"
           placeholder={"Enter " + label}
           value={value}
-          rows={5}
+          rows={maxRows ?? 1}
           disabled={disabled}
           className={`h-auto ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {

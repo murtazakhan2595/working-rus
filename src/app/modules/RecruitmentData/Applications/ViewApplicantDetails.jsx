@@ -108,7 +108,7 @@ const ViewApplicantDetails = ({
           <Labels label={`${applicant?.Year_of_Experience} Years`} />
           <Labels
             label={
-              applicant?.current_salary ? `$${formatNumber(applicant?.current_salary)}` : ""
+              applicant?.current_salary ? `${jobDetails?.currency} ${formatNumber(applicant?.current_salary)}` : ""
             }
           />
           <Labels label={getCountryFullName(applicant?.location)} />
@@ -130,7 +130,7 @@ const ViewApplicantDetails = ({
           />
           <ApplicantDetail
             label={"Expected Salary"}
-            value={formatNumber(applicant?.expected_salary)}
+            value={`${jobDetails?.currency} ${formatNumber(applicant?.expected_salary)}`}
           />
           <ApplicantDetail
             label={"Notice Period"}

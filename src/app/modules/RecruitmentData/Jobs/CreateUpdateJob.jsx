@@ -263,6 +263,7 @@ const JobForm = forwardRef(
                           value={props.values.Job_Requirement}
                           label="Job Requirement"
                           required
+                          maxRows={5}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
@@ -276,6 +277,7 @@ const JobForm = forwardRef(
                           value={props.values.Job_Description}
                           label="Job Description"
                           required
+                          maxRows={5}
                           onChange={(field, value) => {
                             props.handleChange(field)(value);
                           }}

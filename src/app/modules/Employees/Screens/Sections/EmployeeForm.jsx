@@ -320,6 +320,7 @@ const EmployeeForm = ({
                             value={props.values?.residential_address}
                             label={"Address"}
                             required={true}
+                            maxRows={1}
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
                             }}
@@ -339,20 +340,6 @@ const EmployeeForm = ({
                           touch={props.touched.department_name}
                           value={props.values.department_name}
                           label={"Department"}
-                          required={true}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                      </Col>
-                      <Col md="6">
-                        <SelectComponent
-                          name={"organization"}
-                          options={organization}
-                          error={props.errors?.organization}
-                          touch={props.touched.organization}
-                          value={props.values.organization}
-                          label={"Organization"}
                           required={true}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);

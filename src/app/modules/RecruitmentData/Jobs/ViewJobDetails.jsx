@@ -19,6 +19,7 @@ import { getJobById } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import { formatNumber } from "data/Data";
 import moment from "moment";
+import { Col,Row } from "reactstrap";
 
 const ViewJobDetails = ({ jobId, onClose }) => {
   const [showEdit, setShowEdit] = useState(false);
@@ -63,7 +64,7 @@ const ViewJobDetails = ({ jobId, onClose }) => {
           <PageLoader />
         ) : (
           <>
-            <div class="flex justify-between items-center mb-1">
+            <div className="flex justify-between items-center mb-1">
               <Labels
                 label={job?.status === "live" ? "Open" : "Close"}
                 iconDot={true}
@@ -75,13 +76,12 @@ const ViewJobDetails = ({ jobId, onClose }) => {
                 }`}
               />
             </div>
-
-            <div class="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between">
               <div>
-                <p class="text-capitalize text-base text-baseGray mb-3">
+                <p className="text-capitalize text-base text-baseGray mb-3">
                   {job?.id}
                 </p>
-                <h2 class="text-2xl text-capitalize font-bold text-[#323333]">
+                <h2 className="text-2xl text-capitalize font-bold text-[#323333]">
                   {job?.Job_Title}
                 </h2>
               </div>
@@ -99,66 +99,66 @@ const ViewJobDetails = ({ jobId, onClose }) => {
                 <PiDotsThreeOutlineFill />
               </div>
             </div>
-            <div class="grid grid-cols-3 gap-4 mb-4 border border-gray-400 rounded-lg px-3 py-4">
-              <div>
-                <p class="text-[14px] font-normal text-baseGray">Education</p>
-                <p class="text-base font-semibold text-baseGray">
+            <Row className="mb-4 border border-gray-400 rounded-lg px-3 py-4">
+              <Col lg={4} className="pb-4">
+                <p className="text-[14px] font-normal text-baseGray">Education</p>
+                <p className="text-base font-semibold text-baseGray">
                   {job?.Education}
                 </p>
-              </div>
-              <div>
-                <p class="text-[14px] font-normal text-baseGray">Job type</p>
-                <p class="text-base font-semibold text-baseGray">
+              </Col>
+              <Col lg={4} className="pb-4">
+                <p className="text-[14px] font-normal text-baseGray">Job type</p>
+                <p className="text-base font-semibold text-baseGray">
                   {getJobType(job?.Job_Type)}
                 </p>
-              </div>
-              <div>
-                <p class="text-[14px] font-normal text-baseGray">Work type</p>
-                <p class="text-base font-semibold text-baseGray">
-                  {getWorkType(job?.Work_type)}
-                </p>
-              </div>
-              <div>
-                <p class="text-[14px] font-normal text-baseGray">Location</p>
-                <p class="text-base font-semibold text-baseGray">
-                  {getCountryFullName(job?.location)}
-                </p>
-              </div>
-              <div>
-                <p class="text-[14px] font-normal text-baseGray">
-                  Employee type
-                </p>
-                <p class="text-base font-semibold text-baseGray">
-                  {getEmployeeType(job?.Employee_Type)}
-                </p>
-              </div>
-              <div>
-                <p class="text-[14px] font-normal text-baseGray">Salary</p>
-                <p class="text-base font-semibold text-baseGray">
-                  {formatNumber(job?.min_salary)} -{" "}
-                  {formatNumber(job?.max_salary)}
-                </p>
-              </div>
-              <div>
-                <p class="text-[14px] font-normal text-baseGray">Start date</p>
-                <p class="text-base font-semibold text-baseGray">
+              </Col>
+              <Col lg={4} className="pb-4">
+                <p className="text-[14px] font-normal text-baseGray">Start date</p>
+                <p className="text-base font-semibold text-baseGray">
                   {job?.created_at
                     ? moment(job?.created_at).format("DD-MM-YYYY")
                     : ""}
                 </p>
-              </div>
-              <div>
-                <p class="text-[14px] font-normal text-baseGray">Deadline</p>
-                <p class="text-base font-semibold text-baseGray">
+              </Col>
+              <Col lg={4} className="pb-4">
+                <p className="text-[14px] font-normal text-baseGray">Work type</p>
+                <p className="text-base font-semibold text-baseGray">
+                  {getWorkType(job?.Work_type)}
+                </p>
+              </Col>
+              <Col lg={4} className="pb-4">
+                <p className="text-[14px] font-normal text-baseGray">Location</p>
+                <p className="text-base font-semibold text-baseGray">
+                  {getCountryFullName(job?.location)}
+                </p>
+              </Col>
+              <Col lg={4} className="pb-4">
+                <p className="text-[14px] font-normal text-baseGray">Deadline</p>
+                <p className="text-base font-semibold text-baseGray">
                   {job?.Deadline
                     ? moment(job?.Deadline).format("DD-MM-YYYY")
                     : ""}
                 </p>
-              </div>
-            </div>
+              </Col>
+              <Col lg={4} className="pb-4">
+                <p className="text-[14px] font-normal text-baseGray">
+                  Employee type
+                </p>
+                <p className="text-base font-semibold text-baseGray">
+                  {getEmployeeType(job?.Employee_Type)}
+                </p>
+              </Col>
+              <Col lg={8}>
+                <p className="text-[14px] font-normal text-baseGray">Salary</p>
+                <p className="text-base font-semibold text-baseGray">
+                  {job?.currency} {formatNumber(job?.min_salary)} -{" "}
+                 {formatNumber(job?.max_salary)}
+                </p>
+              </Col>
+            </Row>
 
-            <div class="flex justify-between items-center">
-              <button class="flex items-center gap-x-2 rounded-full bg-[#E6E9F0] px-3 py-1 text-baseGray text-base font-normal">
+            <div className="flex justify-between items-center">
+              <button className="flex items-center gap-x-2 rounded-full bg-[#E6E9F0] px-3 py-1 text-baseGray text-base font-normal">
                 <PiBriefcaseThin className="text-xl" />{" "}
                 {job?.total_applications} Applications
               </button>
@@ -179,12 +179,14 @@ const ViewJobDetails = ({ jobId, onClose }) => {
                 {job?.Job_Description}
               </p>
             </div>
-            <h3 className="font-bold text-base text-[#323333]">
-              Job Requirements
-            </h3>
-            <p className="text-base font-normal text-baseGray">
-              {job?.Job_Requirement}
-            </p>
+            <div className="mt-4">
+              <h3 className="font-bold text-base text-[#323333]">
+                Job Requirements
+              </h3>
+              <p className="text-base font-normal text-baseGray">
+                {job?.Job_Requirement}
+              </p>
+            </div>
           </>
         )}
       </div>

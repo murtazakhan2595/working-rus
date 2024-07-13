@@ -4,8 +4,15 @@ import { Link, useParams } from "react-router-dom";
 import { restart, education, money, proCheck } from "../../../../assets/images";
 import { Header, Labels } from "../Sections";
 import { fetchJobById } from "../../../hooks/recruitment";
-import { convertToK } from "../../../../utils/ConvertToK";
+import { formatNumber } from "data/Data";
 import { RxCross2 } from "react-icons/rx";
+import moment from "moment";
+import {
+  getCountryFullName,
+  getEmployeeType,
+  getWorkType,
+  getJobType,
+} from "utils/getValuesFromTables";
 
 const JobDescription = ({ baseUrl }) => {
   const [jobDetails, setJobDetails] = useState(null);
@@ -25,15 +32,6 @@ const JobDescription = ({ baseUrl }) => {
     };
     getJobDetails();
   }, [id]);
-
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "numeric", day: "numeric" };
-    const formattedDate = new Date(dateString).toLocaleDateString(
-      undefined,
-      options
-    );
-    return formattedDate;
-  };
 
   const calculateRemainingDays = (deadline) => {
     const currentDate = new Date();
@@ -69,30 +67,43 @@ const JobDescription = ({ baseUrl }) => {
               <div className="flex justify-between border-b border-[#DADADA] pb-4">
                 <div>
                   <div className="flex items-center text-baseGray mt-1 font-lato">
-                    <span>{jobDetails?.location}</span>
+                    <span>{getCountryFullName(jobDetails?.location)}</span>
                     <span className="mx-2">•</span>
-                    <span>{jobDetails?.Job_Type}</span>
+                    <span>{getJobType(jobDetails?.Job_Type)}</span>
                   </div>
                   <div className="text-sm text-gray-600">
-                    Apply before {formatDate(jobDetails?.Deadline)} •{" "}
+                    Apply before{" "}
+                    {moment(jobDetails?.Deadline).format("DD-MM-YYYY")} •{" "}
                     {calculateRemainingDays(jobDetails?.Deadline)}
                   </div>
                 </div>
-                <Link className="btn btn-dark" to={`/apply/${jobDetails?.id}`}>
+                <Link className="btn btn-dark d-flex items-center" to={`/apply/${jobDetails?.id}`}>
                   Apply now
                 </Link>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-x-6 mb-4">
-              <Labels label={jobDetails?.Employee_Type} src={restart} backgroungColor={'bg-[#F0F1F2]'} />
-              <Labels label={jobDetails?.Education} src={education} backgroungColor={'bg-[#F0F1F2]'} />
-              <Labels label={jobDetails?.Work_type} src={proCheck} backgroungColor={'bg-[#F0F1F2]'} />
               <Labels
-                label={`PKR ${convertToK(
+                label={getEmployeeType(jobDetails?.Employee_Type)}
+                src={restart}
+                backgroungColor={"bg-[#F0F1F2]"}
+              />
+              <Labels
+                label={jobDetails?.Education}
+                src={education}
+                backgroungColor={"bg-[#F0F1F2]"}
+              />
+              <Labels
+                label={getWorkType(jobDetails?.Work_type)}
+                src={proCheck}
+                backgroungColor={"bg-[#F0F1F2]"}
+              />
+              <Labels
+                label={`${jobDetails.currency} ${formatNumber(
                   jobDetails?.min_salary
-                )} - ${convertToK(jobDetails?.max_salary)} /month`}
+                )} - ${formatNumber(jobDetails?.max_salary)} /month`}
                 src={money}
-                backgroungColor={'bg-[#F0F1F2]'}
+                backgroungColor={"bg-[#F0F1F2]"}
               />
             </div>
             <div className="mb-4">
