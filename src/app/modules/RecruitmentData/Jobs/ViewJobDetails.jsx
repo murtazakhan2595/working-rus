@@ -5,13 +5,20 @@ import { Link } from "react-router-dom";
 import { CiEdit } from "react-icons/ci";
 import { PiBriefcaseThin } from "react-icons/pi";
 import { IoArrowForward } from "react-icons/io5";
-import { Tabs, Blocks, Header, StatusLabel, Labels } from "../Sections";
+import { Labels } from "../Sections";
 import { PiDotsThreeOutlineFill } from "react-icons/pi";
-import { convertToK } from "../../../../utils/ConvertToK";
+import {
+  getCountryFullName,
+  getEmployeeType,
+  getWorkType,
+  getJobType,
+} from "utils/getValuesFromTables";
 import { useState } from "react";
 import EditJobDetails from "./EditJobDetails";
 import { getJobById } from "app/hooks/recruitment";
 import { PageLoader } from "components";
+import { formatNumber } from "data/Data";
+import moment from "moment";
 
 const ViewJobDetails = ({ jobId, onClose }) => {
   const [showEdit, setShowEdit] = useState(false);
@@ -102,19 +109,19 @@ const ViewJobDetails = ({ jobId, onClose }) => {
               <div>
                 <p class="text-[14px] font-normal text-baseGray">Job type</p>
                 <p class="text-base font-semibold text-baseGray">
-                  {job?.Job_Type}
+                  {getJobType(job?.Job_Type)}
                 </p>
               </div>
               <div>
                 <p class="text-[14px] font-normal text-baseGray">Work type</p>
                 <p class="text-base font-semibold text-baseGray">
-                  {job?.Work_type}
+                  {getWorkType(job?.Work_type)}
                 </p>
               </div>
               <div>
                 <p class="text-[14px] font-normal text-baseGray">Location</p>
                 <p class="text-base font-semibold text-baseGray">
-                  {job?.location}
+                  {getCountryFullName(job?.location)}
                 </p>
               </div>
               <div>
@@ -122,25 +129,30 @@ const ViewJobDetails = ({ jobId, onClose }) => {
                   Employee type
                 </p>
                 <p class="text-base font-semibold text-baseGray">
-                  {job?.Employee_Type}
+                  {getEmployeeType(job?.Employee_Type)}
                 </p>
               </div>
               <div>
                 <p class="text-[14px] font-normal text-baseGray">Salary</p>
                 <p class="text-base font-semibold text-baseGray">
-                  {convertToK(job?.min_salary)} - {convertToK(job?.max_salary)}
+                  {formatNumber(job?.min_salary)} -{" "}
+                  {formatNumber(job?.max_salary)}
                 </p>
               </div>
               <div>
                 <p class="text-[14px] font-normal text-baseGray">Start date</p>
                 <p class="text-base font-semibold text-baseGray">
-                  {job?.created_at ? job?.created_at.slice(0, 10): ''}
+                  {job?.created_at
+                    ? moment(job?.created_at).format("DD-MM-YYYY")
+                    : ""}
                 </p>
               </div>
               <div>
                 <p class="text-[14px] font-normal text-baseGray">Deadline</p>
                 <p class="text-base font-semibold text-baseGray">
-                  {job?.Deadline}
+                  {job?.Deadline
+                    ? moment(job?.Deadline).format("DD-MM-YYYY")
+                    : ""}
                 </p>
               </div>
             </div>
@@ -151,14 +163,14 @@ const ViewJobDetails = ({ jobId, onClose }) => {
                 {job?.total_applications} Applications
               </button>
               <Link
-                to={`/applicants/${job?.id}`}
+                to="/applicants"
+                state={{ jobId: job.id }}
                 className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2"
               >
                 Applications
                 <IoArrowForward className="text-xl" />
               </Link>
             </div>
-
             <div className="mt-3">
               <h3 className="font-bold text-base text-[#323333]">
                 Job Description
