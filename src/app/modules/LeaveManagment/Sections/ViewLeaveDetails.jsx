@@ -122,7 +122,7 @@ const ViewLeaveDetails = ({
           <div>
             <p className="text-[14px] font-normal text-baseGray">Leave Type</p>
             <p className="text-base font-semibold text-baseGray">
-              {application?.leave_type}
+              {application?.leave_component_name}
             </p>
           </div>
           <div>
@@ -152,7 +152,7 @@ const ViewLeaveDetails = ({
           <div>
             <p className="text-[14px] font-normal text-baseGray">Contact no</p>
             <p className="text-base font-semibold text-baseGray">
-              {application?.contact_no}
+              {application?.contact}
             </p>
           </div>
           <div>
@@ -165,7 +165,7 @@ const ViewLeaveDetails = ({
 
         <div className="flex justify-end items-center">
           <Link
-            to={`/leave-history/${application?.employee_id}`}
+            to={`/leave-history`}
             className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2"
           >
             View History
