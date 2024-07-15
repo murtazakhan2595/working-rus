@@ -33,6 +33,8 @@ const JobDescription = ({ baseUrl }) => {
     getJobDetails();
   }, [id]);
 
+  console.log("jobDetails", jobDetails)
+
   const calculateRemainingDays = (deadline) => {
     const currentDate = new Date();
     const deadlineDate = new Date(deadline);
@@ -99,7 +101,7 @@ const JobDescription = ({ baseUrl }) => {
                 backgroungColor={"bg-[#F0F1F2]"}
               />
               <Labels
-                label={`${jobDetails.currency} ${formatNumber(
+                label={`${jobDetails?.currency} ${formatNumber(
                   jobDetails?.min_salary
                 )} - ${formatNumber(jobDetails?.max_salary)} /month`}
                 src={money}
