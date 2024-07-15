@@ -453,7 +453,6 @@ const FileInput = ({
   label,
   acceptType,
 }) => {
-  console.log(value);
   return (
     <>
       <div
