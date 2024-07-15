@@ -89,7 +89,6 @@ function ManagerName({ value }) {
   return <>{manager ? manager.label : "N/A"}</>;
 }
 
-
 export {
   getCountryFullName,
   getEmployeeType,
