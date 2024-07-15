@@ -4,7 +4,9 @@ import { toast, ToastContainer } from "react-toastify";
 
 import { connect } from "react-redux";
 import { Members } from "../Sections";
-import { FaChevronLeft } from "react-icons/fa";
+import {
+  FaChevronLeft,
+} from "react-icons/fa";
 import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
 import {
@@ -20,33 +22,75 @@ import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import calender from "assets/images/calender.svg";
 import members from "assets/images/members.svg";
 import priority from "assets/images/priority.svg";
-import { addTask, getTaskById } from "app/hooks/taskManagment";
+import {
+  addTask,
+  getTaskById,
+} from "app/hooks/taskManagment";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import CreateAndEditCardForm from "../Sections/CreateAndEditCardForm";
+import {
+  addAttachments,
+  getAttachmentById,
+  deleteAttachment,
+} from "app/hooks/taskManagment";
 
-const EditCard = ({ onClose, employees, cardId }) => {
+
+const EditCard = ({
+  onClose,
+  employees,
+  cardId,
+}) => {
+console.log("cardId", cardId)
+  const dropdownOptions = [
+    {
+      label: "High",
+      icon: highpriorityIcon,
+      value: "High",
+    },
+    { label: "Low", icon: lowpriorityIcon, value: "Low" },
+    { label: "Medium", icon: mediumpriorityIcon, value: "Medium" },
+  ];
   const priorityMapping = {
     High: 1,
     Medium: 2,
     Low: 3,
   };
 
+
+
   const [initialValues, setInitialValues] = useState({
     ...CardTypes,
-    board_id: "",
-    project_id: "",
+    board_id: '',
+    project_id: '',
   });
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  console.log("initialValues", initialValues)
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
       const cardDetails = await getTaskById(cardId);
-      console.log("cardDetails", cardDetails);
-      if (isMounted) {
-        setInitialValues(cardDetails);
+      if (cardDetails?.attachment.length > 0) {
+        const attachment = await Promise.all(
+          cardDetails.attachment.map(async (attachmentId) => {
+            const response = await getAttachmentById(attachmentId);
+            console.log("response", response)
+            return {...response.attachments, id: response.id};
+          })
+        );
+        if (isMounted) {
+          setInitialValues({
+            ...cardDetails,
+            attachment: attachment,
+          });
+        }
       }
+      else if (isMounted) {
+          setInitialValues({
+            ...cardDetails,
+          });
+        }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
     } finally {
@@ -57,33 +101,65 @@ const EditCard = ({ onClose, employees, cardId }) => {
   };
   const formRef = useRef();
 
-  const handleSubmit = async (formData) => {
-    setIsLoading(true);
-    try {
-      const response = await addTask(formData);
-      if (response) {
-        onClose();
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error(error.response.data.detail, {
-        position: toast.POSITION.TOP_RIGHT,
+const handleSubmit = async (
+  formData,
+  newfiles,
+  files,
+  deleteFiles=[],
+  resetForm
+) => {
+  // console.log("Files", files);
+  setIsLoading(true);
+  try {
+    if(deleteFiles.length > 0) {
+      deleteFiles.forEach(async (file) => {
+        await deleteAttachment(file.id);
       });
-    } finally {
-      setIsLoading(false);
     }
-  };
-  useEffect(() => {
-    let isMounted = true;
-    if (cardId) fetchData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [cardId]);
+    // Map over files to get an array of promises
+    const attachmentPromises = newfiles.map(async (file) => {
+      const response = await addAttachments(file);
+      return response.id; // Return the attachment ID
+    });
+
+    // Wait for all promises to resolve
+    const attachmentIds = await Promise.all(attachmentPromises);
+    const oldAttachmentIds = files.map((file) => file.id);
+
+    // Update formData with attachment IDs
+    formData.attachment = [...attachmentIds, ...oldAttachmentIds];
+    console.log("formData", formData);
+
+    // Now call addTask
+    const response = await addTask({
+      ...formData,
+      priority: priorityMapping[formData.priority],
+    });
+
+    if (response) {
+      onClose();
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    toast.error(error.response.data.detail, {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+    useEffect(() => {
+      let isMounted = true;
+      if (cardId) fetchData(isMounted);
+      return () => {
+        isMounted = false;
+      };
+    }, [cardId]);
 
   return (
-    <div className="fixed top-0 right-0 max-w-[95%] w-[650px] h-full z-10 overflow-y-auto hideScroll ">
-      <div className="bg-white h-full shadow px-[50px] py-10 flex flex-col gap-7 overflow-y-auto hideScroll">
+    <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll ">
+      <div className="bg-white h-full fixed  max-w-[35%] w-[35%] top-0 right-0  shadow px-[50px] py-10 flex flex-col gap-7 overflow-y-auto hideScroll">
         <div className="flex-col justify-start items-start gap-2.5 flex">
           <RxCross2 className="cursor-pointer self-end" onClick={onClose} />
           <div className="flex gap-4 items-center text-xl font-bold text-zinc-800">
@@ -99,6 +175,7 @@ const EditCard = ({ onClose, employees, cardId }) => {
           employees={employees}
           handleSubmit={handleSubmit}
           onClose={onClose}
+          isEdit={true}
         />
       </div>
     </div>
