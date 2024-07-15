@@ -442,6 +442,38 @@ const getAttachmentById = async (attachmentId) => {
   }
 };
 
+const fetchComments = async (taskId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/comments?task_id=${taskId}`, {
+      headers: headers(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    return [];
+  }
+};
+
+const postComment = async (taskId, userId, comment) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/comments/`,
+      {
+        task_id: taskId,
+        user_id: userId,
+        comment: comment,
+      },
+      {
+        headers: headers(), 
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error posting comment:", error);
+    throw error; // Re-throw the error to handle it in the component
+  }
+};
+
 export {
   getAllProjects,
   addProject,
@@ -459,4 +491,6 @@ export {
   addAttachments,
   getAttachmentById,
   deleteAttachment,
+  fetchComments,
+  postComment,
 };
