@@ -1,3 +1,10 @@
 import AddNewListModel from "./AddNewListModel";
 import MembersDropdown from "./MembersDropdown";
-export{AddNewListModel,MembersDropdown};
+import { getStatusClass, getStatus, getStatusIconColor } from "./getTaskStatus";
+export {
+  AddNewListModel,
+  MembersDropdown,
+  getStatusClass,
+  getStatus,
+  getStatusIconColor,
+};

@@ -2,13 +2,15 @@ import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { Project } from "app/utils/Types/TaskManagment";
-import { Header, PageLoader } from "components";
+import { Header, PageLoader, ConfirmationModal } from "components";
 import { FilterInput } from "components/form-control";
 import { Card, CardBody, Row, Col, Button } from "reactstrap";
 import {
   getAllBoards,
   getProjectById,
   getTaskByBoardId,
+  deleteBoard,
+  moveTask
 } from "app/hooks/taskManagment";
 import { TaskSortingFilters } from "data/Data";
 import { FaPlus } from "react-icons/fa";
@@ -18,16 +20,9 @@ import { useParams, Link } from "react-router-dom";
 import RenderProject from "./Sections/RenderProject";
 import { CustomDropdown } from "../Sections";
 import { AddNewListModel, MembersDropdown } from "./Sections";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import highpriority from "assets/images/highpriority.svg";
-import lowpriority from "assets/images/lowpriority.svg";
-import TimeIcon from "assets/images/timeIcon";
-import message from "assets/images/message.svg";
-import attachmentsIcon from "assets/images/attachments.svg";
-
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
-import { getRandomColor } from "utils/getValuesFromTables";
+import {getRandomColor} from "utils/renderValues"
 
 const Board = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -44,10 +39,9 @@ const Board = ({ userProfile }) => {
       });
       const projectDetails = await getProjectById(projectId);
       if (isMounted) {
-        setAllBoards(boardsData );
+        setAllBoards(boardsData);
         setProjectData(projectDetails);
       }
-
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
     } finally {
@@ -56,7 +50,6 @@ const Board = ({ userProfile }) => {
       }
     }
   };
- 
 
   useEffect(() => {
     let isMounted = true;
@@ -89,7 +82,7 @@ const Board = ({ userProfile }) => {
       <Header title="My Boards" />
       <Row>
         <Col lg={12} className="mx-auto">
-          <Card className="p-0" style={{background:"#FAFBFC"}}>
+          <Card className="p-0" style={{ background: "#FAFBFC" }}>
             <CardBody className="py-3">
               {showAddNewListModel && (
                 <AddNewListModel
@@ -147,6 +140,9 @@ const Board = ({ userProfile }) => {
                         key={index}
                         board={board}
                         projectId={projectId}
+                        reloadData={() => {
+                          fetchData(true);
+                        }}
                       />
                     ))}
                 </div>
@@ -159,12 +155,12 @@ const Board = ({ userProfile }) => {
   );
 };
 
-const TaskColumn = ({ color, count, board, projectId }) => {
-  console.log(board.id, projectId)
+const TaskColumn = ({ reloadData, board, projectId }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchData = async (isMounted) => {
     try {
@@ -175,7 +171,7 @@ const TaskColumn = ({ color, count, board, projectId }) => {
         setTasks(TaskData);
       }
     } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
+      console.error("Error fetching tasks:", error);
     }
   };
 
@@ -187,6 +183,26 @@ const TaskColumn = ({ color, count, board, projectId }) => {
     };
   }, []);
 
+  const handleDragStart = (e, taskId) => {
+    e.dataTransfer.setData("taskId", taskId);
+    e.dataTransfer.setData("sourceBoardId", board.id);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData("taskId");
+    const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
+
+    if (sourceBoardId !== board.id) {
+      await moveTask({id:taskId, board_id:board.id});
+      reloadData();
+    }
+  };
+
   const dropdownOptions = [
     {
       label: "Edit",
@@ -197,22 +213,29 @@ const TaskColumn = ({ color, count, board, projectId }) => {
     {
       label: "Delete",
       onClick: () => {
-        console.log("hk");
+        setIsDeleteModalOpen(true);
       },
     },
   ];
 
-  console.log(tasks, "status");
-
+  const confirmDelete = async () => {
+    await deleteBoard(board.id);
+    reloadData();
+    setIsDeleteModalOpen(false);
+  };
 
   return (
-    <div className="flex flex-col min-w-[290px] mb-5">
+    <div
+      className="flex flex-col min-w-[290px] mb-5"
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       <div className="flex flex-col ">
         <header className="flex gap-5 justify-between pl-5 w-full">
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
               <div
-                className={`shrink-0 my-auto w-2 h-2 ${getRandomColor()} rounded-full`}
+                className={`shrink-0 my-auto w-2 h-2 ${getRandomColor(board.name?.charAt(0))} rounded-full`}
               />
               <span>{board.name}</span>
             </h2>
@@ -241,12 +264,24 @@ const TaskColumn = ({ color, count, board, projectId }) => {
         {tasks &&
           tasks.count > 0 &&
           tasks.results.map((task, index) => (
-            <TaskCard key={index} task={task} projectId={projectId} boardId={board.id}/>
+            <TaskCard
+              key={index}
+              task={task}
+              projectId={projectId}
+              boardId={board.id}
+              reloadData={() => {
+                fetchData(true);
+              }}
+              onDragStart={handleDragStart}
+            />
           ))}
       </div>
       {openCreateCard && (
         <CreateCard
-          onClose={() => setOpenCreateCard(false)}
+          onClose={() => {
+            setOpenCreateCard(false);
+            reloadData();
+          }}
           boardId={board.id}
           projectId={projectId}
         />
@@ -256,14 +291,24 @@ const TaskColumn = ({ color, count, board, projectId }) => {
           boardId={board.id}
           onClose={() => {
             setshowAddNewListModel(false);
+            reloadData();
           }}
           isEditMode={true}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <ConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            // reloadData();
+          }}
+          onDelete={confirmDelete}
         />
       )}
     </div>
   );
 };
-
 
 const mapStateToProps = (state) => {
   return {

@@ -5,7 +5,7 @@ import StatusLabel from "./StatusLabel";
 import EmployeeNameInfo from "./EmployeeNameInfo";
 import Table from "./Table";
 import BarChart  from "./BarChart";
-
+import ConfirmationModal from "./ConfirmationModal";
 export{
     Header,
     PageLoader,
@@ -14,5 +14,6 @@ export{
     EmployeeNameInfo,
     Table,
     BarChart,
+    ConfirmationModal,
 }
 

@@ -1,5 +1,5 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
-import React, { useState, useRef, forwardRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
 import {
@@ -10,25 +10,18 @@ import {
   PhoneNumberInput,
   EmailInput,
 } from "../../../../components/form-control.jsx";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  educationTypeOptions,
-  employeeTypeOptions,
-  jobTypeOptions,
-  locationTypeOptions,
-  workTypeOptions,
-} from "../../../../data/Data.js";
 import PageLoader from "../../../../components/PageLoader.jsx";
 import { connect } from "react-redux";
 import { addApplication } from "../../../hooks/recruitment.jsx";
 import { Header } from "../Sections/index.js";
 import { ApplicationDetail } from "../../../utils/Types/Recruitment.jsx";
-import { getAllCountries } from 'countries-and-timezones';
+import { getAllCountries } from "countries-and-timezones";
 
 const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
   value: countryCode,
-  label: getAllCountries()[countryCode].name
+  label: getAllCountries()[countryCode].name,
 }));
 
 const JobApplicationForm = () => {
@@ -46,15 +39,15 @@ const JobApplicationForm = () => {
         toast.success(`Application submitted successfully!`, {
           autoClose: 1000,
         });
-        navigate('/jobs')
+        navigate("/jobs");
       } else {
-        toast.error(
-          `Failed to submit application. Please try again.`
-        );
+        toast.error(`Failed to submit application. Please try again.`);
       }
     } catch (error) {
       console.error(error);
-      toast.error("An error occurred. Failed to submit application. Please try again.");
+      toast.error(
+        "An error occurred. Failed to submit application. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -71,9 +64,7 @@ const JobApplicationForm = () => {
                 <Col lg={10}>
                   <div className="h4 mb-0 d-flex align-items-center">
                     <i className="nav-icon fas fa-id-card-alt" />
-                    <span className="ml-2 fw-700">
-                      Application Form
-                    </span>
+                    <span className="ml-2 fw-700">Application Form</span>
                   </div>
                 </Col>
               </Row>
@@ -97,7 +88,7 @@ const JobApplicationForm = () => {
                         }}
                         validate={(values) => {
                           const errors = {};
-                          
+
                           return errors;
                         }}
                       >
@@ -132,12 +123,12 @@ const JobApplicationForm = () => {
                               </Col>
                               <Col md={12}>
                                 <SelectComponent
-                                  name={'location'}
+                                  name={"location"}
                                   options={countryOptions}
                                   error={props.errors.location}
                                   touch={props.touched.location}
                                   value={props.values.location}
-                                  label={'Location'}
+                                  label={"Location"}
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
@@ -145,13 +136,13 @@ const JobApplicationForm = () => {
                               </Col>
                               <Col md={6}>
                                 <PhoneNumberInput
-                                  name={'phone_number'}
+                                  name={"phone_number"}
                                   error={props.errors.phone_number}
                                   touch={props.touched.phone_number}
                                   value={props.values.phone_number}
-                                  label={'Contact no.'}
+                                  label={"Contact no."}
                                   countryCode={props.values.country_code}
-                                  countryCodeName={'country_code'}
+                                  countryCodeName={"country_code"}
                                   required={true}
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
@@ -160,14 +151,14 @@ const JobApplicationForm = () => {
                               </Col>
                               <Col md="6">
                                 <EmailInput
-                                  name={'email'}
+                                  name={"email"}
                                   error={props.errors.email}
                                   touch={props.touched.email}
                                   value={props.values.email}
-                                  label={'Email'}
+                                  label={"Email"}
                                   required={true}
                                   onChange={(field, value) => {
-                                    props.handleChange(field,)(value);
+                                    props.handleChange(field)(value);
                                   }}
                                 />
                               </Col>
@@ -194,6 +185,7 @@ const JobApplicationForm = () => {
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
+                                  maxLength={3}
                                   required={true}
                                   regEx={/^[0-9.]+$/}
                                 />
@@ -208,6 +200,7 @@ const JobApplicationForm = () => {
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
+                                  maxLength="14,2"
                                   regEx={/^[0-9.]+$/}
                                 />
                               </Col>
@@ -221,15 +214,22 @@ const JobApplicationForm = () => {
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
+                                  maxLength="14,2"
                                   regEx={/^[0-9.]+$/}
                                 />
                               </Col>
                               <Col md="6">
                                 <DateInput
                                   name="availability_for_interview"
-                                  error={props.errors.availability_for_interview}
-                                  touch={props.touched.availability_for_interview}
-                                  value={props.values.availability_for_interview}
+                                  error={
+                                    props.errors.availability_for_interview
+                                  }
+                                  touch={
+                                    props.touched.availability_for_interview
+                                  }
+                                  value={
+                                    props.values.availability_for_interview
+                                  }
                                   label="Availability for interview"
                                   required={true}
                                   minDate={new Date()}
@@ -264,7 +264,10 @@ const JobApplicationForm = () => {
                                 </Link>
                               </Col>
                               <Col md="4">
-                                <Button type="submit" className="btn btn-dark w-100">
+                                <Button
+                                  type="submit"
+                                  className="btn btn-dark w-100"
+                                >
                                   {"Submit"}
                                 </Button>
                               </Col>
@@ -292,4 +295,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(JobApplicationForm);
-

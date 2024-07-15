@@ -58,15 +58,18 @@ const Table = ({
         )}
         <tbody>
           {data && data.length > 0 ? (
-            data.map((row) => (
+            data.map((row,recordIndex) => (
               <React.Fragment key={row.id}>
                 <tr
                   onClick={() => {
                     if (rowExpand) toggleExpandRow(row.id);
+                    else if (tableOptions.onRowClick)
+                      tableOptions.onRowClick(row);
                   }}
                 >
                   {columns.map((column, index) => (
                     <td
+                      className={`${column.onClick ? "cursor-pointer" : ""}`}
                       key={index}
                       style={
                         column.width
@@ -77,10 +80,17 @@ const Table = ({
                       }
                       onClick={() => {
                         if (column.roWExpandOnClick) toggleExpandRow(row.id);
+                        else if (column.onClick)
+                          column.onClick(recordIndex, data, row);
                       }}
                     >
                       {column.formatter
-                        ? column.formatter(row[column.dataField], row, data)
+                        ? column.formatter(
+                            row[column.dataField],
+                            row,
+                            data,
+                            index
+                          )
                         : row[column.dataField]}
                     </td>
                   ))}

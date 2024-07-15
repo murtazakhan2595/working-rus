@@ -28,7 +28,6 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     errors.employee_location = "Work location is required";
   if (!values.employee_status) errors.employee_status = "Status is required";
   if (!values.joining_date) errors.joining_date = "Joining date is required";
-  if (!values.organization) errors.organization = "Organization is required";
   return errors;
 };
 

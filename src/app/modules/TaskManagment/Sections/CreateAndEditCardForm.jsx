@@ -14,7 +14,7 @@ import highpriorityIcon from "assets/images/highpriority.svg";
 import lowpriorityIcon from "assets/images/lowpriority.svg";
 import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import plus from "assets/images/plus.svg";
-import { CardTypes } from "app/utils/Types/TaskManagment";
+import { PriorityList } from "data/Data";
 import Members from "./Member";
 import { FileInput } from "components/form-control";
 import { AiOutlineDownload } from "react-icons/ai";
@@ -173,7 +173,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 <Col md="6" className="mb-0">
                   <SelectComponent
                     name="priority"
-                    options={dropdownOptions}
+                    options={PriorityList}
                     error={props.errors.priority}
                     touch={props.touched.priority}
                     value={props.values.priority}
@@ -261,6 +261,9 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                     {props.values.assigned_to &&
                       props.values.assigned_to.length > 0 &&
                       props.values.assigned_to.map((member, index) => (
+                    {props.values.assigned_to &&
+                      props.values.assigned_to.length > 0 &&
+                      props.values.assigned_to.map((member, index) => (
                         <div key={index}>
                           <Members member={member} />
                         </div>
@@ -282,6 +285,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 <Col md="12" className="mb-3 w-full b">
                   <SelectComponent
                     name="assigned_to"
+                    name="assigned_to"
                     options={employees}
                     error={props.errors.assigned_to}
                     touch={props.touched.assigned_to}
@@ -289,6 +293,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                     required
                     onChange={(field, value) => {
                       setMembersOpen(false);
+                      const members = props.values.assigned_to || [];
                       const members = props.values.assigned_to || [];
                       members.push(value);
                       props.setFieldValue(field, members);

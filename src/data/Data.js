@@ -32,12 +32,6 @@ export const tasksTitle = [
   { label: "Priority", width: "w-28" },
 ];
 
-export const priorityOptions = [
-  { value: 3, label: "🟢 Low" },
-  { value: 2, label: "🌕 Medium" },
-  { value: 1, label: "🔴 High" },
-];
-
 export const statusOptions = [
   { value: "To Do", label: "Todo" },
   { value: "In Progress", label: "In Progress" },
@@ -232,9 +226,27 @@ export const typeOptions = [
   },
 ];
 
-export const priority2Options = [
+export const formatNumber = (num) => {
+  const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
+  let unit = 0;
+
+  while (num >= 1000 && unit < units.length - 1) {
+    num /= 1000;
+    unit++;
+  }
+
+  // Use Intl.NumberFormat to format the number with 2 decimal places
+  const formattedNumber = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+
+  return formattedNumber + units[unit];
+};
+
+export const PriorityList = [
   {
-    value: "Low",
+    value: 3,
     label: (
       <div className="flex items-center gap-x-2 text-baseGray ">
         <IoMdArrowDropdownCircle className="text-2xl" /> Low
@@ -242,7 +254,7 @@ export const priority2Options = [
     ),
   },
   {
-    value: "Medium",
+    value: 2,
     label: (
       <div className="flex items-center gap-x-2 text-yellow-500">
         <FiMinusCircle className="text-xl" /> Medium
@@ -250,7 +262,7 @@ export const priority2Options = [
     ),
   },
   {
-    value: "High",
+    value: 1,
     label: (
       <div className="flex items-center gap-x-2 text-red-500">
         <IoMdArrowDropupCircle className="text-2xl" /> High

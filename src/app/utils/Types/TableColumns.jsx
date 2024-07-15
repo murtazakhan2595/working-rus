@@ -5,6 +5,8 @@ import {
   LeaveTypeOfEmployee,
   UserRole,
 } from "utils/getValuesFromTables";
+import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
+import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
 import {
@@ -15,6 +17,8 @@ import {
 import moment from "moment";
 import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
 import { IoIosArrowDown } from "react-icons/io";
+import { downloadCV } from "app/hooks/recruitment";
+import { AiOutlineDownload } from "react-icons/ai";
 
 export const LeaveHistoryColumns = (updateLeaveType) => [
   {
@@ -60,7 +64,7 @@ export const LeaveHistoryColumns = (updateLeaveType) => [
   {
     dataField: "",
     text: "",
-    formatter: (cell) =>  <IoIosArrowDown className="cursor-pointer" />,
+    formatter: (cell) => <IoIosArrowDown className="cursor-pointer" />,
     roWExpandOnClick: true,
   },
 ];
@@ -146,6 +150,92 @@ export const MyLeavesColumns = [
   },
 ];
 
+export const AllJobApplicationColumns = (
+  handleOptionSelect,
+  setViewApplicationDetails
+) => [
+  {
+    dataField: "id",
+    text: "Candidate ID",
+    formatter: (cell, row) => <EmployeeID value={cell} />,
+  },
+  {
+    dataField: "first_name",
+    text: "Candidate",
+    formatter: (cell, row) => (
+      <>
+        <div className="text-base text-[#323333] cursor-pointer">
+          {cell} {row.last_name}
+        </div>
+        <div className="font-lato text-base text-baseGray">
+          {`Exp. ${row?.Year_of_Experience} years`}
+        </div>
+      </>
+    ),
+    onClick: (index, list) => {
+      setViewApplicationDetails({ index, list });
+    },
+  },
+  {
+    dataField: "phone_number",
+    text: "Phone no/Email",
+    formatter: (cell, row) => (
+      <>
+        <div className="text-base font-lato">{cell || ""}</div>
+        <div className="text-base font-lato">{row.email || ""}</div>
+      </>
+    ),
+  },
+  {
+    dataField: "current_salary",
+    text: "Current Salary",
+    formatter: (cell) => <>{formatNumber(cell)}</>,
+  },
+  {
+    dataField: "expected_salary",
+    text: "Expected Salary",
+    formatter: (cell) => <>{formatNumber(cell)}</>,
+  },
+  {
+    dataField: "updated_at",
+    text: "Applied On",
+    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+  },
+  {
+    dataField: "",
+    text: "Resume",
+    formatter: (cell, row) => (
+      <>
+        <div className="flex gap-x-2 items-center justify-center">
+          <span title={row?.cv} className="font-lato text-base text-baseGray">
+            File
+          </span>
+          <button onClick={() => downloadCV(row?.cv, row?.first_name)}>
+            <AiOutlineDownload />
+          </button>
+        </div>
+      </>
+    ),
+  },
+  {
+    dataField: "application_status",
+    text: "Status",
+    formatter: (cell) => {
+      const role = dropdownOptions.find((obj) => obj.value === cell);
+      return <StatusLabel status={role?.label} />;
+    },
+  },
+  {
+    dataField: "",
+    text: "",
+    formatter: (cell, row) => (
+      <RenderJobApplicationActions
+        row={row}
+        handleOptionSelect={handleOptionSelect}
+      />
+    ),
+  },
+];
 export const AllLeavesApplicationColumns = [
   {
     dataField: "employee_id",

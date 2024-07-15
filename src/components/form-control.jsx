@@ -162,13 +162,14 @@ const TextInput = ({
   disabled,
   required,
   regEx,
+  maxLength,
 }) => {
   return (
     <>
       <FormGroup floating>
         <Input
           type="text"
-          maxLength="100"
+          maxLength={maxLength ?? "100"}
           id={name}
           name={name}
           autoComplete="Off"
@@ -241,8 +242,8 @@ const PhoneNumberInput = ({
               isDisabled={disabled}
               id={countryCodeName}
               className={`custom-select-input form-control ${
-                error && touch ? "is-invalid" : ""
-              }`}
+                !countryCode ? "items-center" : ""
+              } ${error && touch ? "is-invalid" : ""}`}
               options={countryCodesOptions ? countryCodesOptions : []}
               value={
                 countryCodesOptions
@@ -256,9 +257,11 @@ const PhoneNumberInput = ({
               }
               placeholder={"Code"}
             />
-            <Label className="text-baseGray" htmlFor="address">
-              Code
-            </Label>
+            {countryCode && (
+              <Label className="text-baseGray" htmlFor="address">
+                Code
+              </Label>
+            )}
           </FormGroup>
         </Col>
         <Col sm={8} className="">
@@ -531,21 +534,22 @@ const TextAreaInput = ({
   required,
   regEx,
   maxLength,
+  maxRows,
 }) => {
   return (
     <>
       <FormGroup floating>
         <Input
           type="textarea"
-          // maxLength={maxLength ?? "100"}
+          maxLength={maxLength ?? "5000"}
           id={name}
           name={name}
           autoComplete="Off"
           placeholder={"Enter " + label}
           value={value}
-          rows={5}
+          rows={maxRows ?? 1}
           disabled={disabled}
-          className={error && touch ? "is-invalid" : ""}
+          className={`h-auto ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {
             const value = option.target.value;
             if (regEx) {

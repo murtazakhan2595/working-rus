@@ -180,6 +180,30 @@ const getList = async (URL) => {
   return [];
 };
 
+const getCurrenciesList = async (URL) => {
+  try {
+    const response = await axios.get(`${baseUrl}/currencies/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const currenciesResponse = response.data;
+      const currenciesList = currenciesResponse.map((currencies) => ({
+        value: currencies.code,
+        label:`${currencies.code} - ${currencies.name}`,
+      }));
+      return currenciesList;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
 const deleteRecord = async (URL, recordName) => {
   try {
     const response = await axios.delete(`${baseUrl}${URL}`, {
@@ -226,4 +250,5 @@ export {
   handleLogout,
   getEmployeeCustomList,
   getProjectsList,
+  getCurrenciesList
 };
