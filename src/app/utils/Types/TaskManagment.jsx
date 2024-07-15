@@ -15,7 +15,7 @@ const CardTypes = {
   start_date: "",
   end_date: "",
   priority: "",
-  created_by: "",
+  assigned_by: "",
   assigned_to: [],
   attachment: [],
 };

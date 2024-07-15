@@ -4,7 +4,9 @@ import { toast, ToastContainer } from "react-toastify";
 
 import { connect } from "react-redux";
 import { Members } from "../Sections";
-import { FaChevronLeft } from "react-icons/fa";
+import {
+  FaChevronLeft,
+} from "react-icons/fa";
 import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
 import {
@@ -20,7 +22,10 @@ import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import calender from "assets/images/calender.svg";
 import members from "assets/images/members.svg";
 import priority from "assets/images/priority.svg";
-import { addTask, getTaskById } from "app/hooks/taskManagment";
+import {
+  addTask,
+  getTaskById,
+} from "app/hooks/taskManagment";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import CreateAndEditCardForm from "../Sections/CreateAndEditCardForm";
 import {
@@ -51,10 +56,12 @@ console.log("cardId", cardId)
     Low: 3,
   };
 
+
+
   const [initialValues, setInitialValues] = useState({
     ...CardTypes,
-    board_id: "",
-    project_id: "",
+    board_id: '',
+    project_id: '',
   });
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,14 +83,12 @@ console.log("cardId", cardId)
           setInitialValues({
             ...cardDetails,
             attachment: attachment,
-            priority: reversePriorityMapping[cardDetails.priority],
           });
         }
       }
       else if (isMounted) {
           setInitialValues({
             ...cardDetails,
-            priority: reversePriorityMapping[cardDetails.priority],
           });
         }
     } catch (error) {
@@ -153,8 +158,8 @@ const handleSubmit = async (
     }, [cardId]);
 
   return (
-    <div className="fixed top-0 right-0 max-w-[95%] w-[650px] h-full z-10 overflow-y-auto hideScroll ">
-      <div className="bg-white h-full shadow px-[50px] py-10 flex flex-col gap-7 overflow-y-auto hideScroll">
+    <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll ">
+      <div className="bg-white h-full fixed  max-w-[35%] w-[35%] top-0 right-0  shadow px-[50px] py-10 flex flex-col gap-7 overflow-y-auto hideScroll">
         <div className="flex-col justify-start items-start gap-2.5 flex">
           <RxCross2 className="cursor-pointer self-end" onClick={onClose} />
           <div className="flex gap-4 items-center text-xl font-bold text-zinc-800">
@@ -170,6 +175,7 @@ const handleSubmit = async (
           employees={employees}
           handleSubmit={handleSubmit}
           onClose={onClose}
+          isEdit={true}
         />
       </div>
     </div>
