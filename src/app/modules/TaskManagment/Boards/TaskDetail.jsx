@@ -236,19 +236,18 @@ const TaskDetail = ({ task, onClose }) => {
           <div key={index} className="flex items-start space-x-3">
             <div className="flex-shrink-0">
               <div className="h-9 w-9 rounded-full bg-pink-500 flex items-center justify-center text-white font-semibold">
-                <EmployeeName value={comment.name} length={2} />
+                <EmployeeName value={comment.user_id} length={2} />
               </div>
             </div>
-            <div className="flex-grow">
-              <div className="flex items-center justify-between">
-                <h3 className="text-[15px] mb-0 font-lato text-baseGray">
-                  {comment.name}
-                </h3>
-                <span className="text-xs text-gray-500">{comment.date}</span>
-              </div>
+            <div className="flex justify-between items-center w-full">
               <p className="mt-1 text-[#323333] font-lato text-base">
                 {comment.comment}
               </p>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px] font-lato text-baseGray">
+                  {moment(comment.created_at?.slice(0, 10)).format("DD-MMM-YY")}
+                </span>
+              </div>
             </div>
           </div>
         ))}
