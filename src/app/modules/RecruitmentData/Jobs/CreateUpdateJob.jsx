@@ -23,13 +23,11 @@ import { connect } from "react-redux";
 import { addJob, updateJob } from "../../../hooks/recruitment.jsx";
 import { Header } from "../Sections/index.js";
 import { JobDetail } from "app/utils/Types/Recruitment.jsx";
+import {validationJobFormSchema} from "app/utils/FormSchema/jobFormSchema.jsx";
 
 const JobForm = forwardRef(
   ({ isLoading, formData, handleSubmit, isEditMode, id, onClose }, formRef) => {
-    const initialValues = {
-      JobDetail,
-      ...formData,
-    };
+    const initialValues = isEditMode ? formData : JobDetail;
     const navigate = useNavigate();
     return (
       <>
@@ -45,14 +43,12 @@ const JobForm = forwardRef(
               <Formik
                 initialValues={initialValues}
                 innerRef={formRef}
+                enableReinitialize={true}
                 onSubmit={(values, { resetForm }) => {
                   handleSubmit(values, resetForm);
                 }}
                 validate={(values) => {
-                  const errors = {};
-                  if (!values.Job_Title) {
-                    errors.Job_Title = "Job Title is required";
-                  }
+                  const errors = validationJobFormSchema(values)
                   return errors;
                 }}
               >
@@ -252,7 +248,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
   const navigate = useNavigate();
   const id = formData?.id;
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values, resetForm) => {
     setIsLoading(true);
 
     try {
@@ -271,7 +267,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
         else navigate("/jobs");
 
         if (!isEditMode) {
-          formRef.current.resetForm();
+          resetForm()
         }
       } else {
         toast.error(
@@ -280,7 +276,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
       }
     } catch (error) {
       console.error(`Error ${isEditMode ? "updating" : "adding"} job:`, error);
-      // toast.error("An error occurred. Please try again.");
+      toast.error(`Error ${isEditMode ? "updating" : "adding"} job:`);
     } finally {
       setIsLoading(false);
     }
