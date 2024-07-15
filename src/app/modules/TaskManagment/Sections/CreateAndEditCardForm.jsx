@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Formik, Form } from "formik";
 import { Row, Col, Button } from "reactstrap";
 import {
@@ -16,13 +16,30 @@ import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import plus from "assets/images/plus.svg";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import Members from "./Member";
+import { FileInput } from "components/form-control";
+import { AiOutlineDownload } from "react-icons/ai";
+import { BiDotsVerticalRounded } from "react-icons/bi";
+import { FaRegImage } from "react-icons/fa";
+import { MdClose } from "react-icons/md";
+
 
 const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose }) => {
+  console.log("Assignee", initialValues.assigned_to, employees)
   const formRef = useRef();
   const fileInputRef = useRef(null);
   const [membersOpen, setMembersOpen] = useState(false);
-  const [files, setFiles] = useState([]);
+  const [newfiles, setNewFiles] = useState([]);
+  const [files, setFiles] = useState([]); 
+  const [deleteFiles, setDeleteFiles] = useState([]);
 
+
+    useEffect(() => {
+      console.log("Initial attachment values:", initialValues.attachment);
+      setFiles(initialValues.attachment);
+    }, [initialValues.attachment]);
+
+  console.log("deletefiles",deleteFiles);
+  
   const dropdownOptions = [
     { label: "High", icon: highpriorityIcon, value: "High" },
     { label: "Low", icon: lowpriorityIcon, value: "Low" },
@@ -30,10 +47,41 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
   ];
 
   const handleAttachmentsChange = (event, props) => {
-    const files = event.target.files;
-    setFiles(files);
-    props.setFieldValue("files", Array.from(files));
+    const selectedFiles = event.target.files;
+    const filesArray = Array.from(selectedFiles);
+
+    Promise.all(
+      filesArray.map((file) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const fileData = {
+              name: file.name,
+              file: event.target.result,
+            };
+            resolve(fileData);
+          };
+          reader.onerror = (error) => {
+            reject(error);
+          };
+          reader.readAsDataURL(file);
+        });
+      })
+    )
+      .then((fileDataArray) => {
+        setNewFiles(fileDataArray); 
+      })
+      .catch((error) => {
+        console.error("Error reading files:", error);
+      });
   };
+  const removeFile = (file)=>{
+    if(file.id){
+      setDeleteFiles([...deleteFiles, file.id]);
+       const filteredFiles = files.filter(f => f.id !== file.id);
+      setFiles(filteredFiles);
+    }
+  }
 
   return (
     <Formik
@@ -41,7 +89,8 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
       enableReinitialize={true}
       innerRef={formRef}
       onSubmit={(values, { resetForm }) => {
-        handleSubmit(values, resetForm);
+        console.log("newfiles", newfiles,"files", files, "deleteFiles", deleteFiles)
+        handleSubmit(values, newfiles,files,deleteFiles, resetForm);
       }}
       validate={(values) => {
         const errors = {};
@@ -142,7 +191,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                   <div className="flex gap-5">
                     <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
                       <RiAttachment2 />
-                      <div>Attachments ({files.length})</div>
+                      <div>Attachments ({newfiles?.length + files.length})</div>
                     </div>
                   </div>
                 </Col>
@@ -165,6 +214,33 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 </Col>
               </Row>
             </Col>
+            <Col md="12" className="mb-3">
+              {(files.length > 0 ||
+                newfiles?.length>0) && (
+                  <div className="">
+                    {[...files, ...newfiles].map((file, index) => (
+                      <div className="flex items-center justify-between w-fit bg-gray-100 p-2 rounded-lg shadow-md mb-2">
+                        <div className="flex items-center">
+                          <FaRegImage className="h-4 w-4 text-gray-500" />
+                          <span className="ml-4 font-lato text-baseGray text-sm">
+                            {file.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-x-2">
+                          <a
+                            href="/path/to/your/image.jpg"
+                            download
+                            className="text-gray-500 hover:text-gray-700"
+                          >
+                            <AiOutlineDownload className="h-5 w-5 " />
+                          </a>
+                          <MdClose className="h-5 w-5 text-gray-500 cursor-pointer" onClick={()=>{removeFile(file)}}/>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+            </Col>
             <Col md="12" className="mb-0">
               <Row className="items-center">
                 <Col md="4" className="label text-[17px] mb-3">
@@ -182,9 +258,9 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 </Col>
                 <Col md="6" className="mb-3">
                   <div className="flex justify-start gap-2 items-center h-100">
-                    {props.values.card_members &&
-                      props.values.card_members.length > 0 &&
-                      props.values.card_members.map((member, index) => (
+                    {props.values.assigned_to &&
+                      props.values.assigned_to.length > 0 &&
+                      props.values.assigned_to.map((member, index) => (
                         <div key={index}>
                           <Members member={member} />
                         </div>
@@ -205,15 +281,15 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
               {membersOpen && (
                 <Col md="12" className="mb-3 w-full b">
                   <SelectComponent
-                    name="card_members"
+                    name="assigned_to"
                     options={employees}
-                    error={props.errors.card_members}
-                    touch={props.touched.card_members}
-                    label="Card Members"
+                    error={props.errors.assigned_to}
+                    touch={props.touched.assigned_to}
+                    label="Assign to"
                     required
                     onChange={(field, value) => {
                       setMembersOpen(false);
-                      const members = props.values.card_members || [];
+                      const members = props.values.assigned_to || [];
                       members.push(value);
                       props.setFieldValue(field, members);
                     }}

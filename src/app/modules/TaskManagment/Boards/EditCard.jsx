@@ -28,6 +28,11 @@ import {
 } from "app/hooks/taskManagment";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import CreateAndEditCardForm from "../Sections/CreateAndEditCardForm";
+import {
+  addAttachments,
+  getAttachmentById,
+  deleteAttachment,
+} from "app/hooks/taskManagment";
 
 
 const EditCard = ({
@@ -62,15 +67,34 @@ console.log("cardId", cardId)
   });
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  console.log("initialValues", initialValues)
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
       const cardDetails = await getTaskById(cardId);
-      console.log("cardDetails", cardDetails)
-      if (isMounted) {
-        setInitialValues({...cardDetails, priority: reversePriorityMapping[cardDetails.priority]});
+      if (cardDetails?.attachment.length > 0) {
+        const attachment = await Promise.all(
+          cardDetails.attachment.map(async (attachmentId) => {
+            const response = await getAttachmentById(attachmentId);
+            console.log("response", response)
+            return {...response.attachments, id: response.id};
+          })
+        );
+        if (isMounted) {
+          setInitialValues({
+            ...cardDetails,
+            attachment: attachment,
+            priority: reversePriorityMapping[cardDetails.priority],
+          });
+        }
       }
+      else if (isMounted) {
+          setInitialValues({
+            ...cardDetails,
+            priority: reversePriorityMapping[cardDetails.priority],
+          });
+        }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
     } finally {
@@ -81,25 +105,54 @@ console.log("cardId", cardId)
   };
   const formRef = useRef();
 
-  const handleSubmit = async (formData) => {
-    setIsLoading(true);
-    try {
-      const response = await addTask({
-        ...formData,
-        priority: priorityMapping[formData.priority],
+const handleSubmit = async (
+  formData,
+  newfiles,
+  files,
+  deleteFiles=[],
+  resetForm
+) => {
+  // console.log("Files", files);
+  setIsLoading(true);
+  try {
+    if(deleteFiles.length > 0) {
+      deleteFiles.forEach(async (file) => {
+        await deleteAttachment(file.id);
       });
-      if (response) {
-        onClose();
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error(error.response.data.detail, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } finally {
-      setIsLoading(false);
     }
-  };
+    // Map over files to get an array of promises
+    const attachmentPromises = newfiles.map(async (file) => {
+      const response = await addAttachments(file);
+      return response.id; // Return the attachment ID
+    });
+
+    // Wait for all promises to resolve
+    const attachmentIds = await Promise.all(attachmentPromises);
+    const oldAttachmentIds = files.map((file) => file.id);
+
+    // Update formData with attachment IDs
+    formData.attachment = [...attachmentIds, ...oldAttachmentIds];
+    console.log("formData", formData);
+
+    // Now call addTask
+    const response = await addTask({
+      ...formData,
+      priority: priorityMapping[formData.priority],
+    });
+
+    if (response) {
+      onClose();
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    toast.error(error.response.data.detail, {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
     useEffect(() => {
       let isMounted = true;
       if (cardId) fetchData(isMounted);

@@ -227,6 +227,26 @@ const addTask = async (payload) => {
     return false;
   }
 };
+const addAttachments = async (payload) => {
+  try {
+      const response = await axios.post(
+        `${baseUrl}/TaskmanagementAttachment`,
+        {attachments: payload},
+        {
+          headers: headers(),
+        }
+      );
+      if(response.status === 201){
+        return response.data;
+      }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding task:", error);
+    return false;
+  }
+};
 
 const getProjectById = async (projectId) => {
   try {
@@ -292,6 +312,23 @@ const deleteProject = async (projectId) => {
     return false;
   }
 };
+const deleteAttachment = async (attachmentId) => {
+  try {
+    const response = await axios.delete(
+      `${baseUrl}/TaskmanagementAttachment/${attachmentId}`,
+      {
+        headers: headers(),
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error deleting attachment:", error);
+    return false;
+  }
+};
 
 const getTaskById = async (taskId) => {
   try {
@@ -314,6 +351,30 @@ const getTaskById = async (taskId) => {
     return {};
   }
 };
+const getAttachmentById = async (attachmentId) => {
+  try {
+    if (attachmentId) {
+      const response = await axios.get(
+        `${baseUrl}/TaskmanagementAttachment/${attachmentId}`,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        console.log("get attachment by id", response.data);
+        return response.data;
+      } else {
+        return {};
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error getting attachment:", error);
+    return {};
+  }
+};
 
 export {
   getAllProjects,
@@ -326,4 +387,7 @@ export {
   getTaskByBoardId,
   addTask,
   getTaskById,
+  addAttachments,
+  getAttachmentById,
+  deleteAttachment,
 };
