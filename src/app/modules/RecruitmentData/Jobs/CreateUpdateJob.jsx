@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef } from "react";
+import React, { useState, useEffect, useRef, forwardRef } from "react";
 import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
 import { FaChevronCircleLeft } from "react-icons/fa";
@@ -8,7 +8,7 @@ import {
   SelectComponent,
   DateInput,
   TextAreaInput,
-} from "../../../../components/form-control.jsx";
+} from "components/form-control.jsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -17,20 +17,36 @@ import {
   jobTypeOptions,
   locationTypeOptions,
   workTypeOptions,
-} from "../../../../data/Data.js";
-import PageLoader from "../../../../components/PageLoader.jsx";
+  countryOptions,
+} from "data/Data.js";
+
+import PageLoader from "components/PageLoader.jsx";
 import { connect } from "react-redux";
-import { addJob, updateJob } from "../../../hooks/recruitment.jsx";
+import { addJob, updateJob } from "app/hooks/recruitment.jsx";
+import { getCurrenciesList } from "app/hooks/general";
 import { Header } from "../Sections/index.js";
 import { JobDetail } from "app/utils/Types/Recruitment.jsx";
+import {validationJobFormSchema} from "app/utils/FormSchema/jobFormSchema.jsx";
 
 const JobForm = forwardRef(
   ({ isLoading, formData, handleSubmit, isEditMode, id, onClose }, formRef) => {
-    const initialValues = {
-      JobDetail,
-      ...formData,
-    };
+    const initialValues = isEditMode ? formData : JobDetail;
     const navigate = useNavigate();
+    const [job_Id, setJob_Id] = useState(null);
+    const [currencies, setCurrencies] = useState([]);
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const currencyData = await getCurrenciesList();
+          setCurrencies(currencyData);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+
+      fetchData();
+    }, []);
+
     return (
       <>
         {isLoading ? (
@@ -45,14 +61,12 @@ const JobForm = forwardRef(
               <Formik
                 initialValues={initialValues}
                 innerRef={formRef}
+                enableReinitialize={true}
                 onSubmit={(values, { resetForm }) => {
                   handleSubmit(values, resetForm);
                 }}
                 validate={(values) => {
-                  const errors = {};
-                  if (!values.Job_Title) {
-                    errors.Job_Title = "Job Title is required";
-                  }
+                  const errors = validationJobFormSchema(values)
                   return errors;
                 }}
               >
@@ -62,6 +76,21 @@ const JobForm = forwardRef(
                       <Col md="12">
                         <h5 className="fw-700 mb-3 mt-4">Details</h5>
                       </Col>
+                      <Col md="6">
+                        <TextInput
+                          name="id"
+                          error={props.errors.id}
+                          touch={props.touched.id}
+                          value={job_Id}
+                          label="Job Id"
+                          required
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                          }}
+                          disabled
+                        />
+                      </Col>
+                      <Col md="6"></Col>
                       <Col md="6">
                         <TextInput
                           name="Job_Title"
@@ -134,7 +163,7 @@ const JobForm = forwardRef(
                       <Col md="6">
                         <SelectComponent
                           name="location"
-                          options={locationTypeOptions}
+                          options={countryOptions}
                           error={props.errors.location}
                           touch={props.touched.location}
                           value={props.values.location}
@@ -142,6 +171,26 @@ const JobForm = forwardRef(
                           required
                           onChange={(field, value) => {
                             props.handleChange(field)(value);
+                            const currenciesCode = currencies.filter((obj) =>
+                              obj.label.includes(value)
+                            );
+                            if(currenciesCode && currenciesCode.length > 0)
+                            props.setFieldValue("currency", currenciesCode[0]?.value);
+                          }}
+                        />
+                      </Col>
+                      <Col md="6">
+                        <SelectComponent
+                          name="currency"
+                          options={currencies}
+                          error={props.errors.currency}
+                          touch={props.touched.currency}
+                          value={props.values.currency}
+                          label="Currency"
+                          required
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                            
                           }}
                         />
                       </Col>
@@ -175,6 +224,19 @@ const JobForm = forwardRef(
                       </Col>
                       <Col md="6">
                         <DateInput
+                          name="start_date"
+                          error={props.errors.start_date}
+                          touch={props.touched.start_date}
+                          value={props.values.start_date}
+                          label="Start Date"
+                          required
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </Col>
+                      <Col md="6">
+                        <DateInput
                           name="Deadline"
                           error={props.errors.Deadline}
                           touch={props.touched.Deadline}
@@ -197,6 +259,7 @@ const JobForm = forwardRef(
                           value={props.values.Job_Requirement}
                           label="Job Requirement"
                           required
+                          maxRows={5}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
@@ -210,6 +273,7 @@ const JobForm = forwardRef(
                           value={props.values.Job_Description}
                           label="Job Description"
                           required
+                          maxRows={5}
                           onChange={(field, value) => {
                             props.handleChange(field)(value);
                           }}
@@ -252,7 +316,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
   const navigate = useNavigate();
   const id = formData?.id;
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values, resetForm) => {
     setIsLoading(true);
 
     try {
@@ -271,7 +335,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
         else navigate("/jobs");
 
         if (!isEditMode) {
-          formRef.current.resetForm();
+          resetForm()
         }
       } else {
         toast.error(
@@ -280,7 +344,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
       }
     } catch (error) {
       console.error(`Error ${isEditMode ? "updating" : "adding"} job:`, error);
-      // toast.error("An error occurred. Please try again.");
+      toast.error(`Error ${isEditMode ? "updating" : "adding"} job:`);
     } finally {
       setIsLoading(false);
     }

@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import Joi from "joi";
 import moment from "moment";
 import ReactQuill from "react-quill";
-import { priorityOptions, statusOptions } from "../../../data/Data";
+import { PriorityList, statusOptions } from "../../../data/Data";
 import Select from "react-select";
 import { TbLocation } from "react-icons/tb";
 
@@ -470,10 +470,10 @@ const TaskModal = ({ id, onClose, taskData, token, baseUrl, getTasks, taskViewBo
                     </label>
                     <Select
                       name="priority"
-                      value={priorityOptions.find(
+                      value={PriorityList.find(
                         (opt) => opt.value === priority
                       )}
-                      options={priorityOptions}
+                      options={PriorityList}
                       className="w-[140px]"
                       isSearchable={false}
                       onChange={(selectedOption) => {

@@ -76,7 +76,10 @@ const getEmployeeList = async () => {
       const employeeResponse = response.data?.results?.employees ?? [];
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
-        label: `${employee.first_name} ${employee.last_name}`,
+        label: `${employee.username}`,
+        name: `${employee.first_name} ${employee.last_name}`,
+        department_name: employee.department_name,
+        department_position: employee.department_position,
       }));
       return employeeList;
     } else return [];
@@ -100,6 +103,31 @@ const getOrganizationList = async () => {
       return organizationList;
     } else return [];
   } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
+const getProjectsList = async () => {
+  const URL = `/project/`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const projectResponse = response.data;
+      const projectList = projectResponse.map((project) => ({
+        value: project.id,
+        label: project.name,
+      }));
+      return projectList;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
@@ -143,6 +171,30 @@ const getList = async (URL) => {
     });
     if (response.status === 200) return response.data;
     else return [];
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
+const getCurrenciesList = async (URL) => {
+  try {
+    const response = await axios.get(`${baseUrl}/currencies/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const currenciesResponse = response.data;
+      const currenciesList = currenciesResponse.map((currencies) => ({
+        value: currencies.code,
+        label:`${currencies.code} - ${currencies.name}`,
+      }));
+      return currenciesList;
+    } else {
+      return [];
+    }
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();
@@ -197,4 +249,6 @@ export {
   getEmployeeList,
   handleLogout,
   getEmployeeCustomList,
+  getProjectsList,
+  getCurrenciesList
 };

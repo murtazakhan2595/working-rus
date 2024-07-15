@@ -1,3 +1,5 @@
+import moment from "moment";
+
 const JobDetail = {
   Job_Title: "",
   Job_Type: "",
@@ -10,6 +12,8 @@ const JobDetail = {
   Deadline: "",
   Job_Requirement: "",
   Job_Description: "",
+  currency:"",
+  start_date:moment(new Date()).format("YYYY-MM-DD"),
 };
 
 const ApplicationDetail = {

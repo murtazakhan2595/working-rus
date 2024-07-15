@@ -28,7 +28,6 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     errors.employee_location = "Work location is required";
   if (!values.employee_status) errors.employee_status = "Status is required";
   if (!values.joining_date) errors.joining_date = "Joining date is required";
-  if (!values.organization) errors.organization = "Organization is required";
   return errors;
 };
 
@@ -38,8 +37,6 @@ const validationEmployeeContactInfoFormSchema = (values) => {
     errors.emergency_first_name = "First name is required";
   if (!values.emergency_relation)
     errors.emergency_relation = "Contact Relation is required";
-  if (!values.emergency_country_code)
-    errors.emergency_country_code = "Phone Country Code name is required";
   if (!values.emergency_phone_no)
     errors.emergency_phone_no = "Phone number is required";
   if (!values.current_address) errors.current_address = "Address is required";

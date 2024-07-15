@@ -35,7 +35,7 @@ const CheckboxDropdown = ({
         >
           <span onClick={() => toggleDropdown()}>{label}</span>
         </DropdownToggle>
-        <DropdownMenu end className="custom-dropdown-menu">
+        <DropdownMenu end className="custom-dropdown-menu h-[70vh] overflow-y-auto">
           {mainHeading && (
             <h5 className="mb-2">
               <b>{mainHeading}</b>

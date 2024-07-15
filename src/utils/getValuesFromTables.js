@@ -8,7 +8,6 @@ import {
 } from "data/Data";
 import { useSelector } from "react-redux";
 
-
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
   return country ? country.label : null;
@@ -20,10 +19,8 @@ function getEmployeeType(employeeType) {
   );
   return response ? response.label : "";
 }
-function UserRole({value}) {
-  const response = UserRoles.find(
-    (option) => option.value === parseInt(value)
-  );
+function UserRole({ value }) {
+  const response = UserRoles.find((option) => option.value === parseInt(value));
   return response ? response.label : "";
 }
 function getWorkType(workType) {
@@ -59,6 +56,11 @@ function DepartmentName({ value }) {
   );
   return <>{department ? department.label : "N/A"}</>;
 }
+function ProjectName({ value }) {
+  const projects = useSelector((state) => state.common.projects);
+  const project = projects.find((option) => option.value === parseInt(value));
+  return <>{project ? project.label : "N/A"}</>;
+}
 function DesignationName({ value }) {
   const designations = useSelector((state) => state.common.designations);
   const designation = designations.find(
@@ -67,14 +69,17 @@ function DesignationName({ value }) {
   return <>{designation ? designation.label : "N/A"}</>;
 }
 
-function EmployeeName({ value }) {
+function EmployeeName({ value, length }) {
   const employees = useSelector((state) => state.emp.employees);
   const employee = employees.find((option) => option.value === parseInt(value));
-  return <>{employee ? employee.label : "N/A"}</>;
+  const employeeName = employee ? employee.name?.toUpperCase() : "N/A";
+  const displayedName = length ? employeeName.slice(0, length) : employeeName;
+
+  return <>{displayedName}</>;
 }
 
 function EmployeeID({ value }) {
-  const employee = value ? `TXB-${value.toString().padStart(4, "0")}` : 'N/A';
+  const employee = value ? `TXB-${value.toString().padStart(4, "0")}` : "N/A";
   return <>{employee}</>;
 }
 
@@ -83,6 +88,7 @@ function ManagerName({ value }) {
   const manager = managers.find((option) => option.value === parseInt(value));
   return <>{manager ? manager.label : "N/A"}</>;
 }
+
 
 export {
   getCountryFullName,
@@ -98,4 +104,5 @@ export {
   EmployeeName,
   EmployeeID,
   UserRole,
+  ProjectName,
 };

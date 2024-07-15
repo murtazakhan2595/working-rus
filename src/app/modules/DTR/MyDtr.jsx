@@ -9,7 +9,7 @@ import { RxCross2, RxPlus } from "react-icons/rx";
 import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { TbCircleDashed } from "react-icons/tb";
-import { priority2Options, status2Options, typeOptions } from "../../../data/Data";
+import { PriorityList, status2Options, typeOptions } from "../../../data/Data";
 import Select from "react-select";
 import { fetchEmployees } from "../../../state/slices/EmpSlice";
 import { postTasks } from "../../../state/slices/DtrPostSlice";
@@ -391,10 +391,10 @@ const MyDtr = ({ baseUrl, token }) => {
                                                 />
                                                 <Select
                                                     name="priorty"
-                                                    value={priority2Options.find(
+                                                    value={PriorityList.find(
                                                         (opt) => opt.value === priorty
                                                     )}
-                                                    options={priority2Options}
+                                                    options={PriorityList}
                                                     className="w-[60%]"
                                                     isSearchable={false}
                                                     // onChange={(selectedOption) => {

@@ -9,7 +9,7 @@ import Joi from "joi";
 import moment from "moment";
 import ReactQuill from "react-quill";
 import Select from "react-select";
-import { priorityOptions, statusOptions } from "../../../data/Data";
+import { PriorityList, statusOptions } from "../../../data/Data";
  
 const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }) => {
   const newDate = new Date();
@@ -317,10 +317,10 @@ const TaskModal = ({ id, onClose, currentStatus, token, baseUrl, boardStatusId }
                       </label>
                       <Select
                         name="priority"
-                        value={priorityOptions.find(
+                        value={PriorityList.find(
                           (opt) => opt.value === priority
                         )}
-                        options={priorityOptions}
+                        options={PriorityList}
                         className="w-[140px]"
                         isSearchable={false}
                         onChange={(selectedOption) => {

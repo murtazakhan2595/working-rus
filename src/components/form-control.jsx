@@ -9,6 +9,7 @@ import { TfiFiles } from "react-icons/tfi";
 import { dropdownStyles } from "../data/Data";
 import { IoIosSearch } from "react-icons/io";
 import { countryCodesOptions } from "../data/CountryCode";
+import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
 const SelectComponent = ({
   name,
@@ -28,8 +29,8 @@ const SelectComponent = ({
         isDisabled={disabled}
         id={name}
         className={`custom-select-input form-control ${
-          error && touch ? "is-invalid" : ""
-        }`}
+          !value ? "items-center" : ""
+        } ${error && touch ? "is-invalid" : ""}`}
         options={options ? options : []}
         value={
           options && options.length > 0
@@ -37,7 +38,7 @@ const SelectComponent = ({
             : ""
         }
         onChange={(selectedOption) => onChange(name, selectedOption.value)}
-        placeholder={`Select ${label}`}
+        placeholder={`${label}`}
         styles={{
           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
           menu: (base) => ({ ...base, zIndex: 9999 }),
@@ -45,12 +46,14 @@ const SelectComponent = ({
         }}
         menuPortalTarget={document.body}
       />
-      <Label
-        className={`text-baseGray ${value ? "date-floating-label" : ""}`}
-        for={name}
-      >
-        {required && <span className="text-danger">* </span>} {label}
-      </Label>
+      {value && (
+        <Label
+          className={`text-baseGray ${value ? "date-floating-label" : ""}`}
+          for={name}
+        >
+          {required && <span className="text-danger">* </span>} {label}
+        </Label>
+      )}
 
       {error && touch && <div className="invalid-feedback">{error}</div>}
     </FormGroup>
@@ -159,13 +162,14 @@ const TextInput = ({
   disabled,
   required,
   regEx,
+  maxLength,
 }) => {
   return (
     <>
       <FormGroup floating>
         <Input
           type="text"
-          maxLength="100"
+          maxLength={maxLength ?? "100"}
           id={name}
           name={name}
           autoComplete="Off"
@@ -238,8 +242,8 @@ const PhoneNumberInput = ({
               isDisabled={disabled}
               id={countryCodeName}
               className={`custom-select-input form-control ${
-                error && touch ? "is-invalid" : ""
-              }`}
+                !countryCode ? "items-center" : ""
+              } ${error && touch ? "is-invalid" : ""}`}
               options={countryCodesOptions ? countryCodesOptions : []}
               value={
                 countryCodesOptions
@@ -253,9 +257,11 @@ const PhoneNumberInput = ({
               }
               placeholder={"Code"}
             />
-            <Label className="text-baseGray" htmlFor="address">
-              Code
-            </Label>
+            {countryCode && (
+              <Label className="text-baseGray" htmlFor="address">
+                Code
+              </Label>
+            )}
           </FormGroup>
         </Col>
         <Col sm={8} className="">
@@ -447,7 +453,6 @@ const FileInput = ({
   label,
   acceptType,
 }) => {
-  console.log(value);
   return (
     <>
       <div
@@ -529,21 +534,22 @@ const TextAreaInput = ({
   required,
   regEx,
   maxLength,
+  maxRows,
 }) => {
   return (
     <>
       <FormGroup floating>
         <Input
           type="textarea"
-          // maxLength={maxLength ?? "100"}
+          maxLength={maxLength ?? "5000"}
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter" + label}
+          placeholder={"Enter " + label}
           value={value}
-          rows={5}
+          rows={maxRows ?? 1}
           disabled={disabled}
-          className={error && touch ? "is-invalid" : ""}
+          className={`h-auto ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {
             const value = option.target.value;
             if (regEx) {
@@ -554,6 +560,54 @@ const TextAreaInput = ({
           }}
         />
         <Label className="text-baseGray" htmlFor="address">
+          {required && <span className="text-danger">* </span>}
+          {label}
+        </Label>
+
+        {error && touch && <div className="invalid-feedback">{error}</div>}
+      </FormGroup>
+    </>
+  );
+};
+const TextAreaEditorInput = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  disabled,
+  required,
+  regEx,
+  maxLength,
+}) => {
+  return (
+    <>
+      <FormGroup floating>
+        <ReactQuill
+          type="textarea"
+          id={name}
+          name={name}
+          autoComplete="Off"
+          placeholder={"Enter " + label}
+          value={value}
+          modules={{
+            toolbar: {
+              container: [
+                ["bold", "italic", "underline"],
+                [{ list: "ordered" }, { list: "bullet" }],
+                ["link"],
+                [{ align: "" }, { align: "center" }, { align: "right" }],
+              ],
+            },
+          }}
+          disabled={disabled}
+          className={`rounded ${error && touch ? "is-invalid" : ""}`}
+          onChange={(option) => {
+            onChange(name, option);
+          }}
+        />
+        <Label className="text-baseGray pt-4 mt-1" htmlFor="address">
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
@@ -683,4 +737,5 @@ export {
   FilterInput,
   CustomLightOutlineButton,
   CheckBoxInput,
+  TextAreaEditorInput,
 };

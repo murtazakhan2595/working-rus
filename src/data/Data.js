@@ -8,6 +8,7 @@ import {
   fetchDepartments,
   fetchLeaveTypes,
   fetchDesignations,
+  fetchProjects,
 } from "state/slices/CommonSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
@@ -29,12 +30,6 @@ export const tasksTitle = [
   { label: "List", width: "w-28" },
 
   { label: "Priority", width: "w-28" },
-];
-
-export const priorityOptions = [
-  { value: 3, label: "🟢 Low" },
-  { value: 2, label: "🌕 Medium" },
-  { value: 1, label: "🔴 High" },
 ];
 
 export const statusOptions = [
@@ -231,9 +226,27 @@ export const typeOptions = [
   },
 ];
 
-export const priority2Options = [
+export const formatNumber = (num) => {
+  const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
+  let unit = 0;
+
+  while (num >= 1000 && unit < units.length - 1) {
+    num /= 1000;
+    unit++;
+  }
+
+  // Use Intl.NumberFormat to format the number with 2 decimal places
+  const formattedNumber = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+
+  return formattedNumber + units[unit];
+};
+
+export const PriorityList = [
   {
-    value: "Low",
+    value: 3,
     label: (
       <div className="flex items-center gap-x-2 text-baseGray ">
         <IoMdArrowDropdownCircle className="text-2xl" /> Low
@@ -241,7 +254,7 @@ export const priority2Options = [
     ),
   },
   {
-    value: "Medium",
+    value: 2,
     label: (
       <div className="flex items-center gap-x-2 text-yellow-500">
         <FiMinusCircle className="text-xl" /> Medium
@@ -249,7 +262,7 @@ export const priority2Options = [
     ),
   },
   {
-    value: "High",
+    value: 1,
     label: (
       <div className="flex items-center gap-x-2 text-red-500">
         <IoMdArrowDropupCircle className="text-2xl" /> High
@@ -363,6 +376,43 @@ export const JobSortingFilters = [
     ],
   },
 ];
+export const TaskSortingFilters = [
+  {
+    label: "",
+    name: "complted",
+    options: [
+      { label: "Finished", value: "" },
+      { label: "Unfinished task", value: "asc" },
+    ],
+  },
+  {
+    label: "Members",
+    name: "members",
+    options: [
+      { label: "No Members", value: "" },
+      { label: "Selected Members", value: "asc" },
+    ],
+  },
+  {
+    label: "Due Date",
+    name: "due_Dates",
+    options: [
+      { label: "No dates", value: "Remote" },
+      { label: "Overdates", value: "Hybrid" },
+      { label: "Due the next day", value: "Onsite" },
+    ],
+  },
+  {
+    label: "Priority",
+    name: "priority",
+    options: [
+      { label: "No priority", value: "Full_Time" },
+      { label: "High", value: "Internees" },
+      { label: "Medium", value: "Part_Time" },
+      { label: "Low", value: "Part_Time" },
+    ],
+  },
+];
 
 export const LeaveStatus = [
   { label: "Approved", value: "Approved" },
@@ -391,4 +441,5 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(fetchLeaveTypes());
   dispatch(fetchDesignations());
   dispatch(fetchReportingManagers());
+  dispatch(fetchProjects());
 };
