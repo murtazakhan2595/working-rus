@@ -217,14 +217,17 @@ function getNavigation(userRole) {
           ]
         : []),
 
-      ...(userRole === 1 || userRole === 2 || userRole === 4
+      ...(userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4
         ? [
             {
               name: "Task Management",
               icon: <IoMdCheckmarkCircleOutline />,
               dropdown: "Projects",
               children: [
-                ...(userRole === 1 || userRole === 2 || userRole === 4
+                ...(userRole === 1 ||
+                userRole === 2 ||
+                userRole === 3 ||
+                userRole === 4
                   ? [
                       {
                         name: "My Task",
@@ -232,7 +235,10 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                ...(userRole === 1 || userRole === 2 || userRole === 4
+                ...(userRole === 1 ||
+                userRole === 2 ||
+                userRole === 3 ||
+                userRole === 4
                   ? [
                       {
                         name: "My Team DTR",
@@ -240,7 +246,10 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                ...(userRole === 4 || userRole === 2 || userRole === 1
+                ...(userRole === 4 ||
+                userRole === 2 ||
+                userRole === 1 ||
+                userRole === 3
                   ? [
                       {
                         name: "Project Board",
@@ -248,7 +257,10 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                ...(userRole === 1 || userRole === 2 || userRole === 4
+                ...(userRole === 1 ||
+                userRole === 2 ||
+                userRole === 3 ||
+                userRole === 4
                   ? [
                       {
                         name: "Time Managment",

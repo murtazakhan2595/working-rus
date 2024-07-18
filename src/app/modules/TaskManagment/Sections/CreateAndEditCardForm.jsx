@@ -235,7 +235,6 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 <div className="">
                   {[...files, ...newfiles].map((file, index) => (
                     <div className="flex items-center justify-between w-fit bg-gray-100 p-2 rounded-lg shadow-md mb-2">
-                      {console.log(files, newfiles)}
                       <div className="flex items-center">
                         <FaRegImage className="h-4 w-4 text-gray-500" />
                         <span className="ml-4 font-lato text-baseGray text-sm">
@@ -276,11 +275,12 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                       <div>Assignee</div>
                     </div>
                   </div>
-                  {props.errors.assigned_to && (
-                    <div className="text-red-500 text-xs pt-1">
-                      {props.errors.assigned_to}
-                    </div>
-                  )}
+                  {props.errors.assigned_to &&
+                    props.values.assigned_to.length === 0 && (
+                      <div className="text-red-500 text-xs pt-1">
+                        {props.errors.assigned_to}
+                      </div>
+                    )}
                 </Col>
                 <Col md="6" className="mb-3">
                   <div className="flex justify-start gap-2 items-center h-100">
