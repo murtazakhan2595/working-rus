@@ -27,7 +27,7 @@ import {
   getTaskById,
 } from "app/hooks/taskManagment";
 import { CardTypes } from "app/utils/Types/TaskManagment";
-import CreateAndEditCardForm from "../Sections/CreateAndEditCardForm";
+import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
 import {
   addAttachments,
   getAttachmentById,

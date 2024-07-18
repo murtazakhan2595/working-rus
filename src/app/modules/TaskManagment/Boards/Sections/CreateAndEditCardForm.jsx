@@ -15,7 +15,7 @@ import lowpriorityIcon from "assets/images/lowpriority.svg";
 import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import plus from "assets/images/plus.svg";
 import { PriorityList } from "data/Data";
-import Members from "./Member";
+import Members from "../../Sections/Member";
 import { FileInput } from "components/form-control";
 import { AiOutlineDownload } from "react-icons/ai";
 import { BiDotsVerticalRounded } from "react-icons/bi";
