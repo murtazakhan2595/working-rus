@@ -228,7 +228,7 @@ function getNavigation(userRole) {
                   ? [
                       {
                         name: "My Task",
-                        url: "/my-profile",
+                        url: "/my-task",
                       },
                     ]
                   : []),

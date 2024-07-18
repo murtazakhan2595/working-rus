@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
 import { LeaveAllotmentColumns } from "app/utils/Types/TableColumns";
-import { Header, PageLoader,ConfirmationModal } from "components";
+import { Header, PageLoader, ConfirmationModal } from "components";
 import { FilterInput } from "components/form-control";
 import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { CiCirclePlus } from "react-icons/ci";
@@ -11,11 +11,9 @@ import ProjectModel from "./CreateProjectModel";
 import { useNavigate } from "react-router-dom";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import moment from "moment";
-import {
-  MembersList,
-  CustomDropdown,
-  ViewBoardDetails,
-} from "../Sections";
+import { MembersList, CustomDropdown, ViewBoardDetails } from "../Sections";
+import { LuFolderX } from "react-icons/lu";
+
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,6 +26,17 @@ const Projects = ({ userProfile }) => {
     try {
       const projectsData = await getAllProjects({ filterData });
       if (isMounted) {
+        if (userProfile.role === 4) {
+          const filteredResults = projectsData.results.filter((project) =>
+            project.project_members.includes(userProfile.id)
+          );
+          const filteredProjectsData = {
+            count: filteredResults.length,
+            results: filteredResults,
+          };
+          setAllProjects(filteredProjectsData);
+        }
+        else
         setAllProjects(projectsData);
       }
     } catch (error) {
@@ -72,7 +81,9 @@ const Projects = ({ userProfile }) => {
 
   return (
     <div className="screen bg-[#F0F1F2] ">
-      <Header title="All Projects" />
+      <Header
+        title={`${userProfile.role === 4 ? "My Projects" : "All Projects"}`}
+      />
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
@@ -113,6 +124,14 @@ const Projects = ({ userProfile }) => {
                         />
                       </Col>
                     ))}
+                    {
+                      AllProjects.count === 0 && (
+                        <main className="flex flex-col flex-wrap justify-center content-center items-center self-stretch p-8 text-2xl tracking-tight leading-4 bg-white rounded-xl text-zinc-600 max-md:px-5 h-[75dvh]">
+                        <LuFolderX className="w-20 h-20 text-zinc-600" /> 
+                        <p className="mt-6">Looks like you don't have any projects</p>
+                      </main>
+                      )
+                    }
                 </Row>
               )}
             </CardBody>
@@ -140,7 +159,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
     setIsViewBoardDetails(false);
     setIsEditMode(false);
   };
-  
+
   const viewDetails = () => {
     setIsDropdownOpen(false);
     setIsViewBoardDetails(true);
