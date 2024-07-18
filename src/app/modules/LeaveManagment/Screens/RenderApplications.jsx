@@ -200,12 +200,12 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
             label={"Direct Manager"}
             value={application?.status_manager}
           />
-          {application?.status_indirect_manager && (
+          {/* {application?.status_indirect_manager && (
             <StatusBar
               label={"Indirect Manager"}
               value={application?.status_indirect_manager}
             />
-          )}
+          )} */}
           <StatusBar label={"HR"} value={application?.status_hr} />
         </div>
       </Col>

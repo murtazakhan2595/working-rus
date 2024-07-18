@@ -56,14 +56,14 @@ const RenderStatus = ({ row }) => {
               Direct Manager Approval
             </span>
           </DropdownItem>
-          {row.status_indirect_manager && (
+          {/* {row.status_indirect_manager && (
             <DropdownItem className={`${itemClassName}`}>
               <span className={`${spanClassName}`}>
                 <StatusIcon status={row.status_indirect_manager} />
                 In-Direct Manager Approval
               </span>
             </DropdownItem>
-          )}
+          )} */}
           <DropdownItem className={`${itemClassName}`}>
             <span className={`${spanClassName}`}>
               <StatusIcon status={row.status_hr} />
