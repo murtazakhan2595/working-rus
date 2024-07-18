@@ -1,5 +1,3 @@
-// TaskDetail.js
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { CiEdit } from "react-icons/ci";
@@ -9,12 +7,7 @@ import { HiOutlinePaperClip } from "react-icons/hi";
 import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
 import { IoCalendarOutline } from "react-icons/io5";
 import { RxCross2, RxPerson } from "react-icons/rx";
-import {
-  AiOutlineDownload,
-  AiOutlineFile,
-  AiOutlinePaperClip,
-  AiOutlineSend,
-} from "react-icons/ai";
+import { AiOutlineDownload, AiOutlineFile, AiOutlinePaperClip, AiOutlineSend } from "react-icons/ai";
 import { FaRegImage } from "react-icons/fa";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import { RiSendPlaneFill } from "react-icons/ri";
@@ -22,9 +15,7 @@ import { LiaCommentAlt } from "react-icons/lia";
 import { PriorityList } from "data/Data";
 import { MembersList } from "../Sections";
 import moment from "moment";
-import { fetchComments } from "app/hooks/taskManagment";
-import { postComment } from "app/hooks/taskManagment";
-import { getBoardById } from "app/hooks/taskManagment";
+import { fetchComments, postComment, getBoardById, addAttachments, getAttachmentById } from "app/hooks/taskManagment";
 import { EmployeeName } from "utils/getValuesFromTables";
 import { useSelector } from "react-redux";
 
@@ -32,6 +23,8 @@ const TaskDetail = ({ task, onClose }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [boardName, setBoardName] = useState("Loading...");
+  const [attachments, setAttachments] = useState([]);
+  const [newAttachment, setNewAttachment] = useState(null);
   const fileInputRef = useRef(null);
 
   const userId = useSelector((state) => state.user.userProfile.id);
@@ -56,19 +49,63 @@ const TaskDetail = ({ task, onClose }) => {
       }
     };
 
+    const fetchAttachments = async () => {
+      try {
+        if (task?.attachment?.length) {
+          const attachmentPromises = task.attachment.map(id => getAttachmentById(id));
+          const attachmentData = await Promise.all(attachmentPromises);
+          console.log('Fetched attachments:', attachmentData);
+          setAttachments(attachmentData);
+        }
+      } catch (error) {
+        console.error("Error fetching attachments:", error);
+      }
+    };
+
     fetchBoardName();
     fetchData();
-  }, [task?.board_id, task?.id]);
+    fetchAttachments();
+  }, [task?.board_id, task?.id, task?.attachment]);
 
   const handleAddComment = async () => {
-    if (newComment.trim()) {
+    if (newComment.trim() || newAttachment) {
       try {
-        await postComment(task.id, userId, newComment);
+        if (newComment.trim()) {
+          await postComment(task.id, userId, newComment);
+          setNewComment("");
+        }
+
+        if (newAttachment) {
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            const base64String = reader.result.split(",")[1];
+            const payload = {
+              taskId: task.id,
+              userId: userId,
+              fileName: newAttachment.name,
+              fileType: newAttachment.type,
+              base64: base64String,
+            };
+            try {
+              const response = await addAttachments(payload);
+              if (response) {
+                console.log("File uploaded successfully:", response);
+                // Refetch attachments after uploading a new one
+                const updatedAttachments = await Promise.all(task.attachment.map(id => getAttachmentById(id)));
+                setAttachments(updatedAttachments);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          };
+          reader.readAsDataURL(newAttachment);
+          setNewAttachment(null);
+        }
+
         const data = await fetchComments(task.id);
         setComments(data);
-        setNewComment("");
       } catch (error) {
-        console.error("Error posting comment:", error);
+        console.error("Error posting comment or uploading attachment:", error);
       }
     }
   };
@@ -79,8 +116,9 @@ const TaskDetail = ({ task, onClose }) => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    console.log("Selected file:", file);
-    // Handle the selected file
+    if (file) {
+      setNewAttachment(file);
+    }
   };
 
   return (
@@ -123,7 +161,6 @@ const TaskDetail = ({ task, onClose }) => {
             </span>
           </div>
           <span className="ml-8 text-sm font-semibold">
-            {/* {EmployeeName(task?.assigned_by)} */}
             <EmployeeName value={task?.assigned_by} />
           </span>
         </div>
@@ -178,24 +215,26 @@ const TaskDetail = ({ task, onClose }) => {
           <AiOutlinePaperClip className="text-xl" />
           Attachments
         </h2>
-        <div className="flex items-center justify-between w-56 bg-gray-100 p-2 rounded-lg shadow-md">
-          <div className="flex items-center">
-            <FaRegImage className="h-4 w-4 text-gray-500" />
-            <span className="ml-4 font-lato text-baseGray text-sm">
-              image.jpg
-            </span>
+        {attachments.map((attachment) => (
+          <div key={attachment.id} className="flex items-center justify-between w-auto my-1 bg-gray-100 p-2 rounded-lg shadow-md">
+            <div className="flex items-center">
+              <FaRegImage className="h-4 w-4 text-gray-500" />
+              <span className="ml-4 font-lato text-baseGray text-sm">
+                {attachment?.attachments.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-x-2">
+              <a
+                href={attachment?.attachments.file}
+                download
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <AiOutlineDownload className="h-5 w-5" />
+              </a>
+              <BiDotsVerticalRounded className="h-5 w-5" />
+            </div>
           </div>
-          <div className="flex items-center gap-x-2">
-            <a
-              href="/path/to/your/image.jpg"
-              download
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <AiOutlineDownload className="h-5 w-5" />
-            </a>
-            <BiDotsVerticalRounded className="h-5 w-5" />
-          </div>
-        </div>
+        ))}
       </div>
 
       <div className="pb-1">
@@ -257,3 +296,4 @@ const TaskDetail = ({ task, onClose }) => {
 };
 
 export default TaskDetail;
+
