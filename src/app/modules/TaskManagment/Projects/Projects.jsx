@@ -10,9 +10,10 @@ import { CiCirclePlus } from "react-icons/ci";
 import ProjectModel from "./CreateProjectModel";
 import { useNavigate } from "react-router-dom";
 import { BiDotsVerticalRounded } from "react-icons/bi";
-import folderIcon from "assets/images/folder.png"
 import moment from "moment";
 import { MembersList, CustomDropdown, ViewBoardDetails } from "../Sections";
+import { LuFolderX } from "react-icons/lu";
+
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -126,11 +127,7 @@ const Projects = ({ userProfile }) => {
                     {
                       AllProjects.count === 0 && (
                         <main className="flex flex-col flex-wrap justify-center content-center items-center self-stretch p-8 text-2xl tracking-tight leading-4 bg-white rounded-xl text-zinc-600 max-md:px-5 h-[75dvh]">
-                        <img
-                          loading="lazy"
-                          src={folderIcon}
-                          alt=""
-                        />
+                        <LuFolderX className="w-20 h-20 text-zinc-600" /> 
                         <p className="mt-6">Looks like you don't have any projects</p>
                       </main>
                       )

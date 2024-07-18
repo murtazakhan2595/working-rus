@@ -189,6 +189,7 @@ function App() {
               <Route path="/leave-request" element={<CreateLeaveRequest />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/my-team" element={<ComingSoon />} />
+              <Route path="/my-task" element={<ComingSoon />} />
               <Route path="/calender" element={<ComingSoon />} />
               <Route path="/attendence" element={<ComingSoon />} />
               <Route path="/my-leaves" element={<MyLeaves />} />
