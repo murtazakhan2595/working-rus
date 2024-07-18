@@ -1,4 +1,3 @@
-[Monday 12:30 PM] Syed Umair Ali
 import React from "react";
  
 const NoProject = () => {
