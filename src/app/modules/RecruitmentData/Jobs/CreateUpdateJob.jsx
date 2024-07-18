@@ -9,13 +9,13 @@ import {
   DateInput,
   TextAreaInput,
 } from "components/form-control.jsx";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
+import { AmountPattern } from "app/utils/Types/ValidationPattern";
 import "react-toastify/dist/ReactToastify.css";
 import {
   educationTypeOptions,
   employeeTypeOptions,
   jobTypeOptions,
-  locationTypeOptions,
   workTypeOptions,
   countryOptions,
 } from "data/Data.js";
@@ -26,7 +26,7 @@ import { addJob, updateJob } from "app/hooks/recruitment.jsx";
 import { getCurrenciesList } from "app/hooks/general";
 import { Header } from "../Sections/index.js";
 import { JobDetail } from "app/utils/Types/Recruitment.jsx";
-import {validationJobFormSchema} from "app/utils/FormSchema/jobFormSchema.jsx";
+import { validationJobFormSchema } from "app/utils/FormSchema/jobFormSchema.jsx";
 
 const JobForm = forwardRef(
   ({ isLoading, formData, handleSubmit, isEditMode, id, onClose }, formRef) => {
@@ -66,7 +66,7 @@ const JobForm = forwardRef(
                   handleSubmit(values, resetForm);
                 }}
                 validate={(values) => {
-                  const errors = validationJobFormSchema(values)
+                  const errors = validationJobFormSchema(values);
                   return errors;
                 }}
               >
@@ -81,7 +81,7 @@ const JobForm = forwardRef(
                           name="id"
                           error={props.errors.id}
                           touch={props.touched.id}
-                          value={job_Id}
+                          value={job_Id || props.values.id}
                           label="Job Id"
                           required
                           onChange={(field, value) => {
@@ -174,8 +174,11 @@ const JobForm = forwardRef(
                             const currenciesCode = currencies.filter((obj) =>
                               obj.label.includes(value)
                             );
-                            if(currenciesCode && currenciesCode.length > 0)
-                            props.setFieldValue("currency", currenciesCode[0]?.value);
+                            if (currenciesCode && currenciesCode.length > 0)
+                              props.setFieldValue(
+                                "currency",
+                                currenciesCode[0]?.value
+                              );
                           }}
                         />
                       </Col>
@@ -190,7 +193,6 @@ const JobForm = forwardRef(
                           required
                           onChange={(field, value) => {
                             props.handleChange(field)(value);
-                            
                           }}
                         />
                       </Col>
@@ -205,7 +207,8 @@ const JobForm = forwardRef(
                           onChange={(field, value) => {
                             props.handleChange(field)(value);
                           }}
-                          regEx={/^[0-9]+$/}
+                          maxLength="14,2"
+                          regEx={AmountPattern}
                         />
                       </Col>
                       <Col md="6">
@@ -219,7 +222,8 @@ const JobForm = forwardRef(
                           onChange={(field, value) => {
                             props.handleChange(field)(value);
                           }}
-                          regEx={/^[0-9]+$/}
+                          maxLength="14,2"
+                          regEx={AmountPattern}
                         />
                       </Col>
                       <Col md="6">
@@ -335,7 +339,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
         else navigate("/jobs");
 
         if (!isEditMode) {
-          resetForm()
+          resetForm();
         }
       } else {
         toast.error(
