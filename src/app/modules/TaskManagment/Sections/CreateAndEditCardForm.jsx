@@ -22,6 +22,7 @@ import { BiDotsVerticalRounded } from "react-icons/bi";
 import { FaRegImage } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { useSelector } from "react-redux";
+import {validationTaskFormSchema} from "app/utils/FormSchema/taskManagementFormSchema";
 
 
 const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose, isEdit }) => {
@@ -86,9 +87,15 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
     }
   }
 
+  const removeMember = (member) => {
+    console.log("member", member);
+    const members = formRef.current.values.assigned_to || [];
+    const updatedMembers = members.filter((m) => m !== member);
+    formRef.current.setFieldValue("assigned_to", updatedMembers);
+  };
+
   return (
     <Formik
-      // initialValues={{ ...initialValues, assigned_by: userProfile.id}}
       initialValues={formInitialValues}
       enableReinitialize={true}
       innerRef={formRef}
@@ -96,7 +103,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
         handleSubmit(values, newfiles, files, deleteFiles, resetForm);
       }}
       validate={(values) => {
-        const errors = {};
+        const errors = validationTaskFormSchema(values);
         return errors;
       }}
     >
@@ -138,7 +145,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                     touch={props.touched.start_date}
                     value={props.values.start_date}
                     label="Start Date"
-                    minDate={new Date()}
+                    required
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
                     }}
@@ -151,6 +158,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                     error={props.errors.assigned_by}
                     touch={props.touched.assigned_by}
                     value={props.values.assigned_by}
+                    required
                     label="Assign By"
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
@@ -167,8 +175,11 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                     error={props.errors.end_date}
                     touch={props.touched.end_date}
                     value={props.values.end_date}
+                    required
                     label="End Date"
-                    minDate={new Date()}
+                    {...(props.values.start_date && {
+                      minDate: new Date(props.values.start_date),
+                    })}
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
                     }}
@@ -181,6 +192,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                     error={props.errors.priority}
                     touch={props.touched.priority}
                     value={props.values.priority}
+                    required
                     label="Priority"
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
@@ -223,7 +235,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 <div className="">
                   {[...files, ...newfiles].map((file, index) => (
                     <div className="flex items-center justify-between w-fit bg-gray-100 p-2 rounded-lg shadow-md mb-2">
-                    {console.log(files, newfiles)}
+                      {console.log(files, newfiles)}
                       <div className="flex items-center">
                         <FaRegImage className="h-4 w-4 text-gray-500" />
                         <span className="ml-4 font-lato text-baseGray text-sm">
@@ -264,6 +276,11 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                       <div>Assignee</div>
                     </div>
                   </div>
+                  {props.errors.assigned_to && (
+                    <div className="text-red-500 text-xs pt-1">
+                      {props.errors.assigned_to}
+                    </div>
+                  )}
                 </Col>
                 <Col md="6" className="mb-3">
                   <div className="flex justify-start gap-2 items-center h-100">
@@ -271,7 +288,11 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                       props.values.assigned_to.length > 0 &&
                       props.values.assigned_to.map((member, index) => (
                         <div key={index}>
-                          <Members member={member} />
+                          <Members
+                            member={member}
+                            isEditMode={true}
+                            removeMember={removeMember}
+                          />
                         </div>
                       ))}
                     <div
