@@ -8,7 +8,7 @@ import highpriorityIcon from "assets/images/highpriority.svg";
 import lowpriorityIcon from "assets/images/lowpriority.svg";
 import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import plus from "assets/images/plus.svg";
-import CreateAndEditCardForm from "../Sections/CreateAndEditCardForm";
+import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
 import { addTask, addAttachments } from "app/hooks/taskManagment";
 
 const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {

@@ -11,7 +11,8 @@ import ProjectModel from "./CreateProjectModel";
 import { useNavigate } from "react-router-dom";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import moment from "moment";
-import { MembersList, CustomDropdown, ViewBoardDetails } from "../Sections";
+import ViewBoardDetails from './ViewBoardDetails'
+import { MembersList, CustomDropdown } from "../Sections";
 import { LuFolderX } from "react-icons/lu";
 
 

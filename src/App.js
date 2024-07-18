@@ -70,18 +70,6 @@ function App() {
   const [userRole, setUserRole] = useState(userProfile.role);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // const handleUpdateProfile = (data) => {
-  //   let updateProfile = {
-  //     id: data.id,
-  //     username: data.username,
-  //     is_filled: data.is_filled,
-  //     role: data.user_role,
-  //   };
-  //   // setUserProfile(updateProfile);
-  //   dispatch(setUserProfile(updateProfile));
-  // };
-
   const getProfile = async () => {
     try {
       const response = await axios.get(`${baseUrl}/user/`, {
@@ -176,14 +164,14 @@ function App() {
                 element={<Dashboard isSidebarOpen={isSidebarOpen} />}
               />
               <Route path="/board/:id" element={<Boardd />} />
+              <Route path="/project/:id" element={<BoardList />} />
+              <Route path="/projects" element={<Projects />} />
               <Route path="/project-board/:projectId" element={<Board />} />
               <Route
                 path="/my-profile"
                 element={<ViewEmployee profileView />}
               />
               <Route exact path="/test" element={<Test />} />
-              <Route path="/projects" element={<Projects />} />
-
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-balance" element={<LeaveBalance />} />
               <Route path="/leave-request" element={<CreateLeaveRequest />} />
@@ -273,8 +261,6 @@ function App() {
                   <Route path="/career-planning" element={<ComingSoon />} />
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
-                  <Route path="/project/:id" element={<BoardList />} />
-                  
                   <Route
                     path="/leave-application"
                     element={<LeaveApplications />}

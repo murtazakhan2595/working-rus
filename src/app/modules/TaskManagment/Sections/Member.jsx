@@ -14,7 +14,7 @@ const Members = ({ member, isEditMode, removeMember }) => {
       title={name}
     >
       <div
-        className={`${getRandomColor()} text-[#FAFBFC] flex font-semibold text-md items-center justify-center rounded-full w-10 h-10`}
+        className={`${getRandomColor(name?.charAt(0))} text-[#FAFBFC] flex font-semibold text-md items-center justify-center rounded-full w-10 h-10`}
         style={{ minWidth: "40px" }}
       >
         {name?.toUpperCase().charAt(0)}

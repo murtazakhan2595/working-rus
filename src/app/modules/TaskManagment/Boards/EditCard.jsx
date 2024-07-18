@@ -27,7 +27,7 @@ import {
   getTaskById,
 } from "app/hooks/taskManagment";
 import { CardTypes } from "app/utils/Types/TaskManagment";
-import CreateAndEditCardForm from "../Sections/CreateAndEditCardForm";
+import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
 import {
   addAttachments,
   getAttachmentById,
@@ -40,16 +40,7 @@ const EditCard = ({
   employees,
   cardId,
 }) => {
-console.log("cardId", cardId)
-  const dropdownOptions = [
-    {
-      label: "High",
-      icon: highpriorityIcon,
-      value: "High",
-    },
-    { label: "Low", icon: lowpriorityIcon, value: "Low" },
-    { label: "Medium", icon: mediumpriorityIcon, value: "Medium" },
-  ];
+
   const priorityMapping = {
     High: 1,
     Medium: 2,
@@ -65,7 +56,6 @@ console.log("cardId", cardId)
   });
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  console.log("initialValues", initialValues)
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -75,7 +65,6 @@ console.log("cardId", cardId)
         const attachment = await Promise.all(
           cardDetails.attachment.map(async (attachmentId) => {
             const response = await getAttachmentById(attachmentId);
-            console.log("response", response)
             return {...response.attachments, id: response.id};
           })
         );
@@ -99,7 +88,6 @@ console.log("cardId", cardId)
       }
     }
   };
-  const formRef = useRef();
 
 const handleSubmit = async (
   formData,
@@ -128,7 +116,6 @@ const handleSubmit = async (
 
     // Update formData with attachment IDs
     formData.attachment = [...attachmentIds, ...oldAttachmentIds];
-    console.log("formData", formData);
 
     // Now call addTask
     const response = await addTask({
