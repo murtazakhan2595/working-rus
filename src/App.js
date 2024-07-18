@@ -182,6 +182,7 @@ function App() {
                 element={<ViewEmployee profileView />}
               />
               <Route exact path="/test" element={<Test />} />
+              <Route path="/projects" element={<Projects />} />
 
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-balance" element={<LeaveBalance />} />
@@ -272,7 +273,7 @@ function App() {
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
                   <Route path="/project/:id" element={<BoardList />} />
-                  <Route path="/projects" element={<Projects />} />
+                  
                   <Route
                     path="/leave-application"
                     element={<LeaveApplications />}

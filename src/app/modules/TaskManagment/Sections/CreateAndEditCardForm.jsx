@@ -74,10 +74,15 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
       });
   };
   const removeFile = (file)=>{
+    console.log("file", file);
     if(file.id){
       setDeleteFiles([...deleteFiles, file.id]);
        const filteredFiles = files.filter(f => f.id !== file.id);
       setFiles(filteredFiles);
+    }
+    else{
+      const filteredFiles = newfiles.filter(f => f.name !== file.name);
+      setNewFiles(filteredFiles);
     }
   }
 
@@ -218,6 +223,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 <div className="">
                   {[...files, ...newfiles].map((file, index) => (
                     <div className="flex items-center justify-between w-fit bg-gray-100 p-2 rounded-lg shadow-md mb-2">
+                    {console.log(files, newfiles)}
                       <div className="flex items-center">
                         <FaRegImage className="h-4 w-4 text-gray-500" />
                         <span className="ml-4 font-lato text-baseGray text-sm">
