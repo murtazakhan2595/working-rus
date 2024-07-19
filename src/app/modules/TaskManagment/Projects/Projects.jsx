@@ -216,7 +216,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
                 {project?.name}
               </h2>
               <p className="text-[11px] font-lato text-[#989CA6]">
-                <EmployeeName value={project?.created_by} /> |{" "}
+                Created By <EmployeeName value={project?.created_by} /> |{" "}
                 {moment(project?.start_date).format("DD-MM-YY")}
               </p>
             </div>
