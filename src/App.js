@@ -16,8 +16,8 @@ import {
   JobApplicationForm,
 } from "./app/modules/RecruitmentData";
 import {
-  LeaveApplications,
-  MyLeaves,
+  LeaveRequest,
+  LeaveTracker,
   CreateLeaveRequest,
   LeaveAllotement,
   LeaveHistory,
@@ -180,7 +180,7 @@ function App() {
               <Route path="/my-task" element={<ComingSoon />} />
               <Route path="/calender" element={<ComingSoon />} />
               <Route path="/attendence" element={<ComingSoon />} />
-              <Route path="/my-leaves" element={<MyLeaves />} />
+              <Route path="/leave-tracker" element={<LeaveTracker />} />
               <Route path="/files-data" element={<ComingSoon />} />
               <Route path="/announcement" element={<ComingSoon />} />
               <Route path="/recognition" element={<ComingSoon />} />
@@ -262,8 +262,8 @@ function App() {
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
                   <Route
-                    path="/leave-application"
-                    element={<LeaveApplications />}
+                    path="/leave-request"
+                    element={<LeaveRequest />}
                   />
                 </>
               )}

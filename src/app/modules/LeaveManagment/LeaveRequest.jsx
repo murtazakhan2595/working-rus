@@ -8,7 +8,7 @@ import { Row, Col } from "reactstrap";
 import RenderApplications from "./Screens/RenderApplications";
 import RenderAllApplications from "./Screens/RenderAllApplications";
 
-const LeaveApplication = ({}) => {
+const LeaveRequest = ({}) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
@@ -102,4 +102,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(LeaveApplication);
+export default connect(mapStateToProps)(LeaveRequest);

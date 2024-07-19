@@ -19,9 +19,9 @@ import time from "../../../assets/images/time.svg";
 import cross from "../../../assets/images/cross.svg";
 import Block from "./Sections/Blocks";
 import LeaveCount from "./Sections/LeaveCount";
-import { getEmployeeLeavesTypesList } from "utils/Lists";
+import { getEmployeeLeavesTypesList, yearsDropdownList } from "utils/Lists";
 
-const MyLeaves = ({ userProfile, leaveTypes }) => {
+const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [Leave, setLeave] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
@@ -38,6 +38,8 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
     sizePerPage: 10,
   });
 
+  console.log(filterData);
+
   const onPageChange = (name, value) => {
     const pageOptions = options;
     if (pageOptions[name] !== value) {
@@ -47,7 +49,7 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
   };
 
   useEffect(() => {
-    setFilterData({ employee_id: userProfile.id });
+    setFilterData({ employee_id: userProfile.id, year: 2024 });
   }, [userProfile]);
 
   useEffect(() => {
@@ -95,6 +97,7 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
   }, [leaveTypes, userProfile]);
 
   const handleFilterChange = (filterName, filterValue) => {
+    console.log(filterName, filterValue);
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -142,9 +145,18 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
             </div>
             <div className="mb-2">
               <label className="block text-gray-700 mb-2">Leave Year</label>
-              <select className="w-full p-2 border border-gray-300 rounded">
-                <option>22-04-24 - 22-04-24</option>
-              </select>
+              <FilterInput
+                filters={[
+                  {
+                    type: "select",
+                    option: yearsDropdownList(2000, 2070),
+                    placeholder: "Leave Year",
+                    name: "year",
+                    defaultValue: { label: "2024", value: "2024" },
+                  },
+                ]}
+                onChange={handleFilterChange}
+              />
             </div>
             <div className="mb-2">
               <label className="block text-gray-700 mb-2">Leave Type</label>
@@ -269,4 +281,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(MyLeaves);
+export default connect(mapStateToProps)(LeaveTracker);
