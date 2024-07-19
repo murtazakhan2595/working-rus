@@ -44,3 +44,10 @@ export function getEmployeeLeavesAgainsLeaveType(
   return { usedLeaves, remainingLeaves, totalLeaves };
 }
 
+export const yearsDropdownList = (StartYear, EndYear) => {
+  const years = [];
+  for (let year = EndYear; year >= StartYear; year--) {
+    years.push({ label: year, value: year });
+  }
+  return years;
+};

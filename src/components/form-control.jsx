@@ -668,6 +668,7 @@ const FilterInput = ({ filters, onChange }) => {
                   }`}
                   styles={dropdownStyles}
                   name={filter.name}
+                  defaultValue={filter.defaultValue}
                   id={filter.name}
                   onChange={(option) => {
                     onChange(filter.name, option?.value);

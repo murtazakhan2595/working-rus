@@ -26,6 +26,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
   const [filterData, setFilterData] = useState({});
+  const [leaveYear, setLeaveYear] = useState(null);
   const [totalApproved, setTotalApproved] = useState(0);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [totalRequests, setTotalRequests] = useState(0);
@@ -38,7 +39,6 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     sizePerPage: 10,
   });
 
-  console.log(filterData);
 
   const onPageChange = (name, value) => {
     const pageOptions = options;
@@ -47,9 +47,12 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
+  
+  const defaultYear = new Date().getFullYear();
 
   useEffect(() => {
-    setFilterData({ employee_id: userProfile.id, year: 2024 });
+    setFilterData({ employee_id: userProfile.id });
+    setLeaveYear(defaultYear);
   }, [userProfile]);
 
   useEffect(() => {
@@ -77,6 +80,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
         setIsLoading(true);
         const leaveTypesResponse = await getEmployeeLeaveTypes({
           employee_id: userProfile.id,
+          year: leaveYear,
         });
 
         if (leaveTypesResponse) {
@@ -94,7 +98,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
       }
     };
     fetchLists();
-  }, [leaveTypes, userProfile]);
+  }, [leaveTypes, userProfile, leaveYear]);
 
   const handleFilterChange = (filterName, filterValue) => {
     console.log(filterName, filterValue);
@@ -109,6 +113,9 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
       return updatedFilters;
     });
   };
+  const handleLeaveYearChange = (_,year) => {
+    setLeaveYear(year);
+  }
 
   const tableOptions = {
     page: options.page,
@@ -149,13 +156,13 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
                 filters={[
                   {
                     type: "select",
-                    option: yearsDropdownList(2000, 2070),
+                    option: yearsDropdownList(2000, defaultYear),
                     placeholder: "Leave Year",
                     name: "year",
-                    defaultValue: { label: "2024", value: "2024" },
+                    defaultValue: { label: defaultYear, value: defaultYear },
                   },
                 ]}
-                onChange={handleFilterChange}
+                onChange={handleLeaveYearChange}
               />
             </div>
             <div className="mb-2">
