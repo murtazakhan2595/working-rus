@@ -38,7 +38,7 @@ const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
               >
                 <CiEdit className="text-2xl cursor-pointer opacity-80" />
                 <div className="text-zinc-600 text-base font-medium  leading-tight">
-                  Edit Job
+                  Edit
                 </div>
               </button>
               <img

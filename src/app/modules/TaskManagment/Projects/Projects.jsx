@@ -220,7 +220,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
             }}
           >
             <div>
-              <h2 className="text-base font-lato text-[#323333] font-semibold">
+              <h2 className="text-base font-lato text-[#323333] cursor-pointer font-semibold">
                 {project?.name}
               </h2>
               <p className="text-[11px] font-lato text-[#989CA6]">
