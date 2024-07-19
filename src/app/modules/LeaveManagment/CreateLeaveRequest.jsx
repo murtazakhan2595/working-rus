@@ -139,7 +139,7 @@ const CreateLeaveRequest = ({
         if (leaveResponse) {
           toast.success("Form submitted successfully!");
           resetForm();
-          navigate("/my-leaves");
+          navigate("/leave-tracker");
         }
       } else {
         toast.error("Form submission failed.");
@@ -196,7 +196,7 @@ const CreateLeaveRequest = ({
                   <Link
                     type="button"
                     className="btn btn-light bg-transparent fw-700"
-                    to="/my-leaves"
+                    to="/leave-tracker"
                   >
                     <span style={{ display: "inline-block" }}>Go Back</span>
                     <FaChevronCircleLeft
@@ -528,7 +528,7 @@ const CreateLeaveRequest = ({
                                 <Link
                                   type="button"
                                   className="btn btn-outline-dark w-100"
-                                  to="/my-leaves"
+                                  to="/leave-tracker"
                                 >
                                   Cancel
                                 </Link>

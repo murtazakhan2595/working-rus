@@ -272,14 +272,22 @@ function getNavigation(userRole) {
             },
           ]
         : []),
-      ...(userRole === 1 || userRole === 2 || userRole === 3
+      ...(userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4
         ? [
             {
               name: "Leave Management",
               icon: <LuCalendarDays />,
               dropdown: "LeaveManagement",
               children: [
-                ...(userRole === 1 || userRole === 2 || userRole === 3
+                ...(userRole === 4
+                  ? [
+                      {
+                        name: "Leave Tracker",
+                        url: "/leave-tracker",
+                      },
+                    ]
+                  : []),
+                ...(userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4
                   ? [
                       {
                         name: "Leave Request",
@@ -287,10 +295,7 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                ...(userRole === 1 ||
-                userRole === 2 ||
-                userRole === 4 ||
-                userRole === 3
+                ...(userRole === 1 || userRole === 2 || userRole === 3
                   ? [
                       {
                         name: "Calender",
@@ -298,10 +303,7 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                ...(userRole === 1 ||
-                userRole === 2 ||
-                userRole === 4 ||
-                userRole === 3
+                ...(userRole === 1 || userRole === 2 || userRole === 3
                   ? [
                       {
                         name: "Leave History",
@@ -317,10 +319,7 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                ...(userRole === 1 ||
-                userRole === 2 ||
-                userRole === 4 ||
-                userRole === 3
+                ...(userRole === 1 || userRole === 2 || userRole === 3
                   ? [
                       {
                         name: "Holidays",
