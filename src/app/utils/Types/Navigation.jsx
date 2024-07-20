@@ -164,8 +164,8 @@ function getNavigation(userRole) {
                 userRole === 3
                   ? [
                       {
-                        name: "My Leaves",
-                        url: "/my-leaves",
+                        name: "Leave Tracker",
+                        url: "/leave-tracker",
                       },
                     ]
                   : []),
@@ -272,25 +272,39 @@ function getNavigation(userRole) {
             },
           ]
         : []),
-      ...(userRole === 1 || userRole === 2 || userRole === 3
+      ...(userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4
         ? [
             {
-              name: "Leave Tracker",
+              name: "Leave Management",
               icon: <LuCalendarDays />,
               dropdown: "LeaveManagement",
               children: [
-                ...(userRole === 1 || userRole === 2 || userRole === 3
+                ...(userRole === 4
                   ? [
                       {
-                        name: "Leave Application",
-                        url: "/leave-application",
+                        name: "Leave Tracker",
+                        url: "/leave-tracker",
                       },
                     ]
                   : []),
-                ...(userRole === 1 ||
-                userRole === 2 ||
-                userRole === 4 ||
-                userRole === 3
+                
+                ...(userRole === 4
+                  ? [
+                      {
+                        name: "Leave Request",
+                        url: "/leave-request",
+                      },
+                    ]
+                  : []),
+                ...(userRole === 1 || userRole === 2 || userRole === 3
+                  ? [
+                      {
+                        name: "Leave Request",
+                        url: "/leave-request-management",
+                      },
+                    ]
+                  : []),
+                ...(userRole === 1 || userRole === 2 || userRole === 3
                   ? [
                       {
                         name: "Calender",
@@ -298,25 +312,11 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                ...(userRole === 1 ||
-                userRole === 2 ||
-                userRole === 4 ||
-                userRole === 3
+                ...(userRole === 1 || userRole === 2 || userRole === 3
                   ? [
                       {
                         name: "Leave History",
                         url: "/leave-history",
-                      },
-                    ]
-                  : []),
-                ...(userRole === 1 ||
-                userRole === 2 ||
-                userRole === 4 ||
-                userRole === 3
-                  ? [
-                      {
-                        name: "Leave Status",
-                        url: "/leave-status",
                       },
                     ]
                   : []),
@@ -328,10 +328,7 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                ...(userRole === 1 ||
-                userRole === 2 ||
-                userRole === 4 ||
-                userRole === 3
+                ...(userRole === 1 || userRole === 2 || userRole === 3
                   ? [
                       {
                         name: "Holidays",

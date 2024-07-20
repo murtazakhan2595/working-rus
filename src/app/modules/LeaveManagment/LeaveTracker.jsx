@@ -19,13 +19,14 @@ import time from "../../../assets/images/time.svg";
 import cross from "../../../assets/images/cross.svg";
 import Block from "./Sections/Blocks";
 import LeaveCount from "./Sections/LeaveCount";
-import { getEmployeeLeavesTypesList } from "utils/Lists";
+import { getEmployeeLeavesTypesList, yearsDropdownList } from "utils/Lists";
 
-const MyLeaves = ({ userProfile, leaveTypes }) => {
+const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [Leave, setLeave] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
   const [filterData, setFilterData] = useState({});
+  const [leaveYear, setLeaveYear] = useState(null);
   const [totalApproved, setTotalApproved] = useState(0);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [totalRequests, setTotalRequests] = useState(0);
@@ -38,6 +39,7 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
     sizePerPage: 10,
   });
 
+
   const onPageChange = (name, value) => {
     const pageOptions = options;
     if (pageOptions[name] !== value) {
@@ -45,9 +47,12 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
+  
+  const defaultYear = new Date().getFullYear();
 
   useEffect(() => {
     setFilterData({ employee_id: userProfile.id });
+    setLeaveYear(defaultYear);
   }, [userProfile]);
 
   useEffect(() => {
@@ -75,6 +80,7 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
         setIsLoading(true);
         const leaveTypesResponse = await getEmployeeLeaveTypes({
           employee_id: userProfile.id,
+          year: leaveYear,
         });
 
         if (leaveTypesResponse) {
@@ -92,9 +98,10 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
       }
     };
     fetchLists();
-  }, [leaveTypes, userProfile]);
+  }, [leaveTypes, userProfile, leaveYear]);
 
   const handleFilterChange = (filterName, filterValue) => {
+    console.log(filterName, filterValue);
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -106,6 +113,9 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
       return updatedFilters;
     });
   };
+  const handleLeaveYearChange = (_,year) => {
+    setLeaveYear(year);
+  }
 
   const tableOptions = {
     page: options.page,
@@ -142,9 +152,18 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
             </div>
             <div className="mb-2">
               <label className="block text-gray-700 mb-2">Leave Year</label>
-              <select className="w-full p-2 border border-gray-300 rounded">
-                <option>22-04-24 - 22-04-24</option>
-              </select>
+              <FilterInput
+                filters={[
+                  {
+                    type: "select",
+                    option: yearsDropdownList(2000, defaultYear),
+                    placeholder: "Leave Year",
+                    name: "year",
+                    defaultValue: { label: defaultYear, value: defaultYear },
+                  },
+                ]}
+                onChange={handleLeaveYearChange}
+              />
             </div>
             <div className="mb-2">
               <label className="block text-gray-700 mb-2">Leave Type</label>
@@ -269,4 +288,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(MyLeaves);
+export default connect(mapStateToProps)(LeaveTracker);

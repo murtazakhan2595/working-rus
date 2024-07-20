@@ -4,7 +4,7 @@ import { AllLeavesApplicationColumns } from "app/utils/Types/TableColumns";
 import { Table, PageLoader } from "components";
 import { getLeaveApplications } from "app/hooks/leaveManagment";
 
-const RenderAllApplications = () => {
+const RenderAllApplications = ({reload}) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
@@ -64,7 +64,7 @@ const RenderAllApplications = () => {
               <div>
                 <Table
                   data={applications?.results || []}
-                  columns={AllLeavesApplicationColumns}
+                  columns={AllLeavesApplicationColumns(reload)}
                   pagination={true}
                   dataTotalSize={applications?.count || 0}
                   tableOptions={tableOptions}

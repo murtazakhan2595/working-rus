@@ -99,6 +99,7 @@ const getEmployeeLeaveTypes = async (filterData = {}) => {
 
 const addLeaveRequest = async (payload) => {
   try {
+    console.log(`${baseUrl}/leave/${payload.id}`);
     if (payload?.id) {
       const response = await axios.patch(
         `${baseUrl}/leave/${payload.id}`,
@@ -122,6 +123,7 @@ const addLeaveRequest = async (payload) => {
     return false;
   }
 };
+
 
 const deleteLeaveRequest = async (payload) => {
   try {
@@ -159,7 +161,7 @@ const allotLeavesToEmployee = async (employeeId, payload) => {
           });
         }
       });
-      toast.success("Leaves Alloted Successfully");
+      
     } catch (error) {
       if (error?.response?.status === 401) {
         handleLogout();
@@ -193,6 +195,28 @@ const getLeaveTypes = async () => {
   return [];
 };
 
+const updateLeaveStatus = async (payload, loggedInUser) => {
+  try {
+    if (payload?.id) {
+      let URL = loggedInUser.role === 2? `${baseUrl}/leaveManager/${payload.id}`:  `${baseUrl}/leaveHr/${payload.id}`;
+      const response = await axios.patch(
+       URL,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      return response;
+    } 
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error updating leave status by HR:", error);
+    return false;
+  }
+};
+
 export {
   getLeaveApplications,
   addLeaveRequest,
@@ -200,4 +224,5 @@ export {
   getEmployeeLeaveTypes,
   allotLeavesToEmployee,
   deleteLeaveRequest,
+  updateLeaveStatus,
 };

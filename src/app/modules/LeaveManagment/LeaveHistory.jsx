@@ -9,7 +9,6 @@ import {
   getLeavesTypeNameList,
   getEmployeeLeavesAgainsLeaveType,
 } from "utils/Lists";
-import { YearsDropdownList } from "utils/Lists";
 import { PageLoader, Header, BarChart, Table } from "components";
 
 const LeaveHistory = ({ leaveTypes, designations, departments }) => {
@@ -165,27 +164,6 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                             option: designations,
                             name: "department_position",
                             placeholder: "Designation",
-                          },
-                        ]}
-                        onChange={handleFilterChange}
-                      />
-                    </div>
-                    <div className="py-3 px-3">
-                      <FilterInput
-                        filters={[
-                          {
-                            type: "select",
-                            placeholder: "From",
-                            name: "from",
-                            option: YearsDropdownList(2000, 2070),
-                            width: "auto",
-                          },
-                          {
-                            type: "select",
-                            name: "to",
-                            placeholder: "To",
-                            option: YearsDropdownList(2000, 2070),
-                            width: "auto",
                           },
                         ]}
                         onChange={handleFilterChange}

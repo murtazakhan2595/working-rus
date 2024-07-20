@@ -8,7 +8,7 @@ import { Row, Col } from "reactstrap";
 import RenderApplications from "./Screens/RenderApplications";
 import RenderAllApplications from "./Screens/RenderAllApplications";
 
-const LeaveApplication = ({}) => {
+const LeaveRequest = ({}) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
@@ -16,7 +16,9 @@ const LeaveApplication = ({}) => {
   const getApplications = async () => {
     setLoading(true);
     try {
+      console.log("filterData", filterData);
       const data = await getLeaveApplications({ filterData });
+      console.log(data)
       setApplications(data);
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -77,6 +79,7 @@ const LeaveApplication = ({}) => {
                 <RenderAllApplications
                   applicationsList={applications}
                   activeTab={activeTab}
+                  reload={getApplications}
                 />
               ) : (
                 <RenderApplications
@@ -102,4 +105,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(LeaveApplication);
+export default connect(mapStateToProps)(LeaveRequest);

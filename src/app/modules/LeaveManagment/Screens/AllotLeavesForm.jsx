@@ -13,6 +13,7 @@ import {
   allotLeavesToEmployee,
   getEmployeeLeaveTypes,
 } from "app/hooks/leaveManagment";
+import { toast } from "react-toastify";
 
 const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
   const formRef = useRef();
@@ -43,6 +44,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
       values.employeeLeaveDetails
     );
     if (response) {
+      toast.success("Leaves Alloted Successfully");
       resetForm();
       closeModel();
     }

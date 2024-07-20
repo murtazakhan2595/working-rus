@@ -258,7 +258,7 @@ const MobSidebar = ({
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">My Leaves</p>
+                        <p className="text-sm px-2">Leave Tracker</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"

@@ -6,11 +6,17 @@ import { Status } from "../Sections";
 import { EmployeeNameInfo } from "components";
 import { useState } from "react";
 import ViewLeaveDetails from "../Sections/ViewLeaveDetails";
-import { addLeaveRequest } from "app/hooks/leaveManagment";
+import { updateLeaveStatus } from "app/hooks/leaveManagment";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 const RenderApplications = ({ applicationsList, activeTab, reload }) => {
+  console.log("applicationsList", applicationsList);
+  applicationsList.map((application) => {
+    console.log("application", application);
+    console.log("application.status_hr", application.status_hr);
+    console.log("status", Status(application.status_hr));
+  });
   const [selectedLeaveIndex, setSelectedLeaveIndex] = useState(null);
 
   const handleLeaveDetails = (index) => {
@@ -40,6 +46,7 @@ const RenderApplications = ({ applicationsList, activeTab, reload }) => {
           const status = Status(application.status_hr);
           return (
             <>
+            {console.log("status", status, activeTab)}
               {status === activeTab && (
                 <Col
                   lg={6}
@@ -91,13 +98,16 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
   const handleApprove = async (status) => {
     try {
       const payload = application;
+      console.log(status, loggedInUser);
       if (loggedInUser.role === 1 || loggedInUser.role === 3) {
         payload['status_hr'] = `${status} by HR`;
       }else if(loggedInUser.role===2){
-        payload['status_hr'] = `${status} by HR`;
+        payload["status_manager"] = `${status} by Manager`;
       }
-      const response = await addLeaveRequest(payload);
+      console.log(payload);
+      const response = await updateLeaveStatus(payload, loggedInUser);
       if (response) {
+        console.log("response", response);
         toast.success(`Application ${status} Successfully!`);
         reload();
       } else {

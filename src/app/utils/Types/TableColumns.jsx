@@ -13,6 +13,7 @@ import {
   Status,
   RenderStatus,
   RenderLeaveType,
+  RenderAction
 } from "app/modules/LeaveManagment/Sections";
 import moment from "moment";
 import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
@@ -236,7 +237,7 @@ export const AllJobApplicationColumns = (
     ),
   },
 ];
-export const AllLeavesApplicationColumns = [
+export const AllLeavesApplicationColumns= (reload) => [
   {
     dataField: "employee_id",
     text: "Employees",
@@ -285,6 +286,11 @@ export const AllLeavesApplicationColumns = [
     dataField: "",
     text: "",
     formatter: (cell, row) => <RenderStatus row={row} />,
+  },
+  {
+    dataField: "action",
+    text: "Action",
+    formatter: (cell, row) => <RenderAction row={row} reload={reload}/>,
   },
 ];
 
