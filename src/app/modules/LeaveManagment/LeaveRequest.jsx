@@ -16,7 +16,9 @@ const LeaveRequest = ({}) => {
   const getApplications = async () => {
     setLoading(true);
     try {
+      console.log("filterData", filterData);
       const data = await getLeaveApplications({ filterData });
+      console.log(data)
       setApplications(data);
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -77,6 +79,7 @@ const LeaveRequest = ({}) => {
                 <RenderAllApplications
                   applicationsList={applications}
                   activeTab={activeTab}
+                  reload={getApplications}
                 />
               ) : (
                 <RenderApplications

@@ -262,7 +262,7 @@ function App() {
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
                   <Route
-                    path="/leave-request"
+                    path="/leave-request-management"
                     element={<LeaveRequest />}
                   />
                 </>

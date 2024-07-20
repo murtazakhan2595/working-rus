@@ -5,7 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 export const Status = (status) => {
   if (!status) return "";
   if (status.includes("Approved")) return "Approved";
-  else if (status.includes("Denied")) return "Denied";
+  else if (status.includes("Declined")) return "Rejected";
   else if (status.includes("Pending")) return "Pending";
   else return "Viewed";
 };
@@ -29,7 +29,7 @@ export const StatusIcon = ({ status }) => {
         style={style}
       />
     );
-  else if (status === "Denied")
+  else if (status === "Rejected")
     return (
       <RxCross2
         className={`${className} bg-[#EA4335] text-white`}
