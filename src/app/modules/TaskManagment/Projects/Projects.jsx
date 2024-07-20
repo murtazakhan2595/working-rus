@@ -2,19 +2,16 @@ import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
-import { LeaveAllotmentColumns } from "app/utils/Types/TableColumns";
 import { Header, PageLoader, ConfirmationModal } from "components";
-import { FilterInput } from "components/form-control";
-import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
+import { Card, CardBody, Row, Col } from "reactstrap";
 import { CiCirclePlus } from "react-icons/ci";
 import ProjectModel from "./CreateProjectModel";
 import { useNavigate } from "react-router-dom";
-import { BiDotsVerticalRounded } from "react-icons/bi";
 import moment from "moment";
-import ViewBoardDetails from './ViewBoardDetails'
+import ViewBoardDetails from "./ViewBoardDetails";
 import { MembersList, CustomDropdown } from "../Sections";
 import { LuFolderX } from "react-icons/lu";
-
+import { EmployeeName } from "utils/getValuesFromTables";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,9 +33,7 @@ const Projects = ({ userProfile }) => {
             results: filteredResults,
           };
           setAllProjects(filteredProjectsData);
-        }
-        else
-        setAllProjects(projectsData);
+        } else setAllProjects(projectsData);
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
@@ -98,7 +93,6 @@ const Projects = ({ userProfile }) => {
               ) : (
                 <Row className="m-0">
                   {showProjectModal && (
-                    // <ProjectModel onClose={toggleAddProject} />
                     <ProjectModel
                       projectId={showProjectModal || null}
                       isEditMode={typeof showProjectModal === "number"}
@@ -125,14 +119,14 @@ const Projects = ({ userProfile }) => {
                         />
                       </Col>
                     ))}
-                    {
-                      AllProjects.count === 0 && (
-                        <main className="flex flex-col flex-wrap justify-center content-center items-center self-stretch p-8 text-2xl tracking-tight leading-4 bg-white rounded-xl text-zinc-600 max-md:px-5 h-[75dvh]">
-                        <LuFolderX className="w-20 h-20 text-zinc-600" /> 
-                        <p className="mt-6">Looks like you don't have any projects</p>
-                      </main>
-                      )
-                    }
+                  {AllProjects.count === 0 && (
+                    <main className="flex flex-col flex-wrap justify-center content-center items-center self-stretch p-8 text-2xl tracking-tight leading-4 bg-white rounded-xl text-zinc-600 max-md:px-5 h-[75dvh]">
+                      <LuFolderX className="w-20 h-20 text-zinc-600" />
+                      <p className="mt-6">
+                        Looks like you don't have any projects
+                      </p>
+                    </main>
+                  )}
                 </Row>
               )}
             </CardBody>
@@ -202,11 +196,9 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
       {project ? (
         <div className="bg-[#FAFBFC] rounded-[10px] p-4 flex flex-col space-y-4 w-full relative">
           <div className="flex justify-between">
-            <img
-              className="w-20 h-20 rounded-full object-cover"
-              src="https://via.placeholder.com/180"
-              alt="Profile"
-            />
+            <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-3xl font-bold text-white">
+              <EmployeeName value={project?.created_by} length={2} />
+            </div>
             <CustomDropdown
               isOpen={isDropdownOpen}
               toggleDropdown={toggleDropdown}
@@ -220,11 +212,11 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
             }}
           >
             <div>
-              <h2 className="text-base font-lato text-[#323333] font-semibold">
+              <h2 className="text-base font-lato text-[#323333] cursor-pointer font-semibold">
                 {project?.name}
               </h2>
               <p className="text-[11px] font-lato text-[#989CA6]">
-                Created by Hani Hassan |{" "}
+                Created By <EmployeeName value={project?.created_by} /> |{" "}
                 {moment(project?.start_date).format("DD-MM-YY")}
               </p>
             </div>
