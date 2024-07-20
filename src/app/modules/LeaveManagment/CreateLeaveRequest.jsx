@@ -60,6 +60,7 @@ const CreateLeaveRequest = ({
       try {
         const employeeResponse = await getEmployeeData(userProfile.id);
         const leaveData = await getLavefromEmployeeInfo(employeeResponse);
+        console.log("leaveData", leaveData);
         setLeaveForm({ ...Leave, ...leaveData });
 
         // If you need to update form fields directly
@@ -124,12 +125,14 @@ const CreateLeaveRequest = ({
 
   const handleSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
+    console.log("values",values);
     try {
       // Extract the value from the report_to field
       const modifiedValues = {
         ...values,
         indirect_report_to: getManagerSelected(values.indirect_report_to),
       };
+      console.log("modifiedValues",modifiedValues);
       const response = await addLeaveRequest(modifiedValues);
       if (response) {
         const leaveResponse = await allotLeavesToEmployee(
@@ -263,7 +266,6 @@ const CreateLeaveRequest = ({
                             </h2>
                             <Row>
                               <Col md="6">
-                                {console.log(props.values)}
                                 <TextInput
                                   name="employee_id"
                                   error={props.errors.employee_id}

@@ -23,9 +23,11 @@ import { getEmployeeLeavesTypesList, yearsDropdownList } from "utils/Lists";
 
 const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [Leave, setLeave] = useState([]);
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
   const [filterData, setFilterData] = useState({});
+  const [filterStats, setFilterStats] = useState({});
   const [leaveYear, setLeaveYear] = useState(null);
   const [totalApproved, setTotalApproved] = useState(0);
   const [pendingRequests, setPendingRequests] = useState(0);
@@ -57,12 +59,14 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
 
   useEffect(() => {
     const fetchdata = async () => {
+      console.log("why this change")
       try {
         setIsLoading(true);
         const applicationsData = await getLeaveApplications({
           options,
           filterData,
         });
+        console.log(applicationsData)
         if (applicationsData) {
           setLeave(applicationsData);
         }
@@ -73,14 +77,16 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     };
     fetchdata();
   }, [options, filterData]);
+  console.log("filterStats", filterStats);
 
   useEffect(() => {
     const fetchLists = async () => {
+      console.log("this would change")
       try {
-        setIsLoading(true);
+        setIsStatsLoading(true);
         const leaveTypesResponse = await getEmployeeLeaveTypes({
           employee_id: userProfile.id,
-          year: leaveYear,
+          ...filterStats,
         });
 
         if (leaveTypesResponse) {
@@ -92,20 +98,23 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
           setUsedLeaves(leaveTypesResponse.usedLeaves);
         }
 
-        setIsLoading(false);
+        setIsStatsLoading(false);
       } catch (error) {
         console.error("Error fetching leave types:", error);
       }
     };
     fetchLists();
-  }, [leaveTypes, userProfile, leaveYear]);
+  }, [leaveTypes, userProfile, filterStats]);
 
   const handleFilterChange = (filterName, filterValue) => {
     console.log(filterName, filterValue);
+    if(filterName === "status_hr" && filterValue){
+      filterValue = filterValue==="Approved"? "Approved by HR": filterValue==="Denied"? "Declined by HR": "pending";
+    }
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
+      if (filterValue === "" || filterValue === undefined) {
         delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
@@ -113,8 +122,17 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
       return updatedFilters;
     });
   };
-  const handleLeaveYearChange = (_,year) => {
-    setLeaveYear(year);
+  const handlestatsChange = (filterName, filterValue) => {
+    console.log(filterName, filterValue);
+    setFilterStats((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "" || filterValue === undefined) {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
   }
 
   const tableOptions = {
@@ -162,7 +180,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
                     defaultValue: { label: defaultYear, value: defaultYear },
                   },
                 ]}
-                onChange={handleLeaveYearChange}
+                onChange={handlestatsChange}
               />
             </div>
             <div className="mb-2">
@@ -176,7 +194,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
                     placeholder: "Leave Type",
                   },
                 ]}
-                onChange={handleFilterChange}
+                onChange={handlestatsChange}
               />
             </div>
           </div>
