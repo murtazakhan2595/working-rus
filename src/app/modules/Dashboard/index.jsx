@@ -33,9 +33,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
   useEffect(() => {
     const fetchData = async () => {
       try{
-        console.log(userProfile);
         const response =await getEmployeeData(userProfile.id);
-        console.log(response);
         setProfileData(
          { image:response?.profile_picture?.file ||
           response?.profile_picture,
