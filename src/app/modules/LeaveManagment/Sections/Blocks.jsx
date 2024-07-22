@@ -1,6 +1,7 @@
 import React from 'react'
 
 const Block = ({ icon, count, label }) => {
+    console.log(count)
     return (
         <div className="flex items-center justify-between bg-white px-4 py-6 rounded-lg shadow-md">
             <div className="flex justify-between w-full gap-x-3">

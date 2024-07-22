@@ -55,6 +55,7 @@ const getLeaveApplications = async (payload) => {
 };
 
 const getEmployeeLeaveTypes = async (filterData = {}) => {
+  console.log(filterData);
   try {
     const response = await axios.get(
       `${baseUrl}/employeeleavetypes?search=${encodeURIComponent(

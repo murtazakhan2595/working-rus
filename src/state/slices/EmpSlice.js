@@ -52,7 +52,7 @@ const employeesSlice = createSlice({
       .addCase(fetchEmployees.fulfilled, (state, action) => {
         state.apiStatus = "succeeded";
         state.employees = action.payload;
-        console.log("Employees data:", action.payload);
+        // console.log("Employees data:", action.payload);
       })
       // When the fetchEmployees thunk is rejected
       .addCase(fetchEmployees.rejected, (state, action) => {

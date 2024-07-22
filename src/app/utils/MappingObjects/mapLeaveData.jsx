@@ -16,7 +16,7 @@ async function getLavefromEmployeeInfo(data) {
     joining_date: data?.joining_date ?? "",
     nationality: data?.nationality ?? "",
     report_to: data?.direct_report ?? "",
-    indirect_report_to: data?.indirect_report ? indirect_report_to : "",
+    indirect_report_to: data?.indirect_report ? indirect_report_to : [],
     address_during_leave: data?.residential_address ?? "",
     contact_no: data?.mobile_no ?? "",
     country_code: data?.country_code ?? "",

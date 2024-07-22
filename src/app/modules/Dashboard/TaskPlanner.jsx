@@ -108,7 +108,8 @@ const TaskPlanner = ({ userProfile, baseUrl, token }) => {
   };
 
   const getAssignedUsername = (userId) => {
-    const user = users.find((user) => user.id === userId);
+    // users.results.employees
+    const user = users?.results?.employees?.find((user) => user.id === userId);
     return user?.username;
   };
 
