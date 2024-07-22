@@ -14,8 +14,8 @@ import {
 import { BsThreeDots } from "react-icons/bs";
 import { useNavigate, Link } from "react-router-dom";
 import {
-  deleteRecord,
-} from "app/hooks/general.jsx";
+  saveEmployeeWorkInformationData,
+} from "app/hooks/employee";
 
 const EmployeeAction = ({ row }) => {
   const navigate = useNavigate();
@@ -26,8 +26,7 @@ const EmployeeAction = ({ row }) => {
 
   const handleDelete = async (employeeId) => {
     try {
-      const URL = `/emp/${employeeId}`;
-      await deleteRecord(URL, "Employee");
+      await saveEmployeeWorkInformationData(employeeId, {employee_status:'Terminated'});
     } catch (error) {
       console.log(error);
     } finally {
@@ -55,9 +54,9 @@ const EmployeeAction = ({ row }) => {
         <DropdownItem onClick={() => navigate(`/user/${row.id}`)}>
           View Profile
         </DropdownItem>
-        <DropdownItem onClick={() => handleDelete(row.id)}>
+        {/* <DropdownItem onClick={() => handleDelete(row.id)}>
           Delete Employee
-        </DropdownItem>
+        </DropdownItem> */}
       </DropdownMenu>
     </ButtonDropdown>
   );

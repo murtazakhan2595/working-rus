@@ -703,22 +703,14 @@ const getEmployeeWorkInformationData = async (baseUrl, employeeid, token) => {
   return EmployeeDepartmentInfo;
 };
 
-const saveEmployeeWorkInformationData = async (
-  baseUrl,
-  employeeid,
-  token,
-  payload
-) => {
+const saveEmployeeWorkInformationData = async (employeeid, payload) => {
   if (employeeid) {
     try {
       const response = await axios.patch(
         `${baseUrl}/emp/${employeeid}`,
         payload,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: headers(),
         }
       );
       if (response.status === 200) {
@@ -812,5 +804,5 @@ export {
   getEmployeeContactInfo,
   saveEmployeeContactInfoData,
   getNewEmployeeCode,
-  deleteEmployeeCertificateData
+  deleteEmployeeCertificateData,
 };

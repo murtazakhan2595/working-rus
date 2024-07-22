@@ -149,20 +149,9 @@ function App() {
                 />
               }
             >
-              <Route
-                path="/coming-soon"
-                element={<ComingSoon isSidebarOpen={isSidebarOpen} />}
-              />
-
-              <Route
-                path="/services"
-                element={<Services isSidebarOpen={isSidebarOpen} />}
-              />
-              <Route
-                exact
-                path="/"
-                element={<Dashboard isSidebarOpen={isSidebarOpen} />}
-              />
+              <Route path="/coming-soon" element={<ComingSoon />} />
+              <Route path="/services" element={<Services />} />
+              <Route exact path="/" element={<Dashboard />} />
               <Route path="/board/:id" element={<Boardd />} />
               <Route path="/project/:id" element={<BoardList />} />
               <Route path="/projects" element={<Projects />} />
@@ -189,13 +178,10 @@ function App() {
               <Route path="/leave-history" element={<LeaveHistory />} />
               <Route
                 path="/leave-balance-employee"
-                element={<LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />}
+                element={<LeaveBalanceEmployee />}
               />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-              <Route
-                path="/leave-balance-hr"
-                element={<LeaveBalanceHR isSidebarOpen={isSidebarOpen} />}
-              />
+              <Route path="/leave-balance-hr" element={<LeaveBalanceHR />} />
               <Route path="/leave-calender" element={<LeaveCalender />} />
               {userRole === 1 && (
                 <>
