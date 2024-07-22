@@ -152,7 +152,7 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                 onChange={(field, value) => {
                                                     props.handleChange(field,)(value);
                                                 }}
-                                                regEx={/^[0-9]+$/}
+                                                regEx={/^[a-zA-Z0-9]*$/}
                                             />
                                         </Col>
                                         <Col md="12">
