@@ -59,15 +59,14 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
 
   useEffect(() => {
     const fetchdata = async () => {
-      console.log("why this change")
       try {
         setIsLoading(true);
         const applicationsData = await getLeaveApplications({
           options,
           filterData,
         });
-        console.log(applicationsData)
         if (applicationsData) {
+          console.log("applicationsData", applicationsData);
           setLeave(applicationsData);
         }
         setIsLoading(false);
@@ -77,11 +76,9 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     };
     fetchdata();
   }, [options, filterData]);
-  console.log("filterStats", filterStats);
 
   useEffect(() => {
     const fetchLists = async () => {
-      console.log("this would change")
       try {
         setIsStatsLoading(true);
         const leaveTypesResponse = await getEmployeeLeaveTypes({
@@ -107,7 +104,6 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
   }, [leaveTypes, userProfile, filterStats]);
 
   const handleFilterChange = (filterName, filterValue) => {
-    console.log(filterName, filterValue);
     if(filterName === "status_hr" && filterValue){
       filterValue = filterValue==="Approved"? "Approved by HR": filterValue==="Denied"? "Declined by HR": "pending";
     }
@@ -123,7 +119,6 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     });
   };
   const handlestatsChange = (filterName, filterValue) => {
-    console.log(filterName, filterValue);
     setFilterStats((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "" || filterValue === undefined) {
