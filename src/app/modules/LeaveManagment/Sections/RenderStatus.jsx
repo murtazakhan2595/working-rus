@@ -53,7 +53,11 @@ const RenderStatus = ({ row }) => {
           <DropdownItem className={`${itemClassName}`}>
             <span className={`${spanClassName}`}>
               <StatusIcon status={row.status_manager} />
-              Direct Manager Approval
+              {Status(row.status_manager) === "Approved"
+                ? "Approved by Manager"
+                : Status(row.status_manager) === "Rejected"
+                ? "Rejected by Manager"
+                : "Direct Manager Approval"}
             </span>
           </DropdownItem>
           {/* {row.status_indirect_manager && (
