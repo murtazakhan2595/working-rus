@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { handleLogout } from "./general";
 import { EmployeeLeaveTypesList } from "app/utils/Types/LeaveManagment";
+import { getEmployeeLeavesTypesList } from "utils/Lists";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -26,6 +27,10 @@ const getLeaveApplications = async (payload) => {
       const LeaveData = {
         count: data.count,
         results: data.results.leaves,
+        approved_leaves: data.results.approved_leaves,
+        pending_leaves: data.results.pending_leaves,
+        rejected_leaves: data.results.rejected_leaves,
+        requested_leaves: data.results.total_count,
       };
       // const updatedData = await Promise.all(
       //   data.map(async (leave) => {
@@ -53,6 +58,7 @@ const getLeaveApplications = async (payload) => {
   }
   return [];
 };
+
 
 const getEmployeeLeaveTypes = async (filterData = {}) => {
   console.log(filterData);
@@ -218,6 +224,69 @@ const updateLeaveStatus = async (payload, loggedInUser) => {
   }
 };
 
+const filterByYearAndLeaveType = (data, year, leaveComponentName) => {
+  const startDate = year ? new Date(`${year}-01-01`) : null;
+  const endDate = year ? new Date(`${year}-12-31`) : null;
+
+  const filteredData = data.filter((item) => {
+    const date = new Date(item.date);
+    const isWithinYear = !year || (date >= startDate && date <= endDate);
+    const isMatchingLeaveType =
+      !leaveComponentName || item.leave_component_name === leaveComponentName;
+
+    return isWithinYear && isMatchingLeaveType;
+  });
+    const counts = {
+      approved: 0,
+      pending: 0,
+      denied: 0,
+      requested: filteredData.length,
+    };
+
+    filteredData.forEach((item) => {
+      if (item.status_hr === "Approved by HR") {
+        counts.approved += 1;
+      } else if (item.status_hr === "Pending") {
+        counts.pending += 1;
+      } else if (item.status_hr === "Declined by HR") {
+        counts.denied += 1;
+      }
+    });
+
+    return counts;
+};
+
+const getLeaveTrackerStats = async (filterStats, leaveTypeList) => {
+  const { year, employee_id, leave_type } = filterStats;
+  const LeaveTypeLabel = leaveTypeList[leave_type-1];
+
+  try {
+    const empLeaveTypes = await getEmployeeLeaveTypes({
+      employee_id: employee_id,
+      year,
+      leave_type,
+    });
+    let leaveApplications = await getLeaveApplications({
+      filterData: { employee_id: employee_id },
+    });
+    const remainingStats = filterByYearAndLeaveType(
+      leaveApplications.results,
+      year,
+      LeaveTypeLabel
+    );
+    return {
+      remainingLeaves: empLeaveTypes.remainingLeaves,
+      usedLeaves: empLeaveTypes.usedLeaves,
+      allotedLeaves: empLeaveTypes.allotedLeaves,
+      ...remainingStats,
+    };
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
+
 export {
   getLeaveApplications,
   addLeaveRequest,
@@ -226,4 +295,5 @@ export {
   allotLeavesToEmployee,
   deleteLeaveRequest,
   updateLeaveStatus,
+  getLeaveTrackerStats,
 };
