@@ -14,6 +14,7 @@ import {
 } from "components/form-control.jsx";
 import { Project } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
+import { DateInput } from "components/form-control";
 
 const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
   const formRef = useRef();
@@ -134,6 +135,37 @@ const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
                             }}
                           />
                         </Col>
+                        <Col md="12" className="mb-0">
+              <Row>
+                <Col md="6" className="mb-0">
+                  <DateInput
+                    name="start_date"
+                    error={props.errors.start_date}
+                    touch={props.touched.start_date}
+                    value={props.values.start_date}
+                    label="Start Date"
+                    required
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                    }}
+                  />
+                </Col>
+                <Col md="6" className="mb-0">
+                  <SelectComponent
+                    name="created_by"
+                    options={employees}
+                    error={props.errors.created_by}
+                    touch={props.touched.created_by}
+                    value={props.values.created_by}
+                    required
+                    label="Created by"
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                    }}
+                  />
+                </Col>
+              </Row>
+            </Col>
                         <Col md="12" className="mb-3">
                           <span className="label text-[17px]">
                             Team Members
