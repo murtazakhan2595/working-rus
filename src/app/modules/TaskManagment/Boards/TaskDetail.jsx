@@ -30,6 +30,8 @@ const TaskDetail = ({ task, onClose }) => {
   const fileInputRef = useRef(null);
   const [isTaskDetailVisible, setIsTaskDetailVisible] = useState(true);
 
+  console.log(task)
+
   const userId = useSelector((state) => state.user.userProfile.id);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ const TaskDetail = ({ task, onClose }) => {
 
     const fetchData = async () => {
       try {
-        const data = await fetchComments(task.id);
+        const data = await fetchComments({ task_id: [task.id] });
         setComments(data);
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -105,8 +107,9 @@ const TaskDetail = ({ task, onClose }) => {
           setNewAttachment(null);
         }
 
-        const data = await fetchComments(task.id);
+        const data = await fetchComments({task_id:[task.id]});
         setComments(data);
+        
       } catch (error) {
         console.error("Error posting comment or uploading attachment:", error);
       }

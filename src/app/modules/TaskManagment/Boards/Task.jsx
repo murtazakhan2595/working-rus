@@ -68,21 +68,21 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     setIsTaskDetailOpen(true);
   };
   const closeTaskDetail = () => {
+    fetchData();
     setIsTaskDetailOpen(false);
   };
 
 
+  const fetchData = async () => {
+    try {
+      const data = await fetchComments({ task_id: [task.id] });
+      setComments(data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      setComments([]);
+    }
+  };
   useEffect(() => {
-
-    const fetchData = async () => {
-      try {
-        const data = await fetchComments(task.id);
-        setComments(data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-        setComments([]);
-      }
-    };
     fetchData();
   }, [task?.board_id, task?.id]);
 
