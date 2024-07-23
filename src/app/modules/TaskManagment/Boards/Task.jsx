@@ -84,6 +84,8 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     fetchData();
   }, [task?.board_id, task?.id]);
 
+
+
   return (
     <div
       className="flex flex-col p-3 mt-6 w-full bg-white rounded-lg shadow cursor-pointer"
