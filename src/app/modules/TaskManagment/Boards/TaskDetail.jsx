@@ -17,20 +17,24 @@ import { MembersList } from "../Sections";
 import moment from "moment";
 import { fetchComments, postComment, getBoardById, addAttachments, getAttachmentById } from "app/hooks/taskManagment";
 import { EmployeeName } from "utils/getValuesFromTables";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import EditCard from "./EditCard";
+import { getRandomColor } from "utils/renderValues";
 
-const TaskDetail = ({ task, onClose }) => {
+const TaskDetail = ({ task, onClose, employees }) => {
+  console.log("employees,", employees);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [boardName, setBoardName] = useState("Loading...");
   const [attachments, setAttachments] = useState([]);
   const [newAttachment, setNewAttachment] = useState(null);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const fileInputRef = useRef(null);
   const [isTaskDetailVisible, setIsTaskDetailVisible] = useState(true);
+  const commentRef = useRef(null);
 
-  console.log(task)
 
   const userId = useSelector((state) => state.user.userProfile.id);
 
@@ -57,9 +61,10 @@ const TaskDetail = ({ task, onClose }) => {
     const fetchAttachments = async () => {
       try {
         if (task?.attachment?.length) {
-          const attachmentPromises = task.attachment.map(id => getAttachmentById(id));
+          const attachmentPromises = task.attachment.map((id) =>
+            getAttachmentById(id)
+          );
           const attachmentData = await Promise.all(attachmentPromises);
-          console.log('Fetched attachments:', attachmentData);
           setAttachments(attachmentData);
         }
       } catch (error) {
@@ -96,7 +101,9 @@ const TaskDetail = ({ task, onClose }) => {
               if (response) {
                 console.log("File uploaded successfully:", response);
                 // Refetch attachments after uploading a new one
-                const updatedAttachments = await Promise.all(task.attachment.map(id => getAttachmentById(id)));
+                const updatedAttachments = await Promise.all(
+                  task.attachment.map((id) => getAttachmentById(id))
+                );
                 setAttachments(updatedAttachments);
               }
             } catch (error) {
@@ -107,9 +114,8 @@ const TaskDetail = ({ task, onClose }) => {
           setNewAttachment(null);
         }
 
-        const data = await fetchComments({task_id:[task.id]});
+        const data = await fetchComments({ task_id: [task.id] });
         setComments(data);
-        
       } catch (error) {
         console.error("Error posting comment or uploading attachment:", error);
       }
@@ -127,208 +133,276 @@ const TaskDetail = ({ task, onClose }) => {
     }
   };
   const editDetails = () => {
-  setIsEditCardOpen(true);
-  setIsTaskDetailVisible(false)
-};
+    setIsEditCardOpen(true);
+    setIsTaskDetailVisible(false);
+  };
 
+  const handleCommentChange = (e) => {
+    const value = e.target.value;
+    setNewComment(value);
+    const mentionStart = value.lastIndexOf("@");
+    if (mentionStart !== -1) {
+      const mentionQuery = value.substring(mentionStart + 1);
+      const matches = employees.filter((user) =>
+        user.label.toLowerCase().includes(mentionQuery.toLowerCase())
+      );
+      setFilteredUsers(matches);
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  };
+  const handleUserSelect = (user) => {
+    const mentionStart = newComment.lastIndexOf("@");
+    const comment = newComment.substring(0, mentionStart) + `@${user.label} `;
+    setNewComment(comment);
+    setShowDropdown(false);
+
+    // Move cursor to the end of the inserted mention
+    setTimeout(() => {
+      commentRef.current.selectionStart = comment.length;
+      commentRef.current.selectionEnd = comment.length;
+      commentRef.current.focus();
+    }, 0);
+  };
+
+  const UserInitials = ({user}) => {
+    const employeeName = EmployeeName({ value: user.value, length: 2 });
+    console.log("emp name - ", employeeName);
+    const name = employeeName.props.children;
+    return <span
+      className={`${getRandomColor(
+        name?.charAt(0)
+      )} font-lato flex justify-center items-center text-[10.5px] font-bold text-[#FAFBFC] w-8 h-8 rounded-full`}
+    >
+      {name}
+    </span>;
+  };
 
   return (
     <>
-    {isEditCardOpen && (
-      <EditCard
-        cardId={task?.id}
-        projectId={task?.project_id}
-        onClose={() => {
-          setIsEditCardOpen(false);
-          onClose()
-        }}
-      />
-    )}
-      {isTaskDetailVisible && <div className="p-4 max-w-xl w-[40%] mx-auto bg-white rounded-lg shadow-lg fixed z-10 top-0 right-0 overflow-y-auto h-[100vh] hideScroll">
-        <div onClick={onClose} className="flex justify-end mb-3">
-          <RxCross2 className="text-baseGray" />
-        </div>
-        <header className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-[#323333] font-lato">
-            {task?.name}
-          </h1>
-          <button
-            className="flex items-center space-x-2 border border-gray-500 rounded text-gray-500 hover:text-gray-700 px-2 py-1"
-            onClick={editDetails}
-          >
-            <CiEdit />
-            <span className="text-base font-lato font-medium">Edit</span>
-          </button>
-        </header>
-
-        <div className="mb-4">
-          <span className="text-[14px] font-lato text-baseGray">
-            Is in list{" "}
-          </span>
-          <span className="text-[14px] font-lato text-baseGray">
-            {boardName}
-          </span>
-        </div>
-
-        <div className="mb-4 border border-gray-400 rounded-lg px-3 py-3">
-          <div className="flex items-center space-x-10 mb-3">
-            <div className="flex items-center gap-x-2">
-              <IoCalendarOutline className="text-baseGray" />
-              <span className="ml-auto text-base font-lato font-bold text-baseGray">
-                Start Date
-              </span>
-            </div>
-            <span className="ml-8 text-sm font-semibold">
-              {moment(task?.start_date).format("DD MMMM, YY")}
-            </span>
+      {isEditCardOpen && (
+        <EditCard
+          cardId={task?.id}
+          projectId={task?.project_id}
+          onClose={() => {
+            setIsEditCardOpen(false);
+            onClose();
+          }}
+        />
+      )}
+      {isTaskDetailVisible && (
+        <div className="p-4 max-w-xl w-[40%] mx-auto bg-white rounded-lg shadow-lg fixed z-10 top-0 right-0 overflow-y-auto h-[100vh] hideScroll">
+          <div onClick={onClose} className="flex justify-end mb-3">
+            <RxCross2 className="text-baseGray" />
           </div>
-          <div className="flex items-center space-x-10 mb-3">
-            <div className="flex items-center gap-x-2">
-              <RxPerson className="text-baseGray" />
-              <span className="ml-auto text-base font-lato font-bold text-baseGray">
-                Created By
-              </span>
-            </div>
-            <span className="ml-8 text-sm font-semibold">
-              <EmployeeName value={task?.assigned_by} />
-            </span>
-          </div>
-          <div className="flex items-center space-x-10 mb-3">
-            <div className="flex items-center gap-x-2">
-              <IoCalendarOutline className="text-baseGray" />
-              <span className="ml-auto text-base font-lato font-bold text-baseGray">
-                Due Date
-              </span>
-            </div>
-            <span className="ml-8 text-sm font-semibold">
-              {moment(task?.end_date).format("DD MMMM, YY")}
-            </span>
-          </div>
-          <div className="flex items-center space-x-10 mb-3">
-            <div className="flex items-center gap-x-2">
-              <PiUsersLight className="text-baseGray" />
-              <span className="ml-auto text-base font-lato font-bold text-baseGray">
-                Assigne
-              </span>
-            </div>
-            <MembersList members={task?.assigned_to} />
-          </div>
-          <div className="flex items-center space-x-10">
-            <div className="flex items-center gap-x-2">
-              <PiHeadlightsBold className="text-baseGray" />
-              <span className="ml-auto text-base font-lato font-bold text-baseGray">
-                Priority
-              </span>
-            </div>
-            <span className="ml-8 text-sm font-semibold text-red-500">
-              {
-                PriorityList.find((option) => option.value === task?.priority)
-                  ?.label
-              }
-            </span>
-          </div>
-        </div>
-
-        <div className="mb-4">
-          <h2 className="text-base font-lato font-bold text-[#323333]">
-            Description
-          </h2>
-          <p
-            className="text-sm text-gray-700 mt-2"
-            dangerouslySetInnerHTML={{ __html: task?.description }}
-          />
-        </div>
-
-        <div className="mb-3">
-          <h2 className="text-base font-lato font-bold text-[#323333] flex gap-x-2 items-center">
-            <AiOutlinePaperClip className="text-xl" />
-            Attachments
-          </h2>
-          {attachments.map((attachment) => (
-            <div
-              key={attachment.id}
-              className="flex items-center justify-between w-auto my-1 bg-gray-100 p-2 rounded-lg shadow-md"
+          <header className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-[#323333] font-lato">
+              {task?.name}
+            </h1>
+            <button
+              className="flex items-center space-x-2 border border-gray-500 rounded text-gray-500 hover:text-gray-700 px-2 py-1"
+              onClick={editDetails}
             >
-              <div className="flex items-center">
-                <FaRegImage className="h-4 w-4 text-gray-500" />
-                <span className="ml-4 font-lato text-baseGray text-sm">
-                  {attachment?.attachments.name}
+              <CiEdit />
+              <span className="text-base font-lato font-medium">Edit</span>
+            </button>
+          </header>
+
+          <div className="mb-4">
+            <span className="text-[14px] font-lato text-baseGray">
+              Is in list{" "}
+            </span>
+            <span className="text-[14px] font-lato text-baseGray">
+              {boardName}
+            </span>
+          </div>
+
+          <div className="mb-4 border border-gray-400 rounded-lg px-3 py-3">
+            <div className="flex items-center space-x-10 mb-3">
+              <div className="flex items-center gap-x-2">
+                <IoCalendarOutline className="text-baseGray" />
+                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                  Start Date
                 </span>
               </div>
+              <span className="ml-8 text-sm font-semibold">
+                {moment(task?.start_date).format("DD MMMM, YY")}
+              </span>
+            </div>
+            <div className="flex items-center space-x-10 mb-3">
               <div className="flex items-center gap-x-2">
-                <a
-                  href={attachment?.attachments.file}
-                  download
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <AiOutlineDownload className="h-5 w-5" />
-                </a>
-                <BiDotsVerticalRounded className="h-5 w-5" />
+                <RxPerson className="text-baseGray" />
+                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                  Created By
+                </span>
               </div>
+              <span className="ml-8 text-sm font-semibold">
+                <EmployeeName value={task?.assigned_by} />
+              </span>
             </div>
-          ))}
-        </div>
+            <div className="flex items-center space-x-10 mb-3">
+              <div className="flex items-center gap-x-2">
+                <IoCalendarOutline className="text-baseGray" />
+                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                  Due Date
+                </span>
+              </div>
+              <span className="ml-8 text-sm font-semibold">
+                {moment(task?.end_date).format("DD MMMM, YY")}
+              </span>
+            </div>
+            <div className="flex items-center space-x-10 mb-3">
+              <div className="flex items-center gap-x-2">
+                <PiUsersLight className="text-baseGray" />
+                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                  Assigne
+                </span>
+              </div>
+              <MembersList members={task?.assigned_to} />
+            </div>
+            <div className="flex items-center space-x-10">
+              <div className="flex items-center gap-x-2">
+                <PiHeadlightsBold className="text-baseGray" />
+                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                  Priority
+                </span>
+              </div>
+              <span className="ml-8 text-sm font-semibold text-red-500">
+                {
+                  PriorityList.find((option) => option.value === task?.priority)
+                    ?.label
+                }
+              </span>
+            </div>
+          </div>
 
-        <div className="pb-1">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-lato font-bold text-[#323333] flex gap-x-2 items-center">
-              <LiaCommentAlt className="text-xl" />
-              Comments ({comments.length})
+          <div className="mb-4">
+            <h2 className="text-base font-lato font-bold text-[#323333]">
+              Description
             </h2>
+            <p
+              className="text-sm text-gray-700 mt-2"
+              dangerouslySetInnerHTML={{ __html: task?.description }}
+            />
           </div>
-          <div className="flex items-center border border-gray-300 rounded-lg p-1 bg-[#E8EAED]">
-            <input
-              type="text"
-              placeholder="Type your comment here"
-              className="flex-grow px-2 py-1 text-sm bg-transparent text-gray-700 focus:outline-none placeholder:text-[14px] placeholder:font-lato placeholder:text-baseGray"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-            />
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <AiOutlinePaperClip
-              onClick={handleFileClick}
-              className="h-5 w-5 text-black mx-2 cursor-pointer"
-            />
-            <div
-              className="bg-black rounded-full w-6 h-6 flex justify-center items-center mr-1"
-              onClick={handleAddComment}
-            >
-              <RiSendPlaneFill className="h-3 w-3 text-white cursor-pointer" />
-            </div>
-          </div>
-        </div>
-        <div className="mt-3 space-y-4">
-          {comments.map((comment, index) => (
-            <div key={index} className="flex items-start space-x-3">
-              <div className="flex-shrink-0">
-                <div className="h-9 w-9 rounded-full bg-pink-500 flex items-center justify-center text-white font-semibold">
-                  <EmployeeName value={comment.user_id} length={2} />
-                </div>
-              </div>
-              <div className="flex justify-between items-center w-full">
-                <p className="mt-1 text-[#323333] font-lato text-base">
-                  {comment.comment}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-lato text-baseGray">
-                    {moment(comment.created_at?.slice(0, 10)).format(
-                      "DD-MMM-YY"
-                    )}
+
+          <div className="mb-3">
+            <h2 className="text-base font-lato font-bold text-[#323333] flex gap-x-2 items-center">
+              <AiOutlinePaperClip className="text-xl" />
+              Attachments
+            </h2>
+            {attachments.map((attachment) => (
+              <div
+                key={attachment.id}
+                className="flex items-center justify-between w-auto my-1 bg-gray-100 p-2 rounded-lg shadow-md"
+              >
+                <div className="flex items-center">
+                  <FaRegImage className="h-4 w-4 text-gray-500" />
+                  <span className="ml-4 font-lato text-baseGray text-sm">
+                    {attachment?.attachments.name}
                   </span>
                 </div>
+                <div className="flex items-center gap-x-2">
+                  <a
+                    href={attachment?.attachments.file}
+                    download
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <AiOutlineDownload className="h-5 w-5" />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pb-1">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-lato font-bold text-[#323333] flex gap-x-2 items-center">
+                <LiaCommentAlt className="text-xl" />
+                Comments ({comments.length})
+              </h2>
+            </div>
+            <div className="flex items-center border border-gray-300 rounded-lg p-1 bg-[#E8EAED]">
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder="Type your comment here"
+                  className="flex-grow px-2 py-1 text-sm bg-transparent text-gray-700 focus:outline-none placeholder:text-[14px] placeholder:font-lato placeholder:text-baseGray w-full"
+                  value={newComment}
+                  onChange={handleCommentChange}
+                  ref={commentRef}
+                />
+                {showDropdown && (
+                  <div className="absolute z-10  top-0 left-0 mt-8 mx-auto shadow-lg rounded-lg bg-white max-h-32 overflow-y-auto ">
+                    {filteredUsers.map((user) => (
+                      <div
+                        key={user.value}
+                        className="p-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2 mb-1"
+                        onClick={() => handleUserSelect(user)}
+                      >
+                        <UserInitials user={user} />
+                        <div className="flex-col gap-1">
+                          <p>{user.name}</p>
+                          <p className="text-sm">@{user.label}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <AiOutlinePaperClip
+                onClick={handleFileClick}
+                className="h-5 w-5 text-black mx-2 cursor-pointer"
+              />
+              <div
+                className="bg-black rounded-full w-6 h-6 flex justify-center items-center mr-1"
+                onClick={handleAddComment}
+              >
+                <RiSendPlaneFill className="h-3 w-3 text-white cursor-pointer" />
               </div>
             </div>
-          ))}
+          </div>
+          <div className="mt-3 space-y-4">
+            {comments?.map((comment, index) => (
+              <div key={index} className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="h-9 w-9 rounded-full bg-pink-500 flex items-center justify-center text-white font-semibold">
+                    <EmployeeName value={comment.user_id} length={2} />
+                  </div>
+                </div>
+                <div className="flex justify-between items-center w-full">
+                  <p className="mt-1 text-[#323333] font-lato text-base">
+                    {comment.comment}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[12px] font-lato text-baseGray">
+                      {moment(comment.created_at?.slice(0, 10)).format(
+                        "DD-MMM-YY"
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>}
+      )}
     </>
   );
 };
+const mapStateToProps = (state) => {
+  return {
+    employees: state.emp.employees,
+  };
+};
 
-export default TaskDetail;
+
+export default connect(mapStateToProps)(TaskDetail);
 
