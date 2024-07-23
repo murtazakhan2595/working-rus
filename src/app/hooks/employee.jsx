@@ -704,8 +704,8 @@ const getEmployeeWorkInformationData = async (baseUrl, employeeid, token) => {
 };
 
 const saveEmployeeWorkInformationData = async (employeeid, payload) => {
-  if (employeeid) {
-    try {
+  try {
+    if (employeeid) {
       const response = await axios.patch(
         `${baseUrl}/emp/${employeeid}`,
         payload,
@@ -716,13 +716,20 @@ const saveEmployeeWorkInformationData = async (employeeid, payload) => {
       if (response.status === 200) {
         return true;
       }
-    } catch (error) {
-      if (error?.response?.status === 401) {
-        handleLogout();
+    } else {
+      const response = await axios.post(`${baseUrl}/emp/add`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        return true;
       }
-      console.error("Error fetching Personal Info data :", error);
-      return false;
     }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
   }
 };
 
