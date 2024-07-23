@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
@@ -12,11 +12,15 @@ import TimeIcon from "assets/images/timeIcon";
 import EditCard from "./EditCard";
 import moment from "moment";
 import TaskDetail from "./TaskDetail";
+import { fetchComments } from "app/hooks/taskManagment";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [comments, setComments] = useState([]);
+
+  console.log(comments)
 
   const editDetails = () => {
     setIsDropdownOpen(false);
@@ -67,6 +71,21 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const closeTaskDetail = () => {
     setIsTaskDetailOpen(false);
   };
+
+
+  useEffect(() => {
+
+    const fetchData = async () => {
+      try {
+        const data = await fetchComments(task.id);
+        setComments(data);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+        setComments([]);
+      }
+    };
+    fetchData();
+  }, [task?.board_id, task?.id]);
 
   return (
     <div
@@ -142,11 +161,11 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
           )}
           <div className="flex gap-0.5 items-center my-auto whitespace-nowrap">
             <BiComment />
-            <div>{task?.comments || 0}</div>
+            <div>{comments?.length || 0}</div>
           </div>
           <div className="flex items-center gap-0.5 my-auto whitespace-nowrap">
             <ImAttachment />
-            <div>{task?.attachments?.length || 0}</div>
+            <div>{task?.attachment?.length || 0}</div>
           </div>
         </div>
       </footer>
