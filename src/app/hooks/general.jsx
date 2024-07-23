@@ -81,7 +81,6 @@ const getEmployeeList = async () => {
         department_name: employee.department_name,
         department_position: employee.department_position,
         work_email: employee.work_email,
-        username: employee.username,
       }));
       return employeeList;
     } else return [];

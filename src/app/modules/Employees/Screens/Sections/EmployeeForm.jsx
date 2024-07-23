@@ -61,8 +61,8 @@ const EmployeeForm = ({
   const [formData, setFormData] = useState(EmployeeInformation);
   const [empId, setEmpId] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [emailAlreadyExist, setEmailAlreadyExist] = useState([]);
-  const [usernameAlreadyExist, setUsernameAlreadyExist] = useState([]);
+  const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
+  const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,6 +73,8 @@ const EmployeeForm = ({
           const employeeData = await getEmployeeInformation(response);
           setFormData(employeeData);
           setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
+          validateEmail(employeeData.work_email);
+          validateUsername(employeeData.username);
         } else {
           const response = await getNewEmployeeCode();
           setEmpId(`TXB-${response.toString().padStart(4, "0")}`);
@@ -88,16 +90,16 @@ const EmployeeForm = ({
   }, [id]);
 
   const validateEmail = (email) => {
-    const employee = employees.find((emp) => emp.work_email === email);
-    if (employee) {
+    const employee = employees.filter((emp) => emp.work_email === email && emp.value !== id);
+    if (employee && employee.length > 0) {
       setEmailAlreadyExist(true);
     } else {
       setEmailAlreadyExist(false);
     }
   };
   const validateUsername = (username) => {
-    const employee = employees.find((emp) => emp.username === username);
-    if (employee) {
+    const employee = employees.filter((emp) => emp.label === username && emp.value !== id);
+    if (employee && employee.length > 0) {
       setUsernameAlreadyExist(true);
     } else {
       setUsernameAlreadyExist(false);
