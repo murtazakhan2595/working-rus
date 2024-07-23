@@ -20,7 +20,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [comments, setComments] = useState([]);
 
-  console.log(comments)
 
   const editDetails = () => {
     setIsDropdownOpen(false);
@@ -37,7 +36,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     {
       label: "View Details",
       onClick: () => {
-        // Optionally, you can open TaskDetail here as well
+        setIsDropdownOpen(false)
         setIsTaskDetailOpen(true);
       },
     },
