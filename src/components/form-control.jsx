@@ -328,6 +328,7 @@ const EmailInput = ({
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
+        {error && touch && <div className="invalid-feedback">{error}</div>}
       </FormGroup>
     </>
   );

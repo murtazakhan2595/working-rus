@@ -3,12 +3,16 @@ import { Row, Col, Button, Form, Label, FormGroup, Input } from "reactstrap";
 import { PageLoader } from "components";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
-import axios from "axios";
+import { useDispatch } from "react-redux";
 import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import { EmployeeInformation } from "app/utils/Types/Employee.jsx";
 import { getEmployeeInformation } from "app/utils/MappingObjects/mapEmployeeData.jsx";
-import { getEmployeeData, getNewEmployeeCode } from "app/hooks/employee.jsx";
+import {
+  getEmployeeData,
+  getNewEmployeeCode,
+  saveEmployeeWorkInformationData,
+} from "app/hooks/employee.jsx";
 import {
   EmailInput,
   PhoneNumberInput,
@@ -23,19 +27,13 @@ import {
   workplaceTypes,
   UserRoles,
 } from "data/Data";
-
 import {
   SelectComponent,
   SelectMultiInputComponent,
   DateInput,
 } from "components/form-control";
-import {
-  getDepartmentList,
-  getManagersList,
-  getDesignationList,
-  getOrganizationList,
-} from "app/hooks/general";
 import { countryOptions } from "data/Data";
+import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
 
 function getManagersStringSelected(managers) {
   if (managers) {
@@ -47,23 +45,24 @@ function getManagersStringSelected(managers) {
   return [];
 }
 const EmployeeForm = ({
-  token,
-  baseUrl,
   isEditMode,
   nextStep,
   setShowSuccessModal,
   setEmail,
   id,
+  employees,
+  designations,
+  departments,
+  managers,
 }) => {
   const formRef = React.createRef();
+  let dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState(EmployeeInformation);
   const [empId, setEmpId] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [managers, setManagers] = useState([]);
-  const [departments, setDepartments] = useState([]);
-  const [designations, setDesignations] = useState([]);
-  const [organization, setOrganization] = useState([]);
+  const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
+  const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,6 +73,8 @@ const EmployeeForm = ({
           const employeeData = await getEmployeeInformation(response);
           setFormData(employeeData);
           setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
+          validateEmail(employeeData.work_email);
+          validateUsername(employeeData.username);
         } else {
           const response = await getNewEmployeeCode();
           setEmpId(`TXB-${response.toString().padStart(4, "0")}`);
@@ -88,55 +89,41 @@ const EmployeeForm = ({
     fetchData();
   }, [id]);
 
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const departmentResponse = await getDepartmentList();
-        setDepartments(departmentResponse);
-
-        const managerResponse = await getManagersList();
-        setManagers(managerResponse);
-
-        const designationResponse = await getDesignationList();
-        setDesignations(designationResponse);
-
-        const organizationResponse = await getOrganizationList();
-        setOrganization(organizationResponse);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchLists();
-  }, []);
+  const validateEmail = (email) => {
+    const employee = employees.filter((emp) => emp.work_email === email && emp.value !== id);
+    if (employee && employee.length > 0) {
+      setEmailAlreadyExist(true);
+    } else {
+      setEmailAlreadyExist(false);
+    }
+  };
+  const validateUsername = (username) => {
+    const employee = employees.filter((emp) => emp.label === username && emp.value !== id);
+    if (employee && employee.length > 0) {
+      setUsernameAlreadyExist(true);
+    } else {
+      setUsernameAlreadyExist(false);
+    }
+  };
 
   const handleSubmit = async (data) => {
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    };
     setIsLoading(true);
     try {
       // Check if an API call is already in progress
       data.indirect_report = data?.indirect_report
         ? getManagersStringSelected(data.indirect_report)
         : "";
-      if (data.id) {
-        const response = await axios.patch(`${baseUrl}/emp/${data.id}`, data, {
-          headers,
-        });
-        if (response.status === 200) {
+      const response = await saveEmployeeWorkInformationData(data.id, data);
+      if (response) {
+        dispatch(fetchEmployees());
+        dispatch(fetchReportingManagers());
+        if (data.id) {
           toast.success("Employee Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
           if (isEditMode) nextStep();
           else navigate("/profile-management");
-        }
-      } else {
-        const response = await axios.post(`${baseUrl}/emp/add`, data, {
-          headers,
-        });
-        if (response.status === 201) {
+        } else {
           setShowSuccessModal && setShowSuccessModal(true);
         }
       }
@@ -183,14 +170,18 @@ const EmployeeForm = ({
                   values,
                   isEditMode
                 );
-                console.log(errors);
+                if (values.work_email && emailAlreadyExist) {
+                  errors.work_email = "Email already exist";
+                }
+                if (values.username && usernameAlreadyExist) {
+                  errors.username = "Username already exist";
+                }
                 return errors;
               }}
             >
               {(props) => (
                 <Form onSubmit={props.handleSubmit}>
                   <Row>
-                    {/* {console.log(props.values)} */}
                     {!isEditMode && (
                       <>
                         <Col md="12">
@@ -220,6 +211,7 @@ const EmployeeForm = ({
                             required={true}
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
+                              validateUsername(value);
                             }}
                           />
                         </Col>
@@ -260,6 +252,7 @@ const EmployeeForm = ({
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
                               setEmail && setEmail(value);
+                              validateEmail(value);
                             }}
                           />
                         </Col>
@@ -523,6 +516,10 @@ const mapStateToProps = (state) => {
   return {
     token: state.user.token,
     baseUrl: state.user.baseUrl,
+    employees: state.emp.employees,
+    departments: state.common.departments,
+    designations: state.common.designations,
+    managers: state.emp.reportingManagers,
   };
 };
 

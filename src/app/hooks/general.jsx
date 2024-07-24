@@ -80,6 +80,7 @@ const getEmployeeList = async () => {
         name: `${employee.first_name} ${employee.last_name}`,
         department_name: employee.department_name,
         department_position: employee.department_position,
+        work_email: employee.work_email,
       }));
       return employeeList;
     } else return [];
@@ -137,7 +138,7 @@ const getEmployeeCustomList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/customemp/?ordering=id&${
+  const URL = `/customemp/?ordering=-id&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
