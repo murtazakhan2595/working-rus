@@ -27,6 +27,7 @@ const LeaveAllotement = ({ departments, designations }) => {
     setIsLoading(true);
     try {
       const employeeData = await getEmployeeCustomList({ options, filterData });
+      console.log("employeeData", employeeData);
       if (isMounted) {
         setEmployeeData(employeeData);
       }
@@ -119,7 +120,7 @@ const LeaveAllotement = ({ departments, designations }) => {
                   <Col lg={12} className="mt-5 mx-2">
                     <Table
                       data={employeeList.results || []}
-                      columns={LeaveAllotmentColumns}
+                      columns={LeaveAllotmentColumns(getPosts)}
                       hideTableHeader={true}
                       pagination={true}
                       dataTotalSize={employeeList.count || 0}

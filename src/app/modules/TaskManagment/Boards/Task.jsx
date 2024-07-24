@@ -20,7 +20,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [comments, setComments] = useState([]);
 
-
   const editDetails = () => {
     setIsDropdownOpen(false);
     setIsEditCardOpen(true);
@@ -36,7 +35,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     {
       label: "View Details",
       onClick: () => {
-        setIsDropdownOpen(false)
+        setIsDropdownOpen(false);
         setIsTaskDetailOpen(true);
       },
     },
@@ -68,23 +67,24 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     setIsTaskDetailOpen(true);
   };
   const closeTaskDetail = () => {
+    fetchData();
     setIsTaskDetailOpen(false);
   };
 
-
+  const fetchData = async () => {
+    try {
+      const data = await fetchComments({ task_id: [task.id] });
+      setComments(data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      setComments([]);
+    }
+  };
   useEffect(() => {
-
-    const fetchData = async () => {
-      try {
-        const data = await fetchComments(task.id);
-        setComments(data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-        setComments([]);
-      }
-    };
     fetchData();
   }, [task?.board_id, task?.id]);
+
+
 
   return (
     <div
@@ -133,7 +133,13 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
           style={{ maxHeight: "100px" }}
         >
           {/* Render HTML from task description */}
-          <div dangerouslySetInnerHTML={{ __html: task?.description }} />
+          <div
+            dangerouslySetInnerHTML={{
+              __html: `${task?.description.slice(0, 170)}${
+                task?.description.length > 170 ? "..." : ""
+              }`,
+            }}
+          />
         </p>
       </div>
       <footer className="flex justify-between py-2">

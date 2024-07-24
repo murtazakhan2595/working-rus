@@ -118,10 +118,7 @@ const handleSubmit = async (
     formData.attachment = [...attachmentIds, ...oldAttachmentIds];
 
     // Now call addTask
-    const response = await addTask({
-      ...formData,
-      priority: priorityMapping[formData.priority],
-    });
+    const response = await addTask(formData);
 
     if (response) {
       onClose();

@@ -442,11 +442,15 @@ const getAttachmentById = async (attachmentId) => {
   }
 };
 
-const fetchComments = async (taskId) => {
+const fetchComments = async (filter) => {
+  console.log("fetchComments", filter);
   try {
-    const response = await axios.get(`${baseUrl}/comments?task_id=${taskId}`, {
-      headers: headers(),
-    });
+    const response = await axios.get(
+      `${baseUrl}/comments/?search=${encodeURIComponent(JSON.stringify(filter))}`,
+      {
+        headers: headers(),
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching comments:", error);

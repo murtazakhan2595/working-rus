@@ -7,7 +7,7 @@ import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { Col } from "reactstrap";
 import AllotLeavesForm from "./AllotLeavesForm";
 
-const RenderEmployeesLeaveAllotement = ({ employee, employeeList }) => {
+const RenderEmployeesLeaveAllotement = ({ employee, employeeList, reload }) => {
   const [employeeLeaveTypes, setEmployeeLeaveTypes] = useState([]);
   const [openLeaveAllotment, setOpenLeaveAllotment] = useState(null);
   const [openLeaveAllotmentIndex, setOpenLeaveAllotmentIndex] = useState(null);
@@ -19,6 +19,7 @@ const RenderEmployeesLeaveAllotement = ({ employee, employeeList }) => {
       const data = await getEmployeeLeaveTypes({
         employee_id: employee.id,
       });
+      console.log("data", data);
       setEmployeeLeaveTypes({
         leaveTypes: data.leaveTypes,
         allotedLeave: data.allotedLeaves,
@@ -41,6 +42,7 @@ const RenderEmployeesLeaveAllotement = ({ employee, employeeList }) => {
   const closeModal = () => {
     setOpenLeaveAllotment(null);
     getPosts();
+    reload(true)
   };
   const next = () => {
     const nextIndex = openLeaveAllotmentIndex + 1;
