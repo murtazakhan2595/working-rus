@@ -140,8 +140,6 @@ const Projects = ({ userProfile }) => {
 const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
   const navigate = useNavigate();
   const projectMembers = project?.project_members || [];
-  const displayedMembers = projectMembers.slice(0, 3);
-  const remainingCount = projectMembers.length - displayedMembers.length;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -197,7 +195,9 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
         <div className="bg-[#FAFBFC] rounded-[10px] p-4 flex flex-col space-y-4 w-full relative">
           <div className="flex justify-between">
             <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-3xl font-bold text-white">
-              <EmployeeName value={project?.created_by} length={2} />
+              {`${project?.name.charAt(0).toUpperCase()}${project?.name
+                .charAt(1)
+                .toUpperCase()}`}
             </div>
             <CustomDropdown
               isOpen={isDropdownOpen}
@@ -206,13 +206,13 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
             />
           </div>
           <div
-            className="flex justify-between"
+            className="flex justify-between cursor-pointer"
             onClick={() => {
               navigateToBoard();
             }}
           >
             <div>
-              <h2 className="text-base font-lato text-[#323333] cursor-pointer font-semibold">
+              <h2 className="text-base font-lato text-[#323333] font-semibold">
                 {project?.name}
               </h2>
               <p className="text-[11px] font-lato text-[#989CA6]">
