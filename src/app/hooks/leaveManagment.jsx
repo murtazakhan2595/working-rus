@@ -258,6 +258,7 @@ const filterByYearAndLeaveType = (data, year, leaveComponentName) => {
 
 const getLeaveTrackerStats = async (filterStats, leaveTypeList) => {
   const { year, employee_id, leave_type } = filterStats;
+  console.log(leave_type)
   const LeaveTypeLabel = leaveTypeList[leave_type-1];
 
   try {
