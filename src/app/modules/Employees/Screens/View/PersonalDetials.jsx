@@ -29,11 +29,17 @@ const PersonalInformation = ({
         <div className="flex flex-col lg:flex-row py-4">
           {/* Image Section */}
           <div className="md:w-[25%] w-full flex flex-col items-start mb-6 lg:mb-0">
-            <img
-              src={userData?.profile_picture?.file || userData?.profile_picture}
-              alt="Profile"
-              className="w-24 h-24 rounded-full mb-4"
-            />
+            {userData?.profile_picture?.file || userData?.profile_picture ? (
+              <img
+                src={
+                  userData?.profile_picture?.file || userData?.profile_picture
+                }
+                alt="Profile"
+                className="w-24 h-24 rounded-full mb-4"
+              />
+            ) : (
+              <div className="opacity-70">Profile</div>
+            )}
 
             <div className="font-semibold text-lg">
               {userData.personalInformation?.first_name}{" "}
