@@ -3,7 +3,6 @@ import { toast, ToastContainer } from "react-toastify";
 import { connect } from "react-redux";
 import { RxCross2, RxPlus } from "react-icons/rx";
 import { Members } from "../Sections";
-import { useNavigate } from "react-router-dom";
 import { Card, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
 import { addProject, getProjectById } from "app/hooks/taskManagment";
@@ -15,10 +14,14 @@ import {
 import { Project } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 import { DateInput } from "components/form-control";
+import { useDispatch } from "react-redux";
+import {
+  fetchProjects,
+} from "state/slices/CommonSlice";
 
 const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
   const formRef = useRef();
-  const navigate = useNavigate();
+  let dispatch = useDispatch();
   const [initialValues, setInitialValues] = useState(Project);
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,10 +52,10 @@ const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
 
   const handleSubmit = async (formData) => {
     setIsLoading(true);
-
     try {
       const response = await addProject(formData);
       if (response) {
+        dispatch(fetchProjects());
         onClose();
       }
     } catch (error) {

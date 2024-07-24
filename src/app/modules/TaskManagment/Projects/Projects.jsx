@@ -165,9 +165,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
 
   const confirmDelete = async () => {
     const response = await deleteProject(project.id);
-    if (response && response.status === 200) {
-      onDeleteSuccess();
-    }
+    onDeleteSuccess();
     setIsDeleteModalOpen(false);
   };
   const dropdownOptions = [
