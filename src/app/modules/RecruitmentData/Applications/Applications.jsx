@@ -3,13 +3,7 @@ import { connect } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { dropdownOptions } from "data/Data";
 import { PageLoader, Table } from "components";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Row,
-  Col,
-} from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { cut, file, list } from "assets/images";
 import { Blocks, Header } from "../Sections";
 import { Tabs } from "./Sections";
@@ -28,11 +22,8 @@ const Applications = () => {
   const [Applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewApplicationDetails, setViewApplicationDetails] = useState(null);
-  const { id } = useParams();
   const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
-  const [filterData, setFilterData] = useState(
-    jobIdForFilter ? { job_id: jobIdForFilter } : {}
-  );
+  const [filterData, setFilterData] = useState({});
   const [totalApplications, setTotalApplications] = useState(0);
   const [shortlistedApplications, setShortlistedApplications] = useState(0);
   const [selectedApplications, setSelectedApplications] = useState(0);
@@ -48,46 +39,31 @@ const Applications = () => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
+
+  useEffect(() => {
+    setFilterData({ job_id: jobIdForFilter });
+  }, [jobIdForFilter]);
+
   useEffect(() => {
     const fetchLists = async () => {
       try {
         setIsLoading(true);
-        const URL = `/candidateall/?ordering=updated_at&page=${
-          options.page
-        }&page_size=${options.sizePerPage}&search=${encodeURIComponent(
-          JSON.stringify(filterData)
-        )}`;
-        const applicationsData = await getJobApplications(URL);
-        const jobPosts = await fetchJobPosts({id:filterData?.job_id});
-        if (applicationsData && jobPosts && activeTab===1) {
-          setApplications({
-            count: applicationsData.count,
-            data: applicationsData.results.candidate,
-          });
-          setTotalApplications(jobPosts.results[0]?.total_applications);
-          setShortlistedApplications(jobPosts.results[0]?.shortlisted_count);
-          setSelectedApplications(jobPosts.results[0]?.selected_count);
-          setRejectedApplications(jobPosts.results[0]?.rejected_count);
-        }
-        else{
-          setApplications({
-            count: applicationsData.count,
-            data: applicationsData.results,
-          });
-         setTotalApplications(applicationsData.results.total_count);
-         setShortlistedApplications(
-           applicationsData.results.shortlisted_application
-         );
-         setSelectedApplications(applicationsData.results.selected_application);
-         setRejectedApplications(applicationsData.results.rejected_application);
-        }
+        const applicationsData = await getJobApplications({
+          options,
+          filterData,
+        });
+        setApplications(applicationsData);
+        setTotalApplications(applicationsData.total_count);
+        setShortlistedApplications(applicationsData.shortlisted_application);
+        setSelectedApplications(applicationsData.selected_application);
+        setRejectedApplications(applicationsData.rejected_application);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching applications:", error);
       }
     };
     fetchLists();
-  }, [id, options, filterData]);
+  }, [options, filterData]);
 
   const handleOptionSelect = async (applicant, option) => {
     try {
@@ -127,7 +103,7 @@ const Applications = () => {
     <div className="screen bg-[#F0F1F2]">
       {viewApplicationDetails && (
         <ViewApplicantDetails
-        applicantIndex={viewApplicationDetails?.index}
+          applicantIndex={viewApplicationDetails?.index}
           closeModel={() => {
             setViewApplicationDetails(null);
           }}
@@ -232,7 +208,7 @@ const Applications = () => {
                   <Col lg={12}>
                     <div>
                       <Table
-                        data={Applications?.data || []}
+                        data={Applications?.results || []}
                         columns={AllJobApplicationColumns(
                           handleOptionSelect,
                           setViewApplicationDetails
