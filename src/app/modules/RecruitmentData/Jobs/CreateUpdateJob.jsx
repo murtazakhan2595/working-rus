@@ -22,7 +22,7 @@ import {
 
 import PageLoader from "components/PageLoader.jsx";
 import { connect } from "react-redux";
-import { addJob, updateJob } from "app/hooks/recruitment.jsx";
+import { addJob, updateJob ,getNewJobCode} from "app/hooks/recruitment.jsx";
 import { getCurrenciesList } from "app/hooks/general";
 import { Header } from "../Sections/index.js";
 import { JobDetail } from "app/utils/Types/Recruitment.jsx";
@@ -46,6 +46,24 @@ const JobForm = forwardRef(
 
       fetchData();
     }, []);
+
+    
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (formData?.id) {
+          setJob_Id(formData?.id);
+        } else {
+          const response = await getNewJobCode();
+          setJob_Id(response);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
     return (
       <>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { JobDetail } from "app/utils/Types/Recruitment.jsx";
+import { handleLogout } from "./general";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -115,6 +116,22 @@ export const getJobById = async (id) => {
   }
 };
 
+const getNewJobCode = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/lastrecruitment/`, {
+      headers: headers(),
+    });
+    const id = response.data?.id;
+    return id + 1;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching data:", error);
+  }
+  return '';
+};
+
 export const addApplication = async (values) => {
   try {
     const response = await axios.post(`${baseUrl}/candidate/`, values, {
@@ -139,4 +156,4 @@ export const updateJob = async (baseUrl, values, id) => {
   }
 };
 
-export { getJobApplications };
+export { getJobApplications ,getNewJobCode};
