@@ -24,6 +24,7 @@ import Loader from "components/PageLoader";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
+import DownloadData from "./DownloadButton";
 
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [userData, setUserData] = useState({});
@@ -36,7 +37,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const { id } = useParams();
   const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
-
+console.log(educations);
   const getDataByHooks = async () => {
     setLoading(true);
     try {
@@ -307,7 +308,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
         ]
       : []),
   ];
-
+console.log(userData)
   return (
     <div className="w-full bg-[#f0f1f2] scroll-auto overflow-auto max-h-[100vh] md:px-4 xl:px-8">
       {/******************** HEADER **************************/}
@@ -344,10 +345,12 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
                       ID: TXB-{id.toString().padStart(4, "0")}
                     </div>
                   </div>
-                  <button className="flex items-center gap-x-2 py-2 opacity-50 text-base font-semibold leading-6 border-2 border-black rounded-lg font-opensans px-4">
-                    <div>Download</div>
-                    <FiDownload />
-                  </button>
+                  <DownloadData
+                    userData={userData}
+                    experiences={experiences}
+                    visa={visa}
+                    certifications={certifications}
+                  />
                 </div>
               </div>
               <hr className="mt-2" />
