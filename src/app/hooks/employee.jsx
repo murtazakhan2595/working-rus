@@ -62,16 +62,13 @@ const getNewEmployeeCode = async () => {
   return EmployeeInformation;
 };
 
-const getEmployeePersonalInfoData = async (baseUrl, employeeid, token) => {
+const getEmployeePersonalInfoData = async (employeeid) => {
   if (employeeid) {
     try {
       const response = await axios.get(
         `${baseUrl}/employeeInformationlist/${employeeid}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: headers(),
         }
       );
       // Assuming response.data is the personal info object

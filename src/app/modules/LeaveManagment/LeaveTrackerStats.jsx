@@ -62,12 +62,8 @@ export default function LeaveTrackerStats({
     };
     fetchStats();
   }, [leaveTypes, userProfile, filterStats]);
-  // console.log({
-  //   label: getLeavesTypeNameList(leaveTypes)[0],
-  //   value: leaveTypes[0],
-  // });
 
-  console.log("leaveTypes[0]", leaveTypes[0]);
+
   useEffect(() => {
     setFilterStats({
       year: new Date().getFullYear(),
