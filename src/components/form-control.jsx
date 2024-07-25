@@ -619,7 +619,7 @@ const TextAreaEditorInput = ({
   );
 };
 
-const FilterInput = ({ filters, onChange }) => {
+const FilterInput = ({ filters, onChange, isClearable=true }) => {
   const classNamesStyle =
     "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md w-56";
   return (
@@ -659,6 +659,7 @@ const FilterInput = ({ filters, onChange }) => {
                 />
               );
             } else if (filter.type === "select") {
+              console.log(filter.defaultValue);
               return (
                 <Select
                   key={index}
@@ -674,7 +675,7 @@ const FilterInput = ({ filters, onChange }) => {
                   onChange={(option) => {
                     onChange(filter.name, option?.value);
                   }}
-                  isClearable={true}
+                  isClearable={isClearable}
                 />
               );
             } else if (filter.type === "date") {

@@ -294,12 +294,16 @@ export const AllLeavesApplicationColumns= (reload) => [
   },
 ];
 
-export const LeaveAllotmentColumns = [
+export const LeaveAllotmentColumns = (reload) => [
   {
     dataField: "employee_id",
     text: "",
     formatter: (cell, row, list) => (
-      <RenderEmployeesLeaveAllotement employee={row} employeeList={list} />
+      <RenderEmployeesLeaveAllotement
+        employee={row}
+        employeeList={list}
+        reload={reload}
+      />
     ),
   },
 ];

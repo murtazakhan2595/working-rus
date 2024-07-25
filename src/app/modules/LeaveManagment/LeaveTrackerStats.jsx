@@ -24,11 +24,11 @@ export default function LeaveTrackerStats({
   const [totalRequests, setTotalRequests] = useState(0);
   const [deniedRequests, setDeniedRequests] = useState(0);
   const [usedLeaves, setUsedLeaves] = useState(0);
-  const [leaveYear, setLeaveYear] = useState(null);
   const [isStatsLoading, setIsStatsLoading] = useState(true);
 
   const defaultYear = new Date().getFullYear();
   const handlestatsChange = (filterName, filterValue) => {
+
     setFilterStats((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "" || filterValue === undefined) {
@@ -46,7 +46,6 @@ export default function LeaveTrackerStats({
         setIsStatsLoading(true);
         const leaveTypeList = getLeavesTypeNameList(leaveTypes);
         const response = await getLeaveTrackerStats(filterStats, leaveTypeList);
-
         if (response) {
           setAllotedLeaves(response.allotedLeaves);
           setRemainingLeaves(response.remainingLeaves);
@@ -56,7 +55,6 @@ export default function LeaveTrackerStats({
           setTotalRequests(response.requested);
           setDeniedRequests(response.denied);
         }
-
         setIsStatsLoading(false);
       } catch (error) {
         console.error("Error fetching leave types:", error);
@@ -64,10 +62,18 @@ export default function LeaveTrackerStats({
     };
     fetchStats();
   }, [leaveTypes, userProfile, filterStats]);
+  // console.log({
+  //   label: getLeavesTypeNameList(leaveTypes)[0],
+  //   value: leaveTypes[0],
+  // });
 
+  console.log("leaveTypes[0]", leaveTypes[0]);
   useEffect(() => {
-    setFilterStats({ employee_id: userProfile.id });
-    setLeaveYear(defaultYear);
+    setFilterStats({
+      year: new Date().getFullYear(),
+      employee_id: userProfile.id,
+      leave_type: 1,
+    });
   }, [userProfile]);
 
   return (
@@ -105,9 +111,14 @@ export default function LeaveTrackerStats({
                   option: leaveTypes,
                   name: "leave_type",
                   placeholder: "Leave Type",
+                  defaultValue: {
+                    label: "Annual",
+                    value: 1 },
+                  
                 },
               ]}
               onChange={handlestatsChange}
+              isClearable={false}
             />
           </div>
         </div>

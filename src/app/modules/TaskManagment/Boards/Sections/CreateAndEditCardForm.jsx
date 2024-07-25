@@ -123,7 +123,7 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
                 }}
               />
             </Col>
-            <Col md="12" className="mb-0">
+            <Col md="12" className="mb-0 non-sticky">
               <TextAreaEditorInput
                 name="description"
                 error={props.errors.description}

@@ -15,7 +15,7 @@ const AcademicInfo = ({ educations, isEditable,employeeId, getDataByHooks }) => 
       <div className="flex justify-between"onClick={() => {
             setShowPersonalDetailCard(true);
           }}>
-        <h2 className="text-xl">Academic Detials</h2>
+        <h2 className="text-xl">Academic Details</h2>
         {isEditable &&
           <div className="flex gap-4 items-center">
           <FiPlus className="text-lg cursor-pointer opacity-80" />

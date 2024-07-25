@@ -8,15 +8,21 @@ import { useState } from "react";
 import ViewLeaveDetails from "../Sections/ViewLeaveDetails";
 import { updateLeaveStatus } from "app/hooks/leaveManagment";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
+import { allotLeavesToEmployee } from "app/hooks/leaveManagment";
+import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
+import { EmployeeLeaveTypesList } from "app/utils/Types/LeaveManagment";
+import { getEmployeeLeavesTypesList } from "utils/Lists";
 
-const RenderApplications = ({ applicationsList, activeTab, reload }) => {
-  console.log("applicationsList", applicationsList);
-  applicationsList.map((application) => {
-    console.log("application", application);
-    console.log("application.status_hr", application.status_hr);
-    console.log("status", Status(application.status_hr));
-  });
+const RenderApplications = ({
+  applicationsList,
+  activeTab,
+  reload,
+  leaveTypes,
+}) => {
+  console.log(applicationsList);
+  console.log(EmployeeLeaveTypesList);
+
   const [selectedLeaveIndex, setSelectedLeaveIndex] = useState(null);
 
   const handleLeaveDetails = (index) => {
@@ -46,7 +52,6 @@ const RenderApplications = ({ applicationsList, activeTab, reload }) => {
           const status = Status(application.status_hr);
           return (
             <>
-            {console.log("status", status, activeTab)}
               {status === activeTab && (
                 <Col
                   lg={6}
@@ -64,6 +69,7 @@ const RenderApplications = ({ applicationsList, activeTab, reload }) => {
                       activeTab={activeTab}
                       reload={reload}
                       onDetails={() => handleLeaveDetails(index)}
+                      leaveTypes={leaveTypes}
                     />
                   </div>
                 </Col>
@@ -93,27 +99,50 @@ const RenderApplications = ({ applicationsList, activeTab, reload }) => {
   );
 };
 
-const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
+const RenderApplication = ({
+  application,
+  activeTab,
+  reload,
+  onDetails,
+  leaveTypes,
+}) => {
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const handleApprove = async (status) => {
     try {
       const payload = application;
-      console.log(status, loggedInUser);
       if (loggedInUser.role === 1 || loggedInUser.role === 3) {
-        payload['status_hr'] = `${status} by HR`;
-      }else if(loggedInUser.role===2){
+        payload["status_hr"] = `${status} by HR`;
+      } else if (loggedInUser.role === 2) {
         payload["status_manager"] = `${status} by Manager`;
       }
-      console.log(payload);
+
       const response = await updateLeaveStatus(payload, loggedInUser);
       if (response) {
-        console.log("response", response);
+        if (status === "Declined" && payload.status_hr === "Approved by HR") {
+          const test = await getEmployeeLeaveTypes({
+            employee_id: payload.employee_id,
+            id: payload.leave_type,
+          });
+          let updateEmployeeLeaves = test.results;
+          updateEmployeeLeaves[0].used_leave =
+            updateEmployeeLeaves[0].used_leave - payload.total_leave;
+          updateEmployeeLeaves[0].left_leave =
+            updateEmployeeLeaves[0].left_leave + payload.total_leave;
+          const result = await allotLeavesToEmployee(
+            payload.employee_id,
+            updateEmployeeLeaves
+          );
+          if (!result) {
+            toast.error("Error updating employee leaves");
+          }
+        }
         toast.success(`Application ${status} Successfully!`);
         reload();
       } else {
         toast.error(`Application Could not be ${status}"`);
       }
     } catch (error) {
+      console.error(error);
       toast.error(`Application Could not be ${status}"`);
     }
   };
@@ -265,6 +294,9 @@ const StatusBar = ({ label, value }) => {
     </div>
   );
 };
-
-export default RenderApplications;
-
+const mapStateToProps = (state) => {
+  return {
+    leaveTypes: state.common.leaveTypes,
+  };
+};
+export default connect(mapStateToProps)(RenderApplications);

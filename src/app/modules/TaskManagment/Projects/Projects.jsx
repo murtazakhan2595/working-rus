@@ -12,12 +12,15 @@ import ViewBoardDetails from "./ViewBoardDetails";
 import { MembersList, CustomDropdown } from "../Sections";
 import { LuFolderX } from "react-icons/lu";
 import { EmployeeName } from "utils/getValuesFromTables";
+import { fetchProjects } from "state/slices/CommonSlice";
+import { useDispatch } from "react-redux";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [AllProjects, setAllProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const dispatch = useDispatch();
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -67,6 +70,7 @@ const Projects = ({ userProfile }) => {
   const toggleAddProject = (projectId) => {
     if (showProjectModal) {
       fetchData(true);
+      dispatch(fetchProjects());
     }
     setShowProjectModal(projectId ?? !showProjectModal);
   };

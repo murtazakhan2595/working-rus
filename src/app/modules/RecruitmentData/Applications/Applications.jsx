@@ -15,6 +15,7 @@ import { Blocks, Header } from "../Sections";
 import { Tabs } from "./Sections";
 import { ViewApplicantDetails } from ".";
 import {
+  fetchJobPosts,
   getJobApplications,
   updateApplicationStatus,
 } from "../../../hooks/recruitment";
@@ -57,21 +58,28 @@ const Applications = () => {
           JSON.stringify(filterData)
         )}`;
         const applicationsData = await getJobApplications(URL);
-        if (applicationsData) {
+        const jobPosts = await fetchJobPosts({id:filterData?.job_id});
+        if (applicationsData && jobPosts && activeTab===1) {
           setApplications({
             count: applicationsData.count,
             data: applicationsData.results.candidate,
           });
-          setTotalApplications(applicationsData.results.total_count);
-          setShortlistedApplications(
-            applicationsData.results.shortlisted_application
-          );
-          setSelectedApplications(
-            applicationsData.results.selected_application
-          );
-          setRejectedApplications(
-            applicationsData.results.rejected_application
-          );
+          setTotalApplications(jobPosts.results[0]?.total_applications);
+          setShortlistedApplications(jobPosts.results[0]?.shortlisted_count);
+          setSelectedApplications(jobPosts.results[0]?.selected_count);
+          setRejectedApplications(jobPosts.results[0]?.rejected_count);
+        }
+        else{
+          setApplications({
+            count: applicationsData.count,
+            data: applicationsData.results,
+          });
+         setTotalApplications(applicationsData.results.total_count);
+         setShortlistedApplications(
+           applicationsData.results.shortlisted_application
+         );
+         setSelectedApplications(applicationsData.results.selected_application);
+         setRejectedApplications(applicationsData.results.rejected_application);
         }
         setIsLoading(false);
       } catch (error) {
