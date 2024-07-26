@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export function getEmployeeLeavesTypesList(LeaveTypes, employeeLeaveType) {
   const employeeLeaveTypeList = employeeLeaveType.map((item) => {
     const leaveType = LeaveTypes.find((type) => type.value === item.leave_type);
@@ -51,3 +53,22 @@ export const yearsDropdownList = (StartYear, EndYear) => {
   }
   return years;
 };
+
+export function getTaskFilteredData(tasksList, filterData) {
+  if (filterData?.end_date) {
+    if (filterData?.end_date === "overdue") {
+      return tasksList.filter((task) =>
+        moment(task.end_date).isAfter(moment(new Date()))
+      );
+    }
+    if (filterData?.end_date === "nextday") {
+      const nextDay = moment(new Date()).add(1, "days");
+      return tasksList.filter(
+        (task) => task.end_date === nextDay.format("YYYY-MM-DD")
+      );
+    } else {
+      return tasksList.filter((task) => task.end_date === filterData?.end_date);
+    }
+  }
+  return tasksList;
+}

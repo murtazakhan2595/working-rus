@@ -70,7 +70,6 @@ const JobsDataTable = () => {
       return updatedFilters;
     });
   };
-  console.log(filterData);
   return (
     <div className="screen bg-[#F0F1F2]">
       <Header
@@ -78,11 +77,6 @@ const JobsDataTable = () => {
         content={
           <FilterInput
             filters={[
-              {
-                type: "search",
-                placeholder: "Search by ID & Job Title",
-                name: "id_and_Job_Title",
-              },
               {
                 type: "sorting",
                 option: JobSortingFilters,

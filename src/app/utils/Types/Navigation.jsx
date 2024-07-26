@@ -292,7 +292,7 @@ function getNavigation(userRole) {
                   ? [
                       {
                         name: "Leave Request",
-                        url: "/leave-request",
+                        url: "/request-leave",
                       },
                     ]
                   : []),
@@ -300,7 +300,7 @@ function getNavigation(userRole) {
                   ? [
                       {
                         name: "Leave Request",
-                        url: "/leave-request-management",
+                        url: "/leave-requests",
                       },
                     ]
                   : []),

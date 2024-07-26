@@ -23,6 +23,9 @@ export const fetchJobPosts = async (filterData, sortData) => {
     );
     return response.data;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching posts:", error);
     throw error;
   }
@@ -41,7 +44,7 @@ export const fetchJobById = async (id) => {
 const getJobApplications = async (payload) => {
   const { options, filterData } = payload;
   try {
-    const URL = `/candidateall/?ordering=updated_at&page=${
+    const URL = `/candidateall/?ordering=-updated_at&page=${
       options.page
     }&page_size=${options.sizePerPage}&search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -74,6 +77,9 @@ const getJobApplications = async (payload) => {
       return applicationsData;
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching applicants:", error);
     return false;
   }
@@ -98,6 +104,9 @@ export const updateApplicationStatus = async (selectedApplicant, option) => {
     );
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error updating application status:", error);
     throw error;
   }
@@ -117,6 +126,9 @@ export const downloadCV = async (cv, name) => {
     link.click();
     document.body.removeChild(link);
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching CV:", error);
     throw error;
   }
@@ -129,6 +141,9 @@ export const addJob = async (baseUrl, values, token) => {
     });
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error adding job:", error);
     throw error;
   }
@@ -140,6 +155,9 @@ export const getJobById = async (id) => {
     });
     return response.data;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error adding job:", error);
     return false;
   }
@@ -168,6 +186,9 @@ export const addApplication = async (values) => {
     });
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error adding job:", error);
     throw error;
   }
@@ -180,6 +201,9 @@ export const updateJob = async (baseUrl, values, id) => {
     });
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error adding job:", error);
     throw error;
   }

@@ -659,7 +659,6 @@ const FilterInput = ({ filters, onChange, isClearable=true }) => {
                 />
               );
             } else if (filter.type === "select") {
-              console.log(filter.defaultValue);
               return (
                 <Select
                   key={index}
@@ -680,15 +679,18 @@ const FilterInput = ({ filters, onChange, isClearable=true }) => {
               );
             } else if (filter.type === "date") {
               const date = filter.value ? new Date(moment(filter.value)) : null;
+              console.log(filter.placeholder,"filter.placeholder");
               return (
                 <div style={{ width: "fit-content" }}>
                   <DatePicker
                     key={index}
                     name={filter.name}
                     id={filter.name}
-                    //  className={`${filter.className ?? classNamesStyle}`}
+                    className={`${filter.className ?? classNamesStyle}`}
                     dropdownMode="select"
-                    placeholder={`${filter.placeholder}`}
+                    placeholderText={filter.placeholder}
+                    value={date}
+                    selected={date}
                     onChange={(value) => {
                       if (value) {
                         value = moment(value).format("YYYY-MM-DD");
@@ -714,7 +716,7 @@ const FilterInput = ({ filters, onChange, isClearable=true }) => {
                   values={filter.values}
                   mainHeading={filter.mainHeading}
                   label={filter.placeholder}
-                  className={filter.className ?? classNamesStyle}
+                  className={filter.className ?? null}
                 />
               );
             } else {

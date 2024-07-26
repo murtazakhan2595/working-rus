@@ -25,18 +25,9 @@ const Projects = ({ userProfile }) => {
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
-      const projectsData = await getAllProjects({ filterData });
+      const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted) {
-        if (userProfile.role === 4) {
-          const filteredResults = projectsData.results.filter((project) =>
-            project.project_members.includes(userProfile.id)
-          );
-          const filteredProjectsData = {
-            count: filteredResults.length,
-            results: filteredResults,
-          };
-          setAllProjects(filteredProjectsData);
-        } else setAllProjects(projectsData);
+        setAllProjects(projectsData);
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);

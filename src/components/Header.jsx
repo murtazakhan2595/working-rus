@@ -21,7 +21,7 @@ const Header = ({ title, content }) => {
         <div className="">
           <h4 className="fw-700">{title}</h4>
         </div>
-        <div className="">
+        <div className="flex flex-wrap justify-end gap-3">
           <FilterInput
             filters={[
               {
@@ -32,6 +32,7 @@ const Header = ({ title, content }) => {
             ]}
             onChange={handleFilterChange}
           />
+          {content ?? ""}
         </div>
       </div>
     </>

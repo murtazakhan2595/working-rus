@@ -41,7 +41,9 @@ const Applications = () => {
   };
 
   useEffect(() => {
-    setFilterData({ job_id: jobIdForFilter });
+    if (jobIdForFilter) {
+      setFilterData({ job_id: jobIdForFilter });
+    }
   }, [jobIdForFilter]);
 
   useEffect(() => {
@@ -84,7 +86,7 @@ const Applications = () => {
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
+      if (!filterValue) {
         delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
@@ -182,6 +184,7 @@ const Applications = () => {
                           type: "date",
                           name: "updated_at",
                           placeholder: "Applied On",
+                          value: filterData?.updated_at,
                         },
                         {
                           type: "select",

@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { handleLogout } from "./general";
 import { Project } from "app/utils/Types/TaskManagment";
+import { getTaskFilteredData } from "utils/Lists";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -10,7 +11,7 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getAllProjects = async (payload) => {
+const getAllProjects = async (payload,userProfile) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -23,11 +24,22 @@ const getAllProjects = async (payload) => {
     });
     if (response.status === 200) {
       const data = response.data;
-      const ProjectsData = {
-        count: data.length,
-        results: data,
-      };
-      return ProjectsData;
+      if (userProfile.role === 4 || userProfile.role === 2) {
+        const filteredResults = data.filter((project) =>
+          project.project_members.includes(userProfile.id)
+        );
+        const ProjectsData = {
+          count: filteredResults.length,
+          results: filteredResults,
+        };
+        return ProjectsData;
+      } else {
+        const ProjectsData = {
+          count: data.length,
+          results: data,
+        };
+        return ProjectsData;
+      }
     } else {
       return [];
     }
@@ -45,18 +57,19 @@ const getTaskByBoardId = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const URL = `/task/?${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  }`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const data = response.data;
-      const ProjectsData = {
+      getTaskFilteredData(data, filterData);
+      const TasksData = {
         count: data.length,
         results: data,
       };
-      return ProjectsData;
+      return TasksData;
     } else {
       return [];
     }
@@ -251,16 +264,16 @@ const moveTask = async (payload) => {
 };
 const addAttachments = async (payload) => {
   try {
-      const response = await axios.post(
-        `${baseUrl}/TaskmanagementAttachment`,
-        {attachments: payload},
-        {
-          headers: headers(),
-        }
-      );
-      if(response.status === 201){
-        return response.data;
+    const response = await axios.post(
+      `${baseUrl}/TaskmanagementAttachment`,
+      { attachments: payload },
+      {
+        headers: headers(),
       }
+    );
+    if (response.status === 201) {
+      return response.data;
+    }
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();
@@ -446,7 +459,9 @@ const fetchComments = async (filter) => {
   console.log("fetchComments", filter);
   try {
     const response = await axios.get(
-      `${baseUrl}/comments/?search=${encodeURIComponent(JSON.stringify(filter))}`,
+      `${baseUrl}/comments/?search=${encodeURIComponent(
+        JSON.stringify(filter)
+      )}`,
       {
         headers: headers(),
       }
@@ -468,7 +483,7 @@ const postComment = async (taskId, userId, comment) => {
         comment: comment,
       },
       {
-        headers: headers(), 
+        headers: headers(),
       }
     );
     return response.data;
