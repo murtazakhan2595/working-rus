@@ -117,7 +117,9 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
               <div className="flex flex-col py-px">
                 <div className="">
                   <div className="flex gap-5 ">
-                    {(userProfile.role === 1 || userProfile.role===3)&&<EmployeeOverview />}
+                    {(userProfile.role === 1 || userProfile.role === 3) && (
+                      <EmployeeOverview />
+                    )}
                   </div>
                 </div>
                 <div className="mt-5 ">
@@ -131,7 +133,10 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
                   <div className="flex gap-5 ">
                     {/* <MyTeam />
                     <MyLeaves /> */}
-                    <TalentSphere />
+
+                    {(userProfile.role === 1 || userProfile.role === 3) && (
+                      <TalentSphere />
+                    )}
                   </div>
                 </div>
               </div>
