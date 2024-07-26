@@ -15,7 +15,6 @@ function EmployeeOverview() {
     active: 0,
     offboarding: 0,
   });
-  console.log(employeeData);
   const chartOptions = {
     chart: {
       type: "donut",
@@ -58,7 +57,6 @@ function EmployeeOverview() {
   const fetchData = async () => {
     try {
       const response = await getEmployeeCustomList();
-      console.log(response);
       setEmployeeData({
         total: response?.TotalEmployee,
         active: response?.ActiveEmployee,

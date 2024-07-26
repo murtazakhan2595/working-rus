@@ -13,6 +13,7 @@ import { getEmployeeData } from "app/hooks/employee";
 import ProfileManagement from "./sections/ProfileManagement";
 import LeaveBalance from "./sections/LeaveBalance";
 import EmployeeOverview from "./sections/EmployeeOverview";
+import TalentSphere from "./sections/TalentSphere";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
   // const [isBarOpen, seIsBarOpen] = useState(false);
@@ -130,6 +131,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
                   <div className="flex gap-5 ">
                     {/* <MyTeam />
                     <MyLeaves /> */}
+                    <TalentSphere />
                   </div>
                 </div>
               </div>

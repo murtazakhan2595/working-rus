@@ -39,6 +39,7 @@ const Table = ({
     }
   };
 
+  console.log("data", data);
   return (
     <div className={`table-container ${className}`}>
       <table className="table custom-table">

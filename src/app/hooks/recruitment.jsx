@@ -156,4 +156,44 @@ export const updateJob = async (baseUrl, values, id) => {
   }
 };
 
-export { getJobApplications ,getNewJobCode};
+const getJobApplicants = async () => {
+  try {
+    console.log("calling")
+    const URL = `/candidateall/?ordering=updated_at`;
+    const response = await getJobApplications(URL);
+    const jobPosts = await fetchJobPosts();
+    console.log("INGO",response, jobPosts)
+    if (response && jobPosts) {
+      const jobMap = jobPosts.results.reduce((map, job) => {
+        map[job.id] = job.Job_Title;
+        return map;
+      }, {});
+
+      // Map candidates to jobs
+      const mappedResults = response.results.candidate
+        .filter((candidate) =>
+          ["contacted", "shortlisted", "offer_made"].includes(
+            candidate.application_status
+          )
+        )
+        .map((candidate) => {
+          return {
+            id: candidate.id,
+            full_name: `${candidate.first_name} ${candidate.last_name}`,
+            application_status: candidate.application_status,
+            job_id: candidate.job_id,
+            job_title: jobMap[candidate.job_id],
+          };
+        });
+      return mappedResults
+    }
+    else{
+      return false
+    }
+  } catch (error) {
+    console.error("Error fetching applicants:", error);
+    return false;
+  }
+};
+
+export { getJobApplications, getNewJobCode, getJobApplicants };
