@@ -153,7 +153,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
                         New Leave Request
                       </div>
                       <Link
-                        to="/leave-request"
+                        to="/request-leave"
                         className="p-2 rounded-md bg-black"
                         style={{ fontSize: "12px" }}
                       >

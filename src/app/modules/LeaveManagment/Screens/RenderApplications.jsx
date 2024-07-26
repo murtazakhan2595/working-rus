@@ -253,19 +253,13 @@ const RenderApplication = ({
 };
 
 const StatusBar = ({ label, value }) => {
-  const status = value
-    ? value.includes("Approved")
-      ? "Approved"
-      : value.includes("Pending")
-      ? "Pending"
-      : value.includes("Denied")
-      ? "Denied"
-      : ""
-    : "";
+  const status = Status(value);
+
+    console.log(status)
   const backgroungColor = status
     ? status === "Approved"
       ? "#ADD9CA"
-      : status === "Denied"
+      : status === "Rejected"
       ? "#D99898"
       : status === "Pending"
       ? "#EEEEF0"
