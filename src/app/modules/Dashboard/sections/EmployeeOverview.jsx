@@ -15,6 +15,7 @@ function EmployeeOverview() {
     active: 0,
     offboarding: 0,
   });
+
   const chartOptions = {
     chart: {
       type: "donut",
@@ -45,12 +46,12 @@ function EmployeeOverview() {
     {
       color: "bg-sky-400",
       label: "Active",
-      value: ((employeeData.active / employeeData.total) * 100).toFixed(2),
+      value: ((employeeData.active / employeeData.total) * 100).toFixed(0),
     },
     {
       color: "bg-sky-300",
       label: "Offboarding",
-      value: ((employeeData.offboarding / employeeData.total) * 100).toFixed(2),
+      value: ((employeeData.offboarding / employeeData.total) * 100).toFixed(0),
     },
   ];
 
@@ -58,9 +59,9 @@ function EmployeeOverview() {
     try {
       const response = await getEmployeeCustomList();
       setEmployeeData({
-        total: response?.TotalEmployee,
+        total: response?.count,
         active: response?.ActiveEmployee,
-        offboarding: response?.TotalEmployee - response?.ActiveEmployee,
+        offboarding: response?.count - response?.ActiveEmployee,
       });
     } catch (err) {
       console.error(err);
