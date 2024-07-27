@@ -560,11 +560,13 @@ const TextAreaInput = ({
             }
           }}
         />
-        <Label className="text-baseGray" htmlFor="address">
+        <Label
+          className={`text-baseGray ${value ? "active" : ""}`}
+          htmlFor={name}
+        >
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
-
         {error && touch && <div className="invalid-feedback">{error}</div>}
       </FormGroup>
     </>
@@ -619,7 +621,7 @@ const TextAreaEditorInput = ({
   );
 };
 
-const FilterInput = ({ filters, onChange, isClearable=true }) => {
+const FilterInput = ({ filters, onChange, isClearable = true }) => {
   const classNamesStyle =
     "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md w-56";
   return (
@@ -679,7 +681,7 @@ const FilterInput = ({ filters, onChange, isClearable=true }) => {
               );
             } else if (filter.type === "date") {
               const date = filter.value ? new Date(moment(filter.value)) : null;
-              console.log(filter.placeholder,"filter.placeholder");
+              console.log(filter.placeholder, "filter.placeholder");
               return (
                 <div style={{ width: "fit-content" }}>
                   <DatePicker
