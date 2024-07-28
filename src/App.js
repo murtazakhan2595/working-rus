@@ -182,7 +182,7 @@ function App() {
               />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-balance-hr" element={<LeaveBalanceHR />} />
-              <Route path="/leave-calender" element={<LeaveCalender />} />
+              <Route path="/leave-calender" element={<ComingSoon />} />
               {userRole === 1 && (
                 <>
                   <Route path="/create-task" element={<CreateTask />} />
