@@ -4,7 +4,7 @@ import { AllLeavesApplicationColumns } from "app/utils/Types/TableColumns";
 import { Table, PageLoader } from "components";
 import { getLeaveApplications } from "app/hooks/leaveManagment";
 
-const RenderAllApplications = ({reload}) => {
+const RenderAllApplications = ({ reload }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
@@ -19,33 +19,21 @@ const RenderAllApplications = ({reload}) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
-  const getApplications = async () => {
-    setLoading(true);
-    try {
-      const data = await getLeaveApplications({ filterData });
-      setApplications(data);
-    } catch (error) {
-      console.error("Error fetching applications:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
   useEffect(() => {
+    const getApplications = async () => {
+      setLoading(true);
+      try {
+        const data = await getLeaveApplications({ filterData, options });
+        setApplications(data);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     getApplications();
   }, [filterData]);
-
-  const handleFilterChange = (filterName, filterValue) => {
-    setFilterData((prevFilters) => {
-      //  debugger
-      const updatedFilters = { ...prevFilters };
-      if (!filterValue) {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
 
   const tableOptions = {
     page: options.page,

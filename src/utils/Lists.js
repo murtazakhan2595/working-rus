@@ -6,6 +6,7 @@ export function getEmployeeLeavesTypesList(LeaveTypes, employeeLeaveType) {
     return {
       value: item.id,
       label: leaveType ? leaveType.label : "Unknown",
+      leave_type_id: item.leave_type,
     };
   });
   return employeeLeaveTypeList;

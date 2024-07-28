@@ -14,7 +14,7 @@ import {
 import { FilterInput } from "components/form-control";
 import { Table } from "components";
 
-import { getEmployeeLeavesTypesList, yearsDropdownList } from "utils/Lists";
+import { getEmployeeLeavesTypesList } from "utils/Lists";
 import LeaveTrackerStats from "./LeaveTrackerStats";
 
 const LeaveTracker = ({ userProfile, leaveTypes }) => {
@@ -122,7 +122,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
           />
         }
       />
-      <LeaveTrackerStats leaveTypes={leaveTypes} userProfile={userProfile} setLeaveTypesOfEmployee/>
+      <LeaveTrackerStats leaveTypes={leaveTypesOfEmployee} userProfile={userProfile} setLeaveTypesOfEmployee/>
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">

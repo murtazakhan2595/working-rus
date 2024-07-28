@@ -60,7 +60,6 @@ const CreateLeaveRequest = ({
       try {
         const employeeResponse = await getEmployeeData(userProfile.id);
         const leaveData = await getLavefromEmployeeInfo(employeeResponse);
-        console.log("leaveData", leaveData);
         setLeaveForm({ ...Leave, ...leaveData });
 
         // If you need to update form fields directly

@@ -8,17 +8,15 @@ import employee from "../../../assets/images/employee.svg";
 import time from "../../../assets/images/time.svg";
 import cross from "../../../assets/images/cross.svg";
 import { getLeaveTrackerStats } from "app/hooks/leaveManagment";
-import { getLeavesTypeNameList } from "utils/Lists";
 
-
-export default function LeaveTrackerStats({
-  leaveTypes,
-  userProfile,
-  setLeaveTypesOfEmployee,
-}) {
+export default function LeaveTrackerStats({ leaveTypes, userProfile }) {
+  const defaultYear = new Date().getFullYear();
   const [allotedLeaves, setAllotedLeaves] = useState(0);
   const [remainingLeaves, setRemainingLeaves] = useState(0);
-  const [filterStats, setFilterStats] = useState({});
+  const [filterStats, setFilterStats] = useState({
+    employee_id: userProfile.id,
+    year: defaultYear,
+  });
   const [totalApproved, setTotalApproved] = useState(0);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [totalRequests, setTotalRequests] = useState(0);
@@ -26,15 +24,18 @@ export default function LeaveTrackerStats({
   const [usedLeaves, setUsedLeaves] = useState(0);
   const [isStatsLoading, setIsStatsLoading] = useState(true);
 
-  const defaultYear = new Date().getFullYear();
   const handlestatsChange = (filterName, filterValue) => {
-
     setFilterStats((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "" || filterValue === undefined) {
         delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
+        if (filterName === "leave_type") {
+          updatedFilters["leave_type_id"] = leaveTypes.find(
+            (type) => type.value === filterValue
+          )?.leave_type_id;
+        }
       }
       return updatedFilters;
     });
@@ -44,8 +45,7 @@ export default function LeaveTrackerStats({
     const fetchStats = async () => {
       try {
         setIsStatsLoading(true);
-        const leaveTypeList = getLeavesTypeNameList(leaveTypes);
-        const response = await getLeaveTrackerStats(filterStats, leaveTypeList);
+        const response = await getLeaveTrackerStats(filterStats);
         if (response) {
           setAllotedLeaves(response.allotedLeaves);
           setRemainingLeaves(response.remainingLeaves);
@@ -61,24 +61,10 @@ export default function LeaveTrackerStats({
       }
     };
     fetchStats();
-  }, [leaveTypes, userProfile, filterStats]);
-  // console.log({
-  //   label: getLeavesTypeNameList(leaveTypes)[0],
-  //   value: leaveTypes[0],
-  // });
-
-  console.log("leaveTypes[0]", leaveTypes[0]);
-  useEffect(() => {
-    setFilterStats({
-      year: new Date().getFullYear(),
-      employee_id: userProfile.id,
-      leave_type: 1,
-    });
-  }, [userProfile]);
-
+  }, [filterStats]);
   return (
     <div className="w-full flex flex-col md:flex-row gap-4 mb-4">
-      <div className="bg-white md:w-[60%] flex items-center rounded-lg">
+      <div className="bg-white md:w-[60%] flex items-center rounded-lg  flex-wrap">
         {/* Left section */}
         <div className="md:w-[45%] px-4 py-2 rounded-lg">
           <h2 className="text-base font-lato text-baseGray font-semibold mb-2">
@@ -111,21 +97,16 @@ export default function LeaveTrackerStats({
                   option: leaveTypes,
                   name: "leave_type",
                   placeholder: "Leave Type",
-                  defaultValue: {
-                    label: "Annual",
-                    value: 1 },
-                  
                 },
               ]}
               onChange={handlestatsChange}
-              isClearable={false}
             />
           </div>
         </div>
 
         {/* Center section */}
 
-        <div className="md:w-[55%] flex flex-col md:flex-row items-center justify-around">
+        <div className="md:w-[55%] flex flex-col md:flex-row items-center justify-around flex-wrap  px-4 py-2">
           <LeaveCount
             title="Leaves Remaining"
             leaveCount={remainingLeaves}
