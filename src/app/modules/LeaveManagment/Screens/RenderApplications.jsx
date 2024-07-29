@@ -5,12 +5,12 @@ import { Status } from "../Sections";
 import { EmployeeNameInfo } from "components";
 import { useState } from "react";
 import ViewLeaveDetails from "../Sections/ViewLeaveDetails";
-import { updateLeaveStatus } from "app/hooks/leaveManagment";
 import { toast } from "react-toastify";
 import { connect, useSelector } from "react-redux";
 import {
   allotLeavesToEmployee,
   getEmployeeLeaveTypesById,
+  updateLeaveStatus
 } from "app/hooks/leaveManagment";
 
 const RenderApplications = ({

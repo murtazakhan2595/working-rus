@@ -43,7 +43,7 @@ const RenderAllApplications = ({ reload, userProfile }) => {
       }
     };
     getApplications();
-  }, [filterData]);
+  }, [filterData,options]);
 
   const tableOptions = {
     page: options.page,

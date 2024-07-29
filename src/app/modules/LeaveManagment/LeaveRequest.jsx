@@ -48,6 +48,7 @@ const LeaveRequest = ({ userProfile }) => {
               tabs={["Pending", "Approved", "Rejected", "All Applications"]}
               onTabChange={(value) => {
                 setActiveTab(value);
+                getApplications()
               }}
             />
           </div>
