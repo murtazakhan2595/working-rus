@@ -54,7 +54,7 @@ function DepartmentName({ value }) {
   const department = departments.find(
     (option) => option.value === parseInt(value)
   );
-  return <>{department ? department.label : "N/A"}</>;
+  return <>{department ? department.label : value ?? "N/A"}</>;
 }
 function ProjectName({ value }) {
   const projects = useSelector((state) => state.common.projects);

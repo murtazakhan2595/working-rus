@@ -1,7 +1,6 @@
 import "react-toastify/dist/ReactToastify.css";
 import moment from "moment";
 import { Row, Col, Button } from "reactstrap";
-import { LeaveType } from "utils/getValuesFromTables";
 import { Status } from "../Sections";
 import { EmployeeNameInfo } from "components";
 import { useState } from "react";
@@ -13,19 +12,14 @@ import {
   allotLeavesToEmployee,
   getEmployeeLeaveTypesById,
 } from "app/hooks/leaveManagment";
-import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
-import { EmployeeLeaveTypesList } from "app/utils/Types/LeaveManagment";
-import { getEmployeeLeavesTypesList } from "utils/Lists";
 
 const RenderApplications = ({
   applicationsList,
   activeTab,
   reload,
   leaveTypes,
+  userProfile,
 }) => {
-  console.log(applicationsList);
-  console.log(EmployeeLeaveTypesList);
-
   const [selectedLeaveIndex, setSelectedLeaveIndex] = useState(null);
 
   const handleLeaveDetails = (index) => {
@@ -52,7 +46,11 @@ const RenderApplications = ({
     <Row className="m-2 bg-white px-2 py-4">
       {applicationsList ? (
         applicationsList.map((application, index) => {
-          const status = Status(application.status_hr);
+          const statusMessage =
+            userProfile.role === 2
+              ? application.status_manager
+              : application.status_hr;
+          const status = Status(statusMessage);
           return (
             <>
               {status === activeTab && (
@@ -112,7 +110,6 @@ const RenderApplication = ({
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const handleApprove = async (status) => {
     try {
-      debugger;
       const payload = application;
       if (loggedInUser.role === 1 || loggedInUser.role === 3) {
         payload["status_hr"] = `${status} by HR`;
@@ -175,9 +172,7 @@ const RenderApplication = ({
       </Col>
       <Col md={5} className="mb-3">
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-          <b>
-            <LeaveType value={application?.leave_type} />
-          </b>
+          <b>{application?.leave_component_name}</b>
           <br />
           {application?.reason}
         </div>
@@ -297,6 +292,7 @@ const StatusBar = ({ label, value }) => {
 const mapStateToProps = (state) => {
   return {
     leaveTypes: state.common.leaveTypes,
+    userProfile: state.user.userProfile,
   };
 };
 export default connect(mapStateToProps)(RenderApplications);

@@ -75,7 +75,13 @@ export default function LeaveTrackerStats({ leaveTypes, userProfile }) {
         {/* Left section */}
         <div className="md:w-[45%] px-4 py-2 rounded-lg">
           <h2 className="text-base font-lato text-baseGray font-semibold mb-2">
-            My <LeaveType value={filterStats.leave_type_id} /> Leave Allowance
+            My{" "}
+            {filterStats.leave_type_id ? (
+              <LeaveType value={filterStats.leave_type_id} />
+            ) : (
+              ""
+            )}
+            Leave Allowance
           </h2>
           <div className="text-3xl font-bold text-[#00A8F0] mb-6">
             {allotedLeaves} days
@@ -96,22 +102,24 @@ export default function LeaveTrackerStats({ leaveTypes, userProfile }) {
               onChange={handlestatsChange}
             />
           </div>
-          {defaultLeaveType && <div className="mb-2">
-            <label className="block text-gray-700 mb-2">Leave Type</label>
-            <FilterInput
-              filters={[
-                {
-                  type: "select",
-                  option: leaveTypes,
-                  name: "leave_type",
-                  placeholder: "Leave Type",
-                  defaultValue: defaultLeaveType,
-                  isClearable: false,
-                },
-              ]}
-              onChange={handlestatsChange}
-            />
-          </div>}
+          {defaultLeaveType && (
+            <div className="mb-2">
+              <label className="block text-gray-700 mb-2">Leave Type</label>
+              <FilterInput
+                filters={[
+                  {
+                    type: "select",
+                    option: leaveTypes,
+                    name: "leave_type",
+                    placeholder: "Leave Type",
+                    defaultValue: defaultLeaveType,
+                    isClearable: false,
+                  },
+                ]}
+                onChange={handlestatsChange}
+              />
+            </div>
+          )}
         </div>
 
         {/* Center section */}

@@ -237,62 +237,71 @@ export const AllJobApplicationColumns = (
     ),
   },
 ];
-export const AllLeavesApplicationColumns= (reload) => [
-  {
-    dataField: "employee_id",
-    text: "Employees",
-    formatter: (cell, row) => (
-      <EmployeeNameInfo
-        name={`${row.name}`}
-        department={row.department_name}
-        position={row.position}
-      />
-    ),
-  },
-  {
-    dataField: "employee_id",
-    text: "ID",
-    formatter: (cell, row) => <EmployeeID value={cell} />,
-  },
-  {
-    dataField: "report_to",
-    text: "Report To",
-    formatter: (cell, row) => <ManagerName value={cell} />,
-  },
-  {
-    dataField: "leave_component_name",
-    text: "Leave Type",
-  },
-  {
-    dataField: "total_leave",
-    text: "No. of Leaves",
-  },
-  {
-    dataField: "start_date",
-    text: "Start Date",
-    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-  },
-  {
-    dataField: "end_date",
-    text: "End Date",
-    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-  },
-  {
-    dataField: "status_hr",
-    text: "Status",
-    formatter: (cell) => <StatusLabel status={Status(cell)} />,
-  },
-  {
-    dataField: "",
-    text: "",
-    formatter: (cell, row) => <RenderStatus row={row} />,
-  },
-  {
-    dataField: "action",
-    text: "Action",
-    formatter: (cell, row) => <RenderAction row={row} reload={reload}/>,
-  },
-];
+export const AllLeavesApplicationColumns = (reload, userProfile) => {
+  const columns = [
+    {
+      dataField: "employee_id",
+      text: "Employees",
+      formatter: (cell, row) => (
+        <EmployeeNameInfo
+          name={`${row.name}`}
+          department={row.department_name}
+          position={row.position}
+        />
+      ),
+      width: "20%",
+    },
+    {
+      dataField: "employee_id",
+      text: "ID",
+      formatter: (cell, row) => <EmployeeID value={cell} />,
+    },
+    {
+      dataField: "report_to",
+      text: "Report To",
+      formatter: (cell, row) => <ManagerName value={cell} />,
+    },
+    {
+      dataField: "leave_component_name",
+      text: "Leave Type",
+    },
+    {
+      dataField: "total_leave",
+      text: "No. of Leaves",
+    },
+    {
+      dataField: "start_date",
+      text: "Start Date",
+      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+    },
+    {
+      dataField: "end_date",
+      text: "End Date",
+      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+    },
+    {
+      dataField: "status_hr",
+      text: "Status",
+      formatter: (cell) => <StatusLabel status={Status(cell)} />,
+    },
+    {
+      dataField: "",
+      text: "",
+      formatter: (cell, row) => <RenderStatus row={row} />,
+    }
+  ];
+
+  if (userProfile && (userProfile.role === 1 || userProfile.role === 3)) {
+    columns.push({
+      dataField: "action",
+      text: "Action",
+      formatter: (cell, row) => <RenderAction row={row} reload={reload} />,
+    });
+  }
+
+  return columns;
+};
+
 
 export const LeaveAllotmentColumns = (reload) => [
   {

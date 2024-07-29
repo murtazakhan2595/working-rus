@@ -3,8 +3,9 @@ import { Row, Col } from "reactstrap";
 import { AllLeavesApplicationColumns } from "app/utils/Types/TableColumns";
 import { Table, PageLoader } from "components";
 import { getLeaveApplications } from "app/hooks/leaveManagment";
+import { connect } from "react-redux";
 
-const RenderAllApplications = ({ reload }) => {
+const RenderAllApplications = ({ reload, userProfile }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
@@ -19,7 +20,16 @@ const RenderAllApplications = ({ reload }) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
-
+  useEffect(() => {
+    if (userProfile && userProfile.role === 2) {
+      if (userProfile && userProfile.role === 2) {
+        setFilterData(prevFilterData => ({
+          ...prevFilterData,
+          report_to: userProfile.id
+        }));
+      }
+    }
+  }, [userProfile]);
   useEffect(() => {
     const getApplications = async () => {
       setLoading(true);
@@ -52,7 +62,7 @@ const RenderAllApplications = ({ reload }) => {
               <div>
                 <Table
                   data={applications?.results || []}
-                  columns={AllLeavesApplicationColumns(reload)}
+                  columns={AllLeavesApplicationColumns(reload, userProfile)}
                   pagination={true}
                   dataTotalSize={applications?.count || 0}
                   tableOptions={tableOptions}
@@ -65,5 +75,9 @@ const RenderAllApplications = ({ reload }) => {
     </>
   );
 };
-
-export default RenderAllApplications;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+export default connect(mapStateToProps)(RenderAllApplications);

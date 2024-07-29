@@ -44,18 +44,20 @@ const SelectComponent = ({
           menu: (base) => ({ ...base, zIndex: 9999 }),
           menuList: (base) => ({ ...base, zIndex: 9999 }),
         }}
-        menuPortalTarget={document.body}
+         menuPortalTarget={document.body}
       />
-      {value && (
+      {value ? (
         <Label
           className={`text-baseGray ${value ? "date-floating-label" : ""}`}
           for={name}
         >
           {required && <span className="text-danger">* </span>} {label}
         </Label>
+      ) : (
+        ""
       )}
-
-      {error && touch && <div className="invalid-feedback">{error}</div>}
+      {console.log(error, touch)}
+      {error && touch && <div className="invalid-feedback">{error || ""}</div>}
     </FormGroup>
   );
 };
@@ -672,7 +674,9 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                   }`}
                   styles={dropdownStyles}
                   name={filter.name}
-                  defaultValue={filter.option.find(obj=>obj.value === filter.defaultValue)}
+                  defaultValue={filter.option.find(
+                    (obj) => obj.value === filter.defaultValue
+                  )}
                   id={filter.name}
                   onChange={(option) => {
                     onChange(filter.name, option?.value);
