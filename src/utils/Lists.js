@@ -1,15 +1,27 @@
 import moment from "moment";
 
 export function getEmployeeLeavesTypesList(LeaveTypes, employeeLeaveType) {
-  const employeeLeaveTypeList = employeeLeaveType.map((item) => {
-    const leaveType = LeaveTypes.find((type) => type.value === item.leave_type);
-    return {
-      value: item.id,
-      label: leaveType ? leaveType.label : "Unknown",
-      leave_type_id: item.leave_type,
-    };
-  });
-  return employeeLeaveTypeList;
+  if (
+    employeeLeaveType &&
+    employeeLeaveType.length > 0 &&
+    LeaveTypes &&
+    LeaveTypes.length > 0
+  ) {
+    debugger
+    const employeeLeaveTypeList = employeeLeaveType.map((item) => {
+      const leaveType = LeaveTypes.find(
+        (type) => type.value === item.leave_type
+      );
+      return {
+        value: item.id,
+        label: leaveType ? leaveType.label : "Unknown",
+        leave_type_id: item.leave_type,
+      };
+    });
+    return employeeLeaveTypeList;
+  } else {
+    return [];
+  }
 }
 export function getLeavesTypeNameList(LeaveTypes) {
   const LeaveTypeNameList = LeaveTypes.map((leaveType) => {
