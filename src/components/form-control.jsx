@@ -117,6 +117,7 @@ const DateInput = ({
         <DatePicker
           name={name}
           id={name}
+          autoComplete="off"
           minDate={minDate}
           disabled={disabled}
           className={`form-control ${error && touch ? "is-invalid" : ""} ${
@@ -671,7 +672,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                   }`}
                   styles={dropdownStyles}
                   name={filter.name}
-                  defaultValue={filter.defaultValue}
+                  defaultValue={filter.option.find(obj=>obj.value === filter.defaultValue)}
                   id={filter.name}
                   onChange={(option) => {
                     onChange(filter.name, option?.value);
@@ -693,6 +694,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                     placeholderText={filter.placeholder}
                     value={date}
                     selected={date}
+                    autoComplete="off"
                     onChange={(value) => {
                       if (value) {
                         value = moment(value).format("YYYY-MM-DD");
