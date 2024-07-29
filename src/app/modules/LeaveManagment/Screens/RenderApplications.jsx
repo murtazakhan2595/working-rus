@@ -20,7 +20,7 @@ const RenderApplications = ({
   reload,
   leaveTypes,
 }) => {
-  console.log(applicationsList);
+  console.log("this needs to check ",applicationsList);
   console.log(EmployeeLeaveTypesList);
 
   const [selectedLeaveIndex, setSelectedLeaveIndex] = useState(null);

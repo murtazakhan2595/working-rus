@@ -61,7 +61,6 @@ const getLeaveApplications = async (payload) => {
 
 
 const getEmployeeLeaveTypes = async (filterData = {}) => {
-  console.log(filterData);
   try {
     const response = await axios.get(
       `${baseUrl}/employeeleavetypes?search=${encodeURIComponent(
@@ -106,7 +105,6 @@ const getEmployeeLeaveTypes = async (filterData = {}) => {
 
 const addLeaveRequest = async (payload) => {
   try {
-    console.log(`${baseUrl}/leave/${payload.id}`);
     if (payload?.id) {
       const response = await axios.patch(
         `${baseUrl}/leave/${payload.id}`,
@@ -258,7 +256,6 @@ const filterByYearAndLeaveType = (data, year, leaveComponentName) => {
 
 const getLeaveTrackerStats = async (filterStats, leaveTypeList) => {
   const { year, employee_id, leave_type } = filterStats;
-  console.log(leave_type)
   const LeaveTypeLabel = leaveTypeList[leave_type-1];
 
   try {
@@ -288,6 +285,66 @@ const getLeaveTrackerStats = async (filterStats, leaveTypeList) => {
 };
 
 
+const getFilteredLeaveApplication = async (payload) => {
+  try {
+    const data = await getLeaveApplications({payload});
+    if (data) {
+          const filterLeaveData = (leaveData) => {
+            // Get today's date and next week's date range
+            const today = new Date();
+            const nextWeekStart = new Date();
+            nextWeekStart.setDate(today.getDate() + 7);
+            const nextWeekEnd = new Date();
+            nextWeekEnd.setDate(today.getDate() + 14);
+
+            // Function to get only the date part (year, month, day)
+            const getDateOnly = (date) =>
+              new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            // Format dates to compare with the 'start_date' field
+            const formatDate = (date) =>
+              getDateOnly(new Date(date.toISOString().split("T")[0]));
+
+            // Get date only versions for comparison
+            const todayDateOnly = getDateOnly(today);
+            const nextWeekStartDateOnly = getDateOnly(nextWeekStart);
+            const nextWeekEndDateOnly = getDateOnly(nextWeekEnd);
+
+            // Filter records for leave today
+            const filteredOnLeaveToday = leaveData.filter((item) => {
+              const startDate = formatDate(new Date(item.start_date));
+              const isOnLeaveToday =
+                startDate.getTime() === todayDateOnly.getTime();
+              return isOnLeaveToday;
+            });
+
+            // Filter records for leave next week
+            const filteredOnLeaveNextWeek = leaveData.filter((item) => {
+              const startDate = formatDate(new Date(item.start_date));
+              const isOnLeaveNextWeek =
+                startDate >= nextWeekStartDateOnly &&
+                startDate <= nextWeekEndDateOnly;
+              return isOnLeaveNextWeek;
+            });
+            return {
+              onLeaveToday: filteredOnLeaveToday,
+              onLeaveNextWeek: filteredOnLeaveNextWeek,
+            }
+          };
+          const result = filterLeaveData(data.results);
+          return { ...result, data: data.results, pending_leaves:data.pending_leaves};
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
 export {
   getLeaveApplications,
   addLeaveRequest,
@@ -297,4 +354,5 @@ export {
   deleteLeaveRequest,
   updateLeaveStatus,
   getLeaveTrackerStats,
+  getFilteredLeaveApplication,
 };

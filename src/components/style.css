@@ -132,6 +132,13 @@
    width: 25%;
    background-color: #ebeced;
  }
-.limit .table-container{
+
+
+.m-bottom-zero .table-container{
   margin-bottom: 0px !important;
+}
+
+.flex-nowrap > * {
+  flex-wrap: nowrap !important;
+  /* max-width: 3rem; */
 }

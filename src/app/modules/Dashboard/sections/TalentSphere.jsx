@@ -76,7 +76,7 @@ const TalentSphere = () => {
             <TitleCard label={"Interview"} value={5} />
           </div>
 
-          <div className="flex flex-col justify-center mt-4 text-sm bg-gray-50 rounded-xl text-zinc-800 max-md:max-w-full limit">
+          <div className="flex flex-col justify-center mt-4 text-sm bg-gray-50 rounded-xl text-zinc-800 max-md:max-w-full limit m-bottom-zero">
             {isLoading ? (
               <PageLoader />
             ) : (
@@ -94,9 +94,11 @@ const TalentSphere = () => {
           <div className="text-sm font-bold leading-5 text-zinc-800">
             Ongoing process
           </div>
-          {
-            isApplicantsLoading ? <PageLoader /> : <RenderApplicants applicantsData={applicantsData} />
-          }
+          {isApplicantsLoading ? (
+            <PageLoader />
+          ) : (
+            <RenderApplicants applicantsData={applicantsData} />
+          )}
         </div>
       </div>
     </div>

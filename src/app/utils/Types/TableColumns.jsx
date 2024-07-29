@@ -18,6 +18,7 @@ import {
 import RenderJobTitle from "app/modules/Dashboard/sections/RenderJobTitle"
 import moment from "moment";
 import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
+import FormateLeaveTrackerName from "app/modules/Dashboard/sections/FormateLeaveTrackerName";
 import { IoIosArrowDown } from "react-icons/io";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
@@ -280,6 +281,28 @@ export const DashbaordJobApplicationColumns = (navigate) => [
     onClick: (index, list) => {
       navigate(`/job-description/${list[index].id}`);
     },
+  },
+];
+export const DashboardLeaveTrackerColumns = [
+  {
+    dataField: "id",
+    text: "",
+    formatter: (cell, row) => <FormateLeaveTrackerName row={row} />,
+    width: "45%",
+  },
+  {
+    dataField: "date",
+    text: "",
+    formatter: (cell) => (
+      <div className="text-[#5c5e64] text-sm font-normal  leading-[18px]">
+        {moment(cell).format("DD MMM YYYY")}
+      </div>
+    ),
+  },
+  {
+    dataField: "status_hr",
+    text: "Status",
+    formatter: (cell) => <StatusLabel status={Status(cell)} />,
   },
 ];
 

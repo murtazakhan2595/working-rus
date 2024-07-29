@@ -39,7 +39,7 @@ const Table = ({
     }
   };
 
-  console.log("data", data);
+  console.log("data", data, columns);
   return (
     <div className={`table-container ${className}`}>
       <table className="table custom-table">

@@ -14,6 +14,7 @@ import ProfileManagement from "./sections/ProfileManagement";
 import LeaveBalance from "./sections/LeaveBalance";
 import EmployeeOverview from "./sections/EmployeeOverview";
 import TalentSphere from "./sections/TalentSphere";
+import LeaveTrackerOverview from "./sections/LeaveTrackerOverview";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
   // const [isBarOpen, seIsBarOpen] = useState(false);
@@ -124,9 +125,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
                 </div>
                 <div className="mt-5 ">
                   <div className="flex gap-5 ">
-                    {/* <MyProgress />
-                    <MyProjects /> */}
-                    {/* <MyProgress /> */}
+                  {(userProfile.role === 1 || userProfile.role === 3) && ( <LeaveTrackerOverview/>)}
                   </div>
                 </div>
                 <div className="mt-5 ">
