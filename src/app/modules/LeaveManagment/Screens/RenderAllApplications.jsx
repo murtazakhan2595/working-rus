@@ -3,6 +3,7 @@ import { Row, Col } from "reactstrap";
 import { AllLeavesApplicationColumns } from "app/utils/Types/TableColumns";
 import { Table, PageLoader } from "components";
 import { getLeaveApplications } from "app/hooks/leaveManagment";
+import { useSelector } from "react-redux";
 
 const RenderAllApplications = ({reload}) => {
   const [applications, setApplications] = useState([]);
@@ -12,6 +13,7 @@ const RenderAllApplications = ({reload}) => {
     page: 1,
     sizePerPage: 10,
   });
+  const loggedInUser = useSelector((state) => state.user.userProfile);
   const onPageChange = (name, value) => {
     const pageOptions = options;
     if (pageOptions[name] !== value) {
@@ -64,7 +66,7 @@ const RenderAllApplications = ({reload}) => {
               <div>
                 <Table
                   data={applications?.results || []}
-                  columns={AllLeavesApplicationColumns(reload)}
+                  columns={AllLeavesApplicationColumns(reload,loggedInUser.role)}
                   pagination={true}
                   dataTotalSize={applications?.count || 0}
                   tableOptions={tableOptions}

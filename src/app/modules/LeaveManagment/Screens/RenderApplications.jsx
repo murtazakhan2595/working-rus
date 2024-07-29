@@ -115,7 +115,7 @@ const RenderApplication = ({
       } else if (loggedInUser.role === 2) {
         payload["status_manager"] = `${status} by Manager`;
       }
-
+console.log("render applicaiton", payload)
       const response = await updateLeaveStatus(payload, loggedInUser);
       if (response) {
         if (status === "Declined" && payload.status_hr === "Approved by HR") {
