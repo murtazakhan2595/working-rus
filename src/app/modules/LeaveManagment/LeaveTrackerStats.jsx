@@ -47,7 +47,6 @@ export default function LeaveTrackerStats({ leaveTypes, userProfile }) {
       setDefaultLeaveType(leave_type?.value || "");
     }
   }, [leaveTypes]);
-  console.log(defaultLeaveType);
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -80,7 +79,7 @@ export default function LeaveTrackerStats({ leaveTypes, userProfile }) {
               <LeaveType value={filterStats.leave_type_id} />
             ) : (
               ""
-            )}
+            )}{" "}
             Leave Allowance
           </h2>
           <div className="text-3xl font-bold text-[#00A8F0] mb-6">
@@ -96,7 +95,6 @@ export default function LeaveTrackerStats({ leaveTypes, userProfile }) {
                   placeholder: "Leave Year",
                   name: "year",
                   defaultValue: { label: defaultYear, value: defaultYear },
-                  isClearable: true,
                 },
               ]}
               onChange={handlestatsChange}
@@ -113,10 +111,10 @@ export default function LeaveTrackerStats({ leaveTypes, userProfile }) {
                     name: "leave_type",
                     placeholder: "Leave Type",
                     defaultValue: defaultLeaveType,
-                    isClearable: false,
                   },
                 ]}
                 onChange={handlestatsChange}
+                isClearable={false}
               />
             </div>
           )}

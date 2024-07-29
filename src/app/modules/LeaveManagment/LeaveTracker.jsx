@@ -142,14 +142,12 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
                           option: leaveTypesOfEmployee,
                           name: "leave_type",
                           placeholder: "Leave Type",
-                          isClearable: true,
                         },
                         {
                           type: "select",
                           option: LeaveStatus,
                           name: "status_hr",
                           placeholder: "Status",
-                          isClearable: true,
                         },
                       ]}
                       onChange={handleFilterChange}
