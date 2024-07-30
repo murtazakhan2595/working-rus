@@ -272,7 +272,7 @@ function getNavigation(userRole) {
             },
           ]
         : []),
-      ...(userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4
+      ...(userRole === 1 || userRole === 2 || userRole === 3
         ? [
             {
               name: "Leave Management",
@@ -284,15 +284,6 @@ function getNavigation(userRole) {
                       {
                         name: "Leave Tracker",
                         url: "/leave-tracker",
-                      },
-                    ]
-                  : []),
-                
-                ...(userRole === 4
-                  ? [
-                      {
-                        name: "Leave Request",
-                        url: "/request-leave",
                       },
                     ]
                   : []),

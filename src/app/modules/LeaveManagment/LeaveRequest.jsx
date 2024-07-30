@@ -29,12 +29,10 @@ const LeaveRequest = ({ userProfile }) => {
 
   useEffect(() => {
     if (userProfile && userProfile.role === 2) {
-      if (userProfile && userProfile.role === 2) {
-        setFilterData(prevFilterData => ({
-          ...prevFilterData,
-          report_to: userProfile.id
-        }));
-      }
+      setFilterData((prevFilterData) => ({
+        ...prevFilterData,
+        report_to: userProfile.id,
+      }));
     }
   }, [userProfile]);
 
@@ -48,7 +46,7 @@ const LeaveRequest = ({ userProfile }) => {
               tabs={["Pending", "Approved", "Rejected", "All Applications"]}
               onTabChange={(value) => {
                 setActiveTab(value);
-                getApplications()
+                getApplications();
               }}
             />
           </div>

@@ -22,12 +22,10 @@ const RenderAllApplications = ({ reload, userProfile }) => {
   };
   useEffect(() => {
     if (userProfile && userProfile.role === 2) {
-      if (userProfile && userProfile.role === 2) {
-        setFilterData(prevFilterData => ({
-          ...prevFilterData,
-          report_to: userProfile.id
-        }));
-      }
+      setFilterData((prevFilterData) => ({
+        ...prevFilterData,
+        report_to: userProfile.id,
+      }));
     }
   }, [userProfile]);
   useEffect(() => {
@@ -43,7 +41,7 @@ const RenderAllApplications = ({ reload, userProfile }) => {
       }
     };
     getApplications();
-  }, [filterData,options]);
+  }, [filterData, options]);
 
   const tableOptions = {
     page: options.page,
