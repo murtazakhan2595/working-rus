@@ -357,7 +357,7 @@ function getNavigation(userRole) {
             },
           ]
         : []),
-      ...(userRole === 1 || userRole === 2 || userRole === 3
+      ...(userRole === 1 || userRole === 3
         ? [
             {
               name: "Talent Sphere",
