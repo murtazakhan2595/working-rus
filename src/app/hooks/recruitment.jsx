@@ -41,20 +41,14 @@ export const fetchJobById = async (id) => {
   }
 };
 
-const getJobApplications = async (payload={}) => {
+const getJobApplications = async (payload) => {
   const { options, filterData } = payload;
-  console.log("calling getJobApplications", payload);
   try {
-    let URL = `/candidateall/?ordering=-updated_at`;
-
-    if (options) {
-      URL += `&page=${options.page}&page_size=${options.sizePerPage}`;
-    }
-
-    if (filterData) {
-      URL += `&search=${encodeURIComponent(JSON.stringify(filterData))}`;
-    }
-
+    const URL = `/candidateall/?ordering=-updated_at&page=${
+      options.page
+    }&page_size=${options.sizePerPage}&search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
@@ -69,7 +63,7 @@ const getJobApplications = async (payload={}) => {
         rejected_application: applicationsResponse.results.rejected_application,
         selected_application: applicationsResponse.results.selected_application,
       };
-      if (filterData?.job_id) {
+      if (filterData.job_id) {
         const jobPosts = await fetchJobPosts({ id: filterData.job_id });
         applicationsData.total_count = jobPosts.results[0]?.total_applications;
         applicationsData.shortlisted_application =
@@ -215,19 +209,23 @@ export const updateJob = async (baseUrl, values, id) => {
   }
 };
 
+
 const getJobApplicants = async () => {
   try {
-    const response = await getJobApplications();
+    console.log("calling")
+    const URL = `/candidateall/?ordering=updated_at`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
     const jobPosts = await fetchJobPosts();
-    console.log("INGO",response, jobPosts)
-    if (response && jobPosts) {
+    if (response.data && jobPosts) {
       const jobMap = jobPosts.results.reduce((map, job) => {
         map[job.id] = job.Job_Title;
         return map;
       }, {});
 
       // Map candidates to jobs
-      const mappedResults = response.results.candidate
+      const mappedResults = response.data.results.candidate
         .filter((candidate) =>
           ["contacted", "shortlisted", "offer_made"].includes(
             candidate.application_status
