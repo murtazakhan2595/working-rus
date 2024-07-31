@@ -270,6 +270,32 @@ export const PriorityList = [
     ),
   },
 ];
+export const PriorityListIcons = [
+  {
+    value: 3,
+    label: (
+      <div className="flex items-center gap-x-2 text-baseGray ">
+        <IoMdArrowDropdownCircle className="text-2xl" />
+      </div>
+    ),
+  },
+  {
+    value: 2,
+    label: (
+      <div className="flex items-center gap-x-2 text-yellow-500">
+        <FiMinusCircle className="text-xl" /> 
+      </div>
+    ),
+  },
+  {
+    value: 1,
+    label: (
+      <div className="flex items-center gap-x-2 text-red-500">
+        <IoMdArrowDropupCircle className="text-2xl" />
+      </div>
+    ),
+  },
+];
 
 export const status2Options = [
   {

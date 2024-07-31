@@ -2,12 +2,18 @@ import React from "react";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import { FaChevronDown } from "react-icons/fa";
 
-const CustomDropdown = ({ isOpen, toggleDropdown, options }) => {
+const CustomDropdown = ({ isOpen, toggleDropdown, options, iconVisible=true, right }) => {
   return (
     <div className="relative">
-      <FaChevronDown className=" cursor-pointer" onClick={toggleDropdown} />
+      {iconVisible && (
+        <FaChevronDown className=" cursor-pointer" onClick={toggleDropdown} />
+      )}
       {isOpen && (
-        <div className="absolute right-3 top-3 w-28 bg-[#FAFBFC] rounded-xl projectDetails-shadow z-10">
+        <div
+          className={`absolute ${
+            right ? "right-0 left-0" : "right-3"
+          }  top-3 w-28 bg-[#FAFBFC] rounded-xl projectDetails-shadow z-10 `}
+        >
           <ul className="py-1">
             {options.map((option, index) => (
               <li

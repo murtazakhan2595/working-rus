@@ -659,7 +659,6 @@ const FilterInput = ({ filters, onChange, isClearable=true }) => {
                 />
               );
             } else if (filter.type === "select") {
-              console.log(filter.defaultValue);
               return (
                 <Select
                   key={index}

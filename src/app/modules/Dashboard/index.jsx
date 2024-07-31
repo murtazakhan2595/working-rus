@@ -15,6 +15,7 @@ import LeaveBalance from "./sections/LeaveBalance";
 import EmployeeOverview from "./sections/EmployeeOverview";
 import TalentSphere from "./sections/TalentSphere";
 import LeaveTrackerOverview from "./sections/LeaveTrackerOverview";
+import MyTasks from "./MyTasks";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
   // const [isBarOpen, seIsBarOpen] = useState(false);
@@ -114,7 +115,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
         </div>
         <main className="flex-wrap content-start self-stretch px-8 pt-8 rounded-xl max-md:px-5">
           <div className="flex gap-5 ">
-            <div className="flex flex-col min-w-[895px]">
+            <div className="flex flex-col min-w-[895px] ">
               <div className="flex flex-col py-px">
                 <div className="">
                   <div className="flex gap-5 ">
@@ -140,8 +141,9 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col w-full">
-              <div className="flex flex-col max-md:mt-10"></div>
+            <div className="flex flex-col w-full gap-5 ">
+              <div>Recent activity</div>
+              <MyTasks />
             </div>
           </div>
         </main>

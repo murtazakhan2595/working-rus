@@ -99,8 +99,7 @@ const getAllBoards = async (payload) => {
 };
 const getAllTasks = async (payload) => {
   const filterData = payload?.filterData ?? {};
-  console.log("filterData", filterData);
-  const URL = `/task/?order=-date${encodeURIComponent(
+  const URL = `/task/?order=-date&search=${encodeURIComponent(
     JSON.stringify(filterData)
   )}`;
   try {
@@ -477,9 +476,9 @@ const postComment = async (taskId, userId, comment) => {
     throw error; // Re-throw the error to handle it in the component
   }
 };
-
 export {
   getAllProjects,
+  getAllTasks,
   addProject,
   getAllBoards,
   getProjectById,

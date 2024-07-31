@@ -46,7 +46,7 @@ const TalentSphere = () => {
   }, []);
 
   return (
-    <div className="flex flex-col pt-6 pb-3 pl-3.5 bg-white rounded-md shadow-sm w-full ">
+    <div className="flex flex-col pt-6 pb-3 pl-3.5 bg-white rounded-md shadow w-[860px] ">
       <div className="flex gap-4 justify-between w-full max-md:flex-wrap">
         <div className="flex gap-3 p-3 text-lg tracking-tight leading-5 rounded-lg text-zinc-800">
           <FaRegStar />
@@ -60,7 +60,7 @@ const TalentSphere = () => {
             </div>
           </Link>
           <Link to="/job-post">
-            <div className="flex gap-1 justify-center items-center px-4 py-2 text-sm text-white bg-black rounded-xl">
+            <div className="flex gap-1 justify-center items-center px-4 py-2 text-sm text-white bg-black rounded-xl mr-2">
               <div>Add Job</div>
               <FaPlus className="text-white" />
             </div>
