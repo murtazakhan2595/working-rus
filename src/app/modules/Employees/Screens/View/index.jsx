@@ -32,7 +32,6 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [certifications, setCertifications] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);
   const [cv, setCV] = useState({});
-  const [visa, setVisa] = useState({});
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const userId = profileView ? userProfile?.id : id;
@@ -44,14 +43,12 @@ console.log(educations);
       let empData = await getEmployeeData(userId);
       let expData = await getEmployeeProfessionalExperianceData(userId);
       let cvData = await getEmployeeCVDetailData(userId);
-      let visaData = await getEmployeeVisaDetailData(userId);
       let educationData = await getEmployeeAcademicRecordData(userId);
       let certificationData = await getEmployeeCerficationData(userId);
 
       setUserData(empData);
       setExperiences(expData);
       setCV(cvData);
-      setVisa(visaData);
       setEducations(educationData);
       setCertifications(certificationData);
     } catch (error) {
@@ -109,206 +106,6 @@ console.log(educations);
     { title: "Swift Code", data: userData?.swift_code },
   ];
 
-  const identificationDetails = [
-    ...[
-      {
-        title: "ID Details",
-        fields: [
-          { title: "Current Country ID", data: visa.living_country_id_no },
-          { title: "Issuance Country", data: visa.place_of_issuance },
-          {
-            title: "ID Issuance Date",
-            data: moment(visa.id_issuance_date, "YYYY-MM-DD").format(
-              "DD-MM-YYYY"
-            ),
-          },
-          {
-            title: "ID Expiry Date",
-            data: moment(visa?.id_expiry_date, "YYYY-MM-DD").format(
-              "DD-MM-YYYY"
-            ),
-          },
-          {
-            title: "ID Front Image",
-            data: visa?.id_front?.document?.file && (
-              <a
-                href={visa.id_front.document.file}
-                download={visa.id_front.document.name}
-                className="flex items-center no-underline text-black"
-              >
-                <FiDownload />
-              </a>
-            ),
-          },
-          {
-            title: "ID Back Image",
-            data: visa?.id_back?.document?.file && (
-              <a
-                href={visa.id_back.document.file}
-                download={visa.id_back.document.name}
-                className="flex items-center no-underline text-black"
-              >
-                <FiDownload />
-              </a>
-            ),
-          },
-        ],
-      },
-    ],
-    ...(visa.is_passport_applicable
-      ? [
-          {
-            title: "Passport Details",
-            fields: [
-              { title: "Passport Number", data: visa.passport_number },
-              {
-                title: "Issuance Country",
-                data: getCountryFullName(visa.Passport_Issuance_Country),
-              },
-              {
-                title: "Issuance Date",
-                data: moment(visa?.Passport_Issuance_Date, "YYYY-MM-DD").format(
-                  "DD-MM-YYYY"
-                ),
-              },
-              {
-                title: "Expiry Date",
-                data: moment(visa?.Passport_Expiry_Date, "YYYY-MM-DD").format(
-                  "DD-MM-YYYY"
-                ),
-              },
-              {
-                title: "Passport Copy",
-                data: visa?.passport_copy?.document?.file && (
-                  <a
-                    href={visa.passport_copy.document.file}
-                    download={visa.passport_copy.document.name}
-                    className="flex items-center no-underline text-black"
-                  >
-                    <FiDownload />
-                  </a>
-                ),
-              },
-            ],
-          },
-        ]
-      : []),
-    ...(visa.is_insurance_applicable
-      ? [
-          {
-            title: "Insurance Details",
-            fields: [
-              { title: "DHA ID", data: visa.dha_id },
-              { title: "Card Number", data: visa.card_number },
-              { title: "Insurance Policy", data: visa.insurance_policy },
-              { title: "Insurance Company", data: visa.insurance_company },
-              {
-                title: "Active Date",
-                data: moment(visa?.insurance_active_date, "YYYY-MM-DD").format(
-                  "DD-MM-YYYY"
-                ),
-              },
-              {
-                title: "Expiry Date",
-
-                data: moment(visa?.insurance_expiry_date, "YYYY-MM-DD").format(
-                  "DD-MM-YYYY"
-                ),
-              },
-              {
-                title: "Insurance Card",
-                data: visa?.insurance_card?.document?.file && (
-                  <a
-                    href={visa.insurance_card.document.file}
-                    download={visa.insurance_card.document.name}
-                    className="flex items-center no-underline text-black"
-                  >
-                    <FiDownload />
-                  </a>
-                ),
-              },
-            ],
-          },
-        ]
-      : []),
-    ...(visa.is_visa_applicable
-      ? [
-          {
-            title: "Visa Details",
-            fields: [
-              { title: "Entry Permit Number", data: visa.entry_permit_number },
-              { title: "Visa Type", data: getVisaLabel(visa.visa_type) },
-              {
-                title: "Issuance Country",
-                data: getCountryFullName(visa.country_of_visa_issuance),
-              },
-              {
-                title: "Issuance Date",
-                data: moment(visa.visa_issuance_date, "YYYY-MM-DD").format(
-                  "DD-MM-YYYY"
-                ),
-              },
-              {
-                title: "Expiry Date",
-                data: moment(visa.visa_expiry_date, "YYYY-MM-DD").format(
-                  "DD-MM-YYYY"
-                ),
-              },
-              { title: "UID Number", data: visa.uid_number },
-              {
-                title: "Entry Permit",
-                data: visa?.enter_permit?.document?.file && (
-                  <a
-                    href={visa.enter_permit.document.file}
-                    download={visa.enter_permit.document.name}
-                    className="flex items-center no-underline text-black"
-                  >
-                    <FiDownload />
-                  </a>
-                ),
-              },
-              {
-                title: "Visa Page",
-                data: visa?.visa_page?.document?.file && (
-                  <a
-                    href={visa.visa_page.document.file}
-                    download={visa.visa_page.document.name}
-                    className="flex items-center no-underline text-black"
-                  >
-                    <FiDownload />
-                  </a>
-                ),
-              },
-              {
-                title: "Medical Result",
-                data: visa?.medical?.document?.file && (
-                  <a
-                    href={visa.medical.document.file}
-                    download={visa.medical.document.name}
-                    className="flex items-center no-underline text-black"
-                  >
-                    <FiDownload />
-                  </a>
-                ),
-              },
-              {
-                title: "ID Application",
-                data: visa?.id_application?.document?.file && (
-                  <a
-                    href={visa.id_application.document.file}
-                    download={visa.id_application.document.name}
-                    className="flex items-center no-underline text-black"
-                  >
-                    <FiDownload />
-                  </a>
-                ),
-              },
-            ],
-          },
-        ]
-      : []),
-  ];
-console.log(userData)
   return (
     <div className="w-full bg-[#f0f1f2] scroll-auto overflow-auto max-h-[100vh] md:px-4 xl:px-8">
       {/******************** HEADER **************************/}
@@ -348,7 +145,7 @@ console.log(userData)
                   <DownloadData
                     userData={userData}
                     experiences={experiences}
-                    visa={visa}
+                    visa={[]}
                     certifications={certifications}
                   />
                 </div>
@@ -412,9 +209,7 @@ console.log(userData)
               )}
               <IdentificationDetails
                 isEditable={profileView}
-                identificationDetails={identificationDetails}
                 employeeId={userData.id}
-                getDataByHooks={getDataByHooks}
               />
             </div>
           </>

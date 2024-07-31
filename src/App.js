@@ -31,7 +31,6 @@ import "./assets/css/globle.css";
 import axios from "axios";
 import {
   setUserLogout,
-  setUserProfile,
   setToken,
 } from "./state/slices/UserSlice.js";
 import { handleUpdateProfile } from "data/Data";
@@ -39,7 +38,6 @@ import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import Employee from "./app/modules/Employees/Employee.jsx";
 import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
-import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
 import { EditEmployeeProfile } from "./app/modules/Employees/Screens/Profile";
 import Test from "./app/modules/Profile/Test.jsx";
 import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
@@ -62,7 +60,6 @@ function App() {
   const token = window.localStorage.getItem("token");
   const baseUrl = useSelector((state) => state.user.baseUrl);
   let dispatch = useDispatch();
-
   let width = window.screen.width;
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);

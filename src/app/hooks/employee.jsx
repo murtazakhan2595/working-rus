@@ -236,7 +236,7 @@ const getEmployeeVisaDetailData = async (employeeid) => {
       console.error("Error fetching Personal Info data :", error);
     }
   }
-  return EmployeeVisaDetails;
+  return {};
 };
 
 const saveEmployeeVisaDetailData = async (
