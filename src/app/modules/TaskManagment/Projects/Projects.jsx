@@ -2,31 +2,30 @@ import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
-import { LeaveAllotmentColumns } from "app/utils/Types/TableColumns";
-import { Header, PageLoader,ConfirmationModal } from "components";
-import { FilterInput } from "components/form-control";
-import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
+import { Header, PageLoader, ConfirmationModal } from "components";
+import { Card, CardBody, Row, Col } from "reactstrap";
 import { CiCirclePlus } from "react-icons/ci";
 import ProjectModel from "./CreateProjectModel";
 import { useNavigate } from "react-router-dom";
-import { BiDotsVerticalRounded } from "react-icons/bi";
 import moment from "moment";
-import {
-  MembersList,
-  CustomDropdown,
-  ViewBoardDetails,
-} from "../Sections";
+import ViewBoardDetails from "./ViewBoardDetails";
+import { MembersList, CustomDropdown } from "../Sections";
+import { LuFolderX } from "react-icons/lu";
+import { EmployeeName } from "utils/getValuesFromTables";
+import { fetchProjects } from "state/slices/CommonSlice";
+import { useDispatch } from "react-redux";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [AllProjects, setAllProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const dispatch = useDispatch();
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
-      const projectsData = await getAllProjects({ filterData });
+      const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted) {
         setAllProjects(projectsData);
       }
@@ -62,6 +61,7 @@ const Projects = ({ userProfile }) => {
   const toggleAddProject = (projectId) => {
     if (showProjectModal) {
       fetchData(true);
+      dispatch(fetchProjects());
     }
     setShowProjectModal(projectId ?? !showProjectModal);
   };
@@ -72,7 +72,9 @@ const Projects = ({ userProfile }) => {
 
   return (
     <div className="screen bg-[#F0F1F2] ">
-      <Header title="All Projects" />
+      <Header
+        title={`${userProfile.role === 4 ? "My Projects" : "All Projects"}`}
+      />
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
@@ -86,7 +88,6 @@ const Projects = ({ userProfile }) => {
               ) : (
                 <Row className="m-0">
                   {showProjectModal && (
-                    // <ProjectModel onClose={toggleAddProject} />
                     <ProjectModel
                       projectId={showProjectModal || null}
                       isEditMode={typeof showProjectModal === "number"}
@@ -113,6 +114,14 @@ const Projects = ({ userProfile }) => {
                         />
                       </Col>
                     ))}
+                  {AllProjects.count === 0 && (
+                    <main className="flex flex-col flex-wrap justify-center content-center items-center self-stretch p-8 text-2xl tracking-tight leading-4 bg-white rounded-xl text-zinc-600 max-md:px-5 h-[75dvh]">
+                      <LuFolderX className="w-20 h-20 text-zinc-600" />
+                      <p className="mt-6">
+                        Looks like you don't have any projects
+                      </p>
+                    </main>
+                  )}
                 </Row>
               )}
             </CardBody>
@@ -126,8 +135,6 @@ const Projects = ({ userProfile }) => {
 const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
   const navigate = useNavigate();
   const projectMembers = project?.project_members || [];
-  const displayedMembers = projectMembers.slice(0, 3);
-  const remainingCount = projectMembers.length - displayedMembers.length;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -140,7 +147,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
     setIsViewBoardDetails(false);
     setIsEditMode(false);
   };
-  
+
   const viewDetails = () => {
     setIsDropdownOpen(false);
     setIsViewBoardDetails(true);
@@ -153,9 +160,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
 
   const confirmDelete = async () => {
     const response = await deleteProject(project.id);
-    if (response && response.status === 200) {
-      onDeleteSuccess();
-    }
+    onDeleteSuccess();
     setIsDeleteModalOpen(false);
   };
   const dropdownOptions = [
@@ -182,11 +187,11 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
       {project ? (
         <div className="bg-[#FAFBFC] rounded-[10px] p-4 flex flex-col space-y-4 w-full relative">
           <div className="flex justify-between">
-            <img
-              className="w-20 h-20 rounded-full object-cover"
-              src="https://via.placeholder.com/180"
-              alt="Profile"
-            />
+            <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-3xl font-bold text-white">
+              {`${project?.name.charAt(0).toUpperCase()}${project?.name
+                .charAt(1)
+                .toUpperCase()}`}
+            </div>
             <CustomDropdown
               isOpen={isDropdownOpen}
               toggleDropdown={toggleDropdown}
@@ -194,7 +199,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
             />
           </div>
           <div
-            className="flex justify-between"
+            className="flex justify-between cursor-pointer"
             onClick={() => {
               navigateToBoard();
             }}
@@ -204,7 +209,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
                 {project?.name}
               </h2>
               <p className="text-[11px] font-lato text-[#989CA6]">
-                Created by Hani Hassan |{" "}
+                Created By <EmployeeName value={project?.created_by} /> |{" "}
                 {moment(project?.start_date).format("DD-MM-YY")}
               </p>
             </div>

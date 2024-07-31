@@ -13,26 +13,17 @@ import {
 } from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import { Table } from "components";
-import checked from "../../../assets/images/checked.svg";
-import employee from "../../../assets/images/employee.svg";
-import time from "../../../assets/images/time.svg";
-import cross from "../../../assets/images/cross.svg";
-import Block from "./Sections/Blocks";
-import LeaveCount from "./Sections/LeaveCount";
-import { getEmployeeLeavesTypesList } from "utils/Lists";
 
-const MyLeaves = ({ userProfile, leaveTypes }) => {
+import { getEmployeeLeavesTypesList } from "utils/Lists";
+import LeaveTrackerStats from "./LeaveTrackerStats";
+
+const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [Leave, setLeave] = useState([]);
+  //
   const [isLoading, setIsLoading] = useState(true);
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
   const [filterData, setFilterData] = useState({});
-  const [totalApproved, setTotalApproved] = useState(0);
-  const [pendingRequests, setPendingRequests] = useState(0);
-  const [totalRequests, setTotalRequests] = useState(0);
-  const [deniedRequests, setDeniedRequests] = useState(0);
-  const [allotedLeaves, setAllotedLeaves] = useState(0);
-  const [remainingLeaves, setRemainingLeaves] = useState(0);
-  const [usedLeaves, setUsedLeaves] = useState(0);
+
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -68,25 +59,20 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
     };
     fetchdata();
   }, [options, filterData]);
-
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        setIsLoading(true);
         const leaveTypesResponse = await getEmployeeLeaveTypes({
           employee_id: userProfile.id,
         });
 
         if (leaveTypesResponse) {
-          setLeaveTypesOfEmployee(
-            getEmployeeLeavesTypesList(leaveTypes, leaveTypesResponse.results)
+          const leaveTypes_list = getEmployeeLeavesTypesList(
+            leaveTypes,
+            leaveTypesResponse.results
           );
-          setAllotedLeaves(leaveTypesResponse.allotedLeaves);
-          setRemainingLeaves(leaveTypesResponse.remainingLeaves);
-          setUsedLeaves(leaveTypesResponse.usedLeaves);
+          setLeaveTypesOfEmployee(leaveTypes_list);
         }
-
-        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching leave types:", error);
       }
@@ -95,10 +81,18 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
   }, [leaveTypes, userProfile]);
 
   const handleFilterChange = (filterName, filterValue) => {
+    if (filterName === "status_hr" && filterValue) {
+      filterValue =
+        filterValue === "Approved"
+          ? "Approved by HR"
+          : filterValue === "Denied"
+          ? "Declined by HR"
+          : "pending";
+    }
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
+      if (filterValue === "" || filterValue === undefined) {
         delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
@@ -130,67 +124,10 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
           />
         }
       />
-      <div className="w-full flex flex-col md:flex-row gap-4 mb-4">
-        <div className="bg-white md:w-[60%] flex items-center rounded-lg">
-          {/* Left section */}
-          <div className="md:w-[45%] px-4 py-2 rounded-lg">
-            <h2 className="text-base font-lato text-baseGray font-semibold mb-2">
-              My Leave Allowance
-            </h2>
-            <div className="text-3xl font-bold text-[#00A8F0] mb-6">
-              {allotedLeaves} days
-            </div>
-            <div className="mb-2">
-              <label className="block text-gray-700 mb-2">Leave Year</label>
-              <select className="w-full p-2 border border-gray-300 rounded">
-                <option>22-04-24 - 22-04-24</option>
-              </select>
-            </div>
-            <div className="mb-2">
-              <label className="block text-gray-700 mb-2">Leave Type</label>
-              <FilterInput
-                filters={[
-                  {
-                    type: "select",
-                    option: leaveTypes,
-                    name: "leave_type",
-                    placeholder: "Leave Type",
-                  },
-                ]}
-                onChange={handleFilterChange}
-              />
-            </div>
-          </div>
-
-          {/* Center section */}
-
-          <div className="md:w-[55%] flex flex-col md:flex-row items-center justify-around">
-            <LeaveCount
-              title="Leaves Remaining"
-              leaveCount={remainingLeaves}
-              borderColor="#00A8F0"
-              clipPath="inset(0 0 0 20%)"
-            />
-            <LeaveCount
-              title="Leaves Used"
-              leaveCount={usedLeaves}
-              borderColor="#556CBF"
-              clipPath="inset(0 70% 0 0)"
-            />
-          </div>
-        </div>
-
-        {/* right */}
-
-        <div className="md:w-[45%] flex justify-center items-center">
-          <div className="grid grid-cols-2 gap-2 h-full w-full max-w-5xl">
-            <Block icon={checked} count={totalApproved} label={"Approved"} />
-            <Block icon={time} count={pendingRequests} label={"Pending"} />
-            <Block icon={employee} count={totalRequests} label={"Request"} />
-            <Block icon={cross} count={deniedRequests} label={"Denied"} />
-          </div>
-        </div>
-      </div>
+      <LeaveTrackerStats
+        leaveTypes={leaveTypesOfEmployee}
+        userProfile={userProfile}
+      />
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
@@ -215,13 +152,12 @@ const MyLeaves = ({ userProfile, leaveTypes }) => {
                       ]}
                       onChange={handleFilterChange}
                     />
-
                     <div className="flex items-center gap-x-3">
                       <div className="font-lato text-[#47484C] text-[17px]">
                         New Leave Request
                       </div>
                       <Link
-                        to="/leave-request"
+                        to="/request-leave"
                         className="p-2 rounded-md bg-black"
                         style={{ fontSize: "12px" }}
                       >
@@ -269,4 +205,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(MyLeaves);
+export default connect(mapStateToProps)(LeaveTracker);

@@ -1,11 +1,17 @@
 import { FaCheck } from "react-icons/fa6";
 import { BsCircleFill } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
-
+import { useSelector } from "react-redux";
+import {
+  allotLeavesToEmployee,
+  getEmployeeLeaveTypesById,
+  updateLeaveStatus,
+} from "app/hooks/leaveManagment";
+import { toast } from "react-toastify";
 export const Status = (status) => {
   if (!status) return "";
   if (status.includes("Approved")) return "Approved";
-  else if (status.includes("Denied")) return "Denied";
+  else if (status.includes("Declined")) return "Rejected";
   else if (status.includes("Pending")) return "Pending";
   else return "Viewed";
 };
@@ -29,7 +35,7 @@ export const StatusIcon = ({ status }) => {
         style={style}
       />
     );
-  else if (status === "Denied")
+  else if (status === "Rejected")
     return (
       <RxCross2
         className={`${className} bg-[#EA4335] text-white`}
@@ -47,4 +53,53 @@ export const StatusIcon = ({ status }) => {
       />
     );
   else return <></>;
+};
+
+export const UpdateStatus = (status, application, loggedInUser) => {
+  const handleApprove = async (status) => {
+    try {
+      const payload = application;
+      const previousStatus = Status(application.status_hr);
+      if (loggedInUser.role === 1 || loggedInUser.role === 3) {
+        payload["status_hr"] = `${status} by HR`;
+      } else if (loggedInUser.role === 2) {
+        payload["status_manager"] = `${status} by Manager`;
+      }
+      const response = await updateLeaveStatus(payload, loggedInUser);
+      // If declined, update the employee leaves
+      if (response) {
+        if (
+          (loggedInUser.role === 1 || loggedInUser.role === 3)
+        ) {
+          const alloted_leaves_info = await getEmployeeLeaveTypesById(
+            payload.leave_type
+          );
+          const leavesInfo = alloted_leaves_info;
+          if(status === "Declined"){
+            leavesInfo.used_leave = alloted_leaves_info.used_leave - payload.total_leave;
+            leavesInfo.left_leave = alloted_leaves_info.left_leave + payload.total_leave;
+          }else if(status === "Approved" && previousStatus === "Rejected"){
+            leavesInfo.used_leave = alloted_leaves_info.used_leave + payload.total_leave;
+            leavesInfo.left_leave = alloted_leaves_info.left_leave - payload.total_leave;
+          }
+          const result = await allotLeavesToEmployee(payload.employee_id, [
+            leavesInfo,
+          ]);
+          if (!result) {
+            toast.error("Error updating employee leaves");
+          }
+        }
+        toast.success(`Application ${status} Successfully!`);
+        return true;
+      } else {
+        toast.error(`Application Could not be ${status}"`);
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(`Application Could not be ${status}"`);
+      return false;
+    }
+  };
+  return handleApprove(status);
 };

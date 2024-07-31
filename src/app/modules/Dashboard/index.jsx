@@ -6,13 +6,15 @@ import TaskPlanner from "./TaskPlanner";
 import DailyTaskRpt from "./DailyTaskRpt";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { setUserLogout } from "state/actions/UserAction";
 import { RiArrowDownSFill } from "react-icons/ri";
+import { getEmployeeData } from "app/hooks/employee";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
   // const [isBarOpen, seIsBarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [profileData, setProfileData] = useState({image:"",initials:""});
 
   const navigate = useNavigate();
   const cookies = new Cookies();
@@ -27,14 +29,35 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
     setUserLogout();
     navigate("/login");
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try{
+        const response =await getEmployeeData(userProfile.id);
+        setProfileData(
+         { image:response?.profile_picture?.file ||
+          response?.profile_picture,
+          initials: `${response?.first_name?.toUpperCase().slice(0, 1)}${response?.last_name?.toUpperCase().slice(0, 1)}`
+        }
+        );
+        
+      }catch(err){
+        console.error(err)
+      }
+    }
+    fetchData()
+  }, [userProfile]);
   return (
     <>
       {/* ##########################   First Column   ########################## */}
 
       <div
         className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll
-         ${isSidebarOpen ? "3xl:w-[92%] xl:w-[100%] w-[100%]" : "3xl:w-[100%] xl:w-[100%] w-[100%]"
-          }`}
+         ${
+           isSidebarOpen
+             ? "3xl:w-[92%] xl:w-[100%] w-[100%]"
+             : "3xl:w-[100%] xl:w-[100%] w-[100%]"
+         }`}
       >
         {/***********************   Dashboard Header   **********************************/}
         <div className="py-8 px-10 flex gap-3  items-center justify-between ">
@@ -46,7 +69,19 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
               className="flex py-2 justify-end px-[.5rem] items-center gap-3 rounded-lg rounded-tl-full rounded-bl-full md:rounded-tl-md md:rounded-bl-md bg-gray-200 cursor-pointer"
               onClick={handleDropdownClick}
             >
-              <div className="text-3xl w-8 h-8 rounded-full border bg-white"></div>
+              <div className="text-3xl w-8 h-8 rounded-full border bg-white">
+                {profileData.image ? (
+                  <img
+                    src={profileData.image}
+                    alt={`profile Picture`}
+                    className="w-full h-full rounded-full"
+                  />
+                ) : (
+                  <>
+                    {profileData.initials}
+                  </>
+                )}
+              </div>
               <div className="text-[#283b91] hidden md:block lg:block">
                 {userProfile.username}
               </div>
@@ -118,8 +153,9 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
           <TodoList />
           {/***********************   Working Time   **********************************/}
           <div
-            className={`flex flex-col w-full md:pr-8 self-start gap-2 items-center md:items-end ${isSidebarOpen ? "" : "3xl:ml-20"
-              }`}
+            className={`flex flex-col w-full md:pr-8 self-start gap-2 items-center md:items-end ${
+              isSidebarOpen ? "" : "3xl:ml-20"
+            }`}
           >
             <WorkTime userProfile={userProfile} />
           </div>

@@ -1,12 +1,26 @@
+import moment from "moment";
+
 export function getEmployeeLeavesTypesList(LeaveTypes, employeeLeaveType) {
-  const employeeLeaveTypeList = employeeLeaveType.map((item) => {
-    const leaveType = LeaveTypes.find((type) => type.value === item.leave_type);
-    return {
-      value: item.id,
-      label: leaveType ? leaveType.label : "Unknown",
-    };
-  });
-  return employeeLeaveTypeList;
+  if (
+    employeeLeaveType &&
+    employeeLeaveType.length > 0 &&
+    LeaveTypes &&
+    LeaveTypes.length > 0
+  ) {
+    const employeeLeaveTypeList = employeeLeaveType.map((item) => {
+      const leaveType = LeaveTypes.find(
+        (type) => type.value === item.leave_type
+      );
+      return {
+        value: item.id,
+        label: leaveType ? leaveType.label : "Unknown",
+        leave_type_id: item.leave_type,
+      };
+    });
+    return employeeLeaveTypeList;
+  } else {
+    return [];
+  }
 }
 export function getLeavesTypeNameList(LeaveTypes) {
   const LeaveTypeNameList = LeaveTypes.map((leaveType) => {
@@ -44,10 +58,42 @@ export function getEmployeeLeavesAgainsLeaveType(
   return { usedLeaves, remainingLeaves, totalLeaves };
 }
 
-export const YearsDropdownList = (StartYear, EndYear) => {
+export const yearsDropdownList = (StartYear, EndYear) => {
   const years = [];
-  for (let year = StartYear; year <= EndYear; year++) {
+  for (let year = EndYear; year >= StartYear; year--) {
     years.push({ label: year, value: year });
   }
   return years;
 };
+
+export function getTaskFilteredData(tasksList, filterData) {
+  if (filterData?.end_date) {
+    if (filterData?.end_date === "overdue") {
+      return tasksList.filter((task) =>
+        moment(task.end_date).isBefore(moment(new Date()))
+      );
+    }
+    if (filterData?.end_date === "nextday") {
+      const nextDay = moment(new Date()).add(1, "days");
+      return tasksList.filter(
+        (task) => task.end_date === nextDay.format("YYYY-MM-DD")
+      );
+    } else {
+      return tasksList.filter((task) => !task.end_date);
+    }
+  }
+  if (filterData?.assigned_to) {
+    if (filterData?.assigned_to === "noMember") {
+      return tasksList.filter(
+        (task) => task.assigned_to === filterData?.assigned_to
+      );
+    }
+    if (filterData?.priority === "priority") {
+      if (filterData?.priority === "noPriority") {
+        return tasksList.filter((task) => !task.priority);
+      }
+      return tasksList.filter((task) => task.priority === filterData?.priority);
+    }
+  }
+  return tasksList;
+}

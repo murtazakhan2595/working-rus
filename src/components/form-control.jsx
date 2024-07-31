@@ -44,18 +44,20 @@ const SelectComponent = ({
           menu: (base) => ({ ...base, zIndex: 9999 }),
           menuList: (base) => ({ ...base, zIndex: 9999 }),
         }}
-        menuPortalTarget={document.body}
+         menuPortalTarget={document.body}
       />
-      {value && (
+      {value ? (
         <Label
           className={`text-baseGray ${value ? "date-floating-label" : ""}`}
           for={name}
         >
           {required && <span className="text-danger">* </span>} {label}
         </Label>
+      ) : (
+        ""
       )}
-
-      {error && touch && <div className="invalid-feedback">{error}</div>}
+      {console.log(error, touch)}
+      {error && touch && <div className="invalid-feedback">{error || ""}</div>}
     </FormGroup>
   );
 };
@@ -117,6 +119,7 @@ const DateInput = ({
         <DatePicker
           name={name}
           id={name}
+          autoComplete="off"
           minDate={minDate}
           disabled={disabled}
           className={`form-control ${error && touch ? "is-invalid" : ""} ${
@@ -328,6 +331,7 @@ const EmailInput = ({
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
+        {error && touch && <div className="invalid-feedback">{error}</div>}
       </FormGroup>
     </>
   );
@@ -559,11 +563,13 @@ const TextAreaInput = ({
             }
           }}
         />
-        <Label className="text-baseGray" htmlFor="address">
+        <Label
+          className={`text-baseGray ${value ? "active" : ""}`}
+          htmlFor={name}
+        >
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
-
         {error && touch && <div className="invalid-feedback">{error}</div>}
       </FormGroup>
     </>
@@ -618,7 +624,7 @@ const TextAreaEditorInput = ({
   );
 };
 
-const FilterInput = ({ filters, onChange }) => {
+const FilterInput = ({ filters, onChange, isClearable = true }) => {
   const classNamesStyle =
     "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md w-56";
   return (
@@ -668,24 +674,31 @@ const FilterInput = ({ filters, onChange }) => {
                   }`}
                   styles={dropdownStyles}
                   name={filter.name}
+                  defaultValue={filter.option.find(
+                    (obj) => obj.value === filter.defaultValue
+                  )}
                   id={filter.name}
                   onChange={(option) => {
                     onChange(filter.name, option?.value);
                   }}
-                  isClearable={true}
+                  isClearable={isClearable}
                 />
               );
             } else if (filter.type === "date") {
               const date = filter.value ? new Date(moment(filter.value)) : null;
+              console.log(filter.placeholder, "filter.placeholder");
               return (
                 <div style={{ width: "fit-content" }}>
                   <DatePicker
                     key={index}
                     name={filter.name}
                     id={filter.name}
-                    //  className={`${filter.className ?? classNamesStyle}`}
+                    className={`${filter.className ?? classNamesStyle}`}
                     dropdownMode="select"
-                    placeholder={`${filter.placeholder}`}
+                    placeholderText={filter.placeholder}
+                    value={date}
+                    selected={date}
+                    autoComplete="off"
                     onChange={(value) => {
                       if (value) {
                         value = moment(value).format("YYYY-MM-DD");
@@ -711,7 +724,7 @@ const FilterInput = ({ filters, onChange }) => {
                   values={filter.values}
                   mainHeading={filter.mainHeading}
                   label={filter.placeholder}
-                  className={filter.className ?? classNamesStyle}
+                  className={filter.className ?? null}
                 />
               );
             } else {

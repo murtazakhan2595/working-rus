@@ -50,6 +50,7 @@ const ViewJobDetails = ({ jobId, onClose }) => {
   useEffect(() => {
     getPosts();
   }, [jobId]);
+  console.log(job)
 
   return (
     <div className="fixed top-0 right-0 w-[650px] h-full z-10 overflow-y-auto hideScroll pl-10">

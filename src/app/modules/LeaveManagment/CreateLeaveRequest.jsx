@@ -108,6 +108,8 @@ const CreateLeaveRequest = ({
     );
   };
   const calculateAllowedLeaves = (alloted_leaves_info, total_leaves) => {
+    console.log("alloted_leaves_info", alloted_leaves_info);
+    console.log("total_leaves", total_leaves);
     if (alloted_leaves_info && total_leaves) {
       const requested_leave = parseInt(total_leaves);
       const used_leaves = alloted_leaves_info.used_leave;
@@ -124,12 +126,14 @@ const CreateLeaveRequest = ({
 
   const handleSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
+    console.log("values",values);
     try {
       // Extract the value from the report_to field
       const modifiedValues = {
         ...values,
         indirect_report_to: getManagerSelected(values.indirect_report_to),
       };
+      console.log("modifiedValues",modifiedValues);
       const response = await addLeaveRequest(modifiedValues);
       if (response) {
         const leaveResponse = await allotLeavesToEmployee(
@@ -139,7 +143,7 @@ const CreateLeaveRequest = ({
         if (leaveResponse) {
           toast.success("Form submitted successfully!");
           resetForm();
-          navigate("/my-leaves");
+          navigate("/leave-tracker");
         }
       } else {
         toast.error("Form submission failed.");
@@ -150,22 +154,27 @@ const CreateLeaveRequest = ({
       setIsLoading(false);
     }
   };
-
   const setLeaveDays = (totalLeave, startDate) => {
     startDate = startDate ? new Date(moment(startDate)) : null;
     if (startDate && !isNaN(startDate.getTime()) && totalLeave) {
-      let endDate = moment(startDate); // Initialize endDate to startDate
-      let workingDaysAdded = 0;
-      while (workingDaysAdded <= totalLeave) {
+      console.log(startDate.getDate());
+      console.log(totalLeave);
+      const lastWorkingDay = moment(startDate).subtract(1, "days");
+      let endDate = moment(startDate); // Initialize endDate to startDate itself
+      let workingDaysAdded = 0; // Start counting from 0
+      while (workingDaysAdded < totalLeave) {
         // Check if the current day is a weekday
         if (endDate.isoWeekday() !== 6 && endDate.isoWeekday() !== 7) {
           workingDaysAdded++;
         }
+        // Only add a day if we haven't reached the total leave days yet
         if (workingDaysAdded < totalLeave) {
           endDate.add(1, "days");
         }
+        console.log(workingDaysAdded, totalLeave, endDate.format("YYYY-MM-DD"));
       }
-      const lastWorkingDay = moment(endDate).subtract(1, "days");
+      console.log("endDate", endDate.format("YYYY-MM-DD"));
+
       const rejoiningDate = moment(endDate).add(1, "days");
       formRef.current.setFieldValue("end_date", endDate.format("YYYY-MM-DD"));
       formRef.current.setFieldValue(
@@ -196,7 +205,7 @@ const CreateLeaveRequest = ({
                   <Link
                     type="button"
                     className="btn btn-light bg-transparent fw-700"
-                    to="/my-leaves"
+                    to="/leave-tracker"
                   >
                     <span style={{ display: "inline-block" }}>Go Back</span>
                     <FaChevronCircleLeft
@@ -263,7 +272,6 @@ const CreateLeaveRequest = ({
                             </h2>
                             <Row>
                               <Col md="6">
-                                {console.log(props.values)}
                                 <TextInput
                                   name="employee_id"
                                   error={props.errors.employee_id}
@@ -528,7 +536,7 @@ const CreateLeaveRequest = ({
                                 <Link
                                   type="button"
                                   className="btn btn-outline-dark w-100"
-                                  to="/my-leaves"
+                                  to="/leave-tracker"
                                 >
                                   Cancel
                                 </Link>

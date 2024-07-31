@@ -13,6 +13,7 @@ import {
   allotLeavesToEmployee,
   getEmployeeLeaveTypes,
 } from "app/hooks/leaveManagment";
+import { toast } from "react-toastify";
 
 const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
   const formRef = useRef();
@@ -43,6 +44,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
       values.employeeLeaveDetails
     );
     if (response) {
+      toast.success("Leaves Alloted Successfully");
       resetForm();
       closeModel();
     }
@@ -88,12 +90,16 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
     }
   };
   const removeLeaveType = (leave_type) => {
+    const employeeLeaveDetails = formRef.current.values.employeeLeaveDetails;
+    const leaveTypetoRemove = employeeLeaveDetails.find(
+      (item) => item.leave_type === leave_type
+    );
+    if (leaveTypetoRemove.used_leave > 0) {
+    }
     if (formRef.current) {
       formRef.current.setFieldValue(
         "employeeLeaveDetails",
-        formRef.current.values.employeeLeaveDetails.filter(
-          (item) => item.leave_type !== leave_type
-        )
+        employeeLeaveDetails.filter((item) => item.leave_type !== leave_type)
       );
     }
   };

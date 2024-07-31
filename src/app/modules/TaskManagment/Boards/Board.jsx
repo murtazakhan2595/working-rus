@@ -10,7 +10,7 @@ import {
   getProjectById,
   getTaskByBoardId,
   deleteBoard,
-  moveTask
+  moveTask,
 } from "app/hooks/taskManagment";
 import { TaskSortingFilters } from "data/Data";
 import { FaPlus } from "react-icons/fa";
@@ -22,7 +22,7 @@ import { CustomDropdown } from "../Sections";
 import { AddNewListModel, MembersDropdown } from "./Sections";
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
-import {getRandomColor} from "utils/renderValues"
+import { getRandomColor } from "utils/renderValues";
 
 const Board = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -59,13 +59,14 @@ const Board = ({ userProfile }) => {
     };
   }, [projectId]);
 
-  const handleFilterChange = (filterName, filterValue) => {
+  const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
+      if (!filterValue || filterCheckStatus === false) {
         delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] = filterValue;
+        updatedFilters[filterName] =
+          filterCheckStatus === false ? "" : filterValue;
       }
       return updatedFilters;
     });
@@ -134,7 +135,7 @@ const Board = ({ userProfile }) => {
                 </Row>
               ) : (
                 <div className="flex gap-5 overflow-x-auto">
-                  {AllBoards.count > 0 &&
+                  {AllBoards.count > 0 ? (
                     AllBoards.results.map((board, index) => (
                       <TaskColumn
                         key={index}
@@ -143,8 +144,14 @@ const Board = ({ userProfile }) => {
                         reloadData={() => {
                           fetchData(true);
                         }}
+                        filterData={filterData}
                       />
-                    ))}
+                    ))
+                  ) : (
+                    <div className="text-center w-100 mt-3 mb-5">
+                      Project Board is empty
+                    </div>
+                  )}
                 </div>
               )}
             </CardBody>
@@ -155,7 +162,7 @@ const Board = ({ userProfile }) => {
   );
 };
 
-const TaskColumn = ({ reloadData, board, projectId }) => {
+const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -165,7 +172,8 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
   const fetchData = async (isMounted) => {
     try {
       const TaskData = await getTaskByBoardId({
-        filterData: { board_id: [board.id] },
+        filterData,
+        ...{ board_id: [board.id] },
       });
       if (isMounted) {
         setTasks(TaskData);
@@ -181,7 +189,7 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [filterData]);
 
   const handleDragStart = (e, taskId) => {
     e.dataTransfer.setData("taskId", taskId);
@@ -198,7 +206,7 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
     const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
 
     if (sourceBoardId !== board.id) {
-      await moveTask({id:taskId, board_id:board.id});
+      await moveTask({ id: taskId, board_id: board.id });
       reloadData();
     }
   };
@@ -226,7 +234,7 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
 
   return (
     <div
-      className="flex flex-col min-w-[290px] mb-5"
+      className="flex flex-col min-w-[290px] max-w-[320px] mb-5"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -235,7 +243,9 @@ const TaskColumn = ({ reloadData, board, projectId }) => {
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
               <div
-                className={`shrink-0 my-auto w-2 h-2 ${getRandomColor(board.name?.charAt(0))} rounded-full`}
+                className={`shrink-0 my-auto w-2 h-2 ${getRandomColor(
+                  board.name?.charAt(0)
+                )} rounded-full`}
               />
               <span>{board.name}</span>
             </h2>

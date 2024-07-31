@@ -1,3 +1,4 @@
+import { colors } from "@mui/material";
 import Chart from "react-apexcharts";
 
 export default function BarChart({ categories, series }) {
@@ -19,11 +20,17 @@ export default function BarChart({ categories, series }) {
       dataLabels: {
         enabled: false,
       },
-      colors: ["#25A8E0", "#d3d5d7"], // Custom colors for each series
+      colors: ["#25A8E0", "#939393",], // Custom colors for each series
       plotOptions: {
         bar: {
           columnWidth: "15px", // Adjust bar width
           borderRadius: 3, // Adjust bar border radius
+          states: {
+            hover: {
+              brightness: 1, // Adjust the brightness on hover
+              opacity: 1, // Adjust the opacity on hover
+            },
+          },
         },
       },
       xaxis: {

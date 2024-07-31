@@ -9,7 +9,7 @@ import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 
 const LeaveAllotement = ({ departments, designations }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({employee_status: "Active,Probation,Notice Period"});
   const [employeeList, setEmployeeData] = useState([]);
   const [options, setOptions] = useState({
     page: 1,
@@ -27,6 +27,7 @@ const LeaveAllotement = ({ departments, designations }) => {
     setIsLoading(true);
     try {
       const employeeData = await getEmployeeCustomList({ options, filterData });
+      console.log("employeeData", employeeData);
       if (isMounted) {
         setEmployeeData(employeeData);
       }
@@ -119,7 +120,7 @@ const LeaveAllotement = ({ departments, designations }) => {
                   <Col lg={12} className="mt-5 mx-2">
                     <Table
                       data={employeeList.results || []}
-                      columns={LeaveAllotmentColumns}
+                      columns={LeaveAllotmentColumns(getPosts)}
                       hideTableHeader={true}
                       pagination={true}
                       dataTotalSize={employeeList.count || 0}

@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { handleLogout } from "./general";
 import { EmployeeLeaveTypesList } from "app/utils/Types/LeaveManagment";
+import { Status } from "app/modules/LeaveManagment/Sections/Status";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -26,21 +27,11 @@ const getLeaveApplications = async (payload) => {
       const LeaveData = {
         count: data.count,
         results: data.results.leaves,
+        approved_leaves: data.results.approved_leaves,
+        pending_leaves: data.results.pending_leaves,
+        rejected_leaves: data.results.rejected_leaves,
+        requested_leaves: data.results.total_count,
       };
-      // const updatedData = await Promise.all(
-      //   data.map(async (leave) => {
-      //     const leaveTypeList = await getEmployeeLeaveTypes({
-      //       employee_id: leave.employee_id,
-      //     });
-      //     const leaveType = leaveTypeList.find(
-      //       (obj) => obj.id === leave.leave_type
-      //     );
-      //     return {
-      //       ...leave,
-      //       employee_leave_type: leaveType?.leave_type ?? "",
-      //     };
-      //   })
-      // );
       return LeaveData;
     } else {
       return [];
@@ -96,9 +87,30 @@ const getEmployeeLeaveTypes = async (filterData = {}) => {
     return EmployeeLeaveTypesList;
   }
 };
+const getEmployeeLeaveTypesById = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/employeeleavetypes/${id}`,
+      { headers: headers() }
+    );
+
+    if (response.status === 200) {
+      return response.data; // Destructure and provide default value
+    } else {
+      return EmployeeLeaveTypesList;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Employee Leave Types data:", error);
+    return EmployeeLeaveTypesList;
+  }
+};
 
 const addLeaveRequest = async (payload) => {
   try {
+    console.log(`${baseUrl}/leave/${payload.id}`);
     if (payload?.id) {
       const response = await axios.patch(
         `${baseUrl}/leave/${payload.id}`,
@@ -159,7 +171,6 @@ const allotLeavesToEmployee = async (employeeId, payload) => {
           });
         }
       });
-      toast.success("Leaves Alloted Successfully");
     } catch (error) {
       if (error?.response?.status === 401) {
         handleLogout();
@@ -193,6 +204,71 @@ const getLeaveTypes = async () => {
   return [];
 };
 
+const updateLeaveStatus = async (payload, loggedInUser) => {
+  try {
+    if (payload?.id) {
+      let URL =
+        loggedInUser.role === 2
+          ? `${baseUrl}/leaveManager/${payload.id}`
+          : `${baseUrl}/leaveHr/${payload.id}`;
+      const response = await axios.patch(URL, payload, {
+        headers: headers(),
+      });
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error updating leave status by HR:", error);
+    return false;
+  }
+};
+
+const getLeaveTrackerStats = async (filterStats) => {
+  const { year, employee_id, leave_type } = filterStats;
+  try {
+    const empLeaveTypes = await getEmployeeLeaveTypes({
+      year,
+      employee_id,
+      leave_type: filterStats.leave_type_id,
+    });
+    let leaveApplications = await getLeaveApplications({
+      filterData: { employee_id, leave_type },
+    });
+    const employeeLeaves = leaveApplications.results;
+    const leaveCount = employeeLeaves.reduce(
+      (counts, item) => {
+        const status = Status(item.status_hr);
+        if (status === "Approved") {
+          counts.approved += 1;
+        } else if (status === "Pending") {
+          counts.pending += 1;
+        } else if (status === "Rejected") {
+          counts.denied += 1;
+        }
+        counts.requested += 1;
+        return counts;
+      },
+      {
+        approved: 0,
+        pending: 0,
+        denied: 0,
+        requested: 0,
+      }
+    );
+    return {
+      remainingLeaves: empLeaveTypes.remainingLeaves,
+      usedLeaves: empLeaveTypes.usedLeaves,
+      allotedLeaves: empLeaveTypes.allotedLeaves,
+      ...leaveCount,
+    };
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
 export {
   getLeaveApplications,
   addLeaveRequest,
@@ -200,4 +276,7 @@ export {
   getEmployeeLeaveTypes,
   allotLeavesToEmployee,
   deleteLeaveRequest,
+  updateLeaveStatus,
+  getLeaveTrackerStats,
+  getEmployeeLeaveTypesById,
 };

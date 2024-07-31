@@ -16,8 +16,8 @@ import {
   JobApplicationForm,
 } from "./app/modules/RecruitmentData";
 import {
-  LeaveApplications,
-  MyLeaves,
+  LeaveRequest,
+  LeaveTracker,
   CreateLeaveRequest,
   LeaveAllotement,
   LeaveHistory,
@@ -31,7 +31,6 @@ import "./assets/css/globle.css";
 import axios from "axios";
 import {
   setUserLogout,
-  setUserProfile,
   setToken,
 } from "./state/slices/UserSlice.js";
 import { handleUpdateProfile } from "data/Data";
@@ -39,7 +38,6 @@ import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import Employee from "./app/modules/Employees/Employee.jsx";
 import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
-import LeaveCalender from "./app/modules/LeaveApplication/LeaveCalender.jsx";
 import { EditEmployeeProfile } from "./app/modules/Employees/Screens/Profile";
 import Test from "./app/modules/Profile/Test.jsx";
 import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
@@ -62,7 +60,6 @@ function App() {
   const token = window.localStorage.getItem("token");
   const baseUrl = useSelector((state) => state.user.baseUrl);
   let dispatch = useDispatch();
-
   let width = window.screen.width;
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
@@ -70,18 +67,6 @@ function App() {
   const [userRole, setUserRole] = useState(userProfile.role);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // const handleUpdateProfile = (data) => {
-  //   let updateProfile = {
-  //     id: data.id,
-  //     username: data.username,
-  //     is_filled: data.is_filled,
-  //     role: data.user_role,
-  //   };
-  //   // setUserProfile(updateProfile);
-  //   dispatch(setUserProfile(updateProfile));
-  // };
-
   const getProfile = async () => {
     try {
       const response = await axios.get(`${baseUrl}/user/`, {
@@ -161,36 +146,27 @@ function App() {
                 />
               }
             >
-              <Route
-                path="/coming-soon"
-                element={<ComingSoon isSidebarOpen={isSidebarOpen} />}
-              />
-
-              <Route
-                path="/services"
-                element={<Services isSidebarOpen={isSidebarOpen} />}
-              />
-              <Route
-                exact
-                path="/"
-                element={<Dashboard isSidebarOpen={isSidebarOpen} />}
-              />
+              <Route path="/coming-soon" element={<ComingSoon />} />
+              <Route path="/services" element={<Services />} />
+              <Route exact path="/" element={<Dashboard />} />
               <Route path="/board/:id" element={<Boardd />} />
+              <Route path="/project/:id" element={<BoardList />} />
+              <Route path="/projects" element={<Projects />} />
               <Route path="/project-board/:projectId" element={<Board />} />
               <Route
                 path="/my-profile"
                 element={<ViewEmployee profileView />}
               />
               <Route exact path="/test" element={<Test />} />
-
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-balance" element={<LeaveBalance />} />
-              <Route path="/leave-request" element={<CreateLeaveRequest />} />
+              <Route path="/request-leave" element={<CreateLeaveRequest />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/my-team" element={<ComingSoon />} />
+              <Route path="/my-task" element={<ComingSoon />} />
               <Route path="/calender" element={<ComingSoon />} />
               <Route path="/attendence" element={<ComingSoon />} />
-              <Route path="/my-leaves" element={<MyLeaves />} />
+              <Route path="/leave-tracker" element={<LeaveTracker />} />
               <Route path="/files-data" element={<ComingSoon />} />
               <Route path="/announcement" element={<ComingSoon />} />
               <Route path="/recognition" element={<ComingSoon />} />
@@ -199,14 +175,11 @@ function App() {
               <Route path="/leave-history" element={<LeaveHistory />} />
               <Route
                 path="/leave-balance-employee"
-                element={<LeaveBalanceEmployee isSidebarOpen={isSidebarOpen} />}
+                element={<LeaveBalanceEmployee />}
               />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-              <Route
-                path="/leave-balance-hr"
-                element={<LeaveBalanceHR isSidebarOpen={isSidebarOpen} />}
-              />
-              <Route path="/leave-calender" element={<LeaveCalender />} />
+              <Route path="/leave-balance-hr" element={<LeaveBalanceHR />} />
+              <Route path="/leave-calender" element={<ComingSoon />} />
               {userRole === 1 && (
                 <>
                   <Route path="/create-task" element={<CreateTask />} />
@@ -271,11 +244,9 @@ function App() {
                   <Route path="/career-planning" element={<ComingSoon />} />
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
-                  <Route path="/project/:id" element={<BoardList />} />
-                  <Route path="/projects" element={<Projects />} />
                   <Route
-                    path="/leave-application"
-                    element={<LeaveApplications />}
+                    path="/leave-requests"
+                    element={<LeaveRequest />}
                   />
                 </>
               )}

@@ -1,7 +1,6 @@
 import React from 'react';
 
 const LeaveCount = ({ title, leaveCount, borderColor, clipPath }) => {
-    console.log('I am clip path', clipPath);
     return (
         <div className="flex flex-col items-center mb-6 md:mb-0">
             <h3 className="text-base font-lato text-baseGray font-medium mb-2">

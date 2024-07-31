@@ -1,16 +1,25 @@
 import "react-toastify/dist/ReactToastify.css";
 import moment from "moment";
 import { Row, Col, Button } from "reactstrap";
-import { LeaveType } from "utils/getValuesFromTables";
 import { Status } from "../Sections";
 import { EmployeeNameInfo } from "components";
 import { useState } from "react";
 import ViewLeaveDetails from "../Sections/ViewLeaveDetails";
-import { addLeaveRequest } from "app/hooks/leaveManagment";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
+import {
+  allotLeavesToEmployee,
+  getEmployeeLeaveTypesById,
+  updateLeaveStatus
+} from "app/hooks/leaveManagment";
 
-const RenderApplications = ({ applicationsList, activeTab, reload }) => {
+const RenderApplications = ({
+  applicationsList,
+  activeTab,
+  reload,
+  leaveTypes,
+  userProfile,
+}) => {
   const [selectedLeaveIndex, setSelectedLeaveIndex] = useState(null);
 
   const handleLeaveDetails = (index) => {
@@ -37,7 +46,11 @@ const RenderApplications = ({ applicationsList, activeTab, reload }) => {
     <Row className="m-2 bg-white px-2 py-4">
       {applicationsList ? (
         applicationsList.map((application, index) => {
-          const status = Status(application.status_hr);
+          const statusMessage =
+            userProfile.role === 2
+              ? application.status_manager
+              : application.status_hr;
+          const status = Status(statusMessage);
           return (
             <>
               {status === activeTab && (
@@ -57,6 +70,7 @@ const RenderApplications = ({ applicationsList, activeTab, reload }) => {
                       activeTab={activeTab}
                       reload={reload}
                       onDetails={() => handleLeaveDetails(index)}
+                      leaveTypes={leaveTypes}
                     />
                   </div>
                 </Col>
@@ -86,24 +100,54 @@ const RenderApplications = ({ applicationsList, activeTab, reload }) => {
   );
 };
 
-const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
+const RenderApplication = ({
+  application,
+  activeTab,
+  reload,
+  onDetails,
+  leaveTypes,
+}) => {
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const handleApprove = async (status) => {
     try {
       const payload = application;
       if (loggedInUser.role === 1 || loggedInUser.role === 3) {
-        payload['status_hr'] = `${status} by HR`;
-      }else if(loggedInUser.role===2){
-        payload['status_hr'] = `${status} by HR`;
+        payload["status_hr"] = `${status} by HR`;
+      } else if (loggedInUser.role === 2) {
+        payload["status_manager"] = `${status} by Manager`;
       }
-      const response = await addLeaveRequest(payload);
+      const response = await updateLeaveStatus(payload, loggedInUser);
+
+      // If declined, update the employee leaves
       if (response) {
+        if (
+          status === "Declined" &&
+          (loggedInUser.role === 1 || loggedInUser.role === 3)
+        ) {
+          const alloted_leaves_info = await getEmployeeLeaveTypesById(
+            payload.leave_type
+          );
+          const leavesInfo = {
+            ...alloted_leaves_info,
+            ...{
+              left_leave: alloted_leaves_info.left_leave + payload.total_leave,
+              used_leave: alloted_leaves_info.used_leave - payload.total_leave,
+            },
+          };
+          const result = await allotLeavesToEmployee(payload.employee_id, [
+            leavesInfo,
+          ]);
+          if (!result) {
+            toast.error("Error updating employee leaves");
+          }
+        }
         toast.success(`Application ${status} Successfully!`);
         reload();
       } else {
         toast.error(`Application Could not be ${status}"`);
       }
     } catch (error) {
+      console.error(error);
       toast.error(`Application Could not be ${status}"`);
     }
   };
@@ -128,9 +172,7 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
       </Col>
       <Col md={5} className="mb-3">
         <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-          <b>
-            <LeaveType value={application?.leave_type} />
-          </b>
+          <b>{application?.leave_component_name}</b>
           <br />
           {application?.reason}
         </div>
@@ -200,12 +242,12 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
             label={"Direct Manager"}
             value={application?.status_manager}
           />
-          {application?.status_indirect_manager && (
+          {/* {application?.status_indirect_manager && (
             <StatusBar
               label={"Indirect Manager"}
               value={application?.status_indirect_manager}
             />
-          )}
+          )} */}
           <StatusBar label={"HR"} value={application?.status_hr} />
         </div>
       </Col>
@@ -214,19 +256,11 @@ const RenderApplication = ({ application, activeTab, reload, onDetails }) => {
 };
 
 const StatusBar = ({ label, value }) => {
-  const status = value
-    ? value.includes("Approved")
-      ? "Approved"
-      : value.includes("Pending")
-      ? "Pending"
-      : value.includes("Denied")
-      ? "Denied"
-      : ""
-    : "";
+  const status = Status(value);
   const backgroungColor = status
     ? status === "Approved"
       ? "#ADD9CA"
-      : status === "Denied"
+      : status === "Rejected"
       ? "#D99898"
       : status === "Pending"
       ? "#EEEEF0"
@@ -255,6 +289,10 @@ const StatusBar = ({ label, value }) => {
     </div>
   );
 };
-
-export default RenderApplications;
-
+const mapStateToProps = (state) => {
+  return {
+    leaveTypes: state.common.leaveTypes,
+    userProfile: state.user.userProfile,
+  };
+};
+export default connect(mapStateToProps)(RenderApplications);

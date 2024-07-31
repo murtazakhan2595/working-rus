@@ -94,6 +94,15 @@ ul {
 .form-floating > .form-control:not(:placeholder-shown) ~ label::after {
   background: transparent;
 }
+.form-floating>label.active {
+  top: 7.9px;
+  line-height: 30px;
+  height: fit-content;
+  padding: 0rem .75rem;
+  background: white;
+  height: fit-content;
+  width: 100%;
+}
 
 .react-datepicker-wrapper {
   width: 100%;

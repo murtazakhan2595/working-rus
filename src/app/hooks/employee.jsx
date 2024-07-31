@@ -236,7 +236,7 @@ const getEmployeeVisaDetailData = async (employeeid) => {
       console.error("Error fetching Personal Info data :", error);
     }
   }
-  return EmployeeVisaDetails;
+  return {};
 };
 
 const saveEmployeeVisaDetailData = async (
@@ -703,34 +703,33 @@ const getEmployeeWorkInformationData = async (baseUrl, employeeid, token) => {
   return EmployeeDepartmentInfo;
 };
 
-const saveEmployeeWorkInformationData = async (
-  baseUrl,
-  employeeid,
-  token,
-  payload
-) => {
-  if (employeeid) {
-    try {
+const saveEmployeeWorkInformationData = async (employeeid, payload) => {
+  try {
+    if (employeeid) {
       const response = await axios.patch(
         `${baseUrl}/emp/${employeeid}`,
         payload,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: headers(),
         }
       );
       if (response.status === 200) {
         return true;
       }
-    } catch (error) {
-      if (error?.response?.status === 401) {
-        handleLogout();
+    } else {
+      const response = await axios.post(`${baseUrl}/emp/add`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        return true;
       }
-      console.error("Error fetching Personal Info data :", error);
-      return false;
     }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
   }
 };
 
@@ -812,5 +811,5 @@ export {
   getEmployeeContactInfo,
   saveEmployeeContactInfoData,
   getNewEmployeeCode,
-  deleteEmployeeCertificateData
+  deleteEmployeeCertificateData,
 };

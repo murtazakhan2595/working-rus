@@ -51,17 +51,7 @@ const EmployeeCVDetails = {
   existingCVId: null,
 };
 
-const EmployeeProfessionalExperiance = {
-  id: null,
-  employee_id: null,
-  exp_organization: null,
-  exp_designation: null,
-  exp_discription: null,
-  exp_letter: null,
-  exp_start_date: null,
-  exp_end_date: null,
-  disableEndDate: false,
-};
+
 
 const EmployeeAcademicRecord = {
   id: null,
@@ -129,18 +119,41 @@ const EmployeeInformation = {
     employee_status: null,
     joining_date: null,
 }
+const EmployeeProfessionalExperiance = {
+  id: null,
+  employee_id: null,
+  exp_organization: null,
+  exp_designation: null,
+  exp_discription: null,
+  exp_letter: null,
+  exp_start_date: null,
+  exp_end_date: null,
+  disableEndDate: false,
+};
 const Employee = {
-    id: null,
-    personalInformation: EmployeePersonalInformation,
-    visaDetails: EmployeeVisaDetails,
-    academicRecord: EmployeeAcademicRecord,
-    cv: EmployeeCVDetails,
-    professionalExperiance: [EmployeeProfessionalExperiance],
-    department: EmployeeDepartmentInfo,
-    bankDetails: EmployeeBankDetails,
-    certifications: EmployeeCertifiation,
+  id: null,
+  personalInformation: EmployeePersonalInformation,
+  visaDetails: EmployeeVisaDetails,
+  academicRecord: EmployeeAcademicRecord,
+  cv: EmployeeCVDetails,
+  professionalExperiance: [
+    {
+      id: null,
+      employee_id: null,
+      exp_organization: null,
+      exp_designation: null,
+      exp_discription: null,
+      exp_letter: null,
+      exp_start_date: null,
+      exp_end_date: null,
+      disableEndDate: false,
+    },
+  ],
+  department: EmployeeDepartmentInfo,
+  bankDetails: EmployeeBankDetails,
+  certifications: EmployeeCertifiation,
+};
 
-}
 
 export {
   Employee,

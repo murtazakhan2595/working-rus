@@ -4,7 +4,7 @@ import CreateUpdateJob from "./CreateUpdateJob";
 
 const EditJobDetails = ({ job, onClose }) => {
   return (
-    <div className="fixed top-0 right-0 w-[680px] h-full z-20 overflow-y-auto hideScroll pl-10">
+    <div className="fixed top-0 right-0 max-w-[680px] w-[95%] h-full z-20 overflow-y-auto hideScroll pl-10">
       <div className="bg-white h-auto shadow-lg p-10">
         <div
           className="absolute right-6 top-6 cursor-pointer"
