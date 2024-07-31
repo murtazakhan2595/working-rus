@@ -50,7 +50,7 @@ export default function MyLeaves(){
             </Link>
           </div>
         </header>
-        <div className="max-h-[210px] overflow-y-auto no-scrollbar">
+        <div className="max-h-[236px] overflow-y-auto no-scrollbar">
           {leave.count > 0 &&
             leave.results.map((leave) => (
               <RenderMyLeaves leave={leave} key={leave.id} />
