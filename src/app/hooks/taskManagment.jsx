@@ -64,10 +64,10 @@ const getTaskByBoardId = async (payload) => {
     });
     if (response.status === 200) {
       const data = response.data;
-      getTaskFilteredData(data, filterData);
+      const taskList = getTaskFilteredData(data, filterData);
       const TasksData = {
-        count: data.length,
-        results: data,
+        count: taskList.length,
+        results: taskList,
       };
       return TasksData;
     } else {
@@ -110,19 +110,14 @@ const getAllBoards = async (payload) => {
   }
   return [];
 };
-const getAllTasks = async (payload) => {
-  const filterData = payload?.filterData ?? {};
-  console.log("filterData", filterData);
-  const URL = `/task/?order=-date${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+const getAllLabels = async () => {
+  const URL = `/TaskLabel`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const data = response.data;
-      console.log("get all tasks", data);
       return data;
     } else {
       return [];
@@ -456,7 +451,6 @@ const getAttachmentById = async (attachmentId) => {
 };
 
 const fetchComments = async (filter) => {
-  console.log("fetchComments", filter);
   try {
     const response = await axios.get(
       `${baseUrl}/comments/?search=${encodeURIComponent(
@@ -512,4 +506,5 @@ export {
   deleteAttachment,
   fetchComments,
   postComment,
+  getAllLabels
 };

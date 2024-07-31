@@ -70,7 +70,7 @@ export function getTaskFilteredData(tasksList, filterData) {
   if (filterData?.end_date) {
     if (filterData?.end_date === "overdue") {
       return tasksList.filter((task) =>
-        moment(task.end_date).isAfter(moment(new Date()))
+        moment(task.end_date).isBefore(moment(new Date()))
       );
     }
     if (filterData?.end_date === "nextday") {
@@ -79,7 +79,20 @@ export function getTaskFilteredData(tasksList, filterData) {
         (task) => task.end_date === nextDay.format("YYYY-MM-DD")
       );
     } else {
-      return tasksList.filter((task) => task.end_date === filterData?.end_date);
+      return tasksList.filter((task) => !task.end_date);
+    }
+  }
+  if (filterData?.assigned_to) {
+    if (filterData?.assigned_to === "noMember") {
+      return tasksList.filter(
+        (task) => task.assigned_to === filterData?.assigned_to
+      );
+    }
+    if (filterData?.priority === "priority") {
+      if (filterData?.priority === "noPriority") {
+        return tasksList.filter((task) => !task.priority);
+      }
+      return tasksList.filter((task) => task.priority === filterData?.priority);
     }
   }
   return tasksList;
