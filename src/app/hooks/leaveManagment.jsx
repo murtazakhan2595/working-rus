@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { handleLogout } from "./general";
 import { EmployeeLeaveTypesList } from "app/utils/Types/LeaveManagment";
-import { getEmployeeLeavesTypesList } from "utils/Lists";
+import { Status } from "app/modules/LeaveManagment/Sections/Status";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -32,20 +32,6 @@ const getLeaveApplications = async (payload) => {
         rejected_leaves: data.results.rejected_leaves,
         requested_leaves: data.results.total_count,
       };
-      // const updatedData = await Promise.all(
-      //   data.map(async (leave) => {
-      //     const leaveTypeList = await getEmployeeLeaveTypes({
-      //       employee_id: leave.employee_id,
-      //     });
-      //     const leaveType = leaveTypeList.find(
-      //       (obj) => obj.id === leave.leave_type
-      //     );
-      //     return {
-      //       ...leave,
-      //       employee_leave_type: leaveType?.leave_type ?? "",
-      //     };
-      //   })
-      // );
       return LeaveData;
     } else {
       return [];
@@ -58,7 +44,6 @@ const getLeaveApplications = async (payload) => {
   }
   return [];
 };
-
 
 const getEmployeeLeaveTypes = async (filterData = {}) => {
   try {
@@ -102,6 +87,26 @@ const getEmployeeLeaveTypes = async (filterData = {}) => {
     return EmployeeLeaveTypesList;
   }
 };
+const getEmployeeLeaveTypesById = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/employeeleavetypes/${id}`,
+      { headers: headers() }
+    );
+
+    if (response.status === 200) {
+      return response.data; // Destructure and provide default value
+    } else {
+      return EmployeeLeaveTypesList;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Employee Leave Types data:", error);
+    return EmployeeLeaveTypesList;
+  }
+};
 
 const addLeaveRequest = async (payload) => {
   try {
@@ -128,7 +133,6 @@ const addLeaveRequest = async (payload) => {
     return false;
   }
 };
-
 
 const deleteLeaveRequest = async (payload) => {
   try {
@@ -166,7 +170,6 @@ const allotLeavesToEmployee = async (employeeId, payload) => {
           });
         }
       });
-      
     } catch (error) {
       if (error?.response?.status === 401) {
         handleLogout();
@@ -203,16 +206,15 @@ const getLeaveTypes = async () => {
 const updateLeaveStatus = async (payload, loggedInUser) => {
   try {
     if (payload?.id) {
-      let URL = loggedInUser.role === 2? `${baseUrl}/leaveManager/${payload.id}`:  `${baseUrl}/leaveHr/${payload.id}`;
-      const response = await axios.patch(
-       URL,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
+      let URL =
+        loggedInUser.role === 2
+          ? `${baseUrl}/leaveManager/${payload.id}`
+          : `${baseUrl}/leaveHr/${payload.id}`;
+      const response = await axios.patch(URL, payload, {
+        headers: headers(),
+      });
       return response;
-    } 
+    }
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();
@@ -222,61 +224,43 @@ const updateLeaveStatus = async (payload, loggedInUser) => {
   }
 };
 
-const filterByYearAndLeaveType = (data, year, leaveComponentName) => {
-  const startDate = year ? new Date(`${year}-01-01`) : null;
-  const endDate = year ? new Date(`${year}-12-31`) : null;
-
-  const filteredData = data.filter((item) => {
-    const date = new Date(item.date);
-    const isWithinYear = !year || (date >= startDate && date <= endDate);
-    const isMatchingLeaveType =
-      !leaveComponentName || item.leave_component_name === leaveComponentName;
-
-    return isWithinYear && isMatchingLeaveType;
-  });
-    const counts = {
-      approved: 0,
-      pending: 0,
-      denied: 0,
-      requested: filteredData.length,
-    };
-
-    filteredData.forEach((item) => {
-      if (item.status_hr === "Approved by HR") {
-        counts.approved += 1;
-      } else if (item.status_hr === "Pending") {
-        counts.pending += 1;
-      } else if (item.status_hr === "Declined by HR") {
-        counts.denied += 1;
-      }
-    });
-
-    return counts;
-};
-
-const getLeaveTrackerStats = async (filterStats, leaveTypeList) => {
+const getLeaveTrackerStats = async (filterStats) => {
   const { year, employee_id, leave_type } = filterStats;
-  const LeaveTypeLabel = leaveTypeList[leave_type-1];
-
   try {
     const empLeaveTypes = await getEmployeeLeaveTypes({
-      employee_id: employee_id,
       year,
-      leave_type,
+      employee_id,
+      leave_type: filterStats.leave_type_id,
     });
     let leaveApplications = await getLeaveApplications({
-      filterData: { employee_id: employee_id },
+      filterData: { employee_id, leave_type },
     });
-    const remainingStats = filterByYearAndLeaveType(
-      leaveApplications.results,
-      year,
-      LeaveTypeLabel
+    const employeeLeaves = leaveApplications.results;
+    const leaveCount = employeeLeaves.reduce(
+      (counts, item) => {
+        const status = Status(item.status_hr);
+        if (status === "Approved") {
+          counts.approved += 1;
+        } else if (status === "Pending") {
+          counts.pending += 1;
+        } else if (status === "Rejected") {
+          counts.denied += 1;
+        }
+        counts.requested += 1;
+        return counts;
+      },
+      {
+        approved: 0,
+        pending: 0,
+        denied: 0,
+        requested: 0,
+      }
     );
     return {
       remainingLeaves: empLeaveTypes.remainingLeaves,
       usedLeaves: empLeaveTypes.usedLeaves,
       allotedLeaves: empLeaveTypes.allotedLeaves,
-      ...remainingStats,
+      ...leaveCount,
     };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -355,4 +339,5 @@ export {
   updateLeaveStatus,
   getLeaveTrackerStats,
   getFilteredLeaveApplication,
+  getEmployeeLeaveTypesById,
 };

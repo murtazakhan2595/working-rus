@@ -23,6 +23,9 @@ export const fetchJobPosts = async (filterData, sortData) => {
     );
     return response.data;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching posts:", error);
     throw error;
   }
@@ -38,13 +41,51 @@ export const fetchJobById = async (id) => {
   }
 };
 
-const getJobApplications = async (URL) => {
+const getJobApplications = async (payload={}) => {
+  const { options, filterData } = payload;
+  console.log("calling getJobApplications", payload);
   try {
+    let URL = `/candidateall/?ordering=-updated_at`;
+
+    if (options) {
+      URL += `&page=${options.page}&page_size=${options.sizePerPage}`;
+    }
+
+    if (filterData) {
+      URL += `&search=${encodeURIComponent(JSON.stringify(filterData))}`;
+    }
+
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
-    return response.data;
+    if (response.status === 200) {
+      const applicationsResponse = response.data;
+      const applicationsData = {
+        count: applicationsResponse.count,
+        results: applicationsResponse.results.candidate,
+        total_count: applicationsResponse.results.total_count,
+        shortlisted_application:
+          applicationsResponse.results.shortlisted_application,
+        rejected_application: applicationsResponse.results.rejected_application,
+        selected_application: applicationsResponse.results.selected_application,
+      };
+      if (filterData?.job_id) {
+        const jobPosts = await fetchJobPosts({ id: filterData.job_id });
+        applicationsData.total_count = jobPosts.results[0]?.total_applications;
+        applicationsData.shortlisted_application =
+          jobPosts.results[0]?.shortlisted_count;
+        applicationsData.selected_application =
+          jobPosts.results[0]?.selected_count;
+        applicationsData.rejected_application =
+          jobPosts.results[0]?.rejected_count;
+      }
+
+      return applicationsData;
+    }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching applicants:", error);
     return false;
   }
@@ -69,6 +110,9 @@ export const updateApplicationStatus = async (selectedApplicant, option) => {
     );
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error updating application status:", error);
     throw error;
   }
@@ -88,6 +132,9 @@ export const downloadCV = async (cv, name) => {
     link.click();
     document.body.removeChild(link);
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching CV:", error);
     throw error;
   }
@@ -100,6 +147,9 @@ export const addJob = async (baseUrl, values, token) => {
     });
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error adding job:", error);
     throw error;
   }
@@ -111,6 +161,9 @@ export const getJobById = async (id) => {
     });
     return response.data;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error adding job:", error);
     return false;
   }
@@ -129,7 +182,7 @@ const getNewJobCode = async () => {
     }
     console.error("Error fetching data:", error);
   }
-  return '';
+  return "";
 };
 
 export const addApplication = async (values) => {
@@ -139,6 +192,9 @@ export const addApplication = async (values) => {
     });
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error adding job:", error);
     throw error;
   }
@@ -151,6 +207,9 @@ export const updateJob = async (baseUrl, values, id) => {
     });
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error adding job:", error);
     throw error;
   }
@@ -158,9 +217,7 @@ export const updateJob = async (baseUrl, values, id) => {
 
 const getJobApplicants = async () => {
   try {
-    console.log("calling")
-    const URL = `/candidateall/?ordering=updated_at`;
-    const response = await getJobApplications(URL);
+    const response = await getJobApplications();
     const jobPosts = await fetchJobPosts();
     console.log("INGO",response, jobPosts)
     if (response && jobPosts) {

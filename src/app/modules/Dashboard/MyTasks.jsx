@@ -42,20 +42,8 @@ export default function MyTasks() {
   const fetchProjects = async (isMounted) => {
     setIsLoading(true);
     try {
-      const projectsData = await getAllProjects({ filterData });
-      if (isMounted) {
-        if (userProfile.role === 4) {
-          const filteredResults = projectsData.results.filter((project) =>
-            project.project_members.includes(userProfile.id)
-          );
-          const filteredProjectsData = {
-            count: filteredResults.length,
-            results: filteredResults,
-          };
-          setAllProjects(filteredProjectsData.results);
-        } else {
-          setAllProjects(projectsData.results);
-        }
+      const projectsData = await getAllProjects({ filterData }, userProfile);
+      if (isMounted && projectsData.results) {
         fetchTasks(isMounted, projectsData.results);
       }
     } catch (error) {

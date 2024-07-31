@@ -50,12 +50,7 @@ const userSlice = createSlice({
   reducers: {
     setUserProfile(state, action) {
       state.isLogin = true;
-      state.userProfile = {
-        id: action.payload.id,
-        username: action.payload.username,
-        is_filled: action.payload.is_filled,
-        role: action.payload.user_role,
-      };
+      state.userProfile = action.payload;
     },
     setUserLogout(state) {
       state.isLogin = false;

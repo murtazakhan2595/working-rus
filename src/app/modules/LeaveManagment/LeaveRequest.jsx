@@ -3,12 +3,11 @@ import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getLeaveApplications } from "app/hooks/leaveManagment";
 import { Tabs, Header, PageLoader } from "components";
-import { FilterInput } from "components/form-control";
 import { Row, Col } from "reactstrap";
 import RenderApplications from "./Screens/RenderApplications";
 import RenderAllApplications from "./Screens/RenderAllApplications";
 
-const LeaveRequest = ({}) => {
+const LeaveRequest = ({ userProfile }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
@@ -16,9 +15,7 @@ const LeaveRequest = ({}) => {
   const getApplications = async () => {
     setLoading(true);
     try {
-      console.log("filterData", filterData);
       const data = await getLeaveApplications({ filterData });
-      console.log(data)
       setApplications(data);
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -30,35 +27,18 @@ const LeaveRequest = ({}) => {
     getApplications();
   }, [filterData]);
 
-  const handleFilterChange = (filterName, filterValue) => {
-    setFilterData((prevFilters) => {
-      //  debugger
-      const updatedFilters = { ...prevFilters };
-      if (!filterValue) {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
+  useEffect(() => {
+    if (userProfile && userProfile.role === 2) {
+      setFilterData((prevFilterData) => ({
+        ...prevFilterData,
+        report_to: userProfile.id,
+      }));
+    }
+  }, [userProfile]);
+
   return (
     <div className="screen bg-[#F0F1F2]">
-      <Header
-        title="Employee Leave Requests"
-        content={
-          <FilterInput
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search",
-                name: "id_and_Job_Title",
-              },
-            ]}
-            onChange={handleFilterChange}
-          />
-        }
-      />
+      <Header title="Employee Leave Requests" />
       <Row className="bg-[#F0F1F2] relative">
         <Col lg={12}>
           <div className="rounded-top bg-white p-2 m-2">
@@ -66,6 +46,7 @@ const LeaveRequest = ({}) => {
               tabs={["Pending", "Approved", "Rejected", "All Applications"]}
               onTabChange={(value) => {
                 setActiveTab(value);
+                getApplications();
               }}
             />
           </div>

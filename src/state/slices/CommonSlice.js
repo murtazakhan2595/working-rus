@@ -33,9 +33,9 @@ export const fetchDepartments = createAsyncThunk(
 // Define the thunk to fetch projects
 export const fetchProjects = createAsyncThunk(
   "common/fetchProjects",
-  async () => {
+  async (userProfile) => {
     try {
-      const response = await getProjectsList();
+      const response = await getProjectsList(userProfile);
       return response;
     } catch (error) {
       throw error;

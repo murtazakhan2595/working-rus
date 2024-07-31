@@ -1,28 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  Card,
-  CardHeader,
-  CardBody,
   ButtonDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Row,
-  Col,
 } from "reactstrap";
-import { StatusLabel } from "components";
-import { Status, getDecision, StatusIcon } from ".";
-import { useParams, Link } from "react-router-dom";
-import { updateLeaveStatus } from "app/hooks/leaveManagment";
+import { Status, UpdateStatus } from ".";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import { FaRegCircle } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
-
-
-
-const RenderAction = ({ row, reload }) => {
+const RenderLeaveAction = ({ row, reload }) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const status = Status(row.status_hr);
@@ -30,26 +19,12 @@ const RenderAction = ({ row, reload }) => {
     setOpenDropdownRow(index === openDropdownRow ? null : index);
   };
 
-  const updatedstatus = async(status) => {
-      try {
-      const payload = row;
-      if (loggedInUser.role === 1 || loggedInUser.role === 3) {
-        payload['status_hr'] = `${status} by HR`;
-      }else if(loggedInUser.role===2){
-        payload["status_manager"] = `${status} by Manager`;
-      }
-      const response = await updateLeaveStatus(payload, loggedInUser);
-      if (response) {
-        toast.success(`Application ${status} Successfully!`);
-        reload();
-      } else {
-        toast.error(`Application Could not be ${status}"`);
-      }
-    } catch (error) {
-      console.error("error",error)
-      toast.error(`Application Could not be ${status}"`);
+  const updatedstatus = async (status) => {
+    const response = UpdateStatus(status, row, loggedInUser);
+    if (response) {
+      reload();
     }
-  }
+  };
   return (
     <div>
       <ButtonDropdown
@@ -76,36 +51,40 @@ const RenderAction = ({ row, reload }) => {
               )}
               <div className="flex items-center">
                 {status}
-                <RiArrowDropDownLine className="text-xl text-zinc-600"/>
+                <RiArrowDropDownLine className="text-xl text-zinc-600" />
               </div>
             </div>
           </Link>
         </DropdownToggle>
         <DropdownMenu start className="p-6">
-          <DropdownItem
-            onClick={() => {
-              updatedstatus("Approved");
-            }}
-          >
-            <div className={`flex gap-[6px] items-center`}>
-              <FaRegCircle className="text-lime-600 " />
-              <div className="text-zinc-600 text-sm font-normal ">Accept</div>
-            </div>
-          </DropdownItem>
-          <DropdownItem
-            onClick={() => {
-              updatedstatus("Declined");
-            }}
-          >
-            <div className={`mt-6 flex gap-[6px]`}>
-              <FaRegCircle className="text-red-600 " />
-              <div className="text-zinc-600 text-sm font-normal ">Reject</div>
-            </div>
-          </DropdownItem>
+          {status !== "Approved" && (
+            <DropdownItem
+              onClick={() => {
+                updatedstatus("Approved");
+              }}
+            >
+              <div className={`p-2 flex gap-[6px] items-center`}>
+                <FaRegCircle className="text-lime-600 " />
+                <div className="text-zinc-600 text-sm font-normal ">Accept</div>
+              </div>
+            </DropdownItem>
+          )}
+          {status !== "Rejected" && (
+            <DropdownItem
+              onClick={() => {
+                updatedstatus("Declined");
+              }}
+            >
+              <div className={`p-2 flex gap-[6px]`}>
+                <FaRegCircle className="text-red-600 " />
+                <div className="text-zinc-600 text-sm font-normal ">Reject</div>
+              </div>
+            </DropdownItem>
+          )}
         </DropdownMenu>
       </ButtonDropdown>
     </div>
   );
 };
 
-export default RenderAction;
+export default RenderLeaveAction;

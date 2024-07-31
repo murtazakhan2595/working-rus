@@ -69,9 +69,14 @@ const getManagersList = async () => {
 
 const getEmployeeList = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/customemp/`, {
-      headers: headers(),
-    });
+    const response = await axios.get(
+      `${baseUrl}/customemp?search=${encodeURIComponent(
+        JSON.stringify({ employee_status: "Active,Probation,Notice Period" })
+      )}`,
+      {
+        headers: headers(),
+      }
+    );
     if (response.status === 200) {
       const employeeResponse = response.data?.results?.employees ?? [];
       const employeeList = employeeResponse.map((employee) => ({
@@ -109,7 +114,7 @@ const getOrganizationList = async () => {
   return [];
 };
 
-const getProjectsList = async () => {
+const getProjectsList = async (userProfile) => {
   const URL = `/project/`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -117,11 +122,22 @@ const getProjectsList = async () => {
     });
     if (response.status === 200) {
       const projectResponse = response.data;
-      const projectList = projectResponse.map((project) => ({
-        value: project.id,
-        label: project.name,
-      }));
-      return projectList;
+      if (userProfile.role === 4 || userProfile.role === 2) {
+        const filteredResults = projectResponse.filter((project) =>
+          project.project_members.includes(userProfile.id)
+        );
+        const projectList = filteredResults.map((project) => ({
+          value: project.id,
+          label: project.name,
+        }));
+        return projectList;
+      } else {
+        const projectList = projectResponse.map((project) => ({
+          value: project.id,
+          label: project.name,
+        }));
+        return projectList;
+      }
     } else {
       return [];
     }
@@ -138,11 +154,9 @@ const getEmployeeCustomList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/customemp/?ordering=-id&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const URL = `/customemp/?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -192,7 +206,7 @@ const getCurrenciesList = async (URL) => {
       const currenciesResponse = response.data;
       const currenciesList = currenciesResponse.map((currencies) => ({
         value: currencies.code,
-        label:`${currencies.code} - ${currencies.name}`,
+        label: `${currencies.code} - ${currencies.name}`,
       }));
       return currenciesList;
     } else {
@@ -253,5 +267,5 @@ export {
   handleLogout,
   getEmployeeCustomList,
   getProjectsList,
-  getCurrenciesList
+  getCurrenciesList,
 };

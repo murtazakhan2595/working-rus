@@ -14,7 +14,7 @@ import { PageLoader, Header, BarChart, Table } from "components";
 const LeaveHistory = ({ leaveTypes, designations, departments }) => {
   const [employeeData, setEmployeeData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({employee_status: "Active,Probation,Notice Period"});
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -71,13 +71,11 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                 : null;
 
             const leavesData = {
-              leaveType: leaveTypeInfo ? leaveTypeInfo.leave_type : "",
-              allotedLeaves: leaveTypeInfo
-                ? leaveTypeInfo.total_alloted_leaves
-                : "",
-              remainingLeaves: leaveTypeInfo ? leaveTypeInfo.left_leave : "",
-              usedLeaves: leaveTypeInfo ? leaveTypeInfo.used_leave : "",
-              leaveTypeList: leaveTypeResponse.results,
+              leaveType: leaveTypeInfo?.leave_type,
+              allotedLeaves: leaveTypeInfo?.total_alloted_leaves || 0,
+              remainingLeaves: leaveTypeInfo?.left_leave ||0,
+              usedLeaves: leaveTypeInfo?.used_leave || 0 ,
+              leaveTypeList: leaveTypeResponse?.results,
             };
             return { ...employee, ...leavesData };
           })

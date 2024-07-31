@@ -13,7 +13,7 @@ import {
   Status,
   RenderStatus,
   RenderLeaveType,
-  RenderAction
+  RenderLeaveAction
 } from "app/modules/LeaveManagment/Sections";
 import RenderJobTitle from "app/modules/Dashboard/sections/RenderJobTitle"
 import moment from "moment";

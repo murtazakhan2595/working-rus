@@ -89,6 +89,8 @@ const Experience = ({ errors, touched, values, onChange }) => {
           onChange={(field, value) => {
             onChange(field, value);
           }}
+          maxRows={4}
+          maxLength={250}
         />
       </Col>
       <Col md="12">

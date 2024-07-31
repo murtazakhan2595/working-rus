@@ -9,7 +9,7 @@ import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 
 const LeaveAllotement = ({ departments, designations }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({employee_status: "Active,Probation,Notice Period"});
   const [employeeList, setEmployeeData] = useState([]);
   const [options, setOptions] = useState({
     page: 1,

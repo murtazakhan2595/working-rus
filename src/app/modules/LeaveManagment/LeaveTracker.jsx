@@ -14,12 +14,12 @@ import {
 import { FilterInput } from "components/form-control";
 import { Table } from "components";
 
-import { getEmployeeLeavesTypesList, yearsDropdownList } from "utils/Lists";
+import { getEmployeeLeavesTypesList } from "utils/Lists";
 import LeaveTrackerStats from "./LeaveTrackerStats";
 
 const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [Leave, setLeave] = useState([]);
-  // 
+  //
   const [isLoading, setIsLoading] = useState(true);
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
   const [filterData, setFilterData] = useState({});
@@ -29,7 +29,6 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     sizePerPage: 10,
   });
 
-
   const onPageChange = (name, value) => {
     const pageOptions = options;
     if (pageOptions[name] !== value) {
@@ -37,11 +36,10 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
-  
+
   useEffect(() => {
     setFilterData({ employee_id: userProfile.id });
   }, [userProfile]);
-
 
   useEffect(() => {
     const fetchdata = async () => {
@@ -61,30 +59,35 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     };
     fetchdata();
   }, [options, filterData]);
-    useEffect(() => {
-      const fetchLists = async () => {
-        try {
-          const leaveTypesResponse = await getEmployeeLeaveTypes({
-            employee_id: userProfile.id,
-          });
+  useEffect(() => {
+    const fetchLists = async () => {
+      try {
+        const leaveTypesResponse = await getEmployeeLeaveTypes({
+          employee_id: userProfile.id,
+        });
 
-          if (leaveTypesResponse) {
-            setLeaveTypesOfEmployee(
-              getEmployeeLeavesTypesList(leaveTypes, leaveTypesResponse.results)
-            );
-          }
-        } catch (error) {
-          console.error("Error fetching leave types:", error);
+        if (leaveTypesResponse) {
+          const leaveTypes_list = getEmployeeLeavesTypesList(
+            leaveTypes,
+            leaveTypesResponse.results
+          );
+          setLeaveTypesOfEmployee(leaveTypes_list);
         }
-      };
-      fetchLists();
-    }, [leaveTypes, userProfile]);
-
-
+      } catch (error) {
+        console.error("Error fetching leave types:", error);
+      }
+    };
+    fetchLists();
+  }, [leaveTypes, userProfile]);
 
   const handleFilterChange = (filterName, filterValue) => {
-    if(filterName === "status_hr" && filterValue){
-      filterValue = filterValue==="Approved"? "Approved by HR": filterValue==="Denied"? "Declined by HR": "pending";
+    if (filterName === "status_hr" && filterValue) {
+      filterValue =
+        filterValue === "Approved"
+          ? "Approved by HR"
+          : filterValue === "Denied"
+          ? "Declined by HR"
+          : "pending";
     }
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
@@ -97,7 +100,6 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
       return updatedFilters;
     });
   };
-
 
   const tableOptions = {
     page: options.page,
@@ -122,7 +124,10 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
           />
         }
       />
-      <LeaveTrackerStats leaveTypes={leaveTypes} userProfile={userProfile} setLeaveTypesOfEmployee/>
+      <LeaveTrackerStats
+        leaveTypes={leaveTypesOfEmployee}
+        userProfile={userProfile}
+      />
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">
@@ -147,13 +152,12 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
                       ]}
                       onChange={handleFilterChange}
                     />
-
                     <div className="flex items-center gap-x-3">
                       <div className="font-lato text-[#47484C] text-[17px]">
                         New Leave Request
                       </div>
                       <Link
-                        to="/leave-request"
+                        to="/request-leave"
                         className="p-2 rounded-md bg-black"
                         style={{ fontSize: "12px" }}
                       >

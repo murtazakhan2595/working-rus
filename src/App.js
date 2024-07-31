@@ -163,7 +163,7 @@ function App() {
               <Route exact path="/test" element={<Test />} />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-balance" element={<LeaveBalance />} />
-              <Route path="/leave-request" element={<CreateLeaveRequest />} />
+              <Route path="/request-leave" element={<CreateLeaveRequest />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/my-team" element={<ComingSoon />} />
               <Route path="/my-task" element={<ComingSoon />} />
@@ -182,7 +182,7 @@ function App() {
               />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-balance-hr" element={<LeaveBalanceHR />} />
-              <Route path="/leave-calender" element={<LeaveCalender />} />
+              <Route path="/leave-calender" element={<ComingSoon />} />
               {userRole === 1 && (
                 <>
                   <Route path="/create-task" element={<CreateTask />} />
@@ -248,7 +248,7 @@ function App() {
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
                   <Route
-                    path="/leave-request-management"
+                    path="/leave-requests"
                     element={<LeaveRequest />}
                   />
                 </>

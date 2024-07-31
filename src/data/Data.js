@@ -227,13 +227,13 @@ export const typeOptions = [
 ];
 
 export const formatNumber = (num) => {
-  const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
-  let unit = 0;
+  // const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
+  // let unit = 0;
 
-  while (num >= 1000 && unit < units.length - 1) {
-    num /= 1000;
-    unit++;
-  }
+  // while (num >= 1000 && unit < units.length - 1) {
+  //   num /= 1000;
+  //   unit++;
+  // }
 
   // Use Intl.NumberFormat to format the number with 2 decimal places
   const formattedNumber = new Intl.NumberFormat("en-US", {
@@ -241,7 +241,9 @@ export const formatNumber = (num) => {
     maximumFractionDigits: 2,
   }).format(num);
 
-  return formattedNumber + units[unit];
+  return formattedNumber;
+
+  // return formattedNumber + units[unit];
 };
 
 export const PriorityList = [
@@ -413,7 +415,7 @@ export const TaskSortingFilters = [
   },
   {
     label: "Members",
-    name: "members",
+    name: "assigned_to",
     options: [
       { label: "No Members", value: "" },
       { label: "Selected Members", value: "asc" },
@@ -421,21 +423,21 @@ export const TaskSortingFilters = [
   },
   {
     label: "Due Date",
-    name: "due_Dates",
+    name: "end_date",
     options: [
-      { label: "No dates", value: "Remote" },
-      { label: "Overdates", value: "Hybrid" },
-      { label: "Due the next day", value: "Onsite" },
+      { label: "No dates", value: "" },
+      { label: "Overdates", value: "overdue" },
+      { label: "Due the next day", value: "nextday" },
     ],
   },
   {
     label: "Priority",
     name: "priority",
     options: [
-      { label: "No priority", value: "Full_Time" },
-      { label: "High", value: "Internees" },
-      { label: "Medium", value: "Part_Time" },
-      { label: "Low", value: "Part_Time" },
+      { label: "No priority", value: "" },
+      { label: "High", value: 1 },
+      { label: "Medium", value: 2 },
+      { label: "Low", value: 3 },
     ],
   },
 ];
@@ -461,11 +463,17 @@ export function getManagerSelected(managers, managersList) {
 }
 
 export const handleUpdateProfile = (dispatch, data) => {
-  dispatch(setUserProfile(data));
+  const userprofile={
+    id: data.id,
+    username: data.username,
+    is_filled: data.is_filled,
+    role: data.user_role,
+  };
+  dispatch(setUserProfile(userprofile));
   dispatch(fetchEmployees());
   dispatch(fetchDepartments());
   dispatch(fetchLeaveTypes());
   dispatch(fetchDesignations());
   dispatch(fetchReportingManagers());
-  dispatch(fetchProjects());
+  dispatch(fetchProjects(userprofile));
 };
