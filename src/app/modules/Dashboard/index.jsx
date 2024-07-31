@@ -16,6 +16,7 @@ import EmployeeOverview from "./sections/EmployeeOverview";
 import TalentSphere from "./sections/TalentSphere";
 import LeaveTrackerOverview from "./sections/LeaveTrackerOverview";
 import MyTasks from "./MyTasks";
+import MyLeaves from "./sections/MyLeaves";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
   // const [isBarOpen, seIsBarOpen] = useState(false);
@@ -146,6 +147,10 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
               <MyTasks />
             </div>
           </div>
+          <div className="flex gap-5 my-5">
+              <MyLeaves/>
+          </div>
+
         </main>
       </div>
     </>
