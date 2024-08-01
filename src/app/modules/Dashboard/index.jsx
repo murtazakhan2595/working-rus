@@ -19,6 +19,7 @@ import MyTasks from "./MyTasks";
 import MyLeaves from "./sections/MyLeaves";
 import AllProjects from "./sections/AllProjects";
 import MyTeams from "./sections/MyTeams";
+import TaskProgress from "./sections/TaskProgress";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
   // const [isBarOpen, seIsBarOpen] = useState(false);
@@ -125,6 +126,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
                     {(userProfile.role === 1 || userProfile.role === 3) && (
                       <EmployeeOverview />
                     )}
+                    <TaskProgress/>
                   </div>
                 </div>
                 <div className="mt-5 ">
