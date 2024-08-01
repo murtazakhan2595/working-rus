@@ -18,6 +18,7 @@ import LeaveTrackerOverview from "./sections/LeaveTrackerOverview";
 import MyTasks from "./MyTasks";
 import MyLeaves from "./sections/MyLeaves";
 import AllProjects from "./sections/AllProjects";
+import MyTeams from "./sections/MyTeams";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
   // const [isBarOpen, seIsBarOpen] = useState(false);
@@ -146,6 +147,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
             <div className="flex flex-col w-full gap-5 ">
               <div>Recent activity</div>
               <MyTasks />
+              <MyTeams/>
             </div>
           </div>
           <div className="flex gap-5 my-5">

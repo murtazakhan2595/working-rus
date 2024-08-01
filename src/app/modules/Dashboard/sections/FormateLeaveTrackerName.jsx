@@ -19,7 +19,7 @@ export default function FormateLeaveTrackerName({ row }) {
         >
           {name?.toUpperCase().charAt(0)}
         </div>
-        <div className="h-[35px] flex-col justify-start items-start gap-[5px] inline-flex">
+        <div className="flex-col justify-start items-start gap-[5px] inline-flex">
           <div className="text-[#323233] text-sm font-bold ">{row.name}</div>
           <div className="justify-start items-start gap-[5px] inline-flex">
             <div className="text-[#5c5e64] text-[11px] font-normal ">
