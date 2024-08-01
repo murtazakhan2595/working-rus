@@ -64,10 +64,10 @@ const getTaskByBoardId = async (payload) => {
     });
     if (response.status === 200) {
       const data = response.data;
-      getTaskFilteredData(data, filterData);
+      const taskList = getTaskFilteredData(data, filterData);
       const TasksData = {
-        count: data.length,
-        results: data,
+        count: taskList.length,
+        results: taskList,
       };
       return TasksData;
     } else {
@@ -110,7 +110,26 @@ const getAllBoards = async (payload) => {
   }
   return [];
 };
-
+const getAllLabels = async () => {
+  const URL = `/TaskLabel`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const data = response.data;
+      return data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching task data :", error);
+  }
+  return [];
+};
 
 const addBoard = async (payload) => {
   try {
@@ -432,7 +451,6 @@ const getAttachmentById = async (attachmentId) => {
 };
 
 const fetchComments = async (filter) => {
-  console.log("fetchComments", filter);
   try {
     const response = await axios.get(
       `${baseUrl}/comments/?search=${encodeURIComponent(
@@ -512,4 +530,5 @@ export {
   deleteAttachment,
   fetchComments,
   postComment,
+  getAllLabels
 };

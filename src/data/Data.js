@@ -417,7 +417,7 @@ export const TaskSortingFilters = [
     label: "Members",
     name: "assigned_to",
     options: [
-      { label: "No Members", value: "" },
+      { label: "No Members", value: "noMember" },
       { label: "Selected Members", value: "asc" },
     ],
   },
@@ -425,7 +425,7 @@ export const TaskSortingFilters = [
     label: "Due Date",
     name: "end_date",
     options: [
-      { label: "No dates", value: "" },
+      { label: "No dates", value: "noDate" },
       { label: "Overdates", value: "overdue" },
       { label: "Due the next day", value: "nextday" },
     ],
@@ -434,7 +434,7 @@ export const TaskSortingFilters = [
     label: "Priority",
     name: "priority",
     options: [
-      { label: "No priority", value: "" },
+      { label: "No priority", value: "noPriority" },
       { label: "High", value: 1 },
       { label: "Medium", value: 2 },
       { label: "Low", value: 3 },

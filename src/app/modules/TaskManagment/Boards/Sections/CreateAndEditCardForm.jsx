@@ -22,27 +22,35 @@ import { BiDotsVerticalRounded } from "react-icons/bi";
 import { FaRegImage } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { useSelector } from "react-redux";
-import {validationTaskFormSchema} from "app/utils/FormSchema/taskManagementFormSchema";
+import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
+import { getAllLabels } from "app/hooks/taskManagment";
 
-
-const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose, isEdit }) => {
-  console.log("initialValues", initialValues)
+const CreateAndEditCardForm = ({
+  initialValues,
+  employees,
+  handleSubmit,
+  onClose,
+  isEdit,
+}) => {
   const formRef = useRef();
   const fileInputRef = useRef(null);
   const [membersOpen, setMembersOpen] = useState(false);
   const [newfiles, setNewFiles] = useState([]);
-  const [files, setFiles] = useState([]); 
+  const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
+  const [labels, setLabels] = useState([]);
+  // useEffect(async () => {
+  //   const labelList = await getAllLabels();
+  //   setLabels(labelList);
+  // }, []);
 
-
-    useEffect(() => {
-      setFiles(initialValues.attachment);
-    }, [initialValues.attachment]);
-
+  useEffect(() => {
+    setFiles(initialValues.attachment);
+  }, [initialValues.attachment]);
 
   const userProfile = useSelector((state) => state.user.userProfile);
-   const formInitialValues = isEdit 
-    ? initialValues 
+  const formInitialValues = isEdit
+    ? initialValues
     : { ...initialValues, assigned_by: userProfile.id };
 
   const handleAttachmentsChange = (event, props) => {
@@ -68,24 +76,23 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
       })
     )
       .then((fileDataArray) => {
-        setNewFiles(fileDataArray); 
+        setNewFiles(fileDataArray);
       })
       .catch((error) => {
         console.error("Error reading files:", error);
       });
   };
-  const removeFile = (file)=>{
+  const removeFile = (file) => {
     console.log("file", file);
-    if(file.id){
+    if (file.id) {
       setDeleteFiles([...deleteFiles, file.id]);
-       const filteredFiles = files.filter(f => f.id !== file.id);
+      const filteredFiles = files.filter((f) => f.id !== file.id);
       setFiles(filteredFiles);
-    }
-    else{
-      const filteredFiles = newfiles.filter(f => f.name !== file.name);
+    } else {
+      const filteredFiles = newfiles.filter((f) => f.name !== file.name);
       setNewFiles(filteredFiles);
     }
-  }
+  };
 
   const removeMember = (member) => {
     console.log("member", member);
@@ -103,8 +110,8 @@ const CreateAndEditCardForm = ({ initialValues, employees, handleSubmit, onClose
         handleSubmit(values, newfiles, files, deleteFiles, resetForm);
       }}
       validate={(values) => {
-        const errors = validationTaskFormSchema(values);
-        return errors;
+        // const errors = validationTaskFormSchema(values);
+        return {};
       }}
     >
       {(props) => (

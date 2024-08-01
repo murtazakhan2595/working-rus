@@ -60,7 +60,6 @@ const Board = ({ userProfile }) => {
   }, [projectId]);
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
-    debugger
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (!filterValue || filterCheckStatus === false) {

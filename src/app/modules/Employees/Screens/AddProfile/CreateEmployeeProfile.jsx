@@ -49,7 +49,7 @@ const CreateEmployeeProfile = () => {
 
           {/*  */}
           <div className="screen">
-            <div className="max-w-[60%] block mx-auto">
+            <div className="max-w-[750px] block mx-auto">
               {currentTab === 1 && (
                 <Welcome
                   employeeId={id}
