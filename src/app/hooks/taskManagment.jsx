@@ -110,30 +110,7 @@ const getAllBoards = async (payload) => {
   }
   return [];
 };
-const getAllTasks = async (payload) => {
-  const filterData = payload?.filterData ?? {};
-  const URL = `/task/?order=-date&search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
-  try {
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const data = response.data;
-      console.log("get all tasks", data);
-      return data;
-    } else {
-      return [];
-    }
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      handleLogout();
-    }
-    console.error("Error fetching task data :", error);
-  }
-  return [];
-};
+
 
 const addBoard = async (payload) => {
   try {
@@ -490,6 +467,30 @@ const postComment = async (taskId, userId, comment) => {
     console.error("Error posting comment:", error);
     throw error; // Re-throw the error to handle it in the component
   }
+};
+const getAllTasks = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  const URL = `/task/?order=-date&search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const data = response.data;
+      console.log("get all tasks", data);
+      return data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching task data :", error);
+  }
+  return [];
 };
 export {
   getAllProjects,
