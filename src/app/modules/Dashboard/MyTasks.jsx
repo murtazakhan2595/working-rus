@@ -44,6 +44,7 @@ export default function MyTasks() {
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted && projectsData.results) {
+        setAllProjects(projectsData.results);
         fetchTasks(isMounted, projectsData.results);
       }
     } catch (error) {
@@ -85,6 +86,7 @@ export default function MyTasks() {
   }, [filterData]);
 
   useEffect(() => {
+    console.log(AllProjects);
     const dynamicOptions = AllProjects.map((project) => ({
       label: project.name,
       onClick: () => {
@@ -104,6 +106,7 @@ export default function MyTasks() {
     setOptions(dynamicOptions);
   }, [AllProjects]);
 
+  console.log(options)
 
 
   useEffect(() => {
