@@ -381,7 +381,7 @@ export const JobSortingFilters = [
 export const TaskSortingFilters = [
   {
     label: "",
-    name: "complted",
+    name: "label",
     options: [
       { label: "Finished", value: "" },
       { label: "Unfinished task", value: "asc" },
