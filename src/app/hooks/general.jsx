@@ -123,8 +123,10 @@ const getProjectsList = async (userProfile) => {
     if (response.status === 200) {
       const projectResponse = response.data;
       if (userProfile.role === 4 || userProfile.role === 2) {
-        const filteredResults = projectResponse.filter((project) =>
-          project.project_members.includes(userProfile.id)
+        const filteredResults = projectResponse.filter(
+          (project) =>
+            project.project_members.includes(userProfile.id) ||
+            project.created_by === userProfile.id
         );
         const projectList = filteredResults.map((project) => ({
           value: project.id,
