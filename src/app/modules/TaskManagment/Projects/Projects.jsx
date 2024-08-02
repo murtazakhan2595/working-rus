@@ -61,7 +61,7 @@ const Projects = ({ userProfile }) => {
   const toggleAddProject = (projectId) => {
     if (showProjectModal) {
       fetchData(true);
-      dispatch(fetchProjects());
+      dispatch(fetchProjects(userProfile));
     }
     setShowProjectModal(projectId ?? !showProjectModal);
   };

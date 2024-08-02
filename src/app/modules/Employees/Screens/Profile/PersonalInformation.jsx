@@ -34,7 +34,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    getEmployeePersonalInfoData(baseUrl, employeeId, token)
+    getEmployeePersonalInfoData(employeeId)
       .then((response) => {
         setPersonalInfo(response);
         setIsLoading(false);
