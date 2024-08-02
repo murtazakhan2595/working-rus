@@ -3,12 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import {
   getEmployeeCVDetailData,
-  getEmployeeVisaDetailData,
-  getEmployeeCerficationData,
   getEmployeeData,
   getEmployeeProfessionalExperianceData,
   getEmployeeAcademicRecordData,
-  getEmployeeVisaDetailsFiles,
 } from "app/hooks/employee";
 import { connect } from "react-redux";
 import { FiDownload } from "react-icons/fi";
@@ -29,14 +26,12 @@ import DownloadData from "./DownloadButton";
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [userData, setUserData] = useState({});
   const [educations, setEducations] = useState([{}]);
-  const [certifications, setCertifications] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);
   const [cv, setCV] = useState({});
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
-console.log(educations);
   const getDataByHooks = async () => {
     setLoading(true);
     try {
@@ -44,13 +39,11 @@ console.log(educations);
       let expData = await getEmployeeProfessionalExperianceData(userId);
       let cvData = await getEmployeeCVDetailData(userId);
       let educationData = await getEmployeeAcademicRecordData(userId);
-      let certificationData = await getEmployeeCerficationData(userId);
 
       setUserData(empData);
       setExperiences(expData);
       setCV(cvData);
       setEducations(educationData);
-      setCertifications(certificationData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -60,7 +53,7 @@ console.log(educations);
   useEffect(() => {
     getDataByHooks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userId]);
 
   const personalInfo = [
     [
@@ -142,12 +135,12 @@ console.log(educations);
                       ID: TXB-{id.toString().padStart(4, "0")}
                     </div>
                   </div>
-                  <DownloadData
+                  {/* <DownloadData
                     userData={userData}
                     experiences={experiences}
                     visa={[]}
                     certifications={certifications}
-                  />
+                  /> */}
                 </div>
               </div>
               <hr className="mt-2" />
@@ -199,14 +192,10 @@ console.log(educations);
                   getDataByHooks={getDataByHooks}
                 />
               )}
-              {Array.isArray(certifications) && certifications?.length > 0 && (
-                <Certifications
-                  isEditable={profileView}
-                  certifications={certifications}
-                  employeeId={userData.id}
-                  getDataByHooks={getDataByHooks}
-                />
-              )}
+              <Certifications
+                isEditable={profileView}
+                employeeId={userData.id}
+              />
               <IdentificationDetails
                 isEditable={profileView}
                 employeeId={userData.id}
