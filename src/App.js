@@ -53,6 +53,7 @@ import PageLoader from "./components/PageLoader.jsx";
 import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
+import EmployeesExit from "app/modules/EmployeesExit";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -208,6 +209,11 @@ function App() {
                     exact
                     path="/create-employee"
                     element={<CreateUpdateEmployee />}
+                  />
+                  <Route
+                    exact
+                    path="/exit-employee"
+                    element={<EmployeesExit />}
                   />
                   <Route
                     path="/leave-allotement"
