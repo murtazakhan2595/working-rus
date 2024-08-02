@@ -13,7 +13,7 @@ import {
   Status,
   RenderStatus,
   RenderLeaveType,
-  RenderLeaveAction
+  RenderLeaveAction,
 } from "app/modules/LeaveManagment/Sections";
 import RenderJobTitle from "app/modules/Dashboard/sections/RenderJobTitle"
 import moment from "moment";
@@ -364,7 +364,7 @@ export const AllLeavesApplicationColumns = (reload, userRole) => {
     columns.push({
       dataField: "action",
       text: "Action",
-      formatter: (cell, row) => <RenderAction row={row} reload={reload} />,
+      formatter: (cell, row) => <RenderLeaveAction row={row} reload={reload} />,
     });
   }
 
