@@ -3,16 +3,16 @@ import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { MembersList } from "../TaskManagment/Sections";
+import { MembersList } from "app/modules/TaskManagment/Sections";
 import {
   getStatusClass,
   getStatusIconColor,
-} from "../TaskManagment/Boards/Sections";
+} from "app/modules/TaskManagment/Boards/Sections";
 import moment from "moment";
 import { PriorityListIcons } from "data/Data";
 import { TimeIcon } from "@mui/x-date-pickers";
-import CustomDropdown from "./sections/CustomDropdown";
-import CreateCardModal from "./sections/CreateCardModal";
+import CustomDropdown from "./CustomDropdown";
+import CreateCardModal from "./CreateCardModal";
 
 export default function MyTasks() {
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -156,7 +156,7 @@ export default function MyTasks() {
           projects={AllProjects}
         />
       )}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
         <header className="justify-between items-center inline-flex">
           <div className="text-[#323233] text-lg font-normal leading-tight">
             My Tasks

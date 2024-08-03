@@ -144,7 +144,10 @@ const Board = ({ userProfile }) => {
                         reloadData={() => {
                           fetchData(true);
                         }}
-                        filterData={filterData}
+                        filterData={{
+                          ...filterData,
+                          board_id: board.id,
+                        }}
                       />
                     ))
                   ) : (
@@ -168,13 +171,9 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
   const fetchData = async (isMounted) => {
     try {
-      const TaskData = await getTaskByBoardId({
-        filterData,
-        ...{ board_id: [board.id] },
-      });
+      const TaskData = await getTaskByBoardId({ filterData });
       if (isMounted) {
         setTasks(TaskData);
       }
@@ -250,7 +249,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
               <span>{board.name}</span>
             </h2>
             <span className="justify-center flex text-sm bg-white text-zinc-600 w-[22px] h-[22px]">
-              {tasks?.count}
+              {tasks?.count || 0}
             </span>
           </div>
 

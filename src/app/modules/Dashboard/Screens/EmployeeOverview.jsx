@@ -73,9 +73,9 @@ function EmployeeOverview() {
   }, [userProfile]);
 
   return (
-    <section className="flex flex-col items-center gap-6 px-[14px] pt-6 bg-white rounded-md min-w-[367pxpx] w-[367px] h-fit">
+    <section className="flex flex-col items-center gap-6 px-[14px] pt-6 bg-white rounded-md w-full h-[100%]">
       <div className=" justify-between items-center inline-flex w-full">
-        <div className="items-center gap-3 flex">
+        <div className="items-center gap-2 flex">
           <GoPeople className="text-lg font-bold" />
           <div className="text-[#323233] text-lg font-normalleading-tight">
             Total Employees
@@ -90,7 +90,6 @@ function EmployeeOverview() {
           </div>
         </Link>
       </div>
-
       <div className="flex flex-col items-center justify-center">
         <div className="w-60 max-w-full max-h-[115px] relative">
           <Chart

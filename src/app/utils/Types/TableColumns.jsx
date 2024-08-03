@@ -15,10 +15,8 @@ import {
   RenderLeaveType,
   RenderLeaveAction,
 } from "app/modules/LeaveManagment/Sections";
-import RenderJobTitle from "app/modules/Dashboard/sections/RenderJobTitle"
 import moment from "moment";
 import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
-import FormateLeaveTrackerName from "app/modules/Dashboard/sections/FormateLeaveTrackerName";
 import { IoIosArrowDown } from "react-icons/io";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
@@ -242,67 +240,6 @@ export const AllJobApplicationColumns = (
         handleOptionSelect={handleOptionSelect}
       />
     ),
-  },
-];
-
-export const DashbaordJobApplicationColumns = (navigate) => [
-  {
-    dataField: "id",
-    text: "Open Jobs",
-    formatter: (cell, row) => <RenderJobTitle row={row} />,
-    width: "45%",
-  },
-
-  {
-    dataField: "total_applications",
-    text: "Applications",
-    formatter: (cell, row) => (
-      <div className="flex items-center justify-center gap-2 text-[#5c5e64] text-sm font-normal ">
-        <IoBagCheckOutline />
-        {cell}
-      </div>
-    ),
-  },
-  {
-    dataField: "Deadline",
-    text: "Expiry Date",
-    formatter: (cell) => <>{moment(cell).format("DD MMM YYYY")}</>,
-  },
-  {
-    dataField: "job_link",
-    text: "Links",
-    formatter: (cell, row, list) => (
-      <button
-        className=""
-      >
-        <BsBoxArrowUpRight className="text-sm cursor-pointer opacity-80" />
-      </button>
-    ),
-    onClick: (index, list) => {
-      navigate(`/job-description/${list[index].id}`);
-    },
-  },
-];
-export const DashboardLeaveTrackerColumns = [
-  {
-    dataField: "id",
-    text: "",
-    formatter: (cell, row) => <FormateLeaveTrackerName row={row} />,
-    width: "45%",
-  },
-  {
-    dataField: "date",
-    text: "",
-    formatter: (cell) => (
-      <div className="text-[#5c5e64] text-sm font-normal  leading-[18px]">
-        {moment(cell).format("DD MMM YYYY")}
-      </div>
-    ),
-  },
-  {
-    dataField: "status_hr",
-    text: "Status",
-    formatter: (cell) => <StatusLabel status={Status(cell)} />,
   },
 ];
 

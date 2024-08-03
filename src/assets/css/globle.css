@@ -192,6 +192,12 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
   color: #ff9900 !important;
 }
 
+
+.label-warning {
+  background-color: #FEF9EE !important;
+  color: #98690C  !important;
+}
+
 .label-info {
   background-color: #e8fbfd !important;
   color: #11c5db !important;

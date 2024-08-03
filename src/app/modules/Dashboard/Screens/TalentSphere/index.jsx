@@ -4,7 +4,7 @@ import { FaChevronRight, FaPlus, FaRegStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { HiOutlineBars3 } from "react-icons/hi2";
 import { Table } from "components";
-import { DashbaordJobApplicationColumns } from "app/utils/Types/TableColumns";
+import { DashbaordJobApplicationColumns } from "app/modules/Dashboard/Screens/Sections";
 import { fetchJobPosts } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
@@ -29,15 +29,14 @@ const TalentSphere = () => {
   };
   const fetchLists = async () => {
     try {
-     
       const applicants = await getJobApplicants();
-      if(applicants){
-        setApplicantsData(applicants)
+      if (applicants) {
+        setApplicantsData(applicants);
       }
     } catch (error) {
       console.error("Error fetching applications:", error);
     } finally {
-      setIsApplicantsLoading(false)
+      setIsApplicantsLoading(false);
     }
   };
   useEffect(() => {
@@ -46,15 +45,15 @@ const TalentSphere = () => {
   }, []);
 
   return (
-    <div className="flex flex-col pt-6 pb-3 pl-3.5 bg-white rounded-md shadow w-[860px] ">
-      <div className="flex gap-4 justify-between w-full max-md:flex-wrap">
-        <div className="flex gap-3 p-3 text-lg tracking-tight leading-5 rounded-lg text-zinc-800">
+    <div className="flex flex-col py-6 px-3 bg-white rounded-md  w-full h-fit ">
+      <div className="flex gap-4 justify-between w-full flex-wrap">
+        <div className="flex gap-1 text-lg tracking-tight leading-5 rounded-lg text-zinc-800 items-center">
           <FaRegStar />
           <div>Talent Sphere</div>
         </div>
-        <div className="flex gap-5 pl-20 my-auto max-md:flex-wrap">
+        <div className="flex gap-1 my-auto flex-wrap">
           <Link to="/jobs">
-            <div className="flex gap-1.5 justify-center px-2.5 py-2 my-auto text-xs leading-5 text-black rounded items-center ">
+            <div className="flex gap-1.5 justify-center px-2.5 py-2 my-auto text-sm leading-5 text-black rounded items-center ">
               <div className="grow my-auto">View All</div>
               <FaChevronRight size={11} />
             </div>
@@ -67,16 +66,16 @@ const TalentSphere = () => {
           </Link>
         </div>
       </div>
-      <div className="flex gap-5 justify-between pr-5 mt-4 max-md:flex-wrap">
-        <div className="flex flex-col justify-end max-md:max-w-full h-fit">
-          <div className="flex gap-3 max-md:flex-wrap">
+      <div className="flex gap-3 justify-between mt-4 max-md:flex-wrap">
+        <div className="flex flex-col justify-end md:w-[65%] sm:w-[100%]">
+          <div className="flex gap-3 flex-wrap">
             <TitleCard label={"Job Opening"} value={6} />
             <TitleCard label={"Applications"} value={50} />
             <TitleCard label={"Shortlisted"} value={20} />
             <TitleCard label={"Interview"} value={5} />
           </div>
 
-          <div className="flex flex-col justify-center mt-4 text-sm bg-gray-50 rounded-xl text-zinc-800 max-md:max-w-full limit m-bottom-zero">
+          <div className="mt-4 h-80 overflow-auto m-bottom-zero hideScroll">
             {isLoading ? (
               <PageLoader />
             ) : (
@@ -84,13 +83,14 @@ const TalentSphere = () => {
                 columns={DashbaordJobApplicationColumns(navigate)}
                 data={posts}
                 pagination={false}
+                dataStyle={{ backgroundColor: "white" }}
                 rowExpand={false}
                 tableOptions={{ onRowClick: false }}
               />
             )}
           </div>
         </div>
-        <div className="flex flex-col pb-16 w-full h-fit">
+        <div className="flex flex-col h-auto max-h-[25rem] md:w-[35%] sm:w-[100%]">
           <div className="text-sm font-bold leading-5 text-zinc-800">
             Ongoing process
           </div>
@@ -109,7 +109,7 @@ export default TalentSphere;
 
 const TitleCard = ({ label, value }) => {
   return (
-    <div className="flex gap-4 p-2 bg-gray-50 rounded-md border border-solid border-zinc-300">
+    <div className="flex gap-1 p-2 bg-gray-50 rounded-md border border-solid border-zinc-300">
       <div className="flex justify-center items-center my-auto w-6 h-6 bg-sky-500 bg-opacity-10  rounded-[100px]">
         <HiOutlineBars3 className="text-sky-600" />
       </div>
@@ -123,7 +123,7 @@ const TitleCard = ({ label, value }) => {
 
 const RenderApplicants = ({ applicantsData }) => {
   return (
-    <div className="h-96 overflow-y-auto">
+    <div className="h-full overflow-y-auto hideScroll">
       {applicantsData.map((applicant) => (
         <div
           key={applicant.id} // Replace 'applicant.id' with a unique identifier from your applicant data
