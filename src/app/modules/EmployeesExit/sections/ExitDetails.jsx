@@ -11,7 +11,7 @@ function ExitDetails({ exitData }) {
       label: "Exit date",
       value: moment(exitData.exit_date).format("DD-MM-YYYY") || "Invalid Date",
     },
-    { label: "Notice period", value: "30 days" },
+    { label: "Notice period", value: exitData.notice_period },
   ];
   return (
     <>
@@ -29,10 +29,10 @@ function ExitDetails({ exitData }) {
             />
           ))}
         </div>
-        <ResignationLetter
+        {exitData.resignation_letter &&<ResignationLetter
           name={exitData.name}
           file={exitData.resignation_letter}
-        />
+        />}
       </div>
     </>
   );

@@ -23,7 +23,9 @@ import { AiOutlineDownload } from "react-icons/ai";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 import { IoBagCheckOutline } from "react-icons/io5";
 import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
-
+import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
+import { MdOutlineFileDownload } from "react-icons/md";
+import { filebase64Download } from "utils/fileUtils";
 
 
 
@@ -156,7 +158,7 @@ export const MyLeavesColumns = [
     formatter: (cell, row) => <RenderStatus row={row} />,
   },
 ];
-export const ExitRequestColumns = [
+export const ExitRequestColumns = (handleOptionSelect, reload) => [
   {
     dataField: "name",
     text: "Employees",
@@ -173,7 +175,7 @@ export const ExitRequestColumns = [
   },
 
   {
-    dataField: "",
+    dataField: "notice_period",
     text: "Notice Period",
   },
   {
@@ -183,17 +185,44 @@ export const ExitRequestColumns = [
   {
     dataField: "",
     text: "Application",
-    formatter: (cell) => <StatusLabel status={Status(cell)} />,
+    formatter: (cell, row) => (
+      <>
+        {row?.resignation_letter ? (
+          <div className="justify-start items-center gap-2.5 inline-flex">
+            <div className="text-[#5c5e64] text-base font-normal">File</div>
+            <button
+              onClick={() =>
+                filebase64Download(
+                  row?.resignation_letter,
+                )
+              }
+            >
+              <AiOutlineDownload />
+            </button>
+          </div>
+        ) : (
+          "N/A"
+        )}
+      </>
+    ),
   },
   {
     dataField: "status_resignation",
     text: "Status",
-    formatter: (cell,row) => <ApplicationStatus row={row}/>,
+    formatter: (cell, row) => (
+      <ApplicationStatus row={row} isTableViewButton={true} />
+    ),
   },
   {
     dataField: "",
     text: "Action",
-    formatter: (cell, row) => <RenderStatus row={row} />,
+    formatter: (cell, row) => (
+      <RenderExitTableAction
+        row={row}
+        handleOptionSelect={handleOptionSelect}
+        reload={reload}
+      />
+    ),
   },
 ];
 
@@ -285,7 +314,6 @@ export const AllJobApplicationColumns = (
 ];
 
 export const AllLeavesApplicationColumns = (reload, userRole) => {
-  console.log(userRole)
   const columns = [
     {
       dataField: "employee_id",
@@ -337,7 +365,6 @@ export const AllLeavesApplicationColumns = (reload, userRole) => {
       formatter: (cell, row) => <RenderStatus row={row} />,
     },
   ];
-  console.log(userRole === 1 || userRole === 3, userRole);
   if (userRole === 1 || userRole === 3) {
     columns.push({
       dataField: "action",

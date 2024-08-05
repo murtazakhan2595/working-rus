@@ -7,7 +7,7 @@ import {
 } from "reactstrap";
 import { StatusIcon } from "app/modules/LeaveManagment/Sections";
 
-const ApplicationStatus = ({ row }) => {
+const ApplicationStatus = ({ row, isTableViewButton=false }) => {
   console.log("row", row);
   const status = row.status_resignation;
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
@@ -62,11 +62,16 @@ const ApplicationStatus = ({ row }) => {
         toggle={() => toggleDropdown(row.id)}
       >
         <DropdownToggle className="border-0 shadow-none bg-transparent">
+          {isTableViewButton ?<button className="h-[35px] px-[34px] py-2.5 rounded-[5px] border border-[#323233] justify-center items-center gap-2.5 inline-flex">
+            <div className="text-[#323233] text-[15px] font-normal font-['Lato'] leading-[19px]">
+              View
+            </div>
+          </button>:
           <button className="px-[34px] py-2.5 rounded-[5px] border border-[#323233] justify-center items-center gap-2.5 flex">
             <div className="text-[#323233] text-[15px] font-normal ">
               View status
             </div>
-          </button>
+          </button>}
         </DropdownToggle>
         <DropdownMenu start className="p-3 ml-2 shadow ">
           <DropdownItem className={`${itemClassName} fw-bold`}>

@@ -190,7 +190,7 @@ function App() {
                   element={<EmployeesExit />}
                 />
               )}
-              {userRole === 2 && (
+              {userRole !== 4 && (
                 <Route
                   exact
                   path="/exit-employee"

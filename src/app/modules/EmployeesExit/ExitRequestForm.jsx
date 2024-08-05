@@ -15,7 +15,12 @@ import { getAllCountries } from "countries-and-timezones";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
 
-const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
+const PersonalInformation = ({
+  personalInfo,
+  userData,
+  isEditable,
+  reload,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -29,14 +34,16 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
       status_resignation: "pending",
       exit_date: data.exit_date,
       resignation_letter: data.resignation_Letter,
+      notice_period: data.notice_period,
     };
-    
+
     try {
-      console.log("employee exit form", formData);
-     const response = await employeeExit(formData);
-     if(response){
-      toast.success("Request has been successfully submitted");
-     }
+      console.log("employee exit form", formData, data);
+       const response = await employeeExit(formData);
+      if (response) {
+        toast.success("Request has been successfully submitted");
+        reload()
+      }
     } catch (error) {
       setIsLoading(false);
       console.error("Error in handleSubmit:", error);
@@ -157,19 +164,19 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
                             name={"notice_period"}
                             options={[
                               {
-                                value: 1,
+                                value: "1 month",
                                 label: "1 month",
                               },
                               {
-                                value: 2,
+                                value: "2 month",
                                 label: "2 month",
                               },
                               {
-                                value: 3,
+                                value: "3 month",
                                 label: "3 month",
                               },
                               {
-                                value: 0,
+                                value: "0 month",
                                 label: "0 month",
                               },
                             ]}
@@ -269,12 +276,7 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
     </>
   );
 };
-export default function ExitRequestForm({
-  token,
-  baseUrl,
-  userProfile,
-  profileView,
-}) {
+export default function ExitRequestForm({ token, baseUrl, userProfile, profileView, reload }) {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState({});
   const userId = userProfile?.id;

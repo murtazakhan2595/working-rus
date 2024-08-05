@@ -824,6 +824,26 @@ const getEmployeeExitData = async (employeeid) => {
       console.error("Error fetching Personal Info data :", error);
     }
 }
+const updateExitData = async (payload) => {
+  if (payload?.id) {
+    try {
+      let URL = `${baseUrl}/employeeExit/${payload?.id}`;
+      const response = await axios.patch(URL, payload, {
+        headers: headers(),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+
+      console.error("Error fetching Personal Info data :", error);
+      return false;
+    }
+  }
+}
 
 export {
   getEmployeeData,
@@ -852,4 +872,5 @@ export {
   deleteEmployeeCertificateData,
   employeeExit,
   getEmployeeExitData,
+  updateExitData,
 };

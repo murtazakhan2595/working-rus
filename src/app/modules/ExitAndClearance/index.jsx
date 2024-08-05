@@ -16,14 +16,14 @@ const ExitAndClearance = ({ userProfile }) => {
   const [exitData, setExitData] = useState(null);
   console.log("exit and clearance", exitData);
 
+  const fetchData = async () => {
+    const response = await getEmployeeExitData();
+    console.log("response", response);
+    if (response) {
+      setExitData(response);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await getEmployeeExitData();
-      console.log("response", response);
-      if (response) {
-        setExitData(response);
-      }
-    };
     fetchData();
   }, [userProfile]);
 
@@ -32,7 +32,7 @@ const ExitAndClearance = ({ userProfile }) => {
       <Header title="Exit Requests" />
       <Row className="bg-[#F0F1F2] relative">
         <Col lg={12}>
-          <StatCard exitData={exitData?.data}/>
+          <StatCard exitData={exitData?.data} />
         </Col>
         <Col lg={12}>
           <div className="   m-2 mb-0 0">
@@ -47,10 +47,14 @@ const ExitAndClearance = ({ userProfile }) => {
         <Col lg={12}>
           <>
             {activeTab === "Resignations" && exitData ? (
-              <Resignations userProfile={userProfile} exitData={exitData} />
+              <Resignations
+                userProfile={userProfile}
+                exitData={exitData}
+                reload={fetchData}
+              />
             ) : (
               activeTab === "Terminations" && (
-                <Terminations userProfile={userProfile}/>
+                <Terminations userProfile={userProfile} />
               )
             )}
           </>

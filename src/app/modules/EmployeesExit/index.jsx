@@ -13,13 +13,14 @@ import ExitRequestDetails from "./ExitRequestDetails";
 const EmployeeExit = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Exit Request");
   const [ exitData, setExitData ] = useState(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      const response  = await getEmployeeExitData(userProfile.id);
-      if(response){
-        setExitData(response.data.results.result[0]);
-      }
+  const fetchData = async () => {
+    const response  = await getEmployeeExitData(userProfile.id);
+    console.log("response emp exit", response.data.results.result[0]);
+    if(response){
+      setExitData(response.data.results.result[0]);
     }
+  }
+  useEffect(() => {
     fetchData();
   }, [userProfile]);
 
@@ -45,7 +46,7 @@ const EmployeeExit = ({ userProfile }) => {
                 exitData={exitData}
               />
             ) : activeTab === "Exit Request" ? (
-              <ExitRequestForm userProfile={userProfile} />
+              <ExitRequestForm userProfile={userProfile} reload={fetchData} />
             ) : (
               <ExitRequestForm userProfile={userProfile} />
             )}
