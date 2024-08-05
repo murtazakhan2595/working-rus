@@ -35,7 +35,10 @@ const CheckboxDropdown = ({
         >
           <span onClick={() => toggleDropdown()}>{label}</span>
         </DropdownToggle>
-        <DropdownMenu end className="custom-dropdown-menu h-[70vh] overflow-y-auto">
+        <DropdownMenu
+          end
+          className="custom-dropdown-menu h-[70vh] overflow-y-auto"
+        >
           {mainHeading && (
             <h5 className="mb-2">
               <b>{mainHeading}</b>
@@ -75,10 +78,38 @@ export const SortingCategory = ({ item, onChange, values }) => {
                 name={item.name}
                 label={checkbox.label}
                 value={
-                  values &&
-                  values[item.name] &&
-                  values[item.name].includes(checkbox.value)
+                  values && values[item.name]
+                    ? values[item.name].includes(checkbox.value)
+                    : false
                 }
+                onChange={(field, option) => {
+                  onChange(field, checkbox.value, option);
+                }}
+              />
+              {checkbox.options && checkbox.options.length > 0 && (
+                <div className="pl-3">
+                  <SortingSubCategory options={checkbox.options} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+    </div>
+  );
+};
+
+export const SortingSubCategory = ({ options, onChange, values }) => {
+  return (
+    <div className="max-h-[16rem] overflow-y-auto">
+      {options &&
+        options.length > 0 &&
+        options.map((checkbox) => {
+          return (
+            <div className="pl-3" key={checkbox.value}>
+              <CheckBoxInput
+                name={checkbox.label}
+                label={checkbox.name}
+                value={false}
                 onChange={(field, option) => {
                   onChange(field, checkbox.value, option);
                 }}

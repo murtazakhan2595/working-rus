@@ -111,6 +111,7 @@ ul {
 .ql-editor {
   padding-top: 2rem !important;
   min-height: 150px;
+  outline: none !important;
 }
 
 .ql-toolbar {
@@ -284,6 +285,16 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
   box-shadow: none !important;
   border: 1px solid #323333 !important;
   width: 6rem !important;
+  border-radius: 0.375rem !important;
+  color: #323333 !important;
+  outline: none !important;
+}
+.custom-dasboard-dropdown-toggle-filter {
+  background-color: transparent !important;
+  padding-left: 0rem !important;
+  box-shadow: none !important;
+  border: 0px solid #323333 !important;
+  width: fit-content !important;
   border-radius: 0.375rem !important;
   color: #323333 !important;
   outline: none !important;
