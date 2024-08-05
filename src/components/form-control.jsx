@@ -204,7 +204,7 @@ const TextInput = ({
 const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
   return (
     <>
-      <FormGroup check className="my-3">
+      <FormGroup check className="my-1">
         <Input
           id={name}
           type="checkbox"

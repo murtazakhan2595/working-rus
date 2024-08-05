@@ -7,7 +7,6 @@ import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
-import Boardd from "./app/modules/Board";
 import {
   Applications,
   Jobs,
@@ -34,14 +33,10 @@ import {
   setToken,
 } from "./state/slices/UserSlice.js";
 import { handleUpdateProfile } from "data/Data";
-import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import Employee from "./app/modules/Employees/Employee.jsx";
-import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
 import { EditEmployeeProfile } from "./app/modules/Employees/Screens/Profile";
 import Test from "./app/modules/Profile/Test.jsx";
-import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
-import LeaveBalanceHR from "./app/modules/LeaveApplication/LeaveBalanceHR.jsx";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import MyDtr from "./app/modules/DTR/MyDtr.jsx";
@@ -150,8 +145,6 @@ function App() {
               <Route path="/coming-soon" element={<ComingSoon />} />
               <Route path="/services" element={<Services />} />
               <Route exact path="/" element={<Dashboard />} />
-              <Route path="/board/:id" element={<Boardd />} />
-              <Route path="/project/:id" element={<BoardList />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/project-board/:projectId" element={<Board />} />
               <Route
@@ -160,7 +153,6 @@ function App() {
               />
               <Route exact path="/test" element={<Test />} />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-              <Route path="/leave-balance" element={<LeaveBalance />} />
               <Route path="/request-leave" element={<CreateLeaveRequest />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/my-team" element={<ComingSoon />} />
@@ -174,12 +166,7 @@ function App() {
               <Route path="/my-travel-details" element={<ComingSoon />} />
               <Route path="/letter-request" element={<ComingSoon />} />
               <Route path="/leave-history" element={<LeaveHistory />} />
-              <Route
-                path="/leave-balance-employee"
-                element={<LeaveBalanceEmployee />}
-              />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-              <Route path="/leave-balance-hr" element={<LeaveBalanceHR />} />
               <Route path="/leave-calender" element={<ComingSoon />} />
               {userRole === 1 && (
                 <>
