@@ -22,7 +22,6 @@ import EditCard from "./EditCard";
 import { getRandomColor } from "utils/renderValues";
 
 const TaskDetail = ({ task, onClose, employees }) => {
-  console.log("employees,", employees);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [boardName, setBoardName] = useState("Loading...");
@@ -210,7 +209,7 @@ const TaskDetail = ({ task, onClose, employees }) => {
         />
       )}
       {isTaskDetailVisible && (
-        <div className="p-4 max-w-xl w-[40%] mx-auto bg-white rounded-lg shadow-lg fixed z-10 top-0 right-0 overflow-y-auto h-[100vh] hideScroll">
+        <div className="p-4 max-w-[700px] w-[95%] mx-auto bg-white rounded-lg shadow-lg fixed z-10 top-0 right-0 overflow-y-auto h-[100vh] hideScroll">
           <div onClick={onClose} className="flex justify-end mb-3">
             <RxCross2 className="text-baseGray" />
           </div>

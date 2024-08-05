@@ -2,7 +2,16 @@ import { connect } from "react-redux";
 import WorkTime from "./WorkTime";
 import TodoList from "./Todolist";
 import TaskPlanner from "./TaskPlanner";
-// import "./index.css";
+import {
+  Card,
+  CardImg,
+  CardBody,
+  CardTitle,
+  CardText,
+  CardFooter,
+  Row,
+  Col,
+} from "reactstrap";
 import DailyTaskRpt from "./DailyTaskRpt";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
@@ -10,67 +19,100 @@ import { useEffect, useState } from "react";
 import { setUserLogout } from "state/actions/UserAction";
 import { RiArrowDownSFill } from "react-icons/ri";
 import { getEmployeeData } from "app/hooks/employee";
-import ProfileManagement from "./sections/ProfileManagement";
-import LeaveBalance from "./sections/LeaveBalance";
-import EmployeeOverview from "./sections/EmployeeOverview";
-import TalentSphere from "./sections/TalentSphere";
-import LeaveTrackerOverview from "./sections/LeaveTrackerOverview";
-import MyTasks from "./MyTasks";
-import MyLeaves from "./sections/MyLeaves";
-import AllProjects from "./sections/AllProjects";
-import MyTeams from "./sections/MyTeams";
-import TaskProgress from "./sections/TaskProgress";
+import ProfileManagement from "./Screens/ProfileManagement";
+import LeaveBalance from "./Screens/LeaveBalance";
+import MyTeams from "./Screens/MyTeams";
+import TaskProgress from "./Screens/TaskProgress";
+import {
+  RecentActivity,
+  MyTasks,
+  EmployeeOverview,
+  LeaveTrackerOverview,
+  TalentSphere,
+  MyLeaves,
+  AllProjects,
+} from "./Screens";
+import { Header } from "components";
 
 const Dashboard = ({ isSidebarOpen, userProfile }) => {
   // const [isBarOpen, seIsBarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [profileData, setProfileData] = useState({image:"",initials:""});
+  const [profileData, setProfileData] = useState({ image: "", initials: "" });
 
   const navigate = useNavigate();
   const cookies = new Cookies();
 
   const handleDropdownClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
-
   };
 
   const handleLogout = () => {
-    window.localStorage.setItem("token","")
+    window.localStorage.setItem("token", "");
     setUserLogout();
     navigate("/login");
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      try{
-        const response =await getEmployeeData(userProfile.id);
-        setProfileData(
-         { image:response?.profile_picture?.file ||
-          response?.profile_picture,
-          initials: `${response?.first_name?.toUpperCase().slice(0, 1)}${response?.last_name?.toUpperCase().slice(0, 1)}`
-        }
-        );
-        
-      }catch(err){
-        console.error(err)
+      try {
+        const response = await getEmployeeData(userProfile.id);
+        setProfileData({
+          image: response?.profile_picture?.file || response?.profile_picture,
+          initials: `${response?.first_name
+            ?.toUpperCase()
+            .slice(0, 1)}${response?.last_name?.toUpperCase().slice(0, 1)}`,
+        });
+      } catch (err) {
+        console.error(err);
       }
-    }
-    fetchData()
+    };
+    fetchData();
   }, [userProfile]);
   return (
     <>
+      <div className="screen bg-[#F0F1F2] ">
+        <Header title={`Dashboard`} />
+        <div className="flex flex-wrap">
+          <div className="flex flex-wrap w-[100%] lg:w-[70%]">
+            <div className="h-[290px] w-[100%] md:w-[50%] overflow-hidden p-2">
+              <EmployeeOverview />
+            </div>
+            <div className="h-[290px] w-[100%] md:w-[50%] overflow-hidden p-2">
+              <TaskProgress />
+            </div>
+            <div className="w-[100%] overflow-hidden p-2">
+              <LeaveTrackerOverview />
+            </div>
+            <div className=" w-[100%] overflow-hidden p-2">
+              <TalentSphere />
+            </div>
+          </div>
+          <div className="flex flex-wrap w-[100%] lg:w-[30%]">
+            <div className="w-[100%] overflow-hidden p-2">
+              <RecentActivity />
+            </div>
+            <div className="w-[100%] overflow-hidden p-2">
+              <MyTasks />
+            </div>
+            <div className="w-[100%] overflow-hidden p-2">
+              <MyTeams />
+            </div>
+          </div>
+          <div className="flex flex-wrap w-[100%]">
+            <div className="w-[100%] md:w-[30%] overflow-hidden p-2">
+              <MyLeaves />
+            </div>
+            <div className="w-[100%] md:w-[70%] overflow-hidden p-2">
+              <AllProjects />
+            </div>
+          </div>
+        </div>
+      </div>
       {/* ##########################   First Column   ########################## */}
-
+      {/* 
       <div
-        className={`bg-[#f9f9f9] h-screen overflow-y-auto overflow-x-hidden scroll
-         ${
-           isSidebarOpen
-             ? "3xl:w-[92%] xl:w-[100%] w-[100%]"
-             : "3xl:w-[100%] xl:w-[100%] w-[100%]"
-         }`}
       >
-        {/***********************   Dashboard Header   **********************************/}
-        <div className="py-8 px-10 flex gap-3  items-center justify-between ">
+        <div className="py-8 px-10  items-center justify-between ">
           <h1 className="text-3xl leading-none font-semibold  opacity-80 tracking-widest">
             Dashboard
           </h1>
@@ -115,7 +157,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
               placeholder="Search"
               className="focus:outline-none focus:border-non bg-gray-200 py-1 pl-8 pr-4 text-white placeholder-white border-none  md:flex lg:w-64 xs:w-[12.5rem] hidden rounded-md"
             />
-          </div> */}
+          </div> 
         </div>
         <main className="flex-wrap content-start self-stretch px-8 pt-8 rounded-xl max-md:px-5">
           <div className="flex gap-5 ">
@@ -137,7 +179,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
                 <div className="mt-5 ">
                   <div className="flex gap-5 ">
                     {/* <MyTeam />
-                    <MyLeaves /> */}
+                    <MyLeaves /> 
 
                     {(userProfile.role === 1 || userProfile.role === 3) && (
                       <TalentSphere />
@@ -157,8 +199,7 @@ const Dashboard = ({ isSidebarOpen, userProfile }) => {
               <AllProjects/>
           </div>
 
-        </main>
-      </div>
+        </main> */}
     </>
   );
 };

@@ -38,7 +38,7 @@ export default function AllProjects(){
     }, [userProfile]);
 
   return (
-    <div className="w-[848px] h-[341px] px-3.5 py-6 bg-white rounded-md flex-col justify-start items-end gap-6 inline-flex">
+    <div className="w-full h-[341px] px-3.5 py-6 bg-white rounded-md flex-col justify-start items-end gap-6 inline-flex">
       <header className="justify-between items-center inline-flex w-full">
         <div className="text-[#323233] text-lg font-normal leading-tight">
           All Projects

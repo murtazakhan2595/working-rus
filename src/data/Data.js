@@ -435,9 +435,9 @@ export const TaskSortingFilters = [
     name: "priority",
     options: [
       { label: "No priority", value: "noPriority" },
-      { label: "High", value: 1 },
-      { label: "Medium", value: 2 },
-      { label: "Low", value: 3 },
+      { label: "High", value: "1" },
+      { label: "Medium", value: "2" },
+      { label: "Low", value: "3" },
     ],
   },
 ];

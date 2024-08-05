@@ -1,15 +1,16 @@
-import { getLeaveApplications } from "app/hooks/leaveManagment";
-import { DashboardLeaveTrackerColumns } from "app/utils/Types/TableColumns";
+import { RxCalendar } from "react-icons/rx";
+import { DashboardLeaveTrackerColumns } from "app/modules/Dashboard/Screens/Sections";
 import calender from "assets/images/calender.svg";
-import { Table } from "components";
+import { Table, StatusLabel } from "components";
 import { useEffect, useState } from "react";
 import { FaCaretDown, FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import FormateLeaveTrackerName from "./FormateLeaveTrackerName";
+import FormateLeaveTrackerName from "../FormateLeaveTrackerName";
 import { getFilteredLeaveApplication } from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import { getDesignationList } from "app/hooks/general";
-import CustomDropdown from "./CustomDropdown";
+import CustomDropdown from "../CustomDropdown";
+import { RenderLeaveStatusDropdown } from "./Sections";
 
 export default function LeaveTrackerOverview() {
   const [applications, setApplications] = useState([]);
@@ -23,7 +24,6 @@ export default function LeaveTrackerOverview() {
   const [pending_leaves, setPendingLeaves] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [filterOption, setFilterOption] = useState("All Requests");
-  
 
   const applyFilters = (applications, filterApplications) => {
     let filteredData = applications;
@@ -56,7 +56,7 @@ export default function LeaveTrackerOverview() {
         } else if (filterOption === "Rejected") {
           return item.status_hr === "Declined by HR";
         }
-        return true; 
+        return true;
       });
     }
     return filteredData;
@@ -118,122 +118,108 @@ export default function LeaveTrackerOverview() {
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
-  }
+  };
   const options = [
     {
       label: "All Requests",
       onClick: () => {
-        setIsDropdownOpen(false)
-        setFilterOption("All Requests")
+        setIsDropdownOpen(false);
+        setFilterOption("All Requests");
       },
     },
     {
       label: "Approved",
-      onClick: () => {setIsDropdownOpen(false)
-        setFilterOption("Approved")
+      onClick: () => {
+        setIsDropdownOpen(false);
+        setFilterOption("Approved");
       },
-
     },
     {
       label: "Pending",
-      onClick: () => {setIsDropdownOpen(false)
-        setFilterOption("Pending")
+      onClick: () => {
+        setIsDropdownOpen(false);
+        setFilterOption("Pending");
       },
     },
     {
       label: "Rejected",
-      onClick: () => {setIsDropdownOpen(false)
-        setFilterOption("Rejected")
+      onClick: () => {
+        setIsDropdownOpen(false);
+        setFilterOption("Rejected");
       },
     },
   ];
   return (
-    <div className="h-[530px] px-3.5 pt-6 pb-3 bg-white rounded-md shadow flex-col justify-start items-start gap-4 inline-flex w-[860px]">
+    <div className="h-fit px-3.5 pt-6 pb-3 bg-white rounded-md flex-col justify-start items-start gap-4 inline-flex w-full ">
       <div className=" justify-between w-full items-center gap-[19px] inline-flex">
         <div className=" p-3 rounded-lg justify-start items-center gap-3 flex">
-          <img
-            className="w-[15px] h-[16.67px] relative"
-            src={calender}
-            alt="calender"
-          />
+          <RxCalendar />
           <div className="text-[#323233] text-lg font-normal  leading-tight">
             Leave Tracker
           </div>
         </div>
         <Link to="/leave-request-management">
           <div className="pr-2 rounded-[3px] justify-center items-center gap-[3px] flex">
-            <div className="text-black text-[11px] font-normal  leading-[18px]">
+            <div className="text-black text-[14px] font-normal leading-[18px]">
               View All
             </div>
             <FaChevronRight size={11} />
           </div>
         </Link>
       </div>
-      <div className="mt-4 flex gap-[52px] w-full">
-        <div className="w-[575px]">
-          <div className=" justify-between items-start inline-flex w-full">
-            <div className="px-3.5 py-0.5 bg-white rounded-[17px] justify-start items-center gap-2.5 flex">
-              <div className="justify-start items-center gap-2.5 flex">
-                <div className="text-[#323233] text-sm font-bold  tracking-tight">
-                  {filterOption}
-                </div>
-                <CustomDropdown
-                  isOpen={isDropdownOpen}
-                  toggleDropdown={toggleDropdown}
-                  options={options}
-                />
-              </div>
-
-              <div className="text-center text-[#98690c] text-xs font-normal  leading-tight pl-2">
-                {pending_leaves} Pending
-              </div>
+      <div className="flex gap-4">
+        <div className="md:w-[75%] sm:w-[100%]">
+          <div className="py-0.5 mb-2 justify-between items-center gap-2 flex flex-wrap w-full">
+            <div className="justify-start items-center gap-2 flex flex-wrap">
+              <RenderLeaveStatusDropdown
+                status={filterOption}
+                setFilterOption={setFilterOption}
+              />
+              <StatusLabel
+                status={"warning"}
+                value={`${pending_leaves} Pending`}
+              />
             </div>
-            <div className="flex gap-4 text-xs whitespace-nowrap text-zinc-600">
-              {/* <div className="flex gap-2.5 px-3 py-2.5 bg-gray-100 rounded-md">
-                <img
-                  loading="lazy"
-                  src=""
-                  className="shrink-0 self-start w-3 aspect-square"
-                />
-                <div>Name/ID</div>
-              </div> */}
-              {/* <button className="flex items-center gap-2.5 px-3 py-2.5 bg-gray-100 rounded-md">
-                <div>Designation</div>
-                <FaCaretDown />
-              </button> */}
-              <div className="flex-nowrap ">
-                <FilterInput
-                  filters={[
-                    {
-                      type: "search",
-                      placeholder: "Name/ID",
-                      name: "id_and_first_name",
-                      className:
-                        "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md w-32",
+            <div className="justify-start items-center gap-2 flex flex-wrap">
+              <FilterInput
+                filters={[
+                  {
+                    type: "search",
+                    placeholder: "Name/ID",
+                    name: "id_and_first_name",
+                    width: "w-[100px]",
+                    height: "h-[32px]",
+                    className:
+                      "focus:outline-none focus:border-non bg-[#F0F1F2] py-1 pl-2 text-[12px] placeholder-[#5C5E64] border-none rounded-md",
+                  },
+                  {
+                    type: "select",
+                    option: designations,
+                    name: "department_position",
+                    placeholder: "Designation",
+                    width: "w-32",
+                    className: {
+                      backgroundColor: "#F0F1F2",
+                      fontSize: "12px",
+                      height: "32px",
                     },
-                    {
-                      type: "select",
-                      option: designations,
-                      name: "department_position",
-                      placeholder: "Designation",
-                      width: "w-32",
-                    },
-                  ]}
-                  onChange={handleFilterChange}
-                />
-              </div>
+                  },
+                ]}
+                onChange={handleFilterChange}
+              />
             </div>
           </div>
-          <div className="h-80 overflow-y-auto m-bottom-zero">
+          <div className="h-80 overflow-y-auto m-bottom-zero hideScroll" >
             <Table
               hideTableHeader={true}
               columns={DashboardLeaveTrackerColumns}
               data={applications}
               pagination={false}
+              dataStyle={{backgroundColor: "white" , border: "none"}}
             />
           </div>
         </div>
-        <div className="flex flex-col pb-16 max-w-[227px] h-[354px] overflow-y-auto">
+        <div className="flex flex-col md:w-[25%] sm:w-[100%] max-h-[30rem] overflow-y-auto">
           <div className="w-full text-sm font-bold tracking-normal text-zinc-800">
             Who’s on Leave{" "}
           </div>

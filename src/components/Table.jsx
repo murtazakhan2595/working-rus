@@ -63,7 +63,7 @@ const Table = ({
                 <tr
                   onClick={() => {
                     if (rowExpand) toggleExpandRow(row.id);
-                    else if (tableOptions.onRowClick)
+                    else if (tableOptions?.onRowClick)
                       tableOptions.onRowClick(row);
                   }}
                 >
@@ -71,13 +71,10 @@ const Table = ({
                     <td
                       className={`${column.onClick ? "cursor-pointer" : ""}`}
                       key={index}
-                      style={
-                        column.width
-                          ? { width: `${column.width}` }
-                          : dataStyle
-                          ? dataStyle
-                          : {}
-                      }
+                      style={{
+                        ...(column.width ? { width: `${column.width}` } : {}),
+                        ...dataStyle
+                      }}
                       onClick={() => {
                         if (column.roWExpandOnClick) toggleExpandRow(row.id);
                         else if (column.onClick)
