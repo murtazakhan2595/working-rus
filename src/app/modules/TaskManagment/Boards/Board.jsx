@@ -71,16 +71,38 @@ const Board = ({ employees }) => {
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
     setFilterData((prevFilters) => {
+      debugger;
       const updatedFilters = { ...prevFilters };
       if (!filterValue || filterCheckStatus === false) {
         delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] =
-          filterCheckStatus === false ? "" : filterValue;
+        if (
+          filterName !== "assigned_to" &&
+          filterName !== "label" &&
+          filterName !== "end_datefilterValue" &&
+          filterName !== "priority"
+        ) {
+          if (updatedFilters.optionsValues) {
+            if (updatedFilters.optionsValues.includes(filterValue)) {
+              updatedFilters.optionsValues =
+                updatedFilters.optionsValues.filter(
+                  (item) => item !== filterValue
+                );
+            } else updatedFilters.optionsValues.push(filterValue);
+          } else updatedFilters.optionsValues = [filterValue];
+        }
+        else if (filterName === "assigned_to" && filterValue === "noMemberSelected") {
+          updatedFilters[filterName] =
+            filterCheckStatus === false ? "" : filterValue;
+          updatedFilters.optionsValues = null;
+        } else
+          updatedFilters[filterName] =
+            filterCheckStatus === false ? "" : filterValue;
       }
       return updatedFilters;
     });
   };
+
   const toggleAddBoardModal = () => {
     if (showAddNewListModel) {
       fetchData(true);

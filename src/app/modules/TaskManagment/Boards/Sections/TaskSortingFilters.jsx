@@ -13,10 +13,10 @@ export const TaskSortingFilters = (employees) => {
       label: "Members",
       name: "assigned_to",
       options: [
-        { label: "No Members", value: "noMember" },
+        { label: "No Members", value: "noMemberSelected" },
         {
           label: "Selected Members",
-          value: "asc",
+          value: "selected_members",
           options: employees,
         },
       ],

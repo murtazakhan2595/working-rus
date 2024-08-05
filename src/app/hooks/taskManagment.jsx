@@ -63,6 +63,8 @@ const getTaskByBoardId = async (payload) => {
   const filterData = payload?.filterData ?? {};
   delete filterData.end_date;
   delete filterData.priority;
+  filterData.assigned_to=filterData.optionsValues;
+  delete filterData.optionsValues;
   const URL = `/task/?search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
