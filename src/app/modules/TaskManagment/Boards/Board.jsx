@@ -12,24 +12,28 @@ import {
   deleteBoard,
   moveTask,
 } from "app/hooks/taskManagment";
-import { TaskSortingFilters } from "data/Data";
 import { FaPlus } from "react-icons/fa";
 import { FiFilter } from "react-icons/fi";
 import { RxPlus } from "react-icons/rx";
 import { useParams, Link } from "react-router-dom";
-import RenderProject from "./Sections/RenderProject";
 import { CustomDropdown } from "../Sections";
-import { AddNewListModel, MembersDropdown } from "./Sections";
+import {
+  AddNewListModel,
+  MembersDropdown,
+  TaskSortingFilters,
+  RenderProject,
+} from "./Sections";
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
 import { getRandomColor } from "utils/renderValues";
 
-const Board = ({ userProfile }) => {
+const Board = ({ employees }) => {
   const [isLoading, setIsLoading] = useState(true);
   const projectId = useParams()?.projectId || null;
   const [projectData, setProjectData] = useState(Project);
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
+  const [filterList, setFilterList] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -58,6 +62,12 @@ const Board = ({ userProfile }) => {
       isMounted = false;
     };
   }, [projectId]);
+
+  useEffect(() => {
+    if (employees && employees.length > 0) {
+      setFilterList(TaskSortingFilters(employees));
+    }
+  }, [employees]);
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
     setFilterData((prevFilters) => {
@@ -111,7 +121,7 @@ const Board = ({ userProfile }) => {
                     filters={[
                       {
                         type: "sorting",
-                        option: TaskSortingFilters,
+                        option: filterList,
                         name: "sorting",
                         placeholder: (
                           <span className="d-flex justify-center items-center gap-1">
@@ -146,7 +156,7 @@ const Board = ({ userProfile }) => {
                         }}
                         filterData={{
                           ...filterData,
-                          board_id: board.id,
+                          board_id: [board.id],
                         }}
                       />
                     ))
@@ -321,7 +331,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
 
 const mapStateToProps = (state) => {
   return {
-    userProfile: state.user.userProfile,
+    employees: state.emp.employees,
   };
 };
 

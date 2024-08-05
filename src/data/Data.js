@@ -12,6 +12,7 @@ import {
 } from "state/slices/CommonSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
+import { options } from "joi";
 
 export const countryOptions = Object.keys(getAllCountries()).map(
   (countryCode) => ({
@@ -285,7 +286,7 @@ export const PriorityListIcons = [
     value: 2,
     label: (
       <div className="flex items-center gap-x-2 text-yellow-500">
-        <FiMinusCircle className="text-xl" /> 
+        <FiMinusCircle className="text-xl" />
       </div>
     ),
   },
@@ -418,7 +419,11 @@ export const TaskSortingFilters = [
     name: "assigned_to",
     options: [
       { label: "No Members", value: "noMember" },
-      { label: "Selected Members", value: "asc" },
+      {
+        label: "Selected Members",
+        value: "asc",
+        options: [{ label: "ajwa", value: "90",name:"ajwa" }, { label: "ali", value: "91",name:"ali" }],
+      },
     ],
   },
   {
@@ -463,7 +468,7 @@ export function getManagerSelected(managers, managersList) {
 }
 
 export const handleUpdateProfile = (dispatch, data) => {
-  const userprofile={
+  const userprofile = {
     id: data.id,
     username: data.username,
     is_filled: data.is_filled,

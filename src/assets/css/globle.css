@@ -111,6 +111,7 @@ ul {
 .ql-editor {
   padding-top: 2rem !important;
   min-height: 150px;
+  outline: none !important;
 }
 
 .ql-toolbar {

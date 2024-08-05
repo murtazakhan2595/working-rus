@@ -61,6 +61,8 @@ const getAllProjects = async (payload,userProfile) => {
 };
 const getTaskByBoardId = async (payload) => {
   const filterData = payload?.filterData ?? {};
+  delete filterData.end_date;
+  delete filterData.priority;
   const URL = `/task/?search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -68,7 +70,7 @@ const getTaskByBoardId = async (payload) => {
     });
     if (response.status === 200) {
       const data = response.data;
-      const taskList = getTaskFilteredData(data, filterData);
+      const taskList = getTaskFilteredData(data, payload?.filterData ?? {});
       const TasksData = {
         count: taskList.length,
         results: taskList,
@@ -501,7 +503,6 @@ const getAllTasks = async (payload) => {
     });
     if (response.status === 200) {
       const data = response.data;
-      console.log("get all tasks", data);
       return data;
     } else {
       return [];
