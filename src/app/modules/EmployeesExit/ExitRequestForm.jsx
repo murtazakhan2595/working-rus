@@ -12,6 +12,8 @@ import { DepartmentName } from "utils/getValuesFromTables";
 import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
 import { getAllCountries } from "countries-and-timezones";
+import { employeeExit } from "app/hooks/employee";
+import { toast } from "react-toastify";
 
 const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,13 +22,21 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
   const [visaDetails, setVisaDetails] = useState({});
   const formRef = React.createRef();
   const handleSubmit = async (data, resetForm) => {
-    setIsLoading(true);
+    // setIsLoading(true);
+    const formData = {
+      exit_category: "resignation",
+      employee_id: userData.id,
+      status_resignation: "pending",
+      exit_date: data.exit_date,
+      resignation_letter: data.resignation_Letter,
+    };
+    
     try {
-      // const response = await apicall(
-      //   employeeId,
-      //   payLoad,
-      //   documents
-      // );
+      console.log("employee exit form", formData);
+     const response = await employeeExit(formData);
+     if(response){
+      toast.success("Request has been successfully submitted");
+     }
     } catch (error) {
       setIsLoading(false);
       console.error("Error in handleSubmit:", error);
@@ -86,7 +96,10 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
               {/* Personal Info Sections */}
               <div className=" flex flex-col lg:flex-row gap-8 overflow-visible no-scrollbar whitespace-break-spaces ">
                 {personalInfo.map((infoGroup, index) => (
-                  <div key={index} className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4">
+                  <div
+                    key={index}
+                    className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4"
+                  >
                     {infoGroup.map((info) => (
                       <div
                         className="flex flex-col w-full gap-2 border p-2 px-3 rounded-md"
@@ -173,9 +186,36 @@ const PersonalInformation = ({ personalInfo, userData, isEditable }) => {
                           <SelectComponent
                             name={"reason_for_leaving"}
                             options={[
+                              { value: "voluntary", label: "Voluntary" },
+                              { value: "involuntary", label: "Involuntary" },
                               {
-                                value: "Better opportunity",
-                                label: "Better opportunity",
+                                value: "end-of-contract",
+                                label: "End of Contract",
+                              },
+                              { value: "retirement", label: "Retirement" },
+                              { value: "layoff", label: "Layoff" },
+                              { value: "dismissal", label: "Dismissal" },
+                              {
+                                value: "mutual-agreement",
+                                label: "Mutual Agreement",
+                              },
+                              {
+                                value: "career-advance",
+                                label: "Career Advancement",
+                              },
+                              { value: "relocation", label: "Relocation" },
+                              {
+                                value: "health-reasons",
+                                label: "Health Reasons",
+                              },
+                              {
+                                value: "family-reasons",
+                                label: "Family Reasons",
+                              },
+                              { value: "education", label: "Education" },
+                              {
+                                value: "better-opportunity",
+                                label: "Better Opportunity",
                               },
                             ]}
                             error={props.errors.reason_for_leaving}

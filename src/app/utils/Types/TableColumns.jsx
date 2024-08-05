@@ -24,6 +24,7 @@ import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 import { IoBagCheckOutline } from "react-icons/io5";
+import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
 
 
 
@@ -154,6 +155,46 @@ export const MyLeavesColumns = [
   {
     dataField: "",
     text: "",
+    formatter: (cell, row) => <RenderStatus row={row} />,
+  },
+];
+export const ExitRequestColumns = [
+  {
+    dataField: "name",
+    text: "Employees",
+  },
+  {
+    dataField: "employee_id",
+    text: "ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
+  },
+  {
+    dataField: "report_to",
+    text: "Report To",
+    formatter: (cell, row) => <ManagerName value={cell} />,
+  },
+
+  {
+    dataField: "",
+    text: "Notice Period",
+  },
+  {
+    dataField: "exit_date",
+    text: "Exit date",
+  },
+  {
+    dataField: "",
+    text: "Application",
+    formatter: (cell) => <StatusLabel status={Status(cell)} />,
+  },
+  {
+    dataField: "status_resignation",
+    text: "Status",
+    formatter: (cell,row) => <ApplicationStatus row={row}/>,
+  },
+  {
+    dataField: "",
+    text: "Action",
     formatter: (cell, row) => <RenderStatus row={row} />,
   },
 ];

@@ -54,6 +54,7 @@ import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
+import ExitAndClearance from "app/modules/ExitAndClearance";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -181,6 +182,21 @@ function App() {
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-balance-hr" element={<LeaveBalanceHR />} />
               <Route path="/leave-calender" element={<ComingSoon />} />
+
+              {userRole === 4 && (
+                <Route
+                  exact
+                  path="/exit-employee"
+                  element={<EmployeesExit />}
+                />
+              )}
+              {userRole === 2 && (
+                <Route
+                  exact
+                  path="/exit-employee"
+                  element={<ExitAndClearance />}
+                />
+              )}
               {userRole === 1 && (
                 <>
                   <Route path="/create-task" element={<CreateTask />} />
@@ -210,11 +226,7 @@ function App() {
                     path="/create-employee"
                     element={<CreateUpdateEmployee />}
                   />
-                  <Route
-                    exact
-                    path="/exit-employee"
-                    element={<EmployeesExit />}
-                  />
+
                   <Route
                     path="/leave-allotement"
                     element={<LeaveAllotement />}
@@ -250,10 +262,7 @@ function App() {
                   <Route path="/career-planning" element={<ComingSoon />} />
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
-                  <Route
-                    path="/leave-requests"
-                    element={<LeaveRequest />}
-                  />
+                  <Route path="/leave-requests" element={<LeaveRequest />} />
                 </>
               )}
             </Route>
