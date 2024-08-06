@@ -18,6 +18,7 @@ import { EmployeeName } from "utils/getValuesFromTables";
 import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
 import ResignationLetter from "../EmployeesExit/sections/ResignationLetter";
+import CustomActionDropdown from "./section/CustomActionDropdown";
 
 const ExitDetailsCard = ({
   onClose,
@@ -26,30 +27,27 @@ const ExitDetailsCard = ({
   onPrevious,
   disableNext,
   disablePrevious,
+  handleOptionSelect,
 }) => {
   const [workInformation, setWorkInformation] = useState(null);
-  console.log("resignation", resignation, workInformation);
   const designations = useSelector((state) => state.common.designations);
-  const employeeDesignation = designations.find(
-    (designation) =>{
-      return designation.value === Number(workInformation?.department_position);
-    }
-  );
+  const employeeDesignation = designations.find((designation) => {
+    return designation.value === Number(workInformation?.department_position);
+  });
   useEffect(() => {
     const fetchData = async () => {
-      try{
+      try {
         const response = await getEmployeeData(resignation?.employee_id);
-        if(response){
-          setWorkInformation(response)
+        if (response) {
+          setWorkInformation(response);
         }
-      }catch(err){
-        console.error("Error fetching resignation data", err)
+      } catch (err) {
+        console.error("Error fetching resignation data", err);
       }
-    }
-    fetchData()
+    };
+    fetchData();
   }, [resignation]);
 
-  const loggedInUser = useSelector((state) => state.user.userProfile);
   return (
     <div className="fixed top-0 right-0 max-w-[40%] w-[40%] h-screen z-10 overflow-y-auto hideScroll pl-10">
       <div className="bg-white h-screen fixed  max-w-[40%] w-[40%] top-0 right-0  shadow-lg p-10 overflow-y-auto hideScroll">
@@ -94,14 +92,10 @@ const ExitDetailsCard = ({
                   </p>
                 </div>
               </div>
-              <button className="flex gap-2 justify-center items-center px-3 py-2 rounded border border-[#5c5e64] ">
-                <div className="flex gap-1.5 items-center self-stretch my-auto">
-                  <span className="self-stretch my-auto text-sm leading-none text-zinc-600">
-                    Action
-                  </span>
-                  <TiArrowSortedDown />
-                </div>
-              </button>
+              <CustomActionDropdown
+                resignation={resignation}
+                handleOptionSelect={handleOptionSelect}
+              />
             </div>
           </section>
           <EmploymentDetails
@@ -147,8 +141,10 @@ function EmploymentDetails({resignation, workInformation}) {
           {details.map((detail, index) => (
             <div key={index} className="flex flex-col items-start">
               <div className="flex flex-col ">
-                <div className="text-sm tracking-tight capitalize">{detail.label}</div>
-                <div className="mt-2 text-base font-semibold tracking-tight">
+                <div className="text-sm tracking-tight capitalize">
+                  {detail.label}
+                </div>
+                <div className="mt-2 text-base font-semibold tracking-tight capitalize">
                   {detail.value}
                 </div>
               </div>
