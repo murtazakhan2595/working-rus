@@ -2,12 +2,17 @@ import { updateExitData } from "app/hooks/employee";
 import { ExitRequestColumns } from "app/utils/Types/TableColumns";
 import { Table } from "components";
 import { useState } from "react";
+import ExitDetailsCard from "./ExitDetailsCard";
 
 const Resignations = ({ userProfile, exitData, reload }) => {
+  const exitDataList = exitData?.data.results.result || [];
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
   });
+
+  const [selectedResignationIndex, setSelectedResignationIndex] = useState(null);
+
   const onPageChange = (name, value) => {
     const pageOptions = options;
     if (pageOptions[name] !== value) {
@@ -40,15 +45,52 @@ const Resignations = ({ userProfile, exitData, reload }) => {
     }
   };
 
+  const closeModal = () => {
+    setSelectedResignationIndex(null);
+  };
+
+  const handleNext = () => {
+    if (selectedResignationIndex < exitDataList.length - 1) {
+      setSelectedResignationIndex(selectedResignationIndex + 1);
+    }
+  };
+  const handlePrevious = () => {
+    if (selectedResignationIndex > 0) {
+      setSelectedResignationIndex(selectedResignationIndex - 1);
+    }
+  };
+
+  const handleRowClicked = (index, data, row) => {
+    setSelectedResignationIndex(index);
+  }
+
+  console.log("selectedResignationIndex", selectedResignationIndex);
+
   return (
     <div>
       <Table
-        data={exitData?.data.results.result || []}
-        columns={ExitRequestColumns(handleOptionSelect, reload)}
+        data={exitDataList || []}
+        columns={ExitRequestColumns(
+          handleOptionSelect,
+          handleRowClicked,
+          reload
+        )}
         pagination={true}
         dataTotalSize={exitData?.count || 0}
         tableOptions={tableOptions}
       />
+      {selectedResignationIndex !== null && (
+        <ExitDetailsCard
+          resignation={exitDataList[selectedResignationIndex]}
+          onClose={closeModal}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          disableNext={selectedResignationIndex >= exitDataList.length - 1}
+          disablePrevious={selectedResignationIndex <= 0}
+          handleOptionSelect={handleOptionSelect}
+          reload
+        />
+      )}
     </div>
   );
 };

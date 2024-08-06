@@ -124,6 +124,7 @@ const getAllLabels = async () => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+
     if (response.status === 200) {
       const data = response.data;
       return data;

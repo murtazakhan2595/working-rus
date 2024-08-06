@@ -12,7 +12,12 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 
 
 
-const RenderExitTableAction = ({ row,handleOptionSelect, reload }) => {
+const RenderExitTableAction = ({
+  row,
+  handleOptionSelect,
+  reload,
+  isTableStyle,
+}) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const dispatch = useDispatch();
@@ -22,8 +27,12 @@ const RenderExitTableAction = ({ row,handleOptionSelect, reload }) => {
   const toggleDropdown = (index) => {
     setOpenDropdownRow(index === openDropdownRow ? null : index);
   };
-  
-  const isMangerView= (status === "rejected by manager" || status === "pending" || status === "accepted by manager" )&&loggedInUser.role === 2;
+
+  const isMangerView =
+    (status === "rejected by manager" ||
+      status === "pending" ||
+      status === "accepted by manager") &&
+    loggedInUser.role === 2;
   const isHrView =
     ((status === "rejected by hr" ||
       status === "pending" ||
@@ -31,8 +40,7 @@ const RenderExitTableAction = ({ row,handleOptionSelect, reload }) => {
       status === "accepted by manager") &&
       loggedInUser.role === 1) ||
     loggedInUser.role === 3;
-  
-  console.log(loggedInUser, status, isMangerView);
+
   return (
     <div>
       <ButtonDropdown
@@ -40,14 +48,8 @@ const RenderExitTableAction = ({ row,handleOptionSelect, reload }) => {
         toggle={() => toggleDropdown(row.id)}
       >
         <DropdownToggle className="border-0 shadow-none bg-transparent">
-          <Link
+          <button
             className="text-zinc-600 text-sm font-normal"
-            style={{
-              padding: ".35em .65em",
-              fontSize: ".75em",
-              minWidth: "100px",
-            }}
-            role={"button"}
           >
             <div className="flex items-center gap-[6px]">
               {status.includes("accepted by manager") ? (
@@ -66,7 +68,7 @@ const RenderExitTableAction = ({ row,handleOptionSelect, reload }) => {
                 <RiArrowDropDownLine className="text-xl text-zinc-600" />
               </div>
             </div>
-          </Link>
+          </button>
         </DropdownToggle>
         <DropdownMenu start className="p-6">
           {isMangerView && (
