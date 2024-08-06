@@ -2,8 +2,23 @@ import { FaChevronDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { Col, Row } from "reactstrap";
+import { getAllLabels } from "app/hooks/taskManagment";
+import { useEffect } from "react";
 
 export default function TaskProgress() {
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await getAllLabels();
+      console.log("Data:", response);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  fetchData();
+}, []);
   const chartOptions = {
     chart: {
       type: "donut",

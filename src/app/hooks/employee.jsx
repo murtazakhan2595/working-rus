@@ -784,6 +784,67 @@ const saveEmployeeBankDetailsData = async (
   return false;
 };
 
+const employeeExit =async(payload)=>{
+  console.log(`${baseUrl}/employeeExit/`);
+  try{
+    const response = await axios.post(`${baseUrl}/employeeExit`, payload, {
+      headers: headers(),
+    });
+    console.log(response)
+    if(response.status===201){
+      return true
+    }
+  }catch(error){
+    if(error?.response?.status === 401){
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false
+  }
+}
+
+const getEmployeeExitData = async (employeeid) => {
+    try {
+      let URL = `${baseUrl}/employeeExit`;
+      if (employeeid) {
+        URL += `?search=${encodeURIComponent(
+          JSON.stringify({ employee_id: employeeid })
+        )}`;
+      }
+      const response = await axios.get(URL, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        return response
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+}
+const updateExitData = async (payload) => {
+  if (payload?.id) {
+    try {
+      let URL = `${baseUrl}/employeeExit/${payload?.id}`;
+      const response = await axios.patch(URL, payload, {
+        headers: headers(),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+
+      console.error("Error fetching Personal Info data :", error);
+      return false;
+    }
+  }
+}
+
 export {
   getEmployeeData,
   getEmployeePersonalInfoData,
@@ -809,4 +870,7 @@ export {
   saveEmployeeContactInfoData,
   getNewEmployeeCode,
   deleteEmployeeCertificateData,
+  employeeExit,
+  getEmployeeExitData,
+  updateExitData,
 };

@@ -1,30 +1,18 @@
 import React, { useState } from "react";
 import { CiEdit } from "react-icons/ci";
-import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
+// import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 
 const PersonalInformation = ({
   personalInfo,
   userData,
-  isEditable,
-  getDataByHooks,
 }) => {
-  console.log("personal info",personalInfo);
-  const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
       <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
         <div className="flex justify-between">
-          <h2 className="text-xl">Personal Details</h2>
-          {isEditable && (
-            <div
-              className="flex gap-4 items-center"
-              onClick={() => {
-                setShowPersonalDetailCard(true);
-              }}
-            >
-              <CiEdit className="text-2xl cursor-pointer opacity-80" />
-            </div>
-          )}
+          <h2 className="text-[#323233] text-xl font-bold">
+            Employee Information
+          </h2>
         </div>
         <hr />
         <div className="flex flex-col lg:flex-row py-4">
@@ -69,17 +57,6 @@ const PersonalInformation = ({
           </div>
         </div>
       </div>
-      {showPersonalDetailCard && (
-        <EmployeeDetailModal
-          openModal={showPersonalDetailCard}
-          closeModal={() => {
-            setShowPersonalDetailCard(false);
-            getDataByHooks();
-          }}
-          employeeId={userData.id}
-          currentClick={1}
-        />
-      )}
     </>
   );
 };

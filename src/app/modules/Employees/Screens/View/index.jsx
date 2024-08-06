@@ -30,6 +30,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
   const [cv, setCV] = useState({});
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
+  console.log(id)
   const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
   const getDataByHooks = async () => {
