@@ -283,6 +283,26 @@ const addAttachments = async (payload) => {
     return false;
   }
 };
+const addCommentAttachment = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/CommentAttachment`,
+      { attachment: payload },
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding task:", error);
+    return false;
+  }
+};
 
 const getProjectById = async (projectId) => {
   try {
@@ -473,15 +493,11 @@ const fetchComments = async (filter) => {
   }
 };
 
-const postComment = async (taskId, userId, comment) => {
+const postComment = async (payload) => {
   try {
     const response = await axios.post(
       `${baseUrl}/comments/`,
-      {
-        task_id: taskId,
-        user_id: userId,
-        comment: comment,
-      },
+     payload,
       {
         headers: headers(),
       }
@@ -515,6 +531,40 @@ const getAllTasks = async (payload) => {
   }
   return [];
 };
+
+const getCommentsWithAttachments = async (filter) => {
+  try {
+    const comments = await fetchComments(filter);
+    const attachmentIds = comments.flatMap((comment) => comment.commentattach);
+    console.log(attachmentIds)
+    const attachments =
+      attachmentIds.length > 0
+        ? await Promise.all(
+            attachmentIds.map((id) =>
+              axios
+                .get(`${baseUrl}/CommentAttachment/${id}`, {
+                  headers: headers(),
+                })
+                .then((response) => response.data)
+            )
+          )
+        : [];
+         const attachmentsMap = new Map(
+           attachments.map((att) => [att.id, att])
+         );
+
+         // Merge attachments with comments
+         const commentsWithAttachments = comments.map((comment) => ({
+           ...comment,
+           attachments: comment.commentattach.map(
+             (id) => attachmentsMap.get(id) || null
+           ),
+         }));
+    return commentsWithAttachments;
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+  }
+};
 export {
   getAllProjects,
   getAllTasks,
@@ -531,9 +581,11 @@ export {
   deleteBoard,
   moveTask,
   addAttachments,
+  addCommentAttachment,
   getAttachmentById,
   deleteAttachment,
   fetchComments,
   postComment,
-  getAllLabels
+  getAllLabels,
+  getCommentsWithAttachments
 };

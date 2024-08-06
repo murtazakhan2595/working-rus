@@ -20,23 +20,34 @@ import { EmployeeName } from "utils/getValuesFromTables";
 import { connect, useSelector } from "react-redux";
 import EditCard from "./EditCard";
 import { getRandomColor } from "utils/renderValues";
+import { addCommentAttachment } from "app/hooks/taskManagment";
+import { getCommentsWithAttachments } from "app/hooks/taskManagment";
+import { filebase64Download } from "utils/fileUtils";
 
 const TaskDetail = ({ task, onClose, employees }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [boardName, setBoardName] = useState("Loading...");
   const [attachments, setAttachments] = useState([]);
-  const [newAttachment, setNewAttachment] = useState(null);
+  const [newAttachment, setNewAttachment] = useState({});
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const fileInputRef = useRef(null);
   const [isTaskDetailVisible, setIsTaskDetailVisible] = useState(true);
   const commentRef = useRef(null);
-
-
   const userId = useSelector((state) => state.user.userProfile.id);
 
+
+  const fetchData = async () => {
+    try {
+      const data = await getCommentsWithAttachments({ task_id: [task.id] });
+      setComments(data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      setComments([]);
+    }
+  };
   useEffect(() => {
     const fetchBoardName = async () => {
       try {
@@ -47,15 +58,6 @@ const TaskDetail = ({ task, onClose, employees }) => {
       }
     };
 
-    const fetchData = async () => {
-      try {
-        const data = await fetchComments({ task_id: [task.id] });
-        setComments(data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-        setComments([]);
-      }
-    };
 
     const fetchAttachments = async () => {
       try {
@@ -79,42 +81,43 @@ const TaskDetail = ({ task, onClose, employees }) => {
   const handleAddComment = async () => {
     if (newComment.trim() || newAttachment) {
       try {
-        if (newComment.trim()) {
-          await postComment(task.id, userId, newComment);
-          setNewComment("");
-        }
-
         if (newAttachment) {
-          const reader = new FileReader();
-          reader.onloadend = async () => {
-            const base64String = reader.result.split(",")[1];
-            const payload = {
-              taskId: task.id,
-              userId: userId,
-              fileName: newAttachment.name,
-              fileType: newAttachment.type,
-              base64: base64String,
-            };
+          console.log("newAttachment", newAttachment);
             try {
-              const response = await addAttachments(payload);
+              const response = await addCommentAttachment(newAttachment);
+              console.log("attachmed response", response)
               if (response) {
-                console.log("File uploaded successfully:", response);
-                // Refetch attachments after uploading a new one
-                const updatedAttachments = await Promise.all(
-                  task.attachment.map((id) => getAttachmentById(id))
-                );
-                setAttachments(updatedAttachments);
+                
+                const payload = {
+                  task_id: task.id,
+                  user_id: userId,
+                  comment: newComment,
+                  commentattach: [response.id]
+                };
+                const result = await postComment(payload);
+                if (result){
+                  
+                  setNewAttachment([]);
+                  setNewComment("");
+                } 
+                
               }
             } catch (error) {
               console.error("Error uploading file:", error);
             }
-          };
-          reader.readAsDataURL(newAttachment);
-          setNewAttachment(null);
         }
 
-        const data = await fetchComments({ task_id: [task.id] });
-        setComments(data);
+        else if (newComment.trim()) {
+          const payload = {
+            task_id: task.id,
+            user_id: userId,
+            comment: newComment,
+          };
+          await postComment(payload);
+          setNewComment("");
+        }
+        console.log("newAttachment", newAttachment)
+        fetchData()
       } catch (error) {
         console.error("Error posting comment or uploading attachment:", error);
       }
@@ -125,12 +128,30 @@ const TaskDetail = ({ task, onClose, employees }) => {
     fileInputRef.current.click();
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setNewAttachment(file);
-    }
-  };
+  console.log()
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0]; // Get the single file
+
+  if (file) {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const fileData = {
+        name: file.name, // File name
+        file: event.target.result, // Base64 data URL
+      };
+      setNewAttachment(fileData); // Update state with file data
+    };
+
+    reader.onerror = (error) => {
+      console.error("Error reading file:", error); // Handle errors
+    };
+
+    reader.readAsDataURL(file); // Read file as data URL
+  }
+};
+
   const editDetails = () => {
     setIsEditCardOpen(true);
     setIsTaskDetailVisible(false);
@@ -314,15 +335,15 @@ const TaskDetail = ({ task, onClose, employees }) => {
                 key={attachment.id}
                 className="flex items-center justify-between w-auto my-1 bg-gray-100 p-2 rounded-lg shadow-md"
                 onClick={(e) => {
-                    if (!e.target.closest(".download-icon")) {
-                      const dataURL = attachment?.attachments.file;
-                      const [metadata, base64Data] = dataURL.split(",");
-                      const mimeType = metadata.match(/:(.*?);/)[1];
-                      const blob = base64ToBlob(base64Data, mimeType);
-                      const blobUrl = URL.createObjectURL(blob);
+                  if (!e.target.closest(".download-icon")) {
+                    const dataURL = attachment?.attachments.file;
+                    const [metadata, base64Data] = dataURL.split(",");
+                    const mimeType = metadata.match(/:(.*?);/)[1];
+                    const blob = base64ToBlob(base64Data, mimeType);
+                    const blobUrl = URL.createObjectURL(blob);
 
-                      window.open(blobUrl, "_blank");
-                    }
+                    window.open(blobUrl, "_blank");
+                  }
                 }}
               >
                 <div className="flex items-center">
@@ -353,6 +374,14 @@ const TaskDetail = ({ task, onClose, employees }) => {
             </div>
             <div className="flex items-center border border-gray-300 rounded-lg p-1 bg-[#E8EAED]">
               <div className="relative w-full">
+                {newAttachment?.name && (
+                  <div className="flex items-center gap-2 pb-2">
+                    <AiOutlineFile className="h-5 w-5 text-black" />
+                    <span className="text-sm text-black">
+                      {newAttachment.name}
+                    </span>
+                  </div>
+                )}
                 <input
                   type="text"
                   placeholder="Type your comment here"
@@ -405,10 +434,32 @@ const TaskDetail = ({ task, onClose, employees }) => {
                     <EmployeeName value={comment.user_id} length={2} />
                   </div>
                 </div>
-                <div className="flex justify-between items-center w-full">
-                  <p className="mt-1 text-[#323333] font-lato text-base">
-                    {comment.comment}
-                  </p>
+                <div className="flex justify-between items-center w-full ">
+                  <div>
+                    {comment?.commentattach?.length > 0 &&
+                      comment?.attachments?.length > 0 &&
+                      comment?.attachments[0]?.attachment && (
+                        <button
+                          className="flex items-center gap-2 hover:bg-[#E8EAED] p-1"
+                          onClick={() => {
+                            console.log(
+                              comment?.attachments[0]?.attachment?.file
+                            );
+                            filebase64Download(
+                              comment?.attachments[0]?.attachment
+                            );
+                          }}
+                        >
+                          <AiOutlineFile className="h-5 w-5 text-black" />
+                          <span className="text-sm text-black">
+                            {comment?.attachments[0]?.attachment?.name}
+                          </span>
+                        </button>
+                      )}
+                    <p className="mt-1 text-[#323333] font-lato text-base">
+                      {comment.comment}
+                    </p>
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[12px] font-lato text-baseGray">
                       {moment(comment.created_at?.slice(0, 10)).format(
