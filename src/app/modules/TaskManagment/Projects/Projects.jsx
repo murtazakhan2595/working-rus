@@ -218,7 +218,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
         </div>
       ) : (
         <div
-          className="flex items-center justify-center flex-col cursor-pointer"
+          className="flex items-center justify-center flex-col cursor-pointer min-h-[190px]"
           onClick={() => {
             toggleAddProject();
           }}

@@ -72,25 +72,31 @@ export const SortingCategory = ({ item, onChange, values }) => {
       {item.options &&
         item.options.length > 0 &&
         item.options.map((checkbox) => {
+          const checkboxValue =
+            values && values[item.name]
+              ? values[item.name].includes(checkbox.value)
+              : false;
           return (
             <div className="pl-3" key={checkbox.value}>
               <CheckBoxInput
                 name={item.name}
                 label={checkbox.label}
-                value={
-                  values && values[item.name]
-                    ? values[item.name].includes(checkbox.value)
-                    : false
-                }
+                value={checkboxValue}
                 onChange={(field, option) => {
                   onChange(field, checkbox.value, option);
                 }}
               />
-              {checkbox.options && checkbox.options.length > 0 && (
-                <div className="pl-3">
-                  <SortingSubCategory options={checkbox.options} />
-                </div>
-              )}
+              {checkbox.options &&
+                checkbox.options.length > 0 &&
+                checkboxValue && (
+                  <div className="pl-3">
+                    <SortingSubCategory
+                      options={checkbox.options}
+                      onChange={onChange}
+                      values={values.optionsValues}
+                    />
+                  </div>
+                )}
             </div>
           );
         })}
@@ -100,7 +106,7 @@ export const SortingCategory = ({ item, onChange, values }) => {
 
 export const SortingSubCategory = ({ options, onChange, values }) => {
   return (
-    <div className="max-h-[16rem] overflow-y-auto">
+    <div className="max-h-[16rem] overflow-y-auto hideScroll">
       {options &&
         options.length > 0 &&
         options.map((checkbox) => {
@@ -109,7 +115,7 @@ export const SortingSubCategory = ({ options, onChange, values }) => {
               <CheckBoxInput
                 name={checkbox.label}
                 label={checkbox.name}
-                value={false}
+                value={values && values.includes(checkbox.value)}
                 onChange={(field, option) => {
                   onChange(field, checkbox.value, option);
                 }}

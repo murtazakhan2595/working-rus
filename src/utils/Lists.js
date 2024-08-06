@@ -94,6 +94,11 @@ export function getTaskFilteredData(tasksList, filterData) {
       }
       return tasksList.filter((task) => task.priority === filterData?.priority);
     }
+    if (filterData?.assigned_to === "noMemberSelected") {
+      return tasksList.filter(
+        (task) => !task.noMemberSelected || task.noMemberSelected.length === 0
+      );
+    }
   }
   return tasksList;
 }
