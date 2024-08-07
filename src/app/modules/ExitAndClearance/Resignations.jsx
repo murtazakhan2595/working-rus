@@ -80,7 +80,6 @@ const Resignations = ({ userProfile, exitData, reload }) => {
     setSelectedResignationId(row.id);
   };
 
-  console.log("selectedResignationId", selectedResignationId);
 
   return (
     <div>
