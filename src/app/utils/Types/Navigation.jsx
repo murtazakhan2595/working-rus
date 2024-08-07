@@ -191,13 +191,21 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                  ...(userRole === 1 ||
-                    userRole === 2 ||
-                    userRole === 4 ||
-                    userRole === 3
+                  ...(
+                    userRole === 4
                       ? [
                           {
                             name: "Exit",
+                            url: "/exit-employee",
+                          },
+                        ]
+                      : []),
+                  ...(userRole === 1 ||
+                    userRole === 2 ||
+                    userRole === 3
+                      ? [
+                          {
+                            name: "Exit and Clearance",
                             url: "/exit-employee",
                           },
                         ]
