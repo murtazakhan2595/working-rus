@@ -30,7 +30,7 @@ const ProfileManagement = () => {
   }, [userProfile]);
 
   return (
-    <section className="flex flex-col p-[18px] text-sm bg-white rounded-md min-w-[417px] w-[417px] h-fit">
+    <section className="flex flex-col p-[18px] text-sm bg-white rounded-md">
       <header className="flex gap-5 justify-between text-lg text-zinc-800">
         <div className="text-[#323233] text-lg font-normal ">
           Profile Management

@@ -15,6 +15,8 @@ const filters = {
   MyLeaves: "MyLeaves",
   RecentActivity: "RecentActivity",
   TaskProgress: "TaskProgress",
+  ProfileManagement: "ProfileManagement",
+  LeaveBalance: "LeaveBalance",
 };
 
 const Dashboard = ({ userProfile }) => {
@@ -29,6 +31,7 @@ const Dashboard = ({ userProfile }) => {
   }, [userProfile]);
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
+
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (!filterValue || filterCheckStatus === false) {
@@ -56,6 +59,8 @@ const Dashboard = ({ userProfile }) => {
         );
     });
   };
+
+  console.log("filterData", filterData);
 
   return (
     <>
@@ -94,6 +99,7 @@ const Dashboard = ({ userProfile }) => {
             else if (section.children && section.children.length > 0)
               return (
                 <div key={index} className={section.className}>
+                {console.log("section.children", section.children)}
                   {section.children && (
                     <>{renderSectionOptions(section.children)}</>
                   )}

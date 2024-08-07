@@ -12,7 +12,6 @@ export default function AllProjects(){
     const userProfile = useSelector((state) => state.user.userProfile);
   const [isLoading, setIsLoading] = useState(true);
   const [AllProjects, setAllProjects] = useState([]);
-  console.log(AllProjects)
     const fetchData = async (isMounted) => {
       setIsLoading(true);
       try {
@@ -38,10 +37,10 @@ export default function AllProjects(){
     }, [userProfile]);
 
   return (
-    <div className="w-full h-[341px] px-3.5 py-6 bg-white rounded-md flex-col justify-start items-end gap-6 inline-flex">
+    <div className="w-full px-3.5 py-6 bg-white rounded-md flex-col justify-start items-end gap-6 inline-flex">
       <header className="justify-between items-center inline-flex w-full">
         <div className="text-[#323233] text-lg font-normal leading-tight">
-          All Projects
+          {userProfile.role === 4 ? "My Projects" : "All Projects"}
         </div>
         <div className="justify-start items-center gap-1 flex">
           <Link to="/projects">

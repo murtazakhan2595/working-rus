@@ -8,6 +8,8 @@ import {
     AllProjects,
     MyTeams,
     TaskProgress,
+    ProfileManagement,
+    LeaveBalance,
   } from "../Screens";
   const DashboardHR = [
   {
@@ -139,12 +141,74 @@ const DashboardManager = [
     ],
   },
 ];
+const DashboardEmployee = [
+  {
+    type: "div",
+    className: "flex flex-wrap w-[70%] gap-0 gap-x-0 gap-y-0",
+    children: [
+      {
+        type: "div",
+        className: " w-[100%] md:w-[50%] overflow-hidden p-2",
+        content: <ProfileManagement />,
+        value: "ProfileManagement",
+      },
+      {
+        type: "div",
+        className: " w-[100%] md:w-[50%] overflow-hidden p-2",
+        content: <LeaveBalance />,
+        value: "LeaveBalance",
+      },
+      {
+        type: "div",
+        className: " w-[100%] md:w-[50%] overflow-hidden p-2",
+        content: <TaskProgress />,
+        value: "TaskProgress",
+      },
 
+      {
+        type: "div",
+        className: " w-[100%] md:w-[50%] overflow-hidden p-2",
+        content: <AllProjects />,
+        value: "AllProjects",
+      },
+      {
+        type: "div",
+        className: " w-[100%] md:w-[50%] overflow-hidden p-2",
+        content: <MyTeams />,
+        value: "MyTeam",
+      },
+      {
+        type: "div",
+        className: "h-[341px] w-[100%] md:w-[50%] overflow-hidden p-2",
+        content: <MyLeaves />,
+        value: "MyLeaves",
+      },
+    ],
+  },
+  {
+    type: "div",
+    className: "flex flex-wrap w-[100%] lg:w-[30%]",
+    children: [
+      {
+        type: "div",
+        className: "w-[100%] overflow-hidden p-2",
+        content: <RecentActivity />,
+        value: "RecentActivity",
+      },
+      {
+        type: "div",
+        className: "w-[100%] overflow-hidden p-2",
+        content: <MyTasks />,
+        value: "MyTasks",
+      },
+    ],
+  },
+];
 export const getDashboard = (userRole) => {
   if (userRole === 3 || userRole === 1) {
     return DashboardHR;
   } else if (userRole === 2) {
     return DashboardManager;
   }
-  else return DashboardHR
+  else return DashboardEmployee;
 };

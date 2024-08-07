@@ -4,21 +4,21 @@ import Chart from "react-apexcharts";
 import { Col, Row } from "reactstrap";
 import { getAllLabels } from "app/hooks/taskManagment";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 export default function TaskProgress() {
+  const userProfile = useSelector((state) => state.user.userProfile);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getAllLabels();
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await getAllLabels();
-      console.log("Data:", response);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  fetchData();
-}, []);
+    fetchData();
+  }, []);
   const chartOptions = {
     chart: {
       type: "donut",
@@ -83,10 +83,10 @@ useEffect(() => {
   };
 
   return (
-    <div className="p-[18px] bg-white rounded-[5px] h-full">
+    <div className="p-[18px] bg-white rounded-[5px]">
       <header className="justify-between items-center inline-flex w-full">
         <div className="text-[#323233] text-lg font-normal leading-tight">
-          Task Progress
+          {userProfile.role === 4 ? "My Progress" : "Task Progress"}
         </div>
         <div className="justify-start items-center gap-1 flex">
           <Link to="">
@@ -116,17 +116,25 @@ useEffect(() => {
           </div>
         </div>
         <Row>
-          <TotalCount count={10} label="Total projects" textColor={'text-[#060606]'}/>
-          <TotalCount count={5} label="Completed" textColor={'text-[#1a922d]'}/>
-          <TotalCount count={2} label="Delayed" textColor={'text-[#dfa510]'}/>
-          <TotalCount count={3} label="On going" textColor={'text-[#e65f2b]'}/>
+          <TotalCount
+            count={10}
+            label="Total projects"
+            textColor={"text-[#060606]"}
+          />
+          <TotalCount
+            count={5}
+            label="Completed"
+            textColor={"text-[#1a922d]"}
+          />
+          <TotalCount count={2} label="Delayed" textColor={"text-[#dfa510]"} />
+          <TotalCount count={3} label="On going" textColor={"text-[#e65f2b]"} />
         </Row>
       </div>
     </div>
   );
 }
 
-const TotalCount = ({ count, label , textColor }) => {
+const TotalCount = ({ count, label, textColor }) => {
   return (
     <Col className="overflow-hidden">
       <div className={`${textColor} text-[20px] font-normal tracking-tight`}>
