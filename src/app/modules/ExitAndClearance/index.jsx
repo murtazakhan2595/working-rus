@@ -14,7 +14,6 @@ import Terminations from "./Terminations";
 const ExitAndClearance = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Resignations");
   const [exitData, setExitData] = useState(null);
-  console.log("exit and clearance", exitData);
 
   const fetchData = async () => {
     const response = await getEmployeeExitData();
