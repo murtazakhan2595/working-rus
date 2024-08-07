@@ -1,7 +1,7 @@
 import { updateExitData } from "app/hooks/employee";
 import { ExitRequestColumns } from "app/utils/Types/TableColumns";
 import { Table } from "components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ExitDetailsCard from "./ExitDetailsCard";
 
 const Resignations = ({ userProfile, exitData, reload }) => {
@@ -11,7 +11,17 @@ const Resignations = ({ userProfile, exitData, reload }) => {
     sizePerPage: 10,
   });
 
-  const [selectedResignationIndex, setSelectedResignationIndex] = useState(null);
+  const [selectedResignationId, setSelectedResignationId] = useState(null);
+
+  useEffect(() => {
+    // When exitDataList changes, ensure the selected resignation is still valid
+    if (
+      selectedResignationId &&
+      !exitDataList.find((item) => item.id === selectedResignationId)
+    ) {
+      setSelectedResignationId(null);
+    }
+  }, [exitDataList]);
 
   const onPageChange = (name, value) => {
     const pageOptions = options;
@@ -26,6 +36,7 @@ const Resignations = ({ userProfile, exitData, reload }) => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
   };
+
   const handleOptionSelect = async (selectedResignation, option) => {
     try {
       if (selectedResignation) {
@@ -33,11 +44,9 @@ const Resignations = ({ userProfile, exitData, reload }) => {
           ...selectedResignation,
           status_resignation: option,
         };
-        const response = await updateExitData(
-          selectedResignation
-        );
-        if(response){
-          reload()
+        const response = await updateExitData(selectedResignation);
+        if (response) {
+          reload();
         }
       }
     } catch (error) {
@@ -46,25 +55,32 @@ const Resignations = ({ userProfile, exitData, reload }) => {
   };
 
   const closeModal = () => {
-    setSelectedResignationIndex(null);
+    setSelectedResignationId(null);
   };
 
   const handleNext = () => {
-    if (selectedResignationIndex < exitDataList.length - 1) {
-      setSelectedResignationIndex(selectedResignationIndex + 1);
+    const currentIndex = exitDataList.findIndex(
+      (item) => item.id === selectedResignationId
+    );
+    if (currentIndex < exitDataList.length - 1) {
+      setSelectedResignationId(exitDataList[currentIndex + 1].id);
     }
   };
+
   const handlePrevious = () => {
-    if (selectedResignationIndex > 0) {
-      setSelectedResignationIndex(selectedResignationIndex - 1);
+    const currentIndex = exitDataList.findIndex(
+      (item) => item.id === selectedResignationId
+    );
+    if (currentIndex > 0) {
+      setSelectedResignationId(exitDataList[currentIndex - 1].id);
     }
   };
 
   const handleRowClicked = (index, data, row) => {
-    setSelectedResignationIndex(index);
-  }
+    setSelectedResignationId(row.id);
+  };
 
-  console.log("selectedResignationIndex", selectedResignationIndex);
+  console.log("selectedResignationId", selectedResignationId);
 
   return (
     <div>
@@ -79,14 +95,25 @@ const Resignations = ({ userProfile, exitData, reload }) => {
         dataTotalSize={exitData?.count || 0}
         tableOptions={tableOptions}
       />
-      {selectedResignationIndex !== null && (
+      {selectedResignationId !== null && (
         <ExitDetailsCard
-          resignation={exitDataList[selectedResignationIndex]}
+          resignation={exitDataList.find(
+            (item) => item.id === selectedResignationId
+          )}
           onClose={closeModal}
           onNext={handleNext}
           onPrevious={handlePrevious}
-          disableNext={selectedResignationIndex >= exitDataList.length - 1}
-          disablePrevious={selectedResignationIndex <= 0}
+          disableNext={
+            exitDataList.findIndex(
+              (item) => item.id === selectedResignationId
+            ) >=
+            exitDataList.length - 1
+          }
+          disablePrevious={
+            exitDataList.findIndex(
+              (item) => item.id === selectedResignationId
+            ) <= 0
+          }
           handleOptionSelect={handleOptionSelect}
           reload
         />
@@ -95,4 +122,4 @@ const Resignations = ({ userProfile, exitData, reload }) => {
   );
 };
 
-export default Resignations;  
+export default Resignations;

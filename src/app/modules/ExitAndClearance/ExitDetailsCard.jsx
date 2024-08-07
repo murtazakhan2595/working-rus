@@ -29,6 +29,7 @@ const ExitDetailsCard = ({
   disablePrevious,
   handleOptionSelect,
 }) => {
+  console.log("resignation", resignation);
   const [workInformation, setWorkInformation] = useState(null);
   const designations = useSelector((state) => state.common.designations);
   const employeeDesignation = designations.find((designation) => {
@@ -102,8 +103,8 @@ const ExitDetailsCard = ({
             resignation={resignation}
             workInformation={workInformation}
           />
-          {resignation.resignation_letter &&
-            resignation.resignation_letter?.name && (
+          {resignation?.resignation_letter &&
+            resignation?.resignation_letter?.name && (
               <ResignationLetter
                 name={resignation.name}
                 file={resignation.resignation_letter}
