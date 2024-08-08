@@ -803,7 +803,7 @@ const employeeExit =async(payload)=>{
   }
 }
 
-const getEmployeeExitData = async (employeeid) => {
+const getEmployeeExitDataById = async (employeeid) => {
     try {
       let URL = `${baseUrl}/employeeExit`;
       if (employeeid) {
@@ -811,6 +811,28 @@ const getEmployeeExitData = async (employeeid) => {
           JSON.stringify({ employee_id: employeeid })
         )}`;
       }
+      const response = await axios.get(URL, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        return response
+      }
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching Personal Info data :", error);
+    }
+}
+const getEmployeeExitData = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+    try {
+      let URL = `${baseUrl}/employeeExit?search=${encodeURIComponent(
+        JSON.stringify(filterData)
+      )}`;
+      // let URL = `${baseUrl}/employeeExit&?search=${encodeURIComponent(
+      //   JSON.stringify(filterData)
+      // )}`;
       const response = await axios.get(URL, {
         headers: headers(),
       });
@@ -873,4 +895,5 @@ export {
   employeeExit,
   getEmployeeExitData,
   updateExitData,
+  getEmployeeExitDataById,
 };

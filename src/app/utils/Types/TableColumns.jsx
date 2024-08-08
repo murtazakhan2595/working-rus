@@ -158,72 +158,85 @@ export const MyLeavesColumns = [
     formatter: (cell, row) => <RenderStatus row={row} />,
   },
 ];
-export const ExitRequestColumns = (handleOptionSelect,handleRowClicked, reload) => [
-  {
-    dataField: "name",
-    text: "Employees",
-    onClick: (recordIndex, data, row) => {
-      handleRowClicked(recordIndex, data, row);
-      
-    }
-  },
-  {
-    dataField: "employee_id",
-    text: "ID",
-    formatter: (cell) => <EmployeeID value={cell} />,
-  },
-  {
-    dataField: "report_to",
-    text: "Report To",
-    formatter: (cell, row) => <ManagerName value={cell} />,
-  },
+export const ExitRequestColumns = (
+  handleOptionSelect,
+  handleRowClicked,
+  reload,
+  hideAction = false
+) => {
+  const columns = [
+    {
+      dataField: "name",
+      text: "Employees",
+      onClick: (recordIndex, data, row) => {
+        handleRowClicked(recordIndex, data, row);
+      },
+    },
+    {
+      dataField: "employee_id",
+      text: "ID",
+      formatter: (cell) => <EmployeeID value={cell} />,
+    },
+    {
+      dataField: "report_to",
+      text: "Report To",
+      formatter: (cell, row) => <ManagerName value={cell} />,
+    },
+    {
+      dataField: "notice_period",
+      text: "Notice Period",
+    },
+    {
+      dataField: "exit_date",
+      text: "Exit date",
+    },
+    {
+      dataField: "",
+      text: "Application",
+      formatter: (cell, row) => (
+        <>
+          {row?.resignation_letter ? (
+            <div className="justify-start items-center gap-2.5 inline-flex">
+              <div className="text-[#5c5e64] text-base font-normal">File</div>
+              <button
+                onClick={() => filebase64Download(row?.resignation_letter)}
+              >
+                <AiOutlineDownload />
+              </button>
+            </div>
+          ) : (
+            "N/A"
+          )}
+        </>
+      ),
+    },
+    {
+      dataField: "status_resignation",
+      text: "Status",
+      formatter: (cell, row) => (
+        <ApplicationStatus row={row} isTableViewButton={true} />
+      ),
+    },
+  ];
 
-  {
-    dataField: "notice_period",
-    text: "Notice Period",
-  },
-  {
-    dataField: "exit_date",
-    text: "Exit date",
-  },
-  {
-    dataField: "",
-    text: "Application",
-    formatter: (cell, row) => (
-      <>
-        {row?.resignation_letter ? (
-          <div className="justify-start items-center gap-2.5 inline-flex">
-            <div className="text-[#5c5e64] text-base font-normal">File</div>
-            <button onClick={() => filebase64Download(row?.resignation_letter)}>
-              <AiOutlineDownload />
-            </button>
-          </div>
-        ) : (
-          "N/A"
-        )}
-      </>
-    ),
-  },
-  {
-    dataField: "status_resignation",
-    text: "Status",
-    formatter: (cell, row) => (
-      <ApplicationStatus row={row} isTableViewButton={true} />
-    ),
-  },
-  {
-    dataField: "",
-    text: "Action",
-    formatter: (cell, row) => (
-      <RenderExitTableAction
-        row={row}
-        handleOptionSelect={handleOptionSelect}
-        reload={reload}
-        isTableStyle={true}
-      />
-    ),
-  },
-];
+  // Conditionally add the Action column if hideAction is false
+  if (!hideAction) {
+    columns.push({
+      dataField: "",
+      text: "Action",
+      formatter: (cell, row) => (
+        <RenderExitTableAction
+          row={row}
+          handleOptionSelect={handleOptionSelect}
+          reload={reload}
+          isTableStyle={true}
+        />
+      ),
+    });
+  }
+
+  return columns;
+};
 
 export const AllJobApplicationColumns = (
   handleOptionSelect,

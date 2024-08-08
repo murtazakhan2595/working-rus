@@ -453,6 +453,22 @@ export const LeaveStatus = [
   { label: "Denied", value: "Denied" },
 ];
 
+export const resignationStatus = [
+  { label: "Pending", value: "pending" },
+  { label: "Accepted by Manager", value: "accepted by manager" },
+  { label: "Rejected by Manager", value: "rejected by manager" },
+  { label: "Accepted by HR", value: "accepted by hr" },
+  { label: "Rejected by HR", value: "rejected by hr" },
+  { label: "Initiated Clearance", value: "initiated clearance" },
+  { label: "Exit Interview", value: "exit interview" },
+];
+
+export const terminationStatus = [
+  { label: "Viewd By Manager", value: "viwed by manager" },
+  { label: "Accepted by Employee", value: "accepted by employee" },
+  { label: "Rejected by Employee", value: "rejected by employee" },
+];
+
 export function getManagerSelected(managers, managersList) {
   if (managers && managersList && managersList.length > 0) {
     managers = managers.split(", ") || [];
