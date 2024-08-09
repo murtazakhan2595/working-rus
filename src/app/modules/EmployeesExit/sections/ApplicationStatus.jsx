@@ -8,7 +8,6 @@ import {
 import { StatusIcon } from "app/modules/LeaveManagment/Sections";
 
 const ApplicationStatus = ({ row, isTableViewButton=false }) => {
-  console.log("row", row);
   const status = row.exit_category==="resignation"? row.status_resignation
     : row.status_termination;
   const [openDropdownRow, setOpenDropdownRow] = useState(null);

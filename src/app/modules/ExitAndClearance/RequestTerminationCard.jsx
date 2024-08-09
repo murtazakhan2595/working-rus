@@ -16,10 +16,33 @@ import { toast } from "react-toastify";
 
 const { RxCross2 } = require("react-icons/rx");
 
+
 const RequestTerminationCard = ({ employees, closeModel }) => {
   const [initialValues, setInitialValues] = React.useState({});
-  const [employeeData, setEmployeeData] = React.useState([[]]);
+  const [employeeData, setEmployeeData] = React.useState([[] ]);
   const formRef = React.createRef();
+
+  const employeeFootPrint = [
+    {
+      title: "Designation",
+    },
+    { title: "First Name" },
+    { title: "Last Name" },
+    {
+      title: "Department",
+    },
+    { title: "Phone Number" },
+    {
+      title: "Work Location",
+    },
+    { title: "Organization" },
+    {
+      title: "Report To",
+    },
+    {
+      title: "Joining Date",
+    },
+  ];
 
   const handleEmployeeChange = async (field, value) => {
     console.log("field", field);
@@ -138,20 +161,34 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
                               handleEmployeeChange(field, value);
                             }}
                           />
-                          {infoGroup.map((info) => (
-                            <div
-                              className="flex flex-col w-full border px-3 py-1 h-fit  rounded-md"
-                              key={info.title}
-                            >
-                              <div className="opacity-60 w-full ">
-                                {info.title}
-                              </div>
+                          {infoGroup.length > 0
+                            ? infoGroup.map((info) => (
+                                <div
+                                  className="flex flex-col w-full border px-3 py-1 h-fit  rounded-md"
+                                  key={info.title}
+                                >
+                                  <div className="opacity-60 w-full ">
+                                    {info.title}
+                                  </div>
 
-                              <div className="w-full">
-                                {info.data || "-----"}
-                              </div>
-                            </div>
-                          ))}
+                                  <div className="w-full">
+                                    {info.data || "-----"}
+                                  </div>
+                                </div>
+                              ))
+                            : employeeFootPrint.map((info)=>{
+                              return (
+                                <div
+                                  className="flex w-full border items-center px-3 py-[1rem] h-fit  rounded-md"
+                                  key={info.title}
+                                >
+                                  <div className="opacity-60 w-full ">
+                                    {info.title}
+                                  </div>
+
+                                </div>
+                              )
+                            })}
                         </div>
                       ))}
                     </div>
@@ -214,7 +251,10 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
                       <SelectComponent
                         name={"reason_for_terminating"}
                         options={[
-                          { value: "poor-performance", label: "Poor Performance" },
+                          {
+                            value: "poor-performance",
+                            label: "Poor Performance",
+                          },
                           { value: "involuntary", label: "Involuntary" },
                           {
                             value: "end-of-contract",

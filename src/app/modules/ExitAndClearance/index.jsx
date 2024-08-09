@@ -16,6 +16,7 @@ import { FilterInput } from "components/form-control";
 import { resignationStatus } from "data/Data";
 import { terminationStatus } from "data/Data";
 import RequestTerminationCard from "./RequestTerminationCard";
+import Terminated from "./Terminated";
 
 
 const ExitAndClearance = ({ userProfile }) => {
@@ -25,22 +26,31 @@ const ExitAndClearance = ({ userProfile }) => {
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
+  const [terminated, setTerminated] = useState([]);
   const [filterData, setFilterData] = useState({});
   const [openRequestTermination, setOpenRequestTermination] = useState(false);
+  console.log("terminateddd", terminated)
 
   const fetchData = async () => {
     const response = await getEmployeeExitData({filterData});
     if (response) {
-      console.log("response in index", response);
       const data = response?.data.results.result;
+      console.log("response in index", data);
       const resignations = data.filter(
         (item) => item.exit_category === "resignation"
       );
       const terminations = data.filter(
         (item) => item.exit_category === "termination"
       );
+      const terminated = data.filter(
+        (item) =>
+          item.exit_category === "termination" &&
+          (item.status_termination === "accepted by employee" ||
+            item.status_termination === "rejected by employee")
+      );
       setResignations(resignations);
       setTerminations(terminations);
+      setTerminated(terminated);
       setTotalExit(response.data.results.total_exit);
       setRejectedResignation(response.data.results.rejected_resignation);
       setApprovedResignation(response.data.results.approved_resignation);
@@ -69,7 +79,9 @@ const ExitAndClearance = ({ userProfile }) => {
 
   return (
     <div className="screen bg-[#F0F1F2]">
-      {openRequestTermination && <RequestTerminationCard closeModel={closeRequestTerminationCard} />}
+      {openRequestTermination && (
+        <RequestTerminationCard closeModel={closeRequestTerminationCard} />
+      )}
       <ExitRequestHeader
         title="Exit Requests"
         content={
@@ -90,7 +102,7 @@ const ExitAndClearance = ({ userProfile }) => {
         <Col lg={12}>
           <div className="   m-2 mb-0 0">
             <Tabs
-              tabs={["Resignations", "Terminations"]}
+              tabs={["Resignations", "Terminations", "Resigned", "Terminated"]}
               onTabChange={(value) => {
                 setActiveTab(value);
               }}
@@ -103,8 +115,8 @@ const ExitAndClearance = ({ userProfile }) => {
               filters={[
                 {
                   type: "search",
-                  placeholder: "Search by Name",
-                  name: "name",
+                  placeholder: "Search by id",
+                  name: "employee_id",
                 },
                 {
                   type: "select",
@@ -125,20 +137,22 @@ const ExitAndClearance = ({ userProfile }) => {
         </Col>
         <Col lg={12}>
           <>
-            {activeTab === "Resignations" ? (
+            {activeTab === "Resignations" && (
               <Resignations
                 userProfile={userProfile}
                 resignations={resignations}
                 reload={fetchData}
               />
-            ) : (
-              activeTab === "Terminations" && (
-                <Terminations
-                  userProfile={userProfile}
-                  terminations={terminations}
-                  reload={fetchData}
-                />
-              )
+            )}
+            {activeTab === "Terminations" && (
+              <Terminations
+                userProfile={userProfile}
+                terminations={terminations}
+                reload={fetchData}
+              />
+            )}
+            {activeTab === "Terminated" && (
+              <Terminated reload={fetchData} terminated={terminated} />
             )}
           </>
         </Col>
@@ -149,7 +163,6 @@ const ExitAndClearance = ({ userProfile }) => {
 };
 
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
     token: state.user.token,
     userProfile: state.user.userProfile,

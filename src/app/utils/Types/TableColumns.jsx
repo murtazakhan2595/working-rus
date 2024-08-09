@@ -26,6 +26,7 @@ import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationSta
 import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { filebase64Download } from "utils/fileUtils";
+import RenderTerminatedRow from "app/modules/ExitAndClearance/section/RenderTerminatedRow";
 
 
 
@@ -166,7 +167,7 @@ export const ExitRequestColumns = (
 ) => {
   const columns = [
     {
-      dataField: "name",
+      dataField: "emp_name",
       text: "Employees",
       onClick: (recordIndex, data, row) => {
         handleRowClicked(recordIndex, data, row);
@@ -397,6 +398,20 @@ export const LeaveAllotmentColumns = (reload) => [
       <RenderEmployeesLeaveAllotement
         employee={row}
         employeeList={list}
+        reload={reload}
+      />
+    ),
+  },
+];
+
+export const ExitTerminatedColumns = (reload) => [
+  {
+    dataField: "employee_id",
+    text: "",
+    formatter: (cell, row, list) => (
+      <RenderTerminatedRow
+        terminatedEmployee={row}
+        terminatedEmployeeList={list}
         reload={reload}
       />
     ),
