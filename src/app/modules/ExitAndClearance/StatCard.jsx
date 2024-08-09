@@ -3,23 +3,22 @@ import { FaRegCheckCircle } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
 import { RxCrossCircled } from "react-icons/rx";
 
-function StatCard({exitData}) {
-  console.log("exitData ins tats", exitData);
+function StatCard({totalExit, approvedResignation, rejectedResignation}) {
   const statsData = [
     {
       icon: <ImExit className="text-[#25A8E0] text-3xl" />,
       title: "Total Exits",
-      value: exitData?.results.total_exit,
+      value: totalExit,
     },
     {
       icon: <FaRegCheckCircle className="text-[#25A8E0] text-3xl" />,
       title: "Accepted",
-      value: exitData?.results.approved_resignation,
+      value: approvedResignation,
     },
     {
       icon: <RxCrossCircled className="text-[#25A8E0] text-3xl" />,
       title: "Rejected",
-      value: exitData?.results.rejected_resignation,
+      value: rejectedResignation,
     },
   ];
    return (

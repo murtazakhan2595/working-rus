@@ -31,7 +31,7 @@ export default function MyLeaves() {
     fetchdata();
   }, [userProfile]);
   return (
-    <div className="w-full px-3.5 py-6 bg-white rounded-md">
+    <div className="w-full px-3.5 py-6 bg-white rounded-md h-full">
       <div className="flex flex-col gap-6">
         <header className="justify-between items-center inline-flex">
           <div className="text-[#323233] text-lg font-normal leading-tight">

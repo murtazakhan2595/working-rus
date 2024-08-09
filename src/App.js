@@ -170,18 +170,11 @@ function App() {
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-calender" element={<ComingSoon />} />
 
-              {userRole === 4 && (
+              {(userRole === 4 || userRole === 2) && (
                 <Route
                   exact
                   path="/exit-employee"
                   element={<EmployeesExit />}
-                />
-              )}
-              {userRole !== 4 && (
-                <Route
-                  exact
-                  path="/exit-employee"
-                  element={<ExitAndClearance />}
                 />
               )}
               {userRole === 1 && (
@@ -205,7 +198,10 @@ function App() {
                     path="/travel-details"
                     element={<ComingSoon />}
                   />
-                  <Route path="/exit-clearance" element={<ComingSoon />} />
+                  <Route
+                    path="/exit-clearance"
+                    element={<ExitAndClearance />}
+                  />
                   <Route path="/customise-employees" element={<ComingSoon />} />
                   <Route path="/relocation" element={<ComingSoon />} />
                   <Route
