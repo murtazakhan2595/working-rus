@@ -1,7 +1,7 @@
 // Header.js
 import React from "react";
 
-const StatusLabel = ({ status, value }) => {
+export const StatusLabel = ({ status, value }) => {
   if (!status) {
     return "";
   }
@@ -39,4 +39,15 @@ const StatusLabel = ({ status, value }) => {
   );
 };
 
-export default StatusLabel;
+export const LabelHolo = ({ text, color }) => {
+  return (
+    <div className="flex items-center space-x-2 mx-1" style={{borderBottom:"0.75px solid #5C5E64"}}>
+      <span
+        className={`w-3 h-3 rounded-full ${color}`}
+        style={{ backgroundColor: color }}
+      ></span>
+      <span className="text-gray-600 ml-0">{` ${text}`}</span>
+    </div>
+  );
+};
+

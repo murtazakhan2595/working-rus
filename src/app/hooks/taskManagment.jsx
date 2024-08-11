@@ -16,7 +16,7 @@ const getAllProjects = async (payload,userProfile) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/project/?order=-date&${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/project/?order=-created_at&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -482,7 +482,7 @@ const getAttachmentById = async (attachmentId) => {
 const fetchComments = async (filter) => {
   try {
     const response = await axios.get(
-      `${baseUrl}/comments/?search=${encodeURIComponent(
+      `${baseUrl}/comments/?order=-created_at&search=${encodeURIComponent(
         JSON.stringify(filter)
       )}`,
       {
@@ -537,11 +537,16 @@ const getAllTasks = async (payload) => {
 
 const getCommentsWithAttachments = async (filter) => {
   try {
+    // Fetch comments based on the provided filter
     const comments = await fetchComments(filter);
+
+    // Extract all attachment IDs from the fetched comments
     const attachmentIds = comments.flatMap((comment) => comment.commentattach);
-    console.log(attachmentIds)
+    console.log(attachmentIds);
+
+    // Fetch all attachments in parallel, but only if there are comments
     const attachments =
-      attachmentIds.length > 0
+      comments.length > 0
         ? await Promise.all(
             attachmentIds.map((id) =>
               axios
@@ -552,22 +557,29 @@ const getCommentsWithAttachments = async (filter) => {
             )
           )
         : [];
-         const attachmentsMap = new Map(
-           attachments.map((att) => [att.id, att])
-         );
 
-         // Merge attachments with comments
-         const commentsWithAttachments = comments.map((comment) => ({
-           ...comment,
-           attachments: comment.commentattach.map(
-             (id) => attachmentsMap.get(id) || null
-           ),
-         }));
+    // Create a map of attachments using their IDs for quick lookup
+    const attachmentsMap = new Map(
+      attachments.map((att) => [att.id, att])
+    );
+
+    // Merge the attachments back into their respective comments
+    const commentsWithAttachments = comments.map((comment) => ({
+      ...comment,
+      // Replace the attachment IDs with the actual attachment objects
+      attachments: comment.commentattach.map(
+        (id) => attachmentsMap.get(id) || null
+      ),
+    }));
+
+    // Return the comments with their attachments included
     return commentsWithAttachments;
   } catch (error) {
+    // Log any errors that occur during the process
     console.error("Error fetching comments:", error);
   }
 };
+
 export {
   getAllProjects,
   getAllTasks,

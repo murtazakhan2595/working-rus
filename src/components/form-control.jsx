@@ -598,15 +598,24 @@ const TextAreaEditorInput = ({
           value={value}
           modules={{
             toolbar: {
-              container: [
-                ["bold", "italic", "underline"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link"],
-                [{ align: "" }, { align: "center" }, { align: "right" }],
-              ],
+                container: [
+                    ["bold", "italic", "underline"],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    ["link"],
+                    [{ align: "" }, { align: "center" }, { align: "right" }],
+                ],
             },
-          }}
-          disabled={disabled}
+        }}
+          formats={[
+            "bold",
+            "italic",
+            "underline",
+            "list",
+            "bullet",
+            "link",
+            "align",
+          ]}
+          readOnly={disabled}
           className={`rounded ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {
             onChange(name, option);
@@ -623,7 +632,7 @@ const TextAreaEditorInput = ({
   );
 };
 
-function dropdownStyles(backgroundColor, fontSize,height) {
+function dropdownStyles(backgroundColor, fontSize, height) {
   return {
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
     control: (provided, state) => ({
@@ -712,7 +721,9 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                   key={index}
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className={`${!filter.className && "shadow-input"} rounded-lg`}
+                  className={`${
+                    !filter.className && "shadow-input"
+                  } rounded-lg`}
                   styles={dropdownStyles(
                     filter?.className?.backgroundColor ?? "#fafbfc",
                     filter?.className?.fontSize ?? "16px",

@@ -71,7 +71,6 @@ const Board = ({ employees }) => {
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
     setFilterData((prevFilters) => {
-      debugger;
       const updatedFilters = { ...prevFilters };
       if (!filterValue || filterCheckStatus === false) {
         delete updatedFilters[filterName];

@@ -64,6 +64,39 @@ function App() {
   const [userRole, setUserRole] = useState(userProfile.role);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const socket = new WebSocket('wss://staging-hrms-be.tecbrix.cloud/');
+
+    // Connection opened
+    socket.onopen = () => {
+        console.log('WebSocket is connected.');
+    };
+
+    // Connection closed
+    socket.onclose = (event) => {
+        if (event.wasClean) {
+            console.log(`WebSocket closed cleanly, code=${event.code}, reason=${event.reason}`);
+        } else {
+            console.log('WebSocket connection closed abruptly.');
+        }
+    };
+
+    // Error handling
+    socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+
+    // Receiving messages
+    socket.onmessage = (event) => {
+        console.log('Message from server:', event.data);
+    };
+
+    // // Clean up the connection on unmount
+    // return () => {
+    //     socket.close();
+    // };
+}, []);
   const getProfile = async () => {
     try {
       const response = await axios.get(`${baseUrl}/user/`, {
@@ -169,21 +202,11 @@ function App() {
               <Route path="/leave-history" element={<LeaveHistory />} />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-calender" element={<ComingSoon />} />
-
-              {userRole === 4 && (
                 <Route
                   exact
                   path="/exit-employee"
                   element={<EmployeesExit />}
                 />
-              )}
-              {userRole !== 4 && (
-                <Route
-                  exact
-                  path="/exit-employee"
-                  element={<ExitAndClearance />}
-                />
-              )}
               {userRole === 1 && (
                 <>
                   <Route path="/create-task" element={<CreateTask />} />
@@ -205,7 +228,7 @@ function App() {
                     path="/travel-details"
                     element={<ComingSoon />}
                   />
-                  <Route path="/exit-clearance" element={<ComingSoon />} />
+                  <Route path="/exit-clearance" element={<ExitAndClearance />} />
                   <Route path="/customise-employees" element={<ComingSoon />} />
                   <Route path="/relocation" element={<ComingSoon />} />
                   <Route
