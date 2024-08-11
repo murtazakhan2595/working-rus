@@ -153,6 +153,7 @@ const getProjectsList = async (userProfile) => {
 };
 
 const getEmployeeCustomList = async (payload) => {
+  console.log("payload", payload);
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};

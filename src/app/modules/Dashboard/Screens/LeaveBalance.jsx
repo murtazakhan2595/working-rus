@@ -99,7 +99,7 @@ function LeaveBalanceCard() {
   }, [userProfile]);
 
   return (
-    <section className="flex flex-col items-center gap-6 px-[14px] pt-6 bg-white rounded-md min-w-[430px] w-[430px] h-fit">
+    <section className="flex flex-col items-center gap-6 px-[14px] pt-6 bg-white rounded-md">
       <div className="text-[#323233] text-lg font-normal  leading-tight self-start pl-8">
         Leave Balance
       </div>

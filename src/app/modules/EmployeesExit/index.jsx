@@ -7,14 +7,14 @@ import { getLeaveApplications } from "app/hooks/leaveManagment";
 import { Tabs, Header, PageLoader } from "components";
 import { Row, Col } from "reactstrap";
 import ExitRequestForm from "./ExitRequestForm";
-import { getEmployeeExitData } from "app/hooks/employee";
+import { getEmployeeExitDataById } from "app/hooks/employee";
 import ExitRequestDetails from "./ExitRequestDetails";
 
 const EmployeeExit = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Exit Request");
   const [ exitData, setExitData ] = useState(null);
   const fetchData = async () => {
-    const response  = await getEmployeeExitData(userProfile.id);
+    const response = await getEmployeeExitDataById(userProfile.id);
     console.log("response emp exit", response.data.results.result[0]);
     if(response){
       setExitData(response.data.results.result[0]);

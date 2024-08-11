@@ -34,6 +34,8 @@ const CustomActionDropdown = ({
     ((status === "rejected by hr" ||
       status === "pending" ||
       status === "accepted by hr" ||
+      status === "initiated clearance" ||
+      status === "exit interview" ||
       status === "accepted by manager") &&
       loggedInUser.role === 1) ||
     loggedInUser.role === 3;
@@ -90,10 +92,35 @@ const CustomActionDropdown = ({
                 <div className={`p-2 flex gap-[6px] items-center`}>
                   <FaRegCircle className="text-green-600" />
                   <div className="text-zinc-600 text-sm font-normal">
-                    Accept by HR
+                    Accept
                   </div>
                 </div>
               </DropdownItem>
+              <DropdownItem
+                onClick={() =>
+                  handleOptionSelect(resignation, "initiated clearance")
+                }
+              >
+                <div className={`p-2 flex gap-[6px] items-center`}>
+                  <FaRegCircle className="text-[#D19C15]" />
+                  <div className="text-zinc-600 text-sm font-normal">
+                    Clearance initiated
+                  </div>
+                </div>
+              </DropdownItem>
+              <DropdownItem
+                onClick={() =>
+                  handleOptionSelect(resignation, "exit interview")
+                }
+              >
+                <div className={`p-2 flex gap-[6px] items-center`}>
+                  <FaRegCircle className="text-[#1598d1]" />
+                  <div className="text-zinc-600 text-sm font-normal">
+                    Exit Interview
+                  </div>
+                </div>
+              </DropdownItem>
+
               <DropdownItem
                 onClick={() =>
                   handleOptionSelect(resignation, "rejected by hr")
@@ -102,7 +129,17 @@ const CustomActionDropdown = ({
                 <div className={`p-2 flex gap-[6px]`}>
                   <FaRegCircle className="text-gray-600" />
                   <div className="text-zinc-600 text-sm font-normal">
-                    Reject by HR
+                    Reject
+                  </div>
+                </div>
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => handleOptionSelect(resignation, "pending")}
+              >
+                <div className={`p-2 flex gap-[6px] items-center`}>
+                  <FaRegCircle className="text-[#5c5e64]" />
+                  <div className="text-zinc-600 text-sm font-normal">
+                    Pending
                   </div>
                 </div>
               </DropdownItem>
