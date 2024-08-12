@@ -18,6 +18,8 @@ import { EmployeeName } from "utils/getValuesFromTables";
 import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
 import CustomActionDropdown from "./section/CustomActionDropdown";
+import  PdfIcon  from 'assets/images/pdfPreview.png';
+import { MdOutlineFileDownload } from "react-icons/md";
 
 const ExitDetailsCard = ({
   onClose,
@@ -88,7 +90,7 @@ const ExitDetailsCard = ({
                   </h1>
                   <p className="gap-5 mt-2.5 text-base text-zinc-600">
                     ID:{resignation?.employee_id} I {employeeDesignation?.label}{" "}
-                    I {resignation?.department_name[0]}
+                    I {resignation?.department_name?.[0]}
                   </p>
                 </div>
               </div>
