@@ -13,6 +13,8 @@ import { getAllCountries } from "countries-and-timezones";
 import moment from "moment";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
+import { terminationReasonsOptions } from "data/Data";
+
 
 const { RxCross2 } = require("react-icons/rx");
 
@@ -43,6 +45,7 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
       title: "Joining Date",
     },
   ];
+  console.log("terminationReasonsOptions", terminationReasonsOptions);
 
   const handleEmployeeChange = async (field, value) => {
     console.log("field", field);
@@ -94,6 +97,7 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
       termination_letter: values.termination_letter,
       notice_period: values.notice_period,
       employee_id: values.terminate_employee,
+      reason_of_termination: values.reason_for_terminating,
     };
     try{
       const response = await employeeExit(payload);
@@ -134,7 +138,6 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
               }}
               validate={(values) => {
                 const errors = {};
-                console.log(values);
 
                 return errors;
               }}
@@ -176,19 +179,18 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
                                   </div>
                                 </div>
                               ))
-                            : employeeFootPrint.map((info)=>{
-                              return (
-                                <div
-                                  className="flex w-full border items-center px-3 py-[1rem] h-fit  rounded-md"
-                                  key={info.title}
-                                >
-                                  <div className="opacity-60 w-full ">
-                                    {info.title}
+                            : employeeFootPrint.map((info) => {
+                                return (
+                                  <div
+                                    className="flex w-full border items-center px-3 py-[1rem] h-fit  rounded-md"
+                                    key={info.title}
+                                  >
+                                    <div className="opacity-60 w-full ">
+                                      {info.title}
+                                    </div>
                                   </div>
-
-                                </div>
-                              )
-                            })}
+                                );
+                              })}
                         </div>
                       ))}
                     </div>
@@ -250,29 +252,14 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
                     <Col md={6} className="z-0">
                       <SelectComponent
                         name={"reason_for_terminating"}
-                        options={[
-                          {
-                            value: "poor-performance",
-                            label: "Poor Performance",
-                          },
-                          { value: "involuntary", label: "Involuntary" },
-                          {
-                            value: "end-of-contract",
-                            label: "End of Contract",
-                          },
-                          { value: "retirement", label: "Retirement" },
-                          { value: "layoff", label: "Layoff" },
-                          { value: "dismissal", label: "Dismissal" },
-                          {
-                            value: "mutual-agreement",
-                            label: "Mutual Agreement",
-                          },
-                        ]}
+                        options={terminationReasonsOptions}
                         error={props.errors.reason_for_terminating}
                         touch={props.touched.reason_for_terminating}
                         value={props.values.reason_for_terminating}
-                        label={"Reason for leaving"}
+
+                        label={"Reason for Terminating"}
                         onChange={(field, value) => {
+                          console.log("value", value);
                           props.setFieldValue(field, value);
                         }}
                       />

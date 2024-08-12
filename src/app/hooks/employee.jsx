@@ -33,7 +33,11 @@ const headers = () => ({
 
 const getEmployeeData = async (employeeid) => {
   try {
-    const response = await axios.get(`${baseUrl}/emp/${employeeid}`, {
+    let URL = `${baseUrl}/emp/`;
+    if(employeeid){
+      URL += `${employeeid}`;
+    }
+    const response = await axios.get(URL, {
       headers: headers(),
     });
     return response.data;

@@ -6,10 +6,10 @@ import { LeaveAllotmentColumns } from "app/utils/Types/TableColumns";
 import { Table, Header, PageLoader } from "components";
 import { FilterInput } from "components/form-control";
 import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
-import { ExitTerminatedColumns } from "app/utils/Types/TableColumns";
+import { ExitResignedColumns } from "app/utils/Types/TableColumns";
 
-const Terminated = ({ terminated, reload }) => {
-
+const Resigned = ({ resigned, reload }) => {
+  console.log("resigned.............................", resigned);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -33,11 +33,11 @@ const Terminated = ({ terminated, reload }) => {
       <Row className="p-0 m-0">
         <Col lg={12} className="p-0 m-0 ">
           <Table
-            data={terminated}
-            columns={ExitTerminatedColumns(reload)}
+            data={resigned}
+            columns={ExitResignedColumns(reload)}
             hideTableHeader={true}
             pagination={true}
-            dataTotalSize={terminated.length || 0}
+            dataTotalSize={resigned.length || 0}
             tableOptions={tableOptions}
             dataStyle={{ backgroundColor: "white" }}
           />
@@ -47,5 +47,4 @@ const Terminated = ({ terminated, reload }) => {
   );
 };
 
-
-export default Terminated;
+export default Resigned;

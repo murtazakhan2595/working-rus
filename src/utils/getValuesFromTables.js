@@ -1,3 +1,4 @@
+import { terminationReasonsOptions } from "data/Data";
 import {
   workTypeOptions,
   employeeTypeOptions,
@@ -89,6 +90,13 @@ function ManagerName({ value }) {
   return <>{manager ? manager.label : "N/A"}</>;
 }
 
+function TerminationReason({value}){
+  const reason = terminationReasonsOptions.find(
+    (option) => option.value === value
+  );
+  return reason ? reason.label : "Unknown Reason";
+}
+
 export {
   getCountryFullName,
   getEmployeeType,
@@ -104,4 +112,5 @@ export {
   EmployeeID,
   UserRole,
   ProjectName,
+  TerminationReason,
 };

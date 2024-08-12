@@ -17,44 +17,79 @@ import { resignationStatus } from "data/Data";
 import { terminationStatus } from "data/Data";
 import RequestTerminationCard from "./RequestTerminationCard";
 import Terminated from "./Terminated";
+import { getEmployeeData } from "app/hooks/employee";
+import Resigned from "./Resigned";
 
 
 const ExitAndClearance = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Resignations");
   const [resignations, setResignations] = useState([]);
   const [terminations, setTerminations] = useState([]);
+  const [resigned , setResigned] = useState([]);
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
   const [terminated, setTerminated] = useState([]);
   const [filterData, setFilterData] = useState({});
   const [openRequestTermination, setOpenRequestTermination] = useState(false);
-  console.log("terminateddd", terminated)
+  const [loading, setLoading] = useState(true);
+
+  console.log("resigned in index", resigned)
+
 
   const fetchData = async () => {
-    const response = await getEmployeeExitData({filterData});
-    if (response) {
+    try{
+    setLoading(true)
+    const response = await getEmployeeExitData({ filterData });
+    const employeeData = await getEmployeeData();
+    if (response && employeeData) {
       const data = response?.data.results.result;
-      console.log("response in index", data);
-      const resignations = data.filter(
+      const mergedData = data.map((exitItem) => {
+        const employee = employeeData.find(
+          (emp) => emp.id === exitItem.employee_id
+        );
+        return {
+          ...exitItem,
+          department_position: employee?.department_position,
+          department_name: employee?.department_name,
+          date_joined: employee?.date_joined,
+          mobile_no: employee?.mobile_no,
+        };
+      });
+
+
+      const resignations = mergedData.filter(
         (item) => item.exit_category === "resignation"
       );
-      const terminations = data.filter(
+      const terminations = mergedData.filter(
         (item) => item.exit_category === "termination"
       );
-      const terminated = data.filter(
+      const terminated = mergedData.filter(
         (item) =>
           item.exit_category === "termination" &&
           (item.status_termination === "accepted by employee" ||
             item.status_termination === "rejected by employee")
       );
+      const resigned = mergedData.filter(
+        (item) =>
+          item.exit_category === "resignation" &&
+          item.status_resignation === "accepted by hr"
+      );
       setResignations(resignations);
       setTerminations(terminations);
       setTerminated(terminated);
+      setResigned(resigned);
       setTotalExit(response.data.results.total_exit);
       setRejectedResignation(response.data.results.rejected_resignation);
       setApprovedResignation(response.data.results.approved_resignation);
     }
+    }catch(e){
+      console.error(e);
+    }
+    finally{
+      setLoading(false);
+    }
+
   };
   useEffect(() => {
     fetchData();
@@ -135,27 +170,34 @@ const ExitAndClearance = ({ userProfile }) => {
             />
           </div>
         </Col>
-        <Col lg={12}>
-          <>
-            {activeTab === "Resignations" && (
-              <Resignations
-                userProfile={userProfile}
-                resignations={resignations}
-                reload={fetchData}
-              />
-            )}
-            {activeTab === "Terminations" && (
-              <Terminations
-                userProfile={userProfile}
-                terminations={terminations}
-                reload={fetchData}
-              />
-            )}
-            {activeTab === "Terminated" && (
-              <Terminated reload={fetchData} terminated={terminated} />
-            )}
-          </>
-        </Col>
+        {loading ? (
+          <PageLoader />
+        ) : (
+          <Col lg={12}>
+            <>
+              {activeTab === "Resignations" && (
+                <Resignations
+                  userProfile={userProfile}
+                  resignations={resignations}
+                  reload={fetchData}
+                />
+              )}
+              {activeTab === "Terminations" && (
+                <Terminations
+                  userProfile={userProfile}
+                  terminations={terminations}
+                  reload={fetchData}
+                />
+              )}
+              {activeTab === "Terminated" && (
+                <Terminated reload={fetchData} terminated={terminated} />
+              )}
+              {activeTab === "Resigned" && (
+                <Resigned reload={fetchData} resigned={resigned} />
+              )}
+            </>
+          </Col>
+        )}
         <br />
       </Row>
     </div>

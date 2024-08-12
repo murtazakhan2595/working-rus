@@ -453,6 +453,25 @@ export const LeaveStatus = [
   { label: "Denied", value: "Denied" },
 ];
 
+export const terminationReasonsOptions = [
+  {
+    value: 1,
+    label: "Poor Performance",
+  },
+  { value: 2, label: "Involuntary" },
+  {
+    value: 7,
+    label: "End of Contract",
+  },
+  { value: 3, label: "Retirement" },
+  { value: 4, label: "Layoff" },
+  { value: 5, label: "Dismissal" },
+  {
+    value: 6,
+    label: "Mutual Agreement",
+  },
+];
+
 export const resignationStatus = [
   { label: "Pending", value: "pending" },
   { label: "Accepted by Manager", value: "accepted by manager" },
