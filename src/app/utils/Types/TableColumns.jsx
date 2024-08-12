@@ -27,6 +27,7 @@ import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExit
 import { MdOutlineFileDownload } from "react-icons/md";
 import { filebase64Download } from "utils/fileUtils";
 import RenderTerminatedRow from "app/modules/ExitAndClearance/section/RenderTerminatedRow";
+import RenderResignedRow from "app/modules/ExitAndClearance/section/RenderResignedRow";
 
 
 
@@ -412,6 +413,19 @@ export const ExitTerminatedColumns = (reload) => [
       <RenderTerminatedRow
         terminatedEmployee={row}
         terminatedEmployeeList={list}
+        reload={reload}
+      />
+    ),
+  },
+];
+export const ExitResignedColumns = (reload) => [
+  {
+    dataField: "employee_id",
+    text: "",
+    formatter: (cell, row, list) => (
+      <RenderResignedRow
+        resignedEmployee={row}
+        resignedEmployeeList={list}
         reload={reload}
       />
     ),

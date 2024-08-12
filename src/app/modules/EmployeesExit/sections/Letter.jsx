@@ -2,7 +2,7 @@ import  PdfIcon from 'assets/images/pdfPreview.png';
 import { MdOutlineFileDownload } from 'react-icons/md';
 
 
-function ResignationLetter({ name, file }) {
+function Letter({ name, file, isTermination }) {
   console.log("file", file);
   console.log("name", name);
   function getFileSizeInKB(base64String) {
@@ -22,7 +22,7 @@ function ResignationLetter({ name, file }) {
   return (
     <div className="flex flex-col items-start pr-20 mt-5 w-full max-md:pr-5 max-md:max-w-full">
       <h3 className="text-base font-bold leading-none text-zinc-800">
-        Resignation letter
+       {isTermination?"Termination Letter":"Resignation letter"}
       </h3>
       <div className="flex flex-wrap gap-5 justify-between items-center px-3 pt-2.5 pb-0.5 mt-4 max-w-full bg-gray-100 rounded-lg w-[562px]">
         <div className="flex gap-4">
@@ -51,4 +51,4 @@ function ResignationLetter({ name, file }) {
   );
 }
 
-export default ResignationLetter;
+export default Letter;

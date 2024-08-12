@@ -12,12 +12,32 @@ import ExitRequestDetails from "./ExitRequestDetails";
 
 const EmployeeExit = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Exit Request");
-  const [ exitData, setExitData ] = useState(null);
+  const [resignation, setResignation] = useState({});
+  const [termination, setTermination] = useState({});
+  const [loading, setLoading] = useState(false);
+
   const fetchData = async () => {
-    const response = await getEmployeeExitDataById(userProfile.id);
-    console.log("response emp exit", response.data.results.result[0]);
-    if(response){
-      setExitData(response.data.results.result[0]);
+    try{
+
+      setLoading(true);
+      const response = await getEmployeeExitDataById(userProfile.id);
+      console.log("response emp exit", response.data.results);
+      if(response){
+        const data = response?.data.results.result;
+        const resignations = data.filter(
+          (item) => item.exit_category === "resignation"
+        );
+        const terminations = data.filter(
+          (item) => item.exit_category === "termination"
+        );
+        
+        setResignation(resignations[0]);
+        setTermination(terminations[0]);
+      }
+    }catch(e){
+      console.error(e);
+    }finally{
+      setLoading(false);
     }
   }
   useEffect(() => {
@@ -38,20 +58,29 @@ const EmployeeExit = ({ userProfile }) => {
             />
           </div>
         </Col>
-        <Col lg={12}>
-          <>
-            {activeTab === "Exit Request" && exitData ? (
-              <ExitRequestDetails
-                userProfile={userProfile}
-                exitData={exitData}
-              />
-            ) : activeTab === "Exit Request" ? (
-              <ExitRequestForm userProfile={userProfile} reload={fetchData} />
-            ) : (
-              <ExitRequestForm userProfile={userProfile} />
-            )}
-          </>
-        </Col>
+        {loading ? (
+          <PageLoader />
+        ) : (
+          <Col lg={12}>
+            <>
+              {activeTab === "Exit Request" && resignation ? (
+                <ExitRequestDetails
+                  userProfile={userProfile}
+                  exitData={resignation}
+                  isResignation={true}
+                />
+              ) : activeTab === "Exit Request" ? (
+                <ExitRequestForm userProfile={userProfile} reload={fetchData} />
+              ) : (
+                termination &&<ExitRequestDetails
+                  userProfile={userProfile}
+                  exitData={termination}
+                  isTermination={true}
+                />
+              )}
+            </>
+          </Col>
+        )}
         <br />
       </Row>
     </div>

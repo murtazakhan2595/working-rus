@@ -96,8 +96,8 @@ const RenderTerminatedRow = ({
 
 const TerminatedDetails = ({ terminatedData, closeModel, next, previous }) => {
   return (
-    <div className="flex flex-wrap gap-5 justify-between items-start mt-3 w-full max-md:max-w-full bg-white z-30">
-      <div className="bg-white h-screen fixed  max-w-[40%] w-[40%] top-0 right-0  shadow-lg p-10 overflow-y-auto hideScroll">
+    <div className="flex flex-wrap gap-5 justify-between items-start mt-3 w-full max-md:max-w-full bg-white ">
+      <div className="bg-white h-screen fixed  max-w-[40%] w-[40%] top-0 right-0  shadow-lg p-10 overflow-y-auto z-30 hideScroll">
         <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
           <div className="flex justify-center ">
             <button
@@ -210,7 +210,7 @@ function TerminationLetter({ name, file }) {
 
   return (
     <div className="flex flex-col items-start pr-20 mt-3 w-full max-md:pr-5 max-md:max-w-full">
-      <div className="flex flex-wrap gap-5 justify-between items-center px-3 pt-2.5 pb-0.5 mt-4 max-w-full bg-gray-100 rounded-lg w-[562px]">
+      <div className="flex flex-wrap gap-5 justify-between items-center px-3 pt-2.5 pb-0.5 mt-4 max-w-full bg-gray-100 rounded-lg w-[562px] z-30">
         <div className="flex gap-4">
           <img
             loading="lazy"
