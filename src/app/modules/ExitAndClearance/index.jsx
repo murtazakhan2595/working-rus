@@ -41,10 +41,12 @@ const ExitAndClearance = ({ userProfile }) => {
     try{
     setLoading(true)
     const response = await getEmployeeExitData({ filterData });
-    const employeeData = await getEmployeeData();
+    let employeeData = await getEmployeeData();
+    console.log("employeeData", employeeData)
     if (response && employeeData) {
+  
       const data = response?.data.results.result;
-      const mergedData = data.map((exitItem) => {
+      let mergedData = data.map((exitItem) => {
         const employee = employeeData.find(
           (emp) => emp.id === exitItem.employee_id
         );
@@ -57,7 +59,11 @@ const ExitAndClearance = ({ userProfile }) => {
         };
       });
 
-
+    if (userProfile.role === 2) {
+      mergedData = mergedData.filter(
+        (item) => Number(item.report_to[0]) === userProfile.id
+      );
+    }
       const resignations = mergedData.filter(
         (item) => item.exit_category === "resignation"
       );
