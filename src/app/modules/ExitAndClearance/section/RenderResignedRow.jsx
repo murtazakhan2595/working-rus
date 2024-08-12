@@ -75,7 +75,7 @@ const RenderResignedRow = ({
             name={resignedEmployee.emp_name}
             department={resignedEmployee.department_name}
             position={resignedEmployee.department_position}
-            id={resignedEmployee.id}
+            id={resignedEmployee.employee_id}
           />
         </div>
         <div className="text-base text-baseGray flex items-center gap-x-4">
@@ -157,7 +157,7 @@ function EmploymentDetails({ ResignedData }) {
       label: "Joining date",
       value: moment(ResignedData?.date_joined).format("DD-MM-YYYY"),
     },
-    { label: "Reason for leaving", value: "dummy" },
+    { label: "Reason for leaving", value: ResignedData.exit_type },
     { label: "Phone no.", value: ResignedData?.mobile_no || "N/A" },
     { label: "Status", value: ResignedData.status_resignation || "N/A" },
     { label: "Exit date", value: ResignedData?.exit_date || "N/A" },

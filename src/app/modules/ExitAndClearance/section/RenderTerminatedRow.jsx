@@ -13,6 +13,7 @@ import { ManagerName } from "utils/getValuesFromTables";
 // import AllotLeavesForm from "./AllotLeavesForm";
 import  PdfIcon  from 'assets/images/pdfPreview.png';
 import { MdOutlineFileDownload } from "react-icons/md";
+import { TerminationReason } from "utils/getValuesFromTables";
 
 const RenderTerminatedRow = ({
   terminatedEmployee,
@@ -59,12 +60,12 @@ const RenderTerminatedRow = ({
   return (
     <>
       {openTerminatedDetails && (
-          <TerminatedDetails
-            terminatedData={openTerminatedDetails}
-            closeModel={closeModal}
-            next={next}
-            previous={previous}
-          />
+        <TerminatedDetails
+          terminatedData={openTerminatedDetails}
+          closeModel={closeModal}
+          next={next}
+          previous={previous}
+        />
       )}
       <div className="flex flex-row justify-between items-center  flex-wrap gap-x-10 gap-y-5 px-2 py-3 mt-3">
         <div
@@ -75,7 +76,7 @@ const RenderTerminatedRow = ({
             name={terminatedEmployee.emp_name}
             department={terminatedEmployee.department_name}
             position={terminatedEmployee.department_position}
-            id={terminatedEmployee.id}
+            id={terminatedEmployee.employee_id}
           />
         </div>
         <div className="text-base text-baseGray flex items-center gap-x-4">
@@ -155,7 +156,10 @@ function EmploymentDetails({ terminatedData }) {
       label: "Joining date",
       value: moment(terminatedData?.date_joined).format("DD-MM-YYYY"),
     },
-    { label: "Reason for leaving", value: "dummy" },
+    {
+      label: "Reason for Terminating",
+      value: <TerminationReason value={terminatedData.reason_of_termination} />,
+    },
     { label: "Phone no.", value: terminatedData?.mobile_no || "N/A" },
     { label: "Status", value: terminatedData.status_termination || "N/A" },
     { label: "Exit date", value: terminatedData?.exit_date || "N/A" },
