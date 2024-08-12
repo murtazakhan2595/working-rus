@@ -17,6 +17,7 @@ import { resignationStatus } from "data/Data";
 import { terminationStatus } from "data/Data";
 import RequestTerminationCard from "./RequestTerminationCard";
 import Terminated from "./Terminated";
+import { getEmployeeData } from "app/hooks/employee";
 
 
 const ExitAndClearance = ({ userProfile }) => {
@@ -31,18 +32,35 @@ const ExitAndClearance = ({ userProfile }) => {
   const [openRequestTermination, setOpenRequestTermination] = useState(false);
   console.log("terminateddd", terminated)
 
+  
+
   const fetchData = async () => {
     const response = await getEmployeeExitData({filterData});
-    if (response) {
+    const employeeData = await getEmployeeData()
+    if (response && employeeData) {
       const data = response?.data.results.result;
-      console.log("response in index", data);
-      const resignations = data.filter(
+       const mergedData = data.map((exitItem) => {
+         const employee = employeeData.find(
+           (emp) => emp.id === exitItem.employee_id
+         );
+         return {
+           ...exitItem,
+           department_position: employee?.department_position ,
+           department_name: employee?.department_name ,
+           date_joined: employee?.date_joined ,
+           mobile_no: employee?.mobile_no ,
+         };
+       });
+
+       console.log("mergedData", mergedData);
+
+      const resignations = mergedData.filter(
         (item) => item.exit_category === "resignation"
       );
-      const terminations = data.filter(
+      const terminations = mergedData.filter(
         (item) => item.exit_category === "termination"
       );
-      const terminated = data.filter(
+      const terminated = mergedData.filter(
         (item) =>
           item.exit_category === "termination" &&
           (item.status_termination === "accepted by employee" ||
