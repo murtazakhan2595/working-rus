@@ -14,10 +14,11 @@ import { RxCross2 } from "react-icons/rx";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { EmployeeName } from "utils/getValuesFromTables";
+import  PdfIcon from 'assets/images/pdfPreview.png';
 import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
 import CustomActionDropdown from "./section/CustomActionDropdown";
+import { MdOutlineFileDownload } from "react-icons/md";
 
 const ExitDetailsCard = ({
   onClose,
