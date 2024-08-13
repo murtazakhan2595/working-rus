@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "react-bootstrap-table/dist/react-bootstrap-table-all.min.css";
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";

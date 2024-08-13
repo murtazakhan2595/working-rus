@@ -1,8 +1,21 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  purge: ["./src/**/*.{js,jsx}", "./public/index.html"],
-  content: [],
+  darkMode: ["class"],
+  content: [
+    './pages/**/*.{js,jsx}',
+    './components/**/*.{js,jsx}',
+    './app/**/*.{js,jsx}',
+    './src/**/*.{js,jsx}',
+  ],
+  prefix: "",
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     fontFamily: {
       montserrat: ["Montserrat", "sans-serif"],
       sfpro: ["SF Pro Display", "sans-serif"],
@@ -11,56 +24,21 @@ module.exports = {
       opensans: ["Open Sans"],
     },
     extend: {
-      boxShadow: {
-        custom: "5px 10px 18px rgba(0, 0, 0, 0.45)",
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
       },
-      textColor: {
-        baseBlue: "#283B91",
-        input: "#555657",
-        baseGray: "#5C5E64",
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
-      backgroundColor: {
-        baseBlue: "#283B91",
-      },
-      borderColor: {
-        baseGray: "#5C5E64",
-      },
-    },
-    screens: {
-      xs: "300px",
-      // => @media (min-width: 320px) { ... }
-
-      sm: "425px",
-      // => @media (min-width: 426px) { ... }
-      500: "500px",
-      
-      md: "768px",
-      // => @media (min-width: 768px) { ... }
-      800: "800px",
-      
-      lg: "1024px",
-      // => @media (min-width: 1024px) { ... }
-      1100: "1100px",
-
-      xl: "1280px",
-      // => @media (min-width: 1280px) { ... }
-
-      "2xl": "1440px",
-      // => @media (min-width: 1280px) { ... }
-
-      "3xl": "1600px",
-      // => @media (min-width: 1536px) { ... }
     },
   },
-  plugins: [
-    function ({ addUtilities }) {
-      addUtilities({
-        ".no-scrollbar": {
-          "::-webkit-scrollbar": { display: "none" },
-          "-ms-overflow-style": "none",
-          "scrollbar-width": "none",
-        },
-      });
-    },
-  ],
-};
+  plugins: [require("tailwindcss-animate")],
+}
