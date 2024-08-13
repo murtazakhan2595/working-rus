@@ -202,17 +202,17 @@ function App() {
               <Route path="/leave-history" element={<LeaveHistory />} />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-calender" element={<ComingSoon />} />
-                <Route
-                  exact
-                  path="/exit-employee"
-                  element={<EmployeesExit />}
-                />
+              <Route exact path="/exit-employee" element={<EmployeesExit />} />
               {userRole === 1 && (
                 <>
                   <Route path="/create-task" element={<CreateTask />} />
                   <Route path="/my-dtr" element={<MyDtr />} />
                   <Route path="/reports" element={<ComingSoon />} />
                 </>
+              )}
+
+              {(userRole === 1 ||  userRole === 2 || userRole === 3) && (
+                <Route path="/exit-clearance" element={<ExitAndClearance />} />
               )}
 
               {(userRole === 1 || userRole === 3) && (
@@ -228,7 +228,7 @@ function App() {
                     path="/travel-details"
                     element={<ComingSoon />}
                   />
-                  <Route path="/exit-clearance" element={<ExitAndClearance />} />
+
                   <Route path="/customise-employees" element={<ComingSoon />} />
                   <Route path="/relocation" element={<ComingSoon />} />
                   <Route

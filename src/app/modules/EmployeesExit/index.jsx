@@ -71,12 +71,16 @@ const EmployeeExit = ({ userProfile }) => {
                 />
               ) : activeTab === "Exit Request" ? (
                 <ExitRequestForm userProfile={userProfile} reload={fetchData} />
-              ) : (
-                termination &&<ExitRequestDetails
+              ) : termination ? (
+                <ExitRequestDetails
                   userProfile={userProfile}
                   exitData={termination}
                   isTermination={true}
                 />
+              ) : (
+                <div className="w-full h-96 bg-white flex items-center justify-center text-3xl text-gray-600">
+                  <div>No Termination Letter</div>
+                </div>
               )}
             </>
           </Col>
