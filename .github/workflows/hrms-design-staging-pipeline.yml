@@ -1,4 +1,4 @@
-name: Trigger auto deployment for hrms-design-staging-fe
+name: hrms-design-staging-pipeline
 
 # When this action will be executed
 on:
