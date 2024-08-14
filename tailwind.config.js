@@ -13,8 +13,13 @@ module.exports = {
       center: true,
       padding: "2rem",
       screens: {
-        "2xl": "1400px",
-      },
+        "xs":"0px",
+      "sm":"600px",
+      "md":"900px",
+      "lg":"1200px",
+      "xl":"1400px",
+      "2xl": "1800px",
+      }
     },
     fontFamily: {
       montserrat: ["Montserrat", "sans-serif"],
@@ -24,6 +29,15 @@ module.exports = {
       opensans: ["Open Sans"],
     },
     extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+
+        "plum":"#953ea3",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

@@ -21,6 +21,12 @@ import {
 } from "state/slices/CommonSlice";
 import { handleUpdateProfile } from "data/Data";
 
+
+
+import { Button } from "./../../../src/@/components/ui/button";
+import { Input } from "./../../../src/@/components/ui/input";
+import { Label } from "./../../../src/@/components/ui/label";
+
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
   let isLogin = useSelector((state) => state.user.isLogin);
@@ -171,11 +177,12 @@ function Login() {
     <div className="h-screen flex justify-center">
       <div className="w-full md:w-[65%] flex flex-col min-h-full p-3 md:p-5 lg:p-7">
         <div className="flex justify-start items-start">
-          <img
+          <h1 className="text-center font-bold font-roboto">PlumPro</h1>
+          {/* <img
             src={logo}
             className="w-[142px] h-auto md:h-auto lg:pl-5"
             alt="Tecbrix logo"
-          />
+          /> */}
         </div>
         <div className="flex justify-center items-center flex-grow">
           <div className="md:mx-auto w-full max-w-md lg:max-w-xl">
@@ -194,13 +201,13 @@ function Login() {
               </div>
 
               <div className="">
-                <label
+                <Label
                   htmlFor="username"
-                  className="text-[#323333] font-normal font-lato text-base"
+                  className=" text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   Login ID*
-                </label>
-                <input
+                </Label>
+                <Input
                   required
                   name="username"
                   type="text"
@@ -208,19 +215,19 @@ function Login() {
                   title="Enter Your Username"
                   value={values.username}
                   onChange={handleChange}
-                  className="w-full rounded-xl py-2 my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
+                  className=""
                 />
                 <div className="text-sm text-rose-500">{errors.username}</div>
               </div>
 
               <div className="relative">
                 <div className="flex justify-between items-center">
-                  <label
+                  <Label
                     htmlFor="password"
-                    className="text-[#323333] font-normal font-lato text-base"
+                    
                   >
                     Password*
-                  </label>
+                  </Label>
                   <NavLink
                     to="/forgot-password"
                     className="text-[#323333] font-normal font-lato text-base underline underline-offset-4"
@@ -228,7 +235,7 @@ function Login() {
                     Forgot your password?
                   </NavLink>
                 </div>
-                <input
+                <Input
                   required
                   name="password"
                   type={showPassword ? "text" : "password"}
@@ -236,13 +243,13 @@ function Login() {
                   title="Enter Your Password"
                   value={values.password}
                   onChange={handleChange}
-                  className="w-full rounded-xl my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
+                  className=""
                 />
 
-                <button
+                <Button
                   type="button"
                   onClick={handlePasswordVisibility}
-                  className={`absolute inset-y-12 right-2 flex items-center ${
+                  className={`absolute top-[23px] right-0 bg-transparent${
                     showPassword ? "text-gray-400" : ""
                   }`}
                 >
@@ -251,12 +258,13 @@ function Login() {
                   ) : (
                     <TbEyeClosed className="text-gray-400" />
                   )}
-                </button>
+                </Button>
+                
                 <div className="text-sm text-rose-500">{errors.password}</div>
               </div>
 
               <div className="flex items-center gap-x-4">
-                <button
+                {/* <button
                   type="submit"
                   className="flex h-11 text-white justify-center items-center w-full font-normal rounded-xl bg-black px-3 py-1.5 text-sm md:text-lg leading-8 font-lato lg:text-base"
                   disabled={isLoading} // Disable button when loading
@@ -266,11 +274,19 @@ function Login() {
                   ) : (
                     <span>Log In</span>
                   )}
-                </button>
+                </button> */}
+
+                <Button type="submit" className="w-full bg-plum"  disabled={isLoading}>
+                {isLoading ? (
+                    <span className="animate-pulse">Logging in...</span>
+                  ) : (
+                    <span>Log In</span>
+                  )}
+            </Button>
               </div>
 
               <div className="flex pb-2 items-center">
-                <input
+                <Input
                   id="keepSignedIn"
                   name="keepSignedIn"
                   type="checkbox"
@@ -278,7 +294,7 @@ function Login() {
                   onChange={handleCheckboxChange}
                   className="hidden"
                 />
-                <label
+                <Label
                   htmlFor="keepSignedIn"
                   className="justify-start font-medium text-sm text-gray text-[#5C5E64] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
                 >
@@ -307,7 +323,7 @@ function Login() {
                     )}
                   </span>
                   Keep me signed in
-                </label>
+                </Label>
               </div>
             </form>
           </div>
@@ -326,6 +342,9 @@ function Login() {
       {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}
       <ToastContainer />
     </div>
+
+
+
   );
 }
 

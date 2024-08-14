@@ -17,6 +17,7 @@ root.render(
       </Router>
       <ToastContainer />
     </Provider>
+    
   // </React.StrictMode> 
 );
 
