@@ -8,7 +8,7 @@ on:
       [ design-staging ]
     paths:
     - '**'
-    - '.github/workflows/hrms-design-staging-fe-AutoDeployTrigger-ec8b3d83-519d-4bc1-a54d-8ee2770cfb10.yml'
+    - '.github/workflows/hrms-design-staging-pipeline.yml'
 
   # Allow manual trigger 
   workflow_dispatch:      
