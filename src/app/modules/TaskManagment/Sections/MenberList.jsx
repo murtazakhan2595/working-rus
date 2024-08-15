@@ -2,7 +2,7 @@ import { EmployeeName } from "utils/getValuesFromTables";
 import { getRandomColor } from "utils/renderValues";
 
 const MembersList = ({ members }) => {
-  if (!members) return <></>;
+  if (!members || members?.length <= 0) return <></>;
   const displayedMembers = members.slice(0, 3);
   const remainingCount = members.length - displayedMembers.length;
   return (

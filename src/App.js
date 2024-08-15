@@ -7,7 +7,6 @@ import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Dashboard from "./app/modules/Dashboard";
 import Login from "./app/modules/Login";
-import Boardd from "./app/modules/Board";
 import {
   Applications,
   Jobs,
@@ -34,14 +33,10 @@ import {
   setToken,
 } from "./state/slices/UserSlice.js";
 import { handleUpdateProfile } from "data/Data";
-import BoardList from "./app/modules/BoardList";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import Employee from "./app/modules/Employees/Employee.jsx";
-import LeaveBalance from "./app/modules/LeaveApplication/LeaveBalance.jsx";
 import { EditEmployeeProfile } from "./app/modules/Employees/Screens/Profile";
 import Test from "./app/modules/Profile/Test.jsx";
-import LeaveBalanceEmployee from "./app/modules/LeaveApplication/LeaveBalanceEmployee.jsx";
-import LeaveBalanceHR from "./app/modules/LeaveApplication/LeaveBalanceHR.jsx";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import MyDtr from "./app/modules/DTR/MyDtr.jsx";
@@ -53,6 +48,8 @@ import PageLoader from "./components/PageLoader.jsx";
 import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
+import EmployeesExit from "app/modules/EmployeesExit";
+import ExitAndClearance from "app/modules/ExitAndClearance";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -67,6 +64,39 @@ function App() {
   const [userRole, setUserRole] = useState(userProfile.role);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const socket = new WebSocket('wss://staging-hrms-be.tecbrix.cloud/');
+
+    // Connection opened
+    socket.onopen = () => {
+        console.log('WebSocket is connected.');
+    };
+
+    // Connection closed
+    socket.onclose = (event) => {
+        if (event.wasClean) {
+            console.log(`WebSocket closed cleanly, code=${event.code}, reason=${event.reason}`);
+        } else {
+            console.log('WebSocket connection closed abruptly.');
+        }
+    };
+
+    // Error handling
+    socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+
+    // Receiving messages
+    socket.onmessage = (event) => {
+        console.log('Message from server:', event.data);
+    };
+
+    // // Clean up the connection on unmount
+    // return () => {
+    //     socket.close();
+    // };
+}, []);
   const getProfile = async () => {
     try {
       const response = await axios.get(`${baseUrl}/user/`, {
@@ -149,8 +179,6 @@ function App() {
               <Route path="/coming-soon" element={<ComingSoon />} />
               <Route path="/services" element={<Services />} />
               <Route exact path="/" element={<Dashboard />} />
-              <Route path="/board/:id" element={<Boardd />} />
-              <Route path="/project/:id" element={<BoardList />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/project-board/:projectId" element={<Board />} />
               <Route
@@ -159,7 +187,6 @@ function App() {
               />
               <Route exact path="/test" element={<Test />} />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-              <Route path="/leave-balance" element={<LeaveBalance />} />
               <Route path="/request-leave" element={<CreateLeaveRequest />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/my-team" element={<ComingSoon />} />
@@ -173,19 +200,19 @@ function App() {
               <Route path="/my-travel-details" element={<ComingSoon />} />
               <Route path="/letter-request" element={<ComingSoon />} />
               <Route path="/leave-history" element={<LeaveHistory />} />
-              <Route
-                path="/leave-balance-employee"
-                element={<LeaveBalanceEmployee />}
-              />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-              <Route path="/leave-balance-hr" element={<LeaveBalanceHR />} />
               <Route path="/leave-calender" element={<ComingSoon />} />
+              <Route exact path="/exit-employee" element={<EmployeesExit />} />
               {userRole === 1 && (
                 <>
                   <Route path="/create-task" element={<CreateTask />} />
                   <Route path="/my-dtr" element={<MyDtr />} />
                   <Route path="/reports" element={<ComingSoon />} />
                 </>
+              )}
+
+              {(userRole === 1 ||  userRole === 2 || userRole === 3) && (
+                <Route path="/exit-clearance" element={<ExitAndClearance />} />
               )}
 
               {(userRole === 1 || userRole === 3) && (
@@ -201,7 +228,7 @@ function App() {
                     path="/travel-details"
                     element={<ComingSoon />}
                   />
-                  <Route path="/exit-clearance" element={<ComingSoon />} />
+
                   <Route path="/customise-employees" element={<ComingSoon />} />
                   <Route path="/relocation" element={<ComingSoon />} />
                   <Route
@@ -209,6 +236,7 @@ function App() {
                     path="/create-employee"
                     element={<CreateUpdateEmployee />}
                   />
+
                   <Route
                     path="/leave-allotement"
                     element={<LeaveAllotement />}
@@ -244,10 +272,7 @@ function App() {
                   <Route path="/career-planning" element={<ComingSoon />} />
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
-                  <Route
-                    path="/leave-requests"
-                    element={<LeaveRequest />}
-                  />
+                  <Route path="/leave-requests" element={<LeaveRequest />} />
                 </>
               )}
             </Route>

@@ -6,16 +6,25 @@ import { connect } from "react-redux";
 import {
   getEmployeeProfessionalExperianceData,
   saveEmployeeProfessionalExperianceData,
-  deleteEmployeeProfessionalExperianceData // Import the delete function
+  deleteEmployeeProfessionalExperianceData, // Import the delete function
 } from "app/hooks/employee.jsx";
 import PageLoader from "components/PageLoader.jsx";
 import Experience from "../Sections/ExperianceForm.jsx";
-import { EmployeeProfessionalExperiance } from "app/utils/Types/Employee";
-import { CustomDarkButton, CustomLightOutlineButton } from "components/form-control";
+import {
+  CustomDarkButton,
+  CustomLightOutlineButton,
+} from "components/form-control";
 import { validationEmployeeExperienceFormSchema } from "app/utils/FormSchema/employeeFormSchema.jsx";
 import { FaTimes } from "react-icons/fa"; // Import the close icon from react-icons
 
-const ExperienceInformation = ({ nextstep, employeeId, isEditMode, prevStep, baseUrl, token }) => {
+const ExperienceInformation = ({
+  nextstep,
+  employeeId,
+  isEditMode,
+  prevStep,
+  baseUrl,
+  token,
+}) => {
   const formRef = React.createRef();
   const [experiences, setExperiences] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -32,16 +41,26 @@ const ExperienceInformation = ({ nextstep, employeeId, isEditMode, prevStep, bas
   }, [employeeId]);
 
   const handleSubmit = async (data) => {
-    const response = await saveEmployeeProfessionalExperianceData(employeeId, data.experiences);
+    const response = await saveEmployeeProfessionalExperianceData(
+      employeeId,
+      data.experiences
+    );
     if (response) nextstep();
   };
 
   const handleDelete = async (experienceId, index, props) => {
     try {
-      await deleteEmployeeProfessionalExperianceData(baseUrl, employeeId, token, [experienceId]);
+      if (experienceId) {
+        await deleteEmployeeProfessionalExperianceData(
+          baseUrl,
+          employeeId,
+          token,
+          [experienceId]
+        );
+      }
       const newExperiences = [...props.values.experiences];
       newExperiences.splice(index, 1);
-      props.setFieldValue('experiences', newExperiences);
+      props.setFieldValue("experiences", newExperiences);
     } catch (error) {
       console.error("Error deleting experience:", error);
     }
@@ -83,20 +102,34 @@ const ExperienceInformation = ({ nextstep, employeeId, isEditMode, prevStep, bas
                               </h5>
                               <FaTimes
                                 className="cursor-pointer"
-                                onClick={() => handleDelete(experience.id, index, props)}
+                                onClick={() =>
+                                  handleDelete(experience.id, index, props)
+                                }
                               />
                             </div>
                           </Col>
+
                           <Experience
                             values={experience}
-                            errors={props.errors?.experiences ? props.errors?.experiences[index] : {}}
-                            touched={props.touched?.experiences ? props.touched?.experiences[index] : {}}
+                            errors={
+                              props.errors?.experiences
+                                ? props.errors?.experiences[index]
+                                : {}
+                            }
+                            touched={
+                              props.touched?.experiences
+                                ? props.touched?.experiences[index]
+                                : {}
+                            }
                             onChange={(field, value) => {
                               experience[field] = value;
                               if (field === "disableEndDate" && value) {
                                 experience.exp_end_date = null;
                               }
-                              props.setFieldValue(`experiences[${index}]`, experience);
+                              props.setFieldValue(
+                                `experiences[${index}]`,
+                                experience
+                              );
                             }}
                           />
                         </React.Fragment>
@@ -108,8 +141,16 @@ const ExperienceInformation = ({ nextstep, employeeId, isEditMode, prevStep, bas
                         onClick={() => {
                           const length = props.values?.experiences?.length;
                           const index = length ? length : 0;
-
-                          props.setFieldValue(`experiences[${index}]`, EmployeeProfessionalExperiance);
+                          props.setFieldValue(`experiences[${index}]`, {
+                            employee_id: null,
+                            exp_organization: null,
+                            exp_designation: null,
+                            exp_discription: null,
+                            exp_letter: null,
+                            exp_start_date: null,
+                            exp_end_date: null,
+                            disableEndDate: false,
+                          });
                         }}
                       >
                         + Add Another
@@ -156,4 +197,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(ExperienceInformation);
-

@@ -8,6 +8,7 @@ const PersonalInformation = ({
   isEditable,
   getDataByHooks,
 }) => {
+  console.log("personal info",personalInfo);
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>

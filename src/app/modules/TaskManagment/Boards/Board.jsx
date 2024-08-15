@@ -12,24 +12,28 @@ import {
   deleteBoard,
   moveTask,
 } from "app/hooks/taskManagment";
-import { TaskSortingFilters } from "data/Data";
 import { FaPlus } from "react-icons/fa";
 import { FiFilter } from "react-icons/fi";
 import { RxPlus } from "react-icons/rx";
 import { useParams, Link } from "react-router-dom";
-import RenderProject from "./Sections/RenderProject";
 import { CustomDropdown } from "../Sections";
-import { AddNewListModel, MembersDropdown } from "./Sections";
+import {
+  AddNewListModel,
+  MembersDropdown,
+  TaskSortingFilters,
+  RenderProject,
+} from "./Sections";
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
 import { getRandomColor } from "utils/renderValues";
 
-const Board = ({ userProfile }) => {
+const Board = ({ employees, userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
   const projectId = useParams()?.projectId || null;
   const [projectData, setProjectData] = useState(Project);
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
+  const [filterList, setFilterList] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -59,18 +63,47 @@ const Board = ({ userProfile }) => {
     };
   }, [projectId]);
 
+  useEffect(() => {
+    if (employees && employees.length > 0) {
+      setFilterList(TaskSortingFilters(employees));
+    }
+  }, [employees]);
+
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (!filterValue || filterCheckStatus === false) {
         delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] =
-          filterCheckStatus === false ? "" : filterValue;
+        if (
+          filterName !== "assigned_to" &&
+          filterName !== "label" &&
+          filterName !== "end_datefilterValue" &&
+          filterName !== "priority"
+        ) {
+          if (updatedFilters.optionsValues) {
+            if (updatedFilters.optionsValues.includes(filterValue)) {
+              updatedFilters.optionsValues =
+                updatedFilters.optionsValues.filter(
+                  (item) => item !== filterValue
+                );
+            } else updatedFilters.optionsValues.push(filterValue);
+          } else updatedFilters.optionsValues = [filterValue];
+        } else if (
+          filterName === "assigned_to" &&
+          filterValue === "noMemberSelected"
+        ) {
+          updatedFilters[filterName] =
+            filterCheckStatus === false ? "" : filterValue;
+          updatedFilters.optionsValues = null;
+        } else
+          updatedFilters[filterName] =
+            filterCheckStatus === false ? "" : filterValue;
       }
       return updatedFilters;
     });
   };
+
   const toggleAddBoardModal = () => {
     if (showAddNewListModel) {
       fetchData(true);
@@ -97,21 +130,23 @@ const Board = ({ userProfile }) => {
                   <MembersDropdown
                     members={projectData?.project_members || []}
                   />
-                  <Button
-                    onClick={toggleAddBoardModal}
-                    className="rounded-md btn-dark d-flex gap-1 items-center justify-center h-[37.6px]"
-                  >
-                    <FaPlus
-                      className="text-white"
-                      style={{ fontSize: "12px" }}
-                    />
-                    Add List
-                  </Button>
+                  {userProfile.role !== 4 &&
+                    <Button
+                      onClick={toggleAddBoardModal}
+                      className="rounded-md btn-dark d-flex gap-1 items-center justify-center h-[37.6px]"
+                    >
+                      <FaPlus
+                        className="text-white"
+                        style={{ fontSize: "12px" }}
+                      />
+                      Add List
+                    </Button>
+                  }
                   <FilterInput
                     filters={[
                       {
                         type: "sorting",
-                        option: TaskSortingFilters,
+                        option: filterList,
                         name: "sorting",
                         placeholder: (
                           <span className="d-flex justify-center items-center gap-1">
@@ -144,7 +179,10 @@ const Board = ({ userProfile }) => {
                         reloadData={() => {
                           fetchData(true);
                         }}
-                        filterData={filterData}
+                        filterData={{
+                          ...filterData,
+                          board_id: [board.id],
+                        }}
                       />
                     ))
                   ) : (
@@ -168,13 +206,9 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
   const fetchData = async (isMounted) => {
     try {
-      const TaskData = await getTaskByBoardId({
-        filterData,
-        ...{ board_id: [board.id] },
-      });
+      const TaskData = await getTaskByBoardId({ filterData });
       if (isMounted) {
         setTasks(TaskData);
       }
@@ -250,7 +284,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
               <span>{board.name}</span>
             </h2>
             <span className="justify-center flex text-sm bg-white text-zinc-600 w-[22px] h-[22px]">
-              {tasks?.count}
+              {tasks?.count || 0}
             </span>
           </div>
 
@@ -322,6 +356,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
 
 const mapStateToProps = (state) => {
   return {
+    employees: state.emp.employees,
     userProfile: state.user.userProfile,
   };
 };

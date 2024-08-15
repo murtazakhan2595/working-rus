@@ -116,6 +116,7 @@ const RenderApplication = ({
       } else if (loggedInUser.role === 2) {
         payload["status_manager"] = `${status} by Manager`;
       }
+      console.log("in render application payload",payload, loggedInUser)
       const response = await updateLeaveStatus(payload, loggedInUser);
 
       // If declined, update the employee leaves

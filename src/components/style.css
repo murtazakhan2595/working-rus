@@ -116,3 +116,29 @@
 .form-floating > label {
   z-index: 0;
 }
+.limit table {
+ display: block;
+ height: 400px;
+ overflow: auto;
+}
+
+.limit table thead th{
+  position: sticky;
+  top: 0;
+  background-color: #ebeced !important;
+  z-index: 1 !important; 
+}
+.limit table th{
+   width: 25%;
+   background-color: #ebeced;
+ }
+
+
+.m-bottom-zero .table-container{
+  margin-bottom: 0px !important;
+}
+
+.flex-nowrap > * {
+  flex-wrap: nowrap !important;
+  /* max-width: 3rem; */
+}

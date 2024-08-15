@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 export const downloadAttachment = async (file, name) => {
+    console.log("downloading", file,name)
     try {
         const response = await axios.get(file, {
             responseType: "blob",
@@ -45,3 +46,10 @@ const getImageExtension = (contentType) => {
             return 'jpg'; // Default to jpg if the format is not recognized
     }
 };
+
+  export function filebase64Download(file) {
+    const link = document.createElement("a");
+    link.href = file.file;
+    link.download = file.name || "downloaded-file";
+    link.click();
+  }

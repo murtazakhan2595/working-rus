@@ -12,6 +12,7 @@ import {
 } from "state/slices/CommonSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
+import { options } from "joi";
 
 export const countryOptions = Object.keys(getAllCountries()).map(
   (countryCode) => ({
@@ -272,6 +273,32 @@ export const PriorityList = [
     ),
   },
 ];
+export const PriorityListIcons = [
+  {
+    value: 3,
+    label: (
+      <div className="flex items-center gap-x-2 text-baseGray ">
+        <IoMdArrowDropdownCircle className="text-2xl" />
+      </div>
+    ),
+  },
+  {
+    value: 2,
+    label: (
+      <div className="flex items-center gap-x-2 text-yellow-500">
+        <FiMinusCircle className="text-xl" />
+      </div>
+    ),
+  },
+  {
+    value: 1,
+    label: (
+      <div className="flex items-center gap-x-2 text-red-500">
+        <IoMdArrowDropupCircle className="text-2xl" />
+      </div>
+    ),
+  },
+];
 
 export const status2Options = [
   {
@@ -381,7 +408,7 @@ export const JobSortingFilters = [
 export const TaskSortingFilters = [
   {
     label: "",
-    name: "complted",
+    name: "label",
     options: [
       { label: "Finished", value: "" },
       { label: "Unfinished task", value: "asc" },
@@ -392,7 +419,11 @@ export const TaskSortingFilters = [
     name: "assigned_to",
     options: [
       { label: "No Members", value: "noMember" },
-      { label: "Selected Members", value: "asc" },
+      {
+        label: "Selected Members",
+        value: "asc",
+        options: [{ label: "ajwa", value: "90",name:"ajwa" }, { label: "ali", value: "91",name:"ali" }],
+      },
     ],
   },
   {
@@ -409,9 +440,9 @@ export const TaskSortingFilters = [
     name: "priority",
     options: [
       { label: "No priority", value: "noPriority" },
-      { label: "High", value: 1 },
-      { label: "Medium", value: 2 },
-      { label: "Low", value: 3 },
+      { label: "High", value: "1" },
+      { label: "Medium", value: "2" },
+      { label: "Low", value: "3" },
     ],
   },
 ];
@@ -420,6 +451,41 @@ export const LeaveStatus = [
   { label: "Approved", value: "Approved" },
   { label: "Pending", value: "Pending" },
   { label: "Denied", value: "Denied" },
+];
+
+export const terminationReasonsOptions = [
+  {
+    value: 1,
+    label: "Poor Performance",
+  },
+  { value: 2, label: "Involuntary" },
+  {
+    value: 7,
+    label: "End of Contract",
+  },
+  { value: 3, label: "Retirement" },
+  { value: 4, label: "Layoff" },
+  { value: 5, label: "Dismissal" },
+  {
+    value: 6,
+    label: "Mutual Agreement",
+  },
+];
+
+export const resignationStatus = [
+  { label: "Pending", value: "pending" },
+  { label: "Accepted by Manager", value: "accepted by manager" },
+  { label: "Rejected by Manager", value: "rejected by manager" },
+  { label: "Accepted by HR", value: "accepted by hr" },
+  { label: "Rejected by HR", value: "rejected by hr" },
+  { label: "Initiated Clearance", value: "initiated clearance" },
+  { label: "Exit Interview", value: "exit interview" },
+];
+
+export const terminationStatus = [
+  { label: "Viewd By Manager", value: "viwed by manager" },
+  { label: "Accepted by Employee", value: "accepted by employee" },
+  { label: "Rejected by Employee", value: "rejected by employee" },
 ];
 
 export function getManagerSelected(managers, managersList) {
@@ -437,7 +503,7 @@ export function getManagerSelected(managers, managersList) {
 }
 
 export const handleUpdateProfile = (dispatch, data) => {
-  const userprofile={
+  const userprofile = {
     id: data.id,
     username: data.username,
     is_filled: data.is_filled,

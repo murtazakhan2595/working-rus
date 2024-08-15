@@ -3,10 +3,9 @@ import Select from "react-select";
 import { FormGroup, Label, Input, Button, Col } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from "moment";
+import moment, { max, min } from "moment";
 import upload from "../assets/images/upload.png";
 import { TfiFiles } from "react-icons/tfi";
-import { dropdownStyles } from "../data/Data";
 import { IoIosSearch } from "react-icons/io";
 import { countryCodesOptions } from "../data/CountryCode";
 import ReactQuill from "react-quill";
@@ -44,7 +43,7 @@ const SelectComponent = ({
           menu: (base) => ({ ...base, zIndex: 9999 }),
           menuList: (base) => ({ ...base, zIndex: 9999 }),
         }}
-         menuPortalTarget={document.body}
+        menuPortalTarget={document.body}
       />
       {value ? (
         <Label
@@ -205,7 +204,7 @@ const TextInput = ({
 const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
   return (
     <>
-      <FormGroup check className="my-3">
+      <FormGroup check className="my-1">
         <Input
           id={name}
           type="checkbox"
@@ -599,15 +598,24 @@ const TextAreaEditorInput = ({
           value={value}
           modules={{
             toolbar: {
-              container: [
-                ["bold", "italic", "underline"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link"],
-                [{ align: "" }, { align: "center" }, { align: "right" }],
-              ],
+                container: [
+                    ["bold", "italic", "underline"],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    ["link"],
+                    [{ align: "" }, { align: "center" }, { align: "right" }],
+                ],
             },
-          }}
-          disabled={disabled}
+        }}
+          formats={[
+            "bold",
+            "italic",
+            "underline",
+            "list",
+            "bullet",
+            "link",
+            "align",
+          ]}
+          readOnly={disabled}
           className={`rounded ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {
             onChange(name, option);
@@ -624,9 +632,49 @@ const TextAreaEditorInput = ({
   );
 };
 
+function dropdownStyles(backgroundColor, fontSize, height) {
+  return {
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: backgroundColor,
+      border: "none",
+      boxShadow: "none",
+      minWidth: "8rem",
+      fontSize: fontSize,
+      minHeight: height,
+      maxHeight: height,
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      fontSize: fontSize,
+      fontWeight: state.isSelected ? "bold" : "normal",
+      color: state.isSelected ? "#000" : "#777",
+      padding: "8px 12px",
+      backgroundColor: state.isSelected ? "#FAFBFC" : "#FAFBFC",
+    }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: "8px",
+      overflow: "hidden",
+    }),
+    scrollbarWidth: (base) => ({
+      ...base,
+      borderRadius: "8px",
+      backgroundColor: "#FAFBFC",
+    }),
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      color: "#555",
+    }),
+  };
+}
+
 const FilterInput = ({ filters, onChange, isClearable = true }) => {
   const classNamesStyle =
-    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md w-56";
+    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
+  const width = "w-56";
+  const height = "h-[38px]";
   return (
     <>
       <div className="flex items-center gap-x-3 gap-y-3 flex-wrap">
@@ -635,12 +683,14 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
             if (filter.type === "search") {
               return (
                 <div className="relative" key={index}>
-                  <IoIosSearch className="absolute top-3 left-3 text-baseGray" />
+                  <IoIosSearch className="absolute top-[30%] left-3 text-baseGray" />
                   <input
                     type="search"
                     style={{ paddingLeft: "2.5rem" }}
                     placeholder={filter.placeholder}
-                    className={`${filter.className ?? classNamesStyle}`}
+                    className={`${filter.className ?? classNamesStyle} ${
+                      filter.width ?? width
+                    } ${filter.height ?? height}`}
                     name={filter.name}
                     id={filter.name}
                     onChange={(option) => {
@@ -655,7 +705,9 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                   key={index}
                   type="text"
                   placeholder={filter.placeholder}
-                  className={filter.className ?? classNamesStyle}
+                  className={`${filter.className ?? classNamesStyle} ${
+                    filter.width ?? width
+                  } ${filter.height ?? height}`}
                   name={filter.name}
                   id={filter.name}
                   onChange={(option) => {
@@ -669,10 +721,14 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                   key={index}
                   options={filter.option}
                   placeholder={filter.placeholder}
-                  className={`shadow-input rounded-lg ${
-                    filter.width ? filter.width : "w-56"
-                  }`}
-                  styles={dropdownStyles}
+                  className={`${
+                    !filter.className && "shadow-input"
+                  } rounded-lg`}
+                  styles={dropdownStyles(
+                    filter?.className?.backgroundColor ?? "#fafbfc",
+                    filter?.className?.fontSize ?? "16px",
+                    filter?.className?.height ?? "38px"
+                  )}
                   name={filter.name}
                   defaultValue={filter.option.find(
                     (obj) => obj.value === filter.defaultValue
@@ -693,7 +749,9 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                     key={index}
                     name={filter.name}
                     id={filter.name}
-                    className={`${filter.className ?? classNamesStyle}`}
+                    className={`${filter.className ?? classNamesStyle} ${
+                      filter.width ?? width
+                    } ${filter.height ?? height}`}
                     dropdownMode="select"
                     placeholderText={filter.placeholder}
                     value={date}

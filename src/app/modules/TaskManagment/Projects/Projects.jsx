@@ -16,6 +16,7 @@ import { fetchProjects } from "state/slices/CommonSlice";
 import { useDispatch } from "react-redux";
 
 const Projects = ({ userProfile }) => {
+
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [AllProjects, setAllProjects] = useState([]);
@@ -61,7 +62,7 @@ const Projects = ({ userProfile }) => {
   const toggleAddProject = (projectId) => {
     if (showProjectModal) {
       fetchData(true);
-      dispatch(fetchProjects());
+      dispatch(fetchProjects(userProfile));
     }
     setShowProjectModal(projectId ?? !showProjectModal);
   };
@@ -114,7 +115,7 @@ const Projects = ({ userProfile }) => {
                         />
                       </Col>
                     ))}
-                  {AllProjects.count === 0 && (
+                  {AllProjects.count === 0 && userProfile.role === 4 &&(
                     <main className="flex flex-col flex-wrap justify-center content-center items-center self-stretch p-8 text-2xl tracking-tight leading-4 bg-white rounded-xl text-zinc-600 max-md:px-5 h-[75dvh]">
                       <LuFolderX className="w-20 h-20 text-zinc-600" />
                       <p className="mt-6">
@@ -185,7 +186,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
       } rounded h-100 flex justify-center items-center`}
     >
       {project ? (
-        <div className="bg-[#FAFBFC] rounded-[10px] p-4 flex flex-col space-y-4 w-full relative">
+        <div className="bg-[#FAFBFC] rounded-[10px] p-4 flex flex-col space-y-4 w-full relative h-[100%]">
           <div className="flex justify-between">
             <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-3xl font-bold text-white">
               {`${project?.name.charAt(0).toUpperCase()}${project?.name
@@ -218,7 +219,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
         </div>
       ) : (
         <div
-          className="flex items-center justify-center flex-col cursor-pointer"
+          className="flex items-center justify-center flex-col cursor-pointer min-h-[190px]"
           onClick={() => {
             toggleAddProject();
           }}

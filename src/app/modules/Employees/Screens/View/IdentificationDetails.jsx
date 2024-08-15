@@ -261,7 +261,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
   };
   useEffect(() => {
     getDataByHooks();
-  }, []);
+  }, [employeeId]);
   return (
     <>
       {loading ? (

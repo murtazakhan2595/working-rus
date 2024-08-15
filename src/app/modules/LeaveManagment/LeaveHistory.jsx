@@ -149,7 +149,7 @@ const LeaveHistory = ({ leaveTypes, designations, departments }) => {
                           {
                             type: "text",
                             placeholder: "Search by Name",
-                            name: "first_name",
+                            name: "id_and_first_name",
                           },
                           {
                             type: "select",

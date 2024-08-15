@@ -28,7 +28,7 @@ function getNavigation(userRole) {
           url: "/",
         },
       ],
-      ...(userRole === 1 || userRole === 3
+      ...(userRole === 1 || userRole === 2 || userRole === 3
         ? [
             {
               name: "People Team",
@@ -59,7 +59,7 @@ function getNavigation(userRole) {
                       },
                     ]
                   : []),
-                ...(userRole === 1 || userRole === 3
+                ...(userRole === 1 || userRole === 2 || userRole === 3
                   ? [
                       {
                         name: "Exit & Clearence",
@@ -188,6 +188,14 @@ function getNavigation(userRole) {
                       {
                         name: "My Travel Details",
                         url: "/my-travel-details",
+                      },
+                    ]
+                  : []),
+                ...(userRole === 4
+                  ? [
+                      {
+                        name: "Exit",
+                        url: "/exit-employee",
                       },
                     ]
                   : []),

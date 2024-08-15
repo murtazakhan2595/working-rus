@@ -1,8 +1,10 @@
 import axios from "axios";
+import React from "react";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { setUserLogout } from "state/actions/UserAction";
 import { EmployeeListData } from "app/utils/Types/General";
+import { useNavigate } from "react-router-dom";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -123,8 +125,10 @@ const getProjectsList = async (userProfile) => {
     if (response.status === 200) {
       const projectResponse = response.data;
       if (userProfile.role === 4 || userProfile.role === 2) {
-        const filteredResults = projectResponse.filter((project) =>
-          project.project_members.includes(userProfile.id)
+        const filteredResults = projectResponse.filter(
+          (project) =>
+            project.project_members.includes(userProfile.id) ||
+            project.created_by === userProfile.id
         );
         const projectList = filteredResults.map((project) => ({
           value: project.id,
@@ -143,7 +147,7 @@ const getProjectsList = async (userProfile) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -151,6 +155,7 @@ const getProjectsList = async (userProfile) => {
 };
 
 const getEmployeeCustomList = async (payload) => {
+  console.log("payload", payload);
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -174,7 +179,7 @@ const getEmployeeCustomList = async (payload) => {
     } else return EmployeeListData;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -190,7 +195,7 @@ const getList = async (URL) => {
     else return [];
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -214,7 +219,7 @@ const getCurrenciesList = async (URL) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -244,7 +249,8 @@ const deleteRecord = async (URL, recordName) => {
   }
 };
 
-const handleLogout = () => {
+const HandleLogout = () => {
+
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
     toast.error("Session Time Out", {
@@ -253,6 +259,7 @@ const handleLogout = () => {
     });
     window.localStorage.setItem("token", "");
     setUserLogout();
+    return <></>;
   }
 };
 
@@ -264,7 +271,7 @@ export {
   deleteRecord,
   getOrganizationList,
   getEmployeeList,
-  handleLogout,
+  HandleLogout,
   getEmployeeCustomList,
   getProjectsList,
   getCurrenciesList,

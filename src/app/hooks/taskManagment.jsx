@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
-import { handleLogout } from "./general";
+import { HandleLogout } from "./general";
 import { Project } from "app/utils/Types/TaskManagment";
 import { getTaskFilteredData } from "utils/Lists";
 
@@ -11,33 +11,40 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getAllProjects = async (payload,userProfile) => {
+const getAllProjects = async (payload, userProfile) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/project/?order=-date&${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/project/?order=-created_at&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+    console.log("response in get all projects", response);
     if (response.status === 200) {
       const data = response.data;
       if (userProfile.role === 4 || userProfile.role === 2) {
-        const filteredResults = data.filter((project) =>
-          project.project_members.includes(userProfile.id)
+        console.log(data);
+        const filteredResults = data.filter(
+          (project) =>
+            project.project_members.includes(userProfile.id) ||
+            project.created_by === userProfile.id
         );
+
         const ProjectsData = {
           count: filteredResults.length,
           results: filteredResults,
         };
+        console.log("returning in if", ProjectsData);
         return ProjectsData;
       } else {
         const ProjectsData = {
           count: data.length,
           results: data,
         };
+        console.log("returning in else", ProjectsData);
         return ProjectsData;
       }
     } else {
@@ -45,26 +52,26 @@ const getAllProjects = async (payload,userProfile) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
 };
 const getTaskByBoardId = async (payload) => {
-  const pageNo = payload?.options?.page ?? "";
-  const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/task/?${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }`;
+  delete filterData.end_date;
+  delete filterData.priority;
+  filterData.assigned_to = filterData.optionsValues;
+  delete filterData.optionsValues;
+  const URL = `/task/?search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const data = response.data;
-      const taskList = getTaskFilteredData(data, filterData);
+      const taskList = getTaskFilteredData(data, payload?.filterData ?? {});
       const TasksData = {
         count: taskList.length,
         results: taskList,
@@ -75,7 +82,7 @@ const getTaskByBoardId = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -104,7 +111,7 @@ const getAllBoards = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -116,6 +123,7 @@ const getAllLabels = async () => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+
     if (response.status === 200) {
       const data = response.data;
       return data;
@@ -124,7 +132,7 @@ const getAllLabels = async () => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching task data :", error);
   }
@@ -160,7 +168,15 @@ const addBoard = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
+    }
+    else if(error?.response?.status === 403){
+      toast.error(
+        "You don’t have sufficient permissions to add columns, please contact your manager",
+        {
+          position: toast.POSITION.TOP_RIGHT,
+        }
+      );
     }
     console.error("Error adding job:", error);
     return false;
@@ -195,7 +211,7 @@ const addProject = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding project:", error);
     return false;
@@ -231,7 +247,7 @@ const addTask = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding task:", error);
     return false;
@@ -251,7 +267,7 @@ const moveTask = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding task:", error);
     return false;
@@ -271,7 +287,40 @@ const addAttachments = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
+    }
+    console.error("Error adding task:", error);
+    return false;
+  }
+};
+const addCommentAttachment = async (payload) => {
+  try {
+    if (payload.id) {
+      const response = await axios.patch(
+        `${baseUrl}/CommentAttachment/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return response.data;
+      }
+    } else {
+      const response = await axios.post(
+        `${baseUrl}/CommentAttachment`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return response.data;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
     }
     console.error("Error adding task:", error);
     return false;
@@ -292,7 +341,7 @@ const getProjectById = async (projectId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     return Project;
@@ -313,7 +362,7 @@ const getBoardById = async (boardId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     return Project;
@@ -333,7 +382,7 @@ const deleteProject = async (projectId) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting project:", error);
     toast.error("Error deleting project!", {
@@ -355,7 +404,7 @@ const deleteBoard = async (taskId) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting board:", error);
     toast.error("Error deleting board!", {
@@ -377,7 +426,7 @@ const deleteTask = async (taskId) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting task:", error);
     toast.error("Error deleting task!", {
@@ -397,7 +446,7 @@ const deleteAttachment = async (attachmentId) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting attachment:", error);
     return false;
@@ -419,7 +468,7 @@ const getTaskById = async (taskId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error getting task:", error);
     return {};
@@ -443,7 +492,7 @@ const getAttachmentById = async (attachmentId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error getting attachment:", error);
     return {};
@@ -453,7 +502,7 @@ const getAttachmentById = async (attachmentId) => {
 const fetchComments = async (filter) => {
   try {
     const response = await axios.get(
-      `${baseUrl}/comments/?search=${encodeURIComponent(
+      `${baseUrl}/comments/?order=-created_at&search=${encodeURIComponent(
         JSON.stringify(filter)
       )}`,
       {
@@ -466,29 +515,112 @@ const fetchComments = async (filter) => {
     return [];
   }
 };
-
-const postComment = async (taskId, userId, comment) => {
+const deleteComment = async (payload) => {
   try {
-    const response = await axios.post(
-      `${baseUrl}/comments/`,
-      {
-        task_id: taskId,
-        user_id: userId,
-        comment: comment,
-      },
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.delete(`${baseUrl}/comments/${payload}`, {
+      headers: headers(),
+    });
     return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error posting comment:", error);
+    throw error; // Re-throw the error to handle it in the component
+  }
+};
+const postComment = async (payload) => {
+  try {
+    if (payload.id) {
+      const response = await axios.patch(
+        `${baseUrl}/comments/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      return response.data;
+    } else {
+      const response = await axios.post(`${baseUrl}/comments/`, payload, {
+        headers: headers(),
+      });
+      return response.data;
+    }
   } catch (error) {
     console.error("Error posting comment:", error);
     throw error; // Re-throw the error to handle it in the component
   }
 };
+const getAllTasks = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  const URL = `/task/?order=-date&search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const data = response.data;
+      return data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching task data :", error);
+  }
+  return [];
+};
+
+const getCommentsWithAttachments = async (filter) => {
+  try {
+    // Fetch comments based on the provided filter
+    const comments = await fetchComments(filter);
+
+    // Extract all attachment IDs from the fetched comments
+    const attachmentIds = comments.flatMap((comment) => comment.commentattach);
+    console.log(attachmentIds);
+
+    // Fetch all attachments in parallel, but only if there are comments
+    const attachments =
+      comments.length > 0
+        ? await Promise.all(
+            attachmentIds.map((id) =>
+              axios
+                .get(`${baseUrl}/CommentAttachment/${id}`, {
+                  headers: headers(),
+                })
+                .then((response) => response.data)
+            )
+          )
+        : [];
+
+    // Create a map of attachments using their IDs for quick lookup
+    const attachmentsMap = new Map(attachments.map((att) => [att.id, att]));
+
+    // Merge the attachments back into their respective comments
+    const commentsWithAttachments = comments.map((comment) => ({
+      ...comment,
+      // Replace the attachment IDs with the actual attachment objects
+      attachments: comment.commentattach.map(
+        (id) => attachmentsMap.get(id) || null
+      ),
+    }));
+
+    // Return the comments with their attachments included
+    return commentsWithAttachments;
+  } catch (error) {
+    // Log any errors that occur during the process
+    console.error("Error fetching comments:", error);
+  }
+};
 
 export {
   getAllProjects,
+  getAllTasks,
   addProject,
   getAllBoards,
   getProjectById,
@@ -502,9 +634,12 @@ export {
   deleteBoard,
   moveTask,
   addAttachments,
+  addCommentAttachment,
   getAttachmentById,
   deleteAttachment,
   fetchComments,
   postComment,
-  getAllLabels
+  deleteComment,
+  getAllLabels,
+  getCommentsWithAttachments,
 };

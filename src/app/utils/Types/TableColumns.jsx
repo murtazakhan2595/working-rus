@@ -13,13 +13,23 @@ import {
   Status,
   RenderStatus,
   RenderLeaveType,
-  RenderLeaveAction
+  RenderLeaveAction,
 } from "app/modules/LeaveManagment/Sections";
 import moment from "moment";
 import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
 import { IoIosArrowDown } from "react-icons/io";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
+import { BsBoxArrowUpRight } from "react-icons/bs";
+import { IoBagCheckOutline } from "react-icons/io5";
+import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
+import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
+import { MdOutlineFileDownload } from "react-icons/md";
+import { filebase64Download } from "utils/fileUtils";
+import RenderTerminatedRow from "app/modules/ExitAndClearance/section/RenderTerminatedRow";
+import RenderResignedRow from "app/modules/ExitAndClearance/section/RenderResignedRow";
+
+
 
 export const LeaveHistoryColumns = (updateLeaveType) => [
   {
@@ -150,6 +160,85 @@ export const MyLeavesColumns = [
     formatter: (cell, row) => <RenderStatus row={row} />,
   },
 ];
+export const ExitRequestColumns = (
+  handleOptionSelect,
+  handleRowClicked,
+  reload,
+  hideAction = false
+) => {
+  const columns = [
+    {
+      dataField: "emp_name",
+      text: "Employees",
+      onClick: (recordIndex, data, row) => {
+        handleRowClicked(recordIndex, data, row);
+      },
+    },
+    {
+      dataField: "employee_id",
+      text: "ID",
+      formatter: (cell) => <EmployeeID value={cell} />,
+    },
+    {
+      dataField: "report_to",
+      text: "Report To",
+      formatter: (cell, row) => <ManagerName value={cell} />,
+    },
+    {
+      dataField: "notice_period",
+      text: "Notice Period",
+    },
+    {
+      dataField: "exit_date",
+      text: "Exit date",
+    },
+    {
+      dataField: "",
+      text: "Application",
+      formatter: (cell, row) => (
+        <>
+          {row?.resignation_letter ? (
+            <div className="justify-start items-center gap-2.5 inline-flex">
+              <div className="text-[#5c5e64] text-base font-normal">File</div>
+              <button
+                onClick={() => filebase64Download(row?.resignation_letter)}
+              >
+                <AiOutlineDownload />
+              </button>
+            </div>
+          ) : (
+            "N/A"
+          )}
+        </>
+      ),
+    },
+    {
+      dataField: "status_resignation",
+      text: "Status",
+      formatter: (cell, row) => (
+        <ApplicationStatus row={row} isTableViewButton={true} />
+      ),
+    },
+  ];
+
+  // Conditionally add the Action column if hideAction is false
+  if (!hideAction) {
+    columns.push({
+      dataField: "",
+      text: "Action",
+      formatter: (cell, row) => (
+        <RenderExitTableAction
+          row={row}
+          handleOptionSelect={handleOptionSelect}
+          reload={reload}
+          isTableStyle={true}
+        />
+      ),
+    });
+  }
+
+  return columns;
+};
 
 export const AllJobApplicationColumns = (
   handleOptionSelect,
@@ -237,19 +326,19 @@ export const AllJobApplicationColumns = (
     ),
   },
 ];
-export const AllLeavesApplicationColumns = (reload, userProfile) => {
+
+export const AllLeavesApplicationColumns = (reload, userRole) => {
   const columns = [
     {
       dataField: "employee_id",
       text: "Employees",
-      formatter: (cell, row) => (
-        <EmployeeNameInfo
-          name={`${row.name}`}
-          department={row.department_name}
-          position={row.position}
-        />
-      ),
-      width: "20%",
+      // formatter: (cell, row) => (
+      //   <EmployeeNameInfo
+      //     name={`${row.name}`}
+      //     department={row.department_name}
+      //     position={row.position}
+      //   />
+      // ),
     },
     {
       dataField: "employee_id",
@@ -288,10 +377,9 @@ export const AllLeavesApplicationColumns = (reload, userProfile) => {
       dataField: "",
       text: "",
       formatter: (cell, row) => <RenderStatus row={row} />,
-    }
+    },
   ];
-
-  if (userProfile && (userProfile.role === 1 || userProfile.role === 3)) {
+  if (userRole === 1 || userRole === 3) {
     columns.push({
       dataField: "action",
       text: "Action",
@@ -311,6 +399,33 @@ export const LeaveAllotmentColumns = (reload) => [
       <RenderEmployeesLeaveAllotement
         employee={row}
         employeeList={list}
+        reload={reload}
+      />
+    ),
+  },
+];
+
+export const ExitTerminatedColumns = (reload) => [
+  {
+    dataField: "employee_id",
+    text: "",
+    formatter: (cell, row, list) => (
+      <RenderTerminatedRow
+        terminatedEmployee={row}
+        terminatedEmployeeList={list}
+        reload={reload}
+      />
+    ),
+  },
+];
+export const ExitResignedColumns = (reload) => [
+  {
+    dataField: "employee_id",
+    text: "",
+    formatter: (cell, row, list) => (
+      <RenderResignedRow
+        resignedEmployee={row}
+        resignedEmployeeList={list}
         reload={reload}
       />
     ),
