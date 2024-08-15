@@ -3,6 +3,7 @@ import MembersDropdown from "./MembersDropdown";
 import { getStatusClass, getStatus, getStatusIconColor } from "./getTaskStatus";
 import {TaskSortingFilters} from './TaskSortingFilters';
 import RenderProject from "./RenderProject";
+import Attachments from './Attachments'
 export {
   AddNewListModel,
   MembersDropdown,
@@ -11,4 +12,5 @@ export {
   getStatusIconColor,
   TaskSortingFilters,
   RenderProject,
+  Attachments,
 };

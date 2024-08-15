@@ -23,7 +23,7 @@ import {
 } from "../utils/Types/Employee";
 import { initialState } from "state/slices/UserSlice";
 import { toast } from "react-toastify";
-import { handleLogout } from "./general";
+import { HandleLogout } from "./general";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -43,7 +43,7 @@ const getEmployeeData = async (employeeid) => {
     return response.data;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching data:", error);
   }
@@ -59,7 +59,7 @@ const getNewEmployeeCode = async () => {
     return id + 1;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching data:", error);
   }
@@ -83,7 +83,7 @@ const getEmployeePersonalInfoData = async (employeeid) => {
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -105,7 +105,7 @@ const saveEmployeePersonalInfoData = async (employeeid, personalInfo) => {
       if (response.status === 200) return true;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
       return false;
@@ -130,7 +130,7 @@ const getEmployeeContactInfo = async (employeeid) => {
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching contact Info data :", error);
     }
@@ -151,7 +151,7 @@ const saveEmployeeContactInfoData = async (employeeid, contactInfo) => {
       if (response.status === 200) return true;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error saving contact Info data :", error);
       return false;
@@ -232,7 +232,7 @@ const getEmployeeVisaDetailData = async (employeeid) => {
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -297,7 +297,7 @@ const saveEmployeeVisaDetailData = async (
       return true;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
       return false;
@@ -329,7 +329,7 @@ const getEmployeeCVDetailData = async (employeeid) => {
         });
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -385,7 +385,7 @@ const saveEmployeeCVDetailData = async (
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -409,7 +409,7 @@ const getEmployeeProfessionalExperianceData = async (employeeid) => {
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -438,7 +438,7 @@ const saveEmployeeProfessionalExperianceData = async (employeeid, payload) => {
           }
         } catch (error) {
           if (error?.response?.status === 401) {
-            handleLogout();
+            HandleLogout();
           }
           toast.error(`Experience ${index + 1} updated unsuccessfully`, {
             position: toast.POSITION.TOP_RIGHT,
@@ -449,7 +449,7 @@ const saveEmployeeProfessionalExperianceData = async (employeeid, payload) => {
       });
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
       return false;
@@ -476,7 +476,7 @@ const deleteEmployeeProfessionalExperianceData = async (
       });
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -502,7 +502,7 @@ const deleteEmployeeProfessionalExperianceData = async (
 //       });
 //     } catch (error) {
 //       if (error?.response?.status === 401) {
-//         handleLogout();
+//         HandleLogout();
 //       }
 //       console.error("Error fetching Personal Info data :", error);
 //     }
@@ -528,7 +528,7 @@ const deleteEmployeeCertificateData = async (
       });
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -554,7 +554,7 @@ const deleteEmployeeAcademicRecordData = async (
       });
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -578,7 +578,7 @@ const getEmployeeAcademicRecordData = async (employeeid) => {
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -608,7 +608,7 @@ const saveEmployeeAcademicRecordData = async (
       return true;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -632,7 +632,7 @@ const getEmployeeCerficationData = async (employeeid) => {
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -661,7 +661,7 @@ const saveEmployeeCertificationData = async (employeeid, payloadAttachment) => {
           }
         } catch (error) {
           if (error?.response?.status === 401) {
-            handleLogout();
+            HandleLogout();
           }
           console.error("Error fetching Personal Info data :", error);
           return false;
@@ -671,7 +671,7 @@ const saveEmployeeCertificationData = async (employeeid, payloadAttachment) => {
       return true;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -696,7 +696,7 @@ const getEmployeeWorkInformationData = async (baseUrl, employeeid, token) => {
       return employeeData;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -727,7 +727,7 @@ const saveEmployeeWorkInformationData = async (employeeid, payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
     return false;
@@ -752,7 +752,7 @@ const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
       return employeeData;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -780,7 +780,7 @@ const saveEmployeeBankDetailsData = async (
         });
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -800,7 +800,7 @@ const employeeExit =async(payload)=>{
     }
   }catch(error){
     if(error?.response?.status === 401){
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
     return false
@@ -823,7 +823,7 @@ const getEmployeeExitDataById = async (employeeid) => {
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -845,7 +845,7 @@ const getEmployeeExitData = async (payload) => {
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
     }
@@ -862,7 +862,7 @@ const updateExitData = async (payload) => {
       }
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
 
       console.error("Error fetching Personal Info data :", error);

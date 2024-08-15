@@ -34,7 +34,7 @@ import { getRandomColor } from "utils/renderValues";
 import { addCommentAttachment } from "app/hooks/taskManagment";
 import { getCommentsWithAttachments } from "app/hooks/taskManagment";
 import { filebase64Download } from "utils/fileUtils";
-import Comments from "./Comments";
+import {Comments} from "./Comments";
 
 const TaskDetail = ({ task, onClose, employees }) => {
   const [comments, setComments] = useState([]);

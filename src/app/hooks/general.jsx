@@ -1,8 +1,10 @@
 import axios from "axios";
+import React from "react";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { setUserLogout } from "state/actions/UserAction";
 import { EmployeeListData } from "app/utils/Types/General";
+import { useNavigate } from "react-router-dom";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -145,7 +147,7 @@ const getProjectsList = async (userProfile) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -177,7 +179,7 @@ const getEmployeeCustomList = async (payload) => {
     } else return EmployeeListData;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -193,7 +195,7 @@ const getList = async (URL) => {
     else return [];
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -217,7 +219,7 @@ const getCurrenciesList = async (URL) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -247,7 +249,8 @@ const deleteRecord = async (URL, recordName) => {
   }
 };
 
-const handleLogout = () => {
+const HandleLogout = () => {
+
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
     toast.error("Session Time Out", {
@@ -256,6 +259,7 @@ const handleLogout = () => {
     });
     window.localStorage.setItem("token", "");
     setUserLogout();
+    return <></>;
   }
 };
 
@@ -267,7 +271,7 @@ export {
   deleteRecord,
   getOrganizationList,
   getEmployeeList,
-  handleLogout,
+  HandleLogout,
   getEmployeeCustomList,
   getProjectsList,
   getCurrenciesList,
