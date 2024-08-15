@@ -80,7 +80,7 @@ const ContactInformation = ({
                     touch={props.touched.emergency_phone_no}
                     value={props.values.emergency_phone_no}
                     countryCode={props.values.emergency_country_code}
-                    countryCodeName={'emergency_country_code'}
+                    countryCodeName={"emergency_country_code"}
                     label="Emergency Contact"
                     required
                     onChange={(field, value) => {
@@ -127,6 +127,7 @@ const ContactInformation = ({
                     value={props.values.residential_address}
                     label="Permanent Address"
                     required
+                    maxRows={3}
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
                     }}
@@ -145,6 +146,7 @@ const ContactInformation = ({
                     value={props.values.current_address}
                     label="Current Address"
                     required
+                    maxRows={3}
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
                     }}
@@ -154,21 +156,21 @@ const ContactInformation = ({
               <hr />
               <Row>
                 <Col md={6} className="text-left">
-                  {!isEditMode &&
+                  {!isEditMode && (
                     <CustomLightOutlineButton
                       onClick={() => {
-                        prevStep()
+                        prevStep();
                       }}
-                      label={'Back'}
+                      label={"Back"}
                     />
-
-                  }</Col>
+                  )}
+                </Col>
                 <Col md="6" className="text-right">
                   <CustomDarkButton
                     onClick={() => {
                       props.handleSubmit();
                     }}
-                    label={isEditMode ? 'Save' : 'Next'}
+                    label={isEditMode ? "Save" : "Next"}
                   />
                 </Col>
               </Row>

@@ -171,6 +171,14 @@ const addBoard = async (payload) => {
     if (error?.response?.status === 401) {
       handleLogout();
     }
+    else if(error?.response?.status === 403){
+      toast.error(
+        "You don’t have sufficient permissions to add columns, please contact your manager",
+        {
+          position: toast.POSITION.TOP_RIGHT,
+        }
+      );
+    }
     console.error("Error adding job:", error);
     return false;
   }

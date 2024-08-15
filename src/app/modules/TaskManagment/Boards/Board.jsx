@@ -27,7 +27,7 @@ import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
 import { getRandomColor } from "utils/renderValues";
 
-const Board = ({ employees }) => {
+const Board = ({ employees, userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
   const projectId = useParams()?.projectId || null;
   const [projectData, setProjectData] = useState(Project);
@@ -89,8 +89,10 @@ const Board = ({ employees }) => {
                 );
             } else updatedFilters.optionsValues.push(filterValue);
           } else updatedFilters.optionsValues = [filterValue];
-        }
-        else if (filterName === "assigned_to" && filterValue === "noMemberSelected") {
+        } else if (
+          filterName === "assigned_to" &&
+          filterValue === "noMemberSelected"
+        ) {
           updatedFilters[filterName] =
             filterCheckStatus === false ? "" : filterValue;
           updatedFilters.optionsValues = null;
@@ -128,16 +130,18 @@ const Board = ({ employees }) => {
                   <MembersDropdown
                     members={projectData?.project_members || []}
                   />
-                  <Button
-                    onClick={toggleAddBoardModal}
-                    className="rounded-md btn-dark d-flex gap-1 items-center justify-center h-[37.6px]"
-                  >
-                    <FaPlus
-                      className="text-white"
-                      style={{ fontSize: "12px" }}
-                    />
-                    Add List
-                  </Button>
+                  {userProfile.role !== 4 &&
+                    <Button
+                      onClick={toggleAddBoardModal}
+                      className="rounded-md btn-dark d-flex gap-1 items-center justify-center h-[37.6px]"
+                    >
+                      <FaPlus
+                        className="text-white"
+                        style={{ fontSize: "12px" }}
+                      />
+                      Add List
+                    </Button>
+                  }
                   <FilterInput
                     filters={[
                       {
@@ -353,6 +357,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
 const mapStateToProps = (state) => {
   return {
     employees: state.emp.employees,
+    userProfile: state.user.userProfile,
   };
 };
 
