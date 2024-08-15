@@ -34,7 +34,7 @@ const headers = () => ({
 const getEmployeeData = async (employeeid) => {
   try {
     let URL = `${baseUrl}/emp/`;
-    if(employeeid){
+    if (employeeid) {
       URL += `${employeeid}`;
     }
     const response = await axios.get(URL, {
@@ -265,31 +265,49 @@ const saveEmployeeVisaDetailData = async (
           const file = visaDetailsFiles[key];
           if (file) {
             if (file?.id) {
-              await axios.patch(
-                `${baseUrl}/attachment/${file?.id}`,
-                {
-                  employee_id: employeeid,
-                  name: key,
-                  description: `${file.name} file`,
-                  document: {
-                    name: file.document.name,
-                    file: file.document.file,
+              try {
+                await axios.patch(
+                  `${baseUrl}/attachment/${file?.id}`,
+                  {
+                    employee_id: employeeid,
+                    name: key,
+                    description: `${file.name} file`,
+                    document: {
+                      name: file.document.name,
+                      file: file.document.file,
+                    },
                   },
-                },
-                { headers: headers() }
-              );
+                  { headers: headers() }
+                );
+              } catch (error) {
+                if (error?.response?.status === 413) {
+                  toast.error(`File ${key} was too large tp upload`, {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 2000,
+                  });
+                }
+              }
             } else {
               // Otherwise, post a new attachment
-              await axios.post(
-                `${baseUrl}/attachment/`,
-                {
-                  employee_id: employeeid,
-                  name: key,
-                  description: `${file.name} file`,
-                  document: file,
-                },
-                { headers: headers() }
-              );
+              try {
+                await axios.post(
+                  `${baseUrl}/attachment/`,
+                  {
+                    employee_id: employeeid,
+                    name: key,
+                    description: `${file.name} file`,
+                    document: file,
+                  },
+                  { headers: headers() }
+                );
+              } catch (error) {
+                if (error?.response?.status === 413) {
+                  toast.error(`File ${key} was too large tp upload`, {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 2000,
+                  });
+                }
+              }
             }
           }
         }
@@ -788,68 +806,68 @@ const saveEmployeeBankDetailsData = async (
   return false;
 };
 
-const employeeExit =async(payload)=>{
+const employeeExit = async (payload) => {
   console.log(`${baseUrl}/employeeExit/`);
-  try{
+  try {
     const response = await axios.post(`${baseUrl}/employeeExit`, payload, {
       headers: headers(),
     });
-    console.log(response)
-    if(response.status===201){
-      return true
+    console.log(response);
+    if (response.status === 201) {
+      return true;
     }
-  }catch(error){
-    if(error?.response?.status === 401){
+  } catch (error) {
+    if (error?.response?.status === 401) {
       HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
-    return false
+    return false;
   }
-}
+};
 
 const getEmployeeExitDataById = async (employeeid) => {
-    try {
-      let URL = `${baseUrl}/employeeExit`;
-      if (employeeid) {
-        URL += `?search=${encodeURIComponent(
-          JSON.stringify({ employee_id: employeeid })
-        )}`;
-      }
-      const response = await axios.get(URL, {
-        headers: headers(),
-      });
-      if (response.status === 200) {
-        return response
-      }
-    } catch (error) {
-      if (error?.response?.status === 401) {
-        HandleLogout();
-      }
-      console.error("Error fetching Personal Info data :", error);
+  try {
+    let URL = `${baseUrl}/employeeExit`;
+    if (employeeid) {
+      URL += `?search=${encodeURIComponent(
+        JSON.stringify({ employee_id: employeeid })
+      )}`;
     }
-}
+    const response = await axios.get(URL, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+};
 const getEmployeeExitData = async (payload) => {
   const filterData = payload?.filterData ?? {};
-    try {
-      let URL = `${baseUrl}/employeeExit?search=${encodeURIComponent(
-        JSON.stringify(filterData)
-      )}`;
-      // let URL = `${baseUrl}/employeeExit&?search=${encodeURIComponent(
-      //   JSON.stringify(filterData)
-      // )}`;
-      const response = await axios.get(URL, {
-        headers: headers(),
-      });
-      if (response.status === 200) {
-        return response
-      }
-    } catch (error) {
-      if (error?.response?.status === 401) {
-        HandleLogout();
-      }
-      console.error("Error fetching Personal Info data :", error);
+  try {
+    let URL = `${baseUrl}/employeeExit?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    // let URL = `${baseUrl}/employeeExit&?search=${encodeURIComponent(
+    //   JSON.stringify(filterData)
+    // )}`;
+    const response = await axios.get(URL, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response;
     }
-}
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+};
 const updateExitData = async (payload) => {
   if (payload?.id) {
     try {
@@ -869,7 +887,7 @@ const updateExitData = async (payload) => {
       return false;
     }
   }
-}
+};
 
 export {
   getEmployeeData,

@@ -18,7 +18,6 @@ import  PdfIcon from 'assets/images/pdfPreview.png';
 import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
 import CustomActionDropdown from "./section/CustomActionDropdown";
-import  PdfIcon  from 'assets/images/pdfPreview.png';
 import { MdOutlineFileDownload } from "react-icons/md";
 
 const ExitDetailsCard = ({
