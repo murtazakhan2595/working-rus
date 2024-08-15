@@ -5,6 +5,9 @@ import { DashboardFilters, getDashboard } from "./Sections";
 import { Header } from "components";
 import { FilterInput } from "components/form-control";
 
+// import page header
+import { Button } from "../../../src/@/components/ui/button";
+import  TopNavbar  from "../../../components/ui/TopNavbar";
 const filters = {
   TalentSphere: "TalentSphere",
   EmployeeOverview: "EmployeeOverview",
@@ -63,8 +66,10 @@ const Dashboard = ({ userProfile }) => {
   console.log("filterData", filterData);
 
   return (
-    <>
+    <>    
+
       <div className="screen bg-[#F0F1F2] ">
+      
         <Header
           title={`Dashboard`}
           content={
@@ -76,7 +81,7 @@ const Dashboard = ({ userProfile }) => {
                   name: "diaplay",
                   placeholder: (
                     <div>
-                      <img src={vectorFilter} className="w-[38px] h-[38px]" />
+                      <img src={vectorFilter} alt="{vectorFilter}" className="w-[38px] h-[38px]" />
                     </div>
                   ),
                   values: filterData,

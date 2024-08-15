@@ -13,20 +13,8 @@ module.exports = {
       center: true,
       padding: "2rem",
       screens: {
-        "xs":"0px",
-      "sm":"600px",
-      "md":"900px",
-      "lg":"1200px",
-      "xl":"1400px",
-      "2xl": "1800px",
-      }
-    },
-    fontFamily: {
-      montserrat: ["Montserrat", "sans-serif"],
-      sfpro: ["SF Pro Display", "sans-serif"],
-      lato: ["Lato"],
-      roboto: ["Roboto"],
-      opensans: ["Open Sans"],
+        "2xl": "1400px",
+      },
     },
     extend: {
       colors: {
@@ -35,8 +23,43 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+       "plum":"#953EA3",
+        accent: '#ff49db',
+        neutral: '#273444',
+        'base-100': '#ffffff',
+        'base-200': '#f7fafc',
+        'base-300': '#e2e8f0',
+        'base-content': '#1a202c',
+        
 
-        "plum":"#953ea3",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
       },
       keyframes: {
         "accordion-down": {
