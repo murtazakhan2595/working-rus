@@ -35,6 +35,7 @@ const PersonalInformation = ({
       exit_date: data.exit_date,
       resignation_letter: data.resignation_Letter,
       notice_period: data.notice_period,
+      exit_type: data.reason_for_leaving,
     };
 
     try {
@@ -338,6 +339,7 @@ export default function ExitRequestForm({ token, baseUrl, userProfile, profileVi
               personalInfo={personalInfo}
               userData={userData}
               getDataByHooks={getDataByHooks}
+              reload = {reload}
             />
           </>
         )}
