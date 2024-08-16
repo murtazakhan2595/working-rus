@@ -6,8 +6,8 @@ import { Header } from "components";
 import { FilterInput } from "components/form-control";
 
 // import page header
-import { Button } from "../../../src/@/components/ui/button";
-import  TopNavbar  from "../../../components/ui/TopNavbar";
+
+
 const filters = {
   TalentSphere: "TalentSphere",
   EmployeeOverview: "EmployeeOverview",
@@ -67,9 +67,9 @@ const Dashboard = ({ userProfile }) => {
 
   return (
     <>    
-
-      <div className="screen bg-[#F0F1F2] ">
       
+      <div className="screen dashboard rounded-[24px] bg-[#F0F1F2] ">
+    
         <Header
           title={`Dashboard`}
           content={

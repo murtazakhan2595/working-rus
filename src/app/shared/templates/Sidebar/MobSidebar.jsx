@@ -122,7 +122,7 @@ const MobSidebar = ({
             <h1 className={`inline-block overflow-hidden transition-all ${isSidebarOpen ? 'w-28' : 'w-0'}`}>TECBRIX</h1>
           </div>
           <div className="flex flex-col justify-between h-[92vh] p-4">
-            <ul className="overflow-y-auto hideScroll list-none">
+            <ul className="overflow-y-auto list-none hideScroll">
               {userProfile.role === 1 && (
                 <>
                   <li className="group">
@@ -160,55 +160,55 @@ const MobSidebar = ({
                       <NavLink to="/employees"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Employee Sheet</p>
+                        <p className="px-2 text-sm">Employee Sheet</p>
 
                       </NavLink>
                       <NavLink to="/add-employee"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Add Employee</p>
+                        <p className="px-2 text-sm">Add Employee</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Profile Management</p>
+                        <p className="px-2 text-sm">Profile Management</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Settings</p>
+                        <p className="px-2 text-sm">Settings</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Travel Details</p>
+                        <p className="px-2 text-sm">Travel Details</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Exit & Clearence</p>
+                        <p className="px-2 text-sm">Exit & Clearence</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Employee Creation</p>
+                        <p className="px-2 text-sm">Employee Creation</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Customise Employees</p>
+                        <p className="px-2 text-sm">Customise Employees</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Relocation</p>
+                        <p className="px-2 text-sm">Relocation</p>
 
                       </NavLink>
 
@@ -234,49 +234,49 @@ const MobSidebar = ({
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">My Profile</p>
+                        <p className="px-2 text-sm">My Profile</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">My Team</p>
+                        <p className="px-2 text-sm">My Team</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Calender</p>
+                        <p className="px-2 text-sm">Calender</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Attendance</p>
+                        <p className="px-2 text-sm">Attendance</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Leave Tracker</p>
+                        <p className="px-2 text-sm">Leave Tracker</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Files & Data</p>
+                        <p className="px-2 text-sm">Files & Data</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">My Travel Details</p>
+                        <p className="px-2 text-sm">My Travel Details</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Letter Requests</p>
+                        <p className="px-2 text-sm">Letter Requests</p>
 
                       </NavLink>
                     </div>
@@ -297,34 +297,31 @@ const MobSidebar = ({
                       </div>
                     </div>
                     {!isSidebarOpen && (
-                      <div className="absolute rounded-lg border border-gray-1 top-56 ml-20
-bg-white w-44 text-base
-invisible opacity-20 -translate-x-3 transition-all
-group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+                      <div className="absolute z-50 invisible ml-20 text-base transition-all -translate-x-3 bg-white border rounded-lg border-gray-1 top-56 w-44 opacity-20 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 shadow-bottom">
 
-                        <div className="flex flex-col rounded-lg bg-white">
+                        <div className="flex flex-col bg-white rounded-lg">
                           <NavLink to="/leave-application"
                             className={({ isActive }) => isActive ? activeLink : normalLink}
                           >
-                            <p className="text-sm px-2">Leave Application</p>
+                            <p className="px-2 text-sm">Leave Application</p>
 
                           </NavLink>
                           <NavLink to="/leave-calender"
                             className={({ isActive }) => isActive ? activeLink : normalLink}
                           >
-                            <p className="text-sm px-2">Leave Calender</p>
+                            <p className="px-2 text-sm">Leave Calender</p>
 
                           </NavLink>
                           <NavLink to="/leave-list"
                             className={({ isActive }) => isActive ? activeLink : normalLink}
                           >
-                            <p className="text-sm px-2">Team Application Status</p>
+                            <p className="px-2 text-sm">Team Application Status</p>
 
                           </NavLink>
                           <NavLink to="/leave-balance"
                             className={({ isActive }) => isActive ? activeLink : normalLink}
                           >
-                            <p className="text-sm px-2">Team Leave Balance</p>
+                            <p className="px-2 text-sm">Team Leave Balance</p>
 
                           </NavLink>
                         </div>
@@ -337,25 +334,25 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                       <NavLink to="/leave-application"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Leave Application</p>
+                        <p className="px-2 text-sm">Leave Application</p>
 
                       </NavLink>
                       <NavLink to="/leave-calender"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Leave Calender</p>
+                        <p className="px-2 text-sm">Leave Calender</p>
 
                       </NavLink>
                       <NavLink to="/leave-list"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Team Application Status</p>
+                        <p className="px-2 text-sm">Team Application Status</p>
 
                       </NavLink>
                       <NavLink to="/leave-balance"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Team Leave Balance</p>
+                        <p className="px-2 text-sm">Team Leave Balance</p>
 
                       </NavLink>
                     </div>
@@ -381,37 +378,37 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Personnel Requisition</p>
+                        <p className="px-2 text-sm">Personnel Requisition</p>
 
                       </NavLink>
                       <NavLink to="/jobs"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Jobs</p>
+                        <p className="px-2 text-sm">Jobs</p>
 
                       </NavLink>
                       <NavLink to="/job-post"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Post a Job</p>
+                        <p className="px-2 text-sm">Post a Job</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Applicants</p>
+                        <p className="px-2 text-sm">Applicants</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Referals</p>
+                        <p className="px-2 text-sm">Referals</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">On Boarding</p>
+                        <p className="px-2 text-sm">On Boarding</p>
 
                       </NavLink>
                     </div>
@@ -431,16 +428,13 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                       </div>
                     </div>
                     {!isSidebarOpen && (
-                      <div className="absolute rounded-lg border border-gray-1 top-80 ml-20
-bg-white w-44 text-base
-invisible opacity-20 -translate-x-3 transition-all
-group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+                      <div className="absolute z-50 invisible ml-20 text-base transition-all -translate-x-3 bg-white border rounded-lg border-gray-1 top-80 w-44 opacity-20 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 shadow-bottom">
 
-                        <div className="flex flex-col rounded-lg bg-white">
+                        <div className="flex flex-col bg-white rounded-lg">
                           <NavLink to="/coming-soon"
                             className={({ isActive }) => isActive ? activeLink : normalLink}
                           >
-                            <p className="text-sm px-2">Employee Evaluation</p>
+                            <p className="px-2 text-sm">Employee Evaluation</p>
 
                           </NavLink>
 
@@ -454,7 +448,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Employee Evaluation</p>
+                        <p className="px-2 text-sm">Employee Evaluation</p>
 
                       </NavLink>
                     </div>
@@ -474,22 +468,19 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                       </div>
                     </div>
                     {!isSidebarOpen && (
-                      <div className="absolute rounded-lg border border-gray-1 top-80 ml-20
-bg-white w-44 text-base
-invisible opacity-20 -translate-x-3 transition-all
-group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+                      <div className="absolute z-50 invisible ml-20 text-base transition-all -translate-x-3 bg-white border rounded-lg border-gray-1 top-80 w-44 opacity-20 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 shadow-bottom">
 
-                        <div className="flex flex-col rounded-lg bg-white">
+                        <div className="flex flex-col bg-white rounded-lg">
                           <NavLink to="/coming-soon"
                             className={({ isActive }) => isActive ? activeLink : normalLink}
                           >
-                            <p className="text-sm px-2">Payroll</p>
+                            <p className="px-2 text-sm">Payroll</p>
 
                           </NavLink>
                           <NavLink to="/coming-soon"
                             className={({ isActive }) => isActive ? activeLink : normalLink}
                           >
-                            <p className="text-sm px-2">Attendance</p>
+                            <p className="px-2 text-sm">Attendance</p>
 
                           </NavLink>
 
@@ -503,13 +494,13 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Payroll</p>
+                        <p className="px-2 text-sm">Payroll</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Attendance</p>
+                        <p className="px-2 text-sm">Attendance</p>
 
                       </NavLink>
                     </div>
@@ -534,13 +525,13 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Announcement</p>
+                        <p className="px-2 text-sm">Announcement</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Recognition</p>
+                        <p className="px-2 text-sm">Recognition</p>
 
                       </NavLink>
                     </div>
@@ -566,25 +557,25 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Learn</p>
+                        <p className="px-2 text-sm">Learn</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Career Planning</p>
+                        <p className="px-2 text-sm">Career Planning</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Succession Plan</p>
+                        <p className="px-2 text-sm">Succession Plan</p>
 
                       </NavLink>
                       <NavLink to="/coming-soon"
                         className={({ isActive }) => isActive ? activeLink : normalLink}
                       >
-                        <p className="text-sm px-2">Development Plan</p>
+                        <p className="px-2 text-sm">Development Plan</p>
 
                       </NavLink>
                     </div>
@@ -620,12 +611,9 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                          </div>
                      </div>
                      {!isSidebarOpen && (
-                         <div className="absolute rounded-md top-72 ml-20
-bg-white w-32 text-base
-invisible opacity-20 -translate-x-3 transition-all
-group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom">
+                         <div className="absolute z-50 invisible w-32 ml-20 text-base transition-all -translate-x-3 bg-white rounded-md top-72 opacity-20 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 shadow-bottom">
 
-                             <div className="flex flex-col rounded-lg bg-white">
+                             <div className="flex flex-col bg-white rounded-lg">
                                  <li>
                                      <Link to="/create-task">
                                          <div
@@ -638,7 +626,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                                  </li>
 
                              </div>
-                             <div className="flex flex-col rounded-lg bg-white">
+                             <div className="flex flex-col bg-white rounded-lg">
                                  <li>
                                      <Link to="/my-dtr">
                                          <div
@@ -709,15 +697,13 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shad
                   >
                     <div className="flex gap-x-2">
                       <IoMdCheckmarkCircleOutline className={`text-xl ${!isSidebarOpen ? 'ml-[10px]' : ''}`} />{" "}
-                      <p className={` text-[14px] ${isSidebarOpen ? 'block' : 'hidden'}`}>Task Management</p>
+                      <p className={` text-[14px] ${isSidebarOpen ? 'block' : 'hidden'}`}>Task Management mobile</p>
                     </div>
                     <FaAngleDown
                       className={`text-xs transform transition-transform ${isProjectOpen ? 'rotate-180' : ''
                         } ${isSidebarOpen ? 'block' : 'hidden'}`}
                     />
-                    {!isSidebarOpen && <div className="absolute rounded-lg border border-gray-1 top-96 ml-20 bg-white w-44 text-base
-invisible opacity-20 -translate-x-3 transition-all
-group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom">
+                    {!isSidebarOpen && <div className="absolute z-50 invisible ml-20 text-base transition-all -translate-x-3 bg-white border rounded-lg border-gray-1 top-96 w-44 opacity-20 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 shadow-bottom">
                       <div className="max-h-[20vh] overflow-y-auto p-1">
                         {projects?.map((project, index) => (
                           <div key={index} className="flex flex-col gap-2">
@@ -739,7 +725,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
                   {(isProjectOpen && isSidebarOpen) && (
                     <>
                       <div className="flex flex-col mb-4 p-2 bg-[#F0F1F2] ">
-                        <div className="flex justify-between mb-1 items-center">
+                        <div className="flex items-center justify-between mb-1">
                           <div className="flex gap-1">
                             {projectsCount > 10 && (
                               <>
@@ -758,7 +744,7 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
                               </>
                             )}
                           </div>
-                          <div className="flex items-center opacity-60 gap-1 text-white">
+                          <div className="flex items-center gap-1 text-white opacity-60">
                             <div className="text-xs">{projectsCount}</div>
                             {userProfile.role !== 4 && (
                               <AiOutlinePlus
@@ -816,12 +802,12 @@ group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shado
                       <div className="font-semibold">{employee?.username}</div>
                       <FaAngleDown className={`text-xs transition-transform duration-300 ${isProfileOpen ? 'transform rotate-180' : ''}`} />
                     </div>
-                    <div className="text-xs overflow-hidden text-ellipsis" style={{ width: '113px' }}>{employee?.work_email}</div>
+                    <div className="overflow-hidden text-xs text-ellipsis" style={{ width: '113px' }}>{employee?.work_email}</div>
                   </div>
                 </div>
 
                 {(isProfileOpen && isSidebarOpen) && (
-                  <div className="flex flex-col gap-y-1 mt-2">
+                  <div className="flex flex-col mt-2 gap-y-1">
                     <Link to="/profile" className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]">
                       <p>Profile Settings</p>
                       <BsPersonGear />

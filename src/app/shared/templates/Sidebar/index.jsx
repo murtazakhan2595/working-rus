@@ -1,28 +1,42 @@
-import MobSidebar from "./MobSidebar";
-import Sidebar from "./Sidebar";
-const index = ({ isSidebarOpen, setIsSidebarOpen }) => {
-  let width = window.screen.width;
-  let val = width <= 1279 ? false : true;
+// Rootpage
+// import  {SidebarNew}  from "../../../../components/ui/sidebar-new";
+import { Navbar } from "../../../../components/ui/navbar";
+import Sidebar from "../../../../app/shared/templates/Sidebar/Sidebar"
+import { cn } from "../../../../src/@/lib/utils";
+import { useStore } from "../../../hooks/use-store";
+import { useSidebarToggle } from "../../../hooks/use-sidebar-toggle";
+import {ContentLayout} from "../../../../components/ui/content-layout"
+// const Main = ({ isSidebarOpen, setIsSidebarOpen }) => {
+
+  export default function Main({ children, isSidebarOpen, setIsSidebarOpen }) {
+    const sidebar = useStore(useSidebarToggle, (state) => state);
+  
+    if (!sidebar) return null;
+
 
   return (
     <>
-      {val ? (
-        <div>
+     <div className="sidebar">
           <Sidebar
             isSidebarOpen={isSidebarOpen}
             setIsSidebarOpen={setIsSidebarOpen}
           />
         </div>
-      ) : (
-        <div>
-          <MobSidebar
-            isSidebarOpen={isSidebarOpen}
-            setIsSidebarOpen={setIsSidebarOpen}
-          />
-        </div>
-      )}
+           
+        <main
+        className={cn(
+          "min-h-[calc(100vh_-_56px)] bg-zinc-50 dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300",
+          sidebar?.isOpen === false ? "lg:ml-[90px]" : "lg:ml-72"
+        )}
+      > <ContentLayout/>
+        
+        {children}
+      </main>
+     
+       
+     
     </>
   );
 };
 
-export default index;
+
