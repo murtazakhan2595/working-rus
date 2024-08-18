@@ -472,13 +472,13 @@ export const terminationReasonsOptions = [
   },
 ];
 
-export const resignationStatus = [
+export const ResignationStatusOptions = [
   { label: "Pending", value: "pending" },
   { label: "Accepted by Manager", value: "accepted by manager" },
   { label: "Rejected by Manager", value: "rejected by manager" },
   { label: "Accepted by HR", value: "accepted by hr" },
   { label: "Rejected by HR", value: "rejected by hr" },
-  { label: "Initiated Clearance", value: "initiated clearance" },
+  { label: "Clearance initiated", value: "initiated clearance" },
   { label: "Exit Interview", value: "exit interview" },
 ];
 

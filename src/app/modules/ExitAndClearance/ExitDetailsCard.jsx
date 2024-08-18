@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import  PdfIcon from 'assets/images/pdfPreview.png';
 import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
-import CustomActionDropdown from "./section/CustomActionDropdown";
+import CustomActionDropdown from "./Section/CustomActionDropdown";
 import { MdOutlineFileDownload } from "react-icons/md";
 
 const ExitDetailsCard = ({

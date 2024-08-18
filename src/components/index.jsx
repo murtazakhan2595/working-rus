@@ -1,11 +1,12 @@
 import  Header from "./Header";
 import PageLoader from "./PageLoader";
 import Tabs from "./Tabs";
-import {StatusLabel,LabelHolo} from "./StatusLabel";
+import {StatusLabel,LabelHolo,StatusViewIcon,StatusCircleLabel} from "./StatusLabel";
 import EmployeeNameInfo from "./EmployeeNameInfo";
 import Table from "./Table";
 import BarChart  from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
+
 export{
     Header,
     PageLoader,
@@ -15,6 +16,8 @@ export{
     Table,
     BarChart,
     ConfirmationModal,
-    LabelHolo
+    LabelHolo,
+    StatusViewIcon,
+    StatusCircleLabel,
 }
 

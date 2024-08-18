@@ -10,10 +10,10 @@ import { getEmployeeExitData } from "app/hooks/employee";
 import StatCard from "./StatCard";
 import Resignations from "./Resignations";
 import Terminations from "./Terminations";
-import ExitRequestHeader from "./section/Header.jsx";
+import ExitRequestHeader from "./Section/Header.jsx";
 import { CustomDarkButton } from "components/form-control";
 import { FilterInput } from "components/form-control";
-import { resignationStatus } from "data/Data";
+import { ResignationStatusOptions } from "data/Data";
 import { terminationStatus } from "data/Data";
 import RequestTerminationCard from "./RequestTerminationCard";
 import Terminated from "./Terminated";
@@ -150,7 +150,7 @@ const ExitAndClearance = ({ userProfile }) => {
             />
           </div>
         </Col>
-        <Col lg={12} className="">
+        {activeTab !== "Resignations" && <Col lg={12} className="">
           <div className="py-3 px-3 bg-white">
             <FilterInput
               filters={[
@@ -163,7 +163,7 @@ const ExitAndClearance = ({ userProfile }) => {
                   type: "select",
                   option:
                     activeTab === "Resignations"
-                      ? resignationStatus
+                      ? ResignationStatusOptions
                       : terminationStatus,
                   name:
                     activeTab === "Resignations"
@@ -175,7 +175,7 @@ const ExitAndClearance = ({ userProfile }) => {
               onChange={handleFilterChange}
             />
           </div>
-        </Col>
+        </Col>}
         {loading ? (
           <PageLoader />
         ) : (

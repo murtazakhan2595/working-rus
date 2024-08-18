@@ -20,16 +20,17 @@ import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/R
 import { IoIosArrowDown } from "react-icons/io";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
-import { BsBoxArrowUpRight } from "react-icons/bs";
+import {
+  ResignationStatusView,
+  RenderTerminatedRow,
+  RenderResignedRow,
+  RenderResignationAction,
+} from "app/modules/ExitAndClearance/Section";
 import { IoBagCheckOutline } from "react-icons/io5";
 import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
 import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { filebase64Download } from "utils/fileUtils";
-import RenderTerminatedRow from "app/modules/ExitAndClearance/section/RenderTerminatedRow";
-import RenderResignedRow from "app/modules/ExitAndClearance/section/RenderResignedRow";
-
-
 
 export const LeaveHistoryColumns = (updateLeaveType) => [
   {
@@ -160,6 +161,88 @@ export const MyLeavesColumns = [
     formatter: (cell, row) => <RenderStatus row={row} />,
   },
 ];
+
+export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
+  const columns = [
+    {
+      dataField: "emp_name",
+      text: "Employees",
+      formatter: (cell, row) => (
+        <EmployeeNameInfo
+          name={cell}
+          department={
+            row.department_name && row.department_name?.length > 0
+              ? row.department_name[0]
+              : ""
+          }
+          position={
+            row.department_position && row.department_position?.length > 0
+              ? row.department_position[0]
+              : ""
+          }
+        />
+      ),
+      onClick: (recordIndex, data, row) => {
+        handleRowClicked(recordIndex, data, row);
+      },
+    },
+    {
+      dataField: "employee_id",
+      text: "ID",
+      formatter: (cell) => <EmployeeID value={cell} />,
+    },
+    {
+      dataField: "report_to",
+      text: "Report To",
+      formatter: (cell, row) => <ManagerName value={cell} />,
+    },
+    {
+      dataField: "notice_period",
+      text: "Notice Period",
+    },
+    {
+      dataField: "exit_date",
+      text: "Exit date",
+      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+    },
+    {
+      dataField: "",
+      text: "Application",
+      formatter: (cell, row) => (
+        <>
+          {row?.resignation_letter ? (
+            <div className="justify-start items-center gap-2.5 inline-flex">
+              <div className="text-[#5c5e64] text-base font-normal">File</div>
+              <button
+                onClick={() =>
+                  filebase64Download(row?.resignation_letter, row?.emp_name)
+                }
+              >
+                <AiOutlineDownload />
+              </button>
+            </div>
+          ) : (
+            "N/A"
+          )}
+        </>
+      ),
+    },
+    {
+      dataField: "status_resignation",
+      text: "Status",
+      formatter: (cell, row) => <ResignationStatusView row={row} />,
+    },
+    {
+      dataField: "",
+      text: "Action",
+      formatter: (cell, row) => (
+        <RenderResignationAction row={row} reload={reload} />
+      ),
+    },
+  ];
+  return columns;
+};
+
 export const ExitRequestColumns = (
   handleOptionSelect,
   handleRowClicked,
@@ -332,13 +415,13 @@ export const AllLeavesApplicationColumns = (reload, userRole) => {
     {
       dataField: "employee_id",
       text: "Employees",
-      // formatter: (cell, row) => (
-      //   <EmployeeNameInfo
-      //     name={`${row.name}`}
-      //     department={row.department_name}
-      //     position={row.position}
-      //   />
-      // ),
+      formatter: (cell, row) => (
+        <EmployeeNameInfo
+          name={`${row.name}`}
+          department={row.department_name}
+          position={row.position}
+        />
+      ),
     },
     {
       dataField: "employee_id",
@@ -389,7 +472,6 @@ export const AllLeavesApplicationColumns = (reload, userRole) => {
 
   return columns;
 };
-
 
 export const LeaveAllotmentColumns = (reload) => [
   {

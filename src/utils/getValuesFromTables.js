@@ -6,6 +6,7 @@ import {
   locationTypeOptions,
   countryOptions,
   UserRoles,
+  ResignationStatusOptions,
 } from "data/Data";
 import { useSelector } from "react-redux";
 
@@ -30,6 +31,10 @@ function getWorkType(workType) {
 }
 function getJobType(jobType) {
   const response = jobTypeOptions.find((option) => option.value === jobType);
+  return response ? response.label : "";
+}
+function ResignationStatus(status) {
+  const response = ResignationStatusOptions.find((option) => option.value === status);
   return response ? response.label : "";
 }
 function getWorkLocation(workLocation) {
@@ -113,4 +118,5 @@ export {
   UserRole,
   ProjectName,
   TerminationReason,
+  ResignationStatus,
 };

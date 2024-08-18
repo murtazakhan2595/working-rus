@@ -9,7 +9,6 @@ import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
 import { ExitResignedColumns } from "app/utils/Types/TableColumns";
 
 const Resigned = ({ resigned, reload }) => {
-  console.log("resigned.............................", resigned);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
