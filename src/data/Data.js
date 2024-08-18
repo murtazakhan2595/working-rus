@@ -9,10 +9,10 @@ import {
   fetchLeaveTypes,
   fetchDesignations,
   fetchProjects,
+  fetchOrganizations,
 } from "state/slices/CommonSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
-import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
-import { options } from "joi";
+import { fetchEmployees,fetchEmployeeDetail, fetchReportingManagers } from "state/slices/EmpSlice";
 
 export const countryOptions = Object.keys(getAllCountries()).map(
   (countryCode) => ({
@@ -193,18 +193,33 @@ export const jobRoles = [
   { label: "Freelancer", value: "Freelancer" },
 ];
 
-export const department = [
-  { label: "Project Management", value: "Project_management" },
-  { label: "Sales", value: "Sales" },
-  { label: "Operations", value: "Operations" },
-  { label: "Design", value: "Design" },
-  { label: "Marketing", value: "Marketing" },
-  { label: "Frontend", value: "Frontend" },
-  { label: "Backend", value: "Backend" },
-  { label: "Presales", value: "Presales" },
-  { label: "HR", value: "HR" },
-  { label: "Accounts", value: "Accounts" },
+export const NoticePeriod = [
+  {
+    value: "1 month",
+    label: "1 month",
+  },
+  {
+    value: "2 month",
+    label: "2 month",
+  },
+  {
+    value: "3 month",
+    label: "3 month",
+  },
+  {
+    value: "0 month",
+    label: "0 month",
+  },
 ];
+export const  ResignationReasons=[
+  { value: "Career growth", label: "Career growth" },
+  { value: "Better opportunity", label: "Better opportunity" },
+  { value: "Personal Reasons", label: "Personal Reasons" },
+  { value: "Relocation", label: "Relocation" },
+  { value: "Health reasons", label: "Health reasons" },
+  { value: "Job dissatisfaction", label: "Job dissatisfaction" },
+  { value: "Others", label: "Others" },
+]
 
 export const typeOptions = [
   {
@@ -511,9 +526,11 @@ export const handleUpdateProfile = (dispatch, data) => {
   };
   dispatch(setUserProfile(userprofile));
   dispatch(fetchEmployees());
+  dispatch(fetchEmployeeDetail(userprofile.id));
   dispatch(fetchDepartments());
   dispatch(fetchLeaveTypes());
   dispatch(fetchDesignations());
+  dispatch(fetchOrganizations());
   dispatch(fetchReportingManagers());
   dispatch(fetchProjects(userprofile));
 };

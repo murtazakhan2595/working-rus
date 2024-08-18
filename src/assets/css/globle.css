@@ -90,15 +90,22 @@ ul {
 .form-floating > .custom-select-input.form-control {
   height: auto !important;
 }
+.custom-select-input.form-control .css-16xfy0z-control {
+  border: none !important;
+}
+.form-control:disabled,
+.custom-select-input.form-control .css-16xfy0z-control {
+  background-color: transparent;
+}
 
 .form-floating > .form-control:not(:placeholder-shown) ~ label::after {
   background: transparent;
 }
-.form-floating>label.active {
+.form-floating > label.active {
   top: 7.9px;
   line-height: 30px;
   height: fit-content;
-  padding: 0rem .75rem;
+  padding: 0rem 0.75rem;
   background: white;
   height: fit-content;
   width: 100%;
@@ -109,13 +116,13 @@ ul {
 }
 
 .ql-editor {
-  padding-top: 2rem !important;
+  padding: 2rem 12px 3px !important;
   min-height: 150px;
   outline: none !important;
 }
 
 .ql-toolbar {
-  background-color: #F6F7FA;
+  background-color: #f6f7fa;
 }
 
 HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
@@ -127,7 +134,7 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
   color: transparent;
 }
 
-.truncate-text{
+.truncate-text {
   overflow: hidden; /* Hide the overflow */
   display: -webkit-box; /* Necessary for webkit browsers */
   -webkit-line-clamp: 5; /* Number of lines to display before truncating */
@@ -193,10 +200,9 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
   color: #ff9900 !important;
 }
 
-
 .label-warning {
-  background-color: #FEF9EE !important;
-  color: #98690C  !important;
+  background-color: #fef9ee !important;
+  color: #98690c !important;
 }
 
 .label-info {
