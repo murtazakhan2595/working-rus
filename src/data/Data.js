@@ -213,10 +213,10 @@ export const NoticePeriod = [
 ];
 export const  ResignationReasons=[
   { value: "Career growth", label: "Career growth" },
-  { value: "Better opportunity", label: "Better opportunity" },
+  { value: "better-opportunity", label: "Better opportunity" },
   { value: "Personal Reasons", label: "Personal Reasons" },
-  { value: "Relocation", label: "Relocation" },
-  { value: "Health reasons", label: "Health reasons" },
+  { value: "relocation", label: "Relocation" },
+  { value: "health-reasons", label: "Health reasons" },
   { value: "Job dissatisfaction", label: "Job dissatisfaction" },
   { value: "Others", label: "Others" },
 ]
