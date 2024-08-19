@@ -7,7 +7,7 @@ import { useStore } from "../../../hooks/use-store";
 import { useSidebarToggle } from "../../../hooks/use-sidebar-toggle";
 import {ContentLayout} from "../../../../components/ui/content-layout"
 import { SidebarNew } from "components/ui/sidebar-new";
-import  ProfileDetailsTopbar from "components/ui/profile-detail";
+
 // const Main = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
   export default function Main({ children, isSidebarOpen, setIsSidebarOpen }) {

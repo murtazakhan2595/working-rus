@@ -6,7 +6,9 @@ import PropTypes from 'prop-types';
 
 function SidebarToggle({ isOpen, setIsOpen }) {
   return (
+
     <div className=" lg:block xl:block absolute top-[12px] -right-[16px] z-20 hidden" >
+
       <Button
         onClick={() => setIsOpen?.()}
         className="w-8 h-8 rounded-md"

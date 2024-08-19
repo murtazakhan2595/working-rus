@@ -1,6 +1,5 @@
-import { Users, SquarePen, SquareStack, House, UsersRound, FileText, Home } from "lucide-react"
 
-
+import { Users, SquarePen, SquareStack, House } from "lucide-react"
 
 
 /**
@@ -11,7 +10,8 @@ import { Users, SquarePen, SquareStack, House, UsersRound, FileText, Home } from
 
 /**
  * @typedef {Object} Menu
- * @property {string} href - The URL of the menu item.
+ * @property {string} to - The URL of the menu item.
+
  * @property {string} label - The label of the menu item.
  * @property {boolean} active - Whether the menu item is active.
  * @property {React.ComponentType} icon - The icon component for the menu item.
@@ -24,7 +24,6 @@ import { Users, SquarePen, SquareStack, House, UsersRound, FileText, Home } from
  */
 
 
-
 export function getMenuList(pathname, groups, userRole) {
   const commonMenus = [
     {
@@ -35,93 +34,128 @@ export function getMenuList(pathname, groups, userRole) {
       submenus: [],
     },
     {
-      href: "/",
+      to: "/",
+
       label: "Dashboard",
       active: pathname === "/",
       icon: House,
       submenus: [],
     },
   ];
+
+
   const peopleTeamMenus = [
     {
-      href: "/profile-management",
+      to: "/profile-management",
       label: "Profile Management",
       active: pathname === "/profile-management",
+      icon: Users,
+      submenus: [],
     },
     {
-      href: "/settings",
+      to: "/settings",
       label: "Profile Settings",
       active: pathname === "/settings",
+      icon: Users,
+      submenus: [],
     },
     {
-      href: "/travel-details",
+      to: "/travel-details",
       label: "Travel Details",
       active: pathname === "/travel-details",
+      icon: Users,
+      submenus: [],
     },
     {
-      href: "/exit-clearance",
+      to: "/exit-clearance",
       label: "Exit & Clearance",
       active: pathname === "/exit-clearance",
+      icon: Users,
+      submenus: [],
     },
     {
-      href: "/create-employee",
+      to: "/create-employee",
       label: "Employee Creation",
       active: pathname === "/create-employee",
+      icon: Users,
+      submenus: [],
     },
     {
-      href: "/customise-employees",
+      to: "/customise-employees",
       label: "Customize Employee",
       active: pathname === "/customise-employees",
-    },    
+      icon: Users,
+      submenus: [],
+    },
     {
-      href: "/relocation",
+      to: "/relocation",
       label: "Relocation",
       active: pathname === "/relocation",
+      icon: Users,
+      submenus: [],
     },
   ];
 
-  const selfServiceHub  = [
-  {
-      href: "/my-profile",
+  const selfServiceHub = [
+    {
+      to: "/my-profile",
       label: "My Profile",
       active: pathname === "/my-profile",
-  },
-  {
-      href: "/my-team",
+      icon: Users,
+      submenus: [],
+    },
+    {
+      to: "/my-team",
       label: "My Team",
       active: pathname === "/my-team",
-  },
-  {
-      href: "/calendar",
+      icon: Users,
+      submenus: [],
+    },
+    {
+      to: "/calendar",
       label: "Calendar",
       active: pathname === "/calendar",
-  },
-  {
-     href: "/attendance",
-     label: "Attendance",
-     active: pathname === "/attendance",
-  },
-  {
-    href: "/leave-tracker",
-    label: "Leave Tracker",
-    active: pathname === "/leave-tracker",
-  },
-  {
-    href: "/files-data",
-    label: "Files & Data",
-    active: pathname === "/files-data",
-  },
-  {
-    href: "/my-travel-details",
-    label: "My Travel Details",
-    active: pathname === "/my-travel-details",
-  },
-  {
-    href: "/exit-employee",
-    label: "Exit",
-    active: pathname === "/exit-employee",
-  },
-  ]
+      icon: Users,
+      submenus: [],
+    },
+    {
+      to: "/attendance",
+      label: "Attendance",
+      active: pathname === "/attendance",
+      icon: Users,
+      submenus: [],
+    },
+    {
+      to: "/leave-tracker",
+      label: "Leave Tracker",
+      active: pathname === "/leave-tracker",
+      icon: Users,
+      submenus: [],
+    },
+    {
+      to: "/files-data",
+      label: "Files & Data",
+      active: pathname === "/files-data",
+      icon: Users,
+      submenus: [],
+    },
+    {
+      to: "/my-travel-details",
+      label: "My Travel Details",
+      active: pathname === "/my-travel-details",
+      icon: Users,
+      submenus: [],
+    },
+    {
+      to: "/exit-employee",
+      label: "Exit",
+      active: pathname === "/exit-employee",
+      icon: Users,
+      submenus: [],
+    },
+  ];
+
+
   const menuList = [
     {
       groupLabel: "",
@@ -129,77 +163,76 @@ export function getMenuList(pathname, groups, userRole) {
     },
     {
       groupLabel: "",
+      // groupLabel: userRole === 1 || userRole === 3 ? "" : "People Team",
       menus: userRole === 1 || userRole === 3 ? peopleTeamMenus : [
         {
-          href:"",
+          to: "",
           label: "People Team",
           active: pathname === "/profile-management",
           icon: Users,
           submenus: [
-        {   
-          href: "/profile-management",
-          label: "Profile Management",
-          
-        },
-        {
-          href: "/settings",
-          label: "Profile Settings",
-        },
-        {
-          href: "/travel-details",
-          label: "Travel Details",
-       },
-        {
-          href: "/exit-clearance",
-          label: "Exit & Clearance",
-        },
-        {
-          href: "/create-employee",
-          label: "Employee Creation",
-
-        },
-        {
-          href: "/customise-employees",
-          label: "Customize Employee",
-        },
+            {
+              to: "/profile-management",
+              label: "Profile Management",
+            },
+            {
+              to: "/settings",
+              label: "Profile Settings",
+            },
+            {
+              to: "/travel-details",
+              label: "Travel Details",
+            },
+            {
+              to: "/exit-clearance",
+              label: "Exit & Clearance",
+            },
+            {
+              to: "/create-employee",
+              label: "Employee Creation",
+            },
+            {
+              to: "/customise-employees",
+              label: "Customize Employee",
+            },
           ],
-        },        
-        
+        },
       ],
-      
     },
     {
-      groupLabel: "",
+      // groupLabel: userRole === 1 || userRole === 3 ? "" : "Self Service Hub",
       menus: userRole === 1 || userRole === 3 ? selfServiceHub : [
         {
-          href: "",
+          to: "",
           label: "Transfer Employee",
           active: pathname === "/internal",
           icon: SquarePen,
           submenus: [
             {
-              href: "/internal",
+
+              to: "/internal",
               label: "Internal",
             },
             {
-              href: "/external",
+              to: "/external",
               label: "External",
             },
-          ]
-        }
-      ]
+          ],
+        },
+      ],
     },
     {
-      href: "/relocation",
+      to: "/relocation",
       label: "Relocation",
       active: pathname === "/relocation",
+      icon: Users,
+      submenus: [],
     },
   ];
- 
+
+
   return menuList;
 }
 
 export default getMenuList;
-
-
 
