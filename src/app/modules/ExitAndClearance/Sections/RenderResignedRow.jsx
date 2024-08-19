@@ -1,33 +1,29 @@
-import { useEffect, useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
-import { EmployeeNameInfo } from "components";
-import { CiEdit } from "react-icons/ci";
-import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { Col } from "reactstrap";
+import { useState } from "react";
+import {
+  EmployeeNameInfo,
+  ViewDetailHeader,
+  Labels,
+  ViewDetailBox,
+  ViewAttachmentDetail,
+} from "components";
 import { FiEye } from "react-icons/fi";
-import { DepartmentName } from "utils/getValuesFromTables";
-import { DesignationName } from "utils/getValuesFromTables";
+import {
+  DepartmentName,
+  DesignationName,
+  EmployeeID,
+  ResignationStatus,
+  ResignationReason,
+} from "utils/getValuesFromTables";
+import {} from "utils/getValuesFromTables";
 import moment from "moment";
 import { ManagerName } from "utils/getValuesFromTables";
-// import AllotLeavesForm from "./AllotLeavesForm";
-import PdfIcon from "assets/images/pdfPreview.png";
-import { MdOutlineFileDownload } from "react-icons/md";
-import Letter from "app/modules/EmployeesExit/sections/Letter";
 
-const RenderResignedRow = ({
-  resignedEmployee,
-  resignedEmployeeList,
-  reload,
-}) => {
+const RenderResignedRow = ({ resignedEmployee, resignedEmployeeList }) => {
   const [openResignedDetails, setopenResignedDetails] = useState(null);
   const [ResignedDetailIndex, setResignedDetailIndex] = useState(null);
-
   const handleResignedDetails = (ResignedEmp) => {
     setResignedDetailIndex(
-      resignedEmployeeList.findIndex(
-        (obj) => obj.emp_id === ResignedEmp.emp_id
-      )
+      resignedEmployeeList.findIndex((obj) => obj.emp_id === ResignedEmp.emp_id)
     );
     setopenResignedDetails(ResignedEmp);
   };
@@ -96,57 +92,73 @@ const RenderResignedRow = ({
 
 const ResignedDetails = ({ ResignedData, closeModel, next, previous }) => {
   return (
-    <div
-      className="flex flex-wrap gap-5 justify-between items-start mt-3 w-full max-md:max-w-full bg-white"
-    >
-      <div className="bg-white h-screen fixed  max-w-[40%] w-[40%] top-0 right-0  shadow-lg p-10 overflow-y-auto hideScroll z-30">
-        <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
-          <div className="flex justify-center ">
-            <button
-              className="flex items-center px-2 py-2"
-              onClick={() => {
-                previous();
-              }}
-            >
-              <IoChevronBack className="" /> Previous
-            </button>
-            <button
-              className="flex items-center px-2 py-2"
-              onClick={() => next()}
-            >
-              Next <IoChevronForward className="" />
-            </button>
-          </div>
-          <RxCross2
-            className=" cursor-pointer"
-            onClick={() => {
-              closeModel();
-            }}
+    <div className="bg-white view-modal-card hideScroll">
+      <ViewDetailHeader
+        title={"Completed exit requests"}
+        onNextClick={next}
+        onPreviousClick={previous}
+        closeModel={closeModel}
+      />
+      <div className="mt-9">
+        <section className="flex flex-col mt-10 w-full max-md:max-w-full justify-start items-start gap-2">
+          <Labels label={"Resigned"} backgroungColor={`bg-[#f4e4eb]`} />
+          <h1 className="text-2xl font-bold text-zinc-800 mb-0">
+            {ResignedData.emp_name}
+          </h1>
+          <p className=" text-base text-zinc-600">
+            ID:
+            <EmployeeID value={ResignedData?.employee_id} /> |{" "}
+            <DesignationName value={ResignedData.department_position} /> |
+            <DepartmentName value={ResignedData.department_name} />
+          </p>
+        </section>
+        <section>
+          <ViewDetailBox
+            labelList={[
+              {
+                label: "Joining date",
+                value: moment(ResignedData?.joining_date).format("DD-MM-YYYY"),
+              },
+              {
+                label: "Status",
+                value: ResignationStatus(ResignedData.status_resignation),
+              },
+              {
+                label: "Report to",
+                value: <ManagerName value={ResignedData.report_to[0]} />,
+              },
+              {
+                label: "Reason for leaving",
+                value: ResignationReason(ResignedData.exit_type),
+              },
+
+              {
+                label: "Exit date",
+                value: moment(ResignedData?.exit_date).format("DD-MM-YYYY"),
+              },
+
+              {
+                label: "Notice Period",
+                value: ResignedData.notice_period || "N/A",
+              },
+              {
+                label: "Phone no.",
+                value: `${ResignedData?.country_code || ""}${
+                  ResignedData?.mobile_no || ""
+                }`,
+              },
+            ]}
           />
-        </div>
-        <div className="mt-9">
-          <section className="flex flex-col mt-10 w-full max-md:max-w-full justify-start items-start gap-2">
-            <div className="gap-1.5 self-start px-3.5 py-1.5 text-base leading-none whitespace-nowrap bg-[#f4e4eb] min-h-[28px] rounded-[100px] text-zinc-600">
-              Resigned
-            </div>
-            <h1 className="text-2xl font-bold text-zinc-800">
-              {ResignedData.emp_name}
-            </h1>
-            <p className=" text-base text-zinc-600">
-              ID:{ResignedData?.employee_id} I{" "}
-              <DesignationName value={ResignedData.department_position} /> I
-              <DepartmentName value={ResignedData.department_name} />
-            </p>
-          </section>
-          <EmploymentDetails ResignedData={ResignedData} />
-          {ResignedData?.resignation_letter &&
-            ResignedData?.resignation_letter?.name && (
-              <Letter
-                name={ResignedData.emp_name}
-                file={ResignedData.resignation_letter}
-              />
-            )}
-        </div>
+          <ViewAttachmentDetail
+            title={"Attachments"}
+            attachments={[
+              {
+                name: `${ResignedData.emp_name} - Resignation letter`,
+                file: ResignedData?.resignation_letter,
+              },
+            ]}
+          />
+        </section>
       </div>
     </div>
   );
