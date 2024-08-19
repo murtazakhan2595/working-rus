@@ -6,6 +6,7 @@ module.exports = {
     './components/**/*.{js,jsx}',
     './app/**/*.{js,jsx}',
     './src/**/*.{js,jsx}',
+   
   ],
   prefix: "",
   theme: {
@@ -23,15 +24,20 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-       "plum":"#953EA3",
-        accent: '#ff49db',
-        neutral: '#273444',
-        'base-100': '#ffffff',
-        'base-200': '#f7fafc',
-        'base-300': '#e2e8f0',
-        'base-content': '#1a202c',
-        
-
+       "plum":{
+          100:'#fefcff',
+          200:'#f7def8',
+          300:'#fbebfb',
+          400:'#f7def8',
+          500:'#f2d1f3',
+          600:'#e9c2ec',
+          700:'#deade3',
+          800:'#cf91d8',
+          900:'#ab4aba',
+          1000:'#a144af',
+          1100:'#953ea3',
+          1200:'##53195d',
+       },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

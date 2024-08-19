@@ -1,8 +1,16 @@
-// Main Layout
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
+import { MdOutlineLogout, MdOutlineNotificationsNone } from "react-icons/md";
+import {
+  FaAngleDoubleLeft,
+  FaAngleDoubleRight,
+} from "react-icons/fa";
+import { FaAngleDown } from "react-icons/fa6";
 import { Outlet, Link, useNavigate } from "react-router-dom";
+import logo from "assets/images/logo.png";
 import { connect } from "react-redux";
 import axios from "axios";
+import { BsPersonGear } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { toggleDropdown } from "state/slices/DropdownSlice";
@@ -10,14 +18,6 @@ import getNavigation from "app/utils/Types/Navigation";
 import { setUserLogout } from "state/actions/UserAction";
 import NavigationMenue from "./NavigationMenue";
 import Notifications from "./Notifications/Notifications";
-
-import { cn } from "../../../../src/@/lib/utils";
-import { useStore } from "../../../hooks/use-store";
-import { Button } from "../../../../src/@/components/ui/button";
-import {Menu} from "../../../../components/ui/menu";
-import { useSidebarToggle } from "../../../hooks/use-sidebar-toggle";
-import { SidebarToggle } from "../../../../components/ui/sidebar-toggle";
-import NewLogo from "../../../../assets/images/NewLogo"
 
 const Sidebar = ({
   isSidebarOpen,
@@ -63,55 +63,222 @@ const Sidebar = ({
   useEffect(() => {
     fetchData();
   }, []);
-  const sidebar = useStore(useSidebarToggle, (state) => state);
 
-  if (!sidebar) return null;
 
   return (
     <>
-      <div className="flex flex-row">
-        <aside
-          className={cn(
-            "fixed top-0 left-0 z-1 h-screen -translate-x-full lg:translate-x-0 transition-[width] ease-in-out duration-300",
-            sidebar?.isOpen === false ? "w-[90px]" : "w-72"
-          )}
+      <div className="flex">
+        {/* Sidebar content goes here */}
+        <div
+          // style={{ backgroundImage: `url(${sidebg})` }}
+          className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-e-lg ${isSidebarOpen ? "w-64" : "w-28"
+            }`}
         >
-
-          <SidebarToggle isOpen={sidebar?.isOpen} setIsOpen={sidebar?.setIsOpen} />
-          <Button
-            className={cn(
-              "transition-transform ease-in-out duration-300 mb-1",
-              sidebar?.isOpen === false ? "translate-x-1" : "translate-x-0"
-            )}
-            variant="link"
-            asChild
-          >
-            <Link to="/" className="flex items-center gap-2">
-              <h1
-                className={cn(
-                  "font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
-                  sidebar?.isOpen === false
-                    ? "-translate-x-96 opacity-0 hidden"
-                    : "translate-x-0 opacity-100"
-                )}
-              >
-               <NewLogo/>
-              </h1>
-            </Link>
-          </Button>
-
+          <div className="text-xl z-10 py-3 px-3 flex border-b border-gray-300 flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold relative">
+            <img
+              src={logo}
+              className={`w-12 ${isSidebarOpen ? "inline-block" : "block mx-auto"
+                } `}
+              alt="logo"
+            />
+            <h1
+              className={`inline-block overflow-hidden transition-all text-2xl ${isSidebarOpen ? "w-28" : "w-0"
+                }`}
+            >
+              TECBRIX
+            </h1>
+          </div>
           <div className={`mx-2 hideScroll ${isSidebarOpen ? "overflow-y-auto overflow-x-visible" : ""}`} style={{ height: `calc(100vh - ${isSidebarOpen ? isProfileOpen ? '290px' : '220px' : '200px'}` }}>
             <NavigationMenue navigation={Navigation} isSidebarOpen={isSidebarOpen} sidebarRefresh={sidebarRefresh} />
-            {/* <Menu isOpen={sidebar?.isOpen} navigation={Navigation} isSidebarOpen={isSidebarOpen} sidebarRefresh={sidebarRefresh}  /> */}
           </div>
 
-        </aside>
-        {/* <Outlet isSidebarOpen={isSidebarOpen} /> */}
-      </div>
+          <ProfileDetails isSidebarOpen={isSidebarOpen} profileImage={profileImage} employee={employee} handleToggleDropdown={handleToggleDropdown} isProfileOpen={isProfileOpen} />
+        </div>
 
+        {/* Sidebar collapse button */}
+        <button
+          button
+          className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${isSidebarOpen ? "left-[12.5rem] top-10" : "left-[5.5rem] top-10"
+            } rounded-lg  mt-4 mr-4 z-10`}
+          onClick={handleSidebarToggle}
+        >
+          {isSidebarOpen ? (
+            <FaAngleDoubleLeft title="Close" className="text-xl" />
+          ) : (
+            <FaAngleDoubleRight title="Open" className="text-xl" />
+          )}
+        </button>
+
+        <Outlet isSidebarOpen={isSidebarOpen} />
+      </div>
     </>
   );
 };
+
+// render notifications
+
+
+const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDropdown, isProfileOpen }) => {
+
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const navigate = useNavigate();
+  const handleShowNotifications = () => {
+    setShowNotifications(prev => !prev)
+  }
+
+  const handleClose = () => {
+    setShowNotifications(false)
+  }
+  return (
+    <div className="pb-2 mx-2">
+      <div className="flex items-center gap-x-3 text-[#5C5E64] flex-grow ml-2 cursor-pointer my-3" onClick={handleShowNotifications}>
+        <MdOutlineNotificationsNone className="text-xl" />
+        <div className={`flex-grow text-[14px] ${isSidebarOpen ? 'block' : 'hidden'}`}>Notifications</div>
+      </div>
+      {showNotifications && <Notifications onClose={handleClose} />}
+      <div
+        className={`${isSidebarOpen
+          ? "bg-white rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1"
+          : ""
+          }`}
+      >
+        <div
+          className={`flex group items-center gap-x-2 py-3 ${isSidebarOpen
+            ? "bg-[#F0F1F2]"
+            : "borderr border--[#5C5E64]"
+            } px-2 rounded-lg cursor-pointer`}
+        >
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt={`${employee?.first_name} ${employee?.last_name}'s Picture`}
+              style={{
+                width: "45px",
+                height: "45px",
+                borderRadius: "50%",
+              }}
+            />
+          ) : (
+            <>
+              {employee?.first_name?.toUpperCase().slice(0, 1)}
+              {employee?.last_name?.toUpperCase().slice(0, 1)}
+            </>
+          )}
+
+          {!isSidebarOpen && (
+            <div
+              className="absolute z-50 ml-20 text-sm bg-white border rounded-lg border-gray-1 w-44 opacity-00 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 shadow-bottom"
+              style={{ bottom: "5px" }}
+            >
+              <div className="flex items-center bg-[#F0F1F2] rounded-lg m-1">
+                <div
+                  className={`flex group items-center gap-x-2 py-3 px-2 rounded-lg cursor-pointer`}
+                >
+                  {profileImage ? (
+                    <img
+                      src={profileImage}
+                      alt={`${employee?.first_name} ${employee?.last_name}'s Picture`}
+                      style={{
+                        width: "45px",
+                        height: "45px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  ) : (
+                    <>
+                      {employee?.first_name
+                        ?.toUpperCase()
+                        .slice(0, 1)}
+                      {employee?.last_name?.toUpperCase().slice(0, 1)}
+                    </>
+                  )}
+                </div>
+                <div className={`flex flex-col text-[#5C5E64]`}>
+                  <div className="flex items-center gap-x-2">
+                    <div className="font-semibold">
+                      {employee?.username}
+                    </div>
+                  </div>
+                  <div
+                    className="overflow-hidden text-xs text-ellipsis"
+                    style={{ width: "100px" }}
+                  >
+                    {employee?.work_email}
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col mx-1 mt-2 gap-y-2">
+                <Link
+                  to="/my-profile"
+                  className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+                >
+                  <p>Profile Settings</p>
+                  <BsPersonGear />
+                </Link>
+                <div
+                  className="flex items-center cursor-pointer justify-between px-3 py-1 mb-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+                  onClick={() => {
+                    window.localStorage.setItem("token", "")
+                    setUserLogout();
+                    navigate("/login");
+                  }}
+                >
+                  <p>Logout</p>
+                  <MdOutlineLogout />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div
+            className={`flex flex-col text-[#5C5E64] ${isSidebarOpen ? "block" : "hidden"
+              }`}
+            onClick={() => handleToggleDropdown("Profile")}
+          >
+            <div className="flex items-center gap-x-2">
+              <div className="font-semibold">
+                {employee?.username}
+              </div>
+              <FaAngleDown
+                className={`text-xs transition-transform duration-300 ${isProfileOpen ? "transform rotate-180" : ""
+                  }`}
+              />
+            </div>
+            <div
+              className="overflow-hidden text-xs text-ellipsis"
+              style={{ width: "130px" }}
+            >
+              {employee?.work_email}
+            </div>
+          </div>
+        </div>
+
+        {isProfileOpen && isSidebarOpen && (
+          <div className="flex flex-col mt-2 gap-y-2">
+            <Link
+              to="/my-profile"
+              className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+            >
+              <p>Profile Settings</p>
+              <BsPersonGear />
+            </Link>
+            <div
+              className="flex items-center cursor-pointer justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
+              onClick={() => {
+                window.localStorage.setItem("token", "")
+                setUserLogout();
+                navigate("/login");
+              }}
+            >
+              <p>Logout</p>
+              <MdOutlineLogout />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>)
+}
 
 const mapStateToProps = (state) => {
   return {
@@ -123,4 +290,3 @@ const mapStateToProps = (state) => {
   };
 };
 export default connect(mapStateToProps, { setUserLogout })(Sidebar);
-

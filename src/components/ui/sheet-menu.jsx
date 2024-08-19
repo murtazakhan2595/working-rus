@@ -2,14 +2,14 @@
 import { Link } from 'react-router-dom';
 import { MenuIcon, PanelsTopLeft } from "lucide-react";
 import { Button } from "../../src/@/components/ui/button";
-import {Menu}  from "../../components/ui/menu";
+import Menu from "../../components/ui/menu";
 import {
   Sheet,
   SheetHeader,
   SheetContent,
   SheetTrigger,
 } from "../../src/@/components/ui/sheet";
-
+import MobileLogo from "../../assets/images/mobile-logo";
 export function SheetMenu() {
   return (
     <Sheet>
@@ -25,12 +25,14 @@ export function SheetMenu() {
             variant="link"
             asChild
           >
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <PanelsTopLeft className="w-6 h-6 mr-1" />
-              <h1 className="text-lg font-bold">Brand</h1>
-            </Link>
+            <Link href="/" className="flex items-center gap-2">
+            <MobileLogo/>
+            
+                        </Link>
           </Button>
         </SheetHeader>
+        {/* <NavigationMenue isOpen  /> */}
+           
         <Menu isOpen />
       </SheetContent>
     </Sheet>

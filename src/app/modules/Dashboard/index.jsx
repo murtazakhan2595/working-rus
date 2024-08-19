@@ -68,7 +68,7 @@ const Dashboard = ({ userProfile }) => {
   return (
     <>    
       
-      <div className="screen dashboard rounded-[24px] bg-[#F0F1F2] ">
+      <div className="screen dashboard ">
     
         <Header
           title={`Dashboard`}

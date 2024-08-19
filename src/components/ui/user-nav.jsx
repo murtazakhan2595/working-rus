@@ -1,9 +1,12 @@
 "use client";
 // done
+import { BsPersonGear } from "react-icons/bs";
+import { toggleDropdown } from "state/slices/DropdownSlice";
+import getNavigation from "app/utils/Types/Navigation";
 
-import { Link } from 'react-router-dom';
+import { Link , useNavigate} from 'react-router-dom';
 import { LayoutGrid, LogOut, User } from "lucide-react";
-
+import ProfileDetailsTopbar from './profile-detail';
 import { Button } from "../../src/@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../../src/@/components/ui/avatar";
 import {
@@ -21,8 +24,66 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "../../src/@/components/ui/dropdown-menu";
+import { setUserLogout } from "../../state/actions/UserAction";
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 
-export function UserNav() {
+
+
+export function UserNav(baseUrl, token, userProfile ) {
+  const [profileImage, setProfileImage] = useState(null);
+  const [employee, setEmployee] = useState(null);
+  const [navigation, setNavigation] = useState(null);
+  const fetchData = useCallback(async () => {
+    try {
+      const employeeResponse = await axios.get(`${baseUrl}/emp/${userProfile?.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const employeeData = employeeResponse.data;
+      setEmployee(employeeData);
+      setNavigation(getNavigation(employeeData.user_role));
+      setProfileImage(
+        employeeResponse.data?.profile_picture?.file ||
+        employeeResponse.data?.profile_picture
+      );
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, [baseUrl, token, userProfile]);
+  useEffect(() => {
+    if (userProfile?.id) {
+      const fetchData = async () => {
+        try {
+          const employeeResponse = await axios.get(`${baseUrl}/emp/${userProfile?.id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const employeeData = employeeResponse.data;
+          setEmployee(employeeData);
+          setNavigation(getNavigation(employeeData.user_role));
+          setProfileImage(
+            employeeResponse.data?.profile_picture?.file ||
+            employeeResponse.data?.profile_picture
+          );
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+      fetchData();
+    }
+  }, [userProfile, baseUrl, token]);;
+ 
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    window.localStorage.setItem("token", "");
+    setUserLogout();
+    navigate("/login");
+  };
+  console.log(navigation); // log the value of navigation to the console
+  console.log(employee);
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
@@ -31,11 +92,13 @@ export function UserNav() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="relative h-8 w-8 rounded-full"
+                className="relative w-8 h-8 rounded-full"
               >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="#" alt="Avatar" />
-                  <AvatarFallback className="bg-transparent">JD</AvatarFallback>
+                <Avatar className="w-8 h-8">
+               <AvatarImage src={profileImage} alt={`${employee?.first_name} ${employee?.last_name}'s Picture`} />
+                
+                  <AvatarFallback className="bg-transparent">{employee?.first_name?.toUpperCase().slice(0, 1)}
+                  {employee?.last_name?.toUpperCase().slice(0, 1)}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -44,7 +107,7 @@ export function UserNav() {
         </Tooltip>
       </TooltipProvider>
 
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-56 " align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">John Doe</p>
@@ -69,7 +132,8 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
+        <DropdownMenuItem className="hover:cursor-pointer"  onClick={handleLogout}
+                >
           <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
           Sign out
         </DropdownMenuItem>
@@ -77,3 +141,5 @@ export function UserNav() {
     </DropdownMenu>
   );
 }
+
+export default UserNav;
