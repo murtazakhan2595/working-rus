@@ -2,14 +2,14 @@
 import { Link } from 'react-router-dom';
 import { MenuIcon, PanelsTopLeft } from "lucide-react";
 import { Button } from "../../src/@/components/ui/button";
-import {Menu}  from "../../components/ui/menu";
+import Menu from "../../components/ui/menu";
 import {
   Sheet,
   SheetHeader,
   SheetContent,
   SheetTrigger,
 } from "../../src/@/components/ui/sheet";
-
+import NavigationMenue from "../../app/shared/templates/Sidebar/NavigationMenue";
 export function SheetMenu() {
   return (
     <Sheet>
@@ -31,7 +31,9 @@ export function SheetMenu() {
             </Link>
           </Button>
         </SheetHeader>
-        <Menu isOpen />
+        <NavigationMenue isOpen  />
+           
+        {/* <Menu isOpen /> */}
       </SheetContent>
     </Sheet>
   );

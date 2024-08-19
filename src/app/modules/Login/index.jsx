@@ -176,7 +176,7 @@ function Login() {
 
   return (
 
-    <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+    <div className="w-full lg:grid lg:min-h-[100vh] lg:grid-cols-2 xl:min-h-[100vh]">
       <div className="flex items-center justify-center ">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid justify-center gap-2 text-center">
@@ -251,7 +251,7 @@ function Login() {
           </div>
         </div>
       </div>
-      <div className="hidden bg-muted lg:block">
+      <div className="items-center justify-end hidden bg-white lg:flex">
         <img
           src={cover}
           alt="Login Image"

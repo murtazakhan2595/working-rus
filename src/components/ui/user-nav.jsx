@@ -1,9 +1,9 @@
 "use client";
 // done
 
-import { Link } from 'react-router-dom';
+import { Link , useNavigate} from 'react-router-dom';
 import { LayoutGrid, LogOut, User } from "lucide-react";
-
+import ProfileDetailsTopbar from './profile-detail';
 import { Button } from "../../src/@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../../src/@/components/ui/avatar";
 import {
@@ -21,8 +21,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "../../src/@/components/ui/dropdown-menu";
-
+import { setUserLogout } from "../../state/actions/UserAction";
 export function UserNav() {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    window.localStorage.setItem("token", "");
+    setUserLogout();
+    navigate("/login");
+  };
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
@@ -31,9 +37,9 @@ export function UserNav() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="relative h-8 w-8 rounded-full"
+                className="relative w-8 h-8 rounded-full"
               >
-                <Avatar className="h-8 w-8">
+                <Avatar className="w-8 h-8">
                   <AvatarImage src="#" alt="Avatar" />
                   <AvatarFallback className="bg-transparent">JD</AvatarFallback>
                 </Avatar>
@@ -69,7 +75,8 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
+        <DropdownMenuItem className="hover:cursor-pointer"  onClick={handleLogout}
+                >
           <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
           Sign out
         </DropdownMenuItem>
