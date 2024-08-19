@@ -73,7 +73,7 @@ const Resigned = React.memo(({ userProfile, departments, reload }) => {
             type: "select",
             option: departments,
             name: "department_name",
-            placeholder: "Status",
+            placeholder: "Department",
           },
         ]}
         onChange={handleFilterChange}
@@ -86,7 +86,7 @@ const Resigned = React.memo(({ userProfile, departments, reload }) => {
             <div>
               <Table
                 data={Resigned?.results || []}
-                columns={ExitResignedColumns(reload)}
+                columns={ExitResignedColumns}
                 hideTableHeader={true}
                 pagination={true}
                 dataTotalSize={Resigned?.count || 0}

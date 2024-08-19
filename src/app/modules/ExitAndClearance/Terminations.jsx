@@ -3,7 +3,7 @@ import { ExitRequestColumns } from "app/utils/Types/TableColumns";
 import { Table } from "components";
 import { useState, useEffect } from "react";
 import ExitDetailsCard from "./ExitDetailsCard";
-const Terminations = ({ userProfile, terminations, reload }) => {
+const Terminations = ({ terminations, reload }) => {
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -93,25 +93,10 @@ const Terminations = ({ userProfile, terminations, reload }) => {
       />
       {selectedResignationId !== null && (
         <ExitDetailsCard
-          resignation={terminations.find(
-            (item) => item.id === selectedResignationId
-          )}
+          resignation={selectedResignationId}
           onClose={closeModal}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          disableNext={
-            terminations.findIndex(
-              (item) => item.id === selectedResignationId
-            ) >=
-            terminations.length - 1
-          }
-          disablePrevious={
-            terminations.findIndex(
-              (item) => item.id === selectedResignationId
-            ) <= 0
-          }
-          handleOptionSelect={handleOptionSelect}
-          reload
+          resignationsList={terminations}
+
         />
       )}
     </div>

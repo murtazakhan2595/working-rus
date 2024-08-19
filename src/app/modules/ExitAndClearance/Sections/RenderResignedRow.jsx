@@ -13,10 +13,9 @@ import {
   EmployeeID,
   ResignationStatus,
   ResignationReason,
+  ManagerName
 } from "utils/getValuesFromTables";
-import {} from "utils/getValuesFromTables";
 import moment from "moment";
-import { ManagerName } from "utils/getValuesFromTables";
 
 const RenderResignedRow = ({ resignedEmployee, resignedEmployeeList }) => {
   const [openResignedDetails, setopenResignedDetails] = useState(null);

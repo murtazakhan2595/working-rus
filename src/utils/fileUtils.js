@@ -46,6 +46,14 @@ const getImageExtension = (contentType) => {
       return "jpg"; // Default to jpg if the format is not recognized
   }
 };
+export function getFileSizeInKB(base64String) {
+  if (!base64String) return "";
+  const base64Data = base64String.split(",")[1];
+  const binaryString = atob(base64Data);
+  const byteLength = binaryString.length;
+  const kbSize = byteLength / 1024;
+  return kbSize.toFixed(0);
+}
 
 export function filebase64Download(file, fileName) {
   const link = document.createElement("a");

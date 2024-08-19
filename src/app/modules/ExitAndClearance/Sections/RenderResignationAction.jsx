@@ -7,13 +7,13 @@ import {
 } from "reactstrap";
 import { StatusCircleLabel } from "components";
 import { useSelector, useDispatch } from "react-redux";
-import { FaRegCircle } from "react-icons/fa";
+import { IoMdArrowDropdown } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { ResignationStatus } from "utils/getValuesFromTables";
 import { Status, StatusCurrentStep } from "./index";
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 
-const RenderResignationAction = ({ row, reload }) => {
+const RenderResignationAction = ({ row, reload, viewMode }) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const status = row.status_resignation;
@@ -31,7 +31,7 @@ const RenderResignationAction = ({ row, reload }) => {
           status_resignation: status,
         };
         const response = await saveEmployeeExitDetail(payload);
-        if (response) {
+        if (response && reload) {
           reload();
         }
       }
@@ -42,22 +42,44 @@ const RenderResignationAction = ({ row, reload }) => {
   return (
     <div>
       {loggedInUser.role === 2 && resignationCurrentStep > 1 ? (
-      <div style={{padding:"0px 12px"}}>  <StatusCircleLabel label={ResignationStatus(status)} status={status} /> </div>
+        <div style={{ padding: "0px 12px" }}>
+          <StatusCircleLabel
+            label={ResignationStatus(status)}
+            status={status}
+          />
+        </div>
       ) : (
         <ButtonDropdown
           isOpen={openDropdownRow === row.id}
           toggle={() => toggleDropdown(row.id)}
         >
           <DropdownToggle className="border-0 shadow-none bg-transparent">
-            <button className="text-zinc-600 text-sm font-normal">
-              <div className="flex items-center">
-                <StatusCircleLabel
-                  label={ResignationStatus(status)}
-                  status={status}
-                />
-                <RiArrowDropDownLine className="text-xl text-zinc-600" />
-              </div>
-            </button>
+            {viewMode ? (
+              <button
+                className="btn btn-outline-dark bg-white text-dark shadow-none"
+                style={{
+                  padding: ".35em .65em",
+                  fontSize: ".75em",
+                  minWidth: "100px",
+                  height: "32.25px",
+                }}
+              >
+                <span className="flex justify-center">
+                  Action
+                  <IoMdArrowDropdown className="text-[20px]" />
+                </span>
+              </button>
+            ) : (
+              <button className="text-zinc-600 text-sm font-normal">
+                <div className="flex items-center">
+                  <StatusCircleLabel
+                    label={ResignationStatus(status)}
+                    status={status}
+                  />
+                  <RiArrowDropDownLine className="text-xl text-zinc-600" />
+                </div>
+              </button>
+            )}
           </DropdownToggle>
           <DropdownMenu start className="p-6">
             {loggedInUser.role === 2 && (

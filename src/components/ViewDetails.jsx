@@ -4,7 +4,7 @@ import pdfIcon from "assets/images/pdfIcon.svg";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import { AiOutlineDownload } from "react-icons/ai";
-import { filebase64Download } from "utils/fileUtils";
+import { filebase64Download, getFileSizeInKB } from "utils/fileUtils";
 import moment from "moment";
 import { downloadCV } from "app/hooks/recruitment";
 
@@ -28,33 +28,36 @@ const ViewDetailBox = ({ labelList }) => {
 
 const ViewAttachmentDetail = ({ title, attachments }) => {
   return (
-      <div className="mt-3">
-        <h3 className="font-bold text-base text-[#323333] text-left">{title}</h3>
-        {attachments &&
-          attachments.map((attachment, index) => {
-            if (!attachment.file) return "";
-            return (
-              <div
-                key={index}
-                className="bg-[#F0F1F2] rounded-lg p-2 flex justify-between items-center"
-              >
-                <div className="flex gap-x-3">
-                  <img src={pdfIcon} alt="" />
-                  <p class="text-[14px] text-[#323333]">{attachment?.name}</p>
-                </div>
-                <div
-                  className="flex gap-x-2 cursor-pointer"
-                  onClick={() =>
-                    filebase64Download(attachment?.file, attachment?.name)
-                  }
-                >
-                  <p class="text-[14px] text-[#323333]">Download</p>
-                  <AiOutlineDownload />
-                </div>
+    <div className="mt-3">
+      <h3 className="font-bold text-base text-[#323333] text-left">{title}</h3>
+      {attachments &&
+        attachments.map((attachment, index) => {
+          if (!attachment.file) return "";
+          return (
+            <div
+              key={index}
+              className="bg-[#F0F1F2] rounded-lg p-2 flex justify-between items-center"
+            >
+              <div className="flex gap-x-3">
+                <img src={pdfIcon} alt="" />
+                <p class="text-[14px] text-[#323333]">{attachment?.name}</p>
+                <p className="self-start mt-1 text-xs leading-none text-zinc-600">
+                  {getFileSizeInKB(attachment?.file?.file)} KB
+                </p>
               </div>
-            );
-          })}
-      </div>
+              <div
+                className="flex gap-x-2 cursor-pointer"
+                onClick={() =>
+                  filebase64Download(attachment?.file, attachment?.name)
+                }
+              >
+                <p class="text-[14px] text-[#323333]">Download</p>
+                <AiOutlineDownload />
+              </div>
+            </div>
+          );
+        })}
+    </div>
   );
 };
 

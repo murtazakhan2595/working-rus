@@ -500,7 +500,7 @@ export const ExitTerminatedColumns = (reload) => [
     ),
   },
 ];
-export const ExitResignedColumns = (reload) => [
+export const ExitResignedColumns = [
   {
     dataField: "employee_id",
     text: "",
@@ -508,7 +508,6 @@ export const ExitResignedColumns = (reload) => [
       <RenderResignedRow
         resignedEmployee={row}
         resignedEmployeeList={list}
-        reload={reload}
       />
     ),
   },
