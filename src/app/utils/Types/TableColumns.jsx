@@ -25,7 +25,7 @@ import {
   RenderTerminatedRow,
   RenderResignedRow,
   RenderResignationAction,
-} from "app/modules/ExitAndClearance/Section";
+} from "app/modules/ExitAndClearance/Sections";
 import { IoBagCheckOutline } from "react-icons/io5";
 import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
 import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";

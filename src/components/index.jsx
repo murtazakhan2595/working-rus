@@ -6,6 +6,7 @@ import EmployeeNameInfo from "./EmployeeNameInfo";
 import Table from "./Table";
 import BarChart  from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
+import ViewDetails from "./ViewDetails";
 
 export{
     Header,
@@ -19,5 +20,6 @@ export{
     LabelHolo,
     StatusViewIcon,
     StatusCircleLabel,
+    ViewDetails
 }
 

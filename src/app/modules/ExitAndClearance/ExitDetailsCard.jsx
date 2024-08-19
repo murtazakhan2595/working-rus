@@ -1,8 +1,5 @@
 // import { addLeaveRequest } from "app/hooks/leaveManagment";
 import { getEmployeeData } from "app/hooks/employee";
-import { getEmployeeWorkInformationData } from "app/hooks/employee";
-import { getManagerSelected } from "data/Data";
-import { TiArrowSortedDown } from "react-icons/ti";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import {
@@ -12,12 +9,9 @@ import {
 } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import  PdfIcon from 'assets/images/pdfPreview.png';
-import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
-import CustomActionDropdown from "./Section/CustomActionDropdown";
+import {CustomActionDropdown} from "./Sections";
 import { MdOutlineFileDownload } from "react-icons/md";
 
 const ExitDetailsCard = ({

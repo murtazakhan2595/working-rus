@@ -9,7 +9,7 @@ import { getEmployeeExitData } from "app/hooks/employee";
 import StatCard from "./StatCard";
 import Resignations from "./Resignations";
 import Terminations from "./Terminations";
-import { Header } from "./Section";
+import { Header } from "./Sections";
 import { CustomDarkButton } from "components/form-control";
 import { FilterInput } from "components/form-control";
 import { ResignationStatusOptions } from "data/Data";
