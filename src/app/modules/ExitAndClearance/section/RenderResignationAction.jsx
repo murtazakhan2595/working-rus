@@ -95,7 +95,7 @@ const RenderResignationAction = ({ row, reload }) => {
                       <StatusCircleLabel label={"Reject"} status={"rejected"} />
                     </DropdownItem>
                   )}
-                  {resignationCurrentStep !== 3 && (
+                  {resignationCurrentStep < 3 && (
                     <DropdownItem
                       onClick={() => handleOptionSelect("initiated clearance")}
                     >
@@ -115,11 +115,11 @@ const RenderResignationAction = ({ row, reload }) => {
                       />
                     </DropdownItem>
                   )}
-                  {resignationCurrentStep === 4 && (
+                  {/* {resignationCurrentStep === 4 && (
                     <DropdownItem onClick={() => handleOptionSelect("exit")}>
                       <StatusCircleLabel label={"Exit"} status={"exit"} />
                     </DropdownItem>
-                  )}
+                  )} */}
                 </>
               ))}
           </DropdownMenu>

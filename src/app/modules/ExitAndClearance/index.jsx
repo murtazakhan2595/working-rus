@@ -144,7 +144,7 @@ const ExitAndClearance = ({ userProfile }) => {
             />
           </div>
         </Col>
-        {activeTab !== "Resignations" && (
+        {activeTab !== "Resignations" && activeTab !== "Resigned"&& (
           <Col lg={12} className="">
             <div className="py-3 px-3 bg-white">
               <FilterInput
