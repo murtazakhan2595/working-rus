@@ -63,8 +63,17 @@ export default function MyTasks() {
           ? {}
           : { filterData: { project_id: [filterOption.id] } };
       const tasksData = await getAllTasks(filter);
-      if (isMounted) {
-        const mergedResult = mergeTasksWithProjects(tasksData, projects);
+      if (isMounted && tasksData) {
+          let filterTasks = tasksData;
+          if (userProfile.role === 2 || userProfile.role === 4) {
+            filterTasks = tasksData.filter(
+              (task) =>
+                task.assigned_to.includes(Number(userProfile.id)) ||
+                task.assigned_by === Number(userProfile.id)
+            );
+          }
+          console.log("mergedResult ---", filterTasks);
+        const mergedResult = mergeTasksWithProjects(filterTasks, projects);
         setTasks(mergedResult);
       }
     } catch (error) {
@@ -84,19 +93,8 @@ export default function MyTasks() {
     };
   }, [filterData]);
 
-  useEffect(() => {
-    async function fetchTaskLabels(){
-      const reponse = await getAllLabels();
-    }
-    let isMounted = true;
-    fetchTaskLabels();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   useEffect(() => {
-    console.log(AllProjects);
     const dynamicOptions = AllProjects.map((project) => ({
       label: project.name,
       onClick: () => {
@@ -116,7 +114,6 @@ export default function MyTasks() {
     setOptions(dynamicOptions);
   }, [AllProjects]);
 
-  console.log(options)
 
 
   useEffect(() => {

@@ -16,33 +16,33 @@ export default function TaskProgress() {
     total: 0,
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [options, setOptions] = useState([]);
-      const [AllProjects, setAllProjects] = useState([]);
-const [filterOption, setFilterOption] = useState("All");
+  const [options, setOptions] = useState([]);
+  const [AllProjects, setAllProjects] = useState([]);
+  const [filterOption, setFilterOption] = useState("All");
 
   const userProfile = useSelector((state) => state.user.userProfile);
 
-const categorizeTasks = (tasks) => {
-  // Initialize an empty object to store categorized tasks
-  const categories = {
-    delayed: { count: 0, labelInfo: {} },
-    ongoing: { count: 0, labelInfo: {} },
-    completed: { count: 0, labelInfo: {} },
-    total: tasks.length,
+  const categorizeTasks = (tasks) => {
+    // Initialize an empty object to store categorized tasks
+    const categories = {
+      delayed: { count: 0, labelInfo: {} },
+      ongoing: { count: 0, labelInfo: {} },
+      completed: { count: 0, labelInfo: {} },
+      total: tasks.length,
+    };
+
+    tasks.forEach((task) => {
+      const labelName = task.label.name.toLowerCase();
+      const labelInfo = { name: task.label.name, color: task.label.color };
+
+      if (categories[labelName]) {
+        categories[labelName].count += 1;
+        categories[labelName].labelInfo = labelInfo; // Update label info dynamically
+      }
+    });
+
+    return categories;
   };
-
-  tasks.forEach((task) => {
-    const labelName = task.label.name.toLowerCase();
-    const labelInfo = { name: task.label.name, color: task.label.color };
-
-    if (categories[labelName]) {
-      categories[labelName].count += 1;
-      categories[labelName].labelInfo = labelInfo; // Update label info dynamically
-    }
-  });
-
-  return categories;
-};
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,9 +54,16 @@ const categorizeTasks = (tasks) => {
         const response = await getAllTasks(filter);
         const projectsData = await getAllProjects({}, userProfile);
         if (response && projectsData.results) {
-          const categorizedTasks = categorizeTasks(response);
+          let filterTasks = response;
+          if (userProfile.role === 2 || userProfile.role === 4) {
+            filterTasks = response.filter(
+              (task) =>
+                task.assigned_to.includes(Number(userProfile.id)) ||
+                task.assigned_by === Number(userProfile.id)
+            );
+          }
+          const categorizedTasks = categorizeTasks(filterTasks);
           setAllProjects(projectsData.results);
-          console.log("Categorized Task Data:", categorizedTasks);
           setTaskLabels(categorizedTasks);
         }
       } catch (error) {
@@ -66,26 +73,25 @@ const categorizeTasks = (tasks) => {
 
     fetchData();
   }, [filterOption]);
-    useEffect(() => {
-      console.log(AllProjects);
-      const dynamicOptions = AllProjects.map((project) => ({
-        label: project.name,
-        onClick: () => {
-          setIsDropdownOpen(false);
-          setFilterOption(project);
-        },
-      }));
+  useEffect(() => {
+    const dynamicOptions = AllProjects.map((project) => ({
+      label: project.name,
+      onClick: () => {
+        setIsDropdownOpen(false);
+        setFilterOption(project);
+      },
+    }));
 
-      dynamicOptions.unshift({
-        label: "All",
-        onClick: () => {
-          setIsDropdownOpen(false);
-          setFilterOption("All");
-        },
-      });
+    dynamicOptions.unshift({
+      label: "All",
+      onClick: () => {
+        setIsDropdownOpen(false);
+        setFilterOption("All");
+      },
+    });
 
-      setOptions(dynamicOptions);
-    }, [AllProjects]);
+    setOptions(dynamicOptions);
+  }, [AllProjects]);
   const chartOptions = {
     chart: {
       type: "donut",
@@ -124,33 +130,33 @@ const categorizeTasks = (tasks) => {
     },
   };
 
-const calculateSegmentValues = (taskLabels) => {
-  const totalTasks = taskLabels.total;
-  const completedCount = taskLabels.completed.count;
-  const delayedCount = taskLabels.delayed.count;
-  const ongoingCount = taskLabels.ongoing.count;
+  const calculateSegmentValues = (taskLabels) => {
+    const totalTasks = taskLabels.total;
+    const completedCount = taskLabels.completed.count;
+    const delayedCount = taskLabels.delayed.count;
+    const ongoingCount = taskLabels.ongoing.count;
 
-  // Calculate the remaining tasks
-  const remainingCount =
-    totalTasks - (completedCount + delayedCount + ongoingCount);
+    // Calculate the remaining tasks
+    const remainingCount =
+      totalTasks - (completedCount + delayedCount + ongoingCount);
 
-  // Calculate percentages for each segment
-  const completedPercentage = (completedCount / totalTasks) * 100;
-  const delayedPercentage = (delayedCount / totalTasks) * 100;
-  const ongoingPercentage = (ongoingCount / totalTasks) * 100;
-  const remainingPercentage =
-    remainingCount > 0 ? (remainingCount / totalTasks) * 100 : 0;
+    // Calculate percentages for each segment
+    const completedPercentage = (completedCount / totalTasks) * 100;
+    const delayedPercentage = (delayedCount / totalTasks) * 100;
+    const ongoingPercentage = (ongoingCount / totalTasks) * 100;
+    const remainingPercentage =
+      remainingCount > 0 ? (remainingCount / totalTasks) * 100 : 0;
 
-  return [
-    completedPercentage,
-    delayedPercentage,
-    ongoingPercentage,
-    remainingPercentage,
-  ];
-};
-const toggleDropdown = () => {
-  setIsDropdownOpen(!isDropdownOpen);
-};
+    return [
+      completedPercentage,
+      delayedPercentage,
+      ongoingPercentage,
+      remainingPercentage,
+    ];
+  };
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
   return (
     <div className="p-[18px] bg-white rounded-[5px]  h-full">
       <header className="justify-between items-center inline-flex w-full">
