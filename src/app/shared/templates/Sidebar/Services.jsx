@@ -32,8 +32,8 @@ const ServicesCards = () => {
                   <service.icon className="w-8 h-8 text-plum-1000" />
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <CardTitle className="text-slate-900">{service.label}</CardTitle>
-                  <CardDescription className="text-slate-900">{service.description}</CardDescription>
+                  <CardTitle className="text-slate-1200">{service.label}</CardTitle>
+                  <CardDescription className="text-slate-1000">{service.description}</CardDescription>
                 </CardContent>
               </Card>
             </Link>

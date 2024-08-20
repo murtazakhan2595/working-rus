@@ -14,7 +14,7 @@ export function ContentLayout({ title, children , isSidebarOpen }) {
       <Navbar title={title} />
     
     </div>
-    <div className="Main-content rounded-[24px] bg-mauve-2">
+    <div className="Main-content rounded-[24px] bg-mauve-200">
 
       <Outlet isSidebarOpen={isSidebarOpen} />
     </div>

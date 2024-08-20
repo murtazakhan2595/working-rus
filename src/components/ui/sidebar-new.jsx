@@ -18,11 +18,11 @@ export function SidebarNew() {
     <aside
       className={cn(
         "fixed top-0 left-0 z-20 h-screen -translate-x-full lg:translate-x-0 transition-[width] ease-in-out duration-300",
-        sidebar?.isOpen === false ? "w-[110px]" : "w-72"
+        sidebar?.isOpen === false ? "w-[100px]" : "w-72"
       )}
     >
       <SidebarToggle isOpen={sidebar?.isOpen} setIsOpen={sidebar?.setIsOpen} />
-      <div className="relative flex flex-col justify-start h-full px-2 pt-2 pb-3 overflow-y-auto ">
+      <div className="relative flex flex-col justify-start h-full px-4 py-4 overflow-y-auto ">
         <Button
           className={cn(
             "transition-transform ease-in-out duration-300 mb-1",

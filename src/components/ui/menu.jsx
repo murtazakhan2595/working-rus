@@ -70,7 +70,7 @@ const Menu = ({ isOpen }) => {
                         variant={active ? "secondary" : "ghost"}
                         className={cn(
                           "justify-start w-full h-10 mb-1",
-                          active ? "bg-plum-200 text-plum-1100 rounded-full" : ""
+                          active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : ""
                         )}
                         asChild
                       >
