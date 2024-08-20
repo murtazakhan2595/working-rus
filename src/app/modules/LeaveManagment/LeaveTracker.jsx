@@ -22,7 +22,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
   //
   const [isLoading, setIsLoading] = useState(true);
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({ employee_id: userProfile.id });
 
   const [options, setOptions] = useState({
     page: 1,
@@ -36,10 +36,6 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
-
-  useEffect(() => {
-    setFilterData({ employee_id: userProfile.id });
-  }, [userProfile]);
 
   useEffect(() => {
     const fetchdata = async () => {
