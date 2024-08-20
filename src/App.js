@@ -49,7 +49,7 @@ import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/Cr
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
 import ExitAndClearance from "app/modules/ExitAndClearance";
-
+import "./index.css"
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
   const userProfile = useSelector((state) => state.user.userProfile);

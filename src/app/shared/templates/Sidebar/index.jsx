@@ -1,7 +1,4 @@
 // Rootpage
-// import  {SidebarNew}  from "../../../../components/ui/sidebar-new";
-import { Navbar } from "../../../../components/ui/navbar";
-import Sidebar from "../../../../app/shared/templates/Sidebar/Sidebar"
 import { cn } from "../../../../src/@/lib/utils";
 import { useStore } from "../../../hooks/use-store";
 import { useSidebarToggle } from "../../../hooks/use-sidebar-toggle";

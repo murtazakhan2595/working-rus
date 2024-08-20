@@ -1,5 +1,5 @@
 
-import { Users, SquarePen, SquareStack, House } from "lucide-react"
+import { Users, SquareStack, House, ArrowLeftRight, Award, CalendarClockIcon, CalendarRange, Crosshair, FileChartColumnIncreasing, ListTodo, UserRoundCheck, UserRoundSearch, UsersRound, ListRestart, Settings2, PlaneTakeoff, DoorOpen, UserRoundPlus, UserRoundCog } from "lucide-react"
 
 
 /**
@@ -49,49 +49,49 @@ export function getMenuList(pathname, groups, userRole) {
       to: "/profile-management",
       label: "Profile Management",
       active: pathname === "/profile-management",
-      icon: Users,
+      icon: UsersRound,
       submenus: [],
     },
     {
       to: "/settings",
       label: "Profile Settings",
       active: pathname === "/settings",
-      icon: Users,
+      icon: Settings2,
       submenus: [],
     },
     {
       to: "/travel-details",
       label: "Travel Details",
       active: pathname === "/travel-details",
-      icon: Users,
+      icon: PlaneTakeoff,
       submenus: [],
     },
     {
       to: "/exit-clearance",
       label: "Exit & Clearance",
       active: pathname === "/exit-clearance",
-      icon: Users,
+      icon: DoorOpen,
       submenus: [],
     },
     {
       to: "/create-employee",
       label: "Employee Creation",
       active: pathname === "/create-employee",
-      icon: Users,
+      icon: UserRoundPlus,
       submenus: [],
     },
     {
       to: "/customise-employees",
       label: "Customize Employee",
       active: pathname === "/customise-employees",
-      icon: Users,
+      icon: UserRoundCog,
       submenus: [],
     },
     {
       to: "/relocation",
       label: "Relocation",
       active: pathname === "/relocation",
-      icon: Users,
+      icon: ArrowLeftRight,
       submenus: [],
     },
   ];
@@ -155,7 +155,75 @@ export function getMenuList(pathname, groups, userRole) {
     },
   ];
 
+  const taskManagement = [
 
+    {
+      label: "Task Management",
+      icon: ListTodo,
+      active: pathname === "/my-task",
+      submenus: [
+        {
+          label: "My Task",
+          to: "/my-task"
+        },
+        {
+          label: "My Team DTR",
+          to: "/my-team"
+        },
+        {
+          label: "Project Board",
+          to: "/projects"
+        },
+        {
+          label: "Time Management",
+          to: "/attendence"
+        }
+      ]
+    },
+    {
+      label: "Leave Management",
+      icon: CalendarRange,
+      active: pathname === "/leave-tracker",
+      submenus: [
+        {
+          label: "Leave Tracker",
+          to: "/leave-tracker"
+        },
+        {
+          label: "Leave Request",
+          to: "/leave-requests"
+        },
+        {
+          label: "Calendar",
+          to: "/leave-calender"
+        },
+        {
+          label: "Leave History",
+          to: "/leave-history"
+        },
+        {
+          label: "Leave Allotment",
+          to: "/leave-allotement"
+        },
+        {
+          label: "Holidays",
+          to: "/leave-balance"
+        },
+        {
+          label: "Settings",
+          icon: Settings2,
+          submenus: [
+            {
+              label: "Leave Type",
+              to: "/leave-type"
+            }
+          ]
+        }
+      ]
+    }
+
+
+  ]
   const menuList = [
     {
       groupLabel: "",
@@ -197,16 +265,11 @@ export function getMenuList(pathname, groups, userRole) {
             },
           ],
         },
-      ],
-    },
-    {
-      // groupLabel: userRole === 1 || userRole === 3 ? "" : "Self Service Hub",
-      menus: userRole === 1 || userRole === 3 ? selfServiceHub : [
         {
           to: "",
           label: "Transfer Employee",
           active: pathname === "/internal",
-          icon: SquarePen,
+          icon: ArrowLeftRight,
           submenus: [
             {
 
@@ -219,15 +282,156 @@ export function getMenuList(pathname, groups, userRole) {
             },
           ],
         },
+        {
+          href: "/relocation",
+          label: "Relocation",
+          active: pathname === "/relocation",
+          icon: ListRestart,
+          submenus: [],
+        },
       ],
     },
     {
-      to: "/relocation",
-      label: "Relocation",
-      active: pathname === "/relocation",
-      icon: Users,
-      submenus: [],
-    },
+      // groupLabel: userRole === 1 || userRole === 3 ? "" : "Self Service Hub",
+      menus: userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3 ? selfServiceHub : [
+        {
+          to: "",
+          label: "Self Service Hub",
+          active: pathname === "/internal",
+          icon: UserRoundCheck,
+          submenus: [
+            {
+              to: "/my-profile",
+              label: "My Profile",
+              active: pathname === "/my-profile",
+              icon: Users,
+              submenus: [],
+            },
+            {
+              to: "/my-team",
+              label: "My Team",
+              active: pathname === "/my-team",
+              icon: Users,
+              submenus: [],
+            },
+            {
+              to: "/calendar",
+              label: "Calendar",
+              active: pathname === "/calendar",
+              icon: Users,
+              submenus: [],
+            },
+            {
+              to: "/attendance",
+              label: "Attendance",
+              active: pathname === "/attendance",
+              icon: Users,
+              submenus: [],
+            },
+            {
+              to: "/leave-tracker",
+              label: "Leave Tracker",
+              active: pathname === "/leave-tracker",
+              icon: Users,
+              submenus: [],
+            },
+            {
+              to: "/files-data",
+              label: "Files & Data",
+              active: pathname === "/files-data",
+              icon: Users,
+              submenus: [],
+            },
+            {
+              to: "/my-travel-details",
+              label: "My Travel Details",
+              active: pathname === "/my-travel-details",
+              icon: Users,
+              submenus: [],
+            },
+            {
+              to: "/exit-employee",
+              label: "Exit",
+              active: pathname === "/exit-employee",
+              icon: Users,
+              submenus: [],
+            },
+          ]
+        },
+      ],
+    }, {
+      groupLabel: "",
+      // groupLabel: userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4 ? "" : "Task Management",
+      menus: userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4 ? taskManagement : [
+        {
+          to: "",
+          label: "Task Management",
+          icon: ListTodo,
+          active: pathname === "/my-task",
+          submenus: [
+            {
+              label: "My Task",
+              to: "/my-task"
+            },
+            {
+              label: "My Team DTR",
+              to: "/my-team"
+            },
+            {
+              label: "Project Board",
+              to: "/projects"
+            },
+            {
+              label: "Time Management",
+              to: "/attendence"
+            }
+          ]
+        },
+        {
+          label: "Leave Management",
+          icon: CalendarRange,
+          active: pathname === "/leave-tracker",
+          submenus: [
+            {
+              label: "Leave Tracker",
+              to: "/leave-tracker"
+            },
+            {
+              label: "Leave Request",
+              to: "/leave-requests"
+            },
+            {
+              label: "Calendar",
+              to: "/leave-calender"
+            },
+            {
+              label: "Leave History",
+              to: "/leave-history"
+            },
+            {
+              label: "Leave Allotment",
+              to: "/leave-allotement"
+            },
+            {
+              label: "Holidays",
+              to: "/leave-balance"
+            },
+            {
+              label: "Settings",
+
+              submenus: [
+                {
+                  label: "Leave Type",
+                  to: "/leave-type"
+                }
+              ]
+            }
+          ]
+        }
+
+      ]
+    }
+
   ];
 
 

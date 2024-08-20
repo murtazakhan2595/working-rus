@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@layer components {
+  .font-heading {
+    @apply text-4xl font-bold text-primary;
+  }
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -11,6 +17,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
     --primary: 292 45% 44%;
+    /* --bs-primary: 292 45% 44%; */
     --primary-foreground: 355.7 100% 99%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
@@ -39,4 +46,14 @@
 
 
 
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+
 }
+
+

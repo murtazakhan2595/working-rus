@@ -74,8 +74,8 @@ function EmployeeOverview() {
 
   return (
     <section className="flex flex-col items-center gap-6 px-[14px] pt-6 bg-white rounded-md w-full h-[100%]">
-      <div className=" justify-between items-center inline-flex w-full">
-        <div className="items-center gap-2 flex">
+      <div className="inline-flex items-center justify-between w-full ">
+        <div className="flex items-center gap-2">
           <GoPeople className="text-lg font-bold" />
           <div className="text-[#323233] text-lg font-normalleading-tight">
             Total Employees
@@ -98,7 +98,7 @@ function EmployeeOverview() {
             type="donut"
             width="100%"
           />
-          <div className="absolute left-1/2 top-1/2 transform -translate-y-1/2 -translate-x-1/2">
+          <div className="absolute transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
             <div className="text-center text-[#5c5e64] text-xs font-normal  leading-tight">
               Total
             </div>
@@ -107,7 +107,7 @@ function EmployeeOverview() {
         </div>
         <div className="flex gap-5 justify-between items-center max-w-full text-xs leading-5 text-zinc-600 w-[174px]">
           {legendItems.map((item, index) => (
-            <div key={index} className="flex gap-1 self-start items-center">
+            <div key={index} className="flex items-center self-start gap-1">
               <div className={`shrink-0 w-3 h-3 ${item.color} rounded-full`} />
               <div>{item.label}</div>
             </div>

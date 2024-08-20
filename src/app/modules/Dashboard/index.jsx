@@ -5,7 +5,6 @@ import { DashboardFilters, getDashboard } from "./Sections";
 import { Header } from "components";
 import { FilterInput } from "components/form-control";
 
-// import page header
 
 
 const filters = {
@@ -32,6 +31,7 @@ const Dashboard = ({ userProfile }) => {
       setDashBoardSections(sections);
     }
   }, [userProfile]);
+  
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
 
@@ -69,30 +69,7 @@ const Dashboard = ({ userProfile }) => {
     <>    
       
       <div className="screen dashboard ">
-    
-        <Header
-          title={`Dashboard`}
-          content={
-            <FilterInput
-              filters={[
-                {
-                  type: "sorting",
-                  option: DashboardFilters,
-                  name: "diaplay",
-                  placeholder: (
-                    <div>
-                      <img src={vectorFilter} alt="{vectorFilter}" className="w-[38px] h-[38px]" />
-                    </div>
-                  ),
-                  values: filterData,
-                  className: "custom-dasboard-dropdown-toggle-filter ",
-                  mainHeading: "Manage Dashboard",
-                },
-              ]}
-              onChange={handleFilterChange}
-            />
-          }
-        />
+     <Header/>
         <div className="flex flex-wrap">
           {DashBoardSections.map((section, index) => {
             if (!!filterData[section.value])

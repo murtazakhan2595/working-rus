@@ -1,12 +1,8 @@
 "use client";
-// done
-import { BsPersonGear } from "react-icons/bs";
-import { toggleDropdown } from "state/slices/DropdownSlice";
-import getNavigation from "app/utils/Types/Navigation";
-
+//
 import { Link , useNavigate} from 'react-router-dom';
 import { LayoutGrid, LogOut, User } from "lucide-react";
-import ProfileDetailsTopbar from './profile-detail';
+
 import { Button } from "../../src/@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../../src/@/components/ui/avatar";
 import {
