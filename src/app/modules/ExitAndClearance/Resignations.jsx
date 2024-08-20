@@ -1,4 +1,3 @@
-import { updateExitData } from "app/hooks/employee";
 import { EmployeeResignationsColumns } from "app/utils/Types/TableColumns";
 import { Table } from "components";
 import React, { useState, useEffect } from "react";
@@ -16,6 +15,7 @@ const Resignations = React.memo(({ userProfile }) => {
   const [Resignations, setResignations] = useState(null);
   const [filterData, setFilterData] = useState({
     exit_category: "resignation",
+    // status_resignation: "exit interview",
     ...(userProfile.role === 2 ? { report_to: userProfile.id } : {}),
   });
   const [options, setOptions] = useState({
@@ -84,7 +84,7 @@ const Resignations = React.memo(({ userProfile }) => {
 
   return (
     <>
-      <div className="py-3 px-3 bg-white">
+      <div className="py-4 px-3 bg-white  flex flex-col gap-5">
         <FilterInput
           filters={[
             {
@@ -104,7 +104,7 @@ const Resignations = React.memo(({ userProfile }) => {
         {loading ? (
           <PageLoader />
         ) : (
-          <Row className="mt-4">
+          <Row>
             <Col lg={12}>
               <div>
                 <Table

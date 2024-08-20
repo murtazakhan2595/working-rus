@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { RxCross2 } from "react-icons/rx";
 import pdfIcon from "assets/images/pdfIcon.svg";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { getCountryFullName } from "utils/getValuesFromTables";
 import { AiOutlineDownload } from "react-icons/ai";
 import { filebase64Download, getFileSizeInKB } from "utils/fileUtils";
-import moment from "moment";
-import { downloadCV } from "app/hooks/recruitment";
 
 const ViewDetailBox = ({ labelList }) => {
   return (
@@ -40,9 +37,13 @@ const ViewAttachmentDetail = ({ title, attachments }) => {
             >
               <div className="flex gap-x-3">
                 <img src={pdfIcon} alt="" />
-                <p class="text-[14px] text-[#323333]">{attachment?.name}</p>
-                <p className="self-start mt-1 text-xs leading-none text-zinc-600">
-                  {getFileSizeInKB(attachment?.file?.file)} KB
+                <p class="text-[14px] text-[#323333]">
+                  <span>{attachment?.name}</span>
+                  <span>
+                    <p className="self-start mt-1 text-xs leading-none text-zinc-600">
+                      {getFileSizeInKB(attachment?.file?.file)} KB
+                    </p>
+                  </span>
                 </p>
               </div>
               <div

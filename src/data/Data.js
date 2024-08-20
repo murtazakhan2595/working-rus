@@ -497,10 +497,12 @@ export const ResignationStatusOptions = [
   { label: "Exit Interview", value: "exit interview" },
 ];
 
-export const terminationStatus = [
+export const TerminationStatusOptions = [
   { label: "Viewd By Manager", value: "viwed by manager" },
   { label: "Accepted by Employee", value: "accepted by employee" },
   { label: "Rejected by Employee", value: "rejected by employee" },
+  { label: "Clearance initiated", value: "initiated clearance" },
+  { label: "Exit Interview", value: "exit interview" },
 ];
 
 export function getManagerSelected(managers, managersList) {

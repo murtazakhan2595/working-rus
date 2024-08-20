@@ -27,6 +27,10 @@ const getEmployeesResignations = async (payload) => {
       return {
         count: resignationData.count,
         results: resignationData?.results?.result,
+        total_exit: resignationData?.results?.total_exit,
+        rejected_resignation: parseInt(resignationData?.results?.rejected_resignation)+parseInt(resignationData?.results?.rejected_termination),
+        approved_resignation: parseInt(resignationData?.results?.approved_resignation)+parseInt(resignationData?.results?.approved_termination),
+
       };
     } else {
       return null;

@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { RenderResignationAction } from "./Sections";
 import {
   ViewDetailHeader,
@@ -15,19 +15,25 @@ import {
   ResignationReason,
   ManagerName,
 } from "utils/getValuesFromTables";
+import { Formik } from "formik";
+import { FileInput } from "components/form-control";
+import { Col, Row, Form, Button } from "reactstrap";
+import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
+import { StatusCurrentStep } from "./Sections";
 
 const ExitDetailsCard = ({
   onClose,
   resignationId,
   isResignation = true,
   resignationsList,
+  reload,
 }) => {
   const [resignation, setResignation] = useState(
     resignationsList.find((item) => item.id === resignationId)
   );
   const [currentResignationId, setCurrentResignationId] =
     useState(resignationId);
-
+  const formRef = useRef();
   const handleNext = () => {
     const currentIndex = resignationsList.findIndex(
       (item) => item.id === currentResignationId
@@ -57,6 +63,24 @@ const ExitDetailsCard = ({
       setCurrentResignationId(currentResignation.id);
     }
   };
+  const handleSubmit = async (data) => {
+    try {
+      if (data) {
+        const payload = {
+          ...data,
+          ...(isResignation
+            ? { status_resignation: "exit interview" }
+            : { status_termination: "exit interview" }),
+        };
+        const response = await saveEmployeeExitDetail(payload);
+        if (response && reload) {
+          reload();
+        }
+      }
+    } catch (error) {
+      console.error("Error updating application status:", error);
+    }
+  };
 
   return (
     <div className="bg-white view-modal-card hideScroll">
@@ -83,10 +107,7 @@ const ExitDetailsCard = ({
               </p>
             </div>
             {isResignation ? (
-              <RenderResignationAction
-                row={resignation}
-                viewMode={true}
-              />
+              <RenderResignationAction row={resignation} viewMode={true} />
             ) : (
               <></>
             )}
@@ -133,12 +154,68 @@ const ExitDetailsCard = ({
             title={"Attachments"}
             attachments={[
               {
-                name: `${resignation.emp_name} - Resignation letter`,
-                file: resignation?.resignation_letter,
+                name: `${resignation.emp_name} - ${
+                  isResignation ? "Resignation" : "Termination"
+                } letter`,
+                file: isResignation
+                  ? resignation?.resignation_letter
+                  : resignation?.termination_letter,
               },
             ]}
           />
         </section>
+        {StatusCurrentStep(
+          isResignation
+            ? resignation?.status_resignation
+            : resignation?.status_termination
+        ) === 3 && (
+          <section className="my-3">
+            <Row>
+              <Col lg={12}>
+                <Formik
+                  initialValues={resignation}
+                  innerRef={formRef}
+                  enableReinitialize={true}
+                  onSubmit={(values, { resetForm }) => {
+                    handleSubmit(values, resetForm);
+                  }}
+                  validate={(values) => {
+                    const errors = {};
+                    return errors;
+                  }}
+                >
+                  {(props) => (
+                    <Form onSubmit={props.handleSubmit}>
+                      <Row>
+                        <Col md="12">
+                          <FileInput
+                            name="cv"
+                            label=" Clearence Report or drag it here"
+                            acceptType=".pdf"
+                            error={props.errors?.cv}
+                            touch={props.touched?.cv}
+                            value={props.values?.cv}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </Col>
+                      </Row>
+                      <Row className="mt-5">
+                        <Col md="4">
+                          <Button type="submit" className="btn btn-dark w-100">
+                            {isResignation ? "Resigned" : "Terminated"}
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Form>
+                  )}
+                </Formik>
+              </Col>
+            </Row>
+          </section>
+        )}
       </div>
     </div>
   );

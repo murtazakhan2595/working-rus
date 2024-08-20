@@ -7,7 +7,7 @@ import { Row, Col } from "reactstrap";
 import { ExitResignedColumns } from "app/utils/Types/TableColumns";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 
-const Resigned = React.memo(({ userProfile, departments, reload }) => {
+const Resigned = React.memo(({ userProfile, departments }) => {
   const [loading, setLoading] = useState(true);
   const [Resigned, setResigned] = useState(null);
   const [filterData, setFilterData] = useState({
@@ -61,7 +61,7 @@ const Resigned = React.memo(({ userProfile, departments, reload }) => {
   };
 
   return (
-    <div className="py-3 px-3 bg-white">
+    <div className="py-4 px-3 bg-white  flex flex-col gap-3">
       <FilterInput
         filters={[
           {
@@ -81,7 +81,7 @@ const Resigned = React.memo(({ userProfile, departments, reload }) => {
       {loading ? (
         <PageLoader />
       ) : (
-        <Row className="mt-4">
+        <Row>
           <Col lg={12}>
             <div>
               <Table
