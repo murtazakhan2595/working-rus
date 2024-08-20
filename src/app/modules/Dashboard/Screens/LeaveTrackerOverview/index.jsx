@@ -11,8 +11,10 @@ import { FilterInput } from "components/form-control";
 import { getDesignationList } from "app/hooks/general";
 import CustomDropdown from "../CustomDropdown";
 import { RenderLeaveStatusDropdown } from "./Sections";
+import { useSelector } from "react-redux";
 
 export default function LeaveTrackerOverview() {
+  const userProfile = useSelector((state) => state.user.userProfile);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
@@ -27,9 +29,6 @@ export default function LeaveTrackerOverview() {
 
   const applyFilters = (applications, filterApplications) => {
     let filteredData = applications;
-    console.log(filterApplications);
-    console.log(designations);
-    console.log("data filter", filteredData);
     if (filterApplications.id_and_first_name) {
       const searchTerm = filterApplications.id_and_first_name.toLowerCase();
       filteredData = filteredData.filter((item) => {
@@ -65,6 +64,9 @@ export default function LeaveTrackerOverview() {
   const getApplications = async () => {
     setLoading(true);
     try {
+      if(userProfile.role===2){
+        filterData.report_to = userProfile.id;
+      }
       const result = await getFilteredLeaveApplication({
         filterData,
       });
