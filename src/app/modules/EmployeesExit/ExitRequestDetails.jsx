@@ -30,11 +30,12 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
         title: "Report to",
         data: <ManagerName value={userData?.direct_report} />,
       },
-      { title: "Work Type", data: userData?.employee_work_type },
+      { title: "Work Type", data: userData?.employee_work_type?.toLowerCase()?.split("_").join(" ") },
       { title: "Organization", data: exitData?.organization?.[0] },
       { title: "Phone no.", data: userData?.mobile_no },
     ],
   ];
+  console.log("exitInfo", exitInfo, exitData);
 
   const getDataByHooks = async () => {
     setLoading(true);
@@ -57,7 +58,7 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
     <div className="m-2 mt-0 bg-white p-10 rounded-b-md relative">
       <div className="h-[35px] justify-between items-start inline-flex w-full mb-4">
         <div className="text-[#323233] text-[22px] font-bold ">
-          Exit Request
+          {isTermination ? "Termination Request" : "Exit Request"}
         </div>
         <ApplicationStatus row={exitData} />
       </div>

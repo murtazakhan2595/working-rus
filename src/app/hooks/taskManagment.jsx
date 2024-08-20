@@ -169,8 +169,7 @@ const addBoard = async (payload) => {
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
-    }
-    else if(error?.response?.status === 403){
+    } else if (error?.response?.status === 403) {
       toast.error(
         "You don’t have sufficient permissions to add columns, please contact your manager",
         {
@@ -560,9 +559,34 @@ const getAllTasks = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
-    if (response.status === 200) {
-      const data = response.data;
-      return data;
+    const taskLabels = await getAllLabels();
+
+    if (response.status === 200 && taskLabels) {
+      const currentDate = new Date();
+      const updatedData = response.data.map((task) => {
+        const { start_date, end_date, label } = task;
+
+        // Check if the current label is "Completed"
+        const isCompleted = taskLabels.results.find(
+          (l) => l.id === label && l.name.toLowerCase() === "completed"
+        );
+
+        const statusLabel = isCompleted
+          ? isCompleted
+          : (currentDate > new Date(end_date)
+              ? taskLabels.results.find(
+                  (l) => l.name.toLowerCase() === "delayed"
+                )
+              : currentDate >= new Date(start_date)
+              ? taskLabels.results.find(
+                  (l) => l.name.toLowerCase() === "ongoing"
+                )
+              : taskLabels.results.find((l) => l.id === label)) || null;
+
+        return { ...task, label: statusLabel };
+      });
+
+      return updatedData;
     } else {
       return [];
     }

@@ -15,6 +15,7 @@ const getLeaveApplications = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
+  console.log("filterData - leave applicaiotn -",payload, filterData);
   const URL = `/leave/?order=-date&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
@@ -271,7 +272,7 @@ const getLeaveTrackerStats = async (filterStats) => {
 
 const getFilteredLeaveApplication = async (payload) => {
   try {
-    const data = await getLeaveApplications({payload});
+    const data = await getLeaveApplications(payload);
     if (data) {
           const filterLeaveData = (leaveData) => {
             // Get today's date and next week's date range
