@@ -43,6 +43,16 @@ export function getMenuList(pathname, groups, userRole) {
     },
   ];
 
+  const reportsMenu = [
+    {
+      to: "/reports",
+      label: "Reports",
+      active: pathname === "/reports",
+      icon: House,
+      submenus: [],
+    },
+  ]
+
 
   const peopleTeamMenus = [
     {
@@ -427,10 +437,112 @@ export function getMenuList(pathname, groups, userRole) {
               ]
             }
           ]
+        },
+        {
+          label: "Talent Sphere",
+          icon: CalendarRange,
+          active: pathname === "/personnel-requisition",
+          submenus: [
+            {
+              label: "Personnel Requisition",
+              to: "/personnel-requisition"
+            },
+            {
+              label: "Jobs",
+              to: "/jobs"
+            },
+            {
+              label: "Applicants",
+              to: "/applicants"
+            },
+            {
+              label: "Referrals",
+              to: "/referrals"
+            },
+          ]
+        },
+        {
+          label: "Performance Management",
+          icon: CalendarRange,
+          active: pathname === "/employee-evaluation",
+          submenus: [
+            {
+              label: "Employee Evaluation",
+              to: "/employee-evaluation"
+            },
+          ]
+        },
+        {
+          label: "Payroll & Attendance",
+          icon: CalendarRange,
+          active: pathname === "/payroll",
+          submenus: [
+            {
+              label: "Payroll",
+              to: "/payroll"
+            },
+            {
+              label: "Attendance",
+              to: "/attendance"
+            },
+          ]
+        },
+        {
+          label: "Personnel Development",
+          icon: CalendarRange,
+          active: pathname === "/learn",
+          submenus: [
+            {
+              label: "Learn",
+              to: "/learn"
+            },
+            {
+              label: "Career Planning",
+              to: "/career-planning"
+            },
+            {
+              label: "Succession Plan",
+              to: "/succession-plan"
+            },
+          ]
+        },
+        {
+          label: "People Enagement",
+          icon: CalendarRange,
+          active: pathname === "/announcement",
+          submenus: [
+            {
+              label: "Announcement",
+              to: "/announcement"
+            },
+            {
+              label: "Recognition",
+              to: "/recognition"
+            },
+          ]
+        },
+        {
+          label: "Daily Task Report",
+          icon: CalendarRange,
+          active: pathname === "/daily-task-report",
+          submenus: [
+            {
+              label: "Create Task",
+              to: "/create-task"
+            },
+            {
+              label: "My DTR",
+              to: "/my-dtr"
+            },
+          ]
         }
 
       ]
-    }
+    },
+    {
+      groupLabel: "",
+      menus: reportsMenu,
+    },
 
   ];
 

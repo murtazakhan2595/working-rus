@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.lucide-dot{
+  display: none !important
+}
+
 
 @layer components {
   .font-heading {
