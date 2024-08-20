@@ -1,4 +1,4 @@
-import { getAllTasks, getAllProjects } from "app/hooks/taskManagment";
+import { getAllTasks, getAllProjects,getAllLabels } from "app/hooks/taskManagment";
 import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -26,7 +26,6 @@ export default function MyTasks() {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(null);
-
 
 
   function mergeTasksWithProjects(tasks, projects) {
@@ -84,6 +83,17 @@ export default function MyTasks() {
       isMounted = false;
     };
   }, [filterData]);
+
+  useEffect(() => {
+    async function fetchTaskLabels(){
+      const reponse = await getAllLabels();
+    }
+    let isMounted = true;
+    fetchTaskLabels();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     console.log(AllProjects);

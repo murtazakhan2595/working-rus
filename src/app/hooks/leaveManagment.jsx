@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
-import { handleLogout } from "./general";
+import { HandleLogout } from "./general";
 import { EmployeeLeaveTypesList } from "app/utils/Types/LeaveManagment";
 import { Status } from "app/modules/LeaveManagment/Sections/Status";
 
@@ -38,7 +38,7 @@ const getLeaveApplications = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -81,7 +81,7 @@ const getEmployeeLeaveTypes = async (filterData = {}) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Employee Leave Types data:", error);
     return EmployeeLeaveTypesList;
@@ -101,7 +101,7 @@ const getEmployeeLeaveTypesById = async (id) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Employee Leave Types data:", error);
     return EmployeeLeaveTypesList;
@@ -127,7 +127,7 @@ const addLeaveRequest = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     return false;
@@ -144,7 +144,7 @@ const deleteLeaveRequest = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     return false;
@@ -172,7 +172,7 @@ const allotLeavesToEmployee = async (employeeId, payload) => {
       });
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching Personal Info data :", error);
       return false;
@@ -196,7 +196,7 @@ const getLeaveTypes = async () => {
     } else return [];
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching leave types data :", error);
   }
@@ -217,7 +217,7 @@ const updateLeaveStatus = async (payload, loggedInUser) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error updating leave status by HR:", error);
     return false;
@@ -322,7 +322,7 @@ const getFilteredLeaveApplication = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }

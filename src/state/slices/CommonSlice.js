@@ -4,6 +4,7 @@ import {
   getDepartmentList,
   getDesignationList,
   getProjectsList,
+  getOrganizationList,
 } from "app/hooks/general";
 
 import { getLeaveTypes } from "app/hooks/leaveManagment";
@@ -14,10 +15,23 @@ const initialState = {
   projects:[],
   leaveTypes: [],
   designations: [],
+  organizations:[],
   apiStatus: "idle",
   error: null,
 };
 
+// Define the thunk to fetch organizations
+export const fetchOrganizations = createAsyncThunk(
+  "common/fetchOrganizations",
+  async () => {
+    try {
+      const response = await getOrganizationList();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 // Define the thunk to fetch departments
 export const fetchDepartments = createAsyncThunk(
   "common/fetchDepartments",
@@ -69,7 +83,6 @@ export const fetchDesignations = createAsyncThunk(
   }
 );
 
-// Define the slice
 const commonSlice = createSlice({
   name: "common",
   initialState,
@@ -77,8 +90,10 @@ const commonSlice = createSlice({
     // Any synchronous actions can be added here
   },
   extraReducers: (builder) => {
+    
+
+    // Departments
     builder
-      // Departments
       .addCase(fetchDepartments.pending, (state) => {
         state.apiStatus = "loading";
       })
@@ -89,8 +104,10 @@ const commonSlice = createSlice({
       .addCase(fetchDepartments.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
-      })
-      // Projects
+      });
+
+    // Projects
+    builder
       .addCase(fetchProjects.pending, (state) => {
         state.apiStatus = "loading";
       })
@@ -101,8 +118,10 @@ const commonSlice = createSlice({
       .addCase(fetchProjects.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
-      })
-      // Leave Types
+      });
+
+    // Leave Types
+    builder
       .addCase(fetchLeaveTypes.pending, (state) => {
         state.apiStatus = "loading";
       })
@@ -113,7 +132,10 @@ const commonSlice = createSlice({
       .addCase(fetchLeaveTypes.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
-      })
+      });
+
+    // Designations
+    builder
       .addCase(fetchDesignations.pending, (state) => {
         state.apiStatus = "loading";
       })
@@ -125,8 +147,23 @@ const commonSlice = createSlice({
         state.apiStatus = "failed";
         state.error = action.error.message;
       });
+
+      // Organizations
+    builder
+    .addCase(fetchOrganizations.pending, (state) => {
+      state.apiStatus = "loading";
+    })
+    .addCase(fetchOrganizations.fulfilled, (state, action) => {
+      state.apiStatus = "succeeded";
+      state.organizations = action.payload;
+    })
+    .addCase(fetchOrganizations.rejected, (state, action) => {
+      state.apiStatus = "failed";
+      state.error = action.error.message;
+    });
   },
 });
+
 
 // Export the reducer
 export default commonSlice.reducer;

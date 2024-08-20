@@ -102,6 +102,9 @@ const IdentificationInformation = ({
         resetForm();
         setIsLoading(false);
       }
+      else{
+        setIsLoading(false);
+      }
     } catch (error) {
       setIsLoading(false);
       console.error("Error in handleSubmit:", error);
