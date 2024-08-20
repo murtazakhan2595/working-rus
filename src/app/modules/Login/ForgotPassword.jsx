@@ -6,7 +6,7 @@ import logo from "../.././../assets/images/tecbrix-logo.png";
 import { PiCaretCircleLeftFill } from "react-icons/pi";
 import { Link } from "react-router-dom";
 
-import { Button } from "../../../src/@/components/ui/button"
+import { Button } from "../../../components/ui/button"
 import { Input } from "../../../src/@/components/ui/input"
 
 const ForgotPassword = () => {

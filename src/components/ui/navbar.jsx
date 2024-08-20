@@ -24,7 +24,7 @@ function Navbar({ title, setUserLogout }) {
   };
 
   return (
-    <header className="sticky top-0 z-0 w-full h-16 bg-white shadow-md">
+    <header className="sticky top-0 z-0 w-full h-16 bg-white ">
       <div className="flex items-center mx-4 sm:mx-8 h-14">
         <div className="flex items-center space-x-4 lg:space-x-0">
           <SheetMenu />

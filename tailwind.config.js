@@ -6,8 +6,8 @@ module.exports = {
     './components/**/*.{js,jsx}',
     './app/**/*.{js,jsx}',
     './src/**/*.{js,jsx}',
-    
-   
+
+
   ],
   prefix: "",
   theme: {
@@ -28,20 +28,70 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-       "plum":{
-          100:'#fefcff',
-          200:'#f7def8',
-          300:'#fbebfb',
-          400:'#f7def8',
-          500:'#f2d1f3',
-          600:'#e9c2ec',
-          700:'#deade3',
-          800:'#cf91d8',
-          900:'#ab4aba',
-          1000:'#a144af',
-          1100:'#953ea3',
-          1200:'##53195d',
-       },
+        "gray": {
+          100: '#fcfcfc',
+          200: '#f9f9f9',
+          300: '#f0f0f0',
+          400: '#e8e8e8',
+          500: '#e0e0e0',
+          600: '#d9d9d9',
+          700: '#cecece',
+          800: '#bbbbbb',
+          900: '#8d8d8d',
+          1000: '#838383',
+          1100: '#646464',
+          1200: '#202020',
+        },
+
+        
+        "mauve": {
+          100: '#fdfcfd',
+          200: '#faf9fb',
+          300: '#f2eff3',
+          400: '#eae7ec',
+          500: '#e3dfe6',
+          600: '#dbd8e0',
+          700: '#d0cdd7',
+          800: '#bcbac7',
+          900: '#8e8c99',
+          1000: '#84828e',
+          1100: '#65636d',
+          1200: '#211f26',
+        },
+
+       
+       
+        "slate": {
+          100: '#fcfcfd',
+          200: '#f9f9fb',
+          300: '#f0f0f3',
+          400: '#e8e8ec',
+          500: '#e0e1e6',
+          600: '#d9d9e0',
+          700: '#cdced6',
+          800: '#b9bbc6',
+          900: '#8b8d98',
+          1000: '#80838d',
+          1100: '#60646c',
+          1200: '#1c2024',
+        },
+
+       
+        "plum": {
+          100: '#fefcff',
+          200: '#fdf7fd',
+          300: '#fbebfb',
+          400: '#f7def8',
+          500: '#f2d1f3',
+          600: '#e9c2ec',
+          700: '#deade3',
+          800: '#cf91d8',
+          900: '#ab4aba',
+          1000: '#a144af',
+          1100: '#953ea3',
+          1200: '#53195d',
+        },
+
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -95,3 +145,4 @@ module.exports = {
   },
   plugins: [require("tailwindcss-animate")],
 }
+

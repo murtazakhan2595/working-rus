@@ -6,7 +6,7 @@ import { Ellipsis } from "lucide-react"
 
 import { cn } from "../../src/@/lib/utils"
 import getMenuList from "../../src/@/lib/menu-list"
-import { Button } from "../../src/@/components/ui/button"
+import { Button } from "./button"
 import { ScrollArea } from "../../src/@/components/ui/scroll-area"
 import { CollapseMenuButton } from "../../components/ui/collapse-menu-button"
 import {
@@ -25,8 +25,8 @@ const Menu = ({ isOpen }) => {
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
-      <nav className="w-full h-full mt-8">
-      <ul className="flex flex-col min-h-[calc(100vh-48px-36px-16px-32px)] lg:min-h-[calc(100vh-32px-40px-32px)] items-start space-y-1 px-2">
+      <nav className="w-full h-full ">
+      <ul className="flex flex-col min-h-[calc(100vh-48px-36px-16px-32px)] lg:min-h-[calc(100vh-32px-40px-32px)] items-start space-y-1 ">
     {menuList.map(({ groupLabel, menus }, index) => (
       <li className={cn("w-full", groupLabel ? "" : "")} key={index}>
         {(isOpen && groupLabel) || isOpen === undefined ? (
@@ -74,7 +74,7 @@ const Menu = ({ isOpen }) => {
                         )}
                         asChild
                       >
-                        <Link to={to}>
+                        <Link to={to} className="px-2">
                           <span className={cn(isOpen === false ? "" : "mr-4")}>
                             <Icon size={18} />
                           </span>

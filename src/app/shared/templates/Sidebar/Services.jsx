@@ -33,7 +33,7 @@ const ServicesCards = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <CardTitle className="text-slate-900">{service.label}</CardTitle>
-                  <CardDescription classNamee="text-slate-500">{service.description}</CardDescription>
+                  <CardDescription className="text-slate-900">{service.description}</CardDescription>
                 </CardContent>
               </Card>
             </Link>
