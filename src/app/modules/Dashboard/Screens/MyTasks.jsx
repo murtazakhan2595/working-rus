@@ -26,6 +26,9 @@ export default function MyTasks() {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(null);
+  const [statusDropdownOptions, setStatusDropdownOptions] = useState([]);
+
+  console.log("tasks", tasks);
 
 
   function mergeTasksWithProjects(tasks, projects) {
@@ -72,7 +75,11 @@ export default function MyTasks() {
                 task.assigned_by === Number(userProfile.id)
             );
           }
-          console.log("mergedResult ---", filterTasks);
+          if (statusFilter) {
+            filterTasks = filterTasks.filter(
+              (task) => task.label.name === statusFilter
+            );
+          }
         const mergedResult = mergeTasksWithProjects(filterTasks, projects);
         setTasks(mergedResult);
       }
@@ -120,31 +127,53 @@ export default function MyTasks() {
     if (AllProjects.length > 0) {
       fetchTasks(true, AllProjects);
     }
-  }, [filterOption, AllProjects]);
+  }, [filterOption, AllProjects, statusFilter]);
 
-  const statusDropdownOptions = [
-    {
-      label: "Completed",
-      onClick: () => {
-        setStatusFilter("completed");
-        setIsStatusDropdownOpen(false);
-      },
-    },
-    {
-      label: "Delayed",
-      onClick: () => {
-        setStatusFilter("delayed");
-         setIsStatusDropdownOpen(false);
-      },
-    },
-    {
-      label: "On going",
-      onClick: () => {
-        setStatusFilter("on going");
-         setIsStatusDropdownOpen(false);
-      },
-    },
-  ];
+  useEffect(() => {
+    const fetchLabels = async () => {
+      try {
+        const labelsData = await getAllLabels();
+         if (labelsData && labelsData.results) {
+           const statusDropdownOptions = labelsData.results.map((status) => ({
+             label: status.name.charAt(0).toUpperCase() + status.name.slice(1), // Capitalize first letter
+             onClick: () => {
+               setStatusFilter(status.name);
+               setIsStatusDropdownOpen(false);
+             },
+           }));
+
+           setStatusDropdownOptions(statusDropdownOptions); // Assuming you have a state for this
+         }
+      } catch (error) {
+        console.error("Error fetching labels:", error);
+      }
+    }
+    fetchLabels();
+  },[])
+
+  // const statusDropdownOptions = [
+  //   {
+  //     label: "Completed",
+  //     onClick: () => {
+  //       setStatusFilter("completed");
+  //       setIsStatusDropdownOpen(false);
+  //     },
+  //   },
+  //   {
+  //     label: "Delayed",
+  //     onClick: () => {
+  //       setStatusFilter("delayed");
+  //        setIsStatusDropdownOpen(false);
+  //     },
+  //   },
+  //   {
+  //     label: "On going",
+  //     onClick: () => {
+  //       setStatusFilter("on going");
+  //        setIsStatusDropdownOpen(false);
+  //     },
+  //   },
+  // ];
     const toggleDropdown = () => {
       setIsDropdownOpen(!isDropdownOpen);
     };
