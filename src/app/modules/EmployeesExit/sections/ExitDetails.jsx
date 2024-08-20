@@ -46,7 +46,7 @@ function ExitDetails({ exitData, isTermination }) {
 
   return (
     <>
-      <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
+      <div className="bg-white border w-full rounded-lg p-6 mb-6">
         <div className="flex justify-between">
           <h2 className="text-xl">Exit Details</h2>
         </div>
@@ -79,7 +79,7 @@ function ExitDetails({ exitData, isTermination }) {
           />
         )}
         {isTermination && (
-          <div className="w-[365px] mt-2 h-10 justify-start items-start gap-5 inline-flex">
+          <div className="w-[365px] h-10 justify-start items-start gap-5 inline-flex mt-14">
             <button
               className="w-[175px] h-10 px-5 py-1 rounded-lg border-2 border-[#bf6760] justify-center items-center gap-[15px] flex"
               onClick={() => handleStatuschange("rejected by employee")}

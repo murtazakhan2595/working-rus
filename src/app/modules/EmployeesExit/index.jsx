@@ -46,7 +46,7 @@ const EmployeeExit = ({ userProfile }) => {
 
   return (
     <div className="screen bg-[#F0F1F2]">
-      <Header title="Employee Exit" />
+      <Header title="Employee Offboarding" />
       <Row className="bg-[#F0F1F2] relative">
         <Col lg={12}>
           <div className="   m-2 mb-0 0">
