@@ -92,7 +92,7 @@ const ViewDetailHeader = ({
         </div>
       </div>
       <RxCross2
-        className=" cursor-pointer"
+        className="cursor-pointer"
         onClick={() => {
           closeModel();
         }}

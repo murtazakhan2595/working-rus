@@ -19,7 +19,7 @@ import { Formik } from "formik";
 import { FileInput } from "components/form-control";
 import { Col, Row, Form, Button } from "reactstrap";
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
-import { StatusCurrentStep } from "./Sections";
+import { ExitStatusCurrentStep } from "./Sections";
 
 const ExitDetailsCard = ({
   onClose,
@@ -31,7 +31,6 @@ const ExitDetailsCard = ({
   const [resignation, setResignation] = useState(
     resignationsList.find((item) => item.id === resignationId)
   );
-  console.log("resignation", resignation);
   const [currentResignationId, setCurrentResignationId] =
     useState(resignationId);
   const formRef = useRef();
@@ -165,7 +164,7 @@ const ExitDetailsCard = ({
             ]}
           />
         </section>
-        {StatusCurrentStep(
+        {ExitStatusCurrentStep(
           isResignation
             ? resignation?.status_resignation
             : resignation?.status_termination
@@ -182,6 +181,9 @@ const ExitDetailsCard = ({
                   }}
                   validate={(values) => {
                     const errors = {};
+                    if(!values.clearance_report){
+                      errors.clearance_report ="Please upload clearance report to proceed"
+                    }
                     return errors;
                   }}
                 >
@@ -190,12 +192,12 @@ const ExitDetailsCard = ({
                       <Row>
                         <Col md="12">
                           <FileInput
-                            name="cv"
+                            name="clearance_report"
                             label=" Clearance Report or drag it here"
                             acceptType=".pdf"
-                            error={props.errors?.cv}
-                            touch={props.touched?.cv}
-                            value={props.values?.cv}
+                            error={props.errors?.clearance_report}
+                            touch={props.touched?.clearance_report}
+                            value={props.values?.clearance_report}
                             required={true}
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);

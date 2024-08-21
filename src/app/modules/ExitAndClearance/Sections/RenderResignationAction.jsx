@@ -6,11 +6,12 @@ import {
   DropdownItem,
 } from "reactstrap";
 import { StatusCircleLabel } from "components";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { saveEmployeeWorkInformationData } from "app/hooks/employee";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { ResignationStatus } from "utils/getValuesFromTables";
-import { Status, StatusCurrentStep } from "./index";
+import { Status, ExitStatusCurrentStep } from "./index";
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 
 const RenderResignationAction = ({ row, reload, viewMode }) => {
@@ -22,7 +23,7 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
   };
   const HRApproval = Status(row.status_resignation, 2);
   const managerApproval = Status(status, 1);
-  const resignationCurrentStep = StatusCurrentStep(status);
+  const resignationCurrentStep = ExitStatusCurrentStep(status);
   const handleOptionSelect = async (status) => {
     try {
       if (row) {
@@ -32,6 +33,12 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
         };
         const response = await saveEmployeeExitDetail(payload);
         if (response && reload) {
+          if (status === "accepted by hr") {
+            await saveEmployeeWorkInformationData(payload.employee_id, {
+              employee_status: "Notice Period",
+              id: payload.employee_id,
+            });
+          }
           reload();
         }
       }
@@ -42,12 +49,14 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
   return (
     <div>
       {loggedInUser.role === 2 && resignationCurrentStep > 1 ? (
-        <div style={{ padding: "0px 12px" }}>
-          <StatusCircleLabel
-            label={ResignationStatus(status)}
-            status={status}
-          />
-        </div>
+        !viewMode && (
+          <div style={{ padding: "0px 12px" }}>
+            <StatusCircleLabel
+              label={ResignationStatus(status)}
+              status={status}
+            />
+          </div>
+        )
       ) : (
         <ButtonDropdown
           isOpen={openDropdownRow === row.id}

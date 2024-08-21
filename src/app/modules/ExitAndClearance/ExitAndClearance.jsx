@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { Tabs } from "components";
 import { Row, Col } from "reactstrap";
-import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
+import { getEmployeesExitCount } from "app/hooks/employeeExitAndClearance";
 import StatCard from "./StatCard";
 import Resignations from "./Resignations";
 import Terminations from "./Terminations";
@@ -14,7 +14,7 @@ import RequestTerminationCard from "./RequestTerminationCard";
 import Terminated from "./Terminated";
 import Resigned from "./Resigned";
 
-const ExitAndClearance = () => {
+const ExitAndClearance = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Resignations");
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
@@ -22,11 +22,15 @@ const ExitAndClearance = () => {
   const [openRequestTermination, setOpenRequestTermination] = useState(false);
   const fetchData = async () => {
     try {
-      const response = await getEmployeesResignations({});
+      const response = await getEmployeesExitCount(
+        userProfile.role === 2
+          ? { filterData: { reporting_to: userProfile.id } }
+          : {}
+      );
       if (response) {
-        setTotalExit(response.total_exit);
-        setRejectedResignation(response.rejected_resignation);
-        setApprovedResignation(response.approved_resignation);
+        setTotalExit(response.total);
+        setRejectedResignation(response.rejected);
+        setApprovedResignation(response.approved);
       }
     } catch (e) {
       console.error(e);
@@ -49,10 +53,14 @@ const ExitAndClearance = () => {
       <Header
         title="Exit Requests"
         content={
-          <CustomDarkButton
-            label={"Request termination +"}
-            onClick={() => setOpenRequestTermination(!openRequestTermination)}
-          />
+          userProfile.role !== 2 ? (
+            <CustomDarkButton
+              label={"Request termination +"}
+              onClick={() => setOpenRequestTermination(!openRequestTermination)}
+            />
+          ) : (
+            <></>
+          )
         }
       />
       <Row className="bg-[#F0F1F2] relative">
@@ -66,7 +74,10 @@ const ExitAndClearance = () => {
         <Col lg={12}>
           <div className="   m-2 mb-0 0">
             <Tabs
-              tabs={["Resignations", "Terminations", "Resigned", "Terminated"]}
+              tabs={[
+                ...["Resignations", "Terminations"],
+                ...(userProfile.role !== 2 ? ["Resigned", "Terminated"] : []),
+              ]}
               onTabChange={(value) => {
                 setActiveTab(value);
               }}

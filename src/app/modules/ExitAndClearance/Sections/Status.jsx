@@ -1,7 +1,22 @@
-export function StatusCurrentStep(status) {
+import { ResignationStatusOptions, TerminationStatusOptions } from "data/Data";
+const StatusList = (isResignation = true) => {
+  // Initialize the status_list variable as an array
+  let status_list = [];
+
+  if (isResignation) {
+    // Iterate over ResignationStatusOptions and collect the values in the status_list array
+    status_list = ResignationStatusOptions.map((status) => status.value);
+  } else {
+    // Iterate over TerminationStatusOptions and collect the values in the status_list array
+    status_list = TerminationStatusOptions.map((status) => status.value);
+  }
+
+  // Join the collected status values with commas and return the resulting string
+  return status_list.join(",");
+};
+
+const ExitStatusCurrentStep = (status) => {
   switch (status.toLowerCase()) {
-    case "pending":
-      return 0;
     case "accepted by manager":
       return 1;
     case "rejected by manager":
@@ -14,17 +29,24 @@ export function StatusCurrentStep(status) {
       return 3;
     case "exit interview":
       return 4;
+    case "accepted by employee":
+      return 0;
+    case "rejected by employee":
+      return 0;
     default:
       return -1; // In case the status doesn't match any known step
   }
-}
-export const Status = (status, step) => {
+};
+const Status = (status, step) => {
   if (!status) return "";
   const normalizedStatus = status.toLowerCase();
-  const currentStep = StatusCurrentStep(status);
-  if (currentStep === 0) {
+  const currentStep = ExitStatusCurrentStep(status);
+  if (currentStep === -1) {
     return "Pending";
   } else if (currentStep >= 1 && step === 1) {
+    if (normalizedStatus.includes("rejected")) return "Rejected";
+    else return "Approved";
+  } else if (currentStep >= 0 && step === 0) {
     if (normalizedStatus.includes("rejected")) return "Rejected";
     else return "Approved";
   } else if (currentStep >= 2 && step === 2) {
@@ -36,3 +58,5 @@ export const Status = (status, step) => {
     return "Approved";
   } else return "Pending";
 };
+
+export { Status, ExitStatusCurrentStep, StatusList };
