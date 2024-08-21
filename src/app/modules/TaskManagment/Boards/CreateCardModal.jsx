@@ -1,34 +1,19 @@
-import { useEffect, useState, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { connect } from "react-redux";
-import { RxCross2, RxPlus } from "react-icons/rx";
+import { RxCross2 } from "react-icons/rx";
 import { Card } from "reactstrap";
 import { CardTypes } from "app/utils/Types/TaskManagment";
-import highpriorityIcon from "assets/images/highpriority.svg";
-import lowpriorityIcon from "assets/images/lowpriority.svg";
-import mediumpriorityIcon from "assets/images/mediumpriority.svg";
-import plus from "assets/images/plus.svg";
 import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
 import { addTask, addAttachments } from "app/hooks/taskManagment";
 
 const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [initialValues, setInitialValues] = useState({
+  const initialValues = {
     ...CardTypes,
     board_id: boardId,
     project_id: projectId,
-  });
-
-
-  const priorityMapping = {
-    High: 1,
-    Medium: 2,
-    Low: 3,
   };
 
 const handleSubmit = async (formData, files, resetForm) => {
-  // console.log("Files", files);
-  setIsLoading(true);
   try {
     // Map over files to get an array of promises
     const attachmentPromises = files.map(async (file) => {
@@ -41,12 +26,10 @@ const handleSubmit = async (formData, files, resetForm) => {
 
     // Update formData with attachment IDs
     formData.attachment = attachmentIds;
-    console.log("formData", formData)
 
     // Now call addTask
     const response = await addTask({
       ...formData,
-      priority: priorityMapping[formData.priority],
     });
 
     if (response) {
@@ -57,9 +40,7 @@ const handleSubmit = async (formData, files, resetForm) => {
     toast.error(error.response.data.detail, {
       position: toast.POSITION.TOP_RIGHT,
     });
-  } finally {
-    setIsLoading(false);
-  }
+  } 
 };
 
   return (

@@ -10,20 +10,14 @@ import {
 import { RiAttachment2 } from "react-icons/ri";
 import { RxPlus } from "react-icons/rx";
 import members from "assets/images/members.svg";
-import highpriorityIcon from "assets/images/highpriority.svg";
-import lowpriorityIcon from "assets/images/lowpriority.svg";
-import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import plus from "assets/images/plus.svg";
 import { PriorityList } from "data/Data";
 import Members from "../../Sections/Member";
-import { FileInput } from "components/form-control";
+import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { AiOutlineDownload } from "react-icons/ai";
-import { BiDotsVerticalRounded } from "react-icons/bi";
 import { FaRegImage } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { useSelector } from "react-redux";
-import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
-import { getAllLabels } from "app/hooks/taskManagment";
 
 const CreateAndEditCardForm = ({
   initialValues,
@@ -38,7 +32,7 @@ const CreateAndEditCardForm = ({
   const [newfiles, setNewFiles] = useState([]);
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
-  const [labels, setLabels] = useState([]);
+  // const [labels, setLabels] = useState([]);
   // useEffect(async () => {
   //   const labelList = await getAllLabels();
   //   setLabels(labelList);
@@ -83,7 +77,6 @@ const CreateAndEditCardForm = ({
       });
   };
   const removeFile = (file) => {
-    console.log("file", file);
     if (file.id) {
       setDeleteFiles([...deleteFiles, file.id]);
       const filteredFiles = files.filter((f) => f.id !== file.id);
@@ -95,7 +88,6 @@ const CreateAndEditCardForm = ({
   };
 
   const removeMember = (member) => {
-    console.log("member", member);
     const members = formRef.current.values.assigned_to || [];
     const updatedMembers = members.filter((m) => m !== member);
     formRef.current.setFieldValue("assigned_to", updatedMembers);
@@ -110,8 +102,8 @@ const CreateAndEditCardForm = ({
         handleSubmit(values, newfiles, files, deleteFiles, resetForm);
       }}
       validate={(values) => {
-        // const errors = validationTaskFormSchema(values);
-        return {};
+        const errors = validationTaskFormSchema(values);
+        return errors;
       }}
     >
       {(props) => (
