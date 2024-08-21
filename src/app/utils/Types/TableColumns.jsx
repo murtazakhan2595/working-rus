@@ -1,8 +1,4 @@
-import {
-  EmployeeID,
-  ManagerName,
-  UserRole,
-} from "utils/getValuesFromTables";
+import { EmployeeID, ManagerName, UserRole } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeNameInfo, StatusLabel } from "components";
@@ -165,16 +161,8 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       formatter: (cell, row) => (
         <EmployeeNameInfo
           name={cell}
-          department={
-            row.department_name && row.department_name?.length > 0
-              ? row.department_name[0]
-              : ""
-          }
-          position={
-            row.department_position && row.department_position?.length > 0
-              ? row.department_position[0]
-              : ""
-          }
+          department={row.department_name}
+          position={row.position}
         />
       ),
       onClick: (recordIndex, data, row) => {
@@ -246,16 +234,8 @@ export const ExitRequestColumns = (handleRowClicked) => {
       formatter: (cell, row) => (
         <EmployeeNameInfo
           name={cell}
-          department={
-            row.department_name && row.department_name?.length > 0
-              ? row.department_name[0]
-              : ""
-          }
-          position={
-            row.department_position && row.department_position?.length > 0
-              ? row.department_position[0]
-              : ""
-          }
+          department={row.department_name}
+          position={row.position}
         />
       ),
       onClick: (recordIndex, data, row) => {

@@ -74,7 +74,7 @@ const RenderTerminatedRow = ({
           <EmployeeNameInfo
             name={terminatedEmployee.emp_name}
             department={terminatedEmployee.department_name}
-            position={terminatedEmployee.department_position}
+            position={terminatedEmployee.position}
             id={terminatedEmployee.employee_id}
           />
         </div>
@@ -109,9 +109,8 @@ const TerminatedDetails = ({ terminatedData, closeModel, next, previous }) => {
             {terminatedData.emp_name}
           </h1>
           <p className=" text-base text-zinc-600">
-            ID:{" "}
-            <EmployeeID value={terminatedData?.employee_id} /> |{" "}
-            <DesignationName value={terminatedData.department_position} /> I
+            ID: <EmployeeID value={terminatedData?.employee_id} /> |{" "}
+            <DesignationName value={terminatedData.position} /> I
             <DepartmentName value={terminatedData.department_name} />
           </p>
         </section>

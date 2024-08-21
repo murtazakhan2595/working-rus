@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaChevronDown, FaChevronRight, FaChevronUp } from "react-icons/fa";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { DesignationName } from "utils/getValuesFromTables";
 import { getRandomColor } from "utils/renderValues";
@@ -10,31 +10,30 @@ import { Collapse, Button, CardBody, Card } from "reactstrap";
 import { BsTelephone } from "react-icons/bs";
 import { AiOutlineHome } from "react-icons/ai";
 import { MdOutlineMail } from "react-icons/md";
+import { DepartmentName } from "utils/getValuesFromTables";
 
-
-
-const MyTeams =({userProfile, employees})=>{
+const MyTeams = ({ userProfile, employees }) => {
   const [teamMembers, setTeamMembers] = useState([]);
-   const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
-      const user  = employees.find((emp) => emp.value === userProfile.id)
-      try{
-        const response =await getEmployeeCustomList({
+      const user = employees.find((emp) => emp.value === userProfile.id);
+      try {
+        const response = await getEmployeeCustomList({
           filterData: { department_name: user.department_name },
         });
-        if(response){
+        if (response) {
           setTeamMembers(response);
         }
-      }catch(err){
-        console.error(err)
+      } catch (err) {
+        console.error(err);
       }
-    }
-    fetchData()
-    }, [userProfile, employees]);
-     const toggleCollapse = (index) => {
-       setOpenIndex(openIndex === index ? null : index);
-     };
+    };
+    fetchData();
+  }, [userProfile, employees]);
+  const toggleCollapse = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
 
   return (
     <div>
@@ -54,7 +53,7 @@ const MyTeams =({userProfile, employees})=>{
             </div>
           </header>
           <div className="overflow-y-auto no-scrollbar max-h-[362px]">
-            {teamMembers.count > 0 &&
+            {teamMembers.count > 0 ? (
               teamMembers.results.map((member, index) => (
                 <RenderTeamMembers
                   key={index}
@@ -62,16 +61,21 @@ const MyTeams =({userProfile, employees})=>{
                   isOpen={openIndex === index}
                   toggle={() => toggleCollapse(index)}
                 />
-              ))}
+              ))
+            ) : (
+              <p className="text-[#5c5e64] font-normal text-center">
+                No members in your team yet.
+              </p>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
-
-}
+};
 
 const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
+  console.log("team member in teams", teamMemeber);
   return (
     <div>
       <div
@@ -94,41 +98,46 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
                 <div className="text-[#5c5e64] text-[11px] font-normal ">
                   <DesignationName value={teamMemeber.department_position} />
                 </div>
-                {/* <div className="text-[#5c5e64] text-[11px] font-normal ">|</div>
-            <div className="text-[#5c5e64] text-[11px] font-normal "></div> */}
+                <div className="text-[#5c5e64] text-[11px] font-normal ">|</div>
+                <div className="text-[#5c5e64] text-[11px] font-normal ">
+                  <DepartmentName value={Number(teamMemeber.department_name)} />
+                </div>
               </div>
             </div>
           </div>
         </div>
         {isOpen ? (
-          <FaChevronUp className="text-sm" />
+          <FaChevronUp className="text-sm cursor-pointer" />
         ) : (
-          <FaChevronDown className="text-sm" />
+          <FaChevronDown className="text-sm cursor-pointer" />
         )}
       </div>
       {isOpen && (
-        <Card className="p-0">
-          <CardBody className="p-2 flex items-center justify-end">
-            <div className=" p-2 bg-[#fafbfc] rounded-[5px] flex-col justify-start items-start inline-flex">
-              <div className="flex items-center gap-2">
+        <div className="pl-10 w-full">
+          <div className="p-2 w-full">
+            <div className=" p-2 bg-[#fafbfc] rounded-[5px] flex-col justify-start items-start inline-flex w-full">
+              <div className="flex items-center gap-2 h-[22px]">
                 <BsTelephone className="text-[#25a8e0]" />
                 <p className="text-[#5c5e64] text-[10px] font-normal  leading-snug">
                   Phone: {teamMemeber.mobile_no}
                 </p>
               </div>
-              <div className="flex items-center gap-2 mt-2">
-                <MdOutlineMail className="text-[#25a8e0]"/>
+              <div className="flex items-center gap-2 mt-2 h-[22px]">
+                <MdOutlineMail className="text-[#25a8e0]" />
                 <p className="text-[#5c5e64] text-[10px] font-normal  leading-snug">
                   Email: {teamMemeber.work_email}
                 </p>
               </div>
-              {/* <div className="flex items-center gap-2">
-                <AiOutlineHome />
-                <p>home: {}</p>
-              </div> */}
+              <div className="flex items-center gap-2 mt-2 h-[22px]">
+                <AiOutlineHome className="text-[#25a8e0]" />
+                <p className="text-[#5c5e64] text-[10px] font-normal  leading-snug">
+                  home: {teamMemeber.current_address},{" "}
+                  {teamMemeber.employee_location}
+                </p>
+              </div>
             </div>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -136,7 +145,7 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
-    employees: state.emp.employees
+    employees: state.emp.employees,
   };
 };
 

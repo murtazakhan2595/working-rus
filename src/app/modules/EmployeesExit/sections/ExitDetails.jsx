@@ -1,12 +1,11 @@
 import moment from "moment";
 import React from "react";
 import { MdOutlineFileDownload } from "react-icons/md";
-import PdfIcon from "assets/images/pdfPreview.png"
+import PdfIcon from "assets/images/pdfPreview.png";
 import { TerminationReason } from "utils/getValuesFromTables";
 import Letter from "./Letter";
 import { toast } from "react-toastify";
 import { updateExitData } from "app/hooks/employee";
-
 
 function ExitDetails({ exitData, isTermination }) {
   console.log("istermination", exitData);
@@ -27,18 +26,24 @@ function ExitDetails({ exitData, isTermination }) {
       label: "Exit date",
       value: moment(exitData.exit_date).format("DD-MM-YYYY") || "Invalid Date",
     },
+    {
+      label: "Exit Interview date",
+      value:
+        moment(exitData.exit_interview_date).format("DD-MM-YYYY") ||
+        "Invalid Date",
+    },
     { label: "Notice period", value: exitData.notice_period },
   ];
-  const handleStatuschange = async(status_termination) => {
-    try{
+  const handleStatuschange = async (status_termination) => {
+    try {
       const response = await updateExitData({
         id: exitData.id,
         status_termination,
       });
-      if(response){
+      if (response) {
         toast.success("Status updated successfully");
       }
-    }catch(e){
+    } catch (e) {
       console.error(e);
       toast.error("Something went wrong");
     }
@@ -88,8 +93,10 @@ function ExitDetails({ exitData, isTermination }) {
                 Reject
               </div>
             </button>
-            <button className="w-[175px] h-10 px-5 py-1 rounded-lg  border-2 border-[#a3bfb6] justify-center items-center gap-[15px] flex"
-            onClick={()=>handleStatuschange("accepted by employee")}>
+            <button
+              className="w-[175px] h-10 px-5 py-1 rounded-lg  border-2 border-[#a3bfb6] justify-center items-center gap-[15px] flex"
+              onClick={() => handleStatuschange("accepted by employee")}
+            >
               <div className="text-[#5c5e64] text-sm font-medium font-['Lato'] leading-normal">
                 Accept
               </div>
@@ -111,6 +118,5 @@ function ExitInfoItem({ label, value }) {
     </div>
   );
 }
-
 
 export default ExitDetails;
