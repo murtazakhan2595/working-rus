@@ -1,5 +1,9 @@
-import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
-import {getRandomColor} from "utils/renderValues"
+import {
+  DepartmentName,
+  DesignationName,
+  EmployeeID,
+} from "utils/getValuesFromTables";
+import { getRandomColor, getInitials } from "utils/renderValues";
 const EmployeeNameInfo = ({
   name,
   department,
@@ -11,10 +15,12 @@ const EmployeeNameInfo = ({
   return (
     <div className="flex items-start pr-3">
       <div
-        className= {`${getRandomColor(name?.charAt(0))} text-[#FAFBFC] flex font-semibold text-md items-center justify-center rounded-full w-10 h-10`}
+        className={`${getRandomColor(
+          name?.charAt(0)
+        )} text-[#FAFBFC] flex font-semibold text-md items-center justify-center rounded-full w-[2.7rem] h-[2.7rem]`}
         style={{ minWidth: "40px" }}
       >
-        {name?.toUpperCase().charAt(0)}
+        {getInitials(name)}
       </div>
       <div className="flex flex-col ml-2 whitespace-break-spaces flex-wrap">
         <div className="text-base font-bold leading-normal text-[#323333] text-left text-capitalize">
@@ -25,7 +31,11 @@ const EmployeeNameInfo = ({
             <DesignationName value={position} /> |{" "}
             <DepartmentName value={department} />
           </div>
-          {id && <div>ID: {id}</div>}
+          {id && (
+            <div>
+              ID: <EmployeeID value={id} />
+            </div>
+          )}
           {allotedLeave && <div>{`${allotedLeave} Leaves allotted`}</div>}
           {leaveTypes && <div>{`${leaveTypes} Leave types`}</div>}
         </div>

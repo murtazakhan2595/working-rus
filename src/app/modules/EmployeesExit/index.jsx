@@ -17,12 +17,11 @@ const EmployeeExit = ({ userProfile }) => {
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
-    try{
-
+    try {
       setLoading(true);
       const response = await getEmployeeExitDataById(userProfile.id);
       console.log("response emp exit", response.data.results);
-      if(response){
+      if (response) {
         const data = response?.data.results.result;
         const resignations = data.filter(
           (item) => item.exit_category === "resignation"
@@ -30,23 +29,23 @@ const EmployeeExit = ({ userProfile }) => {
         const terminations = data.filter(
           (item) => item.exit_category === "termination"
         );
-        
+
         setResignation(resignations[0]);
         setTermination(terminations[0]);
       }
-    }catch(e){
+    } catch (e) {
       console.error(e);
-    }finally{
+    } finally {
       setLoading(false);
     }
-  }
+  };
   useEffect(() => {
     fetchData();
   }, [userProfile]);
 
   return (
     <div className="screen bg-[#F0F1F2]">
-      <Header title="Employee Exit" />
+      <Header title="Employee Offboarding" />
       <Row className="bg-[#F0F1F2] relative">
         <Col lg={12}>
           <div className="   m-2 mb-0 0">
@@ -92,7 +91,6 @@ const EmployeeExit = ({ userProfile }) => {
 };
 
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
     token: state.user.token,
     userProfile: state.user.userProfile,

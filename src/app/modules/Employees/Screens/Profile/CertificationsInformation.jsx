@@ -51,7 +51,6 @@ const CertificationsInformation = ({
         employeeId,
         data.certifications
       );
-      console.log("Save response:", response);
       if (response) nextstep();
     } catch (error) {
       console.error("Error saving certifications:", error);
@@ -60,10 +59,12 @@ const CertificationsInformation = ({
 
   const handleDelete = async (certificationId, index, props) => {
     try {
-      await deleteEmployeeCertificateData(baseUrl, employeeId, token, [certificationId]);
+      await deleteEmployeeCertificateData(baseUrl, employeeId, token, [
+        certificationId,
+      ]);
       const newCertifications = [...props.values.certifications];
       newCertifications.splice(index, 1);
-      props.setFieldValue('certifications', newCertifications);
+      props.setFieldValue("certifications", newCertifications);
     } catch (error) {
       console.error("Error deleting certification:", error);
     }
@@ -107,7 +108,9 @@ const CertificationsInformation = ({
                                 </h5>
                                 <FaTimes
                                   className="cursor-pointer"
-                                  onClick={() => handleDelete(certification.id, index, props)}
+                                  onClick={() =>
+                                    handleDelete(certification.id, index, props)
+                                  }
                                 />
                               </div>
                             </Col>

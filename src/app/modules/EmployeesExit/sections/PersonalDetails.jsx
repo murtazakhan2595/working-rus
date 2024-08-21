@@ -8,7 +8,7 @@ const PersonalInformation = ({
 }) => {
   return (
     <>
-      <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
+      <div className="bg-white  border w-full rounded-lg p-6 mb-6">
         <div className="flex justify-between">
           <h2 className="text-[#323233] text-xl font-bold">
             Employee Information
@@ -47,7 +47,7 @@ const PersonalInformation = ({
                     <div className="opacity-60 w-[150px] lg:w-[40%]">
                       {info.title}
                     </div>
-                    <div className="w-[calc(100%-150px)] lg:w-[60%]">
+                    <div className="w-[calc(100%-150px)] lg:w-[60%] capitalize">
                       {info.data || "-----"}
                     </div>
                   </div>

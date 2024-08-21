@@ -111,7 +111,7 @@ const Table = ({
         </tbody>
         {pagination && (
           <tfoot>
-            <tr>
+            <tr >
               <td colSpan={columns.length}>
                 <CustomPagination
                   currentPage={options.page}
@@ -135,7 +135,7 @@ const CustomPagination = ({
   onPageChange,
 }) => {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between mt-4">
       <CustomPageSizePagination
         sizePerPage={sizePerPage}
         onPageChange={onPageChange}

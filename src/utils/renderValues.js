@@ -49,3 +49,5 @@ export const getRandomColor = (letter) => {
     return colorValues[Math.floor(Math.random() * colorValues.length)];
   }
 };
+
+

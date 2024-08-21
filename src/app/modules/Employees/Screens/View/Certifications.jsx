@@ -66,13 +66,13 @@ const Certifications = ({ isEditable, employeeId }) => {
                     {cer.certification_institute || "------"}
                   </div>
                   <div className="opacity-70">
-                    {moment(cer.completion_date, "YYYY-MM-DD").format(
-                      "DD MMMM, YYYY"
-                    ) || "00-00-0000"}
+                    {cer.completion_date
+                      ? moment(cer.completion_date).format("DD MMMM, YYYY")
+                      : ""}
                     {cer.expiry_date && " - "}
-                    {moment(cer.expiry_date, "YYYY-MM-DD").format(
-                      "DD MMMM, YYYY"
-                    ) || ""}
+                    {cer.expiry_date
+                      ? moment(cer.expiry_date).format("DD MMMM, YYYY")
+                      : ""}
                   </div>
                 </div>
                 <div>

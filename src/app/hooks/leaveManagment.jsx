@@ -271,7 +271,7 @@ const getLeaveTrackerStats = async (filterStats) => {
 
 const getFilteredLeaveApplication = async (payload) => {
   try {
-    const data = await getLeaveApplications({payload});
+    const data = await getLeaveApplications(payload);
     if (data) {
           const filterLeaveData = (leaveData) => {
             // Get today's date and next week's date range

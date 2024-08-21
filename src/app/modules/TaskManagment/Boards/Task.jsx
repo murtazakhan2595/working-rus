@@ -68,6 +68,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   };
   const closeTaskDetail = () => {
     fetchData();
+    reloadData();
     setIsTaskDetailOpen(false);
   };
 

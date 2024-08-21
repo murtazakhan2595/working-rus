@@ -9,7 +9,7 @@ import { RxCross2, RxPlus } from "react-icons/rx";
 import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { TbCircleDashed } from "react-icons/tb";
-import { department, PriorityList, status2Options, statusOptions, typeOptions } from "../../../data/Data";
+import { PriorityList, status2Options, statusOptions, typeOptions } from "../../../data/Data";
 import Select from "react-select";
 import { fetchEmployees } from "../../../state/slices/EmpSlice";
 import { postTasks } from "../../../state/slices/DtrPostSlice";
@@ -279,17 +279,7 @@ const CreateTask = ({ baseUrl, token }) => {
                             <input type="text" placeholder="Search by ID, Name or designation"
                                 onChange={handleSearchChange}
                                 className="pl-2 bg-[#F0F1F2] h-8 outline-none rounded-lg placeholder:text-xs" />}
-                        {filters.department &&
-                            <Select
-                                className="w-[180px]"
-                                options={department}
-                            // value={department.find(
-                            //     (option) => option.label === departmentInfo.department_name
-                            // )}
-                            // onChange={(selectedOption) =>
-                            //     handleChange("department_name", selectedOption.value)
-                            // }
-                            />}
+                        
                         {filters.date &&
                             <input type="date" name="startDate" className="w-[170px] border border-baseGray h-9 rounded-lg px-2"
                                 onChange={handleDateChange}
@@ -345,16 +335,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                             onChange={() => handleCheckboxChange('search')} />
                                         <label className="text-sm" htmlFor="search">Search</label>
                                     </div>
-                                    {/* <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.department}
-                                            onChange={() => handleCheckboxChange('department')} />
-                                        <label className="text-sm" htmlFor="department">Department</label>
-                                    </div> */}
-                                    {/* <div className="flex items-center gap-x-4">
-                                        <input type="checkbox" className="w-3.5 h-3.5" checked={filters.designation}
-                                            onChange={() => handleCheckboxChange('designation')} />
-                                        <label className="text-sm" htmlFor="designation">Designation</label>
-                                    </div> */}
+                                  
                                     <div className="flex items-center gap-x-4">
                                         <input type="checkbox" className="w-3.5 h-3.5" checked={filters.date}
                                             onChange={() => handleCheckboxChange('date')} />
@@ -714,10 +695,7 @@ const CreateTask = ({ baseUrl, token }) => {
                                 <div className="flex flex-col leading-none">
                                     <div className="text-gray-400 text-sm leading-none">TXB-{dtr.employee_id.toString().padStart(4, "0")}</div>
                                     <div className="font-semibold text-[16px] text-[#323333] font-lato">{dtr.employee_name}</div>
-                                    <div className="flex items-center gap-x-1">
-                                        <div className="text-gray-400 text-sm">{dtr.department}</div>
-                                        <div className="text-gray-400 text-sm border-l-4 pl-1">{dtr.designation}</div>
-                                    </div>
+                                   
                                 </div>
                             </div>
                             <IoChevronForwardCircleOutline

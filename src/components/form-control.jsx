@@ -3,7 +3,7 @@ import Select from "react-select";
 import { FormGroup, Label, Input, Button, Col } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment, { max, min } from "moment";
+import moment from "moment";
 import upload from "../assets/images/upload.png";
 import { TfiFiles } from "react-icons/tfi";
 import { IoIosSearch } from "react-icons/io";
@@ -55,7 +55,6 @@ const SelectComponent = ({
       ) : (
         ""
       )}
-      {console.log(error, touch)}
       {error && touch && <div className="invalid-feedback">{error || ""}</div>}
     </FormGroup>
   );
@@ -271,6 +270,7 @@ const PhoneNumberInput = ({
             <Input
               id={name}
               name={name}
+              disabled={disabled}
               autoComplete="Off"
               placeholder={"Enter" + label}
               value={`${countryCode || ""}${value || ""}`}
@@ -742,7 +742,6 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
               );
             } else if (filter.type === "date") {
               const date = filter.value ? new Date(moment(filter.value)) : null;
-              console.log(filter.placeholder, "filter.placeholder");
               return (
                 <div style={{ width: "fit-content" }}>
                   <DatePicker

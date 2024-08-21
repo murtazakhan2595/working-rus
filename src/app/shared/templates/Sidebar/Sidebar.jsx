@@ -1,10 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { MdOutlineLogout, MdOutlineNotificationsNone } from "react-icons/md";
-import {
-  FaAngleDoubleLeft,
-  FaAngleDoubleRight,
-} from "react-icons/fa";
+import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa6";
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import logo from "assets/images/logo.png";
@@ -18,6 +15,7 @@ import getNavigation from "app/utils/Types/Navigation";
 import { setUserLogout } from "state/actions/UserAction";
 import NavigationMenue from "./NavigationMenue";
 import Notifications from "./Notifications/Notifications";
+import { MembersList } from "app/modules/TaskManagment/Sections";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -27,13 +25,10 @@ const Sidebar = ({
   userProfile,
   sidebarRefresh,
 }) => {
-
   const [profileImage, setProfileImage] = useState(null);
   const [employee, setEmployee] = useState(null);
   const [Navigation, setNavigation] = useState(null);
-  const {
-    isProfileOpen,
-  } = useSelector((state) => state.dropdown);
+  const { isProfileOpen } = useSelector((state) => state.dropdown);
   const dispatch = useDispatch();
   const handleToggleDropdown = (dropdownName) => {
     dispatch(toggleDropdown(dropdownName));
@@ -56,7 +51,7 @@ const Sidebar = ({
     setNavigation(getNavigation(employeeData.user_role));
     setProfileImage(
       employeeResponse.data?.profile_picture?.file ||
-      employeeResponse.data?.profile_picture
+        employeeResponse.data?.profile_picture
     );
   };
 
@@ -64,42 +59,64 @@ const Sidebar = ({
     fetchData();
   }, []);
 
-
   return (
     <>
       <div className="flex">
         {/* Sidebar content goes here */}
         <div
           // style={{ backgroundImage: `url(${sidebg})` }}
-          className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-e-lg ${isSidebarOpen ? "w-64" : "w-28"
-            }`}
+          className={`h-screen bg-cover bg-[100%] bg-[#fafafa] border border-gray-300 rounded-e-lg ${
+            isSidebarOpen ? "w-64" : "w-28"
+          }`}
         >
           <div className="text-xl z-10 py-3 px-3 flex border-b border-gray-300 flex-row items-center justify-start gap-1 text-[#2f4acf] font-semibold relative">
             <img
               src={logo}
-              className={`w-12 ${isSidebarOpen ? "inline-block" : "block mx-auto"
-                } `}
+              className={`w-12 ${
+                isSidebarOpen ? "inline-block" : "block mx-auto"
+              } `}
               alt="logo"
             />
             <h1
-              className={`inline-block overflow-hidden transition-all text-2xl ${isSidebarOpen ? "w-28" : "w-0"
-                }`}
+              className={`inline-block overflow-hidden transition-all text-2xl ${
+                isSidebarOpen ? "w-28" : "w-0"
+              }`}
             >
               TECBRIX
             </h1>
           </div>
-          <div className={`mx-2 hideScroll ${isSidebarOpen ? "overflow-y-auto overflow-x-visible" : ""}`} style={{ height: `calc(100vh - ${isSidebarOpen ? isProfileOpen ? '290px' : '220px' : '200px'}` }}>
-            <NavigationMenue navigation={Navigation} isSidebarOpen={isSidebarOpen} sidebarRefresh={sidebarRefresh} />
+          <div
+            className={`mx-2 hideScroll ${
+              isSidebarOpen ? "overflow-y-auto overflow-x-visible" : ""
+            }`}
+            style={{
+              height: `calc(100vh - ${
+                isSidebarOpen ? (isProfileOpen ? "290px" : "220px") : "200px"
+              }`,
+            }}
+          >
+            <NavigationMenue
+              navigation={Navigation}
+              isSidebarOpen={isSidebarOpen}
+              sidebarRefresh={sidebarRefresh}
+            />
           </div>
 
-          <ProfileDetails isSidebarOpen={isSidebarOpen} profileImage={profileImage} employee={employee} handleToggleDropdown={handleToggleDropdown} isProfileOpen={isProfileOpen} />
+          <ProfileDetails
+            isSidebarOpen={isSidebarOpen}
+            profileImage={profileImage}
+            employee={employee}
+            handleToggleDropdown={handleToggleDropdown}
+            isProfileOpen={isProfileOpen}
+          />
         </div>
 
         {/* Sidebar collapse button */}
         <button
           button
-          className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${isSidebarOpen ? "left-[12.5rem] top-10" : "left-[5.5rem] top-10"
-            } rounded-lg  mt-4 mr-4 z-10`}
+          className={`bg-white text-gray-500 border border-gray-300 p-1.5 absolute ${
+            isSidebarOpen ? "left-[12.5rem] top-10" : "left-[5.5rem] top-10"
+          } rounded-lg  mt-4 mr-4 z-10`}
           onClick={handleSidebarToggle}
         >
           {isSidebarOpen ? (
@@ -117,37 +134,50 @@ const Sidebar = ({
 
 // render notifications
 
-
-const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDropdown, isProfileOpen }) => {
-
+const ProfileDetails = ({
+  isSidebarOpen,
+  employee,
+  profileImage,
+  handleToggleDropdown,
+  isProfileOpen,
+}) => {
   const [showNotifications, setShowNotifications] = useState(false);
 
   const navigate = useNavigate();
   const handleShowNotifications = () => {
-    setShowNotifications(prev => !prev)
-  }
+    setShowNotifications((prev) => !prev);
+  };
 
   const handleClose = () => {
-    setShowNotifications(false)
-  }
+    setShowNotifications(false);
+  };
   return (
     <div className="pb-2 mx-2">
-      <div className="flex items-center gap-x-3 text-[#5C5E64] flex-grow ml-2 cursor-pointer my-3" onClick={handleShowNotifications}>
+      <div
+        className="flex items-center gap-x-3 text-[#5C5E64] flex-grow ml-2 cursor-pointer my-3"
+        onClick={handleShowNotifications}
+      >
         <MdOutlineNotificationsNone className="text-xl" />
-        <div className={`flex-grow text-[14px] ${isSidebarOpen ? 'block' : 'hidden'}`}>Notifications</div>
+        <div
+          className={`flex-grow text-[14px] ${
+            isSidebarOpen ? "block" : "hidden"
+          }`}
+        >
+          Notifications
+        </div>
       </div>
       {showNotifications && <Notifications onClose={handleClose} />}
       <div
-        className={`${isSidebarOpen
-          ? "bg-white rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1"
-          : ""
-          }`}
+        className={`${
+          isSidebarOpen
+            ? "bg-white rounded-lg border border-gray-200 shadow-bottom mb-3 mt-1"
+            : ""
+        }`}
       >
         <div
-          className={`flex group items-center gap-x-2 py-3 ${isSidebarOpen
-            ? "bg-[#F0F1F2]"
-            : "borderr border--[#5C5E64]"
-            } px-2 rounded-lg cursor-pointer`}
+          className={`flex group items-center gap-x-2 py-3 ${
+            isSidebarOpen ? "bg-[#F0F1F2]" : "borderr border--[#5C5E64]"
+          } px-2 rounded-lg cursor-pointer`}
         >
           {profileImage ? (
             <img
@@ -161,8 +191,7 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
             />
           ) : (
             <>
-              {employee?.first_name?.toUpperCase().slice(0, 1)}
-              {employee?.last_name?.toUpperCase().slice(0, 1)}
+              <MembersList members={[employee?.id]} />
             </>
           )}
 
@@ -190,18 +219,14 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
                     />
                   ) : (
                     <>
-                      {employee?.first_name
-                        ?.toUpperCase()
-                        .slice(0, 1)}
+                      {employee?.first_name?.toUpperCase().slice(0, 1)}
                       {employee?.last_name?.toUpperCase().slice(0, 1)}
                     </>
                   )}
                 </div>
                 <div className={`flex flex-col text-[#5C5E64]`}>
                   <div className="flex items-center gap-x-2">
-                    <div className="font-semibold">
-                      {employee?.username}
-                    </div>
+                    <div className="font-semibold">{employee?.username}</div>
                   </div>
                   <div
                     className="text-xs overflow-hidden text-ellipsis"
@@ -222,7 +247,7 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
                 <div
                   className="flex items-center cursor-pointer justify-between px-3 py-1 mb-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
                   onClick={() => {
-                    window.localStorage.setItem("token", "")
+                    window.localStorage.setItem("token", "");
                     setUserLogout();
                     navigate("/login");
                   }}
@@ -235,17 +260,17 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
           )}
 
           <div
-            className={`flex flex-col text-[#5C5E64] ${isSidebarOpen ? "block" : "hidden"
-              }`}
+            className={`flex flex-col text-[#5C5E64] ${
+              isSidebarOpen ? "block" : "hidden"
+            }`}
             onClick={() => handleToggleDropdown("Profile")}
           >
             <div className="flex items-center gap-x-2">
-              <div className="font-semibold">
-                {employee?.username}
-              </div>
+              <div className="font-semibold">{employee?.username}</div>
               <FaAngleDown
-                className={`text-xs transition-transform duration-300 ${isProfileOpen ? "transform rotate-180" : ""
-                  }`}
+                className={`text-xs transition-transform duration-300 ${
+                  isProfileOpen ? "transform rotate-180" : ""
+                }`}
               />
             </div>
             <div
@@ -269,7 +294,7 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
             <div
               className="flex items-center cursor-pointer justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
               onClick={() => {
-                window.localStorage.setItem("token", "")
+                window.localStorage.setItem("token", "");
                 setUserLogout();
                 navigate("/login");
               }}
@@ -280,8 +305,9 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
           </div>
         )}
       </div>
-    </div>)
-}
+    </div>
+  );
+};
 
 const mapStateToProps = (state) => {
   return {

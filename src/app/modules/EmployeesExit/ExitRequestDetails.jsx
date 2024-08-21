@@ -30,8 +30,8 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
         title: "Report to",
         data: <ManagerName value={userData?.direct_report} />,
       },
-      { title: "Work Type", data: userData?.employee_work_type },
-      { title: "Organization", data: exitData?.organization?.[0] },
+      { title: "Work Type", data: userData?.employee_work_type?.toLowerCase()?.split("_").join(" ") },
+      { title: "Organization", data: exitData?.organization },
       { title: "Phone no.", data: userData?.mobile_no },
     ],
   ];
@@ -40,7 +40,6 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
     setLoading(true);
     try {
       let empData = await getEmployeeData(userProfile.id);
-      console.log("emp data at exit", empData);
       setUserData(empData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -57,7 +56,7 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
     <div className="m-2 mt-0 bg-white p-10 rounded-b-md relative">
       <div className="h-[35px] justify-between items-start inline-flex w-full mb-4">
         <div className="text-[#323233] text-[22px] font-bold ">
-          Exit Request
+          {isTermination ? "Termination Request" : "Exit Request"}
         </div>
         <ApplicationStatus row={exitData} />
       </div>
@@ -69,7 +68,7 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
           getDataByHooks={getDataByHooks}
         />
       )}
-      <ExitDetails exitData={exitData} isTermination={isTermination}/>
+      <ExitDetails exitData={exitData} isTermination={isTermination} />
     </div>
   );
 };

@@ -1,4 +1,8 @@
-import { getAllTasks, getAllProjects } from "app/hooks/taskManagment";
+import {
+  getAllTasks,
+  getAllProjects,
+  getAllLabels,
+} from "app/hooks/taskManagment";
 import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -26,8 +30,9 @@ export default function MyTasks() {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(null);
+  const [statusDropdownOptions, setStatusDropdownOptions] = useState([]);
 
-
+  console.log("tasks", tasks);
 
   function mergeTasksWithProjects(tasks, projects) {
     return tasks.map((task) => {
@@ -64,8 +69,21 @@ export default function MyTasks() {
           ? {}
           : { filterData: { project_id: [filterOption.id] } };
       const tasksData = await getAllTasks(filter);
-      if (isMounted) {
-        const mergedResult = mergeTasksWithProjects(tasksData, projects);
+      if (isMounted && tasksData) {
+        let filterTasks = tasksData;
+        if (userProfile.role === 2 || userProfile.role === 4) {
+          filterTasks = tasksData.filter(
+            (task) =>
+              task.assigned_to.includes(Number(userProfile.id)) ||
+              task.assigned_by === Number(userProfile.id)
+          );
+        }
+        if (statusFilter) {
+          filterTasks = filterTasks.filter(
+            (task) => task.label.name === statusFilter
+          );
+        }
+        const mergedResult = mergeTasksWithProjects(filterTasks, projects);
         setTasks(mergedResult);
       }
     } catch (error) {
@@ -86,7 +104,6 @@ export default function MyTasks() {
   }, [filterData]);
 
   useEffect(() => {
-    console.log(AllProjects);
     const dynamicOptions = AllProjects.map((project) => ({
       label: project.name,
       onClick: () => {
@@ -106,44 +123,40 @@ export default function MyTasks() {
     setOptions(dynamicOptions);
   }, [AllProjects]);
 
-  console.log(options)
-
-
   useEffect(() => {
     if (AllProjects.length > 0) {
       fetchTasks(true, AllProjects);
     }
-  }, [filterOption, AllProjects]);
+  }, [filterOption, AllProjects, statusFilter]);
 
-  const statusDropdownOptions = [
-    {
-      label: "Completed",
-      onClick: () => {
-        setStatusFilter("completed");
-        setIsStatusDropdownOpen(false);
-      },
-    },
-    {
-      label: "Delayed",
-      onClick: () => {
-        setStatusFilter("delayed");
-         setIsStatusDropdownOpen(false);
-      },
-    },
-    {
-      label: "On going",
-      onClick: () => {
-        setStatusFilter("on going");
-         setIsStatusDropdownOpen(false);
-      },
-    },
-  ];
-    const toggleDropdown = () => {
-      setIsDropdownOpen(!isDropdownOpen);
+  useEffect(() => {
+    const fetchLabels = async () => {
+      try {
+        const labelsData = await getAllLabels();
+        if (labelsData && labelsData.results) {
+          const statusDropdownOptions = labelsData.results.map((status) => ({
+            label: status.name.charAt(0).toUpperCase() + status.name.slice(1), // Capitalize first letter
+            onClick: () => {
+              setStatusFilter(status.name);
+              setIsStatusDropdownOpen(false);
+            },
+          }));
+
+          setStatusDropdownOptions(statusDropdownOptions); // Assuming you have a state for this
+        }
+      } catch (error) {
+        console.error("Error fetching labels:", error);
+      }
     };
-    const toggleStatusDropdown = () => {
-      setIsStatusDropdownOpen(!isStatusDropdownOpen);
-    };
+    fetchLabels();
+  }, []);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const toggleStatusDropdown = () => {
+    setIsStatusDropdownOpen(!isStatusDropdownOpen);
+  };
 
   return (
     <div className="px-[14px] py-6 bg-white rounded-md min-h-[470px]">
@@ -187,7 +200,9 @@ export default function MyTasks() {
               />
             </div>
             <div className="h-[34px] px-3.5 py-0.5 bg-[#f0f1f2] rounded-[5px] justify-start items-center gap-2.5 inline-flex">
-              <div className="text-[#060606] text-xs font-normal">{`${statusFilter?statusFilter:"Status"}`}</div>
+              <div className="text-[#060606] text-xs font-normal">{`${
+                statusFilter ? statusFilter : "Status"
+              }`}</div>
               <CustomDropdown
                 isOpen={isStatusDropdownOpen}
                 toggleDropdown={toggleStatusDropdown}
@@ -197,12 +212,13 @@ export default function MyTasks() {
           </div>
         </div>
         <div className="max-h-[270px] overflow-y-auto">
-          {tasks.length > 0 ?
-            (tasks.map((task) => <RenderTask key={task.id} task={task} />)):
-            <div className="text-[#5c5e64] text-sm font-normal text-center">
-              No tasks found
-            </div>
-          }
+          {tasks.length > 0 ? (
+            tasks.map((task) => <RenderTask key={task.id} task={task} />)
+          ) : (
+            <p className="text-[#5c5e64] font-normal text-center mt-3">
+              No tasks found.
+            </p>
+          )}
         </div>
       </div>
     </div>
