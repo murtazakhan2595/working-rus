@@ -10,6 +10,7 @@ import { Collapse, Button, CardBody, Card } from "reactstrap";
 import { BsTelephone } from "react-icons/bs";
 import { AiOutlineHome } from "react-icons/ai";
 import { MdOutlineMail } from "react-icons/md";
+import { DepartmentName } from "utils/getValuesFromTables";
 
 const MyTeams = ({ userProfile, employees }) => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -74,6 +75,7 @@ const MyTeams = ({ userProfile, employees }) => {
 };
 
 const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
+  console.log("team member in teams", teamMemeber);
   return (
     <div>
       <div
@@ -97,7 +99,9 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
                   <DesignationName value={teamMemeber.department_position} />
                 </div>
                 <div className="text-[#5c5e64] text-[11px] font-normal ">|</div>
-                <div className="text-[#5c5e64] text-[11px] font-normal "></div>
+                <div className="text-[#5c5e64] text-[11px] font-normal ">
+                  <DepartmentName value={Number(teamMemeber.department_name)} />
+                </div>
               </div>
             </div>
           </div>
@@ -127,7 +131,8 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
               <div className="flex items-center gap-2 mt-2 h-[22px]">
                 <AiOutlineHome className="text-[#25a8e0]" />
                 <p className="text-[#5c5e64] text-[10px] font-normal  leading-snug">
-                  home: {}
+                  home: {teamMemeber.current_address},{" "}
+                  {teamMemeber.employee_location}
                 </p>
               </div>
             </div>
