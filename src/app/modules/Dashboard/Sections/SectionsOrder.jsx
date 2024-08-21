@@ -38,7 +38,7 @@ import {
   },
   {
     type: "div",
-    className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2",
+    className: "grid grid-cols-[200px_minmax(1fr,_.5fr)_100px] gap-4 ",
     children: [
       {
         type: "div",
@@ -46,37 +46,37 @@ import {
         content: <LeaveTrackerOverview/>,
         value: "LeaveTracker",
       },
-      {
-        type: "div",
-        className: "",
-        content: <TalentSphere/>,
-        value: "TalentSphere",
-      },
+      // {
+      //   type: "div",
+      //   className: "",
+      //   content: <TalentSphere/>,
+      //   value: "TalentSphere",
+      // },
       
-      {
-        type: "div",
-        className: "",
-        content: <MyTasks/>,
-        value: "MyTasks",
-      },
-      {
-        type: "div",
-        className: "",
-        content: <MyTeams/>,
-        value: "MyTeam",
-      },
-      {
-        type: "div",
-        className: "",
-        content: <MyLeaves/>,
-        value: "MyLeaves",
-      },
-      {
-        type: "div",
-        className: "",
-        content: <AllProjects/>,
-        value: "AllProjects",
-      },
+      // {
+      //   type: "div",
+      //   className: "",
+      //   content: <MyTasks/>,
+      //   value: "MyTasks",
+      // },
+      // {
+      //   type: "div",
+      //   className: "",
+      //   content: <MyTeams/>,
+      //   value: "MyTeam",
+      // },
+      // {
+      //   type: "div",
+      //   className: "",
+      //   content: <MyLeaves/>,
+      //   value: "MyLeaves",
+      // },
+      // {
+      //   type: "div",
+      //   className: "",
+      //   content: <AllProjects/>,
+      //   value: "AllProjects",
+      // },
     ]
   }
   ];

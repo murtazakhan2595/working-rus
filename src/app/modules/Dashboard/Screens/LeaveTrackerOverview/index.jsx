@@ -247,7 +247,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardHeader, CardContent, CardTitle } from "../../../../../src/@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "../../../../../src/@/components/ui/tabs";
 import { Input } from "../../../../../src/@/components/ui/input";
@@ -256,100 +256,221 @@ import { Avatar, AvatarImage, AvatarFallback } from "../../../../../src/@/compon
 import { Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "components/ui/button";
+import { Pagination } from "../../../../../src/@/components/ui/pagination";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "../../../../../src/@/components/ui/dropdown-menu"
+import { Badge } from "../../../../../src/@/components/ui/badge";
+
+
 
 export default function Component() {
+  const [search, setSearch] = useState("")
+  const [sort, setSort] = useState({ key: "name", order: "asc" })
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [designationFilter, setDesignationFilter] = useState("all")
   const [activeTab, setActiveTab] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
-  const employees = [
-    {
-      name: "John Doe",
-      email: "john@example.com",
-      designation: "Software Engineer",
-      leaveStatus: "Approved",
-      leaveStart: "2023-06-01",
-      leaveEnd: "2023-06-05",
-      avatar: "/placeholder-user.jpg",
-    },
-    {
-      name: "Jane Smith",
-      email: "jane@example.com",
-      designation: "Product Manager",
-      leaveStatus: "Pending",
-      leaveStart: "2023-07-15",
-      leaveEnd: "2023-07-20",
-      avatar: "/placeholder-user.jpg",
-    },
-    {
-      name: "Bob Johnson",
-      email: "bob@example.com",
-      designation: "UI Designer",
-      leaveStatus: "Approved",
-      leaveStart: "2023-08-10",
-      leaveEnd: "2023-08-15",
-      avatar: "/placeholder-user.jpg",
-    },
-    {
-      name: "Sarah Lee",
-      email: "sarah@example.com",
-      designation: "QA Analyst",
-      leaveStatus: "Denied",
-      leaveStart: "2023-09-01",
-      leaveEnd: "2023-09-05",
-      avatar: "/placeholder-user.jpg",
-    },
-  ]
-  const filteredEmployees = employees.filter((employee) =>
-    employee.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  const employees = useMemo(() => {
+    return [
+      {
+        id: 1,
+        name: "John Doe",
+        email: "john.doe@example.com",
+        designation: "Software Engineer",
+        status: "Active",
+        leaveDate: "2023-06-30",
+        avatar: "/placeholder-user.jpg",
+      },
+      {
+        id: 2,
+        name: "Jane Smith",
+        email: "jane.smith@example.com",
+        designation: "Product Manager",
+        status: "On Leave",
+        leaveDate: "2023-07-15",
+        avatar: "/placeholder-user.jpg",
+      },
+      {
+        id: 3,
+        name: "Michael Johnson",
+        email: "michael.johnson@example.com",
+        designation: "UI/UX Designer",
+        status: "Active",
+        leaveDate: "2023-08-01",
+        avatar: "/placeholder-user.jpg",
+      },
+      {
+        id: 4,
+        name: "Emily Davis",
+        email: "emily.davis@example.com",
+        designation: "Data Analyst",
+        status: "Active",
+        leaveDate: "2023-09-01",
+        avatar: "/placeholder-user.jpg",
+      },
+      {
+        id: 5,
+        name: "David Wilson",
+        email: "david.wilson@example.com",
+        designation: "Project Manager",
+        status: "On Leave",
+        leaveDate: "2023-07-31",
+        avatar: "/placeholder-user.jpg",
+      },
+      {
+        id: 6,
+        name: "Sarah Brown",
+        email: "sarah.brown@example.com",
+        designation: "Software Engineer",
+        status: "Active",
+        leaveDate: "2023-10-15",
+        avatar: "/placeholder-user.jpg",
+      },
+      {
+        id: 7,
+        name: "Daniel Thompson",
+        email: "daniel.thompson@example.com",
+        designation: "Marketing Coordinator",
+        status: "Active",
+        leaveDate: "2023-11-01",
+        avatar: "/placeholder-user.jpg",
+      },
+      {
+        id: 8,
+        name: "Olivia Anderson",
+        email: "olivia.anderson@example.com",
+        designation: "HR Specialist",
+        status: "On Leave",
+        leaveDate: "2023-08-15",
+        avatar: "/placeholder-user.jpg",
+      },
+      {
+        id: 9,
+        name: "William Martinez",
+        email: "william.martinez@example.com",
+        designation: "Accountant",
+        status: "Active",
+        leaveDate: "2023-12-01",
+        avatar: "/placeholder-user.jpg",
+      },
+      {
+        id: 10,
+        name: "Emma Hernandez",
+        email: "emma.hernandez@example.com",
+        designation: "Sales Representative",
+        status: "Active",
+        leaveDate: "2024-01-01",
+        avatar: "/placeholder-user.jpg",
+      },
+    ]
+      .filter((employee) => {
+        const searchValue = search.toLowerCase()
+        const statusFilterValue = statusFilter === "all" ? "" : statusFilter
+        const designationFilterValue = designationFilter === "all" ? "" : designationFilter
+        return (
+          employee.name.toLowerCase().includes(searchValue) ||
+          employee.email.toLowerCase().includes(searchValue) ||
+          employee.designation.toLowerCase().includes(searchValue) ||
+          (statusFilterValue ? employee.status.toLowerCase() === statusFilterValue : true) ||
+          (designationFilterValue ? employee.designation.toLowerCase() === designationFilterValue : true) ||
+          employee.leaveDate.includes(searchValue)
+        )
+      })
+      .sort((a, b) => {
+        if (sort.order === "asc") {
+          return a[sort.key] > b[sort.key] ? 1 : -1
+        } else {
+          return a[sort.key] < b[sort.key] ? 1 : -1
+        }
+      })
+      .slice((page - 1) * pageSize, page * pageSize)
+  }, [search, sort, page, pageSize, statusFilter, designationFilter])
+  const handleSort = (key) => {
+    if (sort.key === key) {
+      setSort({ key, order: sort.order === "asc" ? "desc" : "asc" })
+    } else {
+      setSort({ key, order: "asc" })
+    }
+  }
+  const handlePageChange = (page) => {
+    setPage(page)
+  }
+  const handlePageSizeChange = (size) => {
+    setPageSize(size)
+    setPage(1)
+  }
+  const handleStatusFilterChange = (status) => {
+    setStatusFilter(status)
+    setPage(1)
+  }
+  const handleDesignationFilterChange = (designation) => {
+    setDesignationFilter(designation)
+    setPage(1)
+  }
   return (
-    <Card>
-      <CardHeader className="flex flex-col items-start justify-between md:items-center">
-      <CardTitle className="flex flex-row justify-between w-full">
-          <div className="text-base font-semibold text-plum-1100">Leave Tracker</div>
-          <Button variant="outline" className="text-sm rounded-full text-slate-900 h-7">
-            <Link to="#">View Details</Link>
-          </Button>
-        </CardTitle>
-        <div className="flex justify-between w-full flew-row">
+    <>
+      <Card>
+      <CardHeader className="flex flex-col items-start justify-between md:flex-row md:items-center">
+    <div className="flex items-center gap-4">
+      <h4 className="text-lg font-medium">Leave Tracker</h4>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="md:mr-auto">
+        <TabsList className="flex-col md:flex-row">
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="team">Team</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    </div>
+    <div className="flex items-center gap-4 mt-4 md:mt-0">
+      <div className="relative">
+        <Search className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Search employees..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="py-2 pl-4 pr-8 border rounded-md border-input bg-background"
+        />
+      </div>
+      <Link
+        href="#"
+        className="inline-flex items-center justify-center px-4 text-sm font-medium transition-colors rounded-md shadow h-9 bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+        prefetch={false}
+      >
+        View All
+      </Link>
+    </div>
+  </CardHeader>
 
-        <div className="flex items-center gap-4">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="md:mr-auto">
-            <TabsList className="flex-col md:flex-row">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="team">Team</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-        <div className="flex items-center gap-4 mt-4 md:mt-0">
-          <div className="relative">
-            <Search className="absolute w-4 h-4 right-2 top-2 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search employees..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="py-2 pl-4 pr-8 border rounded-md border-input bg-background"
-            />
-          </div>
-          
-        </div>
-        </div>
-      
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Employees</TableHead>
-              <TableHead>Designation</TableHead>
-              <TableHead>Leave Status</TableHead>
-              <TableHead>Leave Dates</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredEmployees.map((employee) => (
-              <TableRow key={employee.email}>
-                <TableCell>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="cursor-pointer" onClick={() => handleSort("name")}>
+                  Employees
+                  {sort.key === "name" && <span className="ml-1">{sort.order === "asc" ? "\u2191" : "\u2193"}</span>}
+                </TableHead>
+                
+                <TableHead className="cursor-pointer" onClick={() => handleSort("designation")}>
+                  Designation
+                  {sort.key === "designation" && (
+                    <span className="ml-1">{sort.order === "asc" ? "\u2191" : "\u2193"}</span>
+                  )}
+                </TableHead>
+                <TableHead className="cursor-pointer" onClick={() => handleSort("status")}>
+                  Status
+                  {sort.key === "status" && <span className="ml-1">{sort.order === "asc" ? "\u2191" : "\u2193"}</span>}
+                </TableHead>
+                <TableHead className="cursor-pointer" onClick={() => handleSort("leaveDate")}>
+                  Leave Date
+                  {sort.key === "leaveDate" && <span className="ml-1">{sort.order === "asc" ? "\u2191" : "\u2193"}</span>}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {employees.map((employee) => (
+                <TableRow key={employee.id}>
+                 <TableCell>
                   <div className="flex items-center gap-4">
                     <Avatar>
                       <AvatarImage src="/placeholder-user.jpg" alt={employee.name} />
@@ -361,29 +482,78 @@ export default function Component() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{employee.designation}</TableCell>
-                <TableCell>
-                  <div
-                    className={`rounded-full px-2 py-1 text-xs font-medium ${
-                      employee.leaveStatus === "Approved"
-                        ? "bg-green-100 text-green-600"
-                        : employee.leaveStatus === "Pending"
-                        ? "bg-yellow-100 text-yellow-600"
-                        : "bg-red-100 text-red-600"
-                    }`}
-                  >
-                    {employee.leaveStatus}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {employee.leaveStart} - {employee.leaveEnd}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+                  <TableCell>{employee.designation}</TableCell>
+                  <TableCell>
+                    <Badge variant={employee.status === "Active" ? "secondary" : "outline"}>{employee.status}</Badge>
+                  </TableCell>
+                  <TableCell>{employee.leaveDate}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+         
+        </CardContent>
+      </Card>
+
+
+      <div className="flex flex-col gap-4">
+
+        <div className="overflow-auto border rounded-lg">
+
+        </div>
+        <div className="flex items-center justify-between">
+          <Pagination
+            currentPage={page}
+            pageSize={pageSize}
+            totalItems={employees.length}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </div>
+    </>
   )
 }
+
+function FilterIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+    </svg>
+  )
+}
+
+
+function Rows2Icon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="18" height="18" x="3" y="3" rx="2" />
+      <path d="M3 12h18" />
+    </svg>
+  )
+}
+
+
+
 
