@@ -1,8 +1,6 @@
 import {
   EmployeeID,
   ManagerName,
-  LeaveType,
-  LeaveTypeOfEmployee,
   UserRole,
 } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
@@ -26,10 +24,7 @@ import {
   RenderResignedRow,
   RenderResignationAction,
 } from "app/modules/ExitAndClearance/Sections";
-import { IoBagCheckOutline } from "react-icons/io5";
 import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
-import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
-import { MdOutlineFileDownload } from "react-icons/md";
 import { filebase64Download } from "utils/fileUtils";
 
 export const LeaveHistoryColumns = (updateLeaveType) => [
@@ -243,16 +238,26 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
   return columns;
 };
 
-export const ExitRequestColumns = (
-  handleOptionSelect,
-  handleRowClicked,
-  reload,
-  hideAction = false
-) => {
+export const ExitRequestColumns = (handleRowClicked) => {
   const columns = [
     {
       dataField: "emp_name",
       text: "Employees",
+      formatter: (cell, row) => (
+        <EmployeeNameInfo
+          name={cell}
+          department={
+            row.department_name && row.department_name?.length > 0
+              ? row.department_name[0]
+              : ""
+          }
+          position={
+            row.department_position && row.department_position?.length > 0
+              ? row.department_position[0]
+              : ""
+          }
+        />
+      ),
       onClick: (recordIndex, data, row) => {
         handleRowClicked(recordIndex, data, row);
       },
@@ -274,6 +279,7 @@ export const ExitRequestColumns = (
     {
       dataField: "exit_date",
       text: "Exit date",
+      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
     },
     {
       dataField: "",
@@ -303,23 +309,6 @@ export const ExitRequestColumns = (
       ),
     },
   ];
-
-  // Conditionally add the Action column if hideAction is false
-  if (!hideAction) {
-    columns.push({
-      dataField: "",
-      text: "Action",
-      formatter: (cell, row) => (
-        <RenderExitTableAction
-          row={row}
-          handleOptionSelect={handleOptionSelect}
-          reload={reload}
-          isTableStyle={true}
-        />
-      ),
-    });
-  }
-
   return columns;
 };
 
@@ -487,7 +476,7 @@ export const LeaveAllotmentColumns = (reload) => [
   },
 ];
 
-export const ExitTerminatedColumns = (reload) => [
+export const ExitTerminatedColumns = [
   {
     dataField: "employee_id",
     text: "",
@@ -495,7 +484,6 @@ export const ExitTerminatedColumns = (reload) => [
       <RenderTerminatedRow
         terminatedEmployee={row}
         terminatedEmployeeList={list}
-        reload={reload}
       />
     ),
   },
@@ -505,10 +493,7 @@ export const ExitResignedColumns = [
     dataField: "employee_id",
     text: "",
     formatter: (cell, row, list) => (
-      <RenderResignedRow
-        resignedEmployee={row}
-        resignedEmployeeList={list}
-      />
+      <RenderResignedRow resignedEmployee={row} resignedEmployeeList={list} />
     ),
   },
 ];

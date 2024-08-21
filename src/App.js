@@ -49,7 +49,7 @@ import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
-import ExitAndClearance from "app/modules/ExitAndClearance";
+import {ExitAndClearance} from "app/modules/ExitAndClearance";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
