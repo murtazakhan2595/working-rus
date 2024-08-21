@@ -42,38 +42,38 @@ import {
     children: [
       {
         type: "div",
-        className: "w-[100%] overflow-hidden p-2",
+        className: "",
         content: <LeaveTrackerOverview/>,
         value: "LeaveTracker",
       },
       {
         type: "div",
-        className: "w-[100%] overflow-hidden p-2",
+        className: "",
         content: <TalentSphere/>,
         value: "TalentSphere",
       },
       
       {
         type: "div",
-        className: "w-[100%] overflow-hidden p-2",
+        className: "",
         content: <MyTasks/>,
         value: "MyTasks",
       },
       {
         type: "div",
-        className: "w-[100%] overflow-hidden p-2",
+        className: "",
         content: <MyTeams/>,
         value: "MyTeam",
       },
       {
         type: "div",
-        className: "w-[100%] md:w-[30%] overflow-hidden p-2",
+        className: "",
         content: <MyLeaves/>,
         value: "MyLeaves",
       },
       {
         type: "div",
-        className: "w-[100%] md:w-[70%] overflow-hidden p-2",
+        className: "",
         content: <AllProjects/>,
         value: "AllProjects",
       },

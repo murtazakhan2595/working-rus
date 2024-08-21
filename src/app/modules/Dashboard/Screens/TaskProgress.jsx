@@ -181,69 +181,6 @@ export default function Component() {
     fetchData();
   }, []);
 
-
-  // const chartOptions = {
-  //   chart: {
-  //     type: "donut",
-  //   },
-  //   colors: ["#1A932E", "#E5AE21", "#E65F2B", "[#fff]"],
-  //   dataLabels: {
-  //     enabled: false,
-  //   },
-  //   plotOptions: {
-  //     pie: {
-  //       startAngle: -90,
-  //       endAngle: 90,
-  //       donut: {
-  //         size: "88%",
-  //       },
-  //     },
-  //   },
-  //   fill: {
-  //     colors: ["#1A932E", "#E5AE21", "#E65F2B", "[#fff]"],
-  //   },
-  //   legend: {
-  //     show: false,
-  //   },
-  //   tooltip: {
-  //     enabled: false, // Disable tooltips
-  //   },
-  // };
-
-  // Calculate the series values
-  // const getSegMentValue = (overallCompletion) => {
-  //   const firstSegment = 33.33;
-  //   const secondSegment = 33.33;
-  //   const thirdSegment = 33.33;
-  //   const remainingSegment = 100 - overallCompletion;
-  //   if (overallCompletion < firstSegment) {
-  //     return [overallCompletion, 0, 0, remainingSegment];
-  //   } else if (overallCompletion < firstSegment + secondSegment) {
-  //     return [
-  //       firstSegment,
-  //       firstSegment + secondSegment - overallCompletion,
-  //       0,
-  //       remainingSegment,
-  //     ];
-  //   } else if (
-  //     overallCompletion <
-  //     firstSegment + secondSegment + thirdSegment
-  //   ) {
-  //     return [
-  //       firstSegment,
-  //       secondSegment,
-  //       firstSegment + secondSegment + thirdSegment - overallCompletion,
-  //       remainingSegment,
-  //     ];
-  //   }
-  //   const chartSeries = [
-  //     firstSegment,
-  //     secondSegment,
-  //     thirdSegment,
-  //     remainingSegment,
-  //   ];
-  //   return chartSeries;
-  // };
   const frameworks = [
     {
       value: "next.js",
