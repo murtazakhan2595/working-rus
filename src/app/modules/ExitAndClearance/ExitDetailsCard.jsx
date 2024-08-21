@@ -190,7 +190,7 @@ const ExitDetailsCard = ({
                         <Col md="12">
                           <FileInput
                             name="cv"
-                            label=" Clearence Report or drag it here"
+                            label=" Clearance Report or drag it here"
                             acceptType=".pdf"
                             error={props.errors?.cv}
                             touch={props.touched?.cv}
