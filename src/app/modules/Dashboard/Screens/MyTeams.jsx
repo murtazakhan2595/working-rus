@@ -94,41 +94,43 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
                 <div className="text-[#5c5e64] text-[11px] font-normal ">
                   <DesignationName value={teamMemeber.department_position} />
                 </div>
-                {/* <div className="text-[#5c5e64] text-[11px] font-normal ">|</div>
-            <div className="text-[#5c5e64] text-[11px] font-normal "></div> */}
+                <div className="text-[#5c5e64] text-[11px] font-normal ">|</div>
+                <div className="text-[#5c5e64] text-[11px] font-normal "></div>
               </div>
             </div>
           </div>
         </div>
         {isOpen ? (
-          <FaChevronUp className="text-sm" />
+          <FaChevronUp className="text-sm cursor-pointer" />
         ) : (
-          <FaChevronDown className="text-sm" />
+          <FaChevronDown className="text-sm cursor-pointer" />
         )}
       </div>
       {isOpen && (
-        <Card className="p-0">
-          <CardBody className="p-2 flex items-center justify-end">
-            <div className=" p-2 bg-[#fafbfc] rounded-[5px] flex-col justify-start items-start inline-flex">
-              <div className="flex items-center gap-2">
+        <div className="pl-10 w-full">
+          <div className="p-2 w-full">
+            <div className=" p-2 bg-[#fafbfc] rounded-[5px] flex-col justify-start items-start inline-flex w-full">
+              <div className="flex items-center gap-2 h-[22px]">
                 <BsTelephone className="text-[#25a8e0]" />
                 <p className="text-[#5c5e64] text-[10px] font-normal  leading-snug">
                   Phone: {teamMemeber.mobile_no}
                 </p>
               </div>
-              <div className="flex items-center gap-2 mt-2">
-                <MdOutlineMail className="text-[#25a8e0]"/>
+              <div className="flex items-center gap-2 mt-2 h-[22px]">
+                <MdOutlineMail className="text-[#25a8e0]" />
                 <p className="text-[#5c5e64] text-[10px] font-normal  leading-snug">
                   Email: {teamMemeber.work_email}
                 </p>
               </div>
-              {/* <div className="flex items-center gap-2">
-                <AiOutlineHome />
-                <p>home: {}</p>
-              </div> */}
+              <div className="flex items-center gap-2 mt-2 h-[22px]">
+                <AiOutlineHome className="text-[#25a8e0]" />
+                <p className="text-[#5c5e64] text-[10px] font-normal  leading-snug">
+                  home: {}
+                </p>
+              </div>
             </div>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );

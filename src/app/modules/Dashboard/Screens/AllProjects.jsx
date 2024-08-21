@@ -7,37 +7,36 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { EmployeeName } from "utils/getValuesFromTables";
 
-
-export default function AllProjects(){
-    const userProfile = useSelector((state) => state.user.userProfile);
+export default function AllProjects() {
+  const userProfile = useSelector((state) => state.user.userProfile);
   const [isLoading, setIsLoading] = useState(true);
   const [AllProjects, setAllProjects] = useState([]);
-    const fetchData = async (isMounted) => {
-      setIsLoading(true);
-      try {
-        const projectsData = await getAllProjects({  }, userProfile);
-        if (isMounted) {
-          setAllProjects(projectsData);
-        }
-      } catch (error) {
-        console.error("Error fetching employeeLeaveTypes:", error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+  const fetchData = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      const projectsData = await getAllProjects({}, userProfile);
+      if (isMounted) {
+        setAllProjects(projectsData);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching employeeLeaveTypes:", error);
+    } finally {
+      if (isMounted) {
+        setIsLoading(false);
+      }
+    }
+  };
 
-    useEffect(() => {
-      let isMounted = true;
-      fetchData(isMounted);
-      return () => {
-        isMounted = false;
-      };
-    }, [userProfile]);
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [userProfile]);
 
   return (
-    <div className="w-full px-3.5 py-6 bg-white rounded-md flex-col justify-start items-end gap-6 inline-flex">
+    <div className="w-full px-3.5 py-6 bg-white rounded-md flex-col justify-start items-end gap-6 inline-flex h-full">
       <header className="justify-between items-center inline-flex w-full">
         <div className="text-[#323233] text-lg font-normal leading-tight">
           {userProfile.role === 4 ? "My Projects" : "All Projects"}
@@ -86,4 +85,4 @@ const RenderProject = ({ project }) => {
       <div className="h-[0px] border border-[#dadada] my-2.5"></div>
     </div>
   );
-}
+};
