@@ -29,7 +29,7 @@ import getNavigation from 'app/utils/Types/Navigation';
 
 export function UserNav() {
   const [employee, setEmployee] = useState(null);
-  // const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const token = window.localStorage.getItem("token");
   const [Navigation, setNavigation] = useState(null);
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -43,7 +43,7 @@ export function UserNav() {
 
   const fetchData = async () => {
     const employeeResponse = await axios.get(
-      `${baseUrl}/emp/${userProfile.id}`,
+     `${baseUrl}/emp/${userProfile.id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -53,11 +53,12 @@ export function UserNav() {
     const employeeData = employeeResponse.data;
     setEmployee(employeeData);
     setNavigation(getNavigation(employeeData.user_role));
-    // setProfileImage(
-    //   employeeResponse.data?.profile_picture?.file ||
-    //   employeeResponse.data?.profile_picture
-    // );
+    setProfileImage(
+      employeeResponse.data?.profile_picture?.file ||
+      employeeResponse.data?.profile_picture
+    );
   };
+  console.log(profileImage, "testing")
 
   useEffect(() => {
     fetchData();
@@ -76,7 +77,7 @@ export function UserNav() {
                 className="relative w-8 h-8 rounded-full"
               >
                 <Avatar className="w-8 h-8">
-                  <AvatarImage src="#" alt="Avatar" />
+                  <AvatarImage src={profileImage} alt="Avatar" />
                   <AvatarFallback className="bg-transparent">{combineFLName}</AvatarFallback>
 
                 </Avatar>
@@ -122,4 +123,4 @@ export function UserNav() {
   );
 }
 
-export default UserNav;
+export default UserNav;

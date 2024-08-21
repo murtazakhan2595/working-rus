@@ -183,16 +183,16 @@ export default function Component() {
 
   const frameworks = [
     {
-      value: "next.js",
-      label: "Next.js",
+      value: "project1",
+      label: "project1",
     },
     {
       value: "sveltekit",
       label: "SvelteKit",
     },
     {
-      value: "nuxt.js",
-      label: "Nuxt.js",
+      value: "project12",
+      label: "project12",
     },
     {
       value: "remix",
@@ -207,32 +207,32 @@ export default function Component() {
   const [open, setOpen] = useState(false);
   const chartConfig = {
     visitors: {
-      label: "Visitors",
+      label: "Compeletd",
     },
-    chrome: {
-      label: "Chrome",
+    project1: {
+      label: "Project1",
       color: "hsl(var(--chart-1))",
     },
-    safari: {
-      label: "Safari",
-      color: "hsl(var(--chart-2))",
+    project2: {
+      label: "Project2",
+      color: "hsl(var(--mauve-5))",
     },
-    firefox: {
-      label: "Firefox",
-      color: "hsl(var(--chart-3))",
+    project3: {
+      label: "Project3",
+      color: "hsl(var(--plum-7))",
     },
    
   }
   const chartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-    { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
+    { browser: "project1", visitors: 275, fill: "var(--color-project1)" },
+    { browser: "project2", visitors: 200, fill: "var(--color-project2)" },
+    { browser: "project3", visitors: 287, fill: "var(--color-project3)" },
     
   ]
   const totalVisitors = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
   }, [])
-  // const chartData = [{ browser: "safari", visitors: 200, fill: "var(--color-safari)" }]
+  // const chartData = [{ browser: "project2", visitors: 200, fill: "var(--color-project2)" }]
   return (
     <Card className="flex flex-col min-h-[400px]">
       <CardHeader className="items-start pb-0">
@@ -298,7 +298,7 @@ export default function Component() {
                           {totalVisitors.toLocaleString()}
                         </tspan>
                         <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground">
-                          Visitors
+                        Completed
                         </tspan>
                       </text>
                     )
@@ -306,36 +306,20 @@ export default function Component() {
                 }}
               />
             </Pie>
-            <ChartLegend
-              content={<ChartLegendContent nameKey="browser" />}
-              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
-            />
+            
           </PieChart>
           </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-
+      <div className="flex space-x-4">
+          {Object.values(chartConfig).map((item, index) => (
+            <div key={index} className="flex items-center text-sm text-mauve-900">
+              <div className={`w-3 h-3 mr-2 rounded-sm`} style={{ backgroundColor: item.color }}></div>
+              <span>{item.label}</span>
+            </div>
+          ))}
+        </div>   
       </CardFooter>
     </Card>
-  )
-}
-
-function TrendingUpIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-      <polyline points="16 7 22 7 22 13" />
-    </svg>
   )
 }
