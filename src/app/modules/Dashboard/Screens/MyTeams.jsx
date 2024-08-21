@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaChevronDown, FaChevronRight, FaChevronUp } from "react-icons/fa";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { DesignationName } from "utils/getValuesFromTables";
 import { getRandomColor } from "utils/renderValues";
@@ -11,30 +11,28 @@ import { BsTelephone } from "react-icons/bs";
 import { AiOutlineHome } from "react-icons/ai";
 import { MdOutlineMail } from "react-icons/md";
 
-
-
-const MyTeams =({userProfile, employees})=>{
+const MyTeams = ({ userProfile, employees }) => {
   const [teamMembers, setTeamMembers] = useState([]);
-   const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
-      const user  = employees.find((emp) => emp.value === userProfile.id)
-      try{
-        const response =await getEmployeeCustomList({
+      const user = employees.find((emp) => emp.value === userProfile.id);
+      try {
+        const response = await getEmployeeCustomList({
           filterData: { department_name: user.department_name },
         });
-        if(response){
+        if (response) {
           setTeamMembers(response);
         }
-      }catch(err){
-        console.error(err)
+      } catch (err) {
+        console.error(err);
       }
-    }
-    fetchData()
-    }, [userProfile, employees]);
-     const toggleCollapse = (index) => {
-       setOpenIndex(openIndex === index ? null : index);
-     };
+    };
+    fetchData();
+  }, [userProfile, employees]);
+  const toggleCollapse = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
 
   return (
     <div>
@@ -54,7 +52,7 @@ const MyTeams =({userProfile, employees})=>{
             </div>
           </header>
           <div className="overflow-y-auto no-scrollbar max-h-[362px]">
-            {teamMembers.count > 0 &&
+            {teamMembers.count > 0 ? (
               teamMembers.results.map((member, index) => (
                 <RenderTeamMembers
                   key={index}
@@ -62,14 +60,18 @@ const MyTeams =({userProfile, employees})=>{
                   isOpen={openIndex === index}
                   toggle={() => toggleCollapse(index)}
                 />
-              ))}
+              ))
+            ) : (
+              <p className="text-[#5c5e64] font-normal text-center">
+                No members in your team yet.
+              </p>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
-
-}
+};
 
 const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
   return (
@@ -138,7 +140,7 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
-    employees: state.emp.employees
+    employees: state.emp.employees,
   };
 };
 

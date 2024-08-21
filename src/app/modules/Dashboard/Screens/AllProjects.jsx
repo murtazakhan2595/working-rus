@@ -51,10 +51,15 @@ export default function AllProjects() {
         </div>
       </header>
       <div className="w-full max-h-[236px] overflow-y-auto no-scrollbar">
-        {AllProjects.count > 0 &&
+        {AllProjects.count > 0 ? (
           AllProjects.results.map((project) => (
             <RenderProject key={project.id} project={project} />
-          ))}
+          ))
+        ) : (
+          <p className="text-[#5c5e64] font-normal text-center">
+            No new projects found.
+          </p>
+        )}
       </div>
     </div>
   );

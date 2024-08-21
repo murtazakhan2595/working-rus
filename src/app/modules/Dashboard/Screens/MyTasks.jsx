@@ -215,9 +215,9 @@ export default function MyTasks() {
           {tasks.length > 0 ? (
             tasks.map((task) => <RenderTask key={task.id} task={task} />)
           ) : (
-            <div className="text-[#5c5e64] text-sm font-normal text-center">
-              No tasks found
-            </div>
+            <p className="text-[#5c5e64] font-normal text-center mt-3">
+              No tasks found.
+            </p>
           )}
         </div>
       </div>

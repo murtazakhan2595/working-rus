@@ -50,10 +50,15 @@ export default function MyLeaves() {
           </div>
         </header>
         <div className="max-h-[236px] overflow-y-auto no-scrollbar">
-          {leave.count > 0 &&
+          {leave.count > 0 ? (
             leave.results.map((leave) => (
               <RenderMyLeaves leave={leave} key={leave.id} />
-            ))}
+            ))
+          ) : (
+            <p className="text-[#5c5e64] font-normal text-center">
+              You haven't taken any leave yet.
+            </p>
+          )}
         </div>
       </div>
     </div>
