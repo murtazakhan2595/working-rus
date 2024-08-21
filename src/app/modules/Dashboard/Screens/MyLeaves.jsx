@@ -56,7 +56,7 @@ export default function MyLeaves() {
             ))
           ) : (
             <p className="text-[#5c5e64] font-normal text-center">
-              You haven't taken any leave yet.
+              You haven't taken any leaves yet.
             </p>
           )}
         </div>
