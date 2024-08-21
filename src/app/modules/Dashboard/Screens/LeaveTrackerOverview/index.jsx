@@ -152,7 +152,7 @@ export default function LeaveTrackerOverview() {
   return (
     <div className="h-fit px-3.5 pt-6 pb-3 bg-white rounded-md flex-col justify-start items-start gap-4 inline-flex w-full ">
       <div className=" justify-between w-full items-center gap-[19px] inline-flex">
-        <div className=" p-3 rounded-lg justify-start items-center gap-3 flex">
+        <div className="flex items-center justify-start gap-3 p-3 rounded-lg ">
           <RxCalendar />
           <div className="text-[#323233] text-lg font-normal  leading-tight">
             Leave Tracker
@@ -170,7 +170,7 @@ export default function LeaveTrackerOverview() {
       <div className="flex gap-4">
         <div className="md:w-[75%] sm:w-[100%]">
           <div className="py-0.5 mb-2 justify-between items-center gap-2 flex flex-wrap w-full">
-            <div className="justify-start items-center gap-2 flex flex-wrap">
+            <div className="flex flex-wrap items-center justify-start gap-2">
               <RenderLeaveStatusDropdown
                 status={filterOption}
                 setFilterOption={setFilterOption}
@@ -180,7 +180,7 @@ export default function LeaveTrackerOverview() {
                 value={`${pending_leaves} Pending`}
               />
             </div>
-            <div className="justify-start items-center gap-2 flex flex-wrap">
+            <div className="flex flex-wrap items-center justify-start gap-2">
               <FilterInput
                 filters={[
                   {
@@ -209,7 +209,7 @@ export default function LeaveTrackerOverview() {
               />
             </div>
           </div>
-          <div className="h-80 overflow-y-auto m-bottom-zero hideScroll" >
+          <div className="overflow-y-auto h-80 m-bottom-zero hideScroll" >
             <Table
               hideTableHeader={true}
               columns={DashboardLeaveTrackerColumns}
@@ -223,14 +223,14 @@ export default function LeaveTrackerOverview() {
           <div className="w-full text-sm font-bold tracking-normal text-zinc-800">
             Who’s on Leave{" "}
           </div>
-          <div className="mt-6 w-full text-sm text-zinc-400">Today</div>
+          <div className="w-full mt-6 text-sm text-zinc-400">Today</div>
           {onLeaveToday?.map((application) => (
             <div className="mt-[23px] flex flex-col gap-2">
               <div className="w-full text-xs text-zinc-600">Nov 09 -Nov 20</div>
               <FormateLeaveTrackerName row={application} />
             </div>
           ))}
-          <div className="mt-6 w-full text-sm text-zinc-400">Next Week</div>
+          <div className="w-full mt-6 text-sm text-zinc-400">Next Week</div>
           {onLeaveNextWeek?.map((application) => (
             <div className="mt-[23px] flex flex-col gap-2">
               <div className="w-full text-xs text-zinc-600">

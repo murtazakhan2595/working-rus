@@ -14,17 +14,17 @@ import {
   const DashboardHR = [
   {
     type: "div",
-    className: "flex flex-wrap w-[100%] lg:w-[70%]",
+    className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
     children: [
       {
         type: "div",
-        className: "h-[290px] w-[100%] md:w-[50%] overflow-hidden p-2",
+        className: "",
         content: <EmployeeOverview/>,
         value: "EmployeeOverview",
       },
       {
         type: "div",
-        className: "h-[290px] w-[100%] md:w-[50%] overflow-hidden p-2",
+        className: "",
         content: <TaskProgress/>,
         value: "TaskProgress",
       },
@@ -40,12 +40,6 @@ import {
         content: <TalentSphere/>,
         value: "TalentSphere",
       },
-    ],
-  },
-  {
-    type: "div",
-    className: "flex flex-wrap w-[100%] lg:w-[30%]",
-    children: [
       {
         type: "div",
         className: "w-[100%] overflow-hidden p-2",
@@ -64,12 +58,6 @@ import {
         content: <MyTeams/>,
         value: "MyTeam",
       },
-    ],
-  },
-  {
-    type: "div",
-    className: " flex flex-wrap w-[100%]",
-    children: [
       {
         type: "div",
         className: "w-[100%] md:w-[30%] overflow-hidden p-2",
@@ -84,6 +72,48 @@ import {
       },
     ],
   },
+  // {
+  //   type: "div",
+  //   className: "flex flex-wrap w-[100%] lg:w-[30%]",
+  //   children: [
+  //     {
+  //       type: "div",
+  //       className: "w-[100%] overflow-hidden p-2",
+  //       content: <RecentActivity/>,
+  //       value: "RecentActivity",
+  //     },
+  //     {
+  //       type: "div",
+  //       className: "w-[100%] overflow-hidden p-2",
+  //       content: <MyTasks/>,
+  //       value: "MyTasks",
+  //     },
+  //     {
+  //       type: "div",
+  //       className: "w-[100%] overflow-hidden p-2",
+  //       content: <MyTeams/>,
+  //       value: "MyTeam",
+  //     },
+  //   ],
+  // },
+  // {
+  //   type: "div",
+  //   className: " flex flex-wrap w-[100%]",
+  //   children: [
+  //     {
+  //       type: "div",
+  //       className: "w-[100%] md:w-[30%] overflow-hidden p-2",
+  //       content: <MyLeaves/>,
+  //       value: "MyLeaves",
+  //     },
+  //     {
+  //       type: "div",
+  //       className: "w-[100%] md:w-[70%] overflow-hidden p-2",
+  //       content: <AllProjects/>,
+  //       value: "AllProjects",
+  //     },
+  //   ],
+  // },
 ];
 const DashboardManager = [
   {

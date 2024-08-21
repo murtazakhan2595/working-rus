@@ -68,7 +68,7 @@ const Dashboard = ({ userProfile }) => {
   return (
     <>    
       
-      <div className="screen dashboard ">
+      <div className="dashboard ">
      <Header/>
         <div className="flex flex-wrap">
           {DashBoardSections.map((section, index) => {
