@@ -39,15 +39,12 @@ export default function LeaveTrackerOverview() {
     }
     if (filterApplications.department_position) {
       const position = parseInt(filterApplications.department_position, 10);
-      console.log("position", position);
       filteredData = filteredData.filter((item) => {
         return Number(item.position) === position;
       });
     }
     if (filterOption !== "All Requests") {
       filteredData = filteredData.filter((item) => {
-        console.log("filterOption", filterOption);
-        console.log("status_hr", item.status_hr);
         if (filterOption === "Approved") {
           return item.status_hr === "Approved by HR";
         } else if (filterOption === "Pending") {

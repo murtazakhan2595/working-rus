@@ -42,7 +42,7 @@ const ProfileManagement = () => {
       </header>
 
       <div className="flex flex-col mt-6">
-        <div className="flex flex-col pb-4 border-b border-zinc-300">
+        <div className="flex flex-col pb-4 border-b border-zinc-300 ">
           <div className="flex gap-4">
             <img
               loading="lazy"
@@ -59,16 +59,16 @@ const ProfileManagement = () => {
           </div>
         </div>
 
-        <div className="mt-2 text-sm">
-          <div className="flex gap-5 self-start mt-1">
-            <div className="  text-zinc-600">Contact Number</div>
-            <div className="my-auto  text-zinc-800">
+        <div className="mt-2 text-sm ">
+          <div className="flex self-start mt-1 h-10">
+            <div className="  text-zinc-600 w-1/2">Contact Number</div>
+            <div className="my-auto  text-zinc-800 w-1/2">
               {profileData?.contactNumber}
             </div>
           </div>
-          <div className="flex gap-5 self-start mt-2">
-            <div className=" text-zinc-600">Email Address</div>
-            <div className="my-auto  text-zinc-800">
+          <div className="flex self-start mt-1 h-10">
+            <div className=" text-zinc-600 w-1/2">Email Address</div>
+            <div className="my-auto  text-zinc-800 w-1/2">
               {profileData?.emailAddress}
             </div>
           </div>

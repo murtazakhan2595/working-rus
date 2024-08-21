@@ -13,7 +13,7 @@ import {
   EmployeeID,
   ResignationStatus,
   ResignationReason,
-  ManagerName
+  ManagerName,
 } from "utils/getValuesFromTables";
 import moment from "moment";
 
@@ -89,6 +89,7 @@ const RenderResignedRow = ({ resignedEmployee, resignedEmployeeList }) => {
 };
 
 const ResignedDetails = ({ ResignedData, closeModel, next, previous }) => {
+  console.log("ResignedData", ResignedData);
   return (
     <div className="bg-white view-modal-card hideScroll">
       <ViewDetailHeader
@@ -165,6 +166,5 @@ const ResignedDetails = ({ ResignedData, closeModel, next, previous }) => {
     </div>
   );
 };
-
 
 export default RenderResignedRow;

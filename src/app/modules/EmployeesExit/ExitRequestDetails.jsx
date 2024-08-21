@@ -40,7 +40,6 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
     setLoading(true);
     try {
       let empData = await getEmployeeData(userProfile.id);
-      console.log("emp data at exit", empData);
       setUserData(empData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -69,7 +68,7 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
           getDataByHooks={getDataByHooks}
         />
       )}
-      <ExitDetails exitData={exitData} isTermination={isTermination}/>
+      <ExitDetails exitData={exitData} isTermination={isTermination} />
     </div>
   );
 };

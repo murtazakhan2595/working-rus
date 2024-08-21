@@ -15,13 +15,11 @@ import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
 import { terminationReasonsOptions } from "data/Data";
 
-
 const { RxCross2 } = require("react-icons/rx");
-
 
 const RequestTerminationCard = ({ employees, closeModel }) => {
   const [initialValues, setInitialValues] = React.useState({});
-  const [employeeData, setEmployeeData] = React.useState([[] ]);
+  const [employeeData, setEmployeeData] = React.useState([[]]);
   const formRef = React.createRef();
 
   const employeeFootPrint = [
@@ -83,15 +81,15 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
         ],
       ];
       setEmployeeData(employeeDataArray);
-
     } catch (e) {
       console.error(e);
     }
   };
-  const handleSubmit =async (values, resetForm) => {
+  const handleSubmit = async (values, resetForm) => {
     console.log(values);
     const payload = {
-      exit_date: values.exit_interview_date,
+      exit_date: values.last_working_day,
+      exit_interview_date: values.exit_interview_date,
       final_working_day: values.last_working_day,
       exit_category: "termination",
       termination_letter: values.termination_letter,
@@ -99,17 +97,16 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
       employee_id: values.terminate_employee,
       reason_of_termination: values.reason_for_terminating,
     };
-    try{
+    try {
       const response = await employeeExit(payload);
-      if(response){
+      if (response) {
         toast.success("Termination request submitted successfully");
         closeModel();
       }
-    }catch(e){
+    } catch (e) {
       console.error(e);
       toast.error("Failed to submit the form");
     }
-
   };
   return (
     <div
@@ -256,7 +253,6 @@ const RequestTerminationCard = ({ employees, closeModel }) => {
                         error={props.errors.reason_for_terminating}
                         touch={props.touched.reason_for_terminating}
                         value={props.values.reason_for_terminating}
-
                         label={"Reason for Terminating"}
                         onChange={(field, value) => {
                           console.log("value", value);
@@ -310,4 +306,4 @@ const mapStateToProps = (state) => {
     employees: state.emp.employees,
   };
 };
-export default  connect(mapStateToProps)(RequestTerminationCard);
+export default connect(mapStateToProps)(RequestTerminationCard);
