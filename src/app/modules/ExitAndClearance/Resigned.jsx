@@ -13,7 +13,7 @@ const Resigned = React.memo(({ userProfile, departments }) => {
   const [filterData, setFilterData] = useState({
     exit_category: "resignation",
     status_resignation: "exit interview",
-    ...(userProfile.role === 2 ? { report_to: userProfile.id } : {}),
+    ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
   const [options, setOptions] = useState({
     page: 1,
@@ -72,7 +72,7 @@ const Resigned = React.memo(({ userProfile, departments }) => {
           {
             type: "select",
             option: departments,
-            name: "department_name",
+            name: "departments",
             placeholder: "Department",
           },
         ]}

@@ -96,13 +96,13 @@ const ExitDetailsCard = ({
             backgroungColor={`bg-[#f4e4eb]`}
           />
           <div className="flex flex-wrap items-center justify-between w-full">
-            <div className="flex flex-col gap-2 justify-start">
+            <div className="flex flex-col gap-2 justify-start max-w-[70%]">
               <h1 className="text-2xl font-bold text-zinc-800 mb-0">
                 {resignation.emp_name}
               </h1>
               <p className=" text-base text-zinc-600">
                 ID: <EmployeeID value={resignation?.employee_id} /> |{" "}
-                <DesignationName value={resignation.department_position} /> |
+                <DesignationName value={resignation.position} /> |
                 <DepartmentName value={resignation.department_name} />
               </p>
             </div>

@@ -14,7 +14,7 @@ const Terminations = ({ userProfile }) => {
   const [Terminations, setTerminations] = useState(null);
   const [filterData, setFilterData] = useState({
     exit_category: "termination",
-    ...(userProfile.role === 2 ? { report_to: userProfile.id } : {}),
+    ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
   const [options, setOptions] = useState({
     page: 1,

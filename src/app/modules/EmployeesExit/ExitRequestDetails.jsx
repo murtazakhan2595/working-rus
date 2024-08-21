@@ -31,11 +31,10 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
         data: <ManagerName value={userData?.direct_report} />,
       },
       { title: "Work Type", data: userData?.employee_work_type?.toLowerCase()?.split("_").join(" ") },
-      { title: "Organization", data: exitData?.organization?.[0] },
+      { title: "Organization", data: exitData?.organization },
       { title: "Phone no.", data: userData?.mobile_no },
     ],
   ];
-  console.log("exitInfo", exitInfo, exitData);
 
   const getDataByHooks = async () => {
     setLoading(true);

@@ -63,12 +63,12 @@ const RenderResignedRow = ({ resignedEmployee, resignedEmployeeList }) => {
       <div className="flex flex-row justify-between items-center  flex-wrap gap-x-10 gap-y-5 px-2 py-3 mt-3">
         <div
           className=""
-          style={{ maxWidth: "calc(100% - 11.7rem)", minWidth: "420px" }}
+          style={{ maxWidth: "calc(100% - 12.5rem)", minWidth: "420px" }}
         >
           <EmployeeNameInfo
             name={resignedEmployee.emp_name}
             department={resignedEmployee.department_name}
-            position={resignedEmployee.department_position}
+            position={resignedEmployee.position}
             id={resignedEmployee.employee_id}
           />
         </div>
@@ -106,7 +106,7 @@ const ResignedDetails = ({ ResignedData, closeModel, next, previous }) => {
           <p className=" text-base text-zinc-600">
             ID:
             <EmployeeID value={ResignedData?.employee_id} /> |{" "}
-            <DesignationName value={ResignedData.department_position} /> |
+            <DesignationName value={ResignedData.position} /> |
             <DepartmentName value={ResignedData.department_name} />
           </p>
         </section>
@@ -123,7 +123,7 @@ const ResignedDetails = ({ ResignedData, closeModel, next, previous }) => {
               },
               {
                 label: "Report to",
-                value: <ManagerName value={ResignedData.report_to[0]} />,
+                value: <ManagerName value={ResignedData.report_to} />,
               },
               {
                 label: "Reason for leaving",
@@ -153,6 +153,10 @@ const ResignedDetails = ({ ResignedData, closeModel, next, previous }) => {
               {
                 name: `${ResignedData.emp_name} - Resignation letter`,
                 file: ResignedData?.resignation_letter,
+              },
+              {
+                name: `${ResignedData.emp_name} - Clearance letter`,
+                file: ResignedData?.clearance_report,
               },
             ]}
           />

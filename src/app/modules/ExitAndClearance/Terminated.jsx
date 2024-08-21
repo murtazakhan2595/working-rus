@@ -13,7 +13,7 @@ const Terminated = ({ userProfile, departments}) => {
   const [filterData, setFilterData] = useState({
     exit_category: "termination",
     status_termination: "exit interview",
-    ...(userProfile.role === 2 ? { report_to: userProfile.id } : {}),
+    ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
   const [options, setOptions] = useState({
     page: 1,
@@ -70,7 +70,7 @@ const Terminated = ({ userProfile, departments}) => {
           {
             type: "select",
             option: departments,
-            name: "department_name",
+            name: "departments",
             placeholder: "Department",
           },
         ]}
