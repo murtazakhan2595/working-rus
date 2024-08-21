@@ -155,7 +155,7 @@ export default function LeaveTrackerOverview() {
         <div className="flex items-center justify-start gap-3 p-3 rounded-lg ">
           <RxCalendar />
           <div className="text-[#323233] text-lg font-normal  leading-tight">
-            Leave Tracker
+            Leave Tracker 1
           </div>
         </div>
         <Link to="/leave-request-management">

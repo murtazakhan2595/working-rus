@@ -1,9 +1,10 @@
-import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts";
+import { Label, PolarRadiusAxis, RadialBar, RadialBarChart, Legend } from "recharts";
 import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../../src/@/components/ui/card";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../../../../src/@/components/ui/chart";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent,ChartLegend,
+  ChartLegendContent } from "../../../../src/@/components/ui/chart";
 import { getEmployeeCustomList } from "app/hooks/general";
 import { Button } from 'components/ui/button';
 import { Link } from 'react-router-dom';
@@ -35,13 +36,15 @@ export default function Component() {
   };
 
   const chartData = [
-    { active: (employeeData.active || 97), offboarding: (employeeData.offboarding || 10) },
+    { active: (employeeData.active || 97),
+      offboarding: (employeeData.offboarding || 10) 
+    },
   ];
 
   const totalEmployees = chartData[0].active + chartData[0].offboarding;
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col min-h-[400px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="text-base font-semibold text-plum-1100">Total Employees</div>
@@ -52,7 +55,7 @@ export default function Component() {
         <CardDescription className="text-slate-900">January - June 2024</CardDescription>
       </CardHeader>
       <CardContent className="flex items-center flex-1 pb-0">
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square w-full max-w-[250px]">
+        <ChartContainer config={chartConfig} className="mx-auto aspect-square w-full max-w-[250px]  ">
           <RadialBarChart data={chartData} endAngle={180} innerRadius={80} outerRadius={130}>
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
@@ -73,10 +76,16 @@ export default function Component() {
             </PolarRadiusAxis>
             <RadialBar dataKey="active" stackId="a" cornerRadius={5} fill="var(--color-active)" className="stroke-2 stroke-transparent" />
             <RadialBar dataKey="offboarding" fill="var(--color-offboarding)" stackId="a" cornerRadius={5} className="stroke-2 stroke-transparent" />
+            <ChartLegend
+              content={<ChartLegendContent />}
+              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+            />
           </RadialBarChart>
+         
         </ChartContainer>
       </CardContent>      
         <CardFooter className="flex justify-center">
+     
         <div className="flex space-x-4">
           {Object.values(chartConfig).map((item, index) => (
             <div key={index} className="flex items-center text-sm text-mauve-900">

@@ -70,7 +70,7 @@ const Dashboard = ({ userProfile }) => {
       
       <div className="dashboard ">
      <Header/>
-        <div className="flex flex-wrap">
+        <div className="">
           {DashBoardSections.map((section, index) => {
             if (!!filterData[section.value])
               return (

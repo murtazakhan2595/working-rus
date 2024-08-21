@@ -139,7 +139,7 @@ import { getAllLabels } from "app/hooks/taskManagment";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Label, Pie, PieChart } from "recharts"
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../../../../src/@/components/ui/chart"
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "../../../../src/@/components/ui/chart"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../../src/@/components/ui/card";
 import { Button } from "components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react"
@@ -297,7 +297,7 @@ export default function Component() {
   }, [])
   // const chartData = [{ browser: "safari", visitors: 200, fill: "var(--color-safari)" }]
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col min-h-[400px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="text-base font-semibold text-plum-1100">{userProfile.role === 4 ? "My Progress" : "Project Progress"} </div>
@@ -369,8 +369,12 @@ export default function Component() {
                 }}
               />
             </Pie>
+            <ChartLegend
+              content={<ChartLegendContent nameKey="browser" />}
+              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+            />
           </PieChart>
-        </ChartContainer>
+          </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
 

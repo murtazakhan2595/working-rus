@@ -30,6 +30,18 @@ import {
       },
       {
         type: "div",
+        className: "",
+        content: <RecentActivity/>,
+        value: "RecentActivity",
+      },
+    ],
+  },
+  {
+    type: "div",
+    className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2",
+    children: [
+      {
+        type: "div",
         className: "w-[100%] overflow-hidden p-2",
         content: <LeaveTrackerOverview/>,
         value: "LeaveTracker",
@@ -40,12 +52,7 @@ import {
         content: <TalentSphere/>,
         value: "TalentSphere",
       },
-      {
-        type: "div",
-        className: "w-[100%] overflow-hidden p-2",
-        content: <RecentActivity/>,
-        value: "RecentActivity",
-      },
+      
       {
         type: "div",
         className: "w-[100%] overflow-hidden p-2",
@@ -70,8 +77,11 @@ import {
         content: <AllProjects/>,
         value: "AllProjects",
       },
-    ],
-  },
+    ]
+  }
+  ];
+     
+  
   // {
   //   type: "div",
   //   className: "flex flex-wrap w-[100%] lg:w-[30%]",
@@ -114,7 +124,7 @@ import {
   //     },
   //   ],
   // },
-];
+
 const DashboardManager = [
   {
     type: "div",
