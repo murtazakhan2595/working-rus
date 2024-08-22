@@ -26,8 +26,8 @@ export default function Component() {
     <Card className="w-full max-w-md min-h-[400px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
-          <div className="text-base font-semibold text-plum-1100">Recent Activity</div>
-          <Button variant="outline" className="text-sm rounded-full text-slate-900 h-7">
+          <div className="font-semibold text-plum-1100">Recent Activity</div>
+          <Button variant="outline" className="">
             <Link to="#">View Details</Link>
           </Button>
         </CardTitle>

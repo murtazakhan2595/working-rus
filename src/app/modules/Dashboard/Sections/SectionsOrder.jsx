@@ -38,11 +38,11 @@ import {
   },
   {
     type: "div",
-    className: "grid grid-cols-[200px_minmax(1fr,_.5fr)_100px] gap-4 ",
+    className: "leave-traker ",
     children: [
       {
         type: "div",
-        className: "",
+        className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
         content: <LeaveTrackerOverview/>,
         value: "LeaveTracker",
       },

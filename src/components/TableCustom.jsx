@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../src/@/components/ui/table";
 import {
   Pagination,
   PaginationItem,
@@ -8,10 +9,10 @@ import {
   DropdownItem,
   DropdownMenu,
 } from "reactstrap";
-import "./style.css";
+
 import { IoMdArrowDropdown } from "react-icons/io";
 
-const Table = ({
+const TableCustom = ({
   columns,
   data,
   tableOptions,
@@ -38,29 +39,39 @@ const Table = ({
       tableOptions.onPageChange(name, page);
     }
   };
-
+  const [sort, setSort] = useState({ key: '', order: 'asc' });
+  const handleSort = (key) => {
+    if (sort.key === key) {
+      setSort({ key, order: sort.order === "asc" ? "desc" : "asc" })
+    } else {
+      setSort({ key, order: "asc" })
+    }
+  }
   return (
     <div className={`table-container ${className}`}>
-      <table className="table custom-table">
+      New Table
+    
+      <Table>
         {!hideTableHeader && (
-          <thead>
-            <tr>
-              {columns.map((column, index) => (
-                <th
-                  key={index}
-                  style={column.width ? { width: `${column.width}` } : {}}
-                >
-                  {column.text}
-                </th>
-              ))}
-            </tr>
-          </thead>
-        )}
-        <tbody>
+          <TableHeader>
+          <TableRow>
+          {columns.map((column, index) => (
+          <TableHead className="cursor-pointer" onClick={() => handleSort('{column.text}')} key={index} style={column.width ? { width: `${column.width}` } : {}}>
+                {column.text}
+                 {sort.key === '{column.text}' && <span className="ml-1">{sort.order === "asc" ? "\u2191" : "\u2193"}</span>}
+               </TableHead>
+          ))}
+          </TableRow>
+          
+       
+         </TableHeader>
+       )}
+       <TableBody>
+        
           {data && data.length > 0 ? (
             data.map((row,recordIndex) => (
               <React.Fragment key={row.id}>
-                <tr
+                <TableRow
                   onClick={() => {
                     if (rowExpand) toggleExpandRow(row.id);
                     else if (tableOptions?.onRowClick)
@@ -68,7 +79,7 @@ const Table = ({
                   }}
                 >
                   {columns.map((column, index) => (
-                    <td
+                    <TableCell
                       className={`${column.onClick ? "cursor-pointer" : ""}`}
                       key={index}
                       style={{
@@ -89,9 +100,9 @@ const Table = ({
                             index
                           )
                         : row[column.dataField]}
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
                 {expandedRow === row.id && (
                   <tr style={{ background: "white" }}>
                     <td colSpan={columns.length}>
@@ -108,7 +119,8 @@ const Table = ({
               </td>
             </tr>
           )}
-        </tbody>
+          </TableBody>
+        
         {pagination && (
           <tfoot>
             <tr>
@@ -123,8 +135,9 @@ const Table = ({
             </tr>
           </tfoot>
         )}
-      </table>
-    </div>
+      </Table>
+   </div>
+            
   );
 };
 
@@ -239,4 +252,4 @@ const CustomPagePagination = ({
   );
 };
 
-export default Table;
+export default TableCustom;

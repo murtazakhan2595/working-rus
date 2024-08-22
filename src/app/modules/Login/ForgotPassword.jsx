@@ -7,7 +7,7 @@ import { PiCaretCircleLeftFill } from "react-icons/pi";
 import { Link } from "react-router-dom";
 
 import { Button } from "../../../components/ui/button"
-import { Input } from "../../../src/@/components/ui/input"
+import { Input } from "../../../components/ui/input"
 
 const ForgotPassword = () => {
     const baseUrl = useSelector((state) => state.user.baseUrl);

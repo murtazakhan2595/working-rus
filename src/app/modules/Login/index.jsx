@@ -24,7 +24,7 @@ import { handleUpdateProfile } from "data/Data";
 
 import { Link } from 'react-router-dom';
 import { Button } from "../../../components/ui/button";
-import { Input } from "./../../../src/@/components/ui/input";
+import { Input } from "../../../components/ui/input";
 import { Label } from "./../../../src/@/components/ui/label";
 import NewLogo from "../.././../assets/images/NewLogo";
 

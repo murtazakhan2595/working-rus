@@ -1,10 +1,12 @@
 import { UserNav } from "./user-nav";
 import { SheetMenu } from "./sheet-menu";
 import { Bell } from "lucide-react";
-import { Input } from "../../src/@/components/ui/input";
 import Notifications  from "../../app/shared/templates/Sidebar/Notifications/Notifications";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import SearchInput  from "./search";
+
+
 function Navbar({ title, setUserLogout }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const navigate = useNavigate();
@@ -31,13 +33,14 @@ function Navbar({ title, setUserLogout }) {
         </div>
 
         <div className="flex items-center justify-end flex-1 space-x-2">
-          <div className="relative flex-1 ml-auto md:grow-0">
+        <SearchInput />
+          {/* <div className="relative flex-1 ml-auto md:grow-0">
             <Input
               type="search"
               placeholder="Search..."
               className="w-full rounded-full bg-background pl-8 md:w-[200px] lg:w-[336px]"
             />
-          </div>
+          </div> */}
           
             <Bell className="text-xl" onClick={handleShowNotifications}/>
           

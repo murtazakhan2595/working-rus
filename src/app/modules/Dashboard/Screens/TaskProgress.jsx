@@ -237,14 +237,14 @@ export default function Component() {
     <Card className="flex flex-col min-h-[400px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
-          <div className="text-base font-semibold text-plum-1100">{userProfile.role === 4 ? "My Progress" : "Project Progress"} </div>
+          <div className="font-semibold text-plum-1100">{userProfile.role === 4 ? "My Progress" : "Project Progress"} </div>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="w-[200px] justify-between rounded-full h-7"
+                className="w-[200px] justify-between"
               >
                 {value
                   ? frameworks.find((framework) => framework.value === value)?.label

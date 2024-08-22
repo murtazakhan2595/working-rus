@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
+import { Card, CardContent, CardHeader, CardDescription, CardTitle, CardFooter, CardSubTitle, CardActions, CardSection, CardBody } from "../../../src/@/components/ui/card";
 import { EmployeeColumns } from "app/utils/Types/TableColumns";
-import { PageLoader, Table } from "components";
-import "./style.css";
+import TableCustom from "components/TableCustom";
+
+
 import EmpDataHeader from "./Screens/Sections/Header.jsx";
 import tie from "assets/images/tie.png";
 import profile from "assets/images/profile.png";
@@ -16,6 +17,8 @@ import {
   getDesignationList,
   getEmployeeCustomList,
 } from "app/hooks/general.jsx";
+
+import { PageLoader } from "components";
 
 const Employee = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -131,90 +134,89 @@ const Employee = () => {
           image: active,
         },
       ])}
-      <Row>
-        <Col lg={12} className="mx-auto">
-          <Card className="p-0">
+
+      <div className="flex flex-row">
+        <div className="flex flex-col w-full">
+          <Card>
             <CardHeader>
-              <Row>
-                <Col lg={12}>
-                  <div className="py-3 px-3">
-                    <FilterInput
-                      filters={[
-                        {
-                          type: "search",
-                          placeholder: "Search by ID and Name",
-                          name: "id_and_first_name",
-                        },
-                        {
-                          type: "select",
-                          option: departments,
-                          name: "department_name",
-                          placeholder: "Department",
-                        },
-                        {
-                          type: "select",
-                          option: designations,
-                          name: "department_position",
-                          placeholder: "Designation",
-                        },
-                        {
-                          type: "select",
-                          option: UserRoles,
-                          name: "user_role",
-                          placeholder: "Role",
-                        },
-                      ]}
-                      onChange={handleFilterChange}
+              <div className="px-3 py-3">
+                <FilterInput
+                  filters={[
+                    {
+                      type: "search",
+                      placeholder: "Search by ID and Name",
+                      name: "id_and_first_name",
+                    },
+                    {
+                      type: "select",
+                      option: departments,
+                      name: "department_name",
+                      placeholder: "Department",
+                    },
+                    {
+                      type: "select",
+                      option: designations,
+                      name: "department_position",
+                      placeholder: "Designation",
+                    },
+                    {
+                      type: "select",
+                      option: UserRoles,
+                      name: "user_role",
+                      placeholder: "Role",
+                    },
+                  ]}
+                  onChange={handleFilterChange}
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div classname="flex flex-row">
+                  <div className="flex flex-col w-full">
+                    <PageLoader />
+                  </div>
+                </div>
+              ) : (
+                <div classname="flex flex-row">
+                  <div className="flex flex-col w-full">
+
+                    <TableCustom
+                      data={employeeData.results || []}
+                      columns={EmployeeColumns}
+                      pagination={true}
+                      dataTotalSize={employeeData.count || 0}
+                      tableOptions={tableOptions}
                     />
                   </div>
-                </Col>
-              </Row>
-            </CardHeader>
-            <CardBody>
-              {isLoading ? (
-                <Row>
-                  <Col lg={12}>
-                    <PageLoader />
-                  </Col>
-                </Row>
-              ) : (
-                <Row>
-                  <Col lg={12}>
-                    <div>
-                      <Table
-                        data={employeeData.results || []}
-                        columns={EmployeeColumns}
-                        pagination={true}
-                        dataTotalSize={employeeData.count || 0}
-                        tableOptions={tableOptions}
-                      />
-                    </div>
-                  </Col>
-                </Row>
+                </div>
+
               )}
-            </CardBody>
+            </CardContent>
           </Card>
-        </Col>
-      </Row>
+        </div>
+      </div>
+
     </div>
+
   );
 };
 
 function Blocks(blocks) {
   return (
-    <Row className="flex items-center">
+    <div className="flex flex-row items-center">
       {blocks &&
         blocks.map((block) => SubBlock(block.label, block.value, block.image))}
-    </Row>
+    </div>
   );
 
   function SubBlock(label, value, image) {
     return (
-      <Col md={4} className="mb-3">
+      <div md={4} className="flex flex-col mb-3">
         <div className="bg-[#FAFBFC] rounded-[20px] p-4 flex gap-x-[30px] m-1">
           <img src={image} alt="icon" />
           <div>
-            <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">
+            <h4 className="text-sm font-normal leading-normal font-lato text-baseGray">
               {label}
             </h4>
             <h2 className="font-lato text-2xl text-[#323333] font-normal leading-normal">
@@ -222,7 +224,7 @@ function Blocks(blocks) {
             </h2>
           </div>
         </div>
-      </Col>
+      </div>
     );
   }
 }

@@ -1,8 +1,10 @@
+"use client"
+
 import * as React from "react"
 import { OTPInput, OTPInputContext } from "input-otp"
 import { Dot } from "lucide-react"
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../../@/lib/utils"
 
 const InputOTP = React.forwardRef(({ className, containerClassName, ...props }, ref) => (
   <OTPInput
@@ -26,8 +28,8 @@ const InputOTPSlot = React.forwardRef(({ index, className, ...props }, ref) => {
     (<div
       ref={ref}
       className={cn(
-        "relative flex h-10 w-10 items-center justify-center border-y border-r border-gray-200 text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md dark:border-gray-800",
-        isActive && "z-10 ring-2 ring-gray-950 ring-offset-white dark:ring-gray-300 dark:ring-offset-gray-950",
+        "relative flex h-10 w-10 items-center justify-center border-y border-r border-slate-200 text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md dark:border-slate-800",
+        isActive && "z-10 ring-2 ring-slate-950 ring-offset-white dark:ring-slate-300 dark:ring-offset-slate-950",
         className
       )}
       {...props}>
@@ -36,7 +38,7 @@ const InputOTPSlot = React.forwardRef(({ index, className, ...props }, ref) => {
         <div
           className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div
-            className="h-4 w-px animate-caret-blink bg-gray-950 duration-1000 dark:bg-gray-50" />
+            className="h-4 w-px animate-caret-blink bg-slate-950 duration-1000 dark:bg-slate-50" />
         </div>
       )}
     </div>)

@@ -1,8 +1,9 @@
+"use client";
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { Controller, FormProvider, useFormContext } from "react-hook-form";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../../@/lib/utils"
 import { Label } from "@/components/ui/label"
 
 const Form = FormProvider
@@ -95,7 +96,7 @@ const FormDescription = React.forwardRef(({ className, ...props }, ref) => {
     (<p
       ref={ref}
       id={formDescriptionId}
-      className={cn("text-sm text-gray-500 dark:text-gray-400", className)}
+      className={cn("text-sm text-slate-500 dark:text-slate-400", className)}
       {...props} />)
   );
 })

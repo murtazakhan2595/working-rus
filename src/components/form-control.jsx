@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { FormGroup, Label, Input, Button, Col } from "reactstrap";
+import { FormGroup, Label,  Button, Col } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment, { max, min } from "moment";
@@ -10,6 +10,10 @@ import { IoIosSearch } from "react-icons/io";
 import { countryCodesOptions } from "../data/CountryCode";
 import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
+
+import { Input } from "./ui/input";
+import { Search as SearchIcon  } from "lucide-react";
+
 const SelectComponent = ({
   name,
   value,
@@ -381,9 +385,9 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
     <>
       <label
         htmlFor="file-upload"
-        className="flex cursor-pointer text-center overflow-hidden font-bold rounded-3xl my-3"
+        className="flex my-3 overflow-hidden font-bold text-center cursor-pointer rounded-3xl"
       >
-        <div className="w-full h-full flex flex-row justify-start  items-center border-solid rounded-3xl relative">
+        <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
           <div className="relative overflow-hidden w-[110px]">
             {value?.file ? (
               <img
@@ -428,7 +432,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
                     reader.readAsDataURL(selectedFile);
                   }
                 }}
-                className="form-control mb-2"
+                className="mb-2 form-control"
                 style={{ minHeight: "auto", fontSize: "12px" }}
               />
               {error && touch && (
@@ -468,7 +472,7 @@ const FileInput = ({
         </h4>
         <label
           htmlFor={name}
-          className="cursor-pointer opacity-70 rounded-lg text-input mt-3"
+          className="mt-3 rounded-lg cursor-pointer opacity-70 text-input"
           style={{
             width: "fit-content",
             margin: "auto",
@@ -521,7 +525,7 @@ const FileInput = ({
         </label>
         <br />
       </div>
-      {error && touch && <div className="text-red-500 text-sm">{error}</div>}
+      {error && touch && <div className="text-sm text-red-500">{error}</div>}
     </>
   );
 };
@@ -612,7 +616,7 @@ const TextAreaEditorInput = ({
             onChange(name, option);
           }}
         />
-        <Label className="text-baseGray pt-4 mt-1" htmlFor="address">
+        <Label className="pt-4 mt-1 text-baseGray" htmlFor="address">
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
@@ -668,27 +672,41 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
   const height = "h-[38px]";
   return (
     <>
-      <div className="flex items-center gap-x-3 gap-y-3 flex-wrap">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
         {filters &&
           filters.map((filter, index) => {
             if (filter.type === "search") {
               return (
+                // <div className="relative" key={index}>
+                //   <IoIosSearch className="absolute top-[30%] left-3 text-baseGray" />
+                //   <input
+                //     type="search"
+                //     style={{ paddingLeft: "2.5rem" }}
+                //     placeholder={filter.placeholder}
+                //     className={`${filter.className ?? classNamesStyle} ${
+                //       filter.width ?? width
+                //     } ${filter.height ?? height}`}
+                //     name={filter.name}
+                //     id={filter.name}
+                //     onChange={(option) => {
+                //       onChange(filter.name, option.target.value);
+                //     }}
+                //   />
+                // </div>
                 <div className="relative" key={index}>
-                  <IoIosSearch className="absolute top-[30%] left-3 text-baseGray" />
-                  <input
-                    type="search"
-                    style={{ paddingLeft: "2.5rem" }}
-                    placeholder={filter.placeholder}
-                    className={`${filter.className ?? classNamesStyle} ${
-                      filter.width ?? width
-                    } ${filter.height ?? height}`}
-                    name={filter.name}
+      <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
+      <Input
+        type="search"
+        placeholder={filter.placeholder}
+        name={filter.name}
                     id={filter.name}
                     onChange={(option) => {
                       onChange(filter.name, option.target.value);
                     }}
-                  />
-                </div>
+        className="py-2 pl-4 pr-8 bg-background"
+                    
+      />
+    </div>
               );
             } else if (filter.type === "text") {
               return (
@@ -779,6 +797,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
             }
           })}
       </div>
+      
     </>
   );
 };

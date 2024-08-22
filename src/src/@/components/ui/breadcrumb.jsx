@@ -2,7 +2,7 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { ChevronRight, MoreHorizontal } from "lucide-react"
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../../@/lib/utils"
 
 const Breadcrumb = React.forwardRef(
   ({ ...props }, ref) => <nav ref={ref} aria-label="breadcrumb" {...props} />
@@ -13,7 +13,7 @@ const BreadcrumbList = React.forwardRef(({ className, ...props }, ref) => (
   <ol
     ref={ref}
     className={cn(
-      "flex flex-wrap items-center gap-1.5 break-words text-sm text-gray-500 sm:gap-2.5 dark:text-gray-400",
+      "flex flex-wrap items-center gap-1.5 break-words text-sm text-slate-500 sm:gap-2.5 dark:text-slate-400",
       className
     )}
     {...props} />
@@ -34,7 +34,10 @@ const BreadcrumbLink = React.forwardRef(({ asChild, className, ...props }, ref) 
   return (
     (<Comp
       ref={ref}
-      className={cn("transition-colors hover:text-gray-950 dark:hover:text-gray-50", className)}
+      className={cn(
+        "transition-colors hover:text-slate-950 dark:hover:text-slate-50",
+        className
+      )}
       {...props} />)
   );
 })
@@ -46,7 +49,7 @@ const BreadcrumbPage = React.forwardRef(({ className, ...props }, ref) => (
     role="link"
     aria-disabled="true"
     aria-current="page"
-    className={cn("font-normal text-gray-950 dark:text-gray-50", className)}
+    className={cn("font-normal text-slate-950 dark:text-slate-50", className)}
     {...props} />
 ))
 BreadcrumbPage.displayName = "BreadcrumbPage"

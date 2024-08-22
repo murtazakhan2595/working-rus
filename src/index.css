@@ -2,116 +2,118 @@
 @tailwind components;
 @tailwind utilities;
 
-.lucide-dot{
-  display: none !important
+.lucide-dot {
+    display: none !important
 }
 
 
 @layer components {
-  .font-heading {
-    @apply text-4xl font-bold text-primary;
-  }
-}
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 292 45% 44%;
-    /* --bs-primary: 292 45% 44%; */
-    --primary-foreground: 355.7 100% 99%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 45%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 292 45% 44%;
-    --chart-1: 292 45% 44%;
-    --chart-2: 12 76% 61%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    
-    --slate-1: 240deg 20% 99%;
-  --slate-2: 240deg 20% 98%;
-  --slate-3: 240deg 11.1% 94.7%;
-  --slate-4: 240deg 9.5% 91.8%;
-  --slate-5: 230deg 10.7% 89%;
-  --slate-6: 240deg 10.1% 86.5%;
-  --slate-7: 233deg 9.9% 82.2%;
-  --slate-8: 231deg 10.2% 75.1%;
-  --slate-9: 231deg 5.9% 57.1%;
-  --slate-10: 226deg 5.4% 52.7%;
-  --slate-11: 220deg 5.9% 40%;
-  --slate-12: 210deg 12.5% 12.5%;
-
-  --plum-1: 280deg 100% 99.4%;
-  --plum-2: 300deg 60% 98%;
-  --plum-3: 300deg 66.7% 95.3%;
-  --plum-4: 298deg 65% 92.2%;
-  --plum-5: 298deg 58.6% 88.6%;
-  --plum-6: 296deg 52.5% 84.3%;
-  --plum-7: 294deg 49.1% 78.4%;
-  --plum-8: 292deg 47.7% 70.8%;
-  --plum-9: 292deg 44.8% 51%;
-  --plum-10: 292deg 44% 47.6%;
-  --plum-11: 292deg 44.9% 44.1%;
-  --plum-12: 291deg 57.6% 23.1%;
-  
-  --mauve-1: 300deg 20% 99%;
-  --mauve-2: 270deg 20% 98%;
-  --mauve-3: 285deg 14.3% 94.5%;
-  --mauve-4: 276deg 11.6% 91.6%;
-  --mauve-5: 274deg 12.3% 88.8%;
-  --mauve-6: 262deg 11.4% 86.3%;
-  --mauve-7: 258deg 11.1% 82.4%;
-  --mauve-8: 249deg 10.4% 75.5%;
-  --mauve-9: 249deg 6% 57.5%;
-  --mauve-10: 250deg 5% 53.3%;
-  --mauve-11: 252deg 4.8% 40.8%;
-  --mauve-12: 257deg 10.1% 13.5%;
-
-  --gray-1: 0deg 0% 98.8%;
-  --gray-2: 0deg 0% 97.6%;
-  --gray-3: 0deg 0% 94.1%;
-  --gray-4: 0deg 0% 91%;
-  --gray-5: 0deg 0% 87.8%;
-  --gray-6: 0deg 0% 85.1%;
-  --gray-7: 0deg 0% 80.8%;
-  --gray-8: 0deg 0% 73.3%;
-  --gray-9: 0deg 0% 55.3%;
-  --gray-10: 0deg 0% 51.4%;
-  --gray-11: 0deg 0% 39.2%;
-  --gray-12: 0deg 0% 12.5%;
-  }
+    .font-heading {
+        @apply text-4xl font-bold text-primary;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 240 10% 3.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 240 10% 3.9%;
+        --primary: 292 45% 44%;
+        /* --bs-primary: 292 45% 44%; */
+        --primary-foreground: 355.7 100% 99%;
+        --secondary: 240 4.8% 95.9%;
+        --secondary-foreground: 240 5.9% 10%;
+        --muted: 240 4.8% 95.9%;
+        --muted-foreground: 240 3.8% 45%;
+        --accent: 240 4.8% 95.9%;
+        --accent-foreground: 240 5.9% 10%;
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 240 5.9% 90%;
+        --input: 240 5.9% 90%;
+        --ring: 292 45% 44%;
+        --chart-1: 292 45% 44%;
+        --chart-2: 294 49.1% 78.4%;
+        --chart-3: 158 11.1% 82.4%;
+        --chart-4: 43 74% 66%;
+        --chart-5: 27 87% 67%;
+        --radius: 1rem;
 
+        --slate-1: 240 20% 99%;
+        --slate-2: 240 20% 98%;
+        --slate-3: 240 11.1% 94.7%;
+        --slate-4: 240 9.5% 91.8%;
+        --slate-5: 230 10.7% 89%;
+        --slate-6: 240 10.1% 86.5%;
+        --slate-7: 233 9.9% 82.2%;
+        --slate-8: 231 10.2% 75.1%;
+        --slate-9: 231 5.9% 57.1%;
+        --slate-10: 226 5.4% 52.7%;
+        --slate-11: 220 5.9% 40%;
+        --slate-12: 210 12.5% 12.5%;
 
+        --plum-1: 280 100% 99.4%;
+        --plum-2: 300 60% 98%;
+        --plum-3: 300 66.7% 95.3%;
+        --plum-4: 298 65% 92.2%;
+        --plum-5: 298 58.6% 88.6%;
+        --plum-6: 296 52.5% 84.3%;
+        --plum-7: 294 49.1% 78.4%;
+        --plum-8: 292 47.7% 70.8%;
+        --plum-9: 292 44.8% 51%;
+        --plum-10: 292 44% 47.6%;
+        --plum-11: 292 44.9% 44.1%;
+        --plum-12: 291 57.6% 23.1%;
 
-  body {
-    @apply bg-background text-foreground font-body;
-  }
+        --mauve-1: 300 20% 99%;
+        --mauve-2: 270 20% 98%;
+        --mauve-3: 285 14.3% 94.5%;
+        --mauve-4: 276 11.6% 91.6%;
+        --mauve-5: 274 12.3% 88.8%;
+        --mauve-6: 262 11.4% 86.3%;
+        --mauve-7: 258 11.1% 82.4%;
+        --mauve-8: 249 10.4% 75.5%;
+        --mauve-9: 249 6% 57.5%;
+        --mauve-10: 250 5% 53.3%;
+        --mauve-11: 252 4.8% 40.8%;
+        --mauve-12: 257 10.1% 13.5%;
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
-  }
-
+        --gray-1: 0 0% 98.8%;
+        --gray-2: 0 0% 97.6%;
+        --gray-3: 0 0% 94.1%;
+        --gray-4: 0 0% 91%;
+        --gray-5: 0 0% 87.8%;
+        --gray-6: 0 0% 85.1%;
+        --gray-7: 0 0% 80.8%;
+        --gray-8: 0 0% 73.3%;
+        --gray-9: 0 0% 55.3%;
+        --gray-10: 0 0% 51.4%;
+        --gray-11: 0 0% 39.2%;
+        --gray-12: 0 0% 12.5%;
+    }
 }
 
+@layer base {
+    * {
+        @apply border-border;
+    }
 
 
 
+    body {
+        @apply bg-background text-foreground font-body;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading;
+    }
+
+}

@@ -74,9 +74,9 @@ export function UserNav() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="relative w-8 h-8 rounded-full"
+                className="relative w-10 h-10 rounded-full"
               >
-                <Avatar className="w-8 h-8">
+                <Avatar className="">
                   <AvatarImage src={profileImage} alt="Avatar" />
                   <AvatarFallback className="bg-transparent">{combineFLName}</AvatarFallback>
 
