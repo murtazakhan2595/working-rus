@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import {
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
-import { IoIosArrowDown } from "react-icons/io";
+import { Popover, PopoverTrigger, PopoverContent } from "../../../../../../src/@/components/ui/popover";
+import { Button } from "../../../../../../components/ui/button";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "../../../../../../src/@/components/ui/command";
+import { ChevronsUpDown, Check } from "lucide-react";
 
 const StatusDropdown = [
   { label: "All Requests", value: "All Requests" },
@@ -13,46 +10,55 @@ const StatusDropdown = [
   { label: "Approved", value: "Approved" },
   { label: "Denied", value: "Rejected" },
 ];
+
 const RenderLeaveStatusDropdown = ({ status, setFilterOption }) => {
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
-  const itemClassName =
-    "px-3 py-2 font-lato font-medium text-[12px] text-baseGray hover:bg-gray-100 cursor-pointer";
-  const toggleDropdown = () => {
-    setOpenDropdownRow(!openDropdownRow);
-  };
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(status);
 
   return (
-    <>
-      <ButtonDropdown
-        isOpen={!!openDropdownRow}
-        toggle={() => toggleDropdown()}
-      >
-        <DropdownToggle className="border-0 shadow-none bg-transparent">
-          <div className="flex font-bold text-[14px] leading-7 whitespace-nowrap text-zinc-800">
-            {status}
-            <IoIosArrowDown style={{ margin: "auto" }} />
-          </div>
-        </DropdownToggle>
-        <DropdownMenu start className="">
-          {StatusDropdown.map((item, index) => {
-            if (item.label === status) {
-              return null;
-            }
-            return (
-              <DropdownItem
-                key={index}
-                className={`${itemClassName}`}
-                onClick={() => {
-                  setFilterOption(item.value);
-                }}
-              >
-                <span>{item.label}</span>
-              </DropdownItem>
-            );
-          })}
-        </DropdownMenu>
-      </ButtonDropdown>
-    </>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-[200px] justify-between"
+        >
+          {value
+            ? StatusDropdown.find((item) => item.value === value)?.label
+            : "Select status..."}
+          <ChevronsUpDown  className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <Command>
+          <CommandInput placeholder="Search status..." />
+          <CommandList>
+            <CommandEmpty>No status found.</CommandEmpty>
+            <CommandGroup>
+              {StatusDropdown.map((item) => (
+                <CommandItem
+                  key={item.value}
+                  value={item.value}
+                  onSelect={(currentValue) => {
+                    setValue(currentValue === value ? "" : currentValue);
+                    setFilterOption(currentValue);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={`mr-2 h-4 w-4 ${
+                      value === item.value ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                  {item.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };
 

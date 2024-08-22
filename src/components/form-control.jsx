@@ -677,23 +677,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
           filters.map((filter, index) => {
             if (filter.type === "search") {
               return (
-                // <div className="relative" key={index}>
-                //   <IoIosSearch className="absolute top-[30%] left-3 text-baseGray" />
-                //   <input
-                //     type="search"
-                //     style={{ paddingLeft: "2.5rem" }}
-                //     placeholder={filter.placeholder}
-                //     className={`${filter.className ?? classNamesStyle} ${
-                //       filter.width ?? width
-                //     } ${filter.height ?? height}`}
-                //     name={filter.name}
-                //     id={filter.name}
-                //     onChange={(option) => {
-                //       onChange(filter.name, option.target.value);
-                //     }}
-                //   />
-                // </div>
-                <div className="relative" key={index}>
+                  <div className="relative" key={index}>
       <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
       <Input
         type="search"

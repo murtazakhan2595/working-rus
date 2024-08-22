@@ -18,19 +18,19 @@ import {
     children: [
       {
         type: "div",
-        className: "",
+        className: "w-full",
         content: <EmployeeOverview/>,
         value: "EmployeeOverview",
       },
       {
         type: "div",
-        className: "",
+        className: "w-full",
         content: <TaskProgress/>,
         value: "TaskProgress",
       },
       {
         type: "div",
-        className: "",
+        className: "w-full",
         content: <RecentActivity/>,
         value: "RecentActivity",
       },
@@ -38,7 +38,7 @@ import {
   },
   {
     type: "div",
-    className: "leave-traker ",
+    className: "leave-tracker ",
     children: [
       {
         type: "div",
@@ -46,12 +46,7 @@ import {
         content: <LeaveTrackerOverview/>,
         value: "LeaveTracker",
       },
-      // {
-      //   type: "div",
-      //   className: "",
-      //   content: <TalentSphere/>,
-      //   value: "TalentSphere",
-      // },
+      //
       
       // {
       //   type: "div",
@@ -78,10 +73,20 @@ import {
       //   value: "AllProjects",
       // },
     ]
-  }
-  ];
-     
-  
+  },
+  {
+    type: "div",
+    className: "talentsphere",
+    children: [
+      {
+      type: "div",
+      className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
+      content: <TalentSphere/>,
+      value: "TalentSphere",
+      },
+    ]
+  },
+]
   // {
   //   type: "div",
   //   className: "flex flex-wrap w-[100%] lg:w-[30%]",

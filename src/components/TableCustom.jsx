@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../src/@/components/ui/table";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../src/@/components/ui/table";
 import {
   Pagination,
   PaginationItem,
@@ -11,7 +11,7 @@ import {
 } from "reactstrap";
 
 import { IoMdArrowDropdown } from "react-icons/io";
-
+import { useMemo } from "react";
 const TableCustom = ({
   columns,
   data,
@@ -21,7 +21,6 @@ const TableCustom = ({
   rowExpand,
   renderExpandedContent,
   pagination,
-  hideTableHeader,
   dataStyle,
 }) => {
   const [expandedRow, setExpandedRow] = useState(null);
@@ -34,80 +33,115 @@ const TableCustom = ({
     setExpandedRow(expandedRow === rowId ? null : rowId);
   };
 
-  const handlePageChange = (name, page) => {
-    if (tableOptions.onPageChange) {
-      tableOptions.onPageChange(name, page);
-    }
-  };
-  const [sort, setSort] = useState({ key: '', order: 'asc' });
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState({ key: "name", order: "asc" });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(4);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [designationFilter, setDesignationFilter] = useState("all");
+
+  const employees = useMemo(() => {
+    return [...data]
+      .filter((employee) => {
+        const searchValue = search.toLowerCase();
+        const statusFilterValue = statusFilter === "all" ? "" : statusFilter;
+        const designationFilterValue = designationFilter === "all" ? "" : designationFilter;
+
+        return (
+          (employee.name && employee.name.toLowerCase().includes(searchValue)) ||
+          (employee.email && employee.email.toLowerCase().includes(searchValue)) ||
+          (employee.designation && employee.designation.toLowerCase().includes(searchValue)) ||
+          (statusFilterValue ? employee.status && employee.status.toLowerCase() === statusFilterValue : true) ||
+          (designationFilterValue ? employee.designation && employee.designation.toLowerCase() === designationFilterValue : true) ||
+          (employee.leaveDate && employee.leaveDate.includes(searchValue))
+        );
+      })
+      .sort((a, b) => {
+        if (sort.order === "asc") {
+          return a[sort.key] > b[sort.key] ? 1 : -1;
+        } else {
+          return a[sort.key] < b[sort.key] ? 1 : -1;
+        }
+      })
+      .slice((page - 1) * pageSize, page * pageSize);
+  }, [search, sort, page, pageSize, statusFilter, designationFilter]);
+
   const handleSort = (key) => {
     if (sort.key === key) {
-      setSort({ key, order: sort.order === "asc" ? "desc" : "asc" })
+      setSort({ key, order: sort.order === "asc" ? "desc" : "asc" });
     } else {
-      setSort({ key, order: "asc" })
+      setSort({ key, order: "asc" });
     }
-  }
+  };
+
+  const handlePageChange = (name, page) => {
+    setPage(page);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setPage(1);
+  };
+
+  const handleStatusFilterChange = (status) => {
+    setStatusFilter(status);
+    setPage(1);
+  };
+
+  const handleDesignationFilterChange = (designation) => {
+    setDesignationFilter(designation);
+    setPage(1);
+  };
+
   return (
     <div className={`table-container ${className}`}>
-      New Table
-    
-      <Table>
-        {!hideTableHeader && (
-          <TableHeader>
+      <Table className="overflow-hidden">
+        <TableHeader>
           <TableRow>
-          {columns.map((column, index) => (
-          <TableHead className="cursor-pointer" onClick={() => handleSort('{column.text}')} key={index} style={column.width ? { width: `${column.width}` } : {}}>
+            {columns.map((column, index) => (
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort(column.dataField)}
+                key={index}
+                style={column.width ? { width: `${column.width}` } : {}}
+              >
                 {column.text}
-                 {sort.key === '{column.text}' && <span className="ml-1">{sort.order === "asc" ? "\u2191" : "\u2193"}</span>}
-               </TableHead>
-          ))}
+                {sort.key === column.dataField && (
+                  <span className="ml-1">{sort.order === "asc" ? "\u2191" : "\u2193"}</span>
+                )}
+              </TableHead>
+            ))}
           </TableRow>
-          
-       
-         </TableHeader>
-       )}
-       <TableBody>
-        
+        </TableHeader>
+        <TableBody>
           {data && data.length > 0 ? (
-            data.map((row,recordIndex) => (
+            data.map((row, recordIndex) => (
               <React.Fragment key={row.id}>
                 <TableRow
                   onClick={() => {
                     if (rowExpand) toggleExpandRow(row.id);
-                    else if (tableOptions?.onRowClick)
-                      tableOptions.onRowClick(row);
+                    else if (tableOptions?.onRowClick) tableOptions.onRowClick(row);
                   }}
                 >
                   {columns.map((column, index) => (
                     <TableCell
                       className={`${column.onClick ? "cursor-pointer" : ""}`}
                       key={index}
-                      style={{
-                        ...(column.width ? { width: `${column.width}` } : {}),
-                        ...dataStyle
-                      }}
+                      style={{ ...(column.width ? { width: `${column.width}` } : {}), ...dataStyle }}
                       onClick={() => {
-                        if (column.roWExpandOnClick) toggleExpandRow(row.id);
-                        else if (column.onClick)
-                          column.onClick(recordIndex, data, row);
+                        if (column.rowExpandOnClick) toggleExpandRow(row.id);
+                        else if (column.onClick) column.onClick(recordIndex, data, row);
                       }}
                     >
                       {column.formatter
-                        ? column.formatter(
-                            row[column.dataField],
-                            row,
-                            data,
-                            index
-                          )
+                        ? column.formatter(row[column.dataField], row, data, index)
                         : row[column.dataField]}
                     </TableCell>
                   ))}
                 </TableRow>
                 {expandedRow === row.id && (
                   <tr style={{ background: "white" }}>
-                    <td colSpan={columns.length}>
-                      {renderExpandedContent(row)}
-                    </td>
+                    <td colSpan={columns.length}>{renderExpandedContent(row)}</td>
                   </tr>
                 )}
               </React.Fragment>
@@ -119,25 +153,10 @@ const TableCustom = ({
               </td>
             </tr>
           )}
-          </TableBody>
-        
-        {pagination && (
-          <tfoot>
-            <tr>
-              <td colSpan={columns.length}>
-                <CustomPagination
-                  currentPage={options.page}
-                  dataTotalSize={dataTotalSize}
-                  sizePerPage={options.sizePerPage}
-                  onPageChange={handlePageChange}
-                />
-              </td>
-            </tr>
-          </tfoot>
-        )}
+        </TableBody>
+        <TableFooter></TableFooter>
       </Table>
-   </div>
-            
+    </div>
   );
 };
 
@@ -162,6 +181,7 @@ const CustomPagination = ({
     </div>
   );
 };
+
 
 const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(false);

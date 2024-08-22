@@ -23,7 +23,7 @@ const activities = [
 
 export default function Component() {
   return (
-    <Card className="w-full max-w-md min-h-[400px]">
+    <Card className="w-full  min-h-[400px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="font-semibold text-plum-1100">Recent Activity</div>
