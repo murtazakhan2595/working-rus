@@ -25,7 +25,7 @@ import { AiOutlineDownload } from "react-icons/ai";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
-
+import { ExternalLink, } from "lucide-react";
 export const DashbaordJobApplicationColumns = (navigate) => [
   {
     dataField: "id",
@@ -38,8 +38,7 @@ export const DashbaordJobApplicationColumns = (navigate) => [
     dataField: "total_applications",
     text: "Applications",
     formatter: (cell, row) => (
-      <div className="flex items-center justify-center gap-2 text-[#5c5e64] text-sm font-normal ">
-        <IoBagCheckOutline />
+      <div className="">
         {cell}
       </div>
     ),
@@ -57,7 +56,8 @@ export const DashbaordJobApplicationColumns = (navigate) => [
         className=""
         to={`/job-description/${cell}`}
       >
-        <BsBoxArrowUpRight className="text-sm cursor-pointer opacity-80 ml-auto" />
+        <ExternalLink/>
+       
       </Link>
     ),
   },

@@ -238,7 +238,7 @@ export default function Component() {
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="font-semibold text-plum-1100">{userProfile.role === 4 ? "My Progress" : "Project Progress"} </div>
-          <Popover open={open} onOpenChange={setOpen}>
+         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -280,7 +280,7 @@ export default function Component() {
                 </CommandList>
               </Command>
             </PopoverContent>
-          </Popover>
+          </Popover> 
         </CardTitle>
         <CardDescription className="text-slate-900">January - June 2024</CardDescription>
       </CardHeader>

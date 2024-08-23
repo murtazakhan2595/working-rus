@@ -46,32 +46,7 @@ import {
         content: <LeaveTrackerOverview/>,
         value: "LeaveTracker",
       },
-      //
-      
-      // {
-      //   type: "div",
-      //   className: "",
-      //   content: <MyTasks/>,
-      //   value: "MyTasks",
-      // },
-      // {
-      //   type: "div",
-      //   className: "",
-      //   content: <MyTeams/>,
-      //   value: "MyTeam",
-      // },
-      // {
-      //   type: "div",
-      //   className: "",
-      //   content: <MyLeaves/>,
-      //   value: "MyLeaves",
-      // },
-      // {
-      //   type: "div",
-      //   className: "",
-      //   content: <AllProjects/>,
-      //   value: "AllProjects",
-      // },
+     
     ]
   },
   {
@@ -86,50 +61,67 @@ import {
       },
     ]
   },
-]
-  // {
-  //   type: "div",
-  //   className: "flex flex-wrap w-[100%] lg:w-[30%]",
-  //   children: [
-  //     {
-  //       type: "div",
-  //       className: "w-[100%] overflow-hidden p-2",
-  //       content: <RecentActivity/>,
-  //       value: "RecentActivity",
-  //     },
-  //     {
-  //       type: "div",
-  //       className: "w-[100%] overflow-hidden p-2",
-  //       content: <MyTasks/>,
-  //       value: "MyTasks",
-  //     },
-  //     {
-  //       type: "div",
-  //       className: "w-[100%] overflow-hidden p-2",
-  //       content: <MyTeams/>,
-  //       value: "MyTeam",
-  //     },
-  //   ],
-  // },
-  // {
-  //   type: "div",
-  //   className: " flex flex-wrap w-[100%]",
-  //   children: [
-  //     {
-  //       type: "div",
-  //       className: "w-[100%] md:w-[30%] overflow-hidden p-2",
-  //       content: <MyLeaves/>,
-  //       value: "MyLeaves",
-  //     },
-  //     {
-  //       type: "div",
-  //       className: "w-[100%] md:w-[70%] overflow-hidden p-2",
-  //       content: <AllProjects/>,
-  //       value: "AllProjects",
-  //     },
-  //   ],
-  // },
-
+  {
+    type: "div",
+    className: "my-tasks",
+    children: [
+      {
+      type: "div",
+      className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
+      content: <MyTasks/>,
+      value: "MyTasks",
+      },
+    ]
+  },
+  {
+    type: "div",
+    className: "my-teams",
+    children: [
+      {
+      type: "div",
+      className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
+      content: <MyTeams/>,
+      value: "MyTeams",
+      },
+    ]
+  },
+  {
+    type: "div",
+    className: "my-leaves",
+    children: [
+      {
+      type: "div",
+      className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
+      content: <MyLeaves/>,
+      value: "MyLeaves",
+      },
+    ]
+  },
+  {
+    type: "div",
+    className: "all-projects",
+    children: [
+      {
+      type: "div",
+      className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
+      content: <AllProjects/>,
+      value: "AllProjects",
+      },
+    ]
+  },
+{
+  type: "div",
+  className: "my-teams",
+  children: [
+    {
+    type: "div",
+    className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
+    content: <MyTeams />,
+    value: "MyTeam",
+    },
+  ]
+}]
+  
 const DashboardManager = [
   {
     type: "div",

@@ -13,7 +13,23 @@ import { PriorityListIcons } from "data/Data";
 import { TimeIcon } from "@mui/x-date-pickers";
 import CustomDropdown from "./CustomDropdown";
 import CreateCardModal from "./CreateCardModal";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardSubtitle } from "../../../../src/@/components/ui/card";
+import { Button } from '../../../../components/ui/button';
+import { Check, ChevronsUpDown } from "lucide-react"
+import * as React from "react"
+import { cn } from "../../../../src/@/lib/utils";
 
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../../../../src/@/components/ui/command"
+import { Popover, PopoverTrigger, PopoverContent } from "../../../../src/@/components/ui/popover";
+
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../../../../src/@/components/ui/table";
 export default function MyTasks() {
   const userProfile = useSelector((state) => state.user.userProfile);
   const [AllProjects, setAllProjects] = useState([]);
@@ -26,8 +42,11 @@ export default function MyTasks() {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(null);
-
-
+  const [open, setOpen] = React.useState(false)
+  const [openStatus, setOpenStatus] = React.useState(false)
+  const [selectedProject, setSelectedProject] = React.useState(false)
+  const [value, setValue] = React.useState("")
+  
 
   function mergeTasksWithProjects(tasks, projects) {
     return tasks.map((task) => {
@@ -146,7 +165,127 @@ export default function MyTasks() {
     };
 
   return (
-    <div className="px-[14px] py-6 bg-white rounded-md min-h-[470px]">
+    <>
+    <Card className="col-span-2">
+      <CardHeader className="items-start pb-0">
+        <CardTitle className="flex flex-row justify-between w-full">
+          <div className="font-semibold text-plum-1100">My Tasks</div>
+       <Button variant="secondary">
+            <Link to="#" onClick={() => {
+                setOpenCreateCard(true);
+              }}>
+              Add New Task</Link>
+          </Button>
+        </CardTitle>
+        <div  className="flex flex-row justify-end w-full gap-4"> 
+        
+
+<Popover open={open} onOpenChange={setOpen}>
+  <PopoverTrigger asChild>
+    <Button
+      variant="outline"
+      role="combobox"
+      aria-expanded={open}
+      className="w-[200px] justify-between"
+    >
+      {selectedProject ? selectedProject : "Select Project..."}
+      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+    </Button>
+  </PopoverTrigger>
+  <PopoverContent className="w-[200px] p-0">
+    <Command>
+      <CommandInput placeholder="Search project..." />
+      <CommandList>
+        <CommandEmpty>No project found.</CommandEmpty>
+        <CommandGroup>
+          {options.map((option) => (
+            <CommandItem
+              key={option.label}
+              value={option.label}
+              onSelect={() => {
+                option.onClick();
+                setSelectedProject(option.label);
+                setOpen(false);
+              }}
+            >
+              <Check
+                className={cn(
+                  "mr-2 h-4 w-4",
+                  selectedProject === option.label ? "opacity-100" : "opacity-0"
+                )}
+              />
+              {option.label}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  </PopoverContent>
+</Popover>
+
+    
+    <Popover open={openStatus} onOpenChange={setOpenStatus}>
+  <PopoverTrigger asChild>
+    <Button
+      variant="outline"
+      role="combobox"
+      aria-expanded={openStatus}
+      className="w-[200px] justify-between"
+    >
+      {value ? value : "Select Status..."}
+      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+    </Button>
+  </PopoverTrigger>
+  <PopoverContent className="w-[200px] p-0">
+    <Command>
+      <CommandInput placeholder="Search status..." />
+      <CommandList>
+        <CommandEmpty>No status found.</CommandEmpty>
+        <CommandGroup>
+          {statusDropdownOptions.map((option) => (
+            <CommandItem
+              key={option.label}
+              value={option.label}
+              onSelect={() => {
+                option.onClick();
+                setValue(option.label);
+                setOpenStatus(false);
+              }}
+            >
+              <Check
+                className={cn(
+                  "mr-2 h-4 w-4",
+                  value === option.label ? "opacity-100" : "opacity-0"
+                )}
+              />
+              {option.label}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  </PopoverContent>
+</Popover>
+             
+             </div>
+      </CardHeader>
+      <CardContent>
+      <div className="">
+  {tasks.length > 0 ? (
+    tasks.slice(0, 5).map((task) => <RenderTask key={task.id} task={task} />)
+  ) : (
+    <div className="text-[#5c5e64] text-sm font-normal text-center">
+      No tasks found
+    </div>
+  )}
+</div>
+
+      </CardContent>
+     
+    </Card>
+    {/* <div className="px-[14px] py-6 bg-white rounded-md min-h-[470px]">
+Task */}
+      
       {openCreateCard && (
         <CreateCardModal
           onClose={() => {
@@ -156,99 +295,58 @@ export default function MyTasks() {
           projects={AllProjects}
         />
       )}
-      <div className="flex flex-col gap-2">
-        <header className="justify-between items-center inline-flex">
-          <div className="text-[#323233] text-lg font-normal leading-tight">
-            My Tasks
-          </div>
-          <div className="justify-start items-center gap-1 flex">
-            <div className="text-[#323233] text-xs font-bold">Create New</div>
-            <button
-              className="p-2 rounded-md bg-black"
-              style={{ fontSize: "12px" }}
-              onClick={() => {
-                setOpenCreateCard(true);
-              }}
-            >
-              <FaPlus className="text-white" />
-            </button>
-          </div>
-        </header>
-        <div className="flex justify-end">
-          <div className="flex items-center gap-2">
-            <div className="h-[34px] px-3.5 py-0.5 bg-[#f0f1f2] rounded-[5px] justify-start items-center gap-2.5 inline-flex">
-              <div className="text-[#060606] text-xs font-normal">
-                {filterOption.name || filterOption}
-              </div>
-              <CustomDropdown
-                isOpen={isDropdownOpen}
-                toggleDropdown={toggleDropdown}
-                options={options}
-              />
-            </div>
-            <div className="h-[34px] px-3.5 py-0.5 bg-[#f0f1f2] rounded-[5px] justify-start items-center gap-2.5 inline-flex">
-              <div className="text-[#060606] text-xs font-normal">{`${statusFilter?statusFilter:"Status"}`}</div>
-              <CustomDropdown
-                isOpen={isStatusDropdownOpen}
-                toggleDropdown={toggleStatusDropdown}
-                options={statusDropdownOptions}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="max-h-[270px] overflow-y-auto">
-          {tasks.length > 0 ?
-            (tasks.map((task) => <RenderTask key={task.id} task={task} />)):
-            <div className="text-[#5c5e64] text-sm font-normal text-center">
-              No tasks found
-            </div>
-          }
-        </div>
-      </div>
-    </div>
+    
+    </>
   );
 }
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 'complete':
+      return 'Complete';
+    case 'in_progress':
+      return 'In Progress';
+    case 'delay':
+      return 'Delay';
+    case 'pending':
+      return 'Pending';
+    default:
+      return 'In Progress';
+  }
+};
 
 const RenderTask = ({ task }) => {
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <div className="flex-col justify-start items-start gap-[5px] inline-flex">
-          <div className="justify-center items-center gap-[5px] inline-flex">
-            <div className="w-2 h-2 bg-[#5640df] rounded-full" />
-            <div className="text-[#5c5e64]/80 text-xs font-normal">
-              {task.project_name}
-            </div>
-          </div>
-          <div className="text-[#060606] text-sm font-bold max-w-[165px] overflow-hidden text-ellipsis">
-            {task.name}
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1 items-center">
-            <div className="flex -space-x-2.5">
-              <MembersList members={task?.assigned_to} />
-            </div>
-          </div>
-          {task?.end_date && (
-            <div
-              className={`flex gap-1 justify-center items-center text-sm px-1.5 py-1 rounded ${getStatusClass(
-                task?.end_date
-              )}`}
-            >
-              <TimeIcon color={getStatusIconColor(task?.end_date)} />
-              <div className="my-auto">
-                {moment(task?.end_date).format("MMMM DD")}
+    <>
+      <Table className="overflow-hidden">
+        <TableBody>
+          <TableRow>
+            <TableCell className="">
+              <div className="flex flex-col w-full gap-2">
+              <div className="flex flex-row w-full gap-4">
+                <div className=" font-base">{task.project_name}</div>
+                <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full border border-mauve-500">{getStatusLabel(task.status)}</div>
               </div>
-            </div>
-          )}
-          {
-            PriorityListIcons.find((option) => option.value === task?.priority)
-              ?.label
-          }
-        </div>
-      </div>
-      <div className="h-[0px] border border-[#dadada] my-2.5"></div>
-    </div>
+              <div className="text-mauve-900">
+                Due on {moment(task?.end_date).format("MMMM DD")}  - Created by  Name of employee
+              </div>
+              </div>
+              
+            </TableCell>
+            
+            
+            <TableCell className="w-[200px]">
+             <Button variant="outline">
+             <Link to="#">
+             View Project</Link>
+             </Button>
+            </TableCell>
+            <TableCell className="w-[200px] text-center">
+              {PriorityListIcons.find((option) => option.value === task?.priority)?.label}
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </>
   );
 };
+

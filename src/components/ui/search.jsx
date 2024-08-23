@@ -16,8 +16,9 @@ function SearchInput() {
         placeholder="Search ..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="py-2 pl-4 pr-8 border rounded-md border-input bg-background"
+        className="py-2 pl-4 pr-8 bg-background"
       />
+      
     </div>
   );
 }

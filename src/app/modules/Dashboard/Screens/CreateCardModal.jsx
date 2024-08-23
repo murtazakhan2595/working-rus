@@ -124,6 +124,7 @@ const CreateCardModal = ({ employees, onClose, projects }) => {
           className="overflow-y-auto h-100 p-4 w-[90%]"
           style={{ maxWidth: "650px" }}
         >
+        
           <div
             className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
             onClick={onClose}

@@ -1,17 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from 'react';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../src/@/components/ui/table";
-import {
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-} from "reactstrap";
-
-import { IoMdArrowDropdown } from "react-icons/io";
-import { useMemo } from "react";
 const TableCustom = ({
   columns,
   data,
@@ -41,7 +29,7 @@ const TableCustom = ({
   const [designationFilter, setDesignationFilter] = useState("all");
 
   const employees = useMemo(() => {
-    return [...data]
+    return data
       .filter((employee) => {
         const searchValue = search.toLowerCase();
         const statusFilterValue = statusFilter === "all" ? "" : statusFilter;
@@ -64,7 +52,7 @@ const TableCustom = ({
         }
       })
       .slice((page - 1) * pageSize, page * pageSize);
-  }, [search, sort, page, pageSize, statusFilter, designationFilter]);
+  }, [data, search, sort, page, pageSize, statusFilter, designationFilter]);
 
   const handleSort = (key) => {
     if (sort.key === key) {
@@ -72,25 +60,6 @@ const TableCustom = ({
     } else {
       setSort({ key, order: "asc" });
     }
-  };
-
-  const handlePageChange = (name, page) => {
-    setPage(page);
-  };
-
-  const handlePageSizeChange = (size) => {
-    setPageSize(size);
-    setPage(1);
-  };
-
-  const handleStatusFilterChange = (status) => {
-    setStatusFilter(status);
-    setPage(1);
-  };
-
-  const handleDesignationFilterChange = (designation) => {
-    setDesignationFilter(designation);
-    setPage(1);
   };
 
   return (
@@ -114,8 +83,8 @@ const TableCustom = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data && data.length > 0 ? (
-            data.map((row, recordIndex) => (
+          {employees && employees.length > 0 ? (
+            employees.map((row, recordIndex) => (
               <React.Fragment key={row.id}>
                 <TableRow
                   onClick={() => {
@@ -139,135 +108,25 @@ const TableCustom = ({
                     </TableCell>
                   ))}
                 </TableRow>
-                {expandedRow === row.id && (
-                  <tr style={{ background: "white" }}>
-                    <td colSpan={columns.length}>{renderExpandedContent(row)}</td>
-                  </tr>
+                {expandedRow === row.id && renderExpandedContent && (
+                  <TableRow>
+                    <TableCell colSpan={columns.length}>
+                      {renderExpandedContent(row)}
+                    </TableCell>
+                  </TableRow>
                 )}
               </React.Fragment>
             ))
           ) : (
-            <tr>
-              <td colSpan={columns.length} className="text-center">
-                No records to display
-              </td>
-            </tr>
+            <TableRow>
+              <TableCell colSpan={columns.length} className="text-center">
+                No data available
+              </TableCell>
+            </TableRow>
           )}
         </TableBody>
-        <TableFooter></TableFooter>
       </Table>
-    </div>
-  );
-};
-
-const CustomPagination = ({
-  currentPage,
-  dataTotalSize,
-  sizePerPage,
-  onPageChange,
-}) => {
-  return (
-    <div className="flex justify-between">
-      <CustomPageSizePagination
-        sizePerPage={sizePerPage}
-        onPageChange={onPageChange}
-      />
-      <CustomPagePagination
-        currentPage={currentPage}
-        dataTotalSize={dataTotalSize}
-        sizePerPage={sizePerPage}
-        onPageChange={onPageChange}
-      />
-    </div>
-  );
-};
-
-
-const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
-  const [openDropdownRow, setOpenDropdownRow] = useState(false);
-  const toggleDropdown = () => {
-    setOpenDropdownRow(!openDropdownRow);
-  };
-  const handleSizeClick = (size) => {
-    onPageChange("page", 1);
-    onPageChange("sizePerPage", size);
-  };
-  return (
-    <div>
-      <ButtonDropdown isOpen={openDropdownRow} toggle={() => toggleDropdown()}>
-        <DropdownToggle className="btn-brand">
-          <span className="flex">
-            {sizePerPage} <IoMdArrowDropdown style={{ margin: "auto" }} />
-          </span>
-        </DropdownToggle>
-        <DropdownMenu end>
-          <DropdownItem onClick={() => handleSizeClick(10)}>10</DropdownItem>
-          <DropdownItem onClick={() => handleSizeClick(25)}>25</DropdownItem>
-          <DropdownItem onClick={() => handleSizeClick(50)}>50</DropdownItem>
-          <DropdownItem onClick={() => handleSizeClick(100)}>100</DropdownItem>
-        </DropdownMenu>
-      </ButtonDropdown>
-    </div>
-  );
-};
-
-const CustomPagePagination = ({
-  currentPage,
-  dataTotalSize,
-  sizePerPage,
-  onPageChange,
-}) => {
-  const totalPages = Math.ceil(dataTotalSize / sizePerPage);
-
-  const handlePageClick = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      onPageChange("page", page);
-    }
-  };
-
-  const renderPaginationItems = () => {
-    const items = [];
-    for (let i = currentPage; i <= currentPage + 3 && i <= totalPages; i++) {
-      items.push(
-        <PaginationItem key={i} active={i === currentPage}>
-          <PaginationLink href="#" onClick={() => handlePageClick(i)}>
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    return items;
-  };
-
-  return (
-    <div className="table-pagination">
-      <Pagination>
-        <PaginationItem disabled={currentPage === 1}>
-          <PaginationLink first href="#" onClick={() => handlePageClick(1)} />
-        </PaginationItem>
-        <PaginationItem disabled={currentPage === 1}>
-          <PaginationLink
-            previous
-            href="#"
-            onClick={() => handlePageClick(currentPage - 1)}
-          />
-        </PaginationItem>
-        {renderPaginationItems()}
-        <PaginationItem disabled={currentPage === totalPages}>
-          <PaginationLink
-            next
-            href="#"
-            onClick={() => handlePageClick(currentPage + 1)}
-          />
-        </PaginationItem>
-        <PaginationItem disabled={currentPage === totalPages}>
-          <PaginationLink
-            last
-            href="#"
-            onClick={() => handlePageClick(totalPages)}
-          />
-        </PaginationItem>
-      </Pagination>
+     
     </div>
   );
 };

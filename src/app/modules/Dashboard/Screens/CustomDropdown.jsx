@@ -6,7 +6,7 @@ const CustomDropdown = ({ isOpen, toggleDropdown, options, iconVisible=true, rig
   return (
     <div className="relative">
       {iconVisible && (
-        <FaChevronDown className=" cursor-pointer" onClick={toggleDropdown} />
+        <FaChevronDown className="cursor-pointer " onClick={toggleDropdown} />
       )}
       {isOpen && (
         <div

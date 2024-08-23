@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { FormGroup, Label,  Button, Col } from "reactstrap";
+import { FormGroup, Label,  Col } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment, { max, min } from "moment";
@@ -13,6 +13,11 @@ import CheckboxMenu from "./SortingFilters";
 
 import { Input } from "./ui/input";
 import { Search as SearchIcon  } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "../src/@/components/ui/popover";
+import { ChevronsUpDown, Check } from 'lucide-react';
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '../src/@/components/ui/command';
+import { useState } from 'react';
+import { Button } from 'components/ui/button';
 
 const SelectComponent = ({
   name,
@@ -665,126 +670,147 @@ function dropdownStyles(backgroundColor, fontSize,height) {
   };
 }
 
+
+
+// new search filter
 const FilterInput = ({ filters, onChange, isClearable = true }) => {
-  const classNamesStyle =
-    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
+  const classNamesStyle = "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
   const width = "w-56";
   const height = "h-[38px]";
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('');
+
   return (
     <>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
-        {filters &&
-          filters.map((filter, index) => {
-            if (filter.type === "search") {
-              return (
-                  <div className="relative" key={index}>
-      <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
-      <Input
-        type="search"
-        placeholder={filter.placeholder}
-        name={filter.name}
-                    id={filter.name}
-                    onChange={(option) => {
-                      onChange(filter.name, option.target.value);
-                    }}
-        className="py-2 pl-4 pr-8 bg-background"
-                    
-      />
-    </div>
-              );
-            } else if (filter.type === "text") {
-              return (
-                <input
-                  key={index}
-                  type="text"
+        {filters && filters.map((filter, index) => {
+          if (filter.type === "search") {
+            return (
+              <div className="relative" key={index}>
+                <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
+                <Input
+                  type="search"
                   placeholder={filter.placeholder}
-                  className={`${filter.className ?? classNamesStyle} ${
-                    filter.width ?? width
-                  } ${filter.height ?? height}`}
                   name={filter.name}
                   id={filter.name}
                   onChange={(option) => {
                     onChange(filter.name, option.target.value);
                   }}
+                  className="py-2 pl-4 pr-8 bg-background"
                 />
-              );
-            } else if (filter.type === "select") {
-              return (
-                <Select
-                  key={index}
-                  options={filter.option}
-                  placeholder={filter.placeholder}
-                  className={`${!filter.className && "shadow-input"} rounded-lg`}
-                  styles={dropdownStyles(
-                    filter?.className?.backgroundColor ?? "#fafbfc",
-                    filter?.className?.fontSize ?? "16px",
-                    filter?.className?.height ?? "38px"
-                  )}
+              </div>
+            );
+          } else if (filter.type === "text") {
+            return (
+              <Input
+                key={index}
+                type="text"
+                placeholder={filter.placeholder}
+                className={`${filter.className ?? classNamesStyle} ${filter.width ?? width} ${filter.height ?? height}`}
+                name={filter.name}
+                id={filter.name}
+                onChange={(option) => {
+                  onChange(filter.name, option.target.value);
+                }}
+              />
+            );
+          } else if (filter.type === "select") {
+            return (
+              <Popover key={index} open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className={`w-[200px] justify-between`}
+                  >
+                    {value
+                      ? filter.option.find((option) => option.value === value)?.label
+                      : filter.placeholder}
+                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search framework..." />
+                    <CommandList>
+                      <CommandEmpty>No framework found.</CommandEmpty>
+                      <CommandGroup>
+                        {filter.option.map((option) => (
+                          <CommandItem
+                            key={option.value}
+                            value={option.value}
+                            onSelect={(currentValue) => {
+                              setValue(currentValue === value ? "" : currentValue);
+                              onChange(filter.name, currentValue);
+                              setOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
+                            />
+                            {option.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+             
+            );
+          } else if (filter.type === "date") {
+            const date = filter.value ? new Date(moment(filter.value)) : null;
+            return (
+              <div style={{ width: "fit-content" }} key={index}>
+                <DatePicker
                   name={filter.name}
-                  defaultValue={filter.option.find(
-                    (obj) => obj.value === filter.defaultValue
-                  )}
                   id={filter.name}
-                  onChange={(option) => {
-                    onChange(filter.name, option?.value);
+                  className={`${filter.className ?? classNamesStyle} ${filter.width ?? width} ${filter.height ?? height}`}
+                  dropdownMode="select"
+                  placeholderText={filter.placeholder}
+                  value={date}
+                  selected={date}
+                  autoComplete="off"
+                  onChange={(value) => {
+                    if (value) {
+                      value = moment(value).format("YYYY-MM-DD");
+                      onChange(filter.name, value);
+                    } else {
+                      onChange(filter.name, null);
+                    }
                   }}
-                  isClearable={isClearable}
+                  showMonthDropdown
+                  showYearDropdown
+                  dateFormat="dd-MM-yyyy"
                 />
-              );
-            } else if (filter.type === "date") {
-              const date = filter.value ? new Date(moment(filter.value)) : null;
-              console.log(filter.placeholder, "filter.placeholder");
-              return (
-                <div style={{ width: "fit-content" }}>
-                  <DatePicker
-                    key={index}
-                    name={filter.name}
-                    id={filter.name}
-                    className={`${filter.className ?? classNamesStyle} ${
-                      filter.width ?? width
-                    } ${filter.height ?? height}`}
-                    dropdownMode="select"
-                    placeholderText={filter.placeholder}
-                    value={date}
-                    selected={date}
-                    autoComplete="off"
-                    onChange={(value) => {
-                      if (value) {
-                        value = moment(value).format("YYYY-MM-DD");
-                        onChange(filter.name, value);
-                      } else {
-                        onChange(filter.name, null);
-                      }
-                    }}
-                    showMonthDropdown
-                    showYearDropdown
-                    dateFormat="dd-MM-yyyy"
-                  />
-                </div>
-              );
-            } else if (filter.type === "sorting") {
-              return (
-                <CheckboxMenu
-                  key={index}
-                  items={filter.option}
-                  onChange={(name, value, filterCheckStatus) => {
-                    onChange(name, value, filterCheckStatus);
-                  }}
-                  values={filter.values}
-                  mainHeading={filter.mainHeading}
-                  label={filter.placeholder}
-                  className={filter.className ?? null}
-                />
-              );
-            } else {
-              return <div key={index}></div>;
-            }
-          })}
+              </div>
+            );
+          } else if (filter.type === "sorting") {
+            return (
+              <CheckboxMenu
+                key={index}
+                items={filter.option}
+                onChange={(name, value, filterCheckStatus) => {
+                  onChange(name, value, filterCheckStatus);
+                }}
+                values={filter.values}
+                mainHeading={filter.mainHeading}
+                label={filter.placeholder}
+                className={filter.className ?? null}
+              />
+            );
+          } else {
+            return <div key={index}></div>;
+          }
+        })}
       </div>
-      
     </>
   );
 };
+
+export default FilterInput;
+
 export {
   SelectComponent,
   SelectMultiInputComponent,

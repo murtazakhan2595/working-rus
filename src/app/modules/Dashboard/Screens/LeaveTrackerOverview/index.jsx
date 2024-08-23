@@ -175,16 +175,8 @@ export default function LeaveTrackerOverview() {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-row gap-4">
-        <RenderLeaveStatusDropdown
-                status={filterOption}
-                setFilterOption={setFilterOption}
-              />
-              <StatusLabel className="text-white bg-yellow-500"
-                status={"warning"}
-                value={`${pending_leaves} Pending`}
-              />
-               <FilterInput
+        <div className="flex flex-row justify-end gap-4">
+        <FilterInput
                 filters={[
                   {
                     type: "search",
@@ -210,6 +202,19 @@ export default function LeaveTrackerOverview() {
                 ]}
                 onChange={handleFilterChange}
               />
+              <div className="flex flex-row gap-4">
+              <RenderLeaveStatusDropdown
+                status={filterOption}
+                setFilterOption={setFilterOption}
+              />
+              
+              <StatusLabel className=""
+                status={"warning"}
+                value={`${pending_leaves} Pending`}
+              />
+              </div>
+        
+               
           </div>
           <TableCustom className="overflow-hidden"
               hideTableHeader={true}
