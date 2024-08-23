@@ -66,7 +66,7 @@ export const DashbaordJobApplicationColumns = (navigate) => [
 export const DashboardLeaveTrackerColumns = [
   {
     dataField: "id",
-    text: "",
+    text: "Employee",
     formatter: (cell, row) => (
       <EmployeeNameInfo
         name={`${row.name}`}
@@ -78,7 +78,7 @@ export const DashboardLeaveTrackerColumns = [
   },
   {
     dataField: "date",
-    text: "",
+    text: "Date",
     formatter: (cell) => (
       <div className="text-[#5c5e64] text-sm font-normal  leading-[18px]">
         {moment(cell).format("DD MMM YYYY")}
