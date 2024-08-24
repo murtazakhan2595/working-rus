@@ -82,42 +82,25 @@ import {
   },
   {
     type: "div",
-    className: "my-teams ",
+    className: "my-team grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
     children: [
       {
+        type: "div",
+        className: "w-full col-span-2",
+        content: <MyLeaves/>,
+        value: "MyLeaves",
+        },
+      {
       type: "div",
-      className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
+      className: "",
       content: <MyTeams/>,
       value: "MyTeams",
       },
+      
+      
     ]
   },
-  
-  {
-    type: "div",
-    className: "my-leaves",
-    children: [
-      {
-      type: "div",
-      className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
-      content: <MyLeaves/>,
-      value: "MyLeaves",
-      },
-    ]
-  },
-  
-{
-  type: "div",
-  className: "my-teams",
-  children: [
-    {
-    type: "div",
-    className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
-    content: <MyTeams />,
-    value: "MyTeam",
-    },
-  ]
-}]
+]
   
 const DashboardManager = [
   {
