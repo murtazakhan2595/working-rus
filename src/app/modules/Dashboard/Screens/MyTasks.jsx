@@ -166,7 +166,7 @@ export default function MyTasks() {
 
   return (
     <>
-    <Card className="col-span-2">
+    <Card className="">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="font-semibold text-plum-1100">My Tasks</div>
@@ -270,7 +270,7 @@ export default function MyTasks() {
              </div>
       </CardHeader>
       <CardContent>
-      <div className="">
+      
   {tasks.length > 0 ? (
     tasks.slice(0, 5).map((task) => <RenderTask key={task.id} task={task} />)
   ) : (
@@ -278,7 +278,7 @@ export default function MyTasks() {
       No tasks found
     </div>
   )}
-</div>
+
 
       </CardContent>
      
@@ -317,9 +317,10 @@ const getStatusLabel = (status) => {
 const RenderTask = ({ task }) => {
   return (
     <>
+    <div clasName="border-b-2 border-slate-200/50">
       <Table className="overflow-hidden">
         <TableBody>
-          <TableRow>
+          <TableRow className="border-b transition-colors hover:bg-slate-100/50 data-[state=selected]:bg-slate-100 dark:hover:bg-slate-800/50 dark:data-[state=selected]:bg-slate-800">
             <TableCell className="">
               <div className="flex flex-col w-full gap-2">
               <div className="flex flex-row w-full gap-4">
@@ -346,6 +347,8 @@ const RenderTask = ({ task }) => {
           </TableRow>
         </TableBody>
       </Table>
+      </div>
+      <div class="h-[0px] border border-[#dadada] "></div>
     </>
   );
 };

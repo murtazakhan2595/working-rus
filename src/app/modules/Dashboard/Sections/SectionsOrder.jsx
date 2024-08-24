@@ -63,19 +63,26 @@ import {
   },
   {
     type: "div",
-    className: "my-tasks",
+    className: "my-tasks grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
     children: [
       {
       type: "div",
-      className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
+      className: "col-span-2",
       content: <MyTasks/>,
       value: "MyTasks",
       },
+      {
+      type: "div",
+      className: "",
+      content: <AllProjects/>,
+      value: "AllProjects",
+      },
+      
     ]
   },
   {
     type: "div",
-    className: "my-teams",
+    className: "my-teams ",
     children: [
       {
       type: "div",
@@ -85,6 +92,7 @@ import {
       },
     ]
   },
+  
   {
     type: "div",
     className: "my-leaves",
@@ -97,18 +105,7 @@ import {
       },
     ]
   },
-  {
-    type: "div",
-    className: "all-projects",
-    children: [
-      {
-      type: "div",
-      className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
-      content: <AllProjects/>,
-      value: "AllProjects",
-      },
-    ]
-  },
+  
 {
   type: "div",
   className: "my-teams",
