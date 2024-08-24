@@ -15,7 +15,7 @@ import CustomDropdown from "./CustomDropdown";
 import CreateCardModal from "./CreateCardModal";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardSubtitle } from "../../../../src/@/components/ui/card";
 import { Button } from '../../../../components/ui/button';
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, MoreHorizontal  } from "lucide-react"
 import * as React from "react"
 import { cn } from "../../../../src/@/lib/utils";
 
@@ -30,6 +30,10 @@ import {
 import { Popover, PopoverTrigger, PopoverContent } from "../../../../src/@/components/ui/popover";
 
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../../../../src/@/components/ui/table";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "../../../../src/@/components/ui/dropdown-menu";
+
+
+
 export default function MyTasks() {
   const userProfile = useSelector((state) => state.user.userProfile);
   const [AllProjects, setAllProjects] = useState([]);
@@ -343,6 +347,25 @@ const RenderTask = ({ task }) => {
             </TableCell>
             <TableCell className="w-[200px] text-center">
               {PriorityListIcons.find((option) => option.value === task?.priority)?.label}
+            </TableCell>
+            <TableCell>
+            <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                aria-haspopup="true"
+                                size="icon"
+                                variant="ghost"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuItem>Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
             </TableCell>
           </TableRow>
         </TableBody>

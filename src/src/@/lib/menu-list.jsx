@@ -1,5 +1,5 @@
 
-import { Users, SquareStack, House, ArrowLeftRight, Award, CalendarClockIcon, CalendarRange, Crosshair, FileChartColumnIncreasing, ListTodo, UserRoundCheck, UserRoundSearch, UsersRound, ListRestart, Settings2, PlaneTakeoff, DoorOpen, UserRoundPlus, UserRoundCog } from "lucide-react"
+import { Users, SquareStack, House, ArrowLeftRight, Award, CalendarClockIcon, CalendarRange, Crosshair, FileChartColumnIncreasing, ListTodo, UserRoundCheck, GalleryHorizontalEnd , UserRoundSearch, UsersRound, ListRestart, Settings2, PlaneTakeoff, DoorOpen, UserRoundPlus, UserRoundCog } from "lucide-react"
 
 
 /**
@@ -48,7 +48,7 @@ export function getMenuList(pathname, groups, userRole) {
       to: "/reports",
       label: "Reports",
       active: pathname === "/reports",
-      icon: House,
+      icon: GalleryHorizontalEnd ,
       submenus: [],
     },
   ]
@@ -440,7 +440,7 @@ export function getMenuList(pathname, groups, userRole) {
         },
         {
           label: "Talent Sphere",
-          icon: CalendarRange,
+          icon: UserRoundSearch,
           active: pathname === "/personnel-requisition",
           submenus: [
             {
@@ -463,7 +463,7 @@ export function getMenuList(pathname, groups, userRole) {
         },
         {
           label: "Performance Management",
-          icon: CalendarRange,
+          icon: Award,
           active: pathname === "/employee-evaluation",
           submenus: [
             {
@@ -474,7 +474,7 @@ export function getMenuList(pathname, groups, userRole) {
         },
         {
           label: "Payroll & Attendance",
-          icon: CalendarRange,
+          icon: CalendarClockIcon,
           active: pathname === "/payroll",
           submenus: [
             {
@@ -489,7 +489,7 @@ export function getMenuList(pathname, groups, userRole) {
         },
         {
           label: "Personnel Development",
-          icon: CalendarRange,
+          icon: UsersRound,
           active: pathname === "/learn",
           submenus: [
             {
@@ -508,7 +508,7 @@ export function getMenuList(pathname, groups, userRole) {
         },
         {
           label: "People Enagement",
-          icon: CalendarRange,
+          icon: Crosshair,
           active: pathname === "/announcement",
           submenus: [
             {
@@ -523,7 +523,7 @@ export function getMenuList(pathname, groups, userRole) {
         },
         {
           label: "Daily Task Report",
-          icon: CalendarRange,
+          icon: FileChartColumnIncreasing,
           active: pathname === "/daily-task-report",
           submenus: [
             {

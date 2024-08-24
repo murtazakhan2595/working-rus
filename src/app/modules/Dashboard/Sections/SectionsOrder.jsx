@@ -90,11 +90,11 @@ import {
         content: <MyLeaves/>,
         value: "MyLeaves",
         },
-      {
-      type: "div",
-      className: "",
-      content: <MyTeams/>,
-      value: "MyTeams",
+        {
+        type: "div",
+        className: "w-[100%] overflow-hidden p-2",
+        content: <MyTeams />,
+        value: "MyTeam",
       },
       
       

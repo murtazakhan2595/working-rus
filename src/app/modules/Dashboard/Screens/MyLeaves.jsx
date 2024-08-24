@@ -82,20 +82,10 @@ const RenderMyLeaves = ({ leave }) => {
             leave.end_date
           ).format("MMM DD")}`}</div>
                   </div>
-                  </div>
-                  
-                 
-                </TableCell>
-                <TableCell className="py-4">
-                  
+                  </div>             
                 </TableCell>
                 <TableCell className="py-4 text-right">
-                  <Badge 
-                    variant={leave.status_hr === "Approved" ? "default" : 
-                      leave.status_hr === "Pending" ? "secondary" : "destructive"}
-                  >
-                    {leave.status_hr}
-                  </Badge>
+                <StatusLabel status={Status(leave.status_hr)} />
                 </TableCell>
               </TableRow>
             

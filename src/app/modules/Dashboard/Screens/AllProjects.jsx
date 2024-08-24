@@ -39,7 +39,7 @@ export default function AllProjects(){
 
   return (
     <>
-   <Card className="w-full h-[644px]">
+   <Card className="w-full h-[640px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="font-semibold text-plum-1100">{userProfile.role === 4 ? "My Projects" : "All Projects"}</div>
