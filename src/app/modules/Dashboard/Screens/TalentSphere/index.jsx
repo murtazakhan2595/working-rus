@@ -3,12 +3,17 @@ import { useState, useEffect } from "react";
 import { FaChevronRight, FaPlus, FaRegStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { HiOutlineBars3 } from "react-icons/hi2";
-import { Table } from "components";
 import { DashbaordJobApplicationColumns } from "app/modules/Dashboard/Screens/Sections";
-import { fetchJobPosts } from "app/hooks/recruitment";
+import { fetchJobPosts, getJobApplications, getJobApplicants } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
-import { getJobApplications, getJobApplicants } from "app/hooks/recruitment";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../../src/@/components/ui/card";
+import { Button } from 'components/ui/button';
+import TableCustom from './../../../../../components/TableCustom';
+import { Briefcase, Users, UserCheck, UserPlus } from "lucide-react";
+import { Separator } from "../../../../../src/@/components/ui/separator";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../../../../../src/@/components/ui/table";
+import { Badge } from "../../../../../src/@/components/ui/badge";
 
 const TalentSphere = () => {
   const [posts, setPosts] = useState([]);
@@ -16,6 +21,7 @@ const TalentSphere = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isApplicantsLoading, setIsApplicantsLoading] = useState(true);
   const navigate = useNavigate();
+
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -27,6 +33,7 @@ const TalentSphere = () => {
       setIsLoading(false);
     }
   };
+
   const fetchLists = async () => {
     try {
       const applicants = await getJobApplicants();
@@ -39,113 +46,125 @@ const TalentSphere = () => {
       setIsApplicantsLoading(false);
     }
   };
+
   useEffect(() => {
     fetchData();
     fetchLists();
   }, []);
 
   return (
-    <div className="flex flex-col py-6 px-3 bg-white rounded-md  w-full h-fit ">
-      <div className="flex gap-4 justify-between w-full flex-wrap">
-        <div className="flex gap-1 text-lg tracking-tight leading-5 rounded-lg text-zinc-800 items-center">
-          <FaRegStar />
-          <div>Talent Sphere</div>
-        </div>
-        <div className="flex gap-1 my-auto flex-wrap">
-          <Link to="/jobs">
-            <div className="flex gap-1.5 justify-center px-2.5 py-2 my-auto text-sm leading-5 text-black rounded items-center ">
-              <div className="grow my-auto">View All</div>
-              <FaChevronRight size={11} />
+    <>
+      <Card className="col-span-2">
+        <CardHeader className="items-start p-6">
+          <CardTitle className="flex flex-row justify-between w-full">
+            <div className="font-semibold text-plum-1100">Talent Sphere</div>
+            <div className="flex flex-row gap-4">
+              <Button variant="outline">
+                <Link to="/jobs">View Detail</Link>
+              </Button>
+              <Button variant="secondary">
+                <Link to="/job-post">Add New Job</Link>
+              </Button>
             </div>
-          </Link>
-          <Link to="/job-post">
-            <div className="flex gap-1 justify-center items-center px-4 py-2 text-sm text-white bg-black rounded-xl mr-2">
-              <div>Add Job</div>
-              <FaPlus className="text-white" />
-            </div>
-          </Link>
-        </div>
-      </div>
-      <div className="flex gap-3 justify-between mt-4 max-md:flex-wrap">
-        <div className="flex flex-col justify-end md:w-[65%] sm:w-[100%]">
-          <div className="flex gap-3 flex-wrap">
-            <TitleCard label={"Job Opening"} value={6} />
-            <TitleCard label={"Applications"} value={50} />
-            <TitleCard label={"Shortlisted"} value={20} />
-            <TitleCard label={"Interview"} value={5} />
-          </div>
-
-          <div className="mt-4 h-80 overflow-auto m-bottom-zero hideScroll">
-            {isLoading ? (
-              <PageLoader />
-            ) : (
-              <Table
-                columns={DashbaordJobApplicationColumns(navigate)}
-                data={posts}
-                pagination={false}
-                dataStyle={{ backgroundColor: "white" }}
-                rowExpand={false}
-                tableOptions={{ onRowClick: false }}
-              />
-            )}
-          </div>
-        </div>
-        <div className="flex flex-col h-auto max-h-[25rem] md:w-[35%] sm:w-[100%]">
-          <div className="text-sm font-bold leading-5 text-zinc-800">
-            Ongoing process
-          </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <StatsTalent />
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <TableCustom
+              columns={DashbaordJobApplicationColumns(navigate)}
+              data={posts.slice(0, 5)}
+              pagination={false}
+              dataStyle={{ backgroundColor: "white" }}
+              rowExpand={false}
+              tableOptions={{ onRowClick: false }}
+            />
+          )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <div className="font-semibold text-plum-1100">Ongoing Process</div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
           {isApplicantsLoading ? (
             <PageLoader />
           ) : (
-            <RenderApplicants applicantsData={applicantsData} />
+            <OnGoingApplicatns applicantsData={applicantsData} />
           )}
-        </div>
-      </div>
-    </div>
+        </CardContent>
+      </Card>
+    </>
   );
 };
 
 export default TalentSphere;
 
-const TitleCard = ({ label, value }) => {
+function StatsTalent() {
   return (
-    <div className="flex gap-1 p-2 bg-gray-50 rounded-md border border-solid border-zinc-300">
-      <div className="flex justify-center items-center my-auto w-6 h-6 bg-sky-500 bg-opacity-10  rounded-[100px]">
-        <HiOutlineBars3 className="text-sky-600" />
-      </div>
-      <div className="flex flex-col justify-center py-px">
-        <div className="text-xs text-zinc-600">{label}</div>
-        <div className="mt-1 text-base text-zinc-800">{value}</div>
+    <div className="w-full p-6">
+      <div className="flex flex-row items-center justify-between">
+        <StatItem icon={Briefcase} label="Job Opening" value="6" />
+        <Separator orientation="vertical" className="w-px mx-2 h-14" />
+        <StatItem icon={UserPlus} label="Applications" value="50" />
+        <Separator orientation="vertical" className="w-px mx-2 h-14" />
+        <StatItem icon={UserCheck} label="Shortlisted" value="20" />
+        <Separator orientation="vertical" className="w-px mx-2 h-14" />
+        <StatItem icon={Users} label="Interview" value="5" />
       </div>
     </div>
   );
-};
+}
 
-const RenderApplicants = ({ applicantsData }) => {
+function StatItem({ icon: Icon, label, value }) {
+  return (
+    <div className="flex flex-row items-center gap-2">
+      <div className="flex items-center justify-center p-4 rounded-full bg-mauve-200">
+      <Icon className="h-7 w-7 text-plum-1100" aria-hidden="true" />
+      </div>
+       
+      <div className="flex flex-col items-centflex-col">
+      <div className="text-2xl font-bold leading-none tabular-nums">{value}</div>
+        <div className="font-xl medium text-muted-foreground">{label}</div>
+      </div>
+      
+    </div>
+  );
+}
+
+const OnGoingApplicatns = ({ applicantsData }) => {
   return (
     <div className="h-full overflow-y-auto hideScroll">
-      {applicantsData.map((applicant) => (
-        <div
-          key={applicant.id} // Replace 'applicant.id' with a unique identifier from your applicant data
-          className="flex gap-5 justify-between py-1 mt-6 bg-white"
-        >
-          <div className="flex gap-4">
-            <div className="my-auto text-xs text-zinc-600">{applicant.id}</div>{" "}
-            <div className="flex flex-col text-zinc-600">
-              <div className="text-sm font-bold tracking-tight">
+      <Table className="min-w-full bg-white">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="py-4">ID</TableHead>
+            <TableHead className="py-4">Full Name</TableHead>
+            <TableHead className="py-4">Job Title</TableHead>
+            <TableHead className="py-4 whitespace-nowrap">Application Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {applicantsData.slice(0, 5).map((applicant) => (
+            <TableRow key={applicant.id} className="border-t">
+              <TableCell className="py-4 text-xs ">{applicant.id}</TableCell>
+              <TableCell className="py-4 text-sm font-bold ">
                 {applicant.full_name}
-              </div>
-              <div className="text-xs tracking-tight">
+              </TableCell>
+              <TableCell className="py-4 text-xs ">
                 {applicant.job_title}
-              </div>
-            </div>
-          </div>
-          <div className="flex gap-1.5 my-auto text-sm leading-4 whitespace-nowrap text-zinc-600">
-            <div className="shrink-0 my-auto w-2.5 h-2.5 rounded-full border border-amber-500 border-solid stroke-[1px]" />
-            <div>{applicant.application_status}</div>
-          </div>
-        </div>
-      ))}
+              </TableCell>
+              <TableCell className="py-4 text-sm leading-4 whitespace-nowrap">
+                <Badge variant="outline" className="text-xs">{applicant.application_status}</Badge>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

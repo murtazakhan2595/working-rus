@@ -3,7 +3,7 @@ import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
 // import loginBg from "../.././../assets/images/login-bg.png";
 import cover from "../.././../assets/images/cover.png";
-import logo from "../.././../assets/images/tecbrix-logo.png";
+
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,6 +20,13 @@ import {
   fetchDesignations,
 } from "state/slices/CommonSlice";
 import { handleUpdateProfile } from "data/Data";
+
+
+import { Link } from 'react-router-dom';
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Label } from "./../../../src/@/components/ui/label";
+import NewLogo from "../.././../assets/images/NewLogo";
 
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
@@ -168,39 +175,28 @@ function Login() {
   }, []);
 
   return (
-    <div className="h-screen flex justify-center">
-      <div className="w-full md:w-[65%] flex flex-col min-h-full p-3 md:p-5 lg:p-7">
-        <div className="flex justify-start items-start">
-          <img
-            src={logo}
-            className="w-[142px] h-auto md:h-auto lg:pl-5"
-            alt="Tecbrix logo"
-          />
-        </div>
-        <div className="flex justify-center items-center flex-grow">
-          <div className="md:mx-auto w-full max-w-md lg:max-w-xl">
+
+    <div className="w-full lg:grid lg:min-h-[100vh] lg:grid-cols-2 xl:min-h-[100vh]">
+      <div className="flex items-center justify-center ">
+        <div className="mx-auto grid w-[350px] gap-6">
+          <div className="grid justify-center gap-2 text-center">
+            <div className="ml-auto mr-auto">
+              <NewLogo />
+            </div>
+            <h1 className="text-3xl font-bold">Login</h1>
+            <p className="text-balance text-muted-foreground">
+              Enter your email below to login to your account
+            </p>
+          </div>
+          <div className="grid gap-4">
             <form
-              className="space-y-3 my-2 lg:py-10 md:py-6 md:px-8 md:m-6"
+              className=""
               onSubmit={handleSubmit}
               method="POST"
-            >
-              <div className="lg:block mx-auto">
-                <h2 className="text-[#323333] text-center text-2xl lg:text-4xl font-lato font-bold leading-9 pb-4 tracking-tight">
-                  Log In
-                </h2>
-                <p className="font-roboto text-center text-[#5C5E64] font-normal text-base lg:mb-10">
-                  It's nice to see you again!
-                </p>
-              </div>
-
-              <div className="">
-                <label
-                  htmlFor="username"
-                  className="text-[#323333] font-normal font-lato text-base"
-                >
-                  Login ID*
-                </label>
-                <input
+            ><div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="usrname"
                   required
                   name="username"
                   type="text"
@@ -208,123 +204,60 @@ function Login() {
                   title="Enter Your Username"
                   value={values.username}
                   onChange={handleChange}
-                  className="w-full rounded-xl py-2 my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
                 />
                 <div className="text-sm text-rose-500">{errors.username}</div>
               </div>
-
-              <div className="relative">
-                <div className="flex justify-between items-center">
-                  <label
-                    htmlFor="password"
-                    className="text-[#323333] font-normal font-lato text-base"
-                  >
-                    Password*
-                  </label>
-                  <NavLink
+              <div className="relative grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <Link
                     to="/forgot-password"
-                    className="text-[#323333] font-normal font-lato text-base underline underline-offset-4"
+                    className="inline-block ml-auto text-sm underline"
                   >
                     Forgot your password?
-                  </NavLink>
+                  </Link>
                 </div>
-                <input
-                  required
+                <Input id="password" required
                   name="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   title="Enter Your Password"
                   value={values.password}
                   onChange={handleChange}
-                  className="w-full rounded-xl my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
-                />
-
-                <button
+                  className="" />
+                <Button
                   type="button"
                   onClick={handlePasswordVisibility}
-                  className={`absolute inset-y-12 right-2 flex items-center ${
-                    showPassword ? "text-gray-400" : ""
-                  }`}
+                  className={`absolute top-[25px] right-0 bg-transparent${showPassword ? "text-gray-400" : ""
+                    }`}
                 >
                   {showPassword ? (
                     <BiShow className="text-gray-400" />
                   ) : (
                     <TbEyeClosed className="text-gray-400" />
                   )}
-                </button>
+                </Button>
+
                 <div className="text-sm text-rose-500">{errors.password}</div>
               </div>
-
-              <div className="flex items-center gap-x-4">
-                <button
-                  type="submit"
-                  className="flex h-11 text-white justify-center items-center w-full font-normal rounded-xl bg-black px-3 py-1.5 text-sm md:text-lg leading-8 font-lato lg:text-base"
-                  disabled={isLoading} // Disable button when loading
-                >
-                  {isLoading ? (
-                    <span className="animate-pulse">Logging in...</span>
-                  ) : (
-                    <span>Log In</span>
-                  )}
-                </button>
-              </div>
-
-              <div className="flex pb-2 items-center">
-                <input
-                  id="keepSignedIn"
-                  name="keepSignedIn"
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={handleCheckboxChange}
-                  className="hidden"
-                />
-                <label
-                  htmlFor="keepSignedIn"
-                  className="justify-start font-medium text-sm text-gray text-[#5C5E64] font-montserrat tracking-tighter relative cursor-pointer pl-6 select-none"
-                >
-                  <span
-                    className={`absolute left-0 top-0.5 w-4 h-4 rounded-sm ${
-                      isChecked ? "bg-[#5C5E64]" : "bg-[#EBEBEB]"
-                    } transition-all duration-300`}
-                    style={{
-                      border: "none",
-                    }}
-                  >
-                    {isChecked && (
-                      <svg
-                        className="w-3 h-3 text-white ml-0.5 mt-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="4"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
-                  </span>
-                  Keep me signed in
-                </label>
-              </div>
+              <Button type="submit" className="w-full">
+                {isLoading ? (
+                  <span className="animate-pulse">Logging in...</span>
+                ) : (
+                  <span>Log In</span>
+                )}
+              </Button>
             </form>
           </div>
         </div>
-        <div className="flex justify-start items-start">
-          <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
-            © 2024 TecBrix
-          </p>
-        </div>
       </div>
-
-      <div className="w-0 md:w-1/2 lg:w-[35%] bg-gray-500 h-full">
-        <img src={cover} alt="Meeting" className="object-cover w-full h-full" />
+      <div className="items-center justify-end hidden bg-white lg:flex">
+        <img
+          src={cover}
+          alt="Login Image"
+          className="object-cover min-h-full min-w-fit"
+        />
       </div>
-
-      {isPopupVisible && <OfflinePopUp onClose={handleClosePopup} />}
-      <ToastContainer />
     </div>
   );
 }

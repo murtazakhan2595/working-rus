@@ -13,6 +13,7 @@ import {
 import { setUserProfile } from "state/slices/UserSlice.js";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
 import { options } from "joi";
+import { ArrowDown, ArrowRight, CircleEllipsis, ArrowUp, Timer   } from 'lucide-react';
 
 export const countryOptions = Object.keys(getAllCountries()).map(
   (countryCode) => ({
@@ -36,7 +37,7 @@ export const tasksTitle = [
 export const statusOptions = [
   { value: "To Do", label: "Todo" },
   { value: "In Progress", label: "In Progress" },
-  { value: "Completed", label: "Completed" },
+  { value: "Done", label: "Done" },
 ];
 
 export const visaOptions = [
@@ -210,7 +211,7 @@ export const typeOptions = [
   {
     value: "Project",
     label: (
-      <div className="flex items-center gap-x-2">
+      <div className="flex justify-center gap-x-2">
         <CiViewBoard className="text-2xl text-[#FF61C0]" />
         Project
       </div>
@@ -219,8 +220,8 @@ export const typeOptions = [
   {
     value: "Miscellaneous",
     label: (
-      <div className="flex items-center gap-x-2">
-        <CiCircleMore className="text-2xl text-[#935AF2]" />
+      <div className="flex justify-center gap-x-2">
+        <CircleEllipsis  className="text-2xl text-[#935AF2]" />
         Miscellaneous
       </div>
     ),
@@ -251,24 +252,24 @@ export const PriorityList = [
   {
     value: 3,
     label: (
-      <div className="flex items-center gap-x-2 text-baseGray ">
-        <IoMdArrowDropdownCircle className="text-2xl" /> Low
+      <div className="flex justify-center gap-x-2 text-mauve-900 ">
+        <ArrowDown className="text-2xl" /> Low
       </div>
     ),
   },
   {
     value: 2,
     label: (
-      <div className="flex items-center gap-x-2 text-yellow-500">
-        <FiMinusCircle className="text-xl" /> Medium
+      <div className="flex justify-center text-yellow-500 gap-x-2">
+        <ArrowRight className="text-xl" /> Medium
       </div>
     ),
   },
   {
     value: 1,
     label: (
-      <div className="flex items-center gap-x-2 text-red-500">
-        <IoMdArrowDropupCircle className="text-2xl" /> High
+      <div className="flex justify-center text-red-500 gap-x-2">
+        <ArrowUp className="text-2xl"  /> High
       </div>
     ),
   },
@@ -277,24 +278,24 @@ export const PriorityListIcons = [
   {
     value: 3,
     label: (
-      <div className="flex items-center gap-x-2 text-baseGray ">
-        <IoMdArrowDropdownCircle className="text-2xl" />
+      <div className="flex justify-center gap-x-2 text-mauve-900 ">
+        <ArrowDown className="text-2xl " /> Low
       </div>
     ),
   },
   {
     value: 2,
     label: (
-      <div className="flex items-center gap-x-2 text-yellow-500">
-        <FiMinusCircle className="text-xl" />
+      <div className="flex justify-center text-yellow-500 gap-x-2">
+        <ArrowRight className="text-xl" />Medium
       </div>
     ),
   },
   {
     value: 1,
     label: (
-      <div className="flex items-center gap-x-2 text-red-500">
-        <IoMdArrowDropupCircle className="text-2xl" />
+      <div className="flex justify-center text-red-500 gap-x-2">
+        <ArrowUp className="text-2xl" />High
       </div>
     ),
   },
@@ -304,24 +305,26 @@ export const status2Options = [
   {
     value: "Pending",
     label: (
-      <div className="bg-[#DADADA] text-[#5C5E64] rounded-md py-0.5 px-2">
+      <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10">
         Pending
       </div>
+      
+      
     ),
   },
   {
     value: "Inprogress",
     label: (
-      <div className="bg-[#FFE8CD] text-[#FF9A1F] rounded-md py-0.5 px-2">
-        In Progress
+      <div className="items-center px-2 py-1 text-xs font-medium text-yellow-800 rounded-full bginline-flex bg-yellow-50 ring-1 ring-inset ring-yellow-600/20">
+        <Timer />In Progress
       </div>
     ),
   },
   {
-    value: "Completed",
+    value: "Done",
     label: (
-      <div className="bg-[#CCEFE3] text-[#5B8C7B] rounded-md py-0.5 px-2">
-        Completed
+      <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 rounded-full bg-green-50 ring-1 ring-inset ring-green-600/20">
+        Done
       </div>
     ),
   },

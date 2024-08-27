@@ -6,6 +6,8 @@ import logo from "../.././../assets/images/tecbrix-logo.png";
 import { PiCaretCircleLeftFill } from "react-icons/pi";
 import { Link } from "react-router-dom";
 
+import { Button } from "../../../components/ui/button"
+import { Input } from "../../../components/ui/input"
 
 const ForgotPassword = () => {
     const baseUrl = useSelector((state) => state.user.baseUrl);
@@ -38,6 +40,10 @@ const ForgotPassword = () => {
     };
 
     return (
+
+
+    
+
         <div className="h-screen flex justify-center">
             <div className="w-full md:w-[65%] flex flex-col min-h-full p-3 md:p-5 lg:p-7">
                 <div className="flex justify-between">

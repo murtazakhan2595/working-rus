@@ -1,232 +1,119 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-* {
-  margin: 0px;
-  padding: 0px;
-}
-
-@font-face {
-  font-family: "SF-Pro-Display";
-  src: url("./app/shared/fonts/sf-pro-display-cufonfonts/SFPRODISPLAYREGULAR.OTF")
-    format("opentype");
+.lucide-dot {
+    display: none !important
 }
 
-body {
-  font-family: "SF-Pro-Display";
-  overflow: hidden;
+
+@layer components {
+    .font-heading {
+        @apply text-4xl font-bold text-primary;
+    }
 }
 
-.scroll::-webkit-scrollbar {
-  width: 6px;
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 240 10% 3.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 240 10% 3.9%;
+        --primary: 292 45% 44%;
+        /* --bs-primary: 292 45% 44%; */
+        --primary-foreground: 355.7 100% 99%;
+        --secondary: 240 4.8% 95.9%;
+        --secondary-foreground: 240 5.9% 10%;
+        --muted: 240 4.8% 95.9%;
+        --muted-foreground: 240 3.8% 45%;
+        --accent: 240 4.8% 95.9%;
+        --accent-foreground: 240 5.9% 10%;
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 240 5.9% 90%;
+        --input: 240 5.9% 90%;
+        --ring: 292 45% 44%;
+        --chart-1: 292 45% 44%;
+        --chart-2: 294 49.1% 78.4%;
+        --chart-3: 158 11.1% 82.4%;
+        --chart-4: 43 74% 66%;
+        --chart-5: 27 87% 67%;
+        --radius: 1rem;
+
+        --slate-1: 240 20% 99%;
+        --slate-2: 240 20% 98%;
+        --slate-3: 240 11.1% 94.7%;
+        --slate-4: 240 9.5% 91.8%;
+        --slate-5: 230 10.7% 89%;
+        --slate-6: 240 10.1% 86.5%;
+        --slate-7: 233 9.9% 82.2%;
+        --slate-8: 231 10.2% 75.1%;
+        --slate-9: 231 5.9% 57.1%;
+        --slate-10: 226 5.4% 52.7%;
+        --slate-11: 220 5.9% 40%;
+        --slate-12: 210 12.5% 12.5%;
+
+        --plum-1: 280 100% 99.4%;
+        --plum-2: 300 60% 98%;
+        --plum-3: 300 66.7% 95.3%;
+        --plum-4: 298 65% 92.2%;
+        --plum-5: 298 58.6% 88.6%;
+        --plum-6: 296 52.5% 84.3%;
+        --plum-7: 294 49.1% 78.4%;
+        --plum-8: 292 47.7% 70.8%;
+        --plum-9: 292 44.8% 51%;
+        --plum-10: 292 44% 47.6%;
+        --plum-11: 292 44.9% 44.1%;
+        --plum-12: 291 57.6% 23.1%;
+
+        --mauve-1: 300 20% 99%;
+        --mauve-2: 270 20% 98%;
+        --mauve-3: 285 14.3% 94.5%;
+        --mauve-4: 276 11.6% 91.6%;
+        --mauve-5: 274 12.3% 88.8%;
+        --mauve-6: 262 11.4% 86.3%;
+        --mauve-7: 258 11.1% 82.4%;
+        --mauve-8: 249 10.4% 75.5%;
+        --mauve-9: 249 6% 57.5%;
+        --mauve-10: 250 5% 53.3%;
+        --mauve-11: 252 4.8% 40.8%;
+        --mauve-12: 257 10.1% 13.5%;
+
+        --gray-1: 0 0% 98.8%;
+        --gray-2: 0 0% 97.6%;
+        --gray-3: 0 0% 94.1%;
+        --gray-4: 0 0% 91%;
+        --gray-5: 0 0% 87.8%;
+        --gray-6: 0 0% 85.1%;
+        --gray-7: 0 0% 80.8%;
+        --gray-8: 0 0% 73.3%;
+        --gray-9: 0 0% 55.3%;
+        --gray-10: 0 0% 51.4%;
+        --gray-11: 0 0% 39.2%;
+        --gray-12: 0 0% 12.5%;
+    }
 }
 
-.scroll::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
-}
+@layer base {
+    * {
+        @apply border-border;
+    }
 
-.scroll::-webkit-scrollbar-thumb {
-  background-color: #7992aa;
-  outline: 1px solid #1976d246;
-}
 
-.hideScroll::-webkit-scrollbar {
-  width: 0px;
-}
 
-.roundScroll::-webkit-scrollbar {
-  width: 7px;
-}
+    body {
+        @apply bg-background text-foreground font-body;
+    }
 
-.roundScroll::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
-  border-radius: 10px;
-}
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading;
+    }
 
-.boardScroll::-webkit-scrollbar {
-  width: 6px;
 }
-
-.boardScroll::-webkit-scrollbar-track {
-  border-radius: 10px;
-  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
-}
-
-.boardScroll::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color: #7992aa;
-  outline: 1px solid #1976d246;
-}
-
-.xScroll::-webkit-scrollbar {
-  width: 2px;
-  height: 5px;
-}
-
-.xScroll::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
-  border-radius: 10px;
-}
-
-.xScroll::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color: #202f75;
-  outline: 1px solid #1976d246;
-}
-
-.roundScroll::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color: #bcc0cc;
-  outline: 1px solid #bcc0cc;
-}
-
-/* scroll style 2 */
-.roundScrollsm::-webkit-scrollbar {
-  width: 6px;
-}
-
-.roundScrollsm::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px #bcc0cc;
-  border-radius: 10px;
-}
-
-.roundScrollsm::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color: #202f75;
-  outline: 1px solid #1976d246;
-}
-
-.xScroll::-webkit-scrollbar {
-  width: 2px;
-  height: 11px;
-}
-
-.xScroll::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733);
-  border-radius: 10px;
-}
-
-.xScroll::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color: #202f75;
-  outline: 1px solid #1976d246;
-}
-.quill {
-  border: 1px solid #dee2e6 !important;
-}
-
-.ql-toolbar.ql-snow {
-  border: none !important;
-  border-bottom: 1px solid #e1e2e5 !important;
-  position: sticky !important;
-  top: 0 !important;
-  background-color: #f6f7fa !important;
-  z-index: 0 !important;
-  padding: 2px 0px !important;
-  border-top-left-radius: 0.375rem !important;
-  border-top-right-radius: 0.375rem !important;
-}
-.non-sticky .ql-toolbar.ql-snow{
-  position: static !important;
-}
-
-.ql-container.ql-snow {
-  border: none !important;
-  /* border-top: 1px solid #ccc !important; */
-}
-
-.ql-editor::-webkit-scrollbar {
-  width: 5px !important;
-}
-
-.ql-editor::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(42, 179, 168, 0.733) !important;
-  border-radius: 10px !important;
-}
-
-.ql-editor::-webkit-scrollbar-thumb {
-  border-radius: 10px !important;
-  background-color: #202f75 !important;
-  outline: 1px solid #1976d246 !important;
-}
-
-.ql-toolbar.ql-snow .ql-formats {
-  margin-right: 0px !important;
-}
-
-/* date picker style overriding */
-.css-13cymwt-control {
-  border: none !important;
-}
-
-.css-13cymwt-control:focus {
-  border: 2px solid white !important;
-}
-
-/* custom react select */
-/* For Chrome, Edge, and Safari */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #202f75;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #202f75;
-}
-
-/* profile box shadow */
-
-/* CSS */
-.shadow-bottom {
-  box-shadow: 0px 100px 80px 0px rgba(0, 0, 0, 0.07),
-    0px 41.778px 33.422px 0px rgba(0, 0, 0, 0.05),
-    0px 22.336px 17.869px 0px rgba(0, 0, 0, 0.04),
-    0px 12.522px 10.017px 0px rgba(0, 0, 0, 0.04),
-    0px 6.65px 5.32px 0px rgba(0, 0, 0, 0.03),
-    0px 2.767px 2.214px 0px rgba(0, 0, 0, 0.02);
-}
-/* Input Shad */
-.shadow-input {
-  box-shadow: 0.5px 2px 1px 0px rgba(0, 0, 0, 0.19);
-}
-/* service card shadow */
-.shadow-card {
-  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.21);
-}
-
-/* project card shadow */
-.projectCard-shadow{
-  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.21);
-}
-
-/* project card details shadow */
-.projectDetails-shadow{
-  box-shadow: 0px -4px 10px 0px rgba(0, 0, 0, 0.04), 0px 100px 80px 0px rgba(0, 0, 0, 0.07), 0px 41.778px 33.422px 0px rgba(0, 0, 0, 0.05), 0px 22.336px 17.869px 0px rgba(0, 0, 0, 0.04), 0px 12.522px 10.017px 0px rgba(0, 0, 0, 0.04), 0px 6.65px 5.32px 0px rgba(0, 0, 0, 0.03);
-}
-
-/* notifications scrooll */
-
-.gray-scorll::-webkit-scrollbar {
-  width: 8px;
-}
-
-.gray-scorll::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 8px;
-}
-
-.gray-scorll::-webkit-scrollbar-thumb {
-  background: #c0c5ce;
-  border-radius: 8px;
-}
-
-.gray-scorll::-webkit-scrollbar-thumb:hover {
-  background: #9099a2;
-  border-radius: 8px;
-}
-

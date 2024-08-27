@@ -6,8 +6,9 @@ import { BiTask } from "react-icons/bi";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { MdBarChart, MdOutlineTrendingUp } from "react-icons/md";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import buble from "../../../assets/images/buble.png";
+import bubble from "../../../assets/images/buble.png";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+
 
 function getNavigation(userRole) {
   const Navigation = {
@@ -15,7 +16,7 @@ function getNavigation(userRole) {
       ...[
         {
           name: "Services",
-          icon: <img src={buble} />,
+          icon: <img src={bubble} />,
           dropdown: "",
           url: "/services",
         },
@@ -229,7 +230,7 @@ function getNavigation(userRole) {
       ...(userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4
         ? [
             {
-              name: "Task Management",
+              name: "Task Management test",
               icon: <IoMdCheckmarkCircleOutline />,
               dropdown: "Projects",
               children: [

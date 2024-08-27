@@ -168,10 +168,7 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
 
           {!isSidebarOpen && (
             <div
-              className="absolute rounded-lg border border-gray-1 ml-20
-                                      bg-white w-44 text-sm
-                                      opacity-00 
-                                      group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50  shadow-bottom"
+              className="absolute z-50 ml-20 text-sm bg-white border rounded-lg border-gray-1 w-44 opacity-00 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 shadow-bottom"
               style={{ bottom: "5px" }}
             >
               <div className="flex items-center bg-[#F0F1F2] rounded-lg m-1">
@@ -204,14 +201,14 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
                     </div>
                   </div>
                   <div
-                    className="text-xs overflow-hidden text-ellipsis"
+                    className="overflow-hidden text-xs text-ellipsis"
                     style={{ width: "100px" }}
                   >
                     {employee?.work_email}
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-y-2 mt-2 mx-1">
+              <div className="flex flex-col mx-1 mt-2 gap-y-2">
                 <Link
                   to="/my-profile"
                   className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"
@@ -249,7 +246,7 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
               />
             </div>
             <div
-              className="text-xs overflow-hidden text-ellipsis"
+              className="overflow-hidden text-xs text-ellipsis"
               style={{ width: "130px" }}
             >
               {employee?.work_email}
@@ -258,7 +255,7 @@ const ProfileDetails = ({ isSidebarOpen, employee, profileImage, handleToggleDro
         </div>
 
         {isProfileOpen && isSidebarOpen && (
-          <div className="flex flex-col gap-y-2 mt-2">
+          <div className="flex flex-col mt-2 gap-y-2">
             <Link
               to="/my-profile"
               className="flex items-center justify-between px-3 py-1 rounded-md hover:bg-[#DAEFF8] text-[#616366] text-sm hover:text-[#0D2282]"

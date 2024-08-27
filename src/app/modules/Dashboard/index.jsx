@@ -5,6 +5,8 @@ import { DashboardFilters, getDashboard } from "./Sections";
 import { Header } from "components";
 import { FilterInput } from "components/form-control";
 
+
+
 const filters = {
   TalentSphere: "TalentSphere",
   EmployeeOverview: "EmployeeOverview",
@@ -29,6 +31,7 @@ const Dashboard = ({ userProfile }) => {
       setDashBoardSections(sections);
     }
   }, [userProfile]);
+  
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
 
@@ -63,32 +66,11 @@ const Dashboard = ({ userProfile }) => {
   console.log("filterData", filterData);
 
   return (
-    <>
-      <div className="screen bg-[#F0F1F2] ">
-        <Header
-          title={`Dashboard`}
-          content={
-            <FilterInput
-              filters={[
-                {
-                  type: "sorting",
-                  option: DashboardFilters,
-                  name: "diaplay",
-                  placeholder: (
-                    <div>
-                      <img src={vectorFilter} className="w-[38px] h-[38px]" />
-                    </div>
-                  ),
-                  values: filterData,
-                  className: "custom-dasboard-dropdown-toggle-filter ",
-                  mainHeading: "Manage Dashboard",
-                },
-              ]}
-              onChange={handleFilterChange}
-            />
-          }
-        />
-        <div className="flex flex-wrap">
+    <>    
+      
+      <div className="dashboard ">
+     <Header/>
+        <div className="flex flex-col w-full gap-4">
           {DashBoardSections.map((section, index) => {
             if (!!filterData[section.value])
               return (

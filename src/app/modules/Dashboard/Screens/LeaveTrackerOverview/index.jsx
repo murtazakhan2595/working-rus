@@ -1,7 +1,8 @@
 import { RxCalendar } from "react-icons/rx";
 import { DashboardLeaveTrackerColumns } from "app/modules/Dashboard/Screens/Sections";
 import calender from "assets/images/calender.svg";
-import { Table, StatusLabel } from "components";
+import { StatusLabel } from "components";
+
 import { useEffect, useState } from "react";
 import { FaCaretDown, FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -11,6 +12,11 @@ import { FilterInput } from "components/form-control";
 import { getDesignationList } from "app/hooks/general";
 import CustomDropdown from "../CustomDropdown";
 import { RenderLeaveStatusDropdown } from "./Sections";
+import TableCustom from "components/TableCustom";
+
+import { Card, CardContent, CardHeader, CardDescription, CardTitle, CardFooter, CardSubTitle, CardActions, CardSection, CardBody } from "../../../../../src/@/components/ui/card";
+import { Button } from "components/ui/button";
+
 
 export default function LeaveTrackerOverview() {
   const [applications, setApplications] = useState([]);
@@ -149,39 +155,28 @@ export default function LeaveTrackerOverview() {
       },
     },
   ];
+
+  
   return (
-    <div className="h-fit px-3.5 pt-6 pb-3 bg-white rounded-md flex-col justify-start items-start gap-4 inline-flex w-full ">
-      <div className=" justify-between w-full items-center gap-[19px] inline-flex">
-        <div className=" p-3 rounded-lg justify-start items-center gap-3 flex">
-          <RxCalendar />
-          <div className="text-[#323233] text-lg font-normal  leading-tight">
-            Leave Tracker
+    <>
+    <Card className="col-span-2 ">
+      <CardHeader className="items-start p-6">
+        <CardTitle className="flex flex-row justify-between w-full">
+        <div className="font-semibold text-plum-1100">
+            Leave Tracker 
           </div>
-        </div>
-        <Link to="/leave-request-management">
-          <div className="pr-2 rounded-[3px] justify-center items-center gap-[3px] flex">
-            <div className="text-black text-[14px] font-normal leading-[18px]">
-              View All
-            </div>
-            <FaChevronRight size={11} />
-          </div>
-        </Link>
-      </div>
-      <div className="flex gap-4">
-        <div className="md:w-[75%] sm:w-[100%]">
-          <div className="py-0.5 mb-2 justify-between items-center gap-2 flex flex-wrap w-full">
-            <div className="justify-start items-center gap-2 flex flex-wrap">
-              <RenderLeaveStatusDropdown
-                status={filterOption}
-                setFilterOption={setFilterOption}
-              />
-              <StatusLabel
-                status={"warning"}
-                value={`${pending_leaves} Pending`}
-              />
-            </div>
-            <div className="justify-start items-center gap-2 flex flex-wrap">
-              <FilterInput
+          <Button variant="outline">
+          <Link to="/leave-request-management">
+          
+          View Detail
+       
+          </Link>
+          </Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex flex-row justify-end gap-4">
+        <FilterInput
                 filters={[
                   {
                     type: "search",
@@ -207,40 +202,71 @@ export default function LeaveTrackerOverview() {
                 ]}
                 onChange={handleFilterChange}
               />
-            </div>
+              <div className="flex flex-row gap-4">
+              <RenderLeaveStatusDropdown
+                status={filterOption}
+                setFilterOption={setFilterOption}
+              />
+              
+              <StatusLabel className=""
+                status={"warning"}
+                value={`${pending_leaves} Pending`}
+              />
+              </div>
+        
+               
           </div>
-          <div className="h-80 overflow-y-auto m-bottom-zero hideScroll" >
-            <Table
+          <TableCustom className="overflow-hidden"
               hideTableHeader={true}
               columns={DashboardLeaveTrackerColumns}
-              data={applications}
+              data={applications.slice(0, 5)}
               pagination={false}
               dataStyle={{backgroundColor: "white" , border: "none"}}
             />
+      </CardContent>
+     
+      </Card>
+      
+    
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+          <div className="font-semibold text-plum-1100">
+            Who's on Leave{""}
           </div>
-        </div>
-        <div className="flex flex-col md:w-[25%] sm:w-[100%] max-h-[30rem] overflow-y-auto">
-          <div className="w-full text-sm font-bold tracking-normal text-zinc-800">
-            Who’s on Leave{" "}
-          </div>
-          <div className="mt-6 w-full text-sm text-zinc-400">Today</div>
-          {onLeaveToday?.map((application) => (
-            <div className="mt-[23px] flex flex-col gap-2">
-              <div className="w-full text-xs text-zinc-600">Nov 09 -Nov 20</div>
-              <FormateLeaveTrackerName row={application} />
-            </div>
-          ))}
-          <div className="mt-6 w-full text-sm text-zinc-400">Next Week</div>
-          {onLeaveNextWeek?.map((application) => (
-            <div className="mt-[23px] flex flex-col gap-2">
-              <div className="w-full text-xs text-zinc-600">
-                {application.start_date}
-              </div>
-              <FormateLeaveTrackerName row={application} />
-            </div>
-          ))}
-        </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          
+        <div className="p-4 border-b-1 bg-mauve-200">Today</div>
+    {onLeaveToday?.map((application) => (
+      <div className="flex flex-col gap-2 p-4">
+        <div className="">{application.start_date}</div>
+        <FormateLeaveTrackerName row={application} />
       </div>
-    </div>
+    ))}
+    <div className="p-4 border-b-1 bg-mauve-200">Next Week</div>
+    {onLeaveNextWeek?.map((application) => (
+      <div className="flex flex-col gap-2 p-4">
+        <div className="">
+          {application.start_date}
+        </div>
+        <FormateLeaveTrackerName row={application} />
+      </div>
+    ))}
+          </CardContent>
+
+        
+      </Card>
+    
+    
+  
+  </>
   );
 }
+
+
+
+
+

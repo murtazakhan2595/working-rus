@@ -1,29 +1,51 @@
-import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
-import React, { useEffect, useState } from "react";
-import Chart from "react-apexcharts";
-import { useSelector } from "react-redux";
-import { GoPeople } from "react-icons/go";
-import { FaChevronRight } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { getEmployeeCustomList } from "app/hooks/general";
 
+import { Link } from "react-router-dom"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../../../src/@/components/ui/card"
+import { Button } from 'components/ui/button';
 
-function RecentActivity() {
- 
+const activities = [
+  {
+    title: "Deployed new version",
+    time: "2h ago",
+    description: "Deployed version 2.3.0 with new features and bug fixes.",
+  },
+  {
+    title: "New user signed up",
+    time: "1 day ago",
+    description: "Welcome @shadcn, our newest community member!",
+  },
+  {
+    title: "Project starred",
+    time: "3 days ago",
+    description: '@shadcn starred the project "Acme Inc Website".',
+  },
+];
+
+export default function Component() {
   return (
-    <section className="flex flex-col items-center gap-6 px-[14px] pt-6 bg-white rounded-md h-full">
-      <div className=" justify-between items-center inline-flex w-full">
-        <div className="items-center gap-3 flex">
-          {/* <GoPeople className="text-lg font-bold" /> */}
-          <div className="text-[#323233] text-lg font-normalleading-tight">
-          Recent Activity
+    <Card className="w-full  min-h-[400px]">
+      <CardHeader className="items-start pb-0">
+        <CardTitle className="flex flex-row justify-between w-full">
+          <div className="font-semibold text-plum-1100">Recent Activity</div>
+          <Button variant="outline" className="">
+            <Link to="#">View Details</Link>
+          </Button>
+        </CardTitle>
+        
+      </CardHeader>
+      <CardContent className="grid gap-4">
+      {activities.map((activity, index) => (
+          <div key={index} className="flex items-start gap-4 pb-4 border-b">
+            <div className="w-full space-y-1">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium">{activity.title}</h4>
+                <span className="text-xs text-muted-foreground">{activity.time}</span>
+              </div>
+              <p className="text-sm text-muted-foreground">{activity.description}</p>
+            </div>
           </div>
-        </div>
-       
-      </div>
-
-    </section>
-  );
+        ))}
+      </CardContent>
+    </Card>
+  )
 }
-
-export default RecentActivity;

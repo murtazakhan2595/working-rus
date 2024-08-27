@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { FormGroup, Label, Input, Button, Col } from "reactstrap";
+import { FormGroup, Label,  Col } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment, { max, min } from "moment";
@@ -10,6 +10,15 @@ import { IoIosSearch } from "react-icons/io";
 import { countryCodesOptions } from "../data/CountryCode";
 import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
+
+import { Input } from "./ui/input";
+import { Search as SearchIcon  } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "../src/@/components/ui/popover";
+import { ChevronsUpDown, Check } from 'lucide-react';
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '../src/@/components/ui/command';
+import { useState } from 'react';
+import { Button } from 'components/ui/button';
+
 const SelectComponent = ({
   name,
   value,
@@ -381,9 +390,9 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
     <>
       <label
         htmlFor="file-upload"
-        className="flex cursor-pointer text-center overflow-hidden font-bold rounded-3xl my-3"
+        className="flex my-3 overflow-hidden font-bold text-center cursor-pointer rounded-3xl"
       >
-        <div className="w-full h-full flex flex-row justify-start  items-center border-solid rounded-3xl relative">
+        <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
           <div className="relative overflow-hidden w-[110px]">
             {value?.file ? (
               <img
@@ -428,7 +437,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
                     reader.readAsDataURL(selectedFile);
                   }
                 }}
-                className="form-control mb-2"
+                className="mb-2 form-control"
                 style={{ minHeight: "auto", fontSize: "12px" }}
               />
               {error && touch && (
@@ -468,7 +477,7 @@ const FileInput = ({
         </h4>
         <label
           htmlFor={name}
-          className="cursor-pointer opacity-70 rounded-lg text-input mt-3"
+          className="mt-3 rounded-lg cursor-pointer opacity-70 text-input"
           style={{
             width: "fit-content",
             margin: "auto",
@@ -521,7 +530,7 @@ const FileInput = ({
         </label>
         <br />
       </div>
-      {error && touch && <div className="text-red-500 text-sm">{error}</div>}
+      {error && touch && <div className="text-sm text-red-500">{error}</div>}
     </>
   );
 };
@@ -612,7 +621,7 @@ const TextAreaEditorInput = ({
             onChange(name, option);
           }}
         />
-        <Label className="text-baseGray pt-4 mt-1" htmlFor="address">
+        <Label className="pt-4 mt-1 text-baseGray" htmlFor="address">
           {required && <span className="text-danger">* </span>}
           {label}
         </Label>
@@ -661,127 +670,147 @@ function dropdownStyles(backgroundColor, fontSize,height) {
   };
 }
 
+
+
+// new search filter
 const FilterInput = ({ filters, onChange, isClearable = true }) => {
-  const classNamesStyle =
-    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
+  const classNamesStyle = "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
   const width = "w-56";
   const height = "h-[38px]";
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('');
+
   return (
     <>
-      <div className="flex items-center gap-x-3 gap-y-3 flex-wrap">
-        {filters &&
-          filters.map((filter, index) => {
-            if (filter.type === "search") {
-              return (
-                <div className="relative" key={index}>
-                  <IoIosSearch className="absolute top-[30%] left-3 text-baseGray" />
-                  <input
-                    type="search"
-                    style={{ paddingLeft: "2.5rem" }}
-                    placeholder={filter.placeholder}
-                    className={`${filter.className ?? classNamesStyle} ${
-                      filter.width ?? width
-                    } ${filter.height ?? height}`}
-                    name={filter.name}
-                    id={filter.name}
-                    onChange={(option) => {
-                      onChange(filter.name, option.target.value);
-                    }}
-                  />
-                </div>
-              );
-            } else if (filter.type === "text") {
-              return (
-                <input
-                  key={index}
-                  type="text"
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
+        {filters && filters.map((filter, index) => {
+          if (filter.type === "search") {
+            return (
+              <div className="relative" key={index}>
+                <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
+                <Input
+                  type="search"
                   placeholder={filter.placeholder}
-                  className={`${filter.className ?? classNamesStyle} ${
-                    filter.width ?? width
-                  } ${filter.height ?? height}`}
                   name={filter.name}
                   id={filter.name}
                   onChange={(option) => {
                     onChange(filter.name, option.target.value);
                   }}
+                  className="py-2 pl-4 pr-8 bg-background"
                 />
-              );
-            } else if (filter.type === "select") {
-              return (
-                <Select
-                  key={index}
-                  options={filter.option}
-                  placeholder={filter.placeholder}
-                  className={`${!filter.className && "shadow-input"} rounded-lg`}
-                  styles={dropdownStyles(
-                    filter?.className?.backgroundColor ?? "#fafbfc",
-                    filter?.className?.fontSize ?? "16px",
-                    filter?.className?.height ?? "38px"
-                  )}
+              </div>
+            );
+          } else if (filter.type === "text") {
+            return (
+              <Input
+                key={index}
+                type="text"
+                placeholder={filter.placeholder}
+                className={`${filter.className ?? classNamesStyle} ${filter.width ?? width} ${filter.height ?? height}`}
+                name={filter.name}
+                id={filter.name}
+                onChange={(option) => {
+                  onChange(filter.name, option.target.value);
+                }}
+              />
+            );
+          } else if (filter.type === "select") {
+            return (
+              <Popover key={index} open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className={`w-[200px] justify-between`}
+                  >
+                    {value
+                      ? filter.option.find((option) => option.value === value)?.label
+                      : filter.placeholder}
+                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search framework..." />
+                    <CommandList>
+                      <CommandEmpty>No framework found.</CommandEmpty>
+                      <CommandGroup>
+                        {filter.option.map((option) => (
+                          <CommandItem
+                            key={option.value}
+                            value={option.value}
+                            onSelect={(currentValue) => {
+                              setValue(currentValue === value ? "" : currentValue);
+                              onChange(filter.name, currentValue);
+                              setOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
+                            />
+                            {option.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+             
+            );
+          } else if (filter.type === "date") {
+            const date = filter.value ? new Date(moment(filter.value)) : null;
+            return (
+              <div style={{ width: "fit-content" }} key={index}>
+                <DatePicker
                   name={filter.name}
-                  defaultValue={filter.option.find(
-                    (obj) => obj.value === filter.defaultValue
-                  )}
                   id={filter.name}
-                  onChange={(option) => {
-                    onChange(filter.name, option?.value);
+                  className={`${filter.className ?? classNamesStyle} ${filter.width ?? width} ${filter.height ?? height}`}
+                  dropdownMode="select"
+                  placeholderText={filter.placeholder}
+                  value={date}
+                  selected={date}
+                  autoComplete="off"
+                  onChange={(value) => {
+                    if (value) {
+                      value = moment(value).format("YYYY-MM-DD");
+                      onChange(filter.name, value);
+                    } else {
+                      onChange(filter.name, null);
+                    }
                   }}
-                  isClearable={isClearable}
+                  showMonthDropdown
+                  showYearDropdown
+                  dateFormat="dd-MM-yyyy"
                 />
-              );
-            } else if (filter.type === "date") {
-              const date = filter.value ? new Date(moment(filter.value)) : null;
-              console.log(filter.placeholder, "filter.placeholder");
-              return (
-                <div style={{ width: "fit-content" }}>
-                  <DatePicker
-                    key={index}
-                    name={filter.name}
-                    id={filter.name}
-                    className={`${filter.className ?? classNamesStyle} ${
-                      filter.width ?? width
-                    } ${filter.height ?? height}`}
-                    dropdownMode="select"
-                    placeholderText={filter.placeholder}
-                    value={date}
-                    selected={date}
-                    autoComplete="off"
-                    onChange={(value) => {
-                      if (value) {
-                        value = moment(value).format("YYYY-MM-DD");
-                        onChange(filter.name, value);
-                      } else {
-                        onChange(filter.name, null);
-                      }
-                    }}
-                    showMonthDropdown
-                    showYearDropdown
-                    dateFormat="dd-MM-yyyy"
-                  />
-                </div>
-              );
-            } else if (filter.type === "sorting") {
-              return (
-                <CheckboxMenu
-                  key={index}
-                  items={filter.option}
-                  onChange={(name, value, filterCheckStatus) => {
-                    onChange(name, value, filterCheckStatus);
-                  }}
-                  values={filter.values}
-                  mainHeading={filter.mainHeading}
-                  label={filter.placeholder}
-                  className={filter.className ?? null}
-                />
-              );
-            } else {
-              return <div key={index}></div>;
-            }
-          })}
+              </div>
+            );
+          } else if (filter.type === "sorting") {
+            return (
+              <CheckboxMenu
+                key={index}
+                items={filter.option}
+                onChange={(name, value, filterCheckStatus) => {
+                  onChange(name, value, filterCheckStatus);
+                }}
+                values={filter.values}
+                mainHeading={filter.mainHeading}
+                label={filter.placeholder}
+                className={filter.className ?? null}
+              />
+            );
+          } else {
+            return <div key={index}></div>;
+          }
+        })}
       </div>
     </>
   );
 };
+
+export default FilterInput;
+
 export {
   SelectComponent,
   SelectMultiInputComponent,

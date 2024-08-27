@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "react-bootstrap-table/dist/react-bootstrap-table-all.min.css";
 import { useState, useEffect } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
@@ -50,7 +49,7 @@ import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/Cr
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
 import ExitAndClearance from "app/modules/ExitAndClearance";
-
+import "./index.css"
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -127,6 +126,7 @@ function App() {
   console.log(userRole, userProfile);
   return (
     <>
+   
       <Routes>
         {isLogin && (
           <>
@@ -273,6 +273,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/confirm-password" element={<ResetPassword />} />
       </Routes>
+     
     </>
   );
 }

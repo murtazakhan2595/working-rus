@@ -75,7 +75,7 @@ const NavigationMenue = ({
         <ul className="">
             {navigation &&
                 navigation.items.map((item, index) => (
-                    <li className="group relative" key={index}>
+                    <li className="relative group" key={index}>
                         <div
                             onClick={() => {
                                 if (item.url) navigate(item.url);
@@ -127,7 +127,7 @@ const NavigationMenue = ({
                             <>
                                 {!isSidebarOpen && (
                                     <div
-                                        className="absolute rounded-lg border border-gray-100 ml-20 bg-white w-44 text-base opacity-00 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom"
+                                        className="absolute z-50 ml-20 text-base transition-all -translate-x-3 bg-white border border-gray-100 rounded-lg w-44 opacity-00 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 shadow-bottom"
                                         style={{ top: "0" }}
                                     >
                                         <div className="flex flex-col bg-white rounded-lg">
@@ -140,7 +140,7 @@ const NavigationMenue = ({
                                                             isActive ? activeLink : normalLink
                                                         }
                                                     >
-                                                        <p className="text-sm px-2">
+                                                        <p className="px-2 text-sm">
                                                             {child.name}
                                                         </p>
                                                     </NavLink>
@@ -198,7 +198,7 @@ const NavigationMenue = ({
                                                                                         : normalLink
                                                                                 }
                                                                             >
-                                                                                <p className="text-sm px-2">
+                                                                                <p className="px-2 text-sm">
                                                                                     {subChild.name}
                                                                                 </p>
                                                                             </NavLink>
@@ -214,7 +214,7 @@ const NavigationMenue = ({
                                                             isActive ? activeLink : normalLink
                                                         }
                                                     >
-                                                        <p className="text-sm px-2">
+                                                        <p className="px-2 text-sm">
                                                             {child.name}
                                                         </p>
                                                     </NavLink>
@@ -264,9 +264,7 @@ const NavigationMenue = ({
                                 />
                                 {!isSidebarOpen && (
                                     <div
-                                        className="absolute rounded-lg border border-gray-1 ml-20 bg-white w-44 text-base
-                                                opacity-00 -translate-x-3 transition-all
-                                                group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-50 shadow-bottom"
+                                        className="absolute z-50 ml-20 text-base transition-all -translate-x-3 bg-white border rounded-lg border-gray-1 w-44 opacity-00 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 shadow-bottom"
                                     >
                                         <div className="max-h-[20vh] overflow-y-auto p-1">
                                             {projects?.map((project, index) => (
@@ -292,7 +290,7 @@ const NavigationMenue = ({
                             {isProjectOpen && isSidebarOpen && (
                                 <>
                                     <div className="flex flex-col mb-4 p-2 bg-[#F0F1F2] ">
-                                        <div className="flex justify-between mb-1 items-center">
+                                        <div className="flex items-center justify-between mb-1">
                                             <div className="flex gap-1">
                                                 {projectsCount > 10 && (
                                                     <>
@@ -311,7 +309,7 @@ const NavigationMenue = ({
                                                     </>
                                                 )}
                                             </div>
-                                            <div className="flex items-center opacity-60 gap-1 text-white">
+                                            <div className="flex items-center gap-1 text-white opacity-60">
                                                 <div className="text-xs">{projectsCount}</div>
                                                 {userProfile.role !== 4 && (
                                                     <AiOutlinePlus
