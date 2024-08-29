@@ -188,6 +188,7 @@ const EmployeeForm = ({
                           <h5 className="fw-700 mb-3">Employee Details</h5>
                         </Col>
                         <Col md="6">
+                      
                           <TextInput
                             name={"employeeId"}
                             error={props.errors?.employeeId}

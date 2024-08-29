@@ -5,6 +5,7 @@ import Notifications  from "../../app/shared/templates/Sidebar/Notifications/Not
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import SearchInput  from "./search";
+import UserNotifications from './user-notifications';
 
 
 function Navbar({ title, setUserLogout }) {
@@ -26,6 +27,7 @@ function Navbar({ title, setUserLogout }) {
   };
 
   return (
+    <>
     <header className="sticky top-0 z-0 w-full h-16 bg-white ">
       <div className="flex items-center mx-4 sm:mx-8 h-14">
         <div className="flex items-center space-x-4 lg:space-x-0">
@@ -42,13 +44,12 @@ function Navbar({ title, setUserLogout }) {
             />
           </div> */}
           
-            <Bell className="text-xl" onClick={handleShowNotifications}/>
-          
-          {showNotifications && <Notifications onClose={handleClose} />}
+           <UserNotifications/>
           <UserNav setUserLogout={handleLogout} />
         </div>
       </div>
     </header>
+    </>
   );
 }
 

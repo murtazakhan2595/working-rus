@@ -1,166 +1,71 @@
-"use client";
-// done
 
-import { Link , useNavigate} from 'react-router-dom';
-import {  Bell Cross } from "lucide-react";
-
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "../../src/@/components/ui/dropdown-menu";
 import { Button } from "./button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../src/@/components/ui/card";
+import { Bell, Inbox, CalendarDays } from "lucide-react";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider
-} from "../../src/@/components/ui/tooltip";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from "../../src/@/components/ui/dropdown-menu";
+const notifications = [
+  {
+    icon: Bell,
+    title: "Your call has been confirmed",
+    description: "5 minutes ago",
+    bgColor: "bg-primary",
+    textColor: "text-primary-foreground",
+  },
+  {
+    icon: Inbox,
+    title: "You have a new message",
+    description: "1 minute ago",
+    bgColor: "bg-secondary",
+    textColor: "text-secondary-foreground",
+  },
+  {
+    icon: CalendarDays,
+    title: "Your subscription is expiring soon",
+    description: "2 hours ago",
+    bgColor: "bg-accent",
+    textColor: "text-accent-foreground",
+  },
+];
 
-
-
-
-import React from 'react';
-
-const UserNotifications = () => {
-    const notifications = [
-        {
-            icon: null,
-            title: 'Abdul',
-            description: 'some description',
-            time: 'Apr 18, 8:37',
-            isRead: true,
-        },
-        {
-            icon: null,
-            title: 'Abdul',
-            description: 'some description',
-            time: 'Apr 18, 8:37',
-            isRead: true,
-        },
-        {
-            icon: null,
-            title: 'Abdul',
-            description: 'some description',
-            time: 'Apr 18, 8:37',
-            isRead: true,
-        },
-        {
-            icon: null,
-            title: 'Abdul',
-            description: 'some description',
-            time: 'Apr 18, 8:37',
-            isRead: true,
-        },
-        {
-            icon: null,
-            title: 'Abdul',
-            description: 'some description',
-            time: 'Apr 18, 8:37',
-            isRead: true,
-        },
-        {
-            icon: null,
-            title: 'Abdul',
-            description: 'some description',
-            time: 'Apr 18, 8:37',
-            isRead: true,
-        },
-        {
-            icon: null,
-            title: 'Abdul',
-            description: 'some description',
-            time: 'Apr 18, 8:37',
-            isRead: true,
-        },
-        {
-            icon: null,
-            title: 'Inam',
-            description: 'some description is here...',
-            time: 'Apr 18, 8:37',
-            isRead: true,
-        },
-        {
-            icon: null,
-            title: 'Sakina Burhan',
-            description: 'Lorem ipsum dolor sit amet',
-            time: 'Apr 18, 8:37',
-            isRead: false,
-        },
-        {
-            icon: null,
-            title: 'Sakina Burhan',
-            description: 'Lorem ipsum dolor sit amet',
-            time: 'Apr 18, 8:37',
-            isRead: false,
-        },
-        {
-            icon: null,
-            title: 'Sakina Burhan',
-            description: 'Lorem ipsum dolor sit amet',
-            time: 'Apr 18, 8:37',
-            isRead: false,
-        },
-    ];
-  
-    return (
-      <DropdownMenu>
-        <TooltipProvider disableHoverableContent>
-          <Tooltip delayDuration={100}>
-            <TooltipTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline" size="icon"
-                  className="relative w-10 h-10 rounded-full"
-                >
-                  <Bell className="text-xl" onClick={handleShowNotifications}/>
-          
-       
-                </Button>
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">Notifications</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-  
-        <DropdownMenuContent className="w-56 " align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{employee?.account_title}</p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {employee?.email}
-              </p>
+export default function UserNotification() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <Bell className="w-5 h-5" />
+          <span className="sr-only">Toggle notifications</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[400px] p-0">
+        <Card className="shadow-none border-0">
+          <CardHeader className="border-b px-6 py-4">
+            <CardTitle>Notifications</CardTitle>
+            <CardDescription className="text-yellow-500">You have 3 unread notifications</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y">
+              {notifications.map((notification, index) => (
+                <div key={index} className="flex items-start gap-4 px-6 py-4 hover:bg-muted">
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${notification.bgColor} ${notification.textColor}`}>
+                    <notification.icon className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium leading-none">{notification.title}</p>
+                    <p className="text-sm text-muted-foreground">{notification.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem className="hover:cursor-pointer" asChild>
-              <Link to="/" className="flex items-center">
-                <LayoutGrid className="w-4 h-4 mr-3 text-muted-foreground" />
-                Dashboard
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:cursor-pointer" asChild>
-              <Link to="/my-profile" className="flex items-center">
-                <User className="w-4 h-4 mr-3 text-muted-foreground" />
-                Account
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="hover:cursor-pointer"  onClick={handleLogout}
-                  >
-            <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
-            Sign out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
+          </CardContent>
+          <CardFooter className="border-t px-6 py-4">
+            <Button variant="secondary" size="sm">
+              Mark all as read
+            </Button>
+          </CardFooter>
+        </Card>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
-export default UserNotifications;
