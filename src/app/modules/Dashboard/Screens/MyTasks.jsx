@@ -326,7 +326,7 @@ const RenderTask = ({ task }) => {
       <Table className="overflow-hidden">
         <TableBody>
           <TableRow className="border-b transition-colors hover:bg-slate-100/50 data-[state=selected]:bg-slate-100 dark:hover:bg-slate-800/50 dark:data-[state=selected]:bg-slate-800">
-            <TableCell className="">
+            <TableCell className="px-4 py-4">
               <div className="flex flex-col w-full gap-2">
               <div className="flex flex-row w-full gap-4">
                 <div className=" font-base">{task.project_name}</div>
@@ -340,13 +340,13 @@ const RenderTask = ({ task }) => {
             </TableCell>
             
             
-            <TableCell className="w-[200px]">
+            <TableCell className="w-[200px] px-4 py-4">
              <Button variant="outline">
              <Link to="#">
              View Project</Link>
              </Button>
             </TableCell>
-            <TableCell className="w-[200px] text-center">
+            <TableCell className="w-[200px] text-center px-4 py-4">
               {PriorityListIcons.find((option) => option.value === task?.priority)?.label}
             </TableCell>
             <TableCell>
@@ -372,7 +372,7 @@ const RenderTask = ({ task }) => {
         </TableBody>
       </Table>
       </div>
-      <div class="h-[0px] border border-[#dadada] "></div>
+     
     </>
   );
 };

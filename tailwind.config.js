@@ -14,11 +14,10 @@ module.exports = {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+    
     },
     extend: {
+       
       fontFamily: {
         body: ['Inter', 'sans-serif'], // Define your custom font family
       },
@@ -142,7 +141,16 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
+    screens: {
+      'xs': '475px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+        
+    },
   },
   plugins: [require("tailwindcss-animate")],
 }
+
 

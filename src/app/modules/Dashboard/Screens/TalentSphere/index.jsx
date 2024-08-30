@@ -1,8 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { FaChevronRight, FaPlus, FaRegStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { HiOutlineBars3 } from "react-icons/hi2";
 import { DashbaordJobApplicationColumns } from "app/modules/Dashboard/Screens/Sections";
 import { fetchJobPosts, getJobApplications, getJobApplicants } from "app/hooks/recruitment";
 import { PageLoader } from "components";
@@ -12,8 +10,8 @@ import { Button } from 'components/ui/button';
 import TableCustom from './../../../../../components/TableCustom';
 import { Briefcase, Users, UserCheck, UserPlus } from "lucide-react";
 import { Separator } from "../../../../../src/@/components/ui/separator";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../../../../../src/@/components/ui/table";
-import { Badge } from "../../../../../src/@/components/ui/badge";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../../../../src/@/components/ui/table";
+import { Badge } from "../../../../../components/ui/badge";
 
 const TalentSphere = () => {
   const [posts, setPosts] = useState([]);
@@ -84,7 +82,7 @@ const TalentSphere = () => {
           )}
         </CardContent>
       </Card>
-      <Card>
+      <Card className="w-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1">
         <CardHeader>
           <CardTitle>
             <div className="font-semibold text-plum-1100">Ongoing Process</div>
@@ -107,7 +105,7 @@ export default TalentSphere;
 function StatsTalent() {
   return (
     <div className="w-full p-6">
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-wrap items-start justify-between xl:flex-nowrap xl:items-center">
         <StatItem icon={Briefcase} label="Job Opening" value="6" />
         <Separator orientation="vertical" className="w-px mx-2 h-14" />
         <StatItem icon={UserPlus} label="Applications" value="50" />
@@ -127,7 +125,7 @@ function StatItem({ icon: Icon, label, value }) {
       <Icon className="h-7 w-7 text-plum-1100" aria-hidden="true" />
       </div>
        
-      <div className="flex flex-col items-centflex-col">
+      <div className="flex flex-col items-center">
       <div className="text-2xl font-bold leading-none tabular-nums">{value}</div>
         <div className="font-xl medium text-muted-foreground">{label}</div>
       </div>

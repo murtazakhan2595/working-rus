@@ -2,7 +2,6 @@ import React from "react";
 import { RxCross2 } from "react-icons/rx";
 import { CiEdit } from "react-icons/ci";
 import dots from "assets/images/dots.svg";
-import { EmployeeName } from "utils/getValuesFromTables";
 import { getRandomColor } from "utils/renderValues";
 
 
@@ -15,29 +14,29 @@ const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
       <div className="bg-white h-full fixed  max-w-[35%] w-[35%] top-0 right-0  shadow px-[50px] py-10 flex flex-col gap-7">
         <div className="flex-col justify-start items-start gap-2.5 flex">
           <RxCross2
-            className="cursor-pointer self-end"
+            className="self-end cursor-pointer"
             onClick={() => {
               onClose();
             }}
           />
-          <div className="self-stretch justify-between items-end inline-flex">
+          <div className="inline-flex items-end self-stretch justify-between">
             <div className="flex-col justify-start items-start gap-2.5 inline-flex">
               <div className="text-zinc-800 text-[25px] font-bold ">
                 {project.name}
               </div>
               <div className="justify-start items-start gap-2.5 inline-flex">
-                <div className="text-zinc-600 text-sm font-normal">
+                <div className="text-sm font-normal text-zinc-600">
                   Created by Hani Hassan | {project.start_date}
                 </div>
               </div>
             </div>
-            <div className="h-9 justify-end items-center gap-4 flex">
+            <div className="flex items-center justify-end gap-4 h-9">
               <button
-                className="px-3 py-2 rounded border border-zinc-600 justify-center items-center gap-2 flex"
+                className="flex items-center justify-center gap-2 px-3 py-2 border rounded border-zinc-600"
                 onClick={openEditProjectModal}
               >
                 <CiEdit className="text-2xl cursor-pointer opacity-80" />
-                <div className="text-zinc-600 text-base font-medium  leading-tight">
+                <div className="text-base font-medium leading-tight text-zinc-600">
                   Edit
                 </div>
               </button>
@@ -58,7 +57,7 @@ const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
           />
         </div>
         <div className="flex flex-col items-center gap-[25px] text-sm text-gray-100 ">
-          <h2 className="self-stretch  text-xl font-bold text-zinc-600 ">
+          <h2 className="self-stretch text-xl font-bold text-zinc-600 ">
             Team Members{" "}
             <span className="text-base">
               ({project.project_members.length})

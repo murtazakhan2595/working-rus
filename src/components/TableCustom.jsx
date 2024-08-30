@@ -1,16 +1,28 @@
 import React, { useState, useMemo } from 'react';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../src/@/components/ui/table";
-const TableCustom = ({
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationLink,
+  PaginationNext
+} from "../src/@/components/ui/pagination"
+
+
+
+export default function TableCustom({
   columns,
   data,
   tableOptions,
   dataTotalSize,
-  className,
   rowExpand,
   renderExpandedContent,
-  pagination,
   dataStyle,
-}) => {
+  pagination = true,
+  itemsPerPage = 10,
+  className = "",
+}: TableCustomProps) {
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
     page: tableOptions?.page ?? 1,
@@ -20,15 +32,13 @@ const TableCustom = ({
   const toggleExpandRow = (rowId) => {
     setExpandedRow(expandedRow === rowId ? null : rowId);
   };
+  const [currentPage, setCurrentPage] = useState(1)
+  const [search, setSearch] = useState('')
+  const [sort, setSort] = useState({ key: 'name', order: 'asc' })
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [designationFilter, setDesignationFilter] = useState('all')
 
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState({ key: "name", order: "asc" });
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(4);
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [designationFilter, setDesignationFilter] = useState("all");
-
-  const employees = useMemo(() => {
+ const employees = useMemo(() => {
     return data
       .filter((employee) => {
         const searchValue = search.toLowerCase();
@@ -51,84 +61,133 @@ const TableCustom = ({
           return a[sort.key] < b[sort.key] ? 1 : -1;
         }
       })
-      .slice((page - 1) * pageSize, page * pageSize);
-  }, [data, search, sort, page, pageSize, statusFilter, designationFilter]);
+      
+  }, [data, search, sort,   statusFilter, designationFilter]);
 
-  const handleSort = (key) => {
-    if (sort.key === key) {
-      setSort({ key, order: sort.order === "asc" ? "desc" : "asc" });
-    } else {
-      setSort({ key, order: "asc" });
-    }
-  };
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage
+    return employees.slice(startIndex, startIndex + itemsPerPage)
+  }, [employees, currentPage, itemsPerPage])
+
+  const totalPages = Math.ceil(employees.length / itemsPerPage)
+
+  const handleSort = (key: string) => {
+    setSort((prevSort) => ({
+      key,
+      order: prevSort.key === key && prevSort.order === 'asc' ? 'desc' : 'asc',
+    }))
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
+
+ 
 
   return (
-    <div className={`table-container ${className}`}>
-      <Table className="overflow-hidden">
-        <TableHeader>
-          <TableRow>
-            {columns.map((column, index) => (
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort(column.dataField)}
-                key={index}
-                style={column.width ? { width: `${column.width}` } : {}}
-              >
-                {column.text}
-                {sort.key === column.dataField && (
-                  <span className="ml-1">{sort.order === "asc" ? "\u2191" : "\u2193"}</span>
-                )}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {employees && employees.length > 0 ? (
-            employees.map((row, recordIndex) => (
-              <React.Fragment key={row.id}>
-                <TableRow
-                  onClick={() => {
-                    if (rowExpand) toggleExpandRow(row.id);
-                    else if (tableOptions?.onRowClick) tableOptions.onRowClick(row);
-                  }}
-                >
-                  {columns.map((column, index) => (
-                    <TableCell
-                      className={`${column.onClick ? "cursor-pointer" : ""}`}
-                      key={index}
-                      style={{ ...(column.width ? { width: `${column.width}` } : {}), ...dataStyle }}
-                      onClick={() => {
-                        if (column.rowExpandOnClick) toggleExpandRow(row.id);
-                        else if (column.onClick) column.onClick(recordIndex, data, row);
-                      }}
-                    >
-                      {column.formatter
-                        ? column.formatter(row[column.dataField], row, data, index)
-                        : row[column.dataField]}
-                    </TableCell>
-                  ))}
-                </TableRow>
-                {expandedRow === row.id && renderExpandedContent && (
-                  <TableRow>
-                    <TableCell colSpan={columns.length}>
-                      {renderExpandedContent(row)}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </React.Fragment>
-            ))
-          ) : (
+    <>
+    <div className={`space-y-4 ${className}`}>
+    <div>
+      <div className="">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={columns.length} className="text-center">
-                No data available
-              </TableCell>
+              {columns.map((column, index) => (
+                <TableHead
+                  key={index}
+                  className="cursor-pointer"
+                  style={column.width ? { width: column.width } : {}}
+                  onClick={() => handleSort(column.dataField)}
+                >
+                  {column.text}
+                  {sort.key === column.dataField && (
+                    <span className="ml-1">{sort.order === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </TableHead>
+              ))}
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-     
-    </div>
-  );
-};
+          </TableHeader>
+          <TableBody>
+          {paginatedData.length > 0 ? (
+  paginatedData.map((row, recordIndex) => (
+    <React.Fragment key={row.id}>
+      <TableRow
+        onClick={() => {
+          if (rowExpand) toggleExpandRow(row.id);
+          else if (tableOptions?.onRowClick) tableOptions.onRowClick(row);
+        }}
+      >
+        {columns.map((column, index) => (
+          <TableCell
+            className={`${column.onClick ? "cursor-pointer" : ""}`}
+            key={index}
+            style={{ ...(column.width ? { width: `${column.width}` } : {}), ...dataStyle }}
+            onClick={() => {
+              if (column.rowExpandOnClick) toggleExpandRow(row.id);
+              else if (column.onClick) column.onClick(recordIndex, data, row);
+            }}
+          >
+            {column.formatter
+              ? column.formatter(row[column.dataField], row, data, index)
+              : row[column.dataField]}
+          </TableCell>
+        ))}
+      </TableRow>
+      {expandedRow === row.id && renderExpandedContent && (
+        <TableRow>
+          <TableCell colSpan={columns.length}>
+            {renderExpandedContent(row)}
+          </TableCell>
+        </TableRow>
+      )}
+    </React.Fragment>
+  ))
+) : (
+  <TableRow>
+    <TableCell colSpan={columns.length} className="text-center">
+      No data available
+    </TableCell>
+  </TableRow>
+)}
 
-export default TableCustom;
+            
+          </TableBody>
+        </Table>
+      </div>
+      {pagination && totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  onClick={() => handlePageChange(page)}
+                  isActive={page === currentPage}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+    </div>
+    </div>
+    </>
+  );
+}
+
+
+
+

@@ -1,34 +1,28 @@
-import { RxCalendar } from "react-icons/rx";
-import { DashboardLeaveTrackerColumns } from "app/modules/Dashboard/Screens/Sections";
-import calender from "assets/images/calender.svg";
-import { StatusLabel } from "components";
 
+import { DashboardLeaveTrackerColumns } from "app/modules/Dashboard/Screens/Sections";
+import { StatusLabel } from "components";
 import { useEffect, useState } from "react";
-import { FaCaretDown, FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import FormateLeaveTrackerName from "../FormateLeaveTrackerName";
 import { getFilteredLeaveApplication } from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import { getDesignationList } from "app/hooks/general";
-import CustomDropdown from "../CustomDropdown";
 import { RenderLeaveStatusDropdown } from "./Sections";
 import TableCustom from "components/TableCustom";
-
-import { Card, CardContent, CardHeader, CardDescription, CardTitle, CardFooter, CardSubTitle, CardActions, CardSection, CardBody } from "../../../../../src/@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../../src/@/components/ui/card";
 import { Button } from "components/ui/button";
 
 
 export default function LeaveTrackerOverview() {
   const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filterData, setFilterData] = useState({});
+  const [ loading,setLoading] = useState(true);
+  const [filterData] = useState({});
   const [filterApplications, setFilterApplications] = useState({});
   const [designations, setDesignations] = useState([]);
   const [onLeaveToday, setOnLeaveToday] = useState([]);
   const [onLeaveNextWeek, setOnLeaveNextWeek] = useState([]);
   const [allApplications, setAllApplications] = useState([]);
   const [pending_leaves, setPendingLeaves] = useState(0);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [filterOption, setFilterOption] = useState("All Requests");
 
   const applyFilters = (applications, filterApplications) => {
@@ -122,44 +116,12 @@ export default function LeaveTrackerOverview() {
     });
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-  const options = [
-    {
-      label: "All Requests",
-      onClick: () => {
-        setIsDropdownOpen(false);
-        setFilterOption("All Requests");
-      },
-    },
-    {
-      label: "Approved",
-      onClick: () => {
-        setIsDropdownOpen(false);
-        setFilterOption("Approved");
-      },
-    },
-    {
-      label: "Pending",
-      onClick: () => {
-        setIsDropdownOpen(false);
-        setFilterOption("Pending");
-      },
-    },
-    {
-      label: "Rejected",
-      onClick: () => {
-        setIsDropdownOpen(false);
-        setFilterOption("Rejected");
-      },
-    },
-  ];
-
+  
+ 
   
   return (
     <>
-    <Card className="col-span-2 ">
+    <Card className="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-1 ">
       <CardHeader className="items-start p-6">
         <CardTitle className="flex flex-row justify-between w-full">
         <div className="font-semibold text-plum-1100">
@@ -175,7 +137,7 @@ export default function LeaveTrackerOverview() {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-row justify-end gap-4">
+        <div className="flex justify-end gap-4 xl:flex-row lg:flex-col md:flex-col sm:flex-col">
         <FilterInput
                 filters={[
                   {
@@ -202,7 +164,7 @@ export default function LeaveTrackerOverview() {
                 ]}
                 onChange={handleFilterChange}
               />
-              <div className="flex flex-row gap-4">
+              <div className="flex flex-wrap gap-4">
               <RenderLeaveStatusDropdown
                 status={filterOption}
                 setFilterOption={setFilterOption}
@@ -223,13 +185,12 @@ export default function LeaveTrackerOverview() {
               pagination={false}
               dataStyle={{backgroundColor: "white" , border: "none"}}
             />
-      </CardContent>
-     
+      </CardContent>     
       </Card>
       
     
 
-      <Card>
+      <Card className="w-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1">
         <CardHeader>
           <CardTitle>
           <div className="font-semibold text-plum-1100">
