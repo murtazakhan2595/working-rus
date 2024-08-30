@@ -18,7 +18,7 @@ function SearchInput() {
         onChange={(e) => setSearchTerm(e.target.value)}
         className="py-2 pl-4 pr-8 bg-background"
       />
-      
+     
     </div>
   );
 }

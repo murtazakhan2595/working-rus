@@ -44,7 +44,7 @@ export default function Component() {
   const totalEmployees = chartData[0].active + chartData[0].offboarding;
 
   return (
-    <Card className="flex flex-col min-h-[400px]">
+    <Card className="flex flex-col min-h-[442px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="font-semibold text-plum-1100">Total Employees</div>

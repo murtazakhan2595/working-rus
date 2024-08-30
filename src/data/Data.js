@@ -1,8 +1,5 @@
-import { IoMdArrowDropupCircle } from "react-icons/io";
-import { IoMdArrowDropdownCircle } from "react-icons/io";
-import { FiMinusCircle } from "react-icons/fi";
 import { CiViewBoard } from "react-icons/ci";
-import { CiCircleMore } from "react-icons/ci";
+
 import { getAllCountries } from "countries-and-timezones";
 import {
   fetchDepartments,

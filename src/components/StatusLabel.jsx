@@ -1,5 +1,5 @@
 // Header.js
-import { Badge } from "../src/@/components/ui/badge";
+import { Badge } from "../components/ui/badge";
 import React from "react";
 
 const StatusLabel = ({ status, value }) => {

@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardSubtitle } from "../../../../src/@/components/ui/card";
 import { Button } from '../../../../components/ui/button';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../../../../src/@/components/ui/table";
-import { Badge } from '../../../../src/@/components/ui/badge';
+import { Badge } from '../../../../components/ui/badge';
 export default function MyLeaves() {
   const [leave, setLeave] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

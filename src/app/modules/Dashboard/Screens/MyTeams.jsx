@@ -14,7 +14,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from 'components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../../../src/@/components/ui/accordion"
 import { MailIcon, PhoneIcon, LinkIcon } from "lucide-react";
-import { Badge } from "../../../../src/@/components/ui/badge"
+import { Badge } from "../../../../components/ui/badge"
 import { Avatar, AvatarImage, AvatarFallback } from "../../../../src/@/components/ui/avatar"
 ;
 

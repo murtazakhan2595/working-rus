@@ -148,19 +148,19 @@ const Employee = () => {
                       name: "id_and_first_name",
                     },
                     {
-                      type: "select",
+                      type: "select-one",
                       option: departments,
                       name: "department_name",
                       placeholder: "Department",
                     },
                     {
-                      type: "select",
+                      type: "select-two",
                       option: designations,
                       name: "department_position",
                       placeholder: "Designation",
                     },
                     {
-                      type: "select",
+                      type: "select-three",
                       option: UserRoles,
                       name: "user_role",
                       placeholder: "Role",

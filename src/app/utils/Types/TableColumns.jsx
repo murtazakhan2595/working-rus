@@ -20,11 +20,8 @@ import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/R
 import { IoIosArrowDown } from "react-icons/io";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
-import { BsBoxArrowUpRight } from "react-icons/bs";
-import { IoBagCheckOutline } from "react-icons/io5";
 import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
 import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
-import { MdOutlineFileDownload } from "react-icons/md";
 import { filebase64Download } from "utils/fileUtils";
 import RenderTerminatedRow from "app/modules/ExitAndClearance/section/RenderTerminatedRow";
 
@@ -256,7 +253,7 @@ export const AllJobApplicationColumns = (
         <div className="text-base text-[#323333] cursor-pointer">
           {cell} {row.last_name}
         </div>
-        <div className="font-lato text-base text-baseGray">
+        <div className="text-base font-lato text-baseGray">
           {`Exp. ${row?.Year_of_Experience} years`}
         </div>
       </>
@@ -295,8 +292,8 @@ export const AllJobApplicationColumns = (
     text: "Resume",
     formatter: (cell, row) => (
       <>
-        <div className="flex gap-x-2 items-center justify-center">
-          <span title={row?.cv} className="font-lato text-base text-baseGray">
+        <div className="flex items-center justify-center gap-x-2">
+          <span title={row?.cv} className="text-base font-lato text-baseGray">
             File
           </span>
           <button onClick={() => downloadCV(row?.cv, row?.first_name)}>

@@ -1,21 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Row,
-  Col,
-} from "reactstrap";
-import { BsThreeDots } from "react-icons/bs";
-import { useNavigate, Link } from "react-router-dom";
-import {
-  saveEmployeeWorkInformationData,
-} from "app/hooks/employee";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "../../../../../src/@/components/ui/dropdown-menu"
+import {Button} from "../../../../../components/ui/button";
+import { useNavigate } from "react-router-dom";
+import {  saveEmployeeWorkInformationData} from "app/hooks/employee";
+import { Check, ChevronsUpDown, MoreHorizontal  } from "lucide-react";
 
 const EmployeeAction = ({ row }) => {
   const navigate = useNavigate();
@@ -34,31 +23,25 @@ const EmployeeAction = ({ row }) => {
   };
 
   return (
-    <ButtonDropdown
-      isOpen={openDropdownRow === row.id}
-      toggle={() => toggleDropdown(row.id)}
-      className="float-end"
-    >
-      <DropdownToggle size="sm" className="btn-brand">
-        <BsThreeDots />
-      </DropdownToggle>
-      <DropdownMenu end>
-        <DropdownItem onClick={() => navigate(`/profile/${row.id}`)}>
-          Edit Profile
-        </DropdownItem>
-        <DropdownItem>
-          <Link to="/edit-employee" state={{ id: row.id }}>
-            Edit Employee
-          </Link>
-        </DropdownItem>
-        <DropdownItem onClick={() => navigate(`/user/${row.id}`)}>
-          View Profile
-        </DropdownItem>
-        {/* <DropdownItem onClick={() => handleDelete(row.id)}>
-          Delete Employee
-        </DropdownItem> */}
-      </DropdownMenu>
-    </ButtonDropdown>
+    <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button
+        aria-haspopup="true"
+        size="icon"
+        variant="ghost"
+      >
+        <MoreHorizontal className="w-4 h-4" />
+        <span className="sr-only">Toggle menu</span>
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end">
+      <DropdownMenuLabel>More Actions</DropdownMenuLabel>
+      <DropdownMenuItem onClick={() => navigate(`/profile/${row.id}`)}>Edit Profile</DropdownMenuItem>
+      <DropdownMenuItem onClick={() => navigate(`/edit-employee`)}>Edit Employee</DropdownMenuItem>
+      <DropdownMenuItem onClick={() => navigate(`/user/${row.id}`)}>View Profile</DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+   
   );
 };
 
