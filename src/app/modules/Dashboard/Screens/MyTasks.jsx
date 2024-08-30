@@ -14,10 +14,18 @@ import { PriorityListIcons } from "data/Data";
 import { TimeIcon } from "@mui/x-date-pickers";
 import CustomDropdown from "./CustomDropdown";
 import CreateCardModal from "./CreateCardModal";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardSubtitle } from "../../../../src/@/components/ui/card";
-import { Button } from '../../../../components/ui/button';
-import { Check, ChevronsUpDown, MoreHorizontal  } from "lucide-react"
-import * as React from "react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardSubtitle,
+} from "../../../../src/@/components/ui/card";
+import { Button } from "../../../../components/ui/button";
+import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
+import * as React from "react";
 import { cn } from "../../../../src/@/lib/utils";
 
 import {
@@ -27,13 +35,33 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "../../../../src/@/components/ui/command"
-import { Popover, PopoverTrigger, PopoverContent } from "../../../../src/@/components/ui/popover";
+} from "../../../../src/@/components/ui/command";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "../../../../src/@/components/ui/popover";
 
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../../../../src/@/components/ui/table";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "../../../../src/@/components/ui/dropdown-menu";
-
-
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+  TableFooter,
+} from "../../../../src/@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "../../../../src/@/components/ui/dropdown-menu";
+import TableCustom from "components/TableCustom";
+import { StatusLabel } from "components";
+import { Status } from "app/modules/LeaveManagment/Sections";
 
 export default function MyTasks() {
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -47,11 +75,10 @@ export default function MyTasks() {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(null);
-  const [open, setOpen] = React.useState(false)
-  const [openStatus, setOpenStatus] = React.useState(false)
-  const [selectedProject, setSelectedProject] = React.useState(false)
-  const [value, setValue] = React.useState("")
-  
+  const [open, setOpen] = React.useState(false);
+  const [openStatus, setOpenStatus] = React.useState(false);
+  const [selectedProject, setSelectedProject] = React.useState(false);
+  const [value, setValue] = React.useState("");
 
   function mergeTasksWithProjects(tasks, projects) {
     return tasks.map((task) => {
@@ -88,6 +115,7 @@ export default function MyTasks() {
           ? {}
           : { filterData: { project_id: [filterOption.id] } };
       const tasksData = await getAllTasks(filter);
+      console.log(tasksData, "TASKS DATA");
       if (isMounted) {
         const mergedResult = mergeTasksWithProjects(tasksData, projects);
         setTasks(mergedResult);
@@ -130,8 +158,7 @@ export default function MyTasks() {
     setOptions(dynamicOptions);
   }, [AllProjects]);
 
-  console.log(options)
-
+  console.log(options, "OPTIONS");
 
   useEffect(() => {
     if (AllProjects.length > 0) {
@@ -151,229 +178,235 @@ export default function MyTasks() {
       label: "Delayed",
       onClick: () => {
         setStatusFilter("delayed");
-         setIsStatusDropdownOpen(false);
+        setIsStatusDropdownOpen(false);
       },
     },
     {
       label: "On going",
       onClick: () => {
         setStatusFilter("on going");
-         setIsStatusDropdownOpen(false);
+        setIsStatusDropdownOpen(false);
       },
     },
   ];
-    const toggleDropdown = () => {
-      setIsDropdownOpen(!isDropdownOpen);
-    };
-    const toggleStatusDropdown = () => {
-      setIsStatusDropdownOpen(!isStatusDropdownOpen);
-    };
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const toggleStatusDropdown = () => {
+    setIsStatusDropdownOpen(!isStatusDropdownOpen);
+  };
 
   return (
     <>
-    <Card className="">
-      <CardHeader className="items-start pb-0">
-        <CardTitle className="flex flex-row justify-between w-full">
-          <div className="font-semibold text-plum-1100">My Tasks</div>
-       <Button variant="secondary">
-            <Link to="#" onClick={() => {
-                setOpenCreateCard(true);
-              }}>
-              Add New Task</Link>
-          </Button>
-        </CardTitle>
-        <div  className="flex flex-row justify-end w-full gap-4"> 
-        
+      <Card className="">
+        <CardHeader className="items-start pb-0">
+          <CardTitle className="flex flex-row justify-between w-full">
+            <div className="font-semibold text-plum-1100">My Tasks</div>
+            <Button variant="secondary">
+              <Link
+                to="#"
+                onClick={() => {
+                  setOpenCreateCard(true);
+                }}
+              >
+                Add New Task
+              </Link>
+            </Button>
+          </CardTitle>
+          <div className="flex flex-row justify-end w-full gap-4">
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-[200px] justify-between"
+                >
+                  {selectedProject ? selectedProject : "Select Project..."}
+                  <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search project..." />
+                  <CommandList>
+                    <CommandEmpty>No project found.</CommandEmpty>
+                    <CommandGroup>
+                      {options.map((option) => (
+                        <CommandItem
+                          key={option.label}
+                          value={option.label}
+                          onSelect={() => {
+                            option.onClick();
+                            setSelectedProject(option.label);
+                            setOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedProject === option.label
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {option.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
 
-<Popover open={open} onOpenChange={setOpen}>
-  <PopoverTrigger asChild>
-    <Button
-      variant="outline"
-      role="combobox"
-      aria-expanded={open}
-      className="w-[200px] justify-between"
-    >
-      {selectedProject ? selectedProject : "Select Project..."}
-      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-    </Button>
-  </PopoverTrigger>
-  <PopoverContent className="w-[200px] p-0">
-    <Command>
-      <CommandInput placeholder="Search project..." />
-      <CommandList>
-        <CommandEmpty>No project found.</CommandEmpty>
-        <CommandGroup>
-          {options.map((option) => (
-            <CommandItem
-              key={option.label}
-              value={option.label}
-              onSelect={() => {
-                option.onClick();
-                setSelectedProject(option.label);
-                setOpen(false);
-              }}
-            >
-              <Check
-                className={cn(
-                  "mr-2 h-4 w-4",
-                  selectedProject === option.label ? "opacity-100" : "opacity-0"
-                )}
-              />
-              {option.label}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  </PopoverContent>
-</Popover>
+            <Popover open={openStatus} onOpenChange={setOpenStatus}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={openStatus}
+                  className="w-[200px] justify-between"
+                >
+                  {value ? value : "Select Status..."}
+                  <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search status..." />
+                  <CommandList>
+                    <CommandEmpty>No status found.</CommandEmpty>
+                    <CommandGroup>
+                      {statusDropdownOptions.map((option) => (
+                        <CommandItem
+                          key={option.label}
+                          value={option.label}
+                          onSelect={() => {
+                            option.onClick();
+                            setValue(option.label);
+                            setOpenStatus(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              value === option.label
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {option.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {tasks.length > 0 ? (
+            <RenderTask tasks={tasks} />
+          ) : (
+            <div>No tasks available.</div>
+          )}
+        </CardContent>
+      </Card>
 
-    
-    <Popover open={openStatus} onOpenChange={setOpenStatus}>
-  <PopoverTrigger asChild>
-    <Button
-      variant="outline"
-      role="combobox"
-      aria-expanded={openStatus}
-      className="w-[200px] justify-between"
-    >
-      {value ? value : "Select Status..."}
-      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-    </Button>
-  </PopoverTrigger>
-  <PopoverContent className="w-[200px] p-0">
-    <Command>
-      <CommandInput placeholder="Search status..." />
-      <CommandList>
-        <CommandEmpty>No status found.</CommandEmpty>
-        <CommandGroup>
-          {statusDropdownOptions.map((option) => (
-            <CommandItem
-              key={option.label}
-              value={option.label}
-              onSelect={() => {
-                option.onClick();
-                setValue(option.label);
-                setOpenStatus(false);
-              }}
-            >
-              <Check
-                className={cn(
-                  "mr-2 h-4 w-4",
-                  value === option.label ? "opacity-100" : "opacity-0"
-                )}
-              />
-              {option.label}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  </PopoverContent>
-</Popover>
-             
-             </div>
-      </CardHeader>
-      <CardContent>
-      
-  {tasks.length > 0 ? (
-    tasks.slice(0, 5).map((task) => <RenderTask key={task.id} task={task} />)
-  ) : (
-    <div className="text-[#5c5e64] text-sm font-normal text-center">
-      No tasks found
-    </div>
-  )}
-
-
-      </CardContent>
-     
-    </Card>
-    {/* <div className="px-[14px] py-6 bg-white rounded-md min-h-[470px]">
-Task */}
-      
+      {/* Modal for creating tasks */}
       {openCreateCard && (
         <CreateCardModal
-          onClose={() => {
-            setOpenCreateCard(false);
+          open={openCreateCard}
+          setOpen={setOpenCreateCard}
+          onSave={() => {
             fetchTasks(true, AllProjects);
           }}
-          projects={AllProjects}
         />
       )}
-    
     </>
   );
 }
+
 const getStatusLabel = (status) => {
   switch (status) {
-    case 'complete':
-      return 'Complete';
-    case 'in_progress':
-      return 'In Progress';
-    case 'delay':
-      return 'Delay';
-    case 'pending':
-      return 'Pending';
+    case "complete":
+      return "Complete";
+    case "in_progress":
+      return "In Progress";
+    case "delay":
+      return "Delay";
+    case "pending":
+      return "Pending";
     default:
-      return 'In Progress';
+      return "In Progress";
   }
 };
 
-const RenderTask = ({ task }) => {
+function RenderTask({ tasks }) {
+  console.log(tasks, "HELLO TASKS");
   return (
-    <>
-    <div clasName="border-b-2 border-slate-200/50">
-      <Table className="overflow-hidden">
-        <TableBody>
-          <TableRow className="border-b transition-colors hover:bg-slate-100/50 data-[state=selected]:bg-slate-100 dark:hover:bg-slate-800/50 dark:data-[state=selected]:bg-slate-800">
-            <TableCell className="px-4 py-4">
-              <div className="flex flex-col w-full gap-2">
+    <TableCustom
+      showHeader={false}
+      columns={[
+        {
+          text: "Title",
+          dataField: "name",
+          formatter: (cell, render) => (
+            <div className="flex flex-col w-full gap-2">
               <div className="flex flex-row w-full gap-4">
-                <div className=" font-base">{task.project_name}</div>
-                <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full border border-mauve-500">{getStatusLabel(task.status)}</div>
+                <div className=" font-base">{render.project_name}</div>
+                <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full border border-mauve-500">
+                  {getStatusLabel(render.status)}
+                </div>
               </div>
               <div className="text-mauve-900">
-                Due on {moment(task?.end_date).format("MMMM DD")}  - Created by  Name of employee
+                Due on {moment(render?.due_date).format("MMMM DD")} - Created by
+                Name of employee
               </div>
-              </div>
-              
-            </TableCell>
-            
-            
-            <TableCell className="w-[200px] px-4 py-4">
-             <Button variant="outline">
-             <Link to="#">
-             View Project</Link>
-             </Button>
-            </TableCell>
-            <TableCell className="w-[200px] text-center px-4 py-4">
-              {PriorityListIcons.find((option) => option.value === task?.priority)?.label}
-            </TableCell>
-            <TableCell>
+            </div>
+          ),
+        },
+        {
+          text: "View Project",
+          formatter: (cell) => (
+            <Button variant="outline">
+              <Link to="#">View Project</Link>
+            </Button>
+          ),
+        },
+        {
+          text: "Action",
+          formatter: () => (
             <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      </div>
-     
-    </>
+              <DropdownMenuTrigger asChild>
+                <Button aria-haspopup="true" size="icon" variant="ghost">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem>Edit</DropdownMenuItem>
+                <DropdownMenuItem>Delete</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ),
+        },
+      ]}
+      data={tasks?.slice(0, 5).map((task) => ({
+        ...task,
+        due_date: moment(task.due_date).format("MMMM D, YYYY"),
+        priority_icon: PriorityListIcons[task.priority],
+        status_class: getStatusClass(task.status),
+        status_icon_color: getStatusIconColor(task.status),
+      }))}
+      options={{
+        filtering: true,
+        exportButton: true,
+        grouping: true,
+        actionsColumnIndex: -1,
+      }}
+    />
   );
-};
-
+}
