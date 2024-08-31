@@ -6,7 +6,9 @@ import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "./../../../src/@/components/ui/label";
 import NewLogo from "../.././../assets/images/NewLogo"
-import { Undo2 } from 'lucide-react';
+import { StepBack  } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
 
 
 const ForgotPassword = () => {
@@ -32,7 +34,7 @@ const ForgotPassword = () => {
                 setResponse({ message: res.data.success, status: "success" });
             }
         } catch (error) {
-            setResponse({ message: error.response?.data?.error || "An error occurred", status: "error" });
+            setResponse({ message: error.response?.data?.error || "Can’t find your email?", status: "error" });
         } finally {
             setIsLoading(false);
             setFormData(initialData);
@@ -41,68 +43,79 @@ const ForgotPassword = () => {
 
     return (
         <>
-<div className="container max-w-full mx-auto lg:grid lg:grid-cols-2 min-h-[670px]">
-      <div className="flex items-center justify-center">
-      <Button>
-      <Undo2  className="w-4 h-4 mr-2" />
-      Go back
-    </Button>
-        <div className="grid gap-6 mx-auto">
-          <div className="grid justify-center gap-2 text-center">
-            <div className="ml-auto mr-auto">
-              <NewLogo />
-            </div>
-            <h1 className="text-3xl font-bold">Login</h1>
-            <p className="text-balance text-muted-foreground">
-              Enter your email below check your account
-            </p>
-          </div>
-          <div className="grid gap-4">
-            <form
-              className=""
-              onSubmit={handleSubmit}
-              method="POST"
-            ><div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="usrname"
-                  required
-                  name="email"
-                  type="text"
-                  autoComplete="email"
-                  title="Enter Your email"
-                  vvalue={formData.email}
-                  onChange={handleChange}
-                />
-                
-                    {response && (
-                                <div className={`mx-auto p-2 flex gap-x-2 rounded-xl ${response.status === "success" ? "bg-[#E6FFEA] border border-[#B6F2C2]" : "bg-[#FFF8F7] border border-[#F2DCDA]"}`}>
-                                    <p className={`font-lato text-[14px] ${response.status === "success" ? "text-[#27A745]" : "text-[#F08278]"}`}>
-                                        {response.message}
-                                    </p>
-                                </div>
-                            )}</div>
-             
+<div className="container max-w-full mx-auto ">
+      <div className="absolute top-3 right-3">
+      <Button >
             
-              <Button type="submit" className="w-full">
-              {isLoading ? (
-                                        <span className="animate-pulse">Sending Link...</span>
-                                    ) : (
-                                        <span>Reset Password</span>
-                                    )}
-              </Button>
-            </form>
-          </div>
+            <Link className="flex items-center" to="/"><StepBack  className="w-4 h-4 mr-2" /> Go back</Link> 
+         </Button>
+      </div>
+        
+      <div className={"lg:grid lg:grid-cols-2" }>
+        <div className="flex items-center justify-center">
+            <div className="grid gap-6 mx-auto">
+            <div className="grid justify-center gap-2 text-center">
+                <div className="ml-auto mr-auto">
+                            <NewLogo />
+                        </div>
+                        <h1 className="text-3xl font-bold">Forgot Your Password</h1>
+                        <p className="text-balance text-muted-foreground">
+                            You will receive instructions to reset your password
+                        </p>
+                    </div>
+                <div className="grid gap-4">
+                    <form
+                        className=""
+                        onSubmit={handleSubmit}
+                        method="POST"
+                        >
+                        <div className="grid gap-2">
+                            <Label htmlFor="email">Enter email address</Label>
+                                <Input
+                                id="usrname"
+                                required
+                                name="email"
+                                type="text"
+                                autoComplete="email"
+                                title="Enter Your email"
+                                vvalue={formData.email}
+                                onChange={handleChange}
+                                />
+                                <Button type="submit" className="w-full">
+                                        {isLoading ? (
+                                            <span className="animate-pulse">Sending Link...</span>
+                                                        ) : (
+                                                        <span>Reset Password</span>
+                                                        )
+                                        }
+                                </Button>
+                                {response && (
+                                    <div className={`mx-auto p-2 flex gap-x-2 rounded-xl ${response.status === "success" ? "bg-[#E6FFEA] border border-[#B6F2C2]" : "bg-[#FFF8F7] border border-[#F2DCDA]"}`}>
+                                        <p className={`font-lato text-[14px] ${response.status === "success" ? "text-[#27A745]" : "text-[#F08278]"}`}>
+                                            {response.message}
+                                        </p>
+                                    </div>
+                                )}</div>
+                    </form>
+                    <div className="grid justify-center gap-2 text-center">
+                        <p className="text-balance text-muted-foreground">
+                            Having trouble logging in? <Link>Contact Support </Link> 
+                            
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div className="items-center hidden lg:w-[35%]  bg-white lg:flex">
-        <img
-          src={oops}
-          alt="Login Image"
-          className=""
-        />
-      </div>
-    </div>
+   
+        <div className="items-center hidden bg-white lg:flex">
+            <img
+            src={oops}
+            alt="Forget pPasword Image"
+            className=""
+            />
+        </div>
+        </div>
+</div>
 
     
 

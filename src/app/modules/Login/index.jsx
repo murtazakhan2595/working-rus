@@ -17,6 +17,19 @@ import { Label } from "./../../../src/@/components/ui/label";
 import NewLogo from "../.././../assets/images/NewLogo";
 import { setToken } from '../../../state/actions/UserAction.js';
 import cover  from "../../../assets/images/cover.jpg";
+
+import { StepBack  } from 'lucide-react';
+
+import { IoWarningOutline } from "react-icons/io5";
+
+import { useLocation } from "react-router-dom";
+
+
+
+import confirm from "../.././../assets/images/confirm.png";
+import { PiCaretCircleLeftFill } from "react-icons/pi";
+
+
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
    let baseUrl = useSelector((state) => state.user.baseUrl);
@@ -163,8 +176,17 @@ function Login() {
   }, []);
 
   return (
+    <>
 
-    <div className="container max-w-full mx-auto lg:grid lg:grid-cols-2 ">
+    <div className="container max-w-full mx-auto ">
+      <div className="absolute hidden top-3 right-3">
+      <Button >
+            
+            <Link className="flex items-center" to="/"><StepBack  className="w-4 h-4 mr-2" /> Go back</Link> 
+         </Button>
+      </div>
+        
+      <div className={"lg:grid lg:grid-cols-2" }>
       <div className="flex items-center justify-center">
         <div className="grid gap-6 mx-auto">
           <div className="grid justify-center gap-2 text-center">
@@ -228,6 +250,7 @@ function Login() {
 
                 <div className="text-sm text-rose-500">{errors.password}</div>
               </div>
+              <div className="grid gap-2">
               <Button type="submit" className="w-full">
                 {isLoading ? (
                   <span className="animate-pulse">Logging in...</span>
@@ -235,6 +258,7 @@ function Login() {
                   <span>Log In</span>
                 )}
               </Button>
+              </div>
             </form>
           </div>
         </div>
@@ -242,8 +266,20 @@ function Login() {
       <div className="items-center hidden bg-white lg:flex">
         <img src={cover} alt="Login page Cover Image" />       
       </div>
+      </div>
+     
     </div>
+    </>
   );
 }
 
 export default Login;
+
+
+
+
+
+
+
+
+

@@ -145,8 +145,7 @@ const Employee = () => {
         },
       ])}
 
-      <div className="flex flex-row w-ful">
-        <div className="flex flex-row">
+      
           <Card>
             <CardHeader>
               <div className="px-3 py-3">
@@ -188,8 +187,7 @@ const Employee = () => {
                   </div>
                 </div>
               ) : (
-                <div classname="flex flex-row">
-                  <div className="flex flex-col w-full">
+                
                     <TableCustom
                       data={employeeData.results || []}
                       columns={EmployeeColumns}
@@ -197,13 +195,11 @@ const Employee = () => {
                       dataTotalSize={employeeData.count || 0}
                       tableOptions={tableOptions}
                     />
-                  </div>
-                </div>
+                  
               )}
             </CardContent>
           </Card>
-        </div>
-      </div>
+       
     </div>
   );
 };

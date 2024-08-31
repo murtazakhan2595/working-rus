@@ -92,7 +92,7 @@ export default function TableCustom({
                     {columns.map((column, index) => (
                       <TableHead
                         key={index}
-                        className="cursor-pointer"
+                        className="cursor-pointer hidden w-[100px] sm:table-cell"
                         style={column.width ? { width: column.width } : {}}
                         onClick={() => handleSort(column.dataField)}
                       >

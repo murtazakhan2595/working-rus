@@ -26,18 +26,7 @@ import {
 import { Button } from "../../../../components/ui/button";
 import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
 import * as React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  CardSubtitle,
-} from "../../../../src/@/components/ui/card";
-import { Button } from "../../../../components/ui/button";
-import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
-import * as React from "react";
+
 import { cn } from "../../../../src/@/lib/utils";
 
 import {
@@ -81,10 +70,7 @@ export default function MyTasks() {
   const [openStatus, setOpenStatus] = React.useState(false);
   const [selectedProject, setSelectedProject] = React.useState(false);
   const [value, setValue] = React.useState("");
-  const [open, setOpen] = React.useState(false);
-  const [openStatus, setOpenStatus] = React.useState(false);
-  const [selectedProject, setSelectedProject] = React.useState(false);
-  const [value, setValue] = React.useState("");
+
 
   function mergeTasksWithProjects(tasks, projects) {
     return tasks.map((task) => {
@@ -441,10 +427,7 @@ export default function MyTasks() {
         <CreateCardModal
           open={openCreateCard}
           setOpen={setOpenCreateCard}
-          onSave={() => {
-          open={openCreateCard}
-          setOpen={setOpenCreateCard}
-          onSave={() => {
+          onSave = {() => {
             fetchTasks(true, AllProjects);
           }}
         />
