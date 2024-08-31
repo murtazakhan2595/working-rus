@@ -26,6 +26,18 @@ import {
 import { Button } from "../../../../components/ui/button";
 import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
 import * as React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardSubtitle,
+} from "../../../../src/@/components/ui/card";
+import { Button } from "../../../../components/ui/button";
+import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
+import * as React from "react";
 import { cn } from "../../../../src/@/lib/utils";
 
 import {
@@ -69,6 +81,10 @@ export default function MyTasks() {
   const [openStatus, setOpenStatus] = React.useState(false);
   const [selectedProject, setSelectedProject] = React.useState(false);
   const [value, setValue] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+  const [openStatus, setOpenStatus] = React.useState(false);
+  const [selectedProject, setSelectedProject] = React.useState(false);
+  const [value, setValue] = React.useState("");
 
   function mergeTasksWithProjects(tasks, projects) {
     return tasks.map((task) => {
@@ -105,6 +121,7 @@ export default function MyTasks() {
           ? {}
           : { filterData: { project_id: [filterOption.id] } };
       const tasksData = await getAllTasks(filter);
+      console.log(tasksData, "TASKS DATA");
       console.log(tasksData, "TASKS DATA");
       if (isMounted) {
         const mergedResult = mergeTasksWithProjects(tasksData, projects);
@@ -149,6 +166,7 @@ export default function MyTasks() {
   }, [AllProjects]);
 
   console.log(options, "OPTIONS");
+  console.log(options, "OPTIONS");
 
   useEffect(() => {
     if (AllProjects.length > 0) {
@@ -169,12 +187,14 @@ export default function MyTasks() {
       onClick: () => {
         setStatusFilter("delayed");
         setIsStatusDropdownOpen(false);
+        setIsStatusDropdownOpen(false);
       },
     },
     {
       label: "On going",
       onClick: () => {
         setStatusFilter("on going");
+        setIsStatusDropdownOpen(false);
         setIsStatusDropdownOpen(false);
       },
     },
@@ -300,8 +320,128 @@ export default function MyTasks() {
       </Card>
 
       {/* Modal for creating tasks */}
+      <Card className="">
+        <CardHeader className="items-start pb-0">
+          <CardTitle className="flex flex-row justify-between w-full">
+            <div className="font-semibold text-plum-1100">My Tasks</div>
+            <Button variant="secondary">
+              <Link
+                to="#"
+                onClick={() => {
+                  setOpenCreateCard(true);
+                }}
+              >
+                Add New Task
+              </Link>
+            </Button>
+          </CardTitle>
+          <div className="flex flex-row justify-end w-full gap-4">
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-[200px] justify-between"
+                >
+                  {selectedProject ? selectedProject : "Select Project..."}
+                  <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search project..." />
+                  <CommandList>
+                    <CommandEmpty>No project found.</CommandEmpty>
+                    <CommandGroup>
+                      {options.map((option) => (
+                        <CommandItem
+                          key={option.label}
+                          value={option.label}
+                          onSelect={() => {
+                            option.onClick();
+                            setSelectedProject(option.label);
+                            setOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedProject === option.label
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {option.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+
+            <Popover open={openStatus} onOpenChange={setOpenStatus}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={openStatus}
+                  className="w-[200px] justify-between"
+                >
+                  {value ? value : "Select Status..."}
+                  <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search status..." />
+                  <CommandList>
+                    <CommandEmpty>No status found.</CommandEmpty>
+                    <CommandGroup>
+                      {statusDropdownOptions.map((option) => (
+                        <CommandItem
+                          key={option.label}
+                          value={option.label}
+                          onSelect={() => {
+                            option.onClick();
+                            setValue(option.label);
+                            setOpenStatus(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              value === option.label
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {option.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {tasks.length > 0 ? (
+            <RenderTask tasks={tasks} />
+          ) : (
+            <div>No tasks available.</div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Modal for creating tasks */}
       {openCreateCard && (
         <CreateCardModal
+          open={openCreateCard}
+          setOpen={setOpenCreateCard}
+          onSave={() => {
           open={openCreateCard}
           setOpen={setOpenCreateCard}
           onSave={() => {
@@ -312,6 +452,7 @@ export default function MyTasks() {
     </>
   );
 }
+
 const getStatusLabel = (status) => {
   switch (status) {
     case "complete":
@@ -322,7 +463,16 @@ const getStatusLabel = (status) => {
       return "Delay";
     case "pending":
       return "Pending";
+    case "complete":
+      return "Complete";
+    case "in_progress":
+      return "In Progress";
+    case "delay":
+      return "Delay";
+    case "pending":
+      return "Pending";
     default:
+      return "In Progress";
       return "In Progress";
   }
 };
