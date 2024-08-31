@@ -1,37 +1,25 @@
+// Done
 import React, { useEffect, useState } from "react";
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
-// import loginBg from "../.././../assets/images/login-bg.png";
-import cover from "../.././../assets/images/cover.png";
-
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
-import { connect } from "react-redux";
-import { setUserProfile, setToken } from "../../../state/slices/UserSlice";
-import OfflinePopUp from "./OfflinePopUp";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import {
-  fetchDepartments,
-  fetchLeaveTypes,
-  fetchDesignations,
-} from "state/slices/CommonSlice";
 import { handleUpdateProfile } from "data/Data";
-
-
 import { Link } from 'react-router-dom';
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "./../../../src/@/components/ui/label";
 import NewLogo from "../.././../assets/images/NewLogo";
-
+import { setToken } from '../../../state/actions/UserAction.js';
+import cover  from "../../../assets/images/cover.jpg";
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
-  let isLogin = useSelector((state) => state.user.isLogin);
-  let baseUrl = useSelector((state) => state.user.baseUrl);
+   let baseUrl = useSelector((state) => state.user.baseUrl);
 
   let dispatch = useDispatch();
 
@@ -176,9 +164,9 @@ function Login() {
 
   return (
 
-    <div className="w-full container mx-auto lg:grid lg:min-h-[100vh] lg:grid-cols-2 xl:min-h-[100vh]">
-      <div className="flex items-center justify-center ">
-        <div className="mx-auto grid w-[350px] gap-6">
+    <div className="container max-w-full mx-auto lg:grid lg:grid-cols-2 ">
+      <div className="flex items-center justify-center">
+        <div className="grid gap-6 mx-auto">
           <div className="grid justify-center gap-2 text-center">
             <div className="ml-auto mr-auto">
               <NewLogo />
@@ -194,7 +182,7 @@ function Login() {
               onSubmit={handleSubmit}
               method="POST"
             ><div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username / Login ID</Label>
                 <Input
                   id="usrname"
                   required
@@ -251,12 +239,8 @@ function Login() {
           </div>
         </div>
       </div>
-      <div className="items-center justify-end hidden bg-white lg:flex">
-        <img
-          src={cover}
-          alt="Login Image"
-          className="object-cover min-h-full min-w-fit"
-        />
+      <div className="items-center hidden bg-white lg:flex">
+        <img src={cover} alt="Login page Cover Image" />       
       </div>
     </div>
   );

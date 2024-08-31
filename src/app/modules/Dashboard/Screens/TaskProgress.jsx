@@ -176,8 +176,8 @@ export default function Component() {
           </PieChart>
           </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm ">
-      <div className=" space-x-4 xl:flex">
+      <CardFooter className="gap-2 text-sm flex-wra ">
+      <div className="space-x-4  xl:flex">
           {Object.values(chartConfig).map((item, index) => (
             <div key={index} className="flex items-center text-sm text-mauve-900">
               <div className={`w-3 h-3 mr-2 rounded-sm`} style={{ backgroundColor: item.color }}></div>
