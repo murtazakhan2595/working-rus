@@ -39,7 +39,7 @@ import {
     children: [
       {
         type: "div",
-        className: "grid grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+        className: " grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
         content: <LeaveTrackerOverview/>,
         value: "LeaveTracker",
       },
@@ -52,7 +52,7 @@ import {
     children: [
       {
       type: "div",
-      className: "grid grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+      className: "grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
       content: <TalentSphere/>,
       value: "TalentSphere",
       },
@@ -60,7 +60,7 @@ import {
   },
   {
     type: "div",
-    className: "my-tasks grid lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+    className: "my-tasks  grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
     children: [
       {
       type: "div",
@@ -79,7 +79,7 @@ import {
   },
   {
     type: "div",
-    className: "my-team grid lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+    className: "my-team  grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
     children: [
       {
         type: "div",
@@ -102,7 +102,7 @@ import {
 const DashboardManager = [
   {
     type: "div",
-    className: "grid grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+    className: "grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
     children: [
       {
         type: "div",
@@ -130,7 +130,7 @@ const DashboardManager = [
     children: [
       {
         type: "div",
-        className: "grid grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+        className: "grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
         content: <LeaveTrackerOverview/>,
         value: "LeaveTracker",
       },
@@ -140,7 +140,7 @@ const DashboardManager = [
  
   {
     type: "div",
-    className: "my-tasks grid lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+    className: "my-tasks grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
     children: [
       {
       type: "div",
@@ -162,7 +162,7 @@ const DashboardManager = [
 const DashboardEmployee = [
   {
     type: "div",
-    className: "grid grid-col-1 grid lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+    className: "grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
     children: [
       {
         type: "div",
@@ -190,7 +190,7 @@ const DashboardEmployee = [
     children: [
       {
         type: "div",
-        className: "grid grid-col-1  lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+        className: "grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
         content: <LeaveTrackerOverview/>,
         value: "LeaveTracker",
       },
@@ -200,7 +200,7 @@ const DashboardEmployee = [
   
   {
     type: "div",
-    className: "my-tasks grid lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+    className: "my-tasks grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3",
     children: [
       {
       type: "div",
@@ -219,7 +219,7 @@ const DashboardEmployee = [
   },
   {
     type: "div",
-    className: "my-team grid lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4    xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+    className: "my-team grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
     children: [
       {
         type: "div",

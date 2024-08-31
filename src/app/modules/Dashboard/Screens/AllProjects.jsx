@@ -9,11 +9,15 @@ import { EmployeeName } from "utils/getValuesFromTables";
 import { Card, CardHeader, CardContent, CardTitle} from "../../../../src/@/components/ui/card";
 import { Button } from '../../../../src/@/components/ui/button';
 import { Table, TableRow,  TableBody, TableCell } from "../../../../src/@/components/ui/table";
+
+import { TableCustom } from 'components/TableCustom';
 export default function AllProjects(){
-    const userProfile = useSelector((state) => state.user.userProfile);
+
+  const userProfile = useSelector((state) => state.user.userProfile);  
   const [isLoading, setIsLoading] = useState(true);
   const [AllProjects, setAllProjects] = useState([]);
-    const fetchData = async (isMounted) => {
+
+  const fetchData = async (isMounted) => {
       setIsLoading(true);
       try {
         const projectsData = await getAllProjects({  }, userProfile);
@@ -54,6 +58,13 @@ export default function AllProjects(){
           AllProjects.results.slice(0, 5).map((project) => (
             <RenderProject key={project.id} project={project} />
           ))}
+
+
+           {/* {project.length > 0 ? (
+            <RenderProject project={projects} />
+          ) : (
+            <div>No Projects available.</div>
+          )} */}
       </CardContent>
     
     </Card>
@@ -64,7 +75,6 @@ export default function AllProjects(){
 
 const RenderProject = ({ project }) => {
   return (
-  
         <Table className="overflow-hidden">
           <TableBody>
             <TableRow>
@@ -86,7 +96,7 @@ const RenderProject = ({ project }) => {
                   </div>
                   <MembersList members={project?.project_members || []} />
                 </div>
-                <div className="h-[0px] border border-[#dadada] "></div>
+                
               </TableCell>
             </TableRow>
           </TableBody>

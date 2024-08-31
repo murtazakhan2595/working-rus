@@ -1,14 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { IoWarningOutline } from "react-icons/io5";
-import logo from "../.././../assets/images/tecbrix-logo.png";
-import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { handleUpdateProfile } from "data/Data";
+import { Link } from 'react-router-dom';
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Label } from "./../../../src/@/components/ui/label";
+import NewLogo from "../.././../assets/images/NewLogo";
+import { setToken } from '../../../state/actions/UserAction.js';
+import enterNewpassword  from "../../../assets/images/enterNewPassword.jpg";
+import { StepBack  } from 'lucide-react';
+
+import { IoWarningOutline } from "react-icons/io5";
+
+import { useLocation } from "react-router-dom";
+
+
+
 import confirm from "../.././../assets/images/confirm.png";
 import { PiCaretCircleLeftFill } from "react-icons/pi";
-import { Link } from "react-router-dom";
+
 
 const ResetPassword = () => {
   const location = useLocation();
@@ -93,67 +111,48 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="h-screen flex justify-center">
-      <div className="w-full md:w-[65%] flex flex-col min-h-full p-3 md:p-5 lg:p-7">
-        <div className="flex justify-between">
-          <div className="flex justify-start items-start">
-            <img
-              src={logo}
-              className="w-[142px] h-auto md:h-auto lg:pl-5"
-              alt="Tecbrix logo"
-            />
-          </div>
-          <Link
-            to="/"
-            className="flex items-center gap-x-2 font-lato font-medium text-base lg:text-[20px]"
-          >
-            Go Back{" "}
-            <PiCaretCircleLeftFill className="text-black text-xl lg:text-2xl" />
-          </Link>
+    <>
+    <div className="container max-w-full mx-auto ">
+        <div className="absolute top-3 right-3">
+        <Button >
+                
+              <Link className="flex items-center" to="/"><StepBack  className="w-4 h-4 mr-2" /> Go back</Link> 
+           </Button>
         </div>
-        <div className="flex justify-center items-center flex-grow">
-          <div className="md:mx-auto w-full max-w-md lg:max-w-xl">
+            
+        <div className={"lg:grid lg:grid-cols-2" }>
+        <div className="flex items-center justify-center">
+          <div className="grid gap-6 mx-auto">
+            <div className="grid justify-center gap-2 text-center">
+              <div className="ml-auto mr-auto">
+                <NewLogo />
+              </div>
+              <h1 className="text-3xl font-bold">Enter New Password</h1>
+              <p className="text-balance text-muted-foreground">
+              Your new password must not be the same or contain the same
+              password as your previous ones.
+              </p>
+            </div>
+            <div className="grid gap-4">
             <form
-              className="space-y-3 my-2 lg:py-10 md:py-6 md:px-8 md:m-6"
+              className="my-2 space-y-3 lg:py-10 md:py-6 md:px-8 md:m-6"
               onSubmit={handleSubmit}
               method="POST"
-            >
-              <div className="mx-auto">
-                <h2 className="text-[#323333] text-center text-2xl lg:text-4xl font-lato font-bold leading-9 pb-4 tracking-tight">
-                  Enter New Password
-                </h2>
-              </div>
-
-              <div className="mx-auto bg-[#FFF8F7] border border-[#F2DCDA] rounded-xl px-2 py-4 flex gap-x-2">
-                <div>
-                  <IoWarningOutline className="text-[#F08278] text-lg" />
-                </div>
-                <p className="font-lato text-[#5C5E64] text-[14px]">
-                  Your new password must not be the same or contain the same
-                  password as your previous ones.
-                </p>
-              </div>
-
-              <div className="relative">
-                <label
-                  htmlFor="password"
-                  className="text-[#323333] font-normal font-lato text-base"
-                >
-                  New password*
-                </label>
-                <input
-                  required
-                  name="password"
-                  type={passwordVisibility.password ? "text" : "password"}
-                  title="Enter Your Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full rounded-xl py-2 my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
-                />
-                <button
+            ><div className="relative grid gap-2">
+                          <Label htmlFor="newpassword">New password</Label>
+                          <Input
+                            id="newpassword"
+                            required
+                            name="newpassword"
+                            type={passwordVisibility.password ? "text" : "password"}
+                            title="Enter Your Password"
+                            value={formData.password}
+                            onChange={handleChange}
+                          />
+                          <Button
                   type="button"
                   onClick={() => handlePasswordVisibility("password")}
-                  className={`absolute inset-y-12 right-2 flex items-center ${
+                  className={`absolute top-[25px] right-0 bg-transparent ${
                     passwordVisibility.password ? "text-gray-400" : ""
                   }`}
                 >
@@ -162,18 +161,15 @@ const ResetPassword = () => {
                   ) : (
                     <TbEyeClosed className="text-gray-400" />
                   )}
-                </button>
-              </div>
-
-              <div className="relative">
-                <label
-                  htmlFor="retype_password"
-                  className="text-[#323333] font-normal font-lato text-base"
-                >
-                  Re-Type new password*
-                </label>
-                <input
-                  required
+                </Button>
+                        </div>
+                        <div className="relative grid gap-2">
+                          <div className="flex items-center">
+                            <Label htmlFor="password">Retype Password</Label>
+                                                     </div>
+                          <Input id="retype_password" required
+                          
+           
                   name="retype_password"
                   type={
                     passwordVisibility.retype_password ? "text" : "password"
@@ -181,31 +177,27 @@ const ResetPassword = () => {
                   title="Retype your password"
                   value={formData.retype_password}
                   onChange={handleChange}
-                  className="w-full rounded-xl py-2 my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
-                />
-                <button
-                  type="button"
-                  onClick={() => handlePasswordVisibility("retype_password")}
-                  className={`absolute inset-y-12 right-2 flex items-center ${
-                    passwordVisibility.retype_password ? "text-gray-400" : ""
-                  }`}
-                >
-                  {passwordVisibility.retype_password ? (
-                    <BiShow className="text-gray-400" />
-                  ) : (
-                    <TbEyeClosed className="text-gray-400" />
-                  )}
-                </button>
-              </div>
-
-              {errorMessage && (
+                            className="" />
+                          <Button
+                            type="button"
+                            onClick={handlePasswordVisibility}
+                            className={`absolute top-[25px] right-0 bg-transparent${
+                              passwordVisibility.retype_password ? "text-gray-400" : ""
+                            }`}
+                          >
+                            {passwordVisibility.retype_password ? (
+                              <BiShow className="text-gray-400" />
+                            ) : (
+                              <TbEyeClosed className="text-gray-400" />
+                            )}
+                          </Button>
+                          {errorMessage && (
                 <div className="mx-auto bg-[#FFF8F7] border border-[#F2DCDA] rounded-xl p-2 flex gap-x-2">
                   <p className="font-lato text-[#F08278] text-[14px]">
                     {errorMessage}
                   </p>
                 </div>
               )}
-
               {response && (
                 <div
                   className={`mx-auto p-2 flex gap-x-2 rounded-xl ${
@@ -225,11 +217,10 @@ const ResetPassword = () => {
                   </p>
                 </div>
               )}
-
-              <div className="flex items-center gap-x-4">
-                <button
-                  type="submit"
-                  className={`flex h-11 justify-center items-center w-full font-normal rounded-xl  px-3 py-1.5 text-sm md:text-lg leading-8 font-lato lg:text-base ${
+                          
+                        </div>
+                        <div className="grid gap-2">
+                        <Button type="submit" className={`flex h-11 justify-center items-center w-full font-normal rounded-xl  px-3 py-1.5 text-sm md:text-lg leading-8 font-lato lg:text-base ${
                     !isFormValid
                       ? "bg-[#F2F2F2] text-[#AFB0B2]"
                       : "bg-black text-white"
@@ -241,26 +232,19 @@ const ResetPassword = () => {
                   ) : (
                     <span>Reset Password</span>
                   )}
-                </button>
-              </div>
-            </form>
+                        </Button>
+                        </div>
+                        </form>
           </div>
         </div>
-        <div className="flex justify-start items-start">
-          <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
-            © 2024 TecBrix
-          </p>
-        </div>
       </div>
-
-      <div className="w-0 md:w-1/2 lg:w-[35%] bg-gray-500 h-full">
-        <img
-          src={confirm}
-          alt="Meeting"
-          className="object-cover w-full h-full"
-        />
+      <div className="items-center hidden bg-white lg:flex">
+        <img src={enterNewpassword} alt="Enter New Password page Cover Image" />       
       </div>
+      </div>
+     
     </div>
+    </>
   );
 };
 

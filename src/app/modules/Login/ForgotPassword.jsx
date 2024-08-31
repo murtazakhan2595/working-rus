@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import oops from "../.././../assets/images/oops.png";
-import logo from "../.././../assets/images/tecbrix-logo.png";
-import { PiCaretCircleLeftFill } from "react-icons/pi";
-import { Link } from "react-router-dom";
+import oops from "../.././../assets/images/oops.jpg";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Label } from "./../../../src/@/components/ui/label";
+import NewLogo from "../.././../assets/images/NewLogo"
+import { StepBack  } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-import { Button } from "../../../components/ui/button"
-import { Input } from "../../../components/ui/input"
+
 
 const ForgotPassword = () => {
     const baseUrl = useSelector((state) => state.user.baseUrl);
@@ -32,7 +34,7 @@ const ForgotPassword = () => {
                 setResponse({ message: res.data.success, status: "success" });
             }
         } catch (error) {
-            setResponse({ message: error.response?.data?.error || "An error occurred", status: "error" });
+            setResponse({ message: error.response?.data?.error || "Can’t find your email?", status: "error" });
         } finally {
             setIsLoading(false);
             setFormData(initialData);
@@ -40,88 +42,84 @@ const ForgotPassword = () => {
     };
 
     return (
-
+        <>
+<div className="container max-w-full mx-auto ">
+      <div className="absolute top-3 right-3">
+      <Button >
+            
+            <Link className="flex items-center" to="/"><StepBack  className="w-4 h-4 mr-2" /> Go back</Link> 
+         </Button>
+      </div>
+        
+      <div className={"lg:grid lg:grid-cols-2" }>
+        <div className="flex items-center justify-center">
+            <div className="grid gap-6 mx-auto">
+            <div className="grid justify-center gap-2 text-center">
+                <div className="ml-auto mr-auto">
+                            <NewLogo />
+                        </div>
+                        <h1 className="text-3xl font-bold">Forgot Your Password</h1>
+                        <p className="text-balance text-muted-foreground">
+                            You will receive instructions to reset your password
+                        </p>
+                    </div>
+                <div className="grid gap-4">
+                    <form
+                        className=""
+                        onSubmit={handleSubmit}
+                        method="POST"
+                        >
+                        <div className="grid gap-2">
+                            <Label htmlFor="email">Enter email address</Label>
+                                <Input
+                                id="usrname"
+                                required
+                                name="email"
+                                type="text"
+                                autoComplete="email"
+                                title="Enter Your email"
+                                vvalue={formData.email}
+                                onChange={handleChange}
+                                />
+                                <Button type="submit" className="w-full">
+                                        {isLoading ? (
+                                            <span className="animate-pulse">Sending Link...</span>
+                                                        ) : (
+                                                        <span>Reset Password</span>
+                                                        )
+                                        }
+                                </Button>
+                                {response && (
+                                    <div className={`mx-auto p-2 flex gap-x-2 rounded-xl ${response.status === "success" ? "bg-[#E6FFEA] border border-[#B6F2C2]" : "bg-[#FFF8F7] border border-[#F2DCDA]"}`}>
+                                        <p className={`font-lato text-[14px] ${response.status === "success" ? "text-[#27A745]" : "text-[#F08278]"}`}>
+                                            {response.message}
+                                        </p>
+                                    </div>
+                                )}</div>
+                    </form>
+                    <div className="grid justify-center gap-2 text-center">
+                        <p className="text-balance text-muted-foreground">
+                            Having trouble logging in? <Link>Contact Support </Link> 
+                            
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+   
+        <div className="items-center hidden bg-white lg:flex">
+            <img
+            src={oops}
+            alt="Forget pPasword Image"
+            className=""
+            />
+        </div>
+        </div>
+</div>
 
     
 
-        <div className="h-screen flex justify-center">
-            <div className="w-full md:w-[65%] flex flex-col min-h-full p-3 md:p-5 lg:p-7">
-                <div className="flex justify-between">
-                    <div className="flex justify-start items-start">
-                        <img
-                            src={logo}
-                            className="w-[142px] h-auto md:h-auto lg:pl-5"
-                            alt="Tecbrix logo"
-                        />
-                    </div>
-                    <Link to='/' className="flex items-center gap-x-2 font-lato font-medium text-base lg:text-[20px]">Go Back <PiCaretCircleLeftFill className="text-black text-xl lg:text-2xl" /></Link>
-                </div>
-                <div className="flex justify-center items-center flex-grow">
-                    <div className="md:mx-auto w-full max-w-md lg:max-w-xl">
-                        <form
-                            className="space-y-3 my-2 lg:py-10 md:py-6 md:px-8 md:m-6"
-                            onSubmit={handleSubmit}
-                            method="POST"
-                        >
-                            <div className="mx-auto">
-                                <h2 className="text-[#323333] text-center text-2xl lg:text-4xl font-lato font-bold leading-9 pb-4 tracking-tight">
-                                    Enter Your Email
-                                </h2>
-                            </div>
-
-                            <div className="relative">
-                                <label
-                                    htmlFor="email"
-                                    className="text-[#323333] font-normal font-lato text-base"
-                                >
-                                    Email*
-                                </label>
-                                <input
-                                    required
-                                    name="email"
-                                    type="email"
-                                    title="Enter Your Email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="w-full rounded-xl py-2 my-1 h-11 text-gray-900 border border-[#969799] pl-2 md:text-base text-sm sm:leading-8 focus:outline-none font-lato"
-                                />
-                            </div>
-
-                            {response && (
-                                <div className={`mx-auto p-2 flex gap-x-2 rounded-xl ${response.status === "success" ? "bg-[#E6FFEA] border border-[#B6F2C2]" : "bg-[#FFF8F7] border border-[#F2DCDA]"}`}>
-                                    <p className={`font-lato text-[14px] ${response.status === "success" ? "text-[#27A745]" : "text-[#F08278]"}`}>
-                                        {response.message}
-                                    </p>
-                                </div>
-                            )}
-
-                            <div className="flex items-center gap-x-4">
-                                <button
-                                    type="submit"
-                                    className={`flex h-11 justify-center items-center w-full font-normal rounded-xl px-3 py-1.5 text-sm md:text-lg leading-8 font-lato lg:text-base ${isLoading ? "bg-[#F2F2F2] text-[#AFB0B2]" : "bg-black text-white"}`}
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <span className="animate-pulse">Sending Link...</span>
-                                    ) : (
-                                        <span>Reset Password</span>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div className="flex justify-start items-start">
-                    <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
-                        © 2024 TecBrix
-                    </p>
-                </div>
-            </div>
-
-            <div className="w-0 md:w-1/2 lg:w-[35%] bg-gray-500 h-full">
-                <img src={oops} alt="Meeting" className="object-cover w-full h-full" />
-            </div>
-        </div>
+        </>
     );
 };
 

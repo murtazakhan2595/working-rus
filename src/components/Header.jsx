@@ -21,6 +21,8 @@ const Header = ({ content }) => {
       "reports": "Reports",
       "dashboard": "Dashboard",
       "services": "Services",
+      "profile": "Profile",
+      "profile-management": "Profile Management",
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);
@@ -29,7 +31,7 @@ const Header = ({ content }) => {
     <div className="px-4 py-4 d-flex justify-content-between">
       <h4 className="font-bold capitalize">{pathName}</h4>
       <div className="flex flex-wrap justify-end gap-3">
-        <FilterInput
+        {/* <FilterInput
           filters={[
             {
               type: "search",
@@ -40,7 +42,7 @@ const Header = ({ content }) => {
           onChange={(filterName, filterValue) => {
             // Handle filter change here if needed
           }}
-        />
+        /> */}
         {content}
       </div>
     </div>
