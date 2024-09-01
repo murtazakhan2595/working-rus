@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
-import { FaChevronDown, FaChevronRight, FaChevronUp } from "react-icons/fa";
-import {  useSelector } from "react-redux";
+
+
 import { Link } from "react-router-dom";
 import { DesignationName } from "utils/getValuesFromTables";
-import { getRandomColor } from "utils/renderValues";
+
 import { connect } from "react-redux";
 import { getEmployeeCustomList } from "app/hooks/general";
-import { Collapse, CardBody } from "reactstrap";
-import { BsTelephone } from "react-icons/bs";
-import { AiOutlineHome } from "react-icons/ai";
-import { MdOutlineMail } from "react-icons/md";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../../../src/@/components/ui/card"
+
+import { Card, CardHeader, CardTitle, CardContent,} from "../../../../src/@/components/ui/card"
 import { Button } from 'components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../../../src/@/components/ui/accordion"
 import { MailIcon, PhoneIcon, LinkIcon } from "lucide-react";
-import { Badge } from "../../../../components/ui/badge"
+
 import { Avatar, AvatarImage, AvatarFallback } from "../../../../src/@/components/ui/avatar"
 ;
 
@@ -44,7 +41,7 @@ const MyTeams =({userProfile, employees})=>{
 
   return (
     <>
-    <Card>
+    <Card className={"h-[100%]"}>
     <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="font-semibold text-plum-1100">My Teams</div>
@@ -81,19 +78,22 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
 
         <Accordion type="single" collapsible>
           <AccordionItem value="user-info-1">
-            <AccordionTrigger className="flex  items-center gap-4 justify-between p-4 hover:no-underline">
-              <Avatar className=" h-14 w-14">
-                <AvatarImage src="/placeholder-user.jpg" alt="@shadcn" />
-                <AvatarFallback className="text-base bg-mauve-400 p-6">{teamMemeber?.first_name?.charAt(0).toUpperCase() +  teamMemeber?.last_name?.charAt(0).toLowerCase() }</AvatarFallback>
+            <AccordionTrigger className="flex items-center gap-4 p-4 hover:no-underline">
+            <div className="flex flex-row items-center justify-start gap-4">
+            <Avatar className=" h-14 w-14">
+                <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
+                <AvatarFallback className="flex items-center justify-center text-base font-normal rounded-full border-plum-500 bg-plum-300">{teamMemeber?.first_name?.charAt(0).toUpperCase() }</AvatarFallback>
               </Avatar>
-              <div className="flex flex-col gap-1">
-                <div className="font-medium text-base text-mauve-1200">
+              <div className="flex flex-col justify-start gap-1">
+                <div className="flex justify-start text-base font-medium text-muave-1200; ">
                 {`${teamMemeber.first_name} ${teamMemeber.last_name}`}
                 </div>
-                <div className="font-medium text-base text-mauve-1200">
-                <DesignationName className="text-base text-mauve-900" value={teamMemeber.department_position}/>
+                <div className="flex justify-start text-sm text-muted-foreground md:inlin">
+                <DesignationName className="flex justify-start text-sm text-muted-foreground md:inline" value={teamMemeber.department_position}/>
                 </div>
                 </div>
+            </div>
+             
           
             </AccordionTrigger>
             <AccordionContent className="p-4 pt-0">
@@ -104,15 +104,15 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
                   <div className="text-xs font-medium text-muted-foreground">Contact</div>
                   <div className="space-y-1 text-sm">
                     <div>
-                      <MailIcon className="w-4 h-4 mr-2 inline" />
+                      <MailIcon className="inline w-4 h-4 mr-2" />
                       Email: {teamMemeber.work_email}
                     </div>
                     <div>
-                      <PhoneIcon className="w-4 h-4 mr-2 inline" />
+                      <PhoneIcon className="inline w-4 h-4 mr-2" />
                       Phone: {teamMemeber.mobile_no}
                     </div>
                     <div>
-                      <LinkIcon className="w-4 h-4 mr-2 inline" />
+                      <LinkIcon className="inline w-4 h-4 mr-2" />
                       <Link href="#" prefetch={false}>
                         oliviadavis.com
                       </Link>

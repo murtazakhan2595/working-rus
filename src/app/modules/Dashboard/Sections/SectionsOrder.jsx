@@ -148,12 +148,7 @@ const DashboardManager = [
       content: <MyTasks/>,
       value: "MyTasks",
       },
-      {
-        type: "div",
-        className: "w-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1",
-        content: <MyTeams />,
-        value: "MyTeam",
-      },
+      
       
     ]
   },

@@ -85,7 +85,7 @@ export const EmployeeColumns = [
   {
     dataField: "name",
     text: "Employees",
-    width: "25%",
+    
     formatter: (cell, row) => (
       <EmployeeNameInfo
         name={`${row.first_name} ${row.last_name}`}
@@ -250,10 +250,10 @@ export const AllJobApplicationColumns = (
     text: "Candidate",
     formatter: (cell, row) => (
       <>
-        <div className="text-base text-[#323333] cursor-pointer">
+        <div className="cursor-pointer">
           {cell} {row.last_name}
         </div>
-        <div className="text-base font-lato text-baseGray">
+        <div className="text-base text-baseGray">
           {`Exp. ${row?.Year_of_Experience} years`}
         </div>
       </>
@@ -267,8 +267,8 @@ export const AllJobApplicationColumns = (
     text: "Phone no/Email",
     formatter: (cell, row) => (
       <>
-        <div className="text-base font-lato">{cell || ""}</div>
-        <div className="text-base font-lato">{row.email || ""}</div>
+        <div className="text-base ">{cell || ""}</div>
+        <div className="text-base ">{row.email || ""}</div>
       </>
     ),
   },
@@ -293,7 +293,7 @@ export const AllJobApplicationColumns = (
     formatter: (cell, row) => (
       <>
         <div className="flex items-center justify-center gap-x-2">
-          <span title={row?.cv} className="text-base font-lato text-baseGray">
+          <span title={row?.cv} className="text-base text-baseGray">
             File
           </span>
           <button onClick={() => downloadCV(row?.cv, row?.first_name)}>

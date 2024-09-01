@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Button, Form, Label, FormGroup, Input } from "reactstrap";
+
 import { PageLoader } from "components";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
@@ -34,6 +34,16 @@ import {
 } from "components/form-control";
 import { countryOptions } from "data/Data";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
+
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "../../../../../src/@/components/ui/sheet"
+import { Button } from "../../../../../components/ui/button"
+import { Label } from "../../../../../src/@/components/ui/label"
+import { Input } from "../../../../../components/ui/input"
+import { Textarea } from "../../../../../src/@/components/ui/textarea"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../../../../../src/@/components/ui/select"
+import { Popover, PopoverTrigger, PopoverContent } from "../../../../../src/@/components/ui/popover"
+import { CalendarDaysIcon, Calendar } from "../../../../../src/@/components/ui/calendar"
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "../../../../../src/@/components/ui/form"
 
 function getManagersStringSelected(managers) {
   if (managers) {
@@ -151,14 +161,17 @@ const EmployeeForm = ({
   return (
     <>
       {isLoading ? (
-        <Row>
-          <Col lg={12}>
+        
+        
             <PageLoader />
-          </Col>
-        </Row>
+         
       ) : (
-        <Row>
-          <Col lg={12}>
+        <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline">Open Employee Onboarding</Button>
+      </SheetTrigger>
+      
+        
             <Formik
               initialValues={formData}
               innerRef={formRef}
@@ -181,13 +194,18 @@ const EmployeeForm = ({
             >
               {(props) => (
                 <Form onSubmit={props.handleSubmit}>
-                  <Row>
+                  <SheetContent className="w-[800px]">
+                  <SheetHeader>
+                    <SheetTitle>Employee Onboarding</SheetTitle>
+                    <SheetDescription>Fill out the form to onboard a new employee.</SheetDescription>
+                  </SheetHeader>
+                  <SheetContent className="grid gap-6">
+                    <div className="grid grid-cols-2 gap-4">
+       
                     {!isEditMode && (
                       <>
-                        <Col md="12">
-                          <h5 className="fw-700 mb-3">Employee Details</h5>
-                        </Col>
-                        <Col md="6">
+                       
+                      <div className="space-y-2">
                       
                           <TextInput
                             name={"employeeId"}
@@ -201,8 +219,8 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </Col>
-                        <Col md="6">
+                        </div >
+                      <div className="space-y-2">
                           <TextInput
                             name={"username"}
                             error={props.errors?.username}
@@ -215,8 +233,8 @@ const EmployeeForm = ({
                               validateUsername(value);
                             }}
                           />
-                        </Col>
-                        <Col md="6">
+                        </div >
+                      <div className="space-y-2">
                           <TextInput
                             name={"first_name"}
                             error={props.errors?.first_name}
@@ -228,8 +246,8 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </Col>
-                        <Col md="6">
+                        </div >
+                      <div className="space-y-2">
                           <TextInput
                             name={"last_name"}
                             error={props.errors?.last_name}
@@ -241,8 +259,8 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </Col>
-                        <Col md="6">
+                        </div >
+                      <div className="space-y-2">
                           <EmailInput
                             name={"work_email"}
                             error={props.errors?.work_email}
@@ -256,9 +274,9 @@ const EmployeeForm = ({
                               validateEmail(value);
                             }}
                           />
-                        </Col>
-                        <Col md="6">
-                          <FormGroup floating>
+                        </div >
+                      <div className="space-y-2">
+                          <FormField floating>
                             <Input
                               type="password"
                               maxLength="20"
@@ -289,9 +307,9 @@ const EmployeeForm = ({
                                   {props.errors?.password}
                                 </div>
                               )}
-                          </FormGroup>
-                        </Col>
-                        <Col md={6}>
+                          </FormField>
+                        </div >
+                        <div className="space-y-2">
                           <PhoneNumberInput
                             name={"mobile_no"}
                             error={props.errors?.mobile_no}
@@ -305,8 +323,8 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </Col>
-                        <Col md="6">
+                        </div >
+                      <div className="space-y-2">
                           <TextAreaInput
                             name={"residential_address"}
                             error={props.errors?.residential_address}
@@ -319,14 +337,14 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </Col>
-                        <Col md="12">
-                          <h5 className="fw-700 mb-3 mt-4">Work information</h5>
-                        </Col>
+                        </div >
+                        <div className="space-y-2">
+                          <h5 className="mt-4 mb-3 fw-700">Work information</h5>
+                        </div >
                       </>
                     )}
                     <>
-                      <Col md="6" className="z-0">
+                    <div className="space-y-2">
                         <SelectComponent
                           name={"department_name"}
                           options={departments}
@@ -339,8 +357,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
-                      <Col md={6}>
+                      </div >
+                      <div className="space-y-2"> md={6}>
                         <SelectComponent
                           name={"employee_location"}
                           options={countryOptions}
@@ -353,8 +371,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
-                      <Col md={6} className="z-0">
+                      </div >
+                      <div className="space-y-2"> md={6} className="z-0">
                         <SelectComponent
                           name={"department_position"}
                           options={designations}
@@ -367,8 +385,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
-                      <Col md={6}>
+                      </div >
+                      <div className="space-y-2"> md={6}>
                         <SelectComponent
                           name={"user_role"}
                           options={UserRoles}
@@ -381,9 +399,9 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
-                      <Col md="6" className="z-0">
-                        <FormGroup>
+                      </div >
+                      <div className="space-y-2"> md="6" className="z-0">
+                        <FormField>
                           <SelectComponent
                             name={"employee_type"}
                             options={jobRoles}
@@ -396,10 +414,10 @@ const EmployeeForm = ({
                               props.setFieldValue(field, value);
                             }}
                           />
-                        </FormGroup>
-                      </Col>
-                      <Col md="6">
-                        <FormGroup>
+                        </FormField>
+                      </div >
+                    <div className="space-y-2">
+                        <FormField>
                           <SelectComponent
                             name={"employee_status"}
                             options={employeeStatus}
@@ -412,9 +430,9 @@ const EmployeeForm = ({
                               props.setFieldValue(field, value);
                             }}
                           />
-                        </FormGroup>
-                      </Col>
-                      <Col md={6} className="z-0">
+                        </FormField>
+                      </div >
+                      <div className="space-y-2"> md={6} className="z-0">
                         <SelectComponent
                           name={"employee_work_type"}
                           options={workplaceTypes}
@@ -427,9 +445,9 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
+                      </div >
 
-                      <Col md={6}>
+                      <div className="space-y-2"> md={6}>
                         <SelectComponent
                           name={"direct_report"}
                           options={managers}
@@ -441,9 +459,9 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
+                      </div >
 
-                      <Col md={6}>
+                      <div className="space-y-2"> md={6}>
                         <SelectMultiInputComponent
                           name={"indirect_report"}
                           options={managers}
@@ -455,8 +473,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
-                      <Col md={6} className="z-0">
+                      </div >
+                      <div className="space-y-2">
                         <SelectComponent
                           name={"department_manager"}
                           options={HeadOfDepartmentOptions}
@@ -469,8 +487,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
-                      <Col md={6}>
+                      </div >
+                      <div className="space-y-2">
                         <DateInput
                           name={"joining_date"}
                           error={props.errors?.joining_date}
@@ -482,12 +500,12 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
+                      </div >
                     </>
-                  </Row>
-                  <Row>
+                  </div>
+                  <div>
                     {!isEditMode && (
-                      <Col md="2">
+                     <div className="space-y-2">
                         <Link
                           type="button"
                           className="btn btn-outline-dark w-100"
@@ -495,19 +513,21 @@ const EmployeeForm = ({
                         >
                           Cancel
                         </Link>
-                      </Col>
+                      </div >
                     )}
-                    <Col md="4">
+                    <div className="space-y-2">
                       <Button type="submit" className="btn btn-dark w-100">
                         {id ? "Update" : "Add"}
                       </Button>
-                    </Col>
-                  </Row>
+                    </div >
+                  </div>
+                  </SheetContent>
+                  </SheetContent>
                 </Form>
               )}
             </Formik>
-          </Col>
-        </Row>
+          </Sheet>
+       
       )}
     </>
   );

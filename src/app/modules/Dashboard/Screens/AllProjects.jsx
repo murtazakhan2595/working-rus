@@ -43,7 +43,7 @@ export default function AllProjects(){
 
   return (
     <>
-   <Card className="w-full h-[640px]">
+   <Card className="w-full h-[100%]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="font-semibold text-plum-1100">{userProfile.role === 4 ? "My Projects" : "All Projects"}</div>
@@ -75,7 +75,7 @@ export default function AllProjects(){
 
 const RenderProject = ({ project }) => {
   return (
-        <Table className="overflow-hidden">
+        <Table className="">
           <TableBody>
             <TableRow>
               <TableCell className="w-full px-4 py-4">
