@@ -1,6 +1,5 @@
 import React from "react";
 import Select from "react-select";
-import { FormGroup, Label,  Col } from "reactstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment, { max, min } from "moment";
@@ -18,6 +17,7 @@ import { ChevronsUpDown, Check } from 'lucide-react';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '../src/@/components/ui/command';
 import { useState } from 'react';
 import { Button } from 'components/ui/button';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "../src/@/components/ui/form"
 
 const SelectComponent = ({
   name,
@@ -26,12 +26,12 @@ const SelectComponent = ({
   touch,
   onChange,
   options,
-  label,
+  FormLabel,
   disabled,
   required,
 }) => {
   return (
-    <FormGroup floating>
+    <FormField floating>
       <Select
         name={name}
         isDisabled={disabled}
@@ -46,7 +46,7 @@ const SelectComponent = ({
             : ""
         }
         onChange={(selectedOption) => onChange(name, selectedOption.value)}
-        placeholder={`${label}`}
+        placeholder={`${FormLabel}`}
         styles={{
           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
           menu: (base) => ({ ...base, zIndex: 9999 }),
@@ -55,18 +55,18 @@ const SelectComponent = ({
         menuPortalTarget={document.body}
       />
       {value ? (
-        <Label
+        <FormLabel
           className={`text-baseGray ${value ? "date-floating-label" : ""}`}
           for={name}
         >
-          {required && <span className="text-danger">* </span>} {label}
-        </Label>
+          {required && <span className="text-danger">* </span>} {FormLabel}
+        </FormLabel>
       ) : (
         ""
       )}
       {console.log(error, touch)}
       {error && touch && <div className="invalid-feedback">{error || ""}</div>}
-    </FormGroup>
+    </FormField>
   );
 };
 const SelectMultiInputComponent = ({
@@ -76,12 +76,12 @@ const SelectMultiInputComponent = ({
   touch,
   onChange,
   options,
-  label,
+  FormLabel,
   disabled,
   required,
 }) => {
   return (
-    <FormGroup floating>
+    <FormField floating>
       <Select
         name={name}
         id={name}
@@ -94,18 +94,18 @@ const SelectMultiInputComponent = ({
         onChange={(selectedOption) => {
           onChange(name, selectedOption);
         }}
-        placeholder={`Select ${label}`}
+        placeholder={`Select ${FormLabel}`}
         isMulti={true}
         noOptionsMessage={() => "No such employee found"}
       />
-      <Label
+      <FormLabel
         className={`text-baseGray ${value ? "date-floating-label" : ""}`}
         for={name}
       >
-        {required && <span className="text-danger">* </span>} {label}
-      </Label>
+        {required && <span className="text-danger">* </span>} {FormLabel}
+      </FormLabel>
       {error && touch && <div className="invalid-feedback">{error}</div>}
-    </FormGroup>
+    </FormField>
   );
 };
 
@@ -115,7 +115,7 @@ const DateInput = ({
   error,
   touch,
   onChange,
-  label,
+  FormLabel,
   disabled,
   required,
   minDate,
@@ -123,7 +123,7 @@ const DateInput = ({
   const date = value ? new Date(moment(value)) : null;
   return (
     <>
-      <FormGroup floating>
+      <FormField floating>
         <DatePicker
           name={name}
           id={name}
@@ -136,7 +136,7 @@ const DateInput = ({
           value={date && !isNaN(date.getTime()) ? date : ""}
           selected={date && !isNaN(date.getTime()) ? date : new Date()}
           dropdownMode="select"
-          placeholder={`${label}`}
+          placeholder={`${FormLabel}`}
           onChange={(value) => {
             if (value) {
               value = moment(value).format("YYYY-MM-DD");
@@ -149,16 +149,16 @@ const DateInput = ({
           showYearDropdown
           dateFormat="dd-MM-yyyy"
         />
-        <Label
-          className={`text-baseGray ${value ? "date-floating-label" : ""}`}
+        <FormLabel
+          className={`text-baseGray ${value ? "date-floating-FormLabel" : ""}`}
           for={name}
         >
-          {required && <span className="text-danger">* </span>} {label}
-        </Label>
+          {required && <span className="text-danger">* </span>} {FormLabel}
+        </FormLabel>
         {error && touch && (
           <div className="invalid-feedback d-block">{error}</div>
         )}
-      </FormGroup>
+      </FormField>
     </>
   );
 };
@@ -169,7 +169,7 @@ const TextInput = ({
   error,
   touch,
   onChange,
-  label,
+  FormLabel,
   disabled,
   required,
   regEx,
@@ -177,14 +177,14 @@ const TextInput = ({
 }) => {
   return (
     <>
-      <FormGroup floating>
+      <FormField floating>
         <Input
           type="text"
           maxLength={maxLength ?? "100"}
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter" + label}
+          placeholder={"Enter" + FormLabel}
           value={value ?? ""}
           disabled={disabled}
           className={error && touch ? "is-invalid" : ""}
@@ -199,21 +199,21 @@ const TextInput = ({
             }
           }}
         />
-        <Label className="text-baseGray" htmlFor="address">
+        <FormLabel className="text-baseGray" htmlFor="address">
           {required && <span className="text-danger">* </span>}
-          {label}
-        </Label>
+          {FormLabel}
+        </FormLabel>
 
         {error && touch && <div className="invalid-feedback">{error}</div>}
-      </FormGroup>
+      </FormField>
     </>
   );
 };
 
-const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
+const CheckBoxInput = ({ name, value, onChange, FormLabel, disabled }) => {
   return (
     <>
-      <FormGroup check className="my-1">
+      <FormField check className="my-1">
         <Input
           id={name}
           type="checkbox"
@@ -225,8 +225,8 @@ const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
             onChange(name, !value);
           }}
         />{" "}
-        <Label check>{label}</Label>
-      </FormGroup>
+        <FormLabel check>{FormLabel}</FormLabel>
+      </FormField>
     </>
   );
 };
@@ -237,7 +237,7 @@ const PhoneNumberInput = ({
   error,
   touch,
   onChange,
-  label,
+  FormLabel,
   disabled,
   required,
   countryCodeName,
@@ -246,8 +246,8 @@ const PhoneNumberInput = ({
   return (
     <>
       <div className="d-flex">
-        <Col sm={4} className="">
-          <FormGroup floating>
+      <div className="space-y-2">
+          <FormField floating>
             <Select
               name={countryCodeName}
               isDisabled={disabled}
@@ -269,19 +269,19 @@ const PhoneNumberInput = ({
               placeholder={"Code"}
             />
             {countryCode && (
-              <Label className="text-baseGray" htmlFor="address">
+              <FormLabel className="text-baseGray" htmlFor="address">
                 Code
-              </Label>
+              </FormLabel>
             )}
-          </FormGroup>
-        </Col>
-        <Col sm={8} className="">
-          <FormGroup floating>
+          </FormField>
+        </div>
+        <div className="space-y-2">
+          <FormField floating>
             <Input
               id={name}
               name={name}
               autoComplete="Off"
-              placeholder={"Enter" + label}
+              placeholder={"Enter" + FormLabel}
               value={`${countryCode || ""}${value || ""}`}
               className={error && touch ? "is-invalid" : ""}
               onChange={(option) => {
@@ -294,14 +294,14 @@ const PhoneNumberInput = ({
                 if (!value || regExTelephone.test(value)) onChange(name, value);
               }}
             />
-            <Label className="text-baseGray" htmlFor="address">
+            <FormLabel className="text-baseGray" htmlFor="address">
               {required && <span className="text-danger">* </span>}
-              {label}
-            </Label>
+              {FormLabel}
+            </FormLabel>
 
             {error && touch && <div className="invalid-feedback">{error}</div>}
-          </FormGroup>
-        </Col>
+          </FormField>
+        </div>
       </div>
     </>
   );
@@ -313,20 +313,20 @@ const EmailInput = ({
   error,
   touch,
   onChange,
-  label,
+  FormLabel,
   disabled,
   required,
 }) => {
   return (
     <>
-      <FormGroup floating>
+      <FormField floating>
         <Input
           type="email"
           maxLength="100"
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter" + label}
+          placeholder={"Enter" + FormLabel}
           value={value}
           className={error && touch ? "is-invalid" : ""}
           onChange={(option) => {
@@ -335,16 +335,16 @@ const EmailInput = ({
             if (!value || regExTelephone.test(value)) onChange(name, value);
           }}
         />
-        <Label className="text-baseGray" htmlFor="address">
+        <FormLabel className="text-baseGray" htmlFor="address">
           {required && <span className="text-danger">* </span>}
-          {label}
-        </Label>
+          {FormLabel}
+        </FormLabel>
         {error && touch && <div className="invalid-feedback">{error}</div>}
-      </FormGroup>
+      </FormField>
     </>
   );
 };
-const CustomButton = ({ label, onClick, disabled }) => {
+const CustomButton = ({ FormLabel, onClick, disabled }) => {
   return (
     <div className="flex justify-end">
       <Button
@@ -352,13 +352,13 @@ const CustomButton = ({ label, onClick, disabled }) => {
         onClick={onClick}
         disabled={disabled}
       >
-        {label}
+        {FormLabel}
       </Button>
     </div>
   );
 };
 
-const CustomDarkButton = ({ label, onClick, disabled, style, className }) => {
+const CustomDarkButton = ({ FormLabel, onClick, disabled, style, className }) => {
   return (
     <Button
       className={`btn btn-dark ${className ?? ""}`}
@@ -366,12 +366,12 @@ const CustomDarkButton = ({ label, onClick, disabled, style, className }) => {
       disabled={disabled}
       style={style}
     >
-      {label}
+      {FormLabel}
     </Button>
   );
 };
 
-const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
+const CustomLightOutlineButton = ({ FormLabel, onClick, disabled, style }) => {
   return (
     <Button
       type="button"
@@ -380,7 +380,7 @@ const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
       onClick={onClick}
       disabled={disabled}
     >
-      {label}
+      {FormLabel}
     </Button>
   );
 };
@@ -388,7 +388,7 @@ const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
 const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
   return (
     <>
-      <label
+      <FormLabel
         htmlFor="file-upload"
         className="flex my-3 overflow-hidden font-bold text-center cursor-pointer rounded-3xl"
       >
@@ -411,7 +411,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
             )}
           </div>
           <div className="text-sm text-left">
-            <FormGroup>
+            <FormField>
               <input
                 id="file-upload"
                 type="file"
@@ -443,7 +443,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
               {error && touch && (
                 <div className="invalid-feedback">{error}</div>
               )}
-            </FormGroup>
+            </FormField>
             <span
               className="fw-lighter"
               style={{ minHeight: "auto", fontSize: "12px" }}
@@ -452,7 +452,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
             </span>
           </div>
         </div>
-      </label>
+      </FormLabel>
     </>
   );
 };
@@ -473,9 +473,9 @@ const FileInput = ({
       >
         <h4>
           <TfiFiles className="m-auto mb-3" />
-          {`Upload Your ${label || "file"}`}
+          {`Upload Your ${FormLabel || "file"}`}
         </h4>
-        <label
+        <FormLabel
           htmlFor={name}
           className="mt-3 rounded-lg cursor-pointer opacity-70 text-input"
           style={{
@@ -527,7 +527,7 @@ const FileInput = ({
               {value?.name}
             </span>
           )}
-        </label>
+        </FormLabel>
         <br />
       </div>
       {error && touch && <div className="text-sm text-red-500">{error}</div>}
@@ -541,7 +541,7 @@ const TextAreaInput = ({
   error,
   touch,
   onChange,
-  label,
+  FormLabel,
   disabled,
   required,
   regEx,
@@ -550,14 +550,14 @@ const TextAreaInput = ({
 }) => {
   return (
     <>
-      <FormGroup floating>
+      <FormField floating>
         <Input
           type="textarea"
           maxLength={maxLength ?? "5000"}
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter " + label}
+          placeholder={"Enter " + FormLabel}
           value={value}
           rows={maxRows ?? 1}
           disabled={disabled}
@@ -571,15 +571,15 @@ const TextAreaInput = ({
             }
           }}
         />
-        <Label
+        <FormLabel
           className={`text-baseGray ${value ? "active" : ""}`}
           htmlFor={name}
         >
           {required && <span className="text-danger">* </span>}
-          {label}
-        </Label>
+          {FormLabel}
+        </FormLabel>
         {error && touch && <div className="invalid-feedback">{error}</div>}
-      </FormGroup>
+      </FormField>
     </>
   );
 };
@@ -589,7 +589,7 @@ const TextAreaEditorInput = ({
   error,
   touch,
   onChange,
-  label,
+  FormLabel,
   disabled,
   required,
   regEx,
@@ -597,13 +597,13 @@ const TextAreaEditorInput = ({
 }) => {
   return (
     <>
-      <FormGroup floating>
+      <FormField floating>
         <ReactQuill
           type="textarea"
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter " + label}
+          placeholder={"Enter " + FormLabel}
           value={value}
           modules={{
             toolbar: {
@@ -621,13 +621,13 @@ const TextAreaEditorInput = ({
             onChange(name, option);
           }}
         />
-        <Label className="pt-4 mt-1 text-baseGray" htmlFor="address">
+        <FormLabel className="pt-4 mt-1 text-baseGray" htmlFor="address">
           {required && <span className="text-danger">* </span>}
-          {label}
-        </Label>
+          {FormLabel}
+        </FormLabel>
 
         {error && touch && <div className="invalid-feedback">{error}</div>}
-      </FormGroup>
+      </FormField>
     </>
   );
 };
@@ -730,7 +730,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                     className={`w-[200px] justify-between`}
                   >
                     {value
-                      ? filter.option.find((option) => option.value === value)?.label
+                      ? filter.option.find((option) => option.value === value)?.FormLabel
                       : filter.placeholder}
                     <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                   </Button>
@@ -754,7 +754,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                             <Check
                               className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
                             />
-                            {option.label}
+                            {option.FormLabel}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -776,7 +776,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                     className={`w-[200px] justify-between`}
                   >
                     {value
-                      ? filter.option.find((option) => option.value === value)?.label
+                      ? filter.option.find((option) => option.value === value)?.FormLabel
                       : filter.placeholder}
                     <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                   </Button>
@@ -800,7 +800,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                             <Check
                               className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
                             />
-                            {option.label}
+                            {option.FormLabel}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -821,7 +821,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                     className={`w-[200px] justify-between`}
                   >
                     {value
-                      ? filter.option.find((option) => option.value === value)?.label
+                      ? filter.option.find((option) => option.value === value)?.FormLabel
                       : filter.placeholder}
                     <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                   </Button>
@@ -845,7 +845,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                             <Check
                               className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
                             />
-                            {option.label}
+                            {option.FormLabel}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -893,7 +893,7 @@ const FilterInput = ({ filters, onChange, isClearable = true }) => {
                 }}
                 values={filter.values}
                 mainHeading={filter.mainHeading}
-                label={filter.placeholder}
+                FormLabel={filter.placeholder}
                 className={filter.className ?? null}
               />
             );

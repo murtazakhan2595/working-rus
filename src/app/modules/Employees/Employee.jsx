@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import {
   Card,
   CardContent,
   CardHeader,
-  CardDescription,
-  CardTitle,
-  CardFooter,
-  CardSubTitle,
-  CardActions,
-  CardSection,
-  CardBody,
-} from '../../../src/@/components/ui/card';
+  CardTitle
+} from "../../../src/@/components/ui/card.jsx"
 import { EmployeeColumns } from 'app/utils/Types/TableColumns';
 import TableCustom from 'components/TableCustom';
-import { UsersRound, Contact, UserRoundCheck, UserPlus } from 'lucide-react';
-import { Button } from '../../../components/ui/button';
-import { Link } from 'react-router-dom';
+import { UsersRound, Contact, UserRoundCheck } from 'lucide-react';
 import Header from '../../../components/Header';
 import { FilterInput } from 'components/form-control.jsx';
 import { UserRoles } from 'data/Data.js';
@@ -26,238 +17,156 @@ import {
   getDesignationList,
   getEmployeeCustomList,
 } from 'app/hooks/general.jsx';
-
 import { PageLoader } from 'components';
+import SheetOnBorading from "../../../components/ui/sheet-onBording-form";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../../src/@/components/ui/tabs"
 
-const Employee = () => {
+
+export default function Component() {
   const [isLoading, setIsLoading] = useState(true);
-  const [employeeData, setEmployeeData] = useState([]);
+  const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [filterData, setFilterData] = useState({});
   const [totalEmployee, setTotalEmployee] = useState(0);
   const [activeEmployee, setActiveEmployee] = useState(0);
   const [totalManagers, setTotalManager] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const navigate = useNavigate();
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
   });
+
   const onPageChange = (name, value) => {
-    const pageOptions = options;
-    if (pageOptions[name] !== value) {
-      pageOptions[name] = value;
-      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
-    }
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
   useEffect(() => {
-    let isMounted = true;
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const employeeData = await getEmployeeCustomList({
-          options,
-          filterData,
-        });
-        if (isMounted) {
-          setEmployeeData(employeeData);
-          setActiveEmployee(employeeData?.ActiveEmployee || 0);
-          setTotalEmployee(employeeData?.TotalEmployee || 0);
-          setTotalManager(employeeData?.TotalManager || 0);
-        }
+        const data = await getEmployeeCustomList({ options, filterData });
+        setEmployeeData(data);
+        setActiveEmployee(data.ActiveEmployee || 0);
+        setTotalEmployee(data.TotalEmployee || 0);
+        setTotalManager(data.TotalManager || 0);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching employees:', error);
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
     fetchData();
-    return () => {
-      isMounted = false;
-    };
   }, [options, filterData]);
 
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const departmentResponse = await getDepartmentList();
+        const [departmentResponse, designationResponse] = await Promise.all([
+          getDepartmentList(),
+          getDesignationList()
+        ]);
         setDepartments(departmentResponse);
-        const designationResponse = await getDesignationList();
         setDesignations(designationResponse);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching lists:', error);
       }
     };
 
     fetchLists();
   }, []);
 
-  const tableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
-    onPageChange: onPageChange,
-  };
-
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange('page', 1);
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === '') {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
+    setFilterData(prevFilters => ({
+      ...prevFilters,
+      [filterName]: filterValue || undefined
+    }));
   };
+
+  const Blocks = (blocks) => (
+    <div className="flex flex-col w-full gap-4 p-6">
+     
+      <div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {blocks.map((block) => (
+            <div key={block.label} className="flex items-center gap-4 p-4 ">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                <block.icon className="w-5 h-5 text-primary" />
+              </div>
+              <div className="p-4 rounded-lg bg-muted">
+                <p className="text-sm text-muted-foreground">{block.label}</p>
+                <p className="text-2xl font-bold">{block.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const filteredEmployees = employeeData.results.filter(employee => {
+    if (selectedStatus === 'all') return true;
+    return employee.status === selectedStatus;
+  });
 
   return (
     <div className="flex flex-col gap-4 profile-management">
-      <Header
-        content={
-          <Button variant="default" size="">
-            <Link className="flex" to="/create-employee">
-              <UserPlus className="w-4 h-4 mr-2" /> On Borad Employee
-            </Link>
-          </Button>
-        }
-      />
+      <Header content={<SheetOnBorading />} />
 
       {Blocks([
-        {
-          label: 'Total Employees',
-          value: totalEmployee,
-          icon: UsersRound,
-        },
-        {
-          label: 'Managers Only',
-          value: totalManagers,
-          icon: Contact,
-        },
-        {
-          label: 'Active Employees',
-          value: activeEmployee,
-          icon: UserRoundCheck,
-        },
+        { label: 'Total Employees', value: totalEmployee, icon: UsersRound },
+        { label: 'Managers', value: totalManagers, icon: Contact },
+        { label: 'Active Employees', value: activeEmployee, icon: UserRoundCheck },
       ])}
-
-      
-          <Card>
-            <CardHeader>
-              <div className="px-3 py-3">
-                <FilterInput
-                  filters={[
-                    {
-                      type: 'search',
-                      placeholder: 'Search by ID and Name',
-                      name: 'id_and_first_name',
-                    },
-                    {
-                      type: 'select-one',
-                      option: departments,
-                      name: 'department_name',
-                      placeholder: 'Department',
-                    },
-                    {
-                      type: 'select-two',
-                      option: designations,
-                      name: 'department_position',
-                      placeholder: 'Designation',
-                    },
-                    {
-                      type: 'select-three',
-                      option: UserRoles,
-                      name: 'user_role',
-                      placeholder: 'Role',
-                    },
-                  ]}
-                  onChange={handleFilterChange}
-                />
-              </div>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div classname="flex flex-row">
-                  <div className="flex flex-col w-full">
-                    <PageLoader />
-                  </div>
-                </div>
-              ) : (
-                
+     
+<Tabs defaultValue="all" className="w-full" onValueChange={setSelectedStatus}>
+            <div className="flex flex-row justify-between">
+            <TabsList className="inline-flex items-center justify-center p-1 bg-white rounded-lg h-9 text-mauve-900">
+              <TabsTrigger value="all">All Employees</TabsTrigger>
+              <TabsTrigger value="active">Active</TabsTrigger>
+              <TabsTrigger value="inactive">Inactive</TabsTrigger>
+            </TabsList>
+            <FilterInput
+            filters={[
+              { type: 'search', placeholder: 'Search by ID and Name', name: 'id_and_first_name' },
+              { type: 'select-one', option: departments, name: 'department_name', placeholder: 'Department' },
+              { type: 'select-two', option: designations, name: 'department_position', placeholder: 'Designation' },
+              { type: 'select-three', option: UserRoles, name: 'user_role', placeholder: 'Role' },
+            ]}
+            onChange={handleFilterChange}
+          />
+            </div>
+           
+            {['all', 'active', 'inactive'].map((status) => (
+              <TabsContent key={status} value={status}>
+                {isLoading ? (
+                  <PageLoader />
+                ) : (
+                  <Card>
+                    <CardContent>
                     <TableCustom
-                      data={employeeData.results || []}
-                      columns={EmployeeColumns}
-                      pagination={true}
-                      dataTotalSize={employeeData.count || 0}
-                      tableOptions={tableOptions}
-                    />
+                    data={filteredEmployees}
+                    columns={EmployeeColumns}
+                    pagination={true}
+                    dataTotalSize={filteredEmployees.length}
+                    tableOptions={{
+                      page: options.page,
+                      sizePerPage: options.sizePerPage,
+                      onPageChange: onPageChange,
+                    }}
                   
-              )}
-            </CardContent>
-          </Card>
-       
+                  />
+                    </CardContent>
+                  </Card>
+                  
+                )}
+              </TabsContent>
+            ))}
+          </Tabs>
+      
     </div>
   );
-};
-
-function Blocks(blocks) {
-  return (
-    <Card className="flex w-full gap-4 p-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold">Employees Stats</h3>
-        <UsersRound className="w-6 h-6 text-muted-foreground" />
-      </div>
-      <div>
-      {blocks &&
-        blocks.map((block) => SubBlock(block.label, block.value, block.icon))}
-      </div>
-      
-    </Card>
-  );
-
-  function SubBlock(label, value, Icon) {
-    return (
-      <><div className="flex ">
-          <div className="flex items-center justify-center p-4 rounded-full bg-mauve-200">
-            <Icon className="h-7 w-7 text-plum-1100" aria-hidden="true" />
-          </div>
-          <div className="flex flex-col items-center justify-center p-4 rounded-md bg-muted">
-            <span className="text-2xl font-bold">{value}</span>
-            <p className="text-sm text-muted-foreground">{label}</p>
-          </div>
-        </div>
-      </>
-
-      //   <Card className="grid w-full max-w-md gap-6 p-6">
-      //   <div className="flex items-center justify-between">
-      //     <h3 className="text-xl font-semibold">Employee Stats</h3>
-      //     <UsersIcon className="w-6 h-6 text-muted-foreground" />
-      //   </div>
-      //   <div className="grid grid-cols-3 gap-4">
-      //     <div className="flex flex-col items-center justify-center p-4 rounded-md bg-muted">
-      //       <span className="text-2xl font-bold">69</span>
-      //       <p className="text-sm text-muted-foreground">Total</p>
-      //     </div>
-      //     <div className="flex flex-col items-center justify-center p-4 rounded-md bg-muted">
-      //       <span className="text-2xl font-bold">21</span>
-      //       <p className="text-sm text-muted-foreground">Managers</p>
-      //     </div>
-      //     <div className="flex flex-col items-center justify-center p-4 rounded-md bg-muted">
-      //       <span className="text-2xl font-bold">102</span>
-      //       <p className="text-sm text-muted-foreground">Active</p>
-      //     </div>
-      //   </div>
-      // </Card>
-    );
-  }
 }
-
-const mapStateToProps = (state) => ({
-  userProfile: state.user.userProfile,
-});
-
-export default connect(mapStateToProps)(Employee);

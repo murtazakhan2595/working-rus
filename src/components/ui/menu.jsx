@@ -74,7 +74,7 @@ const Menu = ({ isOpen }) => {
                         )}
                         asChild
                       >
-                        <Link to={to} className="px-2">
+                        <Link to={to} className="px-2 hover:bg-plum-500">
                           <span className={cn(isOpen === false ? "" : "mr-4")}>
                             <Icon size={18} />
                           </span>

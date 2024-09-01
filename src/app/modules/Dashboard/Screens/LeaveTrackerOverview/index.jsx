@@ -178,12 +178,12 @@ export default function LeaveTrackerOverview() {
         
                
           </div>
-          <TableCustom className="overflow-hidden"
-              hideTableHeader={true}
+          <TableCustom className=""
+              showHeader={true}
               columns={DashboardLeaveTrackerColumns}
               data={applications.slice(0, 5)}
               pagination={false}
-              dataStyle={{backgroundColor: "white" , border: "none"}}
+              
             />
       </CardContent>     
       </Card>

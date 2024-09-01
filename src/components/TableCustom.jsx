@@ -92,13 +92,14 @@ export default function TableCustom({
                     {columns.map((column, index) => (
                       <TableHead
                         key={index}
-                        className="cursor-pointer hidden w-[100px] sm:table-cell"
+                        className="cursor-pointer"
                         style={column.width ? { width: column.width } : {}}
                         onClick={() => handleSort(column.dataField)}
                       >
                         {column.text}
                         {sort.key === column.dataField && (
-                          <span className="ml-1">{sort.order === 'asc' ? 'â†‘' : 'â†“'}</span>
+                         <span className="ml-1">{sort.order === 'asc' ? '↑' : '↓'}</span>
+
                         )}
                       </TableHead>
                     ))}
@@ -117,7 +118,7 @@ export default function TableCustom({
                       >
                         {columns.map((column, index) => (
                           <TableCell
-                            className={`${column.onClick ? "cursor-pointer" : ""}`}
+                            className={`${column.onClick ? "cursor-pointer " : ""}`}
                             key={index}
                             style={{ ...(column.width ? { width: `${column.width}` } : {}), ...dataStyle }}
                             onClick={() => {

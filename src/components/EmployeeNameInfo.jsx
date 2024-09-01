@@ -1,5 +1,8 @@
 import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
 import {getRandomColor} from "utils/renderValues"
+import { Avatar, AvatarImage, AvatarFallback } from "../src/@/components/ui/avatar"
+
+// const combineFLName = employee?.first_name?.charAt(0).toUpperCase() +  employee?.last_name?.charAt(0).toUpperCase() 
 const EmployeeNameInfo = ({
   name,
   department,
@@ -9,18 +12,17 @@ const EmployeeNameInfo = ({
   allotedLeave,
 }) => {
   return (
-    <div className="flex items-start pr-3">
-      <div
-        className= {`${getRandomColor(name?.charAt(0))} text-[#FAFBFC] flex font-semibold text-md items-center justify-center rounded-full w-10 h-10`}
-        style={{ minWidth: "40px" }}
-      >
-        {name?.toUpperCase().charAt(0)}
-      </div>
-      <div className="flex flex-col ml-2 whitespace-break-spaces flex-wrap">
-        <div className="text-base font-bold leading-normal text-[#323333] text-left text-capitalize">
+    <div className="flex items-center">
+      <Avatar className=" h-14 w-14">
+                <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
+                <AvatarFallback className="flex items-center justify-center rounded-full border-plum-500 bg-plum-300">{name?.charAt(0).toUpperCase() }</AvatarFallback>
+              </Avatar>
+      
+      <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces">
+        <div className="font-medium">
           {`${name ?? "N/A"}`}
         </div>
-        <div className="text-baseGray text-left flex justify-start gap-x-5 gap-y-1 flex-wrap">
+        <div className="hidden text-sm text-muted-foreground md:inline">
           <div>
             <DesignationName value={position} /> |{" "}
             <DepartmentName value={department} />
