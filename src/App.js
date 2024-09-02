@@ -64,6 +64,7 @@ function App() {
   const [userRole, setUserRole] = useState(userProfile.role);
   const navigate = useNavigate();
   const location = useLocation();
+
   const getProfile = async () => {
     try {
       const response = await axios.get(`${baseUrl}/user/`, {
@@ -141,6 +142,7 @@ function App() {
                 <Sidebar
                   isSidebarOpen={isSidebarOpen}
                   setIsSidebarOpen={setIsSidebarOpen}
+                  userRole={userRole}
                 />
               }
             >
