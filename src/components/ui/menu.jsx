@@ -16,11 +16,10 @@ import {
   TooltipProvider
 } from "../../src/@/components/ui/tooltip"
 
-const Menu = ({ isOpen }) => {
+const Menu = ({ isOpen, userRole }) => {
 
   const pathname = window.location.pathname; // Get the current pathname
-  const menuList = getMenuList(pathname) || [];
-  console.log(menuList, "MENU LIST");
+  const menuList = getMenuList(pathname, userRole) || [];
 
 
   return (

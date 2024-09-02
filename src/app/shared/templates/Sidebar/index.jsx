@@ -7,7 +7,7 @@ import { SidebarNew } from "components/ui/sidebar-new";
 
 // const Main = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
-  export default function Main({ children, isSidebarOpen, setIsSidebarOpen }) {
+  export default function Main({ userRole }) {
     const sidebar = useStore(useSidebarToggle, (state) => state);
   
     if (!sidebar) return null;
@@ -16,7 +16,7 @@ import { SidebarNew } from "components/ui/sidebar-new";
   return (
     <>
      <div className="sidebar">
-          <SidebarNew />
+          <SidebarNew userRole={userRole}/>
         </div>
            
         <main

@@ -9,8 +9,9 @@ import  SidebarToggle  from "../../components/ui/sidebar-toggle";
 import Menu from "../../components/ui/menu";
 import NewLogo from './../../assets/images/NewLogo';
 import MobileLogo from './../../assets/images/mobile-logo';
-export function SidebarNew() {
+export function SidebarNew(userRole) {
   const sidebar = useStore(useSidebarToggle, (state) => state);
+
   
   if(!sidebar) return null;
 
@@ -50,7 +51,7 @@ export function SidebarNew() {
           </Link>
         </Button>
         
-        <Menu isOpen={sidebar?.isOpen} />
+        <Menu isOpen={sidebar?.isOpen} userRole={userRole}/>
       </div>
     </aside>
   );

@@ -1,6 +1,20 @@
-
-import { Users, SquareStack, House, ArrowLeftRight, Award, CalendarClockIcon, CalendarRange, Crosshair, FileChartColumnIncreasing, ListTodo, UserRoundCheck, GalleryHorizontalEnd , UserRoundSearch, UsersRound, ListRestart, Settings2, PlaneTakeoff, DoorOpen, UserRoundPlus, UserRoundCog } from "lucide-react"
-
+import {
+  Users,
+  SquareStack,
+  House,
+  ArrowLeftRight,
+  Award,
+  CalendarClockIcon,
+  CalendarRange,
+  Crosshair,
+  FileChartColumnIncreasing,
+  ListTodo,
+  UserRoundCheck,
+  GalleryHorizontalEnd,
+  UserRoundSearch,
+  UsersRound,
+  Settings2,
+} from "lucide-react";
 
 /**
  * @typedef {Object} Group
@@ -11,7 +25,6 @@ import { Users, SquareStack, House, ArrowLeftRight, Award, CalendarClockIcon, Ca
 /**
  * @typedef {Object} Menu
  * @property {string} to - The URL of the menu item.
-
  * @property {string} label - The label of the menu item.
  * @property {boolean} active - Whether the menu item is active.
  * @property {React.ComponentType} icon - The icon component for the menu item.
@@ -22,533 +35,142 @@ import { Users, SquareStack, House, ArrowLeftRight, Award, CalendarClockIcon, Ca
  * Example function using the Group type.
  * @param {Group[]} groups - The list of groups.
  */
+export function getMenuList(pathname, userRole) {
+  const userRolesMap = {
+    isPeopleTeam: userRole.userRole === 1 || userRole.userRole === 3,
+    isSelfServiceHub: userRole.userRole === 1 || userRole.userRole === 2 || userRole.userRole === 3 || userRole.userRole === 4,
+    isTaskManagement: userRole.userRole === 1 || userRole.userRole === 2 || userRole.userRole === 3 || userRole.userRole === 4,
+    isTalentSphere: userRole.userRole === 1 || userRole.userRole === 2 || userRole.userRole === 3,
+    isPayrollAttendance: userRole.userRole === 1 || userRole.userRole === 2 || userRole.userRole === 3,
+    isReportsMenu: userRole.userRole === 1 || userRole.userRole === 2,
+    performanceManagementMenus: userRole.userRole === 1 || userRole.userRole === 2 || userRole.userRole === 3,
+    dailyTaskReportMenus: userRole.userRole === 1 || userRole.userRole === 2 || userRole.userRole === 3,
+    personalDevelopmentMenus: userRole.userRole === 1 || userRole.userRole === 2 || userRole.userRole === 3
+  };
 
+  const createMenu = (to, label, icon, submenus = [], active = pathname === to) => ({
+    to,
+    label,
+    active,
+    icon,
+    submenus,
+  });
 
-export function getMenuList(pathname, groups, userRole) {
   const commonMenus = [
-    {
-      to: "/services",
-      label: "Services",
-      active: pathname.includes("/services"),
-      icon: SquareStack,
-      submenus: [],
-    },
-    {
-      to: "/",
-
-      label: "Dashboard",
-      active: pathname === "/",
-      icon: House,
-      submenus: [],
-    },
+    createMenu("/services", "Services", SquareStack),
+    createMenu("/", "Dashboard", House),
   ];
-
-  const reportsMenu = [
-    {
-      to: "/reports",
-      label: "Reports",
-      active: pathname === "/reports",
-      icon: GalleryHorizontalEnd ,
-      submenus: [],
-    },
-  ]
-
 
   const peopleTeamMenus = [
-    {
-      to: "/profile-management",
-      label: "Profile Management",
-      active: pathname === "/profile-management",
-      icon: UsersRound,
-      submenus: [],
-    },
-    {
-      to: "/settings",
-      label: "Profile Settings",
-      active: pathname === "/settings",
-      icon: Settings2,
-      submenus: [],
-    },
-    {
-      to: "/travel-details",
-      label: "Travel Details",
-      active: pathname === "/travel-details",
-      icon: PlaneTakeoff,
-      submenus: [],
-    },
-    {
-      to: "/exit-clearance",
-      label: "Exit & Clearance",
-      active: pathname === "/exit-clearance",
-      icon: DoorOpen,
-      submenus: [],
-    },
-    {
-      to: "/create-employee",
-      label: "Employee Creation",
-      active: pathname === "/create-employee",
-      icon: UserRoundPlus,
-      submenus: [],
-    },
-    {
-      to: "/customise-employees",
-      label: "Customize Employee",
-      active: pathname === "/customise-employees",
-      icon: UserRoundCog,
-      submenus: [],
-    },
-    {
-      to: "/relocation",
-      label: "Relocation",
-      active: pathname === "/relocation",
-      icon: ArrowLeftRight,
-      submenus: [],
-    },
+    createMenu("", "People Team", Users, [
+      createMenu("/profile-management", "Profile Management"),
+      createMenu("/settings", "Profile Settings"),
+      createMenu("/travel-details", "Travel Details"),
+      createMenu("/exit-clearance", "Exit & Clearance"),
+      createMenu("/create-employee", "Employee Creation"),
+      createMenu("/customise-employees", "Customize Employee"),
+      createMenu("/relocation", "Relocation"),
+    ], pathname === "/profile-management"),
+    createMenu("", "Transfer Employee", ArrowLeftRight, [
+      createMenu("/internal", "Internal"),
+      createMenu("/external", "External"),
+    ], pathname === "/internal"),
   ];
 
-  const selfServiceHub = [
-    {
-      to: "/my-profile",
-      label: "My Profile",
-      active: pathname === "/my-profile",
-      icon: Users,
-      submenus: [],
-    },
-    {
-      to: "/my-team",
-      label: "My Team",
-      active: pathname === "/my-team",
-      icon: Users,
-      submenus: [],
-    },
-    {
-      to: "/calendar",
-      label: "Calendar",
-      active: pathname === "/calendar",
-      icon: Users,
-      submenus: [],
-    },
-    {
-      to: "/attendance",
-      label: "Attendance",
-      active: pathname === "/attendance",
-      icon: Users,
-      submenus: [],
-    },
-    {
-      to: "/leave-tracker",
-      label: "Leave Tracker",
-      active: pathname === "/leave-tracker",
-      icon: Users,
-      submenus: [],
-    },
-    {
-      to: "/files-data",
-      label: "Files & Data",
-      active: pathname === "/files-data",
-      icon: Users,
-      submenus: [],
-    },
-    {
-      to: "/my-travel-details",
-      label: "My Travel Details",
-      active: pathname === "/my-travel-details",
-      icon: Users,
-      submenus: [],
-    },
-    {
-      to: "/exit-employee",
-      label: "Exit",
-      active: pathname === "/exit-employee",
-      icon: Users,
-      submenus: [],
-    },
+  const selfServiceHubMenus = [
+    createMenu("", "Self Service Hub", UserRoundCheck, [
+      createMenu("/my-profile", "My Profile", Users),
+      createMenu("/my-team", "My Team", Users),
+      createMenu("/calendar", "Calendar", Users),
+      createMenu("/attendance", "Attendance", Users),
+      createMenu("/leave-tracker", "Leave Tracker", Users),
+      createMenu("/files-data", "Files & Data", Users),
+      createMenu("/my-travel-details", "My Travel Details", Users),
+      createMenu("/exit-employee", "Exit", Users),
+    ], pathname === "/internal"),
   ];
 
-  const taskManagement = [
+  const taskManagementMenus = [
+    createMenu("", "Task Management", ListTodo, [
+      createMenu("/my-task", "My Task"),
+      createMenu("/my-team", "My Team DTR"),
+      createMenu("/projects", "Project Board"),
+      createMenu("/attendence", "Time Management"),
+    ], pathname === "/my-task"),
+    createMenu("", "Leave Management", CalendarRange, [
+      createMenu("/leave-tracker", "Leave Tracker"),
+      createMenu("/leave-requests", "Leave Request"),
+      createMenu("/leave-calender", "Calendar"),
+      createMenu("/leave-history", "Leave History"),
+      createMenu("/leave-allotement", "Leave Allotment"),
+      createMenu("/leave-balance", "Holidays"),
+      createMenu("", "Settings", Settings2, [createMenu("/leave-type", "Leave Type")]),
+    ], pathname === "/leave-tracker"),
+  ];
 
-    {
-      label: "Task Management",
-      icon: ListTodo,
-      active: pathname === "/my-task",
-      submenus: [
-        {
-          label: "My Task",
-          to: "/my-task"
-        },
-        {
-          label: "My Team DTR",
-          to: "/my-team"
-        },
-        {
-          label: "Project Board",
-          to: "/projects"
-        },
-        {
-          label: "Time Management",
-          to: "/attendence"
-        }
-      ]
-    },
-    {
-      label: "Leave Management",
-      icon: CalendarRange,
-      active: pathname === "/leave-tracker",
-      submenus: [
-        {
-          label: "Leave Tracker",
-          to: "/leave-tracker"
-        },
-        {
-          label: "Leave Request",
-          to: "/leave-requests"
-        },
-        {
-          label: "Calendar",
-          to: "/leave-calender"
-        },
-        {
-          label: "Leave History",
-          to: "/leave-history"
-        },
-        {
-          label: "Leave Allotment",
-          to: "/leave-allotement"
-        },
-        {
-          label: "Holidays",
-          to: "/leave-balance"
-        },
-        {
-          label: "Settings",
-          icon: Settings2,
-          submenus: [
-            {
-              label: "Leave Type",
-              to: "/leave-type"
-            }
-          ]
-        }
-      ]
-    }
+  const talentSphereMenus = [
+    createMenu("", "Talent Sphere", UserRoundSearch, [
+      createMenu("/personnel-requisition", "Personnel Requisition"),
+      createMenu("/jobs", "Jobs"),
+      createMenu("/applicants", "Applicants"),
+      createMenu("/referrals", "Referrals"),
+    ], pathname === "/personnel-requisition"),
+  ];
 
+  const dailyTaskReportMenus = [
+    createMenu("", "Daily Task Report", FileChartColumnIncreasing, [
+      createMenu("/create-task", "Create Task"),
+      createMenu("/my-dtr", "My DTR"),
+    ], pathname === "/daily-task-report"),
+  ];
 
-  ]
+  const personalDevelopmentMenus = [
+    createMenu("", "Personal Development", UsersRound, [
+      createMenu("/learn", "Learn"),
+      createMenu("/career-planning", "Career Planning"),
+      createMenu("/succession-plan", "Succession Plan"),
+    ], pathname === "/learn"),
+  ];
+
+  const payrollAndAttendanceMenus = [
+    createMenu("", "Payroll & Attendance", CalendarClockIcon, [
+      createMenu("/payroll", "Payroll"),
+      createMenu("/attendance", "Attendance"),
+    ], pathname === "/payroll"),
+  ];
+
+  const peopleEngagementMenus = [
+    createMenu("", "People Engagement", Crosshair, [
+      createMenu("/announcement", "Announcement"),
+      createMenu("/recognition", "Recognition"),
+    ], pathname === "/announcement"),
+  ];
+
+  const performanceManagementMenus = [
+    createMenu("", "Performance Management", Award, [
+      createMenu("/employee-evaluation", "Employee Evaluation"),
+    ], pathname === "/employee-evaluation"),
+  ];
+
+  const reportsMenus = [
+    createMenu("/reports", "Reports", GalleryHorizontalEnd, [], pathname === "/reports"),
+  ];
+
   const menuList = [
-    {
-      groupLabel: "",
-      menus: commonMenus,
-    },
-    {
-      groupLabel: "",
-      // groupLabel: userRole === 1 || userRole === 3 ? "" : "People Team",
-      menus: userRole === 1 || userRole === 3 ? peopleTeamMenus : [
-        {
-          to: "",
-          label: "People Team",
-          active: pathname === "/profile-management",
-          icon: Users,
-          submenus: [
-            {
-              to: "/profile-management",
-              label: "Profile Management",
-            },
-            {
-              to: "/settings",
-              label: "Profile Settings",
-            },
-            {
-              to: "/travel-details",
-              label: "Travel Details",
-            },
-            {
-              to: "/exit-clearance",
-              label: "Exit & Clearance",
-            },
-            {
-              to: "/create-employee",
-              label: "Employee Creation",
-            },
-            {
-              to: "/customise-employees",
-              label: "Customize Employee",
-            },
-          ],
-        },
-        {
-          to: "",
-          label: "Transfer Employee",
-          active: pathname === "/internal",
-          icon: ArrowLeftRight,
-          submenus: [
-            {
-
-              to: "/internal",
-              label: "Internal",
-            },
-            {
-              to: "/external",
-              label: "External",
-            },
-          ],
-        },
-        {
-          href: "/relocation",
-          label: "Relocation",
-          active: pathname === "/relocation",
-          icon: ListRestart,
-          submenus: [],
-        },
-      ],
-    },
-    {
-      // groupLabel: userRole === 1 || userRole === 3 ? "" : "Self Service Hub",
-      menus: userRole === 1 || userRole === 2 || userRole === 4 || userRole === 3 ? selfServiceHub : [
-        {
-          to: "",
-          label: "Self Service Hub",
-          active: pathname === "/internal",
-          icon: UserRoundCheck,
-          submenus: [
-            {
-              to: "/my-profile",
-              label: "My Profile",
-              active: pathname === "/my-profile",
-              icon: Users,
-              submenus: [],
-            },
-            {
-              to: "/my-team",
-              label: "My Team",
-              active: pathname === "/my-team",
-              icon: Users,
-              submenus: [],
-            },
-            {
-              to: "/calendar",
-              label: "Calendar",
-              active: pathname === "/calendar",
-              icon: Users,
-              submenus: [],
-            },
-            {
-              to: "/attendance",
-              label: "Attendance",
-              active: pathname === "/attendance",
-              icon: Users,
-              submenus: [],
-            },
-            {
-              to: "/leave-tracker",
-              label: "Leave Tracker",
-              active: pathname === "/leave-tracker",
-              icon: Users,
-              submenus: [],
-            },
-            {
-              to: "/files-data",
-              label: "Files & Data",
-              active: pathname === "/files-data",
-              icon: Users,
-              submenus: [],
-            },
-            {
-              to: "/my-travel-details",
-              label: "My Travel Details",
-              active: pathname === "/my-travel-details",
-              icon: Users,
-              submenus: [],
-            },
-            {
-              to: "/exit-employee",
-              label: "Exit",
-              active: pathname === "/exit-employee",
-              icon: Users,
-              submenus: [],
-            },
-          ]
-        },
-      ],
-    }, {
-      groupLabel: "",
-      // groupLabel: userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4 ? "" : "Task Management",
-      menus: userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4 ? taskManagement : [
-        {
-          to: "",
-          label: "Task Management",
-          icon: ListTodo,
-          active: pathname === "/my-task",
-          submenus: [
-            {
-              label: "My Task",
-              to: "/my-task"
-            },
-            {
-              label: "My Team DTR",
-              to: "/my-team"
-            },
-            {
-              label: "Project Board",
-              to: "/projects"
-            },
-            {
-              label: "Time Management",
-              to: "/attendence"
-            }
-          ]
-        },
-        {
-          label: "Leave Management",
-          icon: CalendarRange,
-          active: pathname === "/leave-tracker",
-          submenus: [
-            {
-              label: "Leave Tracker",
-              to: "/leave-tracker"
-            },
-            {
-              label: "Leave Request",
-              to: "/leave-requests"
-            },
-            {
-              label: "Calendar",
-              to: "/leave-calender"
-            },
-            {
-              label: "Leave History",
-              to: "/leave-history"
-            },
-            {
-              label: "Leave Allotment",
-              to: "/leave-allotement"
-            },
-            {
-              label: "Holidays",
-              to: "/leave-balance"
-            },
-            {
-              label: "Settings",
-
-              submenus: [
-                {
-                  label: "Leave Type",
-                  to: "/leave-type"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          label: "Talent Sphere",
-          icon: UserRoundSearch,
-          active: pathname === "/personnel-requisition",
-          submenus: [
-            {
-              label: "Personnel Requisition",
-              to: "/personnel-requisition"
-            },
-            {
-              label: "Jobs",
-              to: "/jobs"
-            },
-            {
-              label: "Applicants",
-              to: "/applicants"
-            },
-            {
-              label: "Referrals",
-              to: "/referrals"
-            },
-          ]
-        },
-        {
-          label: "Performance Management",
-          icon: Award,
-          active: pathname === "/employee-evaluation",
-          submenus: [
-            {
-              label: "Employee Evaluation",
-              to: "/employee-evaluation"
-            },
-          ]
-        },
-        {
-          label: "Payroll & Attendance",
-          icon: CalendarClockIcon,
-          active: pathname === "/payroll",
-          submenus: [
-            {
-              label: "Payroll",
-              to: "/payroll"
-            },
-            {
-              label: "Attendance",
-              to: "/attendance"
-            },
-          ]
-        },
-        {
-          label: "Personnel Development",
-          icon: UsersRound,
-          active: pathname === "/learn",
-          submenus: [
-            {
-              label: "Learn",
-              to: "/learn"
-            },
-            {
-              label: "Career Planning",
-              to: "/career-planning"
-            },
-            {
-              label: "Succession Plan",
-              to: "/succession-plan"
-            },
-          ]
-        },
-        {
-          label: "People Enagement",
-          icon: Crosshair,
-          active: pathname === "/announcement",
-          submenus: [
-            {
-              label: "Announcement",
-              to: "/announcement"
-            },
-            {
-              label: "Recognition",
-              to: "/recognition"
-            },
-          ]
-        },
-        {
-          label: "Daily Task Report",
-          icon: FileChartColumnIncreasing,
-          active: pathname === "/daily-task-report",
-          submenus: [
-            {
-              label: "Create Task",
-              to: "/create-task"
-            },
-            {
-              label: "My DTR",
-              to: "/my-dtr"
-            },
-          ]
-        }
-
-      ]
-    },
-    {
-      groupLabel: "",
-      menus: reportsMenu,
-    },
-
-  ];
-
+    { groupLabel: "", menus: commonMenus },
+    userRolesMap.isPeopleTeam && { groupLabel: "", menus: peopleTeamMenus },
+    userRolesMap.isSelfServiceHub && { groupLabel: "", menus: selfServiceHubMenus },
+    userRolesMap.isTaskManagement && { groupLabel: "", menus: taskManagementMenus },
+    userRolesMap.isTalentSphere && { groupLabel: "", menus: talentSphereMenus },
+    userRolesMap.performanceManagementMenus && {groupLabel:"", menus: performanceManagementMenus},
+    userRolesMap.isPayrollAttendance && { groupLabel: "", menus: payrollAndAttendanceMenus },
+    userRolesMap.dailyTaskReportMenus && {groupLabel:"", menus: dailyTaskReportMenus},
+    userRolesMap.personalDevelopmentMenus && { groupLabel:"", menus: personalDevelopmentMenus},
+    { groupLabel: "", menus: peopleEngagementMenus },
+    userRolesMap.isReportsMenu && { groupLabel: "", menus: reportsMenus },
+  ].filter(Boolean);
 
   return menuList;
 }
 
 export default getMenuList;
-
