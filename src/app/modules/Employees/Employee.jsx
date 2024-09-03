@@ -4,7 +4,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle
-} from "../../../src/@/components/ui/card.jsx"
+} from "../../../components/ui/card.jsx"
 import { EmployeeColumns } from 'app/utils/Types/TableColumns';
 import TableCustom from 'components/TableCustom';
 import { UsersRound, Contact, UserRoundCheck } from 'lucide-react';
@@ -87,20 +87,29 @@ export default function Component() {
   };
 
   const Blocks = (blocks) => (
-    <div className="flex flex-col w-full gap-4 p-6">
+    <div className="flex flex-col w-full gap-4">
      
       <div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {blocks.map((block) => (
-            <div key={block.label} className="flex items-center gap-4 p-4 ">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+            <Card key={block.label} className="flex flex-col items-start gap-4 ">
+              <CardHeader className="flex flex-row items-center justify-between w-full">
+              
+              <div className="p-4">
+                <p className="font-medium">{block.label}</p>
+                </div>
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
                 <block.icon className="w-5 h-5 text-primary" />
               </div>
-              <div className="p-4 rounded-lg bg-muted">
-                <p className="text-sm text-muted-foreground">{block.label}</p>
-                <p className="text-2xl font-bold">{block.value}</p>
+              </CardHeader>
+             <CardContent>
+             <div className="p-4 ">
+                
+                <p className="text-3xl font-bold text-primary">{block.value}</p>
               </div>
-            </div>
+             </CardContent>
+              
+            </Card>
           ))}
         </div>
       </div>

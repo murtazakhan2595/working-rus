@@ -2,7 +2,7 @@ import { Label, PolarRadiusAxis, RadialBar, RadialBarChart, Legend } from "recha
 import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../../src/@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent,ChartLegend,
   ChartLegendContent } from "../../../../src/@/components/ui/chart";
 import { getEmployeeCustomList } from "app/hooks/general";

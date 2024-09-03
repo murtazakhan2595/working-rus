@@ -1,7 +1,7 @@
 
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "../../src/@/components/ui/dropdown-menu";
 import { Button } from "./button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../src/@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/card";
 import { Bell, Inbox, CalendarDays } from "lucide-react";
 
 const notifications = [
@@ -38,8 +38,8 @@ export default function UserNotification() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[400px] p-0">
-        <Card className="shadow-none border-0">
-          <CardHeader className="border-b px-6 py-4">
+        <Card className="border-0 shadow-none">
+          <CardHeader className="px-6 py-4 border-b">
             <CardTitle>Notifications</CardTitle>
             <CardDescription className="text-yellow-500">You have 3 unread notifications</CardDescription>
           </CardHeader>
@@ -48,7 +48,7 @@ export default function UserNotification() {
               {notifications.map((notification, index) => (
                 <div key={index} className="flex items-start gap-4 px-6 py-4 hover:bg-muted">
                   <div className={`flex h-8 w-8 items-center justify-center rounded-full ${notification.bgColor} ${notification.textColor}`}>
-                    <notification.icon className="h-5 w-5" />
+                    <notification.icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium leading-none">{notification.title}</p>
@@ -58,7 +58,7 @@ export default function UserNotification() {
               ))}
             </div>
           </CardContent>
-          <CardFooter className="border-t px-6 py-4">
+          <CardFooter className="px-6 py-4 border-t">
             <Button variant="secondary" size="sm">
               Mark all as read
             </Button>

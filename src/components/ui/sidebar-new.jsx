@@ -32,9 +32,9 @@ export function SidebarNew(userRole) {
           variant="link"
           asChild
         >
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex justify-start gap-2 justify-items-start">
             {/* <PanelsTopLeft className="w-6 h-6 mr-1" /> */}
-            <div className={cn(sidebar?.isOpen === false ? "-translate-x-0 opacity-100" : "translate-x-96 opacity-0 hidden") || "transition-[transform,opacity,display]"}>
+            <div className={cn(sidebar?.isOpen === false ? "-translate-x-0 opacity-100" : "translate-x-96 opacity-0 hidden") || " justify-start transition-[transform,opacity,display]"}>
             <MobileLogo />
             </div>
          

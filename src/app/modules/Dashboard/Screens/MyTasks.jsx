@@ -22,7 +22,7 @@ import {
   CardHeader,
   CardTitle,
   CardSubtitle,
-} from "../../../../src/@/components/ui/card";
+} from "../../../../components/ui/card.jsx";
 import { Button } from "../../../../components/ui/button";
 import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
 import * as React from "react";

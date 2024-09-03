@@ -32,7 +32,8 @@ export function CollapseMenuButton({
   label,
   active,
   submenus,
-  isOpen
+  isOpen,
+  userRole
 }) {
   const isSubmenuActive = submenus.some((submenu) => submenu.active);
   const [isCollapsed, setIsCollapsed] = useState(isSubmenuActive);
@@ -41,7 +42,7 @@ export function CollapseMenuButton({
     <Collapsible
       open={isCollapsed}
       onOpenChange={setIsCollapsed}
-      className="w-full"
+      className="w-full "
     >
       <CollapsibleTrigger
         className="[&[data-state=open]>div>div>svg]:rotate-180 mb-1"
@@ -49,7 +50,13 @@ export function CollapseMenuButton({
       >
         <Button
           variant={active ? "secondary" : "ghost"}
-          className="justify-start w-full h-10"
+          className={cn(
+            "justify-start w-full h-10 mb-1  hover:bg-plum-500 hover:text-plum-900",
+            active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : "",
+           
+             
+           
+          )}
         >
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center">
@@ -88,10 +95,14 @@ export function CollapseMenuButton({
           <Button
             key={index}
             variant={active ? "secondary" : "ghost"}
-            className="justify-start w-full h-10 mb-1"
+            className={cn(
+              "justify-start w-full h-10 mb-1  hover:bg-plum-500 hover:text-plum-900",
+              active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : "",
+              
+            )}
             asChild
           >
-            <Link to={to}>
+            <Link to={to} className="px-2 hover:bg-plum-500">
               <span className="ml-2 mr-4">
                 <Dot size={18} />
               </span>
@@ -118,7 +129,13 @@ export function CollapseMenuButton({
             <DropdownMenuTrigger asChild>
               <Button
                 variant={active ? "secondary" : "ghost"}
-                className="justify-start w-full h-10 mb-1"
+                className={cn(
+                  "justify-start w-full h-10 mb-1  hover:bg-plum-500 hover:text-plum-900",
+                  active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : "",
+                    isOpen
+                            ? "w-full" : "w-[75%]"
+                  
+                )}
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center">

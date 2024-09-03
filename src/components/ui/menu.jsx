@@ -51,13 +51,14 @@ const Menu = ({ isOpen, userRole }) => {
         {menus &&
           menus.map(({ to, label, icon: Icon, active, submenus }, index) =>
             submenus && submenus.length > 0 ? (
-              <div className="w-full" key={index}>
+              <div className="w-full " key={index}>
                 <CollapseMenuButton
                   icon={Icon}
                   label={label}
                   active={active}
                   submenus={submenus}
                   isOpen={isOpen}
+                  userRole={userRole}
                 />
               </div>
             ) : (
@@ -68,8 +69,12 @@ const Menu = ({ isOpen, userRole }) => {
                       <Button
                         variant={active ? "secondary" : "ghost"}
                         className={cn(
-                          "justify-start w-full h-10 mb-1",
-                          active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : ""
+                          "justify-start w-full h-10 mb-1  hover:bg-plum-500 hover:text-plum-900",
+                          active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : "",
+                         
+                            isOpen
+                            ? "w-full" : "w-[75%]"
+                         
                         )}
                         asChild
                       >

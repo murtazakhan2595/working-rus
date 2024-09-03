@@ -5,7 +5,7 @@ import { DashbaordJobApplicationColumns } from "app/modules/Dashboard/Screens/Se
 import { fetchJobPosts, getJobApplications, getJobApplicants } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../../src/@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
 import { Button } from 'components/ui/button';
 import TableCustom from './../../../../../components/TableCustom';
 import { Briefcase, Users, UserCheck, UserPlus } from "lucide-react";

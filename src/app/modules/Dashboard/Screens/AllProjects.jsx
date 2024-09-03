@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { EmployeeName } from "utils/getValuesFromTables";
-import { Card, CardHeader, CardContent, CardTitle} from "../../../../src/@/components/ui/card";
+import { Card, CardHeader, CardContent, CardTitle} from "../../../../components/ui/card";
 import { Button } from '../../../../src/@/components/ui/button';
 import { Table, TableRow,  TableBody, TableCell } from "../../../../src/@/components/ui/table";
-
+import { Avatar, AvatarImage, AvatarFallback } from "../../../../src/@/components/ui/avatar"
 import { TableCustom } from 'components/TableCustom';
 export default function AllProjects(){
 
@@ -81,14 +81,16 @@ const RenderProject = ({ project }) => {
               <TableCell className="w-full px-4 py-4">
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-2">
-                    <div className="w-[35.80px] h-9 rounded-[100px] justify-center items-center gap-2.5 inline-flex bg-gray-300 text-white">
-                      {`${project?.name.charAt(0).toUpperCase()}${project?.name.charAt(1).toUpperCase()}`}
-                    </div>
-                    <div className="h-[50px] flex-col justify-center gap-1 items-start inline-flex">
-                      <div className="w-[173px] text-[#323233] text-sm font-bold">
+                        <Avatar className=" h-14 w-14">
+                      <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
+                      <AvatarFallback className="flex items-center justify-center rounded-full border-plum-500 bg-plum-300">{`${project?.name.charAt(0).toUpperCase()}`}</AvatarFallback>
+                    </Avatar>
+                    
+                    <div className="inline-flex flex-col items-start justify-center gap-1 ">
+                      <div className="font-medium">
                         {project.name}
                       </div>
-                      <div className="text-[#989ba5] text-[11px] font-normal">
+                      <div   className="hidden text-sm text-muted-foreground md:inline">
                         Created By <EmployeeName value={project?.created_by} /> |{" "}
                         {moment(project?.start_date).format("DD-MM-YY")}
                       </div>
