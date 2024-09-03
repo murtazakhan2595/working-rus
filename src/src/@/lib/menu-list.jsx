@@ -57,8 +57,8 @@ export function getMenuList(pathname, userRole) {
   });
 
   const commonMenus = [
-    createMenu("/", "Dashboard", House),
     createMenu("/services", "Services", SquareStack),
+    createMenu("/", "Dashboard", House),
     
   ];
 
