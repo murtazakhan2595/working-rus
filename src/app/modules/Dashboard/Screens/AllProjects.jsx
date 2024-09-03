@@ -9,8 +9,9 @@ import { EmployeeName } from "utils/getValuesFromTables";
 import { Card, CardHeader, CardContent, CardTitle} from "../../../../components/ui/card";
 import { Button } from '../../../../src/@/components/ui/button';
 import { Table, TableRow,  TableBody, TableCell } from "../../../../src/@/components/ui/table";
-import { Avatar, AvatarImage, AvatarFallback } from "../../../../src/@/components/ui/avatar"
+// import { Avatar, AvatarImage, AvatarFallback } from "../../../../src/@/components/ui/avatar"
 import { TableCustom } from 'components/TableCustom';
+import Avatar from "components/ui/Avatar";
 export default function AllProjects(){
 
   const userProfile = useSelector((state) => state.user.userProfile);  
@@ -81,10 +82,12 @@ const RenderProject = ({ project }) => {
               <TableCell className="w-full px-4 py-4">
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-2">
-                        <Avatar className=" h-14 w-14">
-                      <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
-                      <AvatarFallback className="flex items-center justify-center rounded-full border-plum-500 bg-plum-300">{`${project?.name.charAt(0).toUpperCase()}`}</AvatarFallback>
-                    </Avatar>
+                  <Avatar
+                  src="/placeholder-user.jpg"
+                  alt="Avatar"
+                  fallbackText={`${project?.name.charAt(0).toUpperCase()}`}
+                  className="h-14 w-14"
+                />
                     
                     <div className="inline-flex flex-col items-start justify-center gap-1 ">
                       <div className="font-medium">
