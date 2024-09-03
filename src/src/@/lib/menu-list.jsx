@@ -130,7 +130,9 @@ export function getMenuList(pathname, userRole) {
       "Leave Management",
       CalendarRange,
       [
-        createMenu("/leave-tracker", "Leave Tracker"),
+        ...(userRole === 4
+          ? [createMenu("/leave-tracker", "Leave Tracker")]
+          : []),
         createMenu("/leave-requests", "Leave Request"),
         createMenu("/leave-calender", "Calendar"),
         createMenu("/leave-history", "Leave History"),
