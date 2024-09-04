@@ -29,9 +29,9 @@ function EmployeeDetailModal({
   return (
     <>
       <div className="contact-modal-screen">
-        <Modal isOpen={openModal} className="modal-success py-4 px-3">
+        <Modal isOpen={openModal} className="px-3 py-4 modal-success">
           <ModalHeader toggle={closeModal} tag="h4">
-            <span className="mb-0 fw-700">{getTitle(currentClick)}</span>
+            <h6 className="">{getTitle(currentClick)}</h6>
           </ModalHeader>
           <ModalBody>
             {currentClick === 1 && (

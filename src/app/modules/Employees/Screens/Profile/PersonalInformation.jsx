@@ -98,7 +98,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
               }}
             >
               {(props) => (
-                <Form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                   <div className="space-y-4">
                   <div className="space-y-2">
                       <ImageInput
@@ -117,7 +117,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                     </div>
                     {employeeId && (
                       <div className="space-y-2">
-                        <h6 className="mb-0 fw-700">
+                        <h6 className="">
                           {props.values.first_name} {props.values.last_name}
                         </h6>
                         <span className="opacity-65 fs-12">
@@ -279,19 +279,27 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                       />
                     </div>
                   </div>
-                  <hr />
-                  <div>
-                    <div md={6} className="text-left"></div>
-                    <div md="6" className="text-right">
-                      <CustomDarkButton
-                        onClick={() => {
-                          props.handleSubmit();
-                        }}
-                        label={isEditMode ? "Save" : "Next"}
-                      />
+                  <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
+                      <div className="flex justify-end space-x-4">
+                       
+                        <Button
+                          type="submit"
+                          size="lg"
+                          variant="default"
+                          onClick={() => {
+                            props.handleSubmit();
+                          }}
+                        >
+                          {isEditMode ? 'Save' : 'Next'}
+                        </Button>
+
+                      </div>
                     </div>
+                  <div>
+                  
+                    
                   </div>
-                </Form>
+                </form>
               )}
             </Formik>
           </div>

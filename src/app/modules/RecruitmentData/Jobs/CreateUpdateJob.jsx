@@ -89,10 +89,10 @@ const JobForm = forwardRef(
                 }}
               >
                 {(props) => (
-                  <Form onSubmit={props.handleSubmit}>
+                  <form onSubmit={props.handleSubmit}>
                     <Row>
                       <Col md="12">
-                        <h5 className="fw-700 mb-3 mt-4">Details</h5>
+                        <h5 className="mt-4 mb-3 fw-700">Details</h5>
                       </Col>
                       <Col md="6">
                         <TextInput
@@ -271,7 +271,7 @@ const JobForm = forwardRef(
                         />
                       </Col>
                       <Col md="12">
-                        <h5 className="fw-700 mb-3 mt-4">Description</h5>
+                        <h5 className="mt-4 mb-3 fw-700">Description</h5>
                       </Col>
                       <Col md="12">
                         <TextAreaInput
@@ -321,7 +321,7 @@ const JobForm = forwardRef(
                         </Button>
                       </Col>
                     </Row>
-                  </Form>
+                  </form>
                 )}
               </Formik>
             </Col>
@@ -393,7 +393,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
                 <CardHeader>
                   <Row>
                     <Col lg={10}>
-                      <div className="h4 mb-0 d-flex align-items-center">
+                      <div className="mb-0 h4 d-flex align-items-center">
                         <i className="nav-icon fas fa-id-card-alt" />
                         <span className="ml-2 fw-700">
                           {id ? "Update" : "Add New"} Job
@@ -403,7 +403,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
                     <Col lg={2}>
                       <Link
                         type="button"
-                        className="btn btn-light bg-transparent fw-700"
+                        className="bg-transparent btn btn-light fw-700"
                         to="/jobs"
                       >
                         <span style={{ display: "inline-block" }}>Go Back</span>

@@ -196,7 +196,7 @@ const CreateLeaveRequest = ({
             <CardHeader>
               <Row>
                 <Col lg={10}>
-                  <div className="h4 mb-0 d-flex align-items-center">
+                  <div className="mb-0 h4 d-flex align-items-center">
                     <i className="nav-icon fas fa-id-card-alt" />
                     <span className="ml-2 fw-700">New Leave Request</span>
                   </div>
@@ -204,7 +204,7 @@ const CreateLeaveRequest = ({
                 <Col lg={2}>
                   <Link
                     type="button"
-                    className="btn btn-light bg-transparent fw-700"
+                    className="bg-transparent btn btn-light fw-700"
                     to="/leave-tracker"
                   >
                     <span style={{ display: "inline-block" }}>Go Back</span>
@@ -245,8 +245,8 @@ const CreateLeaveRequest = ({
                         }}
                       >
                         {(props) => (
-                          <Form onSubmit={props.handleSubmit}>
-                            <h2 className="text-baseGray font-lato text-lg font-semibold">
+                          <form onSubmit={props.handleSubmit}>
+                            <h2 className="text-lg font-semibold text-baseGray font-lato">
                               Application Date
                             </h2>
                             {/* {console.log(props.values)} */}
@@ -267,7 +267,7 @@ const CreateLeaveRequest = ({
                                 />
                               </Col>
                             </Row>
-                            <h2 className="text-baseGray font-lato text-lg font-semibold">
+                            <h2 className="text-lg font-semibold text-baseGray font-lato">
                               Employee Details
                             </h2>
                             <Row>
@@ -365,7 +365,7 @@ const CreateLeaveRequest = ({
                                 />
                               </Col>
                             </Row>
-                            <h2 className="text-baseGray font-lato text-lg font-semibold">
+                            <h2 className="text-lg font-semibold text-baseGray font-lato">
                               Leave Details
                             </h2>
                             <Row>
@@ -550,7 +550,7 @@ const CreateLeaveRequest = ({
                                 </Button>
                               </Col>
                             </Row>
-                          </Form>
+                          </form>
                         )}
                       </Formik>
                     </Col>

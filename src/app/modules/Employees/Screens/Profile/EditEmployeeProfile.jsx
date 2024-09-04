@@ -45,7 +45,7 @@ const EditEmployeeProfile = () => {
             <CardHeader>
               <Row>
                 <Col lg={12}>
-                  <h4 className="ml-2 fw-700">{getTitle()}</h4>
+                  <h4 className="">{getTitle()}</h4>
                 </Col>
               </Row>
             </CardHeader>

@@ -85,10 +85,10 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
                   }}
                 >
                   {(props) => (
-                    <Form onSubmit={props.handleSubmit}>
+                    <form onSubmit={props.handleSubmit}>
                       <Row className="m-0">
                         <Col md="12">
-                          <h5 className="fw-700 mb-3 mt-4">List Titile</h5>
+                          <h5 className="mt-4 mb-3 fw-700">List Titile</h5>
                         </Col>
                         <Col md="12">
                           <TextInput
@@ -120,7 +120,7 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
                           </Button>
                         </Col>
                       </Row>
-                    </Form>
+                    </form>
                   )}
                 </Formik>
               </Col>

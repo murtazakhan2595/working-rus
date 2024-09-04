@@ -146,10 +146,10 @@ const IdentificationInformation = ({
               }}
             >
               {(props) => (
-                <Form onSubmit={props.handleSubmit}>
+                <form onSubmit={props.handleSubmit}>
                   <Row>
                     <Col md="12">
-                      <h5 className="fw-700 mb-3 mt-4">ID Details</h5>
+                      <h5 className="mt-4 mb-3 fw-700">ID Details</h5>
                     </Col>
                     <Col md="6">
                       <TextInput
@@ -622,7 +622,7 @@ const IdentificationInformation = ({
                       />
                     </Col>
                   </Row>
-                </Form>
+                </form>
               )}
             </Formik>
           </Col>

@@ -95,12 +95,12 @@ export default function Component() {
   };
 
   const Blocks = (blocks) => (
-    <div className="flex flex-row items-center gap-2">
+    <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center lg:flex-row lg:items-center md:flex-row md:items-center">
 
       
 
         {blocks.map((block) => (
-          <div key={block.label} className="flex flex-row items-center justify-start gap-2">
+          <div key={block.label} className="flex flex-row items-center justify-start gap-2 ">
             <div className="flex items-center justify-center p-4 rounded-full bg-mauve-200">
               <block.icon className="h-7 w-7 text-plum-1100" aria-hidden="true"/>
             </div>

@@ -12,12 +12,12 @@ const PersonalInformation = ({
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
-      <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
+      <div className="w-full p-6 mb-6 bg-white border rounded-lg shadow">
         <div className="flex justify-between">
-          <h2 className="text-xl">Personal Details</h2>
+          <h2 className="text-lg">Personal Details</h2>
           {isEditable && (
             <div
-              className="flex gap-4 items-center"
+              className="flex items-center gap-4"
               onClick={() => {
                 setShowPersonalDetailCard(true);
               }}
@@ -27,7 +27,7 @@ const PersonalInformation = ({
           )}
         </div>
         <hr />
-        <div className="flex flex-col lg:flex-row py-4">
+        <div className="flex flex-col py-4 lg:flex-row">
           {/* Image Section */}
           <div className="md:w-[25%] w-full flex flex-col items-start mb-6 lg:mb-0">
             {userData?.profile_picture?.file || userData?.profile_picture ? (
@@ -36,13 +36,13 @@ const PersonalInformation = ({
                   userData?.profile_picture?.file || userData?.profile_picture
                 }
                 alt="Profile"
-                className="w-24 h-24 rounded-full mb-4"
+                className="w-24 h-24 mb-4 rounded-full"
               />
             ) : (
               <div className="opacity-70">Profile</div>
             )}
 
-            <div className="font-semibold text-lg">
+            <div className="text-lg font-semibold">
               {userData.personalInformation?.first_name}{" "}
               {userData.personalInformation?.last_name}
             </div>
@@ -51,9 +51,9 @@ const PersonalInformation = ({
             </div>
           </div>
           {/* Personal Info Sections */}
-          <div className="w-full flex flex-col lg:flex-row gap-8 overflow-visible no-scrollbar whitespace-break-spaces">
+          <div className="flex flex-col w-full gap-8 overflow-visible lg:flex-row no-scrollbar whitespace-break-spaces">
             {personalInfo.map((infoGroup, index) => (
-              <div key={index} className="w-full flex flex-col gap-4">
+              <div key={index} className="flex flex-col w-full gap-4">
                 {infoGroup.map((info) => (
                   <div className="flex w-full gap-3" key={info.title}>
                     <div className="opacity-60 w-[150px] lg:w-[40%]">

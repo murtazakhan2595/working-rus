@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { div, Col, Form } from "reactstrap";
+import { Form } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
@@ -7,15 +7,16 @@ import {
   saveEmployeeContactInfoData,
 } from "app/hooks/employee";
 import {
-  CustomLightOutlineButton,
-  CustomDarkButton,
+
   TextInput,
   PhoneNumberInput,
   TextAreaInput,
 } from "components/form-control.jsx";
-import {PageLoader} from "components";
+import { PageLoader } from "components";
 import { getContactInfo } from "app/utils/MappingObjects/mapEmployeeData.jsx";
-import {validationEmployeeContactInfoFormSchema} from 'app/utils/FormSchema/employeeFormSchema'
+import { validationEmployeeContactInfoFormSchema } from 'app/utils/FormSchema/employeeFormSchema'
+import { Button } from "components/ui/button";
+
 
 const ContactInformation = ({
   nextstep,
@@ -51,130 +52,125 @@ const ContactInformation = ({
     <>
       {isLoading ? (
         <div>
-          <Col lg={12}>
+          <div className="space-y-4">
             <PageLoader />
-          </Col>
+          </div>
         </div>
       ) : (
-        <Formik
-          initialValues={contactInfo}
-          ref={formRef}
-          onSubmit={(values, { resetForm }) => {
-            handleSubmit(values, resetForm);
-          }}
-          validate={(values) => {
-            const errors = validationEmployeeContactInfoFormSchema(values);
-            return errors;
-          }}
-        >
-          {(props) => (
-            <Form onSubmit={props.handleSubmit}>
-              <h2 className="text-[22px] font-lato font-bold text-[#323333] text-left">
-                Emergency Contact
-              </h2>
-              <div>
-                <Col md="6">
-                  <PhoneNumberInput
-                    name="emergency_phone_no"
-                    error={props.errors.emergency_phone_no}
-                    touch={props.touched.emergency_phone_no}
-                    value={props.values.emergency_phone_no}
-                    countryCode={props.values.emergency_country_code}
-                    countryCodeName={'emergency_country_code'}
-                    label="Emergency Contact"
-                    required
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-                <Col md="6">
-                  <TextInput
-                    name="emergency_first_name"
-                    error={props.errors.emergency_first_name}
-                    touch={props.touched.emergency_first_name}
-                    value={props.values.emergency_first_name}
-                    label="Full Name"
-                    required
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-                <Col md="6">
-                  <TextInput
-                    name="emergency_relation"
-                    error={props.errors.emergency_relation}
-                    touch={props.touched.emergency_relation}
-                    value={props.values.emergency_relation}
-                    label="Relation"
-                    required
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-              </div>
-              <h2 className="text-[22px] font-lato font-bold text-[#323333] text-left">
-                Permanent Address
-              </h2>
-              <div>
-                <Col md="12">
-                  <TextAreaInput
-                    name="residential_address"
-                    error={props.errors.residential_address}
-                    touch={props.touched.residential_address}
-                    value={props.values.residential_address}
-                    label="Permanent Address"
-                    required
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-              </div>
-              <h2 className="text-[22px] font-lato font-bold text-[#323333] text-left">
-                Present Address
-              </h2>
-              <div>
-                <Col md="12">
-                  <TextAreaInput
-                    name="current_address"
-                    error={props.errors.current_address}
-                    touch={props.touched.current_address}
-                    value={props.values.current_address}
-                    label="Current Address"
-                    required
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                  />
-                </Col>
-              </div>
-              <hr />
-              <div>
-                <Col md={6} className="text-left">
-                  {!isEditMode &&
-                    <CustomLightOutlineButton
-                      onClick={() => {
-                        prevStep()
-                      }}
-                      label={'Back'}
-                    />
+        <div className="space-y-4">
+          <Formik
+            initialValues={contactInfo}
+            ref={formRef}
+            onSubmit={(values, { resetForm }) => {
+              handleSubmit(values, resetForm);
+            }}
+            validate={(values) => {
+              const errors = validationEmployeeContactInfoFormSchema(values);
+              return errors;
+            }}
+          >
+            {(props) => (
+              <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                <h6 className="text-2xl text-secondary-foreground">
+                  Emergency Contact
+                </h6>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <PhoneNumberInput
+                        name="emergency_phone_no"
+                        error={props.errors.emergency_phone_no}
+                        touch={props.touched.emergency_phone_no}
+                        value={props.values.emergency_phone_no}
+                        countryCode={props.values.emergency_country_code}
+                        countryCodeName={'emergency_country_code'}
+                        label="Emergency Contact"
+                        required
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <TextInput
+                        name="emergency_first_name"
+                        error={props.errors.emergency_first_name}
+                        touch={props.touched.emergency_first_name}
+                        value={props.values.emergency_first_name}
+                        label="Full Name"
+                        required
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <TextInput
+                        name="emergency_relation"
+                        error={props.errors.emergency_relation}
+                        touch={props.touched.emergency_relation}
+                        value={props.values.emergency_relation}
+                        label="Relation"
+                        required
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </div>
 
-                  }</Col>
-                <Col md="6" className="text-right">
-                  <CustomDarkButton
-                    onClick={() => {
-                      props.handleSubmit();
-                    }}
-                    label={isEditMode ? 'Save' : 'Next'}
-                  />
-                </Col>
-              </div>
-            </Form>
-          )}
-        </Formik>
+                    <div className="space-y-2">
+                      <TextAreaInput
+                        name="residential_address"
+                        error={props.errors.residential_address}
+                        touch={props.touched.residential_address}
+                        value={props.values.residential_address}
+                        label="Permanent Address"
+                        required
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <TextAreaInput
+                        name="current_address"
+                        error={props.errors.current_address}
+                        touch={props.touched.current_address}
+                        value={props.values.current_address}
+                        label="Current Address"
+                        required
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </div>
+                    <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
+                      <div className="flex justify-end space-x-4">
+                        {!isEditMode &&
+                          <Button variant="outline" size="lg" onClick={() => {
+                            prevStep()
+                          }}
+                          >Back</Button>
+                        }
+                        <Button
+                          type="submit"
+                          size="lg"
+                          variant="default"
+                          onClick={() => {
+                            props.handleSubmit();
+                          }}
+                        >
+                          {isEditMode ? 'Save' : 'Next'}
+                        </Button>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            )}
+          </Formik>
+        </div>
       )}
     </>
   );
