@@ -125,7 +125,7 @@ function StatItem({ icon: Icon, label, value }) {
       <Icon className="h-7 w-7 text-plum-1100" aria-hidden="true" />
       </div>
        
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-start">
       <div className="text-2xl font-bold leading-none tabular-nums">{value}</div>
         <div className="font-xl medium text-muted-foreground">{label}</div>
       </div>

@@ -87,33 +87,30 @@ export default function Component() {
   };
 
   const Blocks = (blocks) => (
-    <div className="flex flex-col w-full gap-4">
-     
-      <div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {blocks.map((block) => (
-            <Card key={block.label} className="flex flex-col items-start gap-4 ">
-              <CardHeader className="flex flex-row items-center justify-between w-full">
-              
-              <div className="p-4">
-                <p className="font-medium">{block.label}</p>
-                </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-                <block.icon className="w-5 h-5 text-primary" />
+    <div className="flex flex-row items-center gap-2">
+
+      
+
+        {blocks.map((block) => (
+          <div key={block.label} className="flex flex-row items-center justify-start gap-2">
+            <div className="flex items-center justify-center p-4 rounded-full bg-mauve-200">
+              <block.icon className="h-7 w-7 text-plum-1100" aria-hidden="true"/>
+            </div>
+            <div className="flex flex-col items-start">
+              <div className="text-2xl font-bold leading-none tabular-nums">
+              {block.value}     
               </div>
-              </CardHeader>
-             <CardContent>
-             <div className="p-4 ">
-                
-                <p className="text-3xl font-bold text-primary">{block.value}</p>
+              <div className="font-xl medium text-muted-foreground">
+                         {block.label}
               </div>
-             </CardContent>
-              
-            </Card>
-          ))}
-        </div>
+            </div>
+            <div>
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
+  
+
   );
 
   const filteredEmployees = employeeData.results.filter(employee => {
@@ -130,15 +127,15 @@ export default function Component() {
         { label: 'Managers', value: totalManagers, icon: Contact },
         { label: 'Active Employees', value: activeEmployee, icon: UserRoundCheck },
       ])}
-     
-<Tabs defaultValue="all" className="w-full" onValueChange={setSelectedStatus}>
-            <div className="flex flex-row justify-between">
-            <TabsList className="inline-flex items-center justify-center p-1 bg-white rounded-lg h-9 text-mauve-900">
-              <TabsTrigger value="all">All Employees</TabsTrigger>
-              <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="inactive">Inactive</TabsTrigger>
-            </TabsList>
-            <FilterInput
+
+      <Tabs defaultValue="all" className="w-full" onValueChange={setSelectedStatus}>
+        <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+          <TabsList className="inline-flex items-center justify-center p-1 bg-white rounded-lg h-9 text-mauve-900">
+            <TabsTrigger value="all">All Employees</TabsTrigger>
+            <TabsTrigger value="active">Active</TabsTrigger>
+            <TabsTrigger value="inactive">Inactive</TabsTrigger>
+          </TabsList>
+          <FilterInput
             filters={[
               { type: 'search', placeholder: 'Search by ID and Name', name: 'id_and_first_name' },
               { type: 'select-one', option: departments, name: 'department_name', placeholder: 'Department' },
@@ -147,16 +144,16 @@ export default function Component() {
             ]}
             onChange={handleFilterChange}
           />
-            </div>
-           
-            {['all', 'active', 'inactive'].map((status) => (
-              <TabsContent key={status} value={status}>
-                {isLoading ? (
-                  <PageLoader />
-                ) : (
-                  <Card>
-                    <CardContent>
-                    <TableCustom
+        </div>
+
+        {['all', 'active', 'inactive'].map((status) => (
+          <TabsContent key={status} value={status}>
+            {isLoading ? (
+              <PageLoader />
+            ) : (
+              <Card>
+                <CardContent>
+                  <TableCustom
                     data={filteredEmployees}
                     columns={EmployeeColumns}
                     pagination={true}
@@ -166,16 +163,16 @@ export default function Component() {
                       sizePerPage: options.sizePerPage,
                       onPageChange: onPageChange,
                     }}
-                  
+
                   />
-                    </CardContent>
-                  </Card>
-                  
-                )}
-              </TabsContent>
-            ))}
-          </Tabs>
-      
+                </CardContent>
+              </Card>
+
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
+
     </div>
   );
 }

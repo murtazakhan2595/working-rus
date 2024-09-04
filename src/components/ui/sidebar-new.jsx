@@ -5,14 +5,14 @@ import { cn } from "../../src/@/lib/utils";
 import { useStore } from "../../app/hooks/use-store";
 import { Button } from "./button";
 import { useSidebarToggle } from "../../app/hooks/use-sidebar-toggle";
-import  SidebarToggle  from "../../components/ui/sidebar-toggle";
+import SidebarToggle from "../../components/ui/sidebar-toggle";
 import Menu from "../../components/ui/menu";
 import NewLogo from './../../assets/images/NewLogo';
 import MobileLogo from './../../assets/images/mobile-logo';
-export function SidebarNew({userRole}) {
+export function SidebarNew({ userRole }) {
   const sidebar = useStore(useSidebarToggle, (state) => state);
-  
-  if(!sidebar) return null;
+
+  if (!sidebar) return null;
 
   return (
     <aside
@@ -31,12 +31,12 @@ export function SidebarNew({userRole}) {
           variant="link"
           asChild
         >
-          <Link href="/" className="flex justify-start gap-2 justify-items-start">
+          <Link href="/" className="flex justify-start gap-2 justify-items-start justify-self-start logo">
             {/* <PanelsTopLeft className="w-6 h-6 mr-1" /> */}
             <div className={cn(sidebar?.isOpen === false ? "-translate-x-0 opacity-100" : "translate-x-96 opacity-0 hidden") || " justify-start transition-[transform,opacity,display]"}>
-            <MobileLogo />
+              <MobileLogo />
             </div>
-         
+
             <h1
               className={cn(
                 "font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
@@ -45,12 +45,11 @@ export function SidebarNew({userRole}) {
                   : "translate-x-0 opacity-100"
               )}
             >
-              <NewLogo/>
+              <NewLogo />
             </h1>
           </Link>
         </Button>
-        
-        <Menu isOpen={sidebar?.isOpen} userRole={userRole}/>
+        <Menu isOpen={sidebar?.isOpen} userRole={userRole} />
       </div>
     </aside>
   );

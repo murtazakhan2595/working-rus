@@ -1,264 +1,541 @@
 
-import * as React from "react";
-import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "../../src/@/components/ui/sheet"
-import { Button } from "../../components/ui/button"
-import { Label } from "../../src/@/components/ui/label"
-import { Input } from "../../components/ui/input"
-import { Textarea } from "../../src/@/components/ui/textarea"
-import { Separator } from "../../src/@/components/ui/separator"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../../src/@/components/ui/select"
-import { Popover, PopoverTrigger, PopoverContent } from "../../src/@/components/ui/popover"
-import { CalendarDaysIcon, Calendar } from "../../src/@/components/ui/calendar"
 
-export default function SheetOnBorading() {
-  const [isFullScreen, setIsFullScreen] = React.useState(false)
+
+import { Button } from "../../components/ui/button"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../src/@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../src/@/components/ui/select"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../../src/@/components/ui/sheet"
+
+import { Calendar } from "../../src/@/components/ui/calendar"
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "../../src/@/components/ui/form"
+import { CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import React, { useEffect, useState } from "react";
+
+
+import { connect } from "react-redux";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { Formik } from "formik";
+import { Link, useNavigate } from "react-router-dom";
+import { EmployeeInformation } from "app/utils/Types/Employee.jsx";
+import { getEmployeeInformation } from "app/utils/MappingObjects/mapEmployeeData.jsx";
+import {
+  getEmployeeData,
+  getNewEmployeeCode,
+  saveEmployeeWorkInformationData,
+} from "app/hooks/employee.jsx";
+import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
+import { validationEmployeeInfoFormSchema } from "app/utils/FormSchema/employeeFormSchema.jsx";
+import {
+  HeadOfDepartmentOptions,
+  employeeStatus,
+  jobRoles,
+  workplaceTypes,
+  UserRoles,
+} from "data/Data";
+
+import { countryOptions } from "data/Data";
+import {
+  EmailInput,
+  PhoneNumberInput,
+  TextAreaInput,
+  TextInput,
+} from "components/form-control.jsx";
+
+
+import {
+  SelectComponent,
+  SelectMultiInputComponent,
+  DateInput,
+} from "components/form-control";
+
+
+function getManagersStringSelected(managers) {
+  if (managers) {
+    const matchingObjects = managers.map((obj) => {
+      return obj.value;
+    });
+    return matchingObjects.join(", ");
+  }
+  return [];
+}
+const SheetOnBorading = ({
+  isEditMode,
+  nextStep,
+  setShowSuccessModal,
+  setEmail,
+  id,
+  employees,
+  designations,
+  departments,
+  managers,
+}) => {
+  const formRef = React.createRef();
+  const [date, setDate] = useState();
+  const [isOpen, setIsOpen] = useState(false)
+  
+  let dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState(EmployeeInformation);
+  const [empId, setEmpId] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
+  const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        if (id) {
+          const response = await getEmployeeData(id);
+          const employeeData = await getEmployeeInformation(response);
+          setFormData(employeeData);
+          setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
+          validateEmail(employeeData.work_email);
+          validateUsername(employeeData.username);
+        } else {
+          const response = await getNewEmployeeCode();
+          setEmpId(`TXB-${response.toString().padStart(4, "0")}`);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const validateEmail = (email) => {
+    const employee = employees.filter((emp) => emp.work_email === email && emp.value !== id);
+    if (employee && employee.length > 0) {
+      setEmailAlreadyExist(true);
+    } else {
+      setEmailAlreadyExist(false);
+    }
+  };
+  const validateUsername = (username) => {
+    const employee = employees.filter((emp) => emp.label === username && emp.value !== id);
+    if (employee && employee.length > 0) {
+      setUsernameAlreadyExist(true);
+    } else {
+      setUsernameAlreadyExist(false);
+    }
+  };
+
+  const handleSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      // Check if an API call is already in progress
+      data.indirect_report = data?.indirect_report
+        ? getManagersStringSelected(data.indirect_report)
+        : "";
+      const response = await saveEmployeeWorkInformationData(data.id, data);
+      if (response) {
+        dispatch(fetchEmployees());
+        dispatch(fetchReportingManagers());
+        if (data.id) {
+          toast.success("Employee Updated Successfully!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          if (isEditMode) nextStep();
+          else navigate("/profile-management");
+        } else {
+          setShowSuccessModal && setShowSuccessModal(true);
+        }
+      }
+    } catch (error) {
+      setFormData(data);
+      if (
+        error.response &&
+        error.response.data.username[0] ===
+          "A user with that username already exists."
+      ) {
+        toast.error("A user with that username already exists.", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } else {
+        console.error("API Error:", error);
+        toast.error(error, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="default">Add Employee</Button>
       </SheetTrigger>
-      <SheetContent className="max-h-[100vh] overflow-auto sm:max-w-4xl">
-        <SheetHeader>
-          <SheetTitle>Add Employee</SheetTitle>
-          <Button
-            onClick={() => setIsFullScreen(!isFullScreen)}
-            variant="outline"
-          >
-            {isFullScreen ? "Exit Full Screen" : "Full Screen"}
-          </Button>
-          <SheetDescription>Fill out the form to add a new employee to the system.</SheetDescription>
-        </SheetHeader>
-        <form>
-          <div className="grid grid-cols-2 gap-4 py-4">
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="employee-id">Employee ID</Label>
-                <Input id="employee-id" defaultValue="TXB-0368" disabled />
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="username">User Name</Label>
-                <Input id="username" placeholder="Enter user name" />
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="first-name">First Name</Label>
-                <Input id="first-name" placeholder="Enter first name" />
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="last-name">Last Name</Label>
-                <Input id="last-name" placeholder="Enter last name" />
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="Enter email" />
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="Enter password" />
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="contact">Contact No.</Label>
-                <Input id="contact" placeholder="Enter contact number" />
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="address">Address</Label>
-                <Textarea id="address" placeholder="Enter address" />
-              </div>
+      <SheetContent side="right" className="w-full p-0 sm:max-w-4xl ">
+        <div className="flex flex-col h-full">
+          <div className="flex-grow overflow-y-auto">
+            <div className="p-6">
+              <SheetHeader>
+                <SheetTitle>Add Employee</SheetTitle>
+              </SheetHeader>
+              <Formik
+              initialValues={formData}
+              innerRef={formRef}
+              onSubmit={(values, { resetForm }) => {
+                handleSubmit(values, resetForm);
+              }}
+              validate={(values) => {
+                const errors = validationEmployeeInfoFormSchema(
+                  values,
+                  isEditMode
+                );
+                if (values.work_email && emailAlreadyExist) {
+                  errors.work_email = "Email already exist";
+                }
+                if (values.username && usernameAlreadyExist) {
+                  errors.username = "Username already exist";
+                }
+                return errors;
+              }}
+            >
+              {(props) => (
+              <Form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Employee Details</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                      <TextInput
+                        name={"employeeId"}
+                        error={props.errors?.employeeId}
+                        touch={props.touched?.employeeId}
+                        value={empId}
+                        label={"Employee ID"}
+                        required={true}
+                        disabled={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                    <TextInput
+                            name={"username"}
+                            error={props.errors?.username}
+                            touch={props.touched.username}
+                            value={props.values.username}
+                            label={"User Name"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                              validateUsername(value);
+                            }}
+                            />
+                    </div>
+                    <div className="space-y-2">
+                      <TextInput
+                            name={"first_name"}
+                            error={props.errors?.first_name}
+                            touch={props.touched.first_name}
+                            value={props.values.first_name}
+                            label={"First Name"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                      <TextInput
+                            name={"last_name"}
+                            error={props.errors?.last_name}
+                            touch={props.touched.last_name}
+                            value={props.values.last_name}
+                            label={"Last Name"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <EmailInput
+                            name={"work_email"}
+                            error={props.errors?.work_email}
+                            touch={props.touched.work_email}
+                            value={props.values.work_email}
+                            label={"Email"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                              setEmail && setEmail(value);
+                              validateEmail(value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <div>
+                    <Label htmlFor="password">
+                              <span className="text-red-600">* </span>Password
+                            </Label>
+                            <Input
+                              type="password"
+                              maxLength="20"
+                              id="password"
+                              name="password"
+                              autoComplete="Off"
+                              placeholder={"Enter User Name"}
+                              onChange={(option) => {
+                                props.handleChange("password")(option);
+                              }}
+                              value={
+                                props.values?.password?.length <= 20
+                                  ? props.values.password
+                                  : ""
+                              }
+                              className={
+                                props.errors?.password && props.touched.password
+                                  ? "is-invalid"
+                                  : ""
+                              }
+                            />
+                            {props.errors?.password &&
+                              props.touched.password && (
+                                <div className="invalid-feedback">
+                                  {props.errors?.password}
+                                </div>
+                              )}
+                          </div>
+                    </div>
+                    <div className="space-y-2">
+                      <PhoneNumberInput
+                            name={"mobile_no"}
+                            error={props.errors?.mobile_no}
+                            touch={props.touched.mobile_no}
+                            value={props.values.mobile_no}
+                            label={"Contact no."}
+                            countryCode={props.values.country_code}
+                            countryCodeName={"country_code"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <TextAreaInput
+                            name={"residential_address"}
+                            error={props.errors?.residential_address}
+                            touch={props.touched?.residential_address}
+                            value={props.values?.residential_address}
+                            label={"Address"}
+                            required={true}
+                            maxRows={1}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Work Information</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <SelectComponent
+                          name={"department_name"}
+                          options={departments}
+                          error={props.errors?.department_name}
+                          touch={props.touched.department_name}
+                          value={props.values.department_name}
+                          label={"Department"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"employee_location"}
+                          options={countryOptions}
+                          error={props.errors?.employee_location}
+                          touch={props.touched.employee_location}
+                          value={props.values.employee_location}
+                          required={true}
+                          label={"Employee Location"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"department_position"}
+                          options={designations}
+                          error={props.errors?.department_position}
+                          touch={props.touched.department_position}
+                          value={props.values.department_position}
+                          label={"Designation"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"user_role"}
+                          options={UserRoles}
+                          error={props.errors?.user_role}
+                          touch={props.touched.user_role}
+                          value={props.values.user_role}
+                          required={true}
+                          label={"Role"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                            name={"employee_type"}
+                            options={jobRoles}
+                            error={props.errors?.employee_type}
+                            touch={props.touched.employee_type}
+                            value={props.values.employee_type}
+                            required={true}
+                            label={"Employee Type"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                            name={"employee_status"}
+                            options={employeeStatus}
+                            error={props.errors?.employee_status}
+                            touch={props.touched.employee_status}
+                            value={props.values.employee_status}
+                            required={true}
+                            label={"Employee status"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"employee_work_type"}
+                          options={workplaceTypes}
+                          error={props.errors?.employee_work_type}
+                          touch={props.touched.employee_work_type}
+                          value={props.values.employee_work_type}
+                          required={true}
+                          label={"Employee Work Type"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"direct_report"}
+                          options={managers}
+                          error={props.errors?.direct_report}
+                          touch={props.touched.direct_report}
+                          value={props.values.direct_report}
+                          label={"Direct Report"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectMultiInputComponent
+                          name={"indirect_report"}
+                          options={managers}
+                          error={props.errors?.indirect_report}
+                          touch={props.touched.indirect_report}
+                          value={props.values.indirect_report}
+                          label={"Indirect Report"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"department_manager"}
+                          options={HeadOfDepartmentOptions}
+                          error={props.errors?.department_manager}
+                          touch={props.touched.department_manager}
+                          value={props.values.department_manager}
+                          required={true}
+                          label={"Department Head"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="joiningDate">Joining Date</Label>
+                      <div className="flex">
+                        <Input
+                          id="joiningDate"
+                          type="text"
+                          placeholder="Select date"
+                          value={date ? format(date, "PPP") : ""}
+                          readOnly
+                          className="w-[calc(100%-40px)]"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-[40px] px-0"
+                          onClick={() => setDate(new Date())}
+                        >
+                          <CalendarIcon className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      {date && (
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          className="border rounded-md"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6 border-t border-gray-200 bg-gray-50">
+            <div className="flex justify-end space-x-4">
+              <Button variant="outline" size="lg"  onClick={() => setIsOpen(false)}>Cancel</Button>
+              <Button type="submit" size="lg" variant="default" >{id ? "Update" : "Add"}</Button>
             </div>
           </div>
-          <Separator />
-          <div className="grid grid-cols-2 gap-4 py-4">
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="department">Department</Label>
-                <Select id="department">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="engineering">Engineering</SelectItem>
-                    <SelectItem value="sales">Sales</SelectItem>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                    <SelectItem value="finance">Finance</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="location">Employee Location</Label>
-                <Select id="location">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="nyc">New York City</SelectItem>
-                    <SelectItem value="la">Los Angeles</SelectItem>
-                    <SelectItem value="chicago">Chicago</SelectItem>
-                    <SelectItem value="london">London</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="designation">Designation</Label>
-                <Select id="designation">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select designation" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="developer">Developer</SelectItem>
-                    <SelectItem value="designer">Designer</SelectItem>
-                    <SelectItem value="analyst">Analyst</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="role">Role</Label>
-                <Select id="role">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fulltime">Full-time</SelectItem>
-                    <SelectItem value="parttime">Part-time</SelectItem>
-                    <SelectItem value="contractor">Contractor</SelectItem>
-                    <SelectItem value="intern">Intern</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="employee-type">Employee Type</Label>
-                <Select id="employee-type">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select employee type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="permanent">Permanent</SelectItem>
-                    <SelectItem value="temporary">Temporary</SelectItem>
-                    <SelectItem value="contract">Contract</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="employee-status">Employee Status</Label>
-                <Select id="employee-status">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select employee status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="terminated">Terminated</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="work-type">Employee Work Type</Label>
-                <Select id="work-type">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select work type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fulltime">Full-time</SelectItem>
-                    <SelectItem value="parttime">Part-time</SelectItem>
-                    <SelectItem value="remote">Remote</SelectItem>
-                    <SelectItem value="hybrid">Hybrid</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="direct-report">Direct Report</Label>
-                <Select id="direct-report">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select direct report" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="john-doe">John Doe</SelectItem>
-                    <SelectItem value="jane-smith">Jane Smith</SelectItem>
-                    <SelectItem value="bob-johnson">Bob Johnson</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="indirect-report">Indirect Report</Label>
-                <Select id="indirect-report">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select indirect report" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="alice-williams">Alice Williams</SelectItem>
-                    <SelectItem value="david-brown">David Brown</SelectItem>
-                    <SelectItem value="sarah-davis">Sarah Davis</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="department-head">Department Head</Label>
-                <Select id="department-head">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select department head" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="michael-johnson">Michael Johnson</SelectItem>
-                    <SelectItem value="emily-wilson">Emily Wilson</SelectItem>
-                    <SelectItem value="alex-garcia">Alex Garcia</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid items-center gap-4">
-              <div className="grid items-center gap-4">
-                <Label htmlFor="joining-date">Joining Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="justify-start w-full font-normal">
-                      Pick a date
-                      <div className="w-4 h-4 ml-auto opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" />
-                  </PopoverContent>
-                </Popover>
-              </div>
+              </Form>
+            )}
+          </Formik>
             </div>
           </div>
-          <SheetFooter>
-            <Button variant="outline">Cancel</Button>
-            <Button type="submit">Add Employee</Button>
-          </SheetFooter>
-        </form>
+          
+        </div>
       </SheetContent>
     </Sheet>
   )
 }
+const mapStateToProps = (state) => {
+  return {
+    token: state.user.token,
+    baseUrl: state.user.baseUrl,
+    employees: state.emp.employees,
+    departments: state.common.departments,
+    designations: state.common.designations,
+    managers: state.emp.reportingManagers,
+  };
+};
+export default connect(mapStateToProps)(SheetOnBorading);

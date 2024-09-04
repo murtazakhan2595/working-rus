@@ -35,18 +35,8 @@ const CreateEmployeeProfile = () => {
 
   return (
     <>
-      <div className="h-screen flex justify-center">
-        <div className="w-full flex flex-col min-h-full">
-          <div className="flex justify-between p-3 md:p-5 lg:p-7">
-            <div className="flex justify-start items-start">
-              <img
-                src={logo}
-                className="w-[142px] h-auto md:h-auto lg:pl-5"
-                alt="Tecbrix logo"
-              />
-            </div>
-          </div>
-
+      <div className="flex justify-center h-screen">
+        <div className="flex flex-col w-full min-h-full">
           {/*  */}
           <div className="screen">
             <div className="max-w-[750px] block mx-auto">
@@ -168,12 +158,7 @@ const CreateEmployeeProfile = () => {
               }
             </div>
           </div>
-          <div className="flex justify-start items-start mb-2">
-            <p className="font-roboto font-normal text-base text-[#5C5E64] lg:pl-5">
-              © 2024 TecBrix
-            </p>
-          </div>
-        </div>
+         </div>
       </div>
     </>
   );
