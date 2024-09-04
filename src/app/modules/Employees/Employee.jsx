@@ -38,8 +38,16 @@ export default function Component() {
     sizePerPage: 10,
   });
 
+
+
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
   };
 
   useEffect(() => {
@@ -157,12 +165,8 @@ export default function Component() {
                     data={filteredEmployees}
                     columns={EmployeeColumns}
                     pagination={true}
-                    dataTotalSize={filteredEmployees.length}
-                    tableOptions={{
-                      page: options.page,
-                      sizePerPage: options.sizePerPage,
-                      onPageChange: onPageChange,
-                    }}
+                    dataTotalSize={employeeData.count || 0}
+                    tableOptions={tableOptions}
 
                   />
                 </CardContent>
