@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Form } from "reactstrap";
+import { div, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
@@ -50,11 +50,11 @@ const ContactInformation = ({
   return (
     <>
       {isLoading ? (
-        <Row>
+        <div>
           <Col lg={12}>
             <PageLoader />
           </Col>
-        </Row>
+        </div>
       ) : (
         <Formik
           initialValues={contactInfo}
@@ -72,7 +72,7 @@ const ContactInformation = ({
               <h2 className="text-[22px] font-lato font-bold text-[#323333] text-left">
                 Emergency Contact
               </h2>
-              <Row>
+              <div>
                 <Col md="6">
                   <PhoneNumberInput
                     name="emergency_phone_no"
@@ -114,11 +114,11 @@ const ContactInformation = ({
                     }}
                   />
                 </Col>
-              </Row>
+              </div>
               <h2 className="text-[22px] font-lato font-bold text-[#323333] text-left">
                 Permanent Address
               </h2>
-              <Row>
+              <div>
                 <Col md="12">
                   <TextAreaInput
                     name="residential_address"
@@ -132,11 +132,11 @@ const ContactInformation = ({
                     }}
                   />
                 </Col>
-              </Row>
+              </div>
               <h2 className="text-[22px] font-lato font-bold text-[#323333] text-left">
                 Present Address
               </h2>
-              <Row>
+              <div>
                 <Col md="12">
                   <TextAreaInput
                     name="current_address"
@@ -150,9 +150,9 @@ const ContactInformation = ({
                     }}
                   />
                 </Col>
-              </Row>
+              </div>
               <hr />
-              <Row>
+              <div>
                 <Col md={6} className="text-left">
                   {!isEditMode &&
                     <CustomLightOutlineButton
@@ -171,7 +171,7 @@ const ContactInformation = ({
                     label={isEditMode ? 'Save' : 'Next'}
                   />
                 </Col>
-              </Row>
+              </div>
             </Form>
           )}
         </Formik>

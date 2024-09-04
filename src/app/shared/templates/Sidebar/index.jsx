@@ -7,7 +7,7 @@ import { SidebarNew } from "components/ui/sidebar-new";
 
 // const Main = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
-  export default function Main({ children, isSidebarOpen, setIsSidebarOpen }) {
+  export default function Main({ userRole }) {
     const sidebar = useStore(useSidebarToggle, (state) => state);
   
     if (!sidebar) return null;
@@ -16,7 +16,7 @@ import { SidebarNew } from "components/ui/sidebar-new";
   return (
     <>
      <div className="sidebar">
-          <SidebarNew />
+          <SidebarNew userRole={userRole}/>
         </div>
            
         <main
@@ -24,7 +24,7 @@ import { SidebarNew } from "components/ui/sidebar-new";
           "min-h-[calc(100vh_-_56px)] bg-mauve-200 transition-[margin-left] ease-in-out duration-300",
           sidebar?.isOpen === false ? "lg:ml-[90px]" : "lg:ml-72"
         )}
-      > <ContentLayout/>
+      > <ContentLayout userRole={userRole}/>
         
 
        

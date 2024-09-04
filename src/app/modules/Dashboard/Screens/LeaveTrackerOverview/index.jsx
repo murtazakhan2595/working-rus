@@ -9,7 +9,7 @@ import { FilterInput } from "components/form-control";
 import { getDesignationList } from "app/hooks/general";
 import { RenderLeaveStatusDropdown } from "./Sections";
 import TableCustom from "components/TableCustom";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../../src/@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
 import { Button } from "components/ui/button";
 
 

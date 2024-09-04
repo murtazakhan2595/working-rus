@@ -1,6 +1,6 @@
 
 import { Award, CalendarClockIcon, CalendarRange, Crosshair, FileChartColumnIncreasing, ListTodo, UserRoundCheck, UserRoundSearch, UsersRound } from "lucide-react";
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "../../../../src/@/components/ui/card"
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "../../../../components/ui/card"
 import React from 'react';
 import { Header } from "components";
 import { Link } from "react-router-dom";

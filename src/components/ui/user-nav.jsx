@@ -25,13 +25,13 @@ import { setUserLogout } from "../../state/actions/UserAction";
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import getNavigation from 'app/utils/Types/Navigation';
+// import getNavigation from 'app/utils/Types/Navigation';
 
 export function UserNav() {
   const [employee, setEmployee] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const token = window.localStorage.getItem("token");
-  const [Navigation, setNavigation] = useState(null);
+  // const [Navigation, setNavigation] = useState(null);
   const userProfile = useSelector((state) => state.user.userProfile);
   const baseUrl = useSelector((state) => state.user.baseUrl);
   const navigate = useNavigate();
@@ -52,13 +52,12 @@ export function UserNav() {
     );
     const employeeData = employeeResponse.data;
     setEmployee(employeeData);
-    setNavigation(getNavigation(employeeData.user_role));
+    // setNavigation(getNavigation(employeeData.user_role));
     setProfileImage(
       employeeResponse.data?.profile_picture?.file ||
       employeeResponse.data?.profile_picture
     );
   };
-  console.log(profileImage, "testing")
 
   useEffect(() => {
     fetchData();

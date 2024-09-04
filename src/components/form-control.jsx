@@ -1,23 +1,20 @@
-import React from "react";
-import Select from "react-select";
+
+import React, { useState } from "react";
+// import Select from "react-select";
+import { Label } from "../src/@/components/ui/label"
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment, { max, min } from "moment";
+import moment from "moment";
 import upload from "../assets/images/upload.png";
 import { TfiFiles } from "react-icons/tfi";
 import { IoIosSearch } from "react-icons/io";
 import { countryCodesOptions } from "../data/CountryCode";
 import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { Select, SelectTrigger, SelectValue, SelectGroup, SelectContent, SelectItem } from "../src/@/components/ui/select"
 
-import { Input } from "./ui/input";
-import { Search as SearchIcon  } from "lucide-react";
-import { Popover, PopoverTrigger, PopoverContent } from "../src/@/components/ui/popover";
-import { ChevronsUpDown, Check } from 'lucide-react';
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '../src/@/components/ui/command';
-import { useState } from 'react';
-import { Button } from 'components/ui/button';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "../src/@/components/ui/form"
 
 const SelectComponent = ({
   name,
@@ -26,49 +23,33 @@ const SelectComponent = ({
   touch,
   onChange,
   options,
-  FormLabel,
+  label,
   disabled,
   required,
 }) => {
   return (
-    <FormField floating>
-      <Select
-        name={name}
-        isDisabled={disabled}
-        id={name}
-        className={`custom-select-input form-control ${
-          !value ? "items-center" : ""
-        } ${error && touch ? "is-invalid" : ""}`}
-        options={options ? options : []}
-        value={
-          options && options.length > 0
-            ? options.find((option) => option.value === value)
-            : ""
-        }
-        onChange={(selectedOption) => onChange(name, selectedOption.value)}
-        placeholder={`${FormLabel}`}
-        styles={{
-          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-          menu: (base) => ({ ...base, zIndex: 9999 }),
-          menuList: (base) => ({ ...base, zIndex: 9999 }),
-        }}
-        menuPortalTarget={document.body}
-      />
-      {value ? (
-        <FormLabel
-          className={`text-baseGray ${value ? "date-floating-label" : ""}`}
-          for={name}
-        >
-          {required && <span className="text-danger">* </span>} {FormLabel}
-        </FormLabel>
-      ) : (
-        ""
-      )}
-      {console.log(error, touch)}
+    <div >
+      <Label for={name}>{required && <span className="text-red-600">* </span>} {label}</Label>
       {error && touch && <div className="invalid-feedback">{error || ""}</div>}
-    </FormField>
+      <Select>
+        <SelectTrigger>
+          <SelectValue placeholder={label} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
+    </div>
   );
 };
+
 const SelectMultiInputComponent = ({
   name,
   value,
@@ -76,36 +57,36 @@ const SelectMultiInputComponent = ({
   touch,
   onChange,
   options,
-  FormLabel,
+  label,
   disabled,
   required,
 }) => {
   return (
-    <FormField floating>
-      <Select
-        name={name}
-        id={name}
-        isDisabled={disabled}
-        className={`custom-select-input form-control ${
-          error && touch ? "is-invalid" : ""
-        }`}
-        options={options ? options : []}
-        value={value ? value : ""}
-        onChange={(selectedOption) => {
-          onChange(name, selectedOption);
-        }}
-        placeholder={`Select ${FormLabel}`}
-        isMulti={true}
-        noOptionsMessage={() => "No such employee found"}
-      />
-      <FormLabel
+    <div>
+         <Label
         className={`text-baseGray ${value ? "date-floating-label" : ""}`}
         for={name}
       >
-        {required && <span className="text-danger">* </span>} {FormLabel}
-      </FormLabel>
+        {required && <span className="text-red-600">* </span>} {label}
+      </Label>
       {error && touch && <div className="invalid-feedback">{error}</div>}
-    </FormField>
+      <Select>
+        <SelectTrigger>
+          <SelectValue placeholder={label} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+   
+    </div>
+
   );
 };
 
@@ -115,7 +96,7 @@ const DateInput = ({
   error,
   touch,
   onChange,
-  FormLabel,
+  label,
   disabled,
   required,
   minDate,
@@ -123,20 +104,28 @@ const DateInput = ({
   const date = value ? new Date(moment(value)) : null;
   return (
     <>
-      <FormField floating>
+      <div>
+      <Label
+          className={`text-baseGray ${value ? "date-floating-label" : ""}`}
+          for={name}
+        >
+          {required && <span className="text-red-600">* </span>} {label}
+        </Label>
+        {error && touch && (
+          <div className="invalid-feedback d-block">{error}</div>
+        )}
         <DatePicker
           name={name}
           id={name}
           autoComplete="off"
           minDate={minDate}
           disabled={disabled}
-          className={`form-control ${error && touch ? "is-invalid" : ""} ${
-            value ? "date-floating-input" : ""
-          }`}
+          className={`form-control ${error && touch ? "is-invalid" : ""} ${value ? "border-mauve-600" : ""
+            }`}
           value={date && !isNaN(date.getTime()) ? date : ""}
           selected={date && !isNaN(date.getTime()) ? date : new Date()}
           dropdownMode="select"
-          placeholder={`${FormLabel}`}
+          placeholder={`${label}`}
           onChange={(value) => {
             if (value) {
               value = moment(value).format("YYYY-MM-DD");
@@ -149,16 +138,8 @@ const DateInput = ({
           showYearDropdown
           dateFormat="dd-MM-yyyy"
         />
-        <FormLabel
-          className={`text-baseGray ${value ? "date-floating-FormLabel" : ""}`}
-          for={name}
-        >
-          {required && <span className="text-danger">* </span>} {FormLabel}
-        </FormLabel>
-        {error && touch && (
-          <div className="invalid-feedback d-block">{error}</div>
-        )}
-      </FormField>
+       
+      </div>
     </>
   );
 };
@@ -169,7 +150,7 @@ const TextInput = ({
   error,
   touch,
   onChange,
-  FormLabel,
+  label,
   disabled,
   required,
   regEx,
@@ -177,14 +158,18 @@ const TextInput = ({
 }) => {
   return (
     <>
-      <FormField floating>
+      <div>
+        <Label className="" htmlFor={name}>
+          {required && <span className="text-red-600">* </span>}
+          {label}
+        </Label>
         <Input
           type="text"
           maxLength={maxLength ?? "100"}
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter" + FormLabel}
+          placeholder={"Enter" + label}
           value={value ?? ""}
           disabled={disabled}
           className={error && touch ? "is-invalid" : ""}
@@ -199,21 +184,19 @@ const TextInput = ({
             }
           }}
         />
-        <FormLabel className="text-baseGray" htmlFor="address">
-          {required && <span className="text-danger">* </span>}
-          {FormLabel}
-        </FormLabel>
+
 
         {error && touch && <div className="invalid-feedback">{error}</div>}
-      </FormField>
+      </div>
     </>
   );
 };
 
-const CheckBoxInput = ({ name, value, onChange, FormLabel, disabled }) => {
+const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
   return (
     <>
-      <FormField check className="my-1">
+      <div>
+        <Label check>{label}</Label>
         <Input
           id={name}
           type="checkbox"
@@ -225,85 +208,68 @@ const CheckBoxInput = ({ name, value, onChange, FormLabel, disabled }) => {
             onChange(name, !value);
           }}
         />{" "}
-        <FormLabel check>{FormLabel}</FormLabel>
-      </FormField>
+
+      </div>
     </>
   );
 };
 
-const PhoneNumberInput = ({
-  name,
-  value,
-  error,
-  touch,
-  onChange,
-  FormLabel,
-  disabled,
-  required,
-  countryCodeName,
-  countryCode,
-}) => {
-  return (
-    <>
-      <div className="d-flex">
-      <div className="space-y-2">
-          <FormField floating>
-            <Select
-              name={countryCodeName}
-              isDisabled={disabled}
-              id={countryCodeName}
-              className={`custom-select-input form-control ${
-                !countryCode ? "items-center" : ""
-              } ${error && touch ? "is-invalid" : ""}`}
-              options={countryCodesOptions ? countryCodesOptions : []}
-              value={
-                countryCodesOptions
-                  ? countryCodesOptions.find(
-                      (option) => option.value === countryCode
-                    )
-                  : ""
-              }
-              onChange={(selectedOption) =>
-                onChange(countryCodeName, selectedOption.value)
-              }
-              placeholder={"Code"}
-            />
-            {countryCode && (
-              <FormLabel className="text-baseGray" htmlFor="address">
-                Code
-              </FormLabel>
-            )}
-          </FormField>
-        </div>
-        <div className="space-y-2">
-          <FormField floating>
-            <Input
-              id={name}
-              name={name}
-              autoComplete="Off"
-              placeholder={"Enter" + FormLabel}
-              value={`${countryCode || ""}${value || ""}`}
-              className={error && touch ? "is-invalid" : ""}
-              onChange={(option) => {
-                const regExTelephone = /^[0-9-]+$/;
-                let value = option.target.value;
-                value = value.replace(countryCode, "");
-                if (value.includes("+")) {
-                  value = "";
-                }
-                if (!value || regExTelephone.test(value)) onChange(name, value);
-              }}
-            />
-            <FormLabel className="text-baseGray" htmlFor="address">
-              {required && <span className="text-danger">* </span>}
-              {FormLabel}
-            </FormLabel>
 
-            {error && touch && <div className="invalid-feedback">{error}</div>}
-          </FormField>
-        </div>
-      </div>
-    </>
+
+const PhoneNumberInput = ({ name, disabled, label, error, touch, onChange }) => {
+  const [selectedCountryCode, setSelectedCountryCode] = useState('');
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSelectChange = (value) => {
+    const selectedOption = countryCodesOptions.find(option => option.value === value);
+    if (selectedOption) {
+      setSelectedCountryCode(selectedOption.code);
+      setInputValue(selectedOption.code); // Set input value to country code
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const regExTelephone = /^[0-9-]+$/;
+    let value = event.target.value;
+    value = value.replace(selectedCountryCode, "");
+    if (value.includes("+")) {
+      value = "";
+    }
+    if (!value || regExTelephone.test(value)) {
+      setInputValue(selectedCountryCode + value);
+      onChange(name, value);
+    }
+  };
+
+  return (
+    <div className="">
+      <Label check>{label}</Label>
+      <div class="grid grid-cols-6 gap-0">
+        <div class="col-start-1 col-span-2 "><Select onValueChange={handleSelectChange}>
+          <SelectTrigger className="">
+            <SelectValue placeholder="Select a country" />
+          </SelectTrigger>
+          <SelectContent>
+            {countryCodesOptions.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select></div>
+        <div class="col-start-3 col-span-4"> <Input
+          id={name}
+          name={name}
+          disabled={disabled}
+          autoComplete="Off"
+          placeholder={"Enter " + label}
+          value={inputValue}
+          className={error && touch ? "is-invalid" : ""}
+          onChange={handleInputChange}
+        />
+        </div></div>
+    </div>
+
   );
 };
 
@@ -313,20 +279,24 @@ const EmailInput = ({
   error,
   touch,
   onChange,
-  FormLabel,
+  label,
   disabled,
   required,
 }) => {
   return (
     <>
-      <FormField floating>
+      <div>
+        <Label className="text-baseGray" htmlFor={name}>
+          {required && <span className="text-red-600">* </span>}
+          {label}
+        </Label>
         <Input
           type="email"
           maxLength="100"
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter" + FormLabel}
+          placeholder={"Enter" + label}
           value={value}
           className={error && touch ? "is-invalid" : ""}
           onChange={(option) => {
@@ -335,16 +305,13 @@ const EmailInput = ({
             if (!value || regExTelephone.test(value)) onChange(name, value);
           }}
         />
-        <FormLabel className="text-baseGray" htmlFor="address">
-          {required && <span className="text-danger">* </span>}
-          {FormLabel}
-        </FormLabel>
+
         {error && touch && <div className="invalid-feedback">{error}</div>}
-      </FormField>
+      </div>
     </>
   );
 };
-const CustomButton = ({ FormLabel, onClick, disabled }) => {
+const CustomButton = ({ label, onClick, disabled }) => {
   return (
     <div className="flex justify-end">
       <Button
@@ -352,13 +319,13 @@ const CustomButton = ({ FormLabel, onClick, disabled }) => {
         onClick={onClick}
         disabled={disabled}
       >
-        {FormLabel}
+        {label}
       </Button>
     </div>
   );
 };
 
-const CustomDarkButton = ({ FormLabel, onClick, disabled, style, className }) => {
+const CustomDarkButton = ({ label, onClick, disabled, style, className }) => {
   return (
     <Button
       className={`btn btn-dark ${className ?? ""}`}
@@ -366,12 +333,12 @@ const CustomDarkButton = ({ FormLabel, onClick, disabled, style, className }) =>
       disabled={disabled}
       style={style}
     >
-      {FormLabel}
+      {label}
     </Button>
   );
 };
 
-const CustomLightOutlineButton = ({ FormLabel, onClick, disabled, style }) => {
+const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
   return (
     <Button
       type="button"
@@ -380,7 +347,7 @@ const CustomLightOutlineButton = ({ FormLabel, onClick, disabled, style }) => {
       onClick={onClick}
       disabled={disabled}
     >
-      {FormLabel}
+      {label}
     </Button>
   );
 };
@@ -388,7 +355,7 @@ const CustomLightOutlineButton = ({ FormLabel, onClick, disabled, style }) => {
 const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
   return (
     <>
-      <FormLabel
+      <label
         htmlFor="file-upload"
         className="flex my-3 overflow-hidden font-bold text-center cursor-pointer rounded-3xl"
       >
@@ -411,7 +378,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
             )}
           </div>
           <div className="text-sm text-left">
-            <FormField>
+            <div>
               <input
                 id="file-upload"
                 type="file"
@@ -443,7 +410,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
               {error && touch && (
                 <div className="invalid-feedback">{error}</div>
               )}
-            </FormField>
+            </div>
             <span
               className="fw-lighter"
               style={{ minHeight: "auto", fontSize: "12px" }}
@@ -452,7 +419,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
             </span>
           </div>
         </div>
-      </FormLabel>
+      </label>
     </>
   );
 };
@@ -473,9 +440,9 @@ const FileInput = ({
       >
         <h4>
           <TfiFiles className="m-auto mb-3" />
-          {`Upload Your ${FormLabel || "file"}`}
+          {`Upload Your ${label || "file"}`}
         </h4>
-        <FormLabel
+        <Label
           htmlFor={name}
           className="mt-3 rounded-lg cursor-pointer opacity-70 text-input"
           style={{
@@ -484,7 +451,7 @@ const FileInput = ({
             position: "relative",
           }}
         >
-          <input
+          <Input
             id={name}
             type="file"
             name={name}
@@ -527,7 +494,7 @@ const FileInput = ({
               {value?.name}
             </span>
           )}
-        </FormLabel>
+        </Label>
         <br />
       </div>
       {error && touch && <div className="text-sm text-red-500">{error}</div>}
@@ -541,7 +508,7 @@ const TextAreaInput = ({
   error,
   touch,
   onChange,
-  FormLabel,
+  label,
   disabled,
   required,
   regEx,
@@ -550,14 +517,22 @@ const TextAreaInput = ({
 }) => {
   return (
     <>
-      <FormField floating>
+      <div>
+      <Label
+          className={`text-baseGray ${value ? "active" : ""}`}
+          htmlFor={name}
+        >
+          {required && <span className="text-red-600">* </span>}
+          {label}
+        </Label>
+        {error && touch && <div className="invalid-feedback">{error}</div>}
         <Input
           type="textarea"
           maxLength={maxLength ?? "5000"}
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter " + FormLabel}
+          placeholder={"Enter " + label}
           value={value}
           rows={maxRows ?? 1}
           disabled={disabled}
@@ -571,15 +546,8 @@ const TextAreaInput = ({
             }
           }}
         />
-        <FormLabel
-          className={`text-baseGray ${value ? "active" : ""}`}
-          htmlFor={name}
-        >
-          {required && <span className="text-danger">* </span>}
-          {FormLabel}
-        </FormLabel>
-        {error && touch && <div className="invalid-feedback">{error}</div>}
-      </FormField>
+      
+      </div>
     </>
   );
 };
@@ -589,7 +557,7 @@ const TextAreaEditorInput = ({
   error,
   touch,
   onChange,
-  FormLabel,
+  label,
   disabled,
   required,
   regEx,
@@ -597,13 +565,19 @@ const TextAreaEditorInput = ({
 }) => {
   return (
     <>
-      <FormField floating>
+      <div>
+      <Label className="pt-4 mt-1 text-baseGray" htmlFor={name}>
+          {required && <span className="text-red-600">* </span>}
+          {label}
+        </Label>
+
+        {error && touch && <div className="invalid-feedback">{error}</div>}
         <ReactQuill
           type="textarea"
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter " + FormLabel}
+          placeholder={"Enter " + label}
           value={value}
           modules={{
             toolbar: {
@@ -615,24 +589,28 @@ const TextAreaEditorInput = ({
               ],
             },
           }}
-          disabled={disabled}
+          formats={[
+            "bold",
+            "italic",
+            "underline",
+            "list",
+            "bullet",
+            "link",
+            "align",
+          ]}
+          readOnly={disabled}
           className={`rounded ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {
             onChange(name, option);
           }}
         />
-        <FormLabel className="pt-4 mt-1 text-baseGray" htmlFor="address">
-          {required && <span className="text-danger">* </span>}
-          {FormLabel}
-        </FormLabel>
-
-        {error && touch && <div className="invalid-feedback">{error}</div>}
-      </FormField>
+       
+      </div>
     </>
   );
 };
 
-function dropdownStyles(backgroundColor, fontSize,height) {
+function dropdownStyles(backgroundColor, fontSize, height) {
   return {
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
     control: (provided, state) => ({
@@ -670,244 +648,124 @@ function dropdownStyles(backgroundColor, fontSize,height) {
   };
 }
 
-
-
-// new search filter
 const FilterInput = ({ filters, onChange, isClearable = true }) => {
-  const classNamesStyle = "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
+  const classNamesStyle =
+    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
   const width = "w-56";
   const height = "h-[38px]";
-  const [openDepartment, setOpenDepartment] = useState(false);
-  const [openDesignation, setOpenDesignation] = useState(false);
-  const [openRole, setOpenRole] = useState(false);
-  
-  const [value, setValue] = useState('');
-
   return (
     <>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
-        {filters && filters.map((filter, index) => {
-          if (filter.type === "search") {
-            return (
-              <div className="relative" key={index}>
-                <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
-                <Input
-                  type="search"
+        {filters &&
+          filters.map((filter, index) => {
+            if (filter.type === "search") {
+              return (
+                <div className="relative" key={index}>
+                  <IoIosSearch className="absolute top-[30%] left-3 text-baseGray" />
+                  <input
+                    type="search"
+                    style={{ paddingLeft: "2.5rem" }}
+                    placeholder={filter.placeholder}
+                    className={`${filter.className ?? classNamesStyle} ${filter.width ?? width
+                      } ${filter.height ?? height}`}
+                    name={filter.name}
+                    id={filter.name}
+                    onChange={(option) => {
+                      onChange(filter.name, option.target.value);
+                    }}
+                  />
+                </div>
+              );
+            } else if (filter.type === "text") {
+              return (
+                <input
+                  key={index}
+                  type="text"
                   placeholder={filter.placeholder}
+                  className={`${filter.className ?? classNamesStyle} ${filter.width ?? width
+                    } ${filter.height ?? height}`}
                   name={filter.name}
                   id={filter.name}
                   onChange={(option) => {
                     onChange(filter.name, option.target.value);
                   }}
-                  className="py-2 pl-4 pr-8 bg-background"
                 />
-              </div>
-            );
-          } else if (filter.type === "text") {
-            return (
-              <Input
-                key={index}
-                type="text"
-                placeholder={filter.placeholder}
-                className={`${filter.className ?? classNamesStyle} ${filter.width ?? width} ${filter.height ?? height}`}
-                name={filter.name}
-                id={filter.name}
-                onChange={(option) => {
-                  onChange(filter.name, option.target.value);
-                }}
-              />
-            );
-          }
-           else if (filter.type === "select-one") {
-            return (
-              
-              <Popover key={index} openDepartment={openDepartment} onOpenChange={setOpenDepartment}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openDepartment}
-                    className={`w-[200px] justify-between`}
-                  >
-                    {value
-                      ? filter.option.find((option) => option.value === value)?.FormLabel
-                      : filter.placeholder}
-                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search framework..." />
-                    <CommandList>
-                      <CommandEmpty>No framework found.</CommandEmpty>
-                      <CommandGroup>
-                        {filter.option.map((option) => (
-                          <CommandItem
-                            key={option.value}
-                            value={option.value}
-                            onSelect={(currentValue) => {
-                              setValue(currentValue === value ? "" : currentValue);
-                              onChange(filter.name, currentValue);
-                              setOpenDepartment(false);
-                            }}
-                          >
-                            <Check
-                              className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
-                            />
-                            {option.FormLabel}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-             
-            );
-          } 
-          else if (filter.type === "select-three") {
-            return (
-              <Popover key={index} openRole={openRole} onOpenChange={setOpenRole}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openRole}
-                    className={`w-[200px] justify-between`}
-                  >
-                    {value
-                      ? filter.option.find((option) => option.value === value)?.FormLabel
-                      : filter.placeholder}
-                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search framework..." />
-                    <CommandList>
-                      <CommandEmpty>No framework found.</CommandEmpty>
-                      <CommandGroup>
-                        {filter.option.map((option) => (
-                          <CommandItem
-                            key={option.value}
-                            value={option.value}
-                            onSelect={(currentValue) => {
-                              setValue(currentValue === value ? "" : currentValue);
-                              onChange(filter.name, currentValue);
-                              setOpenRole(false);
-                            }}
-                          >
-                            <Check
-                              className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
-                            />
-                            {option.FormLabel}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-             
-            );
-          }   else if (filter.type === "select-two") {
-            return (
-              <Popover key={index} openDesignation={openDesignation} onOpenChange={setOpenDesignation}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openDesignation}
-                    className={`w-[200px] justify-between`}
-                  >
-                    {value
-                      ? filter.option.find((option) => option.value === value)?.FormLabel
-                      : filter.placeholder}
-                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search framework..." />
-                    <CommandList>
-                      <CommandEmpty>No framework found.</CommandEmpty>
-                      <CommandGroup>
-                        {filter.option.map((option) => (
-                          <CommandItem
-                            key={option.value}
-                            value={option.value}
-                            onSelect={(currentValue) => {
-                              setValue(currentValue === value ? "" : currentValue);
-                              onChange(filter.name, currentValue);
-                              setOpenDesignation(false);
-                            }}
-                          >
-                            <Check
-                              className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
-                            />
-                            {option.FormLabel}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-             
-            );
-          } 
-          else if (filter.type === "date") {
-            const date = filter.value ? new Date(moment(filter.value)) : null;
-            return (
-              <div style={{ width: "fit-content" }} key={index}>
-                <DatePicker
+              );
+            } else if (filter.type === "select") {
+              return (
+                <Select
+                  key={index}
+                  options={filter.option}
+                  placeholder={filter.placeholder}
+                  className={`${!filter.className && "shadow-input"
+                    } rounded-lg`}
+                  styles={dropdownStyles(
+                    filter?.className?.backgroundColor ?? "#fafbfc",
+                    filter?.className?.fontSize ?? "16px",
+                    filter?.className?.height ?? "38px"
+                  )}
                   name={filter.name}
+                  defaultValue={filter.option.find(
+                    (obj) => obj.value === filter.defaultValue
+                  )}
                   id={filter.name}
-                  className={`${filter.className ?? classNamesStyle} ${filter.width ?? width} ${filter.height ?? height}`}
-                  dropdownMode="select"
-                  placeholderText={filter.placeholder}
-                  value={date}
-                  selected={date}
-                  autoComplete="off"
-                  onChange={(value) => {
-                    if (value) {
-                      value = moment(value).format("YYYY-MM-DD");
-                      onChange(filter.name, value);
-                    } else {
-                      onChange(filter.name, null);
-                    }
+                  onChange={(option) => {
+                    onChange(filter.name, option?.value);
                   }}
-                  showMonthDropdown
-                  showYearDropdown
-                  dateFormat="dd-MM-yyyy"
+                  isClearable={isClearable}
                 />
-              </div>
-            );
-          } else if (filter.type === "sorting") {
-            return (
-              <CheckboxMenu
-                key={index}
-                items={filter.option}
-                onChange={(name, value, filterCheckStatus) => {
-                  onChange(name, value, filterCheckStatus);
-                }}
-                values={filter.values}
-                mainHeading={filter.mainHeading}
-                FormLabel={filter.placeholder}
-                className={filter.className ?? null}
-              />
-            );
-          } else {
-            return <div key={index}></div>;
-          }
-        })}
+              );
+            } else if (filter.type === "date") {
+              const date = filter.value ? new Date(moment(filter.value)) : null;
+              return (
+                <div style={{ width: "fit-content" }}>
+                  <DatePicker
+                    key={index}
+                    name={filter.name}
+                    id={filter.name}
+                    className={`${filter.className ?? classNamesStyle} ${filter.width ?? width
+                      } ${filter.height ?? height}`}
+                    dropdownMode="select"
+                    placeholderText={filter.placeholder}
+                    value={date}
+                    selected={date}
+                    autoComplete="off"
+                    onChange={(value) => {
+                      if (value) {
+                        value = moment(value).format("YYYY-MM-DD");
+                        onChange(filter.name, value);
+                      } else {
+                        onChange(filter.name, null);
+                      }
+                    }}
+                    showMonthDropdown
+                    showYearDropdown
+                    dateFormat="dd-MM-yyyy"
+                  />
+                </div>
+              );
+            } else if (filter.type === "sorting") {
+              return (
+                <CheckboxMenu
+                  key={index}
+                  items={filter.option}
+                  onChange={(name, value, filterCheckStatus) => {
+                    onChange(name, value, filterCheckStatus);
+                  }}
+                  values={filter.values}
+                  mainHeading={filter.mainHeading}
+                  label={filter.placeholder}
+                  className={filter.className ?? null}
+                />
+              );
+            } else {
+              return <div key={index}></div>;
+            }
+          })}
       </div>
     </>
   );
 };
-
-export default FilterInput;
-
 export {
   SelectComponent,
   SelectMultiInputComponent,

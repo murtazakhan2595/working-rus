@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import { Row, Col, FormGroup } from "reactstrap";
 import { PageLoader } from "components";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
@@ -34,16 +34,15 @@ import {
 } from "components/form-control";
 import { countryOptions } from "data/Data";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
-
-import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "../../../../../src/@/components/ui/sheet"
 import { Button } from "../../../../../components/ui/button"
-import { Label } from "../../../../../src/@/components/ui/label"
 import { Input } from "../../../../../components/ui/input"
-import { Textarea } from "../../../../../src/@/components/ui/textarea"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../../../../../src/@/components/ui/select"
-import { Popover, PopoverTrigger, PopoverContent } from "../../../../../src/@/components/ui/popover"
-import { CalendarDaysIcon, Calendar } from "../../../../../src/@/components/ui/calendar"
+import { Label } from "../../../../../src/@/components/ui/label"
+import { Calendar } from "../../../../../src/@/components/ui/calendar"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "../../../../../src/@/components/ui/form"
+import { CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { Card, CardHeader, CardTitle, CardContent } from "../../../../../components/ui/card";
+import EmpDataHeader from "./Header"
 
 function getManagersStringSelected(managers) {
   if (managers) {
@@ -73,6 +72,7 @@ const EmployeeForm = ({
   const [isLoading, setIsLoading] = useState(true);
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
+  const [date, setDate] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,7 +142,7 @@ const EmployeeForm = ({
       if (
         error.response &&
         error.response.data.username[0] ===
-          "A user with that username already exists."
+        "A user with that username already exists."
       ) {
         toast.error("A user with that username already exists.", {
           position: toast.POSITION.TOP_RIGHT,
@@ -160,18 +160,365 @@ const EmployeeForm = ({
 
   return (
     <>
-      {isLoading ? (
-        
-        
+
+
+      <div className="w-full p-0 ">
+        <EmpDataHeader title="Add Employee" />
+
+        <Formik
+          initialValues={formData}
+          innerRef={formRef}
+          onSubmit={(values, { resetForm }) => {
+            handleSubmit(values, resetForm);
+          }}
+          validate={(values) => {
+            const errors = validationEmployeeInfoFormSchema(
+              values,
+              isEditMode
+            );
+            if (values.work_email && emailAlreadyExist) {
+              errors.work_email = "Email already exist";
+            }
+            if (values.username && usernameAlreadyExist) {
+              errors.username = "Username already exist";
+            }
+            return errors;
+          }}
+        >
+          {(props) => (
+            <CardContent>
+              <Form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Employee Details</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <TextInput
+                        name={"employeeId"}
+                        error={props.errors?.employeeId}
+                        touch={props.touched?.employeeId}
+                        value={empId}
+                        label={"Employee ID"}
+                        required={true}
+                        disabled={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                    <TextInput
+                            name={"username"}
+                            error={props.errors?.username}
+                            touch={props.touched.username}
+                            value={props.values.username}
+                            label={"User Name"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                              validateUsername(value);
+                            }}
+                            />
+                    </div>
+                    <div className="space-y-2">
+                      <TextInput
+                            name={"first_name"}
+                            error={props.errors?.first_name}
+                            touch={props.touched.first_name}
+                            value={props.values.first_name}
+                            label={"First Name"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                      <TextInput
+                            name={"last_name"}
+                            error={props.errors?.last_name}
+                            touch={props.touched.last_name}
+                            value={props.values.last_name}
+                            label={"Last Name"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <EmailInput
+                            name={"work_email"}
+                            error={props.errors?.work_email}
+                            touch={props.touched.work_email}
+                            value={props.values.work_email}
+                            label={"Email"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                              setEmail && setEmail(value);
+                              validateEmail(value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <div>
+                    <Label htmlFor="password">
+                              <span className="text-red-600">* </span>Password
+                            </Label>
+                            <Input
+                              type="password"
+                              maxLength="20"
+                              id="password"
+                              name="password"
+                              autoComplete="Off"
+                              placeholder={"Enter User Name"}
+                              onChange={(option) => {
+                                props.handleChange("password")(option);
+                              }}
+                              value={
+                                props.values?.password?.length <= 20
+                                  ? props.values.password
+                                  : ""
+                              }
+                              className={
+                                props.errors?.password && props.touched.password
+                                  ? "is-invalid"
+                                  : ""
+                              }
+                            />
+                            {props.errors?.password &&
+                              props.touched.password && (
+                                <div className="invalid-feedback">
+                                  {props.errors?.password}
+                                </div>
+                              )}
+                          </div>
+                    </div>
+                    <div className="space-y-2">
+                      <PhoneNumberInput
+                            name={"mobile_no"}
+                            error={props.errors?.mobile_no}
+                            touch={props.touched.mobile_no}
+                            value={props.values.mobile_no}
+                            label={"Contact no."}
+                            countryCode={props.values.country_code}
+                            countryCodeName={"country_code"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <TextAreaInput
+                            name={"residential_address"}
+                            error={props.errors?.residential_address}
+                            touch={props.touched?.residential_address}
+                            value={props.values?.residential_address}
+                            label={"Address"}
+                            required={true}
+                            maxRows={1}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Work Information</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"department_name"}
+                          options={departments}
+                          error={props.errors?.department_name}
+                          touch={props.touched.department_name}
+                          value={props.values.department_name}
+                          label={"Department"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"employee_location"}
+                          options={countryOptions}
+                          error={props.errors?.employee_location}
+                          touch={props.touched.employee_location}
+                          value={props.values.employee_location}
+                          required={true}
+                          label={"Employee Location"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"department_position"}
+                          options={designations}
+                          error={props.errors?.department_position}
+                          touch={props.touched.department_position}
+                          value={props.values.department_position}
+                          label={"Designation"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"user_role"}
+                          options={UserRoles}
+                          error={props.errors?.user_role}
+                          touch={props.touched.user_role}
+                          value={props.values.user_role}
+                          required={true}
+                          label={"Role"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                            name={"employee_type"}
+                            options={jobRoles}
+                            error={props.errors?.employee_type}
+                            touch={props.touched.employee_type}
+                            value={props.values.employee_type}
+                            required={true}
+                            label={"Employee Type"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                            name={"employee_status"}
+                            options={employeeStatus}
+                            error={props.errors?.employee_status}
+                            touch={props.touched.employee_status}
+                            value={props.values.employee_status}
+                            required={true}
+                            label={"Employee status"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"employee_work_type"}
+                          options={workplaceTypes}
+                          error={props.errors?.employee_work_type}
+                          touch={props.touched.employee_work_type}
+                          value={props.values.employee_work_type}
+                          required={true}
+                          label={"Employee Work Type"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"direct_report"}
+                          options={managers}
+                          error={props.errors?.direct_report}
+                          touch={props.touched.direct_report}
+                          value={props.values.direct_report}
+                          label={"Direct Report"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectMultiInputComponent
+                          name={"indirect_report"}
+                          options={managers}
+                          error={props.errors?.indirect_report}
+                          touch={props.touched.indirect_report}
+                          value={props.values.indirect_report}
+                          label={"Indirect Report"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                    <SelectComponent
+                          name={"department_manager"}
+                          options={HeadOfDepartmentOptions}
+                          error={props.errors?.department_manager}
+                          touch={props.touched.department_manager}
+                          value={props.values.department_manager}
+                          required={true}
+                          label={"Department Head"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="joiningDate">Joining Date</Label>
+                      <div className="flex">
+                        <Input
+                          id="joiningDate"
+                          type="text"
+                          placeholder="Select date"
+                          value={date ? format(date, "PPP") : ""}
+                          readOnly
+                          className="w-[calc(100%-40px)]"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-[40px] px-0"
+                          onClick={() => setDate(new Date())}
+                        >
+                          <CalendarIcon className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      {date && (
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          className="border rounded-md"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6 border-t border-gray-200 bg-gray-50">
+                  <div className="flex justify-end space-x-4">
+                    <Button variant="outline" size="lg">
+                      <Link to="/profile-management">Cancel</Link></Button>
+                    <Button type="submit" size="lg" variant="default" >{id ? "Update" : "Add"}</Button>
+                  </div>
+                </div>
+              </Form>
+            </CardContent>
+          )}
+        </Formik>
+      </div>
+
+      {/* {isLoading ? (
+        <Row>
+          <Col lg={12}>
             <PageLoader />
-         
+          </Col>
+        </Row>
       ) : (
-        <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline">Open Employee Onboarding</Button>
-      </SheetTrigger>
-      
-        
+        <Row>
+          <Col lg={12}>
             <Formik
               initialValues={formData}
               innerRef={formRef}
@@ -194,19 +541,13 @@ const EmployeeForm = ({
             >
               {(props) => (
                 <Form onSubmit={props.handleSubmit}>
-                  <SheetContent className="w-[800px]">
-                  <SheetHeader>
-                    <SheetTitle>Employee Onboarding</SheetTitle>
-                    <SheetDescription>Fill out the form to onboard a new employee.</SheetDescription>
-                  </SheetHeader>
-                  <SheetContent className="grid gap-6">
-                    <div className="grid grid-cols-2 gap-4">
-       
+                  <Row>
                     {!isEditMode && (
                       <>
-                       
-                      <div className="space-y-2">
-                      
+                        <Col md="12">
+                          <h5 className="mb-3 fw-700">Employee Details</h5>
+                        </Col>
+                        <Col md="6">
                           <TextInput
                             name={"employeeId"}
                             error={props.errors?.employeeId}
@@ -219,8 +560,8 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </div >
-                      <div className="space-y-2">
+                        </Col>
+                        <Col md="6">
                           <TextInput
                             name={"username"}
                             error={props.errors?.username}
@@ -233,8 +574,8 @@ const EmployeeForm = ({
                               validateUsername(value);
                             }}
                           />
-                        </div >
-                      <div className="space-y-2">
+                        </Col>
+                        <Col md="6">
                           <TextInput
                             name={"first_name"}
                             error={props.errors?.first_name}
@@ -246,8 +587,8 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </div >
-                      <div className="space-y-2">
+                        </Col>
+                        <Col md="6">
                           <TextInput
                             name={"last_name"}
                             error={props.errors?.last_name}
@@ -259,8 +600,8 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </div >
-                      <div className="space-y-2">
+                        </Col>
+                        <Col md="6">
                           <EmailInput
                             name={"work_email"}
                             error={props.errors?.work_email}
@@ -274,9 +615,9 @@ const EmployeeForm = ({
                               validateEmail(value);
                             }}
                           />
-                        </div >
-                      <div className="space-y-2">
-                          <FormField floating>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup floating>
                             <Input
                               type="password"
                               maxLength="20"
@@ -299,7 +640,7 @@ const EmployeeForm = ({
                               }
                             />
                             <Label htmlFor="password">
-                              <span className="text-danger">* </span>Password
+                              <span className="text-red-600">* </span>Password
                             </Label>
                             {props.errors?.password &&
                               props.touched.password && (
@@ -307,9 +648,9 @@ const EmployeeForm = ({
                                   {props.errors?.password}
                                 </div>
                               )}
-                          </FormField>
-                        </div >
-                        <div className="space-y-2">
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
                           <PhoneNumberInput
                             name={"mobile_no"}
                             error={props.errors?.mobile_no}
@@ -323,8 +664,8 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </div >
-                      <div className="space-y-2">
+                        </Col>
+                        <Col md="6">
                           <TextAreaInput
                             name={"residential_address"}
                             error={props.errors?.residential_address}
@@ -337,14 +678,14 @@ const EmployeeForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                        </div >
-                        <div className="space-y-2">
+                        </Col>
+                        <Col md="12">
                           <h5 className="mt-4 mb-3 fw-700">Work information</h5>
-                        </div >
+                        </Col>
                       </>
                     )}
                     <>
-                    <div className="space-y-2">
+                      <Col md="6" className="z-0">
                         <SelectComponent
                           name={"department_name"}
                           options={departments}
@@ -357,8 +698,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </div >
-                      <div className="space-y-2"> md={6}>
+                      </Col>
+                      <Col md={6}>
                         <SelectComponent
                           name={"employee_location"}
                           options={countryOptions}
@@ -371,8 +712,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </div >
-                      <div className="space-y-2"> md={6} className="z-0">
+                      </Col>
+                      <Col md={6} className="z-0">
                         <SelectComponent
                           name={"department_position"}
                           options={designations}
@@ -385,8 +726,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </div >
-                      <div className="space-y-2"> md={6}>
+                      </Col>
+                      <Col md={6}>
                         <SelectComponent
                           name={"user_role"}
                           options={UserRoles}
@@ -399,9 +740,9 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </div >
-                      <div className="space-y-2"> md="6" className="z-0">
-                        <FormField>
+                      </Col>
+                      <Col md="6" className="z-0">
+                        <FormGroup>
                           <SelectComponent
                             name={"employee_type"}
                             options={jobRoles}
@@ -414,10 +755,10 @@ const EmployeeForm = ({
                               props.setFieldValue(field, value);
                             }}
                           />
-                        </FormField>
-                      </div >
-                    <div className="space-y-2">
-                        <FormField>
+                        </FormGroup>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
                           <SelectComponent
                             name={"employee_status"}
                             options={employeeStatus}
@@ -430,9 +771,9 @@ const EmployeeForm = ({
                               props.setFieldValue(field, value);
                             }}
                           />
-                        </FormField>
-                      </div >
-                      <div className="space-y-2"> md={6} className="z-0">
+                        </FormGroup>
+                      </Col>
+                      <Col md={6} className="z-0">
                         <SelectComponent
                           name={"employee_work_type"}
                           options={workplaceTypes}
@@ -445,9 +786,9 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </div >
+                      </Col>
 
-                      <div className="space-y-2"> md={6}>
+                      <Col md={6}>
                         <SelectComponent
                           name={"direct_report"}
                           options={managers}
@@ -459,9 +800,9 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </div >
+                      </Col>
 
-                      <div className="space-y-2"> md={6}>
+                      <Col md={6}>
                         <SelectMultiInputComponent
                           name={"indirect_report"}
                           options={managers}
@@ -473,8 +814,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </div >
-                      <div className="space-y-2">
+                      </Col>
+                      <Col md={6} className="z-0">
                         <SelectComponent
                           name={"department_manager"}
                           options={HeadOfDepartmentOptions}
@@ -487,8 +828,8 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </div >
-                      <div className="space-y-2">
+                      </Col>
+                      <Col md={6}>
                         <DateInput
                           name={"joining_date"}
                           error={props.errors?.joining_date}
@@ -500,12 +841,12 @@ const EmployeeForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </div >
+                      </Col>
                     </>
-                  </div>
-                  <div>
+                  </Row>
+                  <Row>
                     {!isEditMode && (
-                     <div className="space-y-2">
+                      <Col md="2">
                         <Link
                           type="button"
                           className="btn btn-outline-dark w-100"
@@ -513,22 +854,20 @@ const EmployeeForm = ({
                         >
                           Cancel
                         </Link>
-                      </div >
+                      </Col>
                     )}
-                    <div className="space-y-2">
+                    <Col md="4">
                       <Button type="submit" className="btn btn-dark w-100">
                         {id ? "Update" : "Add"}
                       </Button>
-                    </div >
-                  </div>
-                  </SheetContent>
-                  </SheetContent>
+                    </Col>
+                  </Row>
                 </Form>
               )}
             </Formik>
-          </Sheet>
-       
-      )}
+          </Col>
+        </Row>
+      )} */}
     </>
   );
 };

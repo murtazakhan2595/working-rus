@@ -3,7 +3,7 @@ import { useStore } from "../../app/hooks/use-store";
 import { useSidebarToggle } from "../../app/hooks/use-sidebar-toggle";
 import { Outlet} from "react-router-dom";
 // import { className } from 'react-C-dom';
-export function ContentLayout({ title, children , isSidebarOpen }) {
+export function ContentLayout({ title, children , isSidebarOpen, userRole }) {
     const sidebar = useStore(useSidebarToggle, (state) => state);
 
     if (!sidebar) return null;
@@ -11,10 +11,10 @@ export function ContentLayout({ title, children , isSidebarOpen }) {
   return (
     <>
     <div className="nav">
-      <Navbar title={title} />
+      <Navbar title={title} userRole={userRole}/>
     
     </div>
-    <div className="Main-content rounded-[24px] bg-mauve-200 screen">
+    <div className="main-content rounded-[24px] bg-mauve-200 screen">
 
       <Outlet isSidebarOpen={isSidebarOpen} />
     </div>

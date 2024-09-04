@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "../../../@/lib/utils"
+import { cn } from "../../src/@/lib/utils.js"
 
 const Card = React.forwardRef(({ className, ...props }, ref) => (
   <div
@@ -32,7 +32,7 @@ CardTitle.displayName = "CardTitle"
 const CardDescription = React.forwardRef(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-slate-500 dark:text-slate-400", className)}
+    className={cn("text-sm text-mauve-500 dark:text-mauve-400", className)}
     {...props} />
 ))
 CardDescription.displayName = "CardDescription"

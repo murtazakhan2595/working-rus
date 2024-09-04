@@ -1,25 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { Row, Col, Form } from "reactstrap";
-import { Formik } from "formik";
 import { getAllCountries } from "countries-and-timezones";
+import { Formik } from "formik";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { Form } from "reactstrap";
+import {
+  CustomDarkButton,
+  EmailInput,
+  ImageInput,
+  PhoneNumberInput,
+  SelectComponent,
+  TextInput,
+} from "../../../../../components/form-control";
+import PageLoader from "../../../../../components/PageLoader.jsx";
+import { maritalStatus } from "../../../../../data/Data.js";
 import {
   getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,
 } from "../../../../hooks/employee";
-import { getPersonalInfo } from "../../../../utils/MappingObjects/mapEmployeeData.jsx";
 import { validationPersonalInfoFormSchema } from "../../../../utils/FormSchema/employeeFormSchema";
-import {
-  SelectComponent,
-  ImageInput,
-  DateInput,
-  TextInput,
-  PhoneNumberInput,
-  EmailInput,
-  CustomDarkButton,
-} from "../../../../../components/form-control";
-import PageLoader from "../../../../../components/PageLoader.jsx";
-import { maritalStatus } from "../../../../../data/Data.js";
+import { getPersonalInfo } from "../../../../utils/MappingObjects/mapEmployeeData.jsx";
+import { Label } from "../../../../../src/@/components/ui/label";
+import { Input } from "../../../../../components/ui/input";
+import { Button } from "../../../../../components/ui/button";
+import { format } from "date-fns"
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from '../../../../../src/@/components/ui/calendar';
+
+
 
 // Get country options for Select component
 const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
@@ -32,6 +39,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
   const [personalInfo, setPersonalInfo] = useState({});
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [date, setDate] = useState(new Date());
+  
 
   useEffect(() => {
     getEmployeePersonalInfoData(employeeId)
@@ -59,14 +68,14 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
   return (
     <>
       {isLoading ? (
-        <Row>
-          <Col lg={12}>
+        <div>
+          <div className="space-y-4">
             <PageLoader />
-          </Col>
-        </Row>
+          </div>
+        </div>
       ) : (
-        <Row>
-          <Col lg={12}>
+        <div>
+          <div className="space-y-4">
             <Formik
               initialValues={personalInfo}
               ref={formRef}
@@ -89,9 +98,9 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
               }}
             >
               {(props) => (
-                <Form onSubmit={props.handleSubmit}>
-                  <Row>
-                    <Col md="12">
+                <Form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                  <div className="space-y-4">
+                  <div className="space-y-2">
                       <ImageInput
                         name={"profile_picture"}
                         error={props.errors.profile_picture}
@@ -105,18 +114,19 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         }}
                         setImageError={setImageError}
                       />
-                    </Col>
+                    </div>
                     {employeeId && (
-                      <Col lg={12} className="mb-3 ml-1">
-                        <h6 className="fw-700 mb-0">
+                      <div className="space-y-2">
+                        <h6 className="mb-0 fw-700">
                           {props.values.first_name} {props.values.last_name}
                         </h6>
                         <span className="opacity-65 fs-12">
                           ID: {`TXB-${employeeId.toString().padStart(4, "0")}`}
                         </span>
-                      </Col>
+                      </div>
                     )}
-                    <Col md="6">
+                    <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
                       <TextInput
                         name={"first_name"}
                         error={props.errors.first_name}
@@ -128,8 +138,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           props.handleChange(field)(value);
                         }}
                       />
-                    </Col>
-                    <Col md={6}>
+                    </div>
+                    <div className="space-y-2">
                       <PhoneNumberInput
                         name={"mobile_no"}
                         error={props.errors.mobile_no}
@@ -143,8 +153,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           props.setFieldValue(field, value);
                         }}
                       />
-                    </Col>
-                    <Col md="6">
+                    </div>
+                    <div className="space-y-2">
                       <TextInput
                         name={"last_name"}
                         error={props.errors.last_name}
@@ -156,8 +166,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           props.handleChange(field)(value);
                         }}
                       />
-                    </Col>
-                    <Col md="6">
+                    </div>
+                    <div className="space-y-2">
                       <EmailInput
                         name={"other_email"}
                         error={props.errors.other_email}
@@ -169,8 +179,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           props.handleChange(field)(value);
                         }}
                       />
-                    </Col>
-                    <Col md="6">
+                    </div>
+                    <div className="space-y-2">
                       <TextInput
                         name={"nic"}
                         error={props.errors.nic}
@@ -183,8 +193,8 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         }}
                         regEx={/^[0-9]+$/}
                       />
-                    </Col>
-                    <Col md="6">
+                    </div>
+                    <div className="space-y-2">
                       <TextInput
                         name={"father_name"}
                         error={props.errors.father_name}
@@ -196,8 +206,10 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           props.handleChange(field)(value);
                         }}
                       />
-                    </Col>
-                    <Col md="6">
+                    </div>
+                    </div>
+                    
+                    <div className="space-y-2">
                       <TextInput
                         name={"mother_name"}
                         error={props.errors.mother_name}
@@ -209,9 +221,9 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           props.handleChange(field)(value);
                         }}
                       />
-                    </Col>
+                    </div>
 
-                    <Col md={6} className="z-0">
+                    <div className="space-y-2">
                       <SelectComponent
                         name={"nationality"}
                         options={countryOptions}
@@ -223,20 +235,37 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           props.setFieldValue(field, value);
                         }}
                       />
-                    </Col>
-                    <Col md={6}>
-                      <DateInput
-                        name={"date_of_birth"}
-                        error={props.errors.date_of_birth}
-                        touch={props.touched.date_of_birth}
-                        value={props.values.date_of_birth}
-                        label={"Date of Birth"}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                      />
-                    </Col>
-                    <Col md={6} className="z-0">
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="joiningDate">Joining Date</Label>
+                      <div className="flex">
+                        <Input
+                          id="joiningDate"
+                          type="text"
+                          placeholder="Select date"
+                          value={date ? format(date, "PPP") : ""}
+                          readOnly
+                          className="w-[calc(100%-40px)]"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-[40px] px-0"
+                          onClick={() => setDate(new Date())}
+                        >
+                          <CalendarIcon className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      {date && (
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          className="border rounded-md"
+                        />
+                      )}
+                    </div>
+                    <div className="space-y-2">
                       <SelectComponent
                         name={"marital_status"}
                         options={maritalStatus}
@@ -248,25 +277,25 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           props.setFieldValue(field, value);
                         }}
                       />
-                    </Col>
-                  </Row>
+                    </div>
+                  </div>
                   <hr />
-                  <Row>
-                    <Col md={6} className="text-left"></Col>
-                    <Col md="6" className="text-right">
+                  <div>
+                    <div md={6} className="text-left"></div>
+                    <div md="6" className="text-right">
                       <CustomDarkButton
                         onClick={() => {
                           props.handleSubmit();
                         }}
                         label={isEditMode ? "Save" : "Next"}
                       />
-                    </Col>
-                  </Row>
+                    </div>
+                  </div>
                 </Form>
               )}
             </Formik>
-          </Col>
-        </Row>
+          </div>
+        </div>
       )}
     </>
   );

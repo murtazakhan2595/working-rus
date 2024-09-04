@@ -5,7 +5,7 @@ import { DashbaordJobApplicationColumns } from "app/modules/Dashboard/Screens/Se
 import { fetchJobPosts, getJobApplications, getJobApplicants } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../../src/@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
 import { Button } from 'components/ui/button';
 import TableCustom from './../../../../../components/TableCustom';
 import { Briefcase, Users, UserCheck, UserPlus } from "lucide-react";
@@ -125,7 +125,7 @@ function StatItem({ icon: Icon, label, value }) {
       <Icon className="h-7 w-7 text-plum-1100" aria-hidden="true" />
       </div>
        
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-start">
       <div className="text-2xl font-bold leading-none tabular-nums">{value}</div>
         <div className="font-xl medium text-muted-foreground">{label}</div>
       </div>

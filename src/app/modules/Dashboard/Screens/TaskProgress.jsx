@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Label, Pie, PieChart } from "recharts"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "../../../../src/@/components/ui/chart"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../../src/@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { Button } from "components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react"
 
@@ -177,7 +177,7 @@ export default function Component() {
           </ChartContainer>
       </CardContent>
       <CardFooter className="gap-2 text-sm flex-wra ">
-      <div className="space-x-4  xl:flex">
+      <div className="space-x-4 xl:flex">
           {Object.values(chartConfig).map((item, index) => (
             <div key={index} className="flex items-center text-sm text-mauve-900">
               <div className={`w-3 h-3 mr-2 rounded-sm`} style={{ backgroundColor: item.color }}></div>

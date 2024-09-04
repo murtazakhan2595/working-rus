@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardSubtitle } from "../../../../src/@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardSubtitle } from "../../../../components/ui/card";
 import { Button } from '../../../../components/ui/button';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../../../../src/@/components/ui/table";
 import { Badge } from '../../../../components/ui/badge';
