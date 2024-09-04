@@ -21,7 +21,7 @@ export default function TableCustom({
   itemsPerPage = 10,
   className = "",
   showHeader = true,  // Show header by default
-}: TableCustomProps) {
+}) {
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
     page: tableOptions?.page ?? 1,
@@ -67,7 +67,7 @@ export default function TableCustom({
     return employees.slice(startIndex, startIndex + itemsPerPage);
   }, [employees, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(employees.length / itemsPerPage);
+  const totalPages = Math.ceil(dataTotalSize / itemsPerPage); 
 
   const handleSort = (key) => {
     setSort((prevSort) => ({
@@ -76,8 +76,14 @@ export default function TableCustom({
     }));
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+
+  const handlePageChange = (name, page) => {
+    // if (tableOptions.onPageChange) {
+    //   tableOptions.onPageChange( name ,page);
+    // }
+    if (page >= 1 && page <= totalPages) {
+      tableOptions.onPageChange("page", page);
+    }
   };
 
   return (
@@ -163,8 +169,8 @@ export default function TableCustom({
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <PaginationItem key={page}>
                     <PaginationLink
-                      onClick={() => handlePageChange(page)}
-                      isActive={page === currentPage}
+                      onClick={() => handlePageChange('page', page)}
+                      isActive={options.page}
                     >
                       {page}
                     </PaginationLink>
@@ -172,7 +178,7 @@ export default function TableCustom({
                 ))}
                 <PaginationItem>
                   <PaginationNext
-                    onClick={() => handlePageChange(currentPage + 1)}
+                    onClick={() => handlePageChange('page', options.page + 1 )}
                     disabled={currentPage === totalPages}
                   />
                 </PaginationItem>
