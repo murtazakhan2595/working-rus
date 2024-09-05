@@ -1,7 +1,6 @@
-
 import React, { useState } from "react";
 // import Select from "react-select";
-import { Label } from "../src/@/components/ui/label"
+import { Label } from "../src/@/components/ui/label";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
@@ -13,8 +12,23 @@ import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectGroup, SelectContent, SelectItem } from "../src/@/components/ui/select"
-import { Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverClose, PopoverHeader, PopoverBody, } from "../src/@/components/ui/popover";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+  SelectContent,
+  SelectItem,
+} from "../src/@/components/ui/select";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverClose,
+  PopoverHeader,
+  PopoverBody,
+} from "../src/@/components/ui/popover";
 import { ChevronsUpDown, Check } from "lucide-react";
 import {
   Command,
@@ -23,7 +37,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "../src/@/components/ui/command"
+} from "../src/@/components/ui/command";
 
 const SelectComponent = ({
   name,
@@ -40,52 +54,25 @@ const SelectComponent = ({
   const [open, setOpen] = useState(false);
   
   return (
-    <div className="flex flex-col" >
-      <Label for={name}>{required && <span className="text-red-600">* </span>} {label}</Label>
+    <div>
+      <Label for={name}>
+        {required && <span className="text-red-600">* </span>} {label}
+      </Label>
       {error && touch && <div className="text-red-600">{error || ""}</div>}
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="justify-between "
-          >
-            {value
-              ? options.find((option) => option.value === value)?.label
-              : label}
-            <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
-          <Command>
-            <CommandInput placeholder="Search..." />
-            <CommandList>
-              <CommandEmpty>No options found.</CommandEmpty>
-              <CommandGroup>
-                {options.map((option) => (
-                  <CommandItem
-                    key={option.value}
-                    value={option.value}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
-                      onChange(currentValue);
-                      setOpen(false);
-                    }}
-                  >
-                    <Check
-                      className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"
-                        }`}
-                    />
-                    {option.label}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-
+      <Select>
+        <SelectTrigger>
+          <SelectValue placeholder={label} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     </div>
   );
 };
@@ -124,9 +111,7 @@ const SelectMultiInputComponent = ({
           </SelectGroup>
         </SelectContent>
       </Select>
-
     </div>
-
   );
 };
 
@@ -151,17 +136,16 @@ const DateInput = ({
         >
           {required && <span className="text-red-600">* </span>} {label}
         </Label>
-        {error && touch && (
-          <div className="text-red-600 d-block">{error}</div>
-        )}
+        {error && touch && <div className="text-red-600 d-block">{error}</div>}
         <DatePicker
           name={name}
           id={name}
           autoComplete="off"
           minDate={minDate}
           disabled={disabled}
-          className={`form-control ${error && touch ? "is-invalid" : ""} ${value ? "border-mauve-600" : ""
-            }`}
+          className={`form-control ${error && touch ? "is-invalid" : ""} ${
+            value ? "border-mauve-600" : ""
+          }`}
           value={date && !isNaN(date.getTime()) ? date : ""}
           selected={date && !isNaN(date.getTime()) ? date : new Date()}
           dropdownMode="select"
@@ -178,7 +162,6 @@ const DateInput = ({
           showYearDropdown
           dateFormat="dd-MM-yyyy"
         />
-
       </div>
     </>
   );
@@ -225,7 +208,6 @@ const TextInput = ({
           }}
         />
 
-
         {error && touch && <div className="text-red-600">{error}</div>}
       </div>
     </>
@@ -248,20 +230,26 @@ const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
             onChange(name, !value);
           }}
         />{" "}
-
       </div>
     </>
   );
 };
 
-
-
-const PhoneNumberInput = ({ name, disabled, label, error, touch, onChange }) => {
-  const [selectedCountryCode, setSelectedCountryCode] = useState('');
-  const [inputValue, setInputValue] = useState('');
+const PhoneNumberInput = ({
+  name,
+  disabled,
+  label,
+  error,
+  touch,
+  onChange,
+}) => {
+  const [selectedCountryCode, setSelectedCountryCode] = useState("");
+  const [inputValue, setInputValue] = useState("");
 
   const handleSelectChange = (value) => {
-    const selectedOption = countryCodesOptions.find(option => option.value === value);
+    const selectedOption = countryCodesOptions.find(
+      (option) => option.value === value
+    );
     if (selectedOption) {
       setSelectedCountryCode(selectedOption.code);
       setInputValue(selectedOption.code); // Set input value to country code
@@ -285,31 +273,35 @@ const PhoneNumberInput = ({ name, disabled, label, error, touch, onChange }) => 
     <div className="">
       <Label check>{label}</Label>
       <div class="grid grid-cols-6 gap-0">
-        <div class="col-start-1 col-span-2 "><Select onValueChange={handleSelectChange}>
-          <SelectTrigger className="">
-            <SelectValue placeholder="Select a country" />
-          </SelectTrigger>
-          <SelectContent>
-            {countryCodesOptions.map(option => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select></div>
-        <div class="col-start-3 col-span-4"> <Input
-          id={name}
-          name={name}
-          disabled={disabled}
-          autoComplete="Off"
-          placeholder={"Enter " + label}
-          value={inputValue}
-          className={error && touch ? "is-invalid" : ""}
-          onChange={handleInputChange}
-        />
-        </div></div>
+        <div class="col-start-1 col-span-2 ">
+          <Select onValueChange={handleSelectChange}>
+            <SelectTrigger className="">
+              <SelectValue placeholder="Select a country" />
+            </SelectTrigger>
+            <SelectContent>
+              {countryCodesOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div class="col-start-3 col-span-4">
+          {" "}
+          <Input
+            id={name}
+            name={name}
+            disabled={disabled}
+            autoComplete="Off"
+            placeholder={"Enter " + label}
+            value={inputValue}
+            className={error && touch ? "is-invalid" : ""}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
     </div>
-
   );
 };
 
@@ -447,9 +439,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
                 className="mb-2 form-control"
                 style={{ minHeight: "auto", fontSize: "12px" }}
               />
-              {error && touch && (
-                <div className="text-red-600">{error}</div>
-              )}
+              {error && touch && <div className="text-red-600">{error}</div>}
             </div>
             <span
               className="fw-lighter"
@@ -586,7 +576,6 @@ const TextAreaInput = ({
             }
           }}
         />
-
       </div>
     </>
   );
@@ -603,7 +592,6 @@ const TextAreaEditorInput = ({
   regEx,
   maxLength,
 }) => {
-
   return (
     <>
       <div>
@@ -645,7 +633,6 @@ const TextAreaEditorInput = ({
             onChange(name, option);
           }}
         />
-
       </div>
     </>
   );
@@ -691,216 +678,134 @@ function dropdownStyles(backgroundColor, fontSize, height) {
 
 const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
   const classNamesStyle =
-    "focus:outline-none focus:border-non bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
+    "focus:outline-none focus:border-none bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
   const width = "w-56";
   const height = "h-[38px]";
-  const [openDepartment, setOpenDepartment] = useState(false);
-  const [openDesignation, setOpenDesignation] = useState(false);
   const [openRole, setOpenRole] = useState(false);
-  const [selectedValue, setValue] = useState('');
-  return (
-    <>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
-        {filters &&
-          filters.map((filter, index) => {
-            if (filter.type === "search") {
-              return (
-                <div className="relative" key={index}>
-                  <IoIosSearch className="absolute top-[30%] left-3 text-baseGray" />
-                  <input
-                    type="search"
-                    style={{ paddingLeft: "2.5rem" }}
-                    placeholder={filter.placeholder}
-                    className={`${filter.className ?? classNamesStyle} ${filter.width ?? width
-                      } ${filter.height ?? height}`}
-                    name={filter.name}
-                    id={filter.name}
-                    onChange={(option) => {
-                      onChange(filter.name, option.target.value);
-                    }}
-                  />
-                </div>
-              );
-            } else if (filter.type === "text") {
-              return (
-                <input
-                  key={index}
-                  type="text"
-                  placeholder={filter.placeholder}
-                  className={`${filter.className ?? classNamesStyle} ${filter.width ?? width
-                    } ${filter.height ?? height}`}
-                  name={filter.name}
-                  id={filter.name}
-                  onChange={(option) => {
-                    onChange(filter.name, option.target.value);
+  const [openDesignation, setOpenDesignation] = useState(false);
+  const [openDepartment, setOpenDepartment] = useState(false);
+  const [selectedValue, setValue] = useState("");
+
+
+  const handleInputChange = (filter, event) => {
+    onChange(filter.name, event.target.value);
+    
+  };
+  
+
+  const renderInputField = (filter, index) => {
+    return <input
+      key={index}
+      type={filter.type}
+      placeholder={filter.placeholder}
+      className={`${filter.className ?? classNamesStyle} ${filter.width ?? width} ${filter.height ?? height}`}
+      name={filter.name}
+      id={filter.name}
+      onChange={(event) => handleInputChange(filter, event)}
+    />
+  }
+
+  const renderPopoverSelect = (filter, index, open, setOpen) => {
+    return (<Popover key={index} open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-[200px] justify-between"
+        >
+          {filter.option.value
+            ? filter.option.find((option) => option.value === value)?.label
+            : filter.placeholder}
+          <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <Command>
+          <CommandInput placeholder="Search..." />
+          <CommandList>
+            <CommandEmpty>No option found.</CommandEmpty>
+            <CommandGroup>
+              {filter.option.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.value}
+                  onSelect={(currentValue) => {
+                    setValue(currentValue === value ? "" : currentValue);
+                    onChange(filter.name, option.value);
+                    setOpen(false);
                   }}
-                />
-              );
-            } else if (filter.type === "select-one") {
-              return (
-                <Popover key={index} openRole={openRole} onOpenChange={setOpenRole}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={openRole}
-                      className={`w-[200px] justify-between`}
-                    >
-                      {value
-                        ? filter.option.find((option) => option.value === value)?.label
-                        : filter.placeholder}
-                      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search framework..." />
-                      <CommandList>
-                        <CommandEmpty>No framework found.</CommandEmpty>
-                        <CommandGroup>
-                          {filter.option.map((option) => (
-                            <CommandItem
-                              key={option.value}
-                              value={option.value}
-                              onSelect={(currentValue) => {
-                                setValue(currentValue === value ? "" : currentValue);
-                                onChange(filter.name, currentValue);
-                                setOpenRole(false);
-                              }}
-                            >
-                              <Check
-                                className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
-                              />
-                              {option.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-
-              );
-            } else if (filter.type === "select-three") {
-              return (
-                <Popover key={index} openRole={openRole} onOpenChange={setOpenRole}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={openRole}
-                      className={`w-[200px] justify-between`}
-                    >
-                      {value
-                        ? filter.option.find((option) => option.value === value)?.label
-                        : filter.placeholder}
-                      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search framework..." />
-                      <CommandList>
-                        <CommandEmpty>No framework found.</CommandEmpty>
-                        <CommandGroup>
-                          {filter.option.map((option) => (
-                            <CommandItem
-                              key={option.value}
-                              value={option.value}
-                              onSelect={(currentValue) => {
-                                setValue(currentValue === value ? "" : currentValue);
-                                onChange(filter.name, currentValue);
-                                setOpenRole(false);
-                              }}
-                            >
-                              <Check
-                                className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
-                              />
-                              {option.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-
-              );
-            } else if (filter.type === "select-two") {
-              return (
-                <Popover key={index} openDesignation={openDesignation} onOpenChange={setOpenDesignation}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={openDesignation}
-                      className={`w-[200px] justify-between`}
-                    >
-                      {value
-                        ? filter.option.find((option) => option.value === value)?.label
-                        : filter.placeholder}
-                      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0">
-                    <Command>
-                      <CommandInput placeholder="Search framework..." />
-                      <CommandList>
-                        <CommandEmpty>No framework found.</CommandEmpty>
-                        <CommandGroup>
-                          {filter.option.map((option) => (
-                            <CommandItem
-                              key={option.value}
-                              value={option.value}
-                              onSelect={(currentValue) => {
-                                setValue(currentValue === value ? "" : currentValue);
-                                onChange(filter.name, currentValue);
-                                setOpenDesignation(false);
-                              }}
-                            >
-                              <Check
-                                className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
-                              />
-                              {option.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-
-              );
-            } else if (filter.type === "date") {
-              const date = filter.value ? new Date(moment(filter.value)) : null;
-              return (
-                <div style={{ width: "fit-content" }}>
-                  <DatePicker
-                    key={index}
-                    name={filter.name}
-                    id={filter.name}
-                    className={`${filter.className ?? classNamesStyle} ${filter.width ?? width
-                      } ${filter.height ?? height}`}
-                    dropdownMode="select"
-                    placeholderText={filter.placeholder}
-                    value={date}
-                    selected={date}
-                    autoComplete="off"
-                    onChange={(value) => {
-                      if (value) {
-                        value = moment(value).format("YYYY-MM-DD");
-                        onChange(filter.name, value);
-                      } else {
-                        onChange(filter.name, null);
-                      }
-                    }}
-                    showMonthDropdown
-                    showYearDropdown
-                    dateFormat="dd-MM-yyyy"
+                >
+                  <Check
+                    className={`mr-2 h-4 w-4 ${
+                      value === option.value ? "opacity-100" : "opacity-0"
+                    }`}
                   />
-                </div>
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>)
+  }
+
+  const renderDatePicker = (filter, index) => {
+    const date = filter.value ? new Date(moment(filter.value)) : null;
+    return (
+      <div key={index} style={{ width: "fit-content" }}>
+        <DatePicker
+          name={filter.name}
+          id={filter.name}
+          className={`${filter.className ?? classNamesStyle} ${
+            filter.width ?? width
+          } ${filter.height ?? height}`}
+          dropdownMode="select"
+          placeholderText={filter.placeholder}
+          selected={date}
+          autoComplete="off"
+          onChange={(value) => {
+            const formattedValue = value
+              ? moment(value).format("YYYY-MM-DD")
+              : null;
+            onChange(filter.name, formattedValue);
+          }}
+          showMonthDropdown
+          showYearDropdown
+          dateFormat="dd-MM-yyyy"
+        />
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
+      {filters &&
+        filters.map((filter, index) => {
+          switch (filter.type) {
+            case "search":
+            case "text":
+              return renderInputField(filter, index);
+            case "select-one":
+              return renderPopoverSelect(filter, index, openDepartment, setOpenDepartment);
+            case "select-two":
+              return renderPopoverSelect(
+                filter,
+                index,
+                openDesignation,
+                setOpenDesignation
               );
-            } else if (filter.type === "sorting") {
+            case "select-three":
+              return renderPopoverSelect(
+                filter,
+                index,
+                openRole,
+                setOpenRole,
+              );
+            case "date":
+              return renderDatePicker(filter, index);
+            case "sorting":
               return (
                 <CheckboxMenu
                   key={index}
@@ -914,14 +819,14 @@ const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
                   className={filter.className ?? null}
                 />
               );
-            } else {
+            default:
               return <div key={index}></div>;
-            }
-          })}
-      </div>
-    </>
+          }
+        })}
+    </div>
   );
 };
+
 export {
   SelectComponent,
   SelectMultiInputComponent,
