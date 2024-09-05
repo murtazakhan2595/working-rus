@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle
 } from "../../../components/ui/card.jsx"
 import { EmployeeColumns } from 'app/utils/Types/TableColumns';
 import TableCustom from 'components/TableCustom';
@@ -38,8 +36,6 @@ export default function Component() {
     sizePerPage: 10,
   });
 
-
-
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -68,65 +64,66 @@ export default function Component() {
     };
 
     fetchData();
-  }, [options, filterData]);
+  }, [options, filterData, selectedStatus]);
 
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const [departmentResponse, designationResponse] = await Promise.all([
-          getDepartmentList(),
-          getDesignationList()
-        ]);
+        const departmentResponse = await getDepartmentList();
         setDepartments(departmentResponse);
+        const designationResponse = await getDesignationList();
         setDesignations(designationResponse);
       } catch (error) {
-        console.error('Error fetching lists:', error);
+        console.error(error);
       }
     };
 
     fetchLists();
-  }, []);
+  }, []); 
 
   const handleFilterChange = (filterName, filterValue) => {
-    onPageChange('page', 1);
-    setFilterData(prevFilters => ({
-      ...prevFilters,
-      [filterName]: filterValue || undefined
-    }));
+    onPageChange("page", 1);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
   };
+
+  // Extract unique employee statuses
+  const employeeStatuses = ['all', ...new Set(employeeData?.results.map(employee => employee.employee_status))];
 
   const Blocks = (blocks) => (
     <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center lg:flex-row lg:items-center md:flex-row md:items-center">
-
-      
-
-        {blocks.map((block) => (
-          <div key={block.label} className="flex flex-row items-center justify-start gap-2 ">
-            <div className="flex items-center justify-center p-4 rounded-full bg-mauve-200">
-              <block.icon className="h-7 w-7 text-plum-1100" aria-hidden="true"/>
+      {blocks.map((block) => (
+        <div key={block.label} className="flex flex-row items-center justify-start gap-2 ">
+          <div className="flex items-center justify-center p-4 rounded-full bg-mauve-200">
+            <block.icon className="h-7 w-7 text-plum-1100" aria-hidden="true" />
+          </div>
+          <div className="flex flex-col items-start">
+            <div className="text-2xl font-bold leading-none tabular-nums">
+              {block.value}
             </div>
-            <div className="flex flex-col items-start">
-              <div className="text-2xl font-bold leading-none tabular-nums">
-              {block.value}     
-              </div>
-              <div className="font-xl medium text-muted-foreground">
-                         {block.label}
-              </div>
-            </div>
-            <div>
+            <div className="font-xl medium text-muted-foreground">
+              {block.label}
             </div>
           </div>
-        ))}
-      </div>
-  
-
+        </div>
+      ))}
+    </div>
   );
 
+  // Filter employees based on selected status
   const filteredEmployees = employeeData.results.filter(employee => {
     if (selectedStatus === 'all') return true;
-    return employee.status === selectedStatus;
+    return employee.employee_status === selectedStatus;
   });
 
+  const employeeStatus = ["All", "Active", "Inactive"]
   return (
     <div className="flex flex-col gap-4 profile-management">
       <Header content={<SheetOnBorading />} />
@@ -140,9 +137,11 @@ export default function Component() {
       <Tabs defaultValue="all" className="w-full" onValueChange={setSelectedStatus}>
         <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="inline-flex items-center justify-center p-1 bg-white rounded-lg h-9 text-mauve-900">
-            <TabsTrigger value="all">All Employees</TabsTrigger>
-            <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="inactive">Inactive</TabsTrigger>
+            {employeeStatuses && employeeStatuses?.map(status => (
+              <TabsTrigger key={status} value={status}>
+                {status?.charAt(0).toUpperCase() + status?.slice(1)}
+              </TabsTrigger>
+            ))}
           </TabsList>
           <FilterInput
             filters={[
@@ -154,8 +153,7 @@ export default function Component() {
             onChange={handleFilterChange}
           />
         </div>
-
-        {['all', 'active', 'inactive'].map((status) => ( 
+        {employeeStatuses.map(status => (
           <TabsContent key={status} value={status}>
             {isLoading ? (
               <PageLoader />
@@ -168,16 +166,13 @@ export default function Component() {
                     pagination={true}
                     dataTotalSize={employeeData.count || 0}
                     tableOptions={tableOptions}
-
                   />
                 </CardContent>
               </Card>
-
             )}
           </TabsContent>
         ))}
       </Tabs>
-
     </div>
   );
 }
