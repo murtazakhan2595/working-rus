@@ -105,10 +105,10 @@ const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
                   }}
                 >
                   {(props) => (
-                    <Form onSubmit={props.handleSubmit}>
+                    <form onSubmit={props.handleSubmit}>
                       <Row className="m-0">
                         <Col md="12">
-                          <h5 className="fw-700 mb-3 mt-4">
+                          <h5 className="mt-4 mb-3 fw-700">
                             {isEditMode ? "Edit" : "Add New"} Project
                           </h5>
                         </Col>
@@ -175,7 +175,7 @@ const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
                           </span>
                         </Col>
                         <Col md="12" className="mb-3">
-                          <div className="flex justify-start gap-2 items-center h-100">
+                          <div className="flex items-center justify-start gap-2 h-100">
                             {props.values.project_members &&
                               props.values.project_members.length > 0 &&
                               props.values.project_members.map(
@@ -195,7 +195,7 @@ const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
                               }}
                               className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
                             >
-                              <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
+                              <span className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
                                 <RxPlus />
                               </span>
                             </div>
@@ -241,7 +241,7 @@ const ProjectModal = ({ employees, onClose, isEditMode, projectId }) => {
                           </Button>
                         </Col>
                       </Row>
-                    </Form>
+                    </form>
                   )}
                 </Formik>
               )}

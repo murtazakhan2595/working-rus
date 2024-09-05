@@ -62,7 +62,7 @@ const JobApplicationForm = () => {
             <CardHeader>
               <Row>
                 <Col lg={10}>
-                  <div className="h4 mb-0 d-flex align-items-center">
+                  <div className="mb-0 h4 d-flex align-items-center">
                     <i className="nav-icon fas fa-id-card-alt" />
                     <span className="ml-2 fw-700">Application Form</span>
                   </div>
@@ -93,7 +93,7 @@ const JobApplicationForm = () => {
                         }}
                       >
                         {(props) => (
-                          <Form onSubmit={props.handleSubmit}>
+                          <form onSubmit={props.handleSubmit}>
                             <Row>
                               <Col md="6">
                                 <TextInput
@@ -272,7 +272,7 @@ const JobApplicationForm = () => {
                                 </Button>
                               </Col>
                             </Row>
-                          </Form>
+                          </form>
                         )}
                       </Formik>
                     </Col>

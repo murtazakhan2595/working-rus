@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-    CardHeader,
-    CardBody,
-    Row,
-    Col,
-    Button,
+    
     Form,
-    Label,
-    FormGroup,
+   
 } from 'reactstrap';
 import { Formik } from 'formik';
 import { connect } from "react-redux";
@@ -15,10 +10,9 @@ import { getEmployeeBankDetailsData, saveEmployeeBankDetailsData } from '../../.
 import { getBankDetails } from '../../../../utils/MappingObjects/mapEmployeeData.jsx'
 import {
     TextInput,
-    CustomDarkButton,
-    CustomLightOutlineButton,
-} from '../../../../../components/form-control.jsx';
+  } from '../../../../../components/form-control.jsx';
 import PageLoader from '../../../../../components/PageLoader.jsx';
+import { Button } from "components/ui/button.jsx";
 
 const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, prevStep }) => {
 
@@ -45,38 +39,36 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
 
     return (
         <>
-            {isLoading ?
-                <Row>
-                    <Col lg={12}>
+            {isLoading ? (
+                <div>
+                    <div className="space-y-4">
                         <PageLoader />
-                    </Col>
-                </Row>
-                :
-                <Row>
-                    <Col lg={12}>
-                        <Formik
-                            initialValues={bankInfo}
-                            ref={formRef}
-                            onSubmit={(values, { resetForm }) => {
-                                handleSubmit(values, resetForm);
-                            }}
-                            validate={(values) => {
-                                const errors = {};
+                    </div>
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    <Formik
+                        initialValues={bankInfo}
+                        ref={formRef}
+                        onSubmit={(values, { resetForm }) => {
+                            handleSubmit(values, resetForm);
+                        }}
+                        validate={(values) => {
+                            const errors = {};
                                 // for (let field in values) {
                                 //     if (!values[`${field}`]) {
                                 //         errors[`${field}`] = 'This field is required';
                                 //     }
                                 // }
                                 // console.log(values, errors)
-
-                                return errors;
-                            }}
-
-                        >
-                            {(props) => (
-                                <Form onSubmit={props.handleSubmit}>
-                                    <Row>
-                                        <Col md="6">
+                            return errors;
+                        }}
+                    >
+                        {(props) => (
+                            <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
                                             <TextInput
                                                 name={'account_iban'}
                                                 error={props.errors.account_iban}
@@ -88,8 +80,8 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                     props.handleChange(field,)(value);
                                                 }}
                                             />
-                                        </Col>
-                                        <Col md="6">
+                                        </div>
+                                        <div className="space-y-2">
                                             <TextInput
                                                 name={'bank_name'}
                                                 error={props.errors.bank_name}
@@ -101,8 +93,8 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                     props.handleChange(field,)(value);
                                                 }}
                                             />
-                                        </Col>
-                                        <Col md="6">
+                                        </div>
+                                        <div className="space-y-2">
                                             <TextInput
                                                 name={'account_title'}
                                                 error={props.errors.account_title}
@@ -114,8 +106,8 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                     props.handleChange(field,)(value);
                                                 }}
                                             />
-                                        </Col>
-                                        <Col md="6">
+                                        </div>
+                                        <div className="space-y-2">
                                             <TextInput
                                                 name={'branch_code'}
                                                 error={props.errors.branch_code}
@@ -127,8 +119,8 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                 }}
                                                 regEx={/^[0-9]+$/}
                                             />
-                                        </Col>
-                                        <Col md="6">
+                                        </div>
+                                        <div className="space-y-2">
                                             <TextInput
                                                 name={'account_number'}
                                                 error={props.errors.account_number}
@@ -141,8 +133,8 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                 }}
                                                 regEx={/^[0-9]+$/}
                                             />
-                                        </Col>
-                                        <Col md="6">
+                                        </div>
+                                        <div className="space-y-2">
                                             <TextInput
                                                 name={'swift_code'}
                                                 error={props.errors.swift_code}
@@ -154,8 +146,8 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                 }}
                                                 regEx={/^[a-zA-Z0-9]*$/}
                                             />
-                                        </Col>
-                                        <Col md="12">
+                                        </div>
+                                        <div className="space-y-2">
                                             <TextInput
                                                 name={'branch_address'}
                                                 error={props.errors.branch_address}
@@ -166,36 +158,39 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                     props.handleChange(field,)(value);
                                                 }}
                                             />
-                                        </Col>
+                                        </div>
 
-                                    </Row>
-                                    <hr />
-                                    <Row>
-                                        <Col md={6} className="text-left">
+                                    </div>
+
+                                    <div className="p-6 border-t border-gray-200 div-span-2 bg-gray-50">
+                                        <div className="flex justify-end space-x-4">
                                             {!isEditMode &&
-                                                <CustomLightOutlineButton
-                                                    onClick={() => {
-                                                        prevStep()
-                                                    }}
-                                                    label={'Back'}
-                                                />
-
-                                            }</Col>
-                                        <Col md="6" className="text-right">
-                                            <CustomDarkButton
+                                                <Button variant="outline" size="lg" onClick={() => {
+                                                    prevStep()
+                                                }}
+                                                >Back</Button>
+                                            }
+                                            <Button
+                                                type="submit"
+                                                size="lg"
+                                                variant="default"
                                                 onClick={() => {
                                                     props.handleSubmit();
                                                 }}
-                                                label={isEditMode ? 'Save' : 'Next'}
-                                            />
-                                        </Col>
-                                    </Row>
-                                </Form>
-                            )}
-                        </Formik>
-                    </Col>
-                </Row>
+                                            >
+                                                {isEditMode ? 'Save' : 'Next'}
+                                            </Button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        )}
+                    </Formik>
+                </div>
+            )
             }
+
         </>
     );
 };

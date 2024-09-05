@@ -92,7 +92,7 @@ const EducationInformation = ({
               }}
             >
               {(props) => (
-                <Form onSubmit={props.handleSubmit}>
+                <form onSubmit={props.handleSubmit}>
                   <Row>
                     {props.values?.educations &&
                       props.values.educations.length > 0 &&
@@ -100,7 +100,7 @@ const EducationInformation = ({
                         <React.Fragment key={index}>
                           <Col md="12">
                             <div className="d-flex justify-content-between align-items-center">
-                              <h5 className="fw-700 mb-3 mt-4">
+                              <h5 className="mt-4 mb-3 fw-700">
                                 Education {index + 1}
                               </h5>
                               <FaTimes
@@ -274,7 +274,7 @@ const EducationInformation = ({
                       />
                     </Col>
                   </Row>
-                </Form>
+                </form>
               )}
             </Formik>
           </Col>

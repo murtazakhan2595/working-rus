@@ -89,7 +89,7 @@ const ExperienceInformation = ({
               }}
             >
               {(props) => (
-                <Form onSubmit={props.handleSubmit}>
+                <form onSubmit={props.handleSubmit}>
                   <Row>
                     {props.values?.experiences &&
                       props.values.experiences.length > 0 &&
@@ -97,7 +97,7 @@ const ExperienceInformation = ({
                         <React.Fragment key={index}>
                           <Col md="12">
                             <div className="d-flex justify-content-between align-items-center">
-                              <h5 className="fw-700 mb-3 mt-4">
+                              <h5 className="mt-4 mb-3 fw-700">
                                 Experience {index + 1}
                               </h5>
                               <FaTimes
@@ -134,7 +134,7 @@ const ExperienceInformation = ({
                           />
                         </React.Fragment>
                       ))}
-                    <Col md="12" className="text-left mt-4">
+                    <Col md="12" className="mt-4 text-left">
                       <Link
                         type="button"
                         className="btn btn-outline-dark"
@@ -178,7 +178,7 @@ const ExperienceInformation = ({
                       />
                     </Col>
                   </Row>
-                </Form>
+                </form>
               )}
             </Formik>
           </Col>

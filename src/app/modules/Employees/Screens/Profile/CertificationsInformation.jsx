@@ -93,7 +93,7 @@ const CertificationsInformation = ({
               }}
             >
               {(props) => (
-                <Form onSubmit={props.handleSubmit}>
+                <form onSubmit={props.handleSubmit}>
                   <Row>
                     {props.values?.certifications &&
                       props.values.certifications.length > 0 &&
@@ -102,7 +102,7 @@ const CertificationsInformation = ({
                           <React.Fragment key={index}>
                             <Col md="12">
                               <div className="d-flex justify-content-between align-items-center">
-                                <h5 className="fw-700 mb-3 mt-4">
+                                <h5 className="mt-4 mb-3 fw-700">
                                   Certification {index + 1}
                                 </h5>
                                 <FaTimes
@@ -216,7 +216,7 @@ const CertificationsInformation = ({
                       />
                     </Col>
                   </Row>
-                </Form>
+                </form>
               )}
             </Formik>
           </Col>

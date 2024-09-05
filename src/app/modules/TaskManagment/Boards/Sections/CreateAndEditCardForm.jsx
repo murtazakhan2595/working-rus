@@ -115,7 +115,7 @@ const CreateAndEditCardForm = ({
       }}
     >
       {(props) => (
-        <Form onSubmit={props.handleSubmit} className="mt-5">
+        <form onSubmit={props.handleSubmit} className="mt-5">
           <Row className="m-0">
             <Col md="12" className="mb-0">
               <TextInput
@@ -241,10 +241,10 @@ const CreateAndEditCardForm = ({
               {(files.length > 0 || newfiles?.length > 0) && (
                 <div className="">
                   {[...files, ...newfiles].map((file, index) => (
-                    <div className="flex items-center justify-between w-fit bg-gray-100 p-2 rounded-lg shadow-md mb-2">
+                    <div className="flex items-center justify-between p-2 mb-2 bg-gray-100 rounded-lg shadow-md w-fit">
                       <div className="flex items-center">
-                        <FaRegImage className="h-4 w-4 text-gray-500" />
-                        <span className="ml-4 font-lato text-baseGray text-sm">
+                        <FaRegImage className="w-4 h-4 text-gray-500" />
+                        <span className="ml-4 text-sm font-lato text-baseGray">
                           {file.name}
                         </span>
                       </div>
@@ -254,10 +254,10 @@ const CreateAndEditCardForm = ({
                           download
                           className="text-gray-500 hover:text-gray-700"
                         >
-                          <AiOutlineDownload className="h-5 w-5 " />
+                          <AiOutlineDownload className="w-5 h-5 " />
                         </a>
                         <MdClose
-                          className="h-5 w-5 text-gray-500 cursor-pointer"
+                          className="w-5 h-5 text-gray-500 cursor-pointer"
                           onClick={() => {
                             removeFile(file);
                           }}
@@ -284,13 +284,13 @@ const CreateAndEditCardForm = ({
                   </div>
                   {props.errors.assigned_to &&
                     props.values.assigned_to.length === 0 && (
-                      <div className="text-red-500 text-xs pt-1">
+                      <div className="pt-1 text-xs text-red-500">
                         {props.errors.assigned_to}
                       </div>
                     )}
                 </Col>
                 <Col md="6" className="mb-3">
-                  <div className="flex justify-start gap-2 items-center h-100">
+                  <div className="flex items-center justify-start gap-2 h-100">
                     {props.values.assigned_to &&
                       props.values.assigned_to.length > 0 &&
                       props.values.assigned_to.map((member, index) => (
@@ -308,7 +308,7 @@ const CreateAndEditCardForm = ({
                       }}
                       className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
                     >
-                      <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
+                      <span className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
                         <RxPlus />
                       </span>
                     </div>
@@ -316,7 +316,7 @@ const CreateAndEditCardForm = ({
                 </Col>
               </Row>
               {membersOpen && (
-                <Col md="12" className="mb-3 w-full b">
+                <Col md="12" className="w-full mb-3 b">
                   <SelectComponent
                     name="assigned_to"
                     options={employees}
@@ -353,7 +353,7 @@ const CreateAndEditCardForm = ({
               </Button>
             </Col>
           </Row>
-        </Form>
+        </form>
       )}
     </Formik>
   );

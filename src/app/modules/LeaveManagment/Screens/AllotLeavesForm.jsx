@@ -106,17 +106,17 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
 
   return (
     <>
-      <div className="flex align-bottom justify-between my-4">
+      <div className="flex justify-between my-4 align-bottom">
         <div className="whitespace-break-spaces">
           <div className="font-bold leading-normal text-[#323333] text-left text-capitalize text-[25px]">
             {employeeData.first_name} {employeeData.last_name}
           </div>
-          <div className="text-baseGray text-left flex justify-between gap-3">
+          <div className="flex justify-between gap-3 text-left text-baseGray">
             ID: {employeeData.id} |{"  "}
             <DesignationName value={employeeData.position} /> |{"  "}
             <DepartmentName value={employeeData.department_name} />
           </div>
-          <div className="text-baseGray text-left mt-3">
+          <div className="mt-3 text-left text-baseGray">
             Jan {new Date().getFullYear()} to Dec {new Date().getFullYear()}
           </div>
         </div>
@@ -152,7 +152,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
           }}
         >
           {(props) => (
-            <Form
+            <form
               onSubmit={props.handleSubmit}
               className="flex flex-col justify-between"
               style={{ minHeight: "calc(100vh - 350px)" }}
@@ -204,7 +204,7 @@ const AllotLeavesForm = ({ employeeData, leaveTypes, closeModel }) => {
                   />
                 </Col>
               </Row>
-            </Form>
+            </form>
           )}
         </Formik>
       </div>
@@ -216,7 +216,7 @@ const AllotLeave = ({ leaveType, errors, touched, values, onChange }) => {
   return (
     <>
       <Row
-        className="mb-4 shadow-sm mx-0"
+        className="mx-0 mb-4 shadow-sm"
         style={{
           border: "1px solid #DADADA",
           borderRadius: "9px",
@@ -232,7 +232,7 @@ const AllotLeave = ({ leaveType, errors, touched, values, onChange }) => {
             <LeaveType value={leaveType} />
           </div>
         </Col>
-        <Col md="6" className="force-white-bg p-0">
+        <Col md="6" className="p-0 force-white-bg">
           <TextInput
             name={"total_alloted_leaves"}
             error={errors?.total_alloted_leaves}

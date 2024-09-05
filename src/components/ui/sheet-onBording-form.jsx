@@ -201,7 +201,7 @@ const SheetOnBorading = ({
               }}
             >
               {(props) => (
-              <Form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+              <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Employee Details</h3>
                   <div className="grid grid-cols-2 gap-4">
@@ -517,7 +517,7 @@ const SheetOnBorading = ({
               <Button type="submit" size="lg" variant="default" >{id ? "Update" : "Add"}</Button>
             </div>
           </div>
-              </Form>
+              </form>
             )}
           </Formik>
             </div>
