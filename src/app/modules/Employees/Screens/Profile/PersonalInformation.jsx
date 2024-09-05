@@ -2,7 +2,6 @@ import { getAllCountries } from "countries-and-timezones";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Form } from "reactstrap";
 import {
   CustomDarkButton,
   EmailInput,
@@ -98,7 +97,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
               }}
             >
               {(props) => (
-                <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                <form onSubmit={props.handleSubmit}className="mt-6 space-y-6">
                   <div className="space-y-4">
                   <div className="space-y-2">
                       <ImageInput

@@ -55,6 +55,7 @@ export default function Component() {
       setIsLoading(true);
       try {
         const data = await getEmployeeCustomList({ options, filterData });
+        console.log(data, "In Employee page")
         setEmployeeData(data);
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
@@ -154,7 +155,7 @@ export default function Component() {
           />
         </div>
 
-        {['all', 'active', 'inactive'].map((status) => (
+        {['all', 'active', 'inactive'].map((status) => ( 
           <TabsContent key={status} value={status}>
             {isLoading ? (
               <PageLoader />

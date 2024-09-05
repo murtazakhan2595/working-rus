@@ -15,7 +15,7 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectGroup, SelectContent, SelectItem } from "../src/@/components/ui/select"
 import { Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverClose, PopoverHeader, PopoverBody, } from "../src/@/components/ui/popover";
-import { ChevronsUpDown, Check  } from "lucide-react";
+import { ChevronsUpDown, Check } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -28,6 +28,7 @@ import {
 const SelectComponent = ({
   name,
   value,
+  setValue,
   error,
   touch,
   onChange,
@@ -36,24 +37,54 @@ const SelectComponent = ({
   disabled,
   required,
 }) => {
+  const [open, setOpen] = useState(false);
+  
   return (
-    <div >
+    <div className="flex flex-col" >
       <Label for={name}>{required && <span className="text-red-600">* </span>} {label}</Label>
       {error && touch && <div className="text-red-600">{error || ""}</div>}
-      <Select>
-        <SelectTrigger>
-          <SelectValue placeholder={label} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="justify-between "
+          >
+            {value
+              ? options.find((option) => option.value === value)?.label
+              : label}
+            <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0">
+          <Command>
+            <CommandInput placeholder="Search..." />
+            <CommandList>
+              <CommandEmpty>No options found.</CommandEmpty>
+              <CommandGroup>
+                {options.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={(currentValue) => {
+                      setValue(currentValue === value ? "" : currentValue);
+                      onChange(currentValue);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"
+                        }`}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
 
     </div>
   );
@@ -72,7 +103,7 @@ const SelectMultiInputComponent = ({
 }) => {
   return (
     <div>
-         <Label
+      <Label
         className={`text-baseGray ${value ? "date-floating-label" : ""}`}
         for={name}
       >
@@ -93,7 +124,7 @@ const SelectMultiInputComponent = ({
           </SelectGroup>
         </SelectContent>
       </Select>
-   
+
     </div>
 
   );
@@ -114,7 +145,7 @@ const DateInput = ({
   return (
     <>
       <div>
-      <Label
+        <Label
           className={`text-baseGray ${value ? "date-floating-label" : ""}`}
           for={name}
         >
@@ -147,7 +178,7 @@ const DateInput = ({
           showYearDropdown
           dateFormat="dd-MM-yyyy"
         />
-       
+
       </div>
     </>
   );
@@ -527,7 +558,7 @@ const TextAreaInput = ({
   return (
     <>
       <div>
-      <Label
+        <Label
           className={`text-baseGray ${value ? "active" : ""}`}
           htmlFor={name}
         >
@@ -555,7 +586,7 @@ const TextAreaInput = ({
             }
           }}
         />
-      
+
       </div>
     </>
   );
@@ -572,11 +603,11 @@ const TextAreaEditorInput = ({
   regEx,
   maxLength,
 }) => {
- 
+
   return (
     <>
       <div>
-      <Label className="pt-4 mt-1 text-baseGray" htmlFor={name}>
+        <Label className="pt-4 mt-1 text-baseGray" htmlFor={name}>
           {required && <span className="text-red-600">* </span>}
           {label}
         </Label>
@@ -614,7 +645,7 @@ const TextAreaEditorInput = ({
             onChange(name, option);
           }}
         />
-       
+
       </div>
     </>
   );
@@ -705,142 +736,142 @@ const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
                   }}
                 />
               );
-            }   else if (filter.type === "select-one") {
-            return (
-              <Popover key={index} openRole={openRole} onOpenChange={setOpenRole}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openRole}
-                    className={`w-[200px] justify-between`}
-                  >
-                    {value
-                      ? filter.option.find((option) => option.value === value)?.label
-                      : filter.placeholder}
-                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search framework..." />
-                    <CommandList>
-                      <CommandEmpty>No framework found.</CommandEmpty>
-                      <CommandGroup>
-                        {filter.option.map((option) => (
-                          <CommandItem
-                            key={option.value}
-                            value={option.value}
-                            onSelect={(currentValue) => {
-                              setValue(currentValue === value ? "" : currentValue);
-                              onChange(filter.name, currentValue);
-                              setOpenRole(false);
-                            }}
-                          >
-                            <Check
-                              className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
-                            />
-                            {option.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+            } else if (filter.type === "select-one") {
+              return (
+                <Popover key={index} openRole={openRole} onOpenChange={setOpenRole}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openRole}
+                      className={`w-[200px] justify-between`}
+                    >
+                      {value
+                        ? filter.option.find((option) => option.value === value)?.label
+                        : filter.placeholder}
+                      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search framework..." />
+                      <CommandList>
+                        <CommandEmpty>No framework found.</CommandEmpty>
+                        <CommandGroup>
+                          {filter.option.map((option) => (
+                            <CommandItem
+                              key={option.value}
+                              value={option.value}
+                              onSelect={(currentValue) => {
+                                setValue(currentValue === value ? "" : currentValue);
+                                onChange(filter.name, currentValue);
+                                setOpenRole(false);
+                              }}
+                            >
+                              <Check
+                                className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
+                              />
+                              {option.label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
 
-            );
-          } else if (filter.type === "select-three") {
-            return (
-              <Popover key={index} openRole={openRole} onOpenChange={setOpenRole}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openRole}
-                    className={`w-[200px] justify-between`}
-                  >
-                    {value
-                      ? filter.option.find((option) => option.value === value)?.label
-                      : filter.placeholder}
-                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search framework..." />
-                    <CommandList>
-                      <CommandEmpty>No framework found.</CommandEmpty>
-                      <CommandGroup>
-                        {filter.option.map((option) => (
-                          <CommandItem
-                            key={option.value}
-                            value={option.value}
-                            onSelect={(currentValue) => {
-                              setValue(currentValue === value ? "" : currentValue);
-                              onChange(filter.name, currentValue);
-                              setOpenRole(false);
-                            }}
-                          >
-                            <Check
-                              className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
-                            />
-                            {option.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              );
+            } else if (filter.type === "select-three") {
+              return (
+                <Popover key={index} openRole={openRole} onOpenChange={setOpenRole}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openRole}
+                      className={`w-[200px] justify-between`}
+                    >
+                      {value
+                        ? filter.option.find((option) => option.value === value)?.label
+                        : filter.placeholder}
+                      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search framework..." />
+                      <CommandList>
+                        <CommandEmpty>No framework found.</CommandEmpty>
+                        <CommandGroup>
+                          {filter.option.map((option) => (
+                            <CommandItem
+                              key={option.value}
+                              value={option.value}
+                              onSelect={(currentValue) => {
+                                setValue(currentValue === value ? "" : currentValue);
+                                onChange(filter.name, currentValue);
+                                setOpenRole(false);
+                              }}
+                            >
+                              <Check
+                                className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
+                              />
+                              {option.label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
 
-            );
-          }   else if (filter.type === "select-two") {
-            return (
-              <Popover key={index} openDesignation={openDesignation} onOpenChange={setOpenDesignation}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openDesignation}
-                    className={`w-[200px] justify-between`}
-                  >
-                    {value
-                      ? filter.option.find((option) => option.value === value)?.label
-                      : filter.placeholder}
-                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search framework..." />
-                    <CommandList>
-                      <CommandEmpty>No framework found.</CommandEmpty>
-                      <CommandGroup>
-                        {filter.option.map((option) => (
-                          <CommandItem
-                            key={option.value}
-                            value={option.value}
-                            onSelect={(currentValue) => {
-                              setValue(currentValue === value ? "" : currentValue);
-                              onChange(filter.name, currentValue);
-                              setOpenDesignation(false);
-                            }}
-                          >
-                            <Check
-                              className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
-                            />
-                            {option.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              );
+            } else if (filter.type === "select-two") {
+              return (
+                <Popover key={index} openDesignation={openDesignation} onOpenChange={setOpenDesignation}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openDesignation}
+                      className={`w-[200px] justify-between`}
+                    >
+                      {value
+                        ? filter.option.find((option) => option.value === value)?.label
+                        : filter.placeholder}
+                      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search framework..." />
+                      <CommandList>
+                        <CommandEmpty>No framework found.</CommandEmpty>
+                        <CommandGroup>
+                          {filter.option.map((option) => (
+                            <CommandItem
+                              key={option.value}
+                              value={option.value}
+                              onSelect={(currentValue) => {
+                                setValue(currentValue === value ? "" : currentValue);
+                                onChange(filter.name, currentValue);
+                                setOpenDesignation(false);
+                              }}
+                            >
+                              <Check
+                                className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"}`}
+                              />
+                              {option.label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
 
-            );
-          } else if (filter.type === "date") {
+              );
+            } else if (filter.type === "date") {
               const date = filter.value ? new Date(moment(filter.value)) : null;
               return (
                 <div style={{ width: "fit-content" }}>
