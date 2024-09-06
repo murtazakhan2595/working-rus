@@ -25,8 +25,6 @@ import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExit
 import { filebase64Download } from "utils/fileUtils";
 import RenderTerminatedRow from "app/modules/ExitAndClearance/section/RenderTerminatedRow";
 
-
-
 export const LeaveHistoryColumns = (updateLeaveType) => [
   {
     dataField: "name",
@@ -85,7 +83,7 @@ export const EmployeeColumns = [
   {
     dataField: "name",
     text: "Employees",
-    
+
     formatter: (cell, row) => (
       <EmployeeNameInfo
         name={`${row.first_name} ${row.last_name}`}
@@ -385,7 +383,6 @@ export const AllLeavesApplicationColumns = (reload, userRole) => {
 
   return columns;
 };
-
 
 export const LeaveAllotmentColumns = (reload) => [
   {

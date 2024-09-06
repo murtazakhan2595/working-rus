@@ -1,24 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Card,
-  CardContent,
-} from "../../../components/ui/card.jsx"
-import { EmployeeColumns } from 'app/utils/Types/TableColumns';
-import TableCustom from 'components/TableCustom';
-import { UsersRound, Contact, UserRoundCheck } from 'lucide-react';
-import Header from '../../../components/Header';
-import { FilterInput } from 'components/form-control.jsx';
-import { UserRoles } from 'data/Data.js';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Card, CardContent } from "../../../components/ui/card.jsx";
+import { EmployeeColumns } from "app/utils/Types/TableColumns";
+import TableCustom from "components/TableCustom";
+import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
+import Header from "../../../components/Header";
+import { FilterInput } from "components/form-control.jsx";
+import { UserRoles } from "data/Data.js";
+import { useNavigate } from "react-router-dom";
 import {
   getDepartmentList,
   getDesignationList,
   getEmployeeCustomList,
-} from 'app/hooks/general.jsx';
-import { PageLoader } from 'components';
+} from "app/hooks/general.jsx";
+import { PageLoader } from "components";
 import SheetOnBorading from "../../../components/ui/sheet-onBording-form";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../../src/@/components/ui/tabs"
-
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "../../../src/@/components/ui/tabs";
 
 export default function Component() {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +30,7 @@ export default function Component() {
   const [totalEmployee, setTotalEmployee] = useState(0);
   const [activeEmployee, setActiveEmployee] = useState(0);
   const [totalManagers, setTotalManager] = useState(0);
-  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState("all");
   const navigate = useNavigate();
   const [options, setOptions] = useState({
     page: 1,
@@ -51,13 +52,13 @@ export default function Component() {
       setIsLoading(true);
       try {
         const data = await getEmployeeCustomList({ options, filterData });
-        console.log(data, "In Employee page")
+        console.log(data, "In Employee page");
         setEmployeeData(data);
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
         setTotalManager(data.TotalManager || 0);
       } catch (error) {
-        console.error('Error fetching employees:', error);
+        console.error("Error fetching employees:", error);
       } finally {
         setIsLoading(false);
       }
@@ -79,7 +80,7 @@ export default function Component() {
     };
 
     fetchLists();
-  }, []); 
+  }, []);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -95,12 +96,20 @@ export default function Component() {
   };
 
   // Extract unique employee statuses
-  const employeeStatuses = ['all', ...new Set(employeeData?.results.map(employee => employee.employee_status))];
+  const employeeStatuses = [
+    "all",
+    ...new Set(
+      employeeData?.results.map((employee) => employee.employee_status)
+    ),
+  ];
 
   const Blocks = (blocks) => (
     <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center lg:flex-row lg:items-center md:flex-row md:items-center">
       {blocks.map((block) => (
-        <div key={block.label} className="flex flex-row items-center justify-start gap-2 ">
+        <div
+          key={block.label}
+          className="flex flex-row items-center justify-start gap-2 "
+        >
           <div className="flex items-center justify-center p-4 rounded-full bg-mauve-200">
             <block.icon className="h-7 w-7 text-plum-1100" aria-hidden="true" />
           </div>
@@ -118,42 +127,70 @@ export default function Component() {
   );
 
   // Filter employees based on selected status
-  const filteredEmployees = employeeData.results.filter(employee => {
-    if (selectedStatus === 'all') return true;
+  const filteredEmployees = employeeData.results.filter((employee) => {
+    if (selectedStatus === "all") return true;
     return employee.employee_status === selectedStatus;
   });
 
-  const employeeStatus = ["All", "Active", "Inactive"]
+  const employeeStatus = ["All", "Active", "Inactive"];
   return (
     <div className="flex flex-col gap-4 profile-management">
       <Header content={<SheetOnBorading />} />
 
       {Blocks([
-        { label: 'Total Employees', value: totalEmployee, icon: UsersRound },
-        { label: 'Managers', value: totalManagers, icon: Contact },
-        { label: 'Active Employees', value: activeEmployee, icon: UserRoundCheck },
+        { label: "Total Employees", value: totalEmployee, icon: UsersRound },
+        { label: "Managers", value: totalManagers, icon: Contact },
+        {
+          label: "Active Employees",
+          value: activeEmployee,
+          icon: UserRoundCheck,
+        },
       ])}
 
-      <Tabs defaultValue="all" className="w-full" onValueChange={setSelectedStatus}>
+      <Tabs
+        defaultValue="all"
+        className="w-full"
+        onValueChange={setSelectedStatus}
+      >
         <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="inline-flex items-center justify-center p-1 bg-white rounded-lg h-9 text-mauve-900">
-            {employeeStatuses && employeeStatuses?.map(status => (
-              <TabsTrigger key={status} value={status}>
-                {status?.charAt(0).toUpperCase() + status?.slice(1)}
-              </TabsTrigger>
-            ))}
+            {employeeStatuses &&
+              employeeStatuses?.map((status) => (
+                <TabsTrigger key={status} value={status}>
+                  {status?.charAt(0).toUpperCase() + status?.slice(1)}
+                </TabsTrigger>
+              ))}
           </TabsList>
           <FilterInput
             filters={[
-              { type: 'search', placeholder: 'Search by ID and Name', name: 'id_and_first_name' },
-              { type: 'select-one', option: departments, name: 'department_name', placeholder: 'Department' },
-              { type: 'select-two', option: designations, name: 'department_position', placeholder: 'Designation' },
-              { type: 'select-three', option: UserRoles, name: 'user_role', placeholder: 'Role' },
+              {
+                type: "search",
+                placeholder: "Search by ID and Name",
+                name: "id_and_first_name",
+              },
+              {
+                type: "select-one",
+                option: departments,
+                name: "department_name",
+                placeholder: "Department",
+              },
+              {
+                type: "select-two",
+                option: designations,
+                name: "department_position",
+                placeholder: "Designation",
+              },
+              {
+                type: "select-three",
+                option: UserRoles,
+                name: "user_role",
+                placeholder: "Role",
+              },
             ]}
             onChange={handleFilterChange}
           />
         </div>
-        {employeeStatuses.map(status => (
+        {employeeStatuses.map((status) => (
           <TabsContent key={status} value={status}>
             {isLoading ? (
               <PageLoader />

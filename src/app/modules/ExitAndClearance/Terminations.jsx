@@ -1,9 +1,12 @@
 import { updateExitData } from "app/hooks/employee";
 import { ExitRequestColumns } from "app/utils/Types/TableColumns";
-import { Table } from "components";
+import { Card, CardContent } from "../../../components/ui/card.jsx";
+
+import TableCustom from "components/TableCustom";
+import PageLoader from "components/PageLoader.jsx";
 import { useState, useEffect } from "react";
 import ExitDetailsCard from "./ExitDetailsCard";
-const Terminations = ({ userProfile, terminations, reload }) => {
+const Terminations = ({ userProfile, terminations, reload, loading }) => {
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -78,43 +81,88 @@ const Terminations = ({ userProfile, terminations, reload }) => {
     setSelectedResignationId(row.id);
   };
   return (
-    <div>
-      <Table
-        data={terminations || []}
-        columns={ExitRequestColumns(
-          handleOptionSelect,
-          handleRowClicked,
-          reload,
-          true
-        )}
-        pagination={true}
-        dataTotalSize={terminations.length || 0}
-        tableOptions={tableOptions}
-      />
-      {selectedResignationId !== null && (
-        <ExitDetailsCard
-          resignation={terminations.find(
-            (item) => item.id === selectedResignationId
-          )}
-          onClose={closeModal}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          disableNext={
-            terminations.findIndex(
-              (item) => item.id === selectedResignationId
-            ) >=
-            terminations.length - 1
-          }
-          disablePrevious={
-            terminations.findIndex(
-              (item) => item.id === selectedResignationId
-            ) <= 0
-          }
-          handleOptionSelect={handleOptionSelect}
-          reload
-        />
+    // <div>
+    //   <Table
+    //     data={terminations || []}
+    //     columns={ExitRequestColumns(
+    //       handleOptionSelect,
+    //       handleRowClicked,
+    //       reload,
+    //       true
+    //     )}
+    //     pagination={true}
+    //     dataTotalSize={terminations.length || 0}
+    //     tableOptions={tableOptions}
+    //   />
+    //   {selectedResignationId !== null && (
+    //     <ExitDetailsCard
+    //       resignation={terminations.find(
+    //         (item) => item.id === selectedResignationId
+    //       )}
+    //       onClose={closeModal}
+    //       onNext={handleNext}
+    //       onPrevious={handlePrevious}
+    //       disableNext={
+    //         terminations.findIndex(
+    //           (item) => item.id === selectedResignationId
+    //         ) >=
+    //         terminations.length - 1
+    //       }
+    //       disablePrevious={
+    //         terminations.findIndex(
+    //           (item) => item.id === selectedResignationId
+    //         ) <= 0
+    //       }
+    //       handleOptionSelect={handleOptionSelect}
+    //       reload
+    //     />
+    //   )}
+    // </div>
+    <>
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <Card>
+          <CardContent>
+            {selectedResignationId !== null && (
+              <ExitDetailsCard
+                resignation={terminations.find(
+                  (item) => item.id === selectedResignationId
+                )}
+                onClose={closeModal}
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                disableNext={
+                  terminations.findIndex(
+                    (item) => item.id === selectedResignationId
+                  ) >=
+                  terminations.length - 1
+                }
+                disablePrevious={
+                  terminations.findIndex(
+                    (item) => item.id === selectedResignationId
+                  ) <= 0
+                }
+                handleOptionSelect={handleOptionSelect}
+                reload
+              />
+            )}
+            <TableCustom
+              data={terminations || []}
+              columns={ExitRequestColumns(
+                handleOptionSelect,
+                handleRowClicked,
+                reload,
+                true
+              )}
+              pagination={true}
+              dataTotalSize={terminations.length || 0}
+              tableOptions={tableOptions}
+            />
+          </CardContent>
+        </Card>
       )}
-    </div>
+    </>
   );
 };
 

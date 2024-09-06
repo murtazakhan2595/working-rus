@@ -1,10 +1,13 @@
 import { updateExitData } from "app/hooks/employee";
 import { ExitRequestColumns } from "app/utils/Types/TableColumns";
-import { Table } from "components";
+import { Card, CardContent } from "../../../components/ui/card.jsx";
+
+import TableCustom from "components/TableCustom";
 import { useState, useEffect } from "react";
 import ExitDetailsCard from "./ExitDetailsCard";
+import PageLoader from "components/PageLoader.jsx";
 
-const Resignations = ({ userProfile, resignations, reload }) => {
+const Resignations = ({ userProfile, resignations, reload, loading }) => {
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -50,6 +53,7 @@ const Resignations = ({ userProfile, resignations, reload }) => {
       }
     } catch (error) {
       console.error("Error updating application status:", error);
+    } finally {
     }
   };
 
@@ -80,42 +84,50 @@ const Resignations = ({ userProfile, resignations, reload }) => {
   };
 
   return (
-    <div>
-      <Table
-        data={resignations || []}
-        columns={ExitRequestColumns(
-          handleOptionSelect,
-          handleRowClicked,
-          reload
-        )}
-        pagination={true}
-        dataTotalSize={resignations.length || 0}
-        tableOptions={tableOptions}
-      />
-      {selectedResignationId !== null && (
-        <ExitDetailsCard
-          resignation={resignations.find(
-            (item) => item.id === selectedResignationId
-          )}
-          onClose={closeModal}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          disableNext={
-            resignations.findIndex(
-              (item) => item.id === selectedResignationId
-            ) >=
-            resignations.length - 1
-          }
-          disablePrevious={
-            resignations.findIndex(
-              (item) => item.id === selectedResignationId
-            ) <= 0
-          }
-          handleOptionSelect={handleOptionSelect}
-          reload
-        />
+    <>
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <Card>
+          <CardContent>
+            {selectedResignationId !== null && (
+              <ExitDetailsCard
+                resignation={resignations.find(
+                  (item) => item.id === selectedResignationId
+                )}
+                onClose={closeModal}
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                disableNext={
+                  resignations.findIndex(
+                    (item) => item.id === selectedResignationId
+                  ) >=
+                  resignations.length - 1
+                }
+                disablePrevious={
+                  resignations.findIndex(
+                    (item) => item.id === selectedResignationId
+                  ) <= 0
+                }
+                handleOptionSelect={handleOptionSelect}
+                reload
+              />
+            )}
+            <TableCustom
+              data={resignations || []}
+              columns={ExitRequestColumns(
+                handleOptionSelect,
+                handleRowClicked,
+                reload
+              )}
+              pagination={true}
+              dataTotalSize={resignations.length || 0}
+              tableOptions={tableOptions}
+            />
+          </CardContent>
+        </Card>
       )}
-    </div>
+    </>
   );
 };
 

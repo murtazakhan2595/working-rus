@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getLeaveApplications } from "app/hooks/leaveManagment";
-import { Tabs, Header, PageLoader } from "components";
 import { Row, Col } from "reactstrap";
 import { getEmployeeExitData } from "app/hooks/employee";
 import StatCard from "./StatCard";
@@ -17,8 +16,15 @@ import { resignationStatus } from "data/Data";
 import { terminationStatus } from "data/Data";
 import RequestTerminationCard from "./RequestTerminationCard";
 import Terminated from "./Terminated";
+import SheetOnBorading from "components/ui/sheet-onBording-form";
 
-
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "../../../src/@/components/ui/tabs";
+import { Header } from "components";
 const ExitAndClearance = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Resignations");
   const [resignations, setResignations] = useState([]);
@@ -29,10 +35,13 @@ const ExitAndClearance = ({ userProfile }) => {
   const [terminated, setTerminated] = useState([]);
   const [filterData, setFilterData] = useState({});
   const [openRequestTermination, setOpenRequestTermination] = useState(false);
-  console.log("terminateddd", terminated)
+  const [loading, setLoading] = useState(false);
+  console.log("terminateddd", terminated);
 
   const fetchData = async () => {
-    const response = await getEmployeeExitData({filterData});
+    setLoading(true);
+    console.log("filterData", filterData);
+    const response = await getEmployeeExitData({ filterData });
     if (response) {
       const data = response?.data.results.result;
       console.log("response in index", data);
@@ -55,34 +64,100 @@ const ExitAndClearance = ({ userProfile }) => {
       setRejectedResignation(response.data.results.rejected_resignation);
       setApprovedResignation(response.data.results.approved_resignation);
     }
+    setLoading(false);
   };
   useEffect(() => {
     fetchData();
   }, [userProfile, filterData]);
 
-    const handleFilterChange = (filterName, filterValue) => {
-      setFilterData((prevFilters) => {
-        const updatedFilters = { ...prevFilters };
-        if (filterValue === "") {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterValue;
-        }
-        return updatedFilters;
-      });
-    };
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
 
-    const closeRequestTerminationCard = () => {
-      setOpenRequestTermination(false);
-      fetchData()
-    }
+  const closeRequestTerminationCard = () => {
+    setOpenRequestTermination(false);
+    fetchData();
+  };
 
   return (
-    <div className="screen bg-[#F0F1F2]">
-      {openRequestTermination && (
+    <div className="flex flex-col gap-4 profile-management">
+      <Header content={<SheetOnBorading />} />
+      <StatCard
+        totalExit={totalExit}
+        approvedResignation={approvedResignation}
+        rejectedResignation={rejectedResignation}
+      />
+      <Tabs
+        defaultValue="Resignations"
+        className="w-full"
+        onValueChange={setActiveTab}
+      >
+        <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+          <TabsList className="inline-flex items-center justify-center p-1 bg-white rounded-lg h-9 text-mauve-900">
+            {["Resignations", "Terminations", "Resigned", "Terminated"].map(
+              (tab) => (
+                <TabsTrigger key={tab} value={tab}>
+                  {tab}
+                </TabsTrigger>
+              )
+            )}
+          </TabsList>
+          <FilterInput
+            filters={[
+              {
+                type: "search",
+                placeholder: "Search by id",
+                name: "employee_id",
+              },
+              {
+                type: "select-one",
+                option:
+                  activeTab === "Resignations"
+                    ? resignationStatus
+                    : terminationStatus,
+                name:
+                  activeTab === "Resignations"
+                    ? "status_resignation"
+                    : "status_termination",
+                placeholder: "Status",
+              },
+            ]}
+            onChange={handleFilterChange}
+          />
+        </div>
+        <TabsContent value="Resignations">
+          <Resignations
+            userProfile={userProfile}
+            resignations={resignations}
+            reload={fetchData}
+            loading={loading}
+          />
+        </TabsContent>
+
+        <TabsContent value="Terminations">
+          <Terminations
+            userProfile={userProfile}
+            terminations={terminations}
+            reload={fetchData}
+            loading={loading}
+          />
+        </TabsContent>
+        <TabsContent value="Terminated">
+          <Terminated terminated={terminated} reload={fetchData} />
+        </TabsContent>
+      </Tabs>
+      {/* {openRequestTermination && (
         <RequestTerminationCard closeModel={closeRequestTerminationCard} />
-      )}
-      <ExitRequestHeader
+      )} */}
+      {/* <ExitRequestHeader
         title="Exit Requests"
         content={
           <CustomDarkButton
@@ -90,8 +165,8 @@ const ExitAndClearance = ({ userProfile }) => {
             onClick={() => setOpenRequestTermination(!openRequestTermination)}
           />
         }
-      />
-      <Row className="bg-[#F0F1F2] relative">
+      /> */}
+      {/* <Row className="bg-[#F0F1F2] relative">
         <Col lg={12}>
           <StatCard
             totalExit={totalExit}
@@ -157,7 +232,7 @@ const ExitAndClearance = ({ userProfile }) => {
           </>
         </Col>
         <br />
-      </Row>
+      </Row> */}
     </div>
   );
 };
