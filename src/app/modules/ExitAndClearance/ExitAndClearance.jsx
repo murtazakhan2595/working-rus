@@ -131,7 +131,7 @@ const ExitAndClearance = ({ userProfile }) => {
         </TabsContent>
 
         <TabsContent value="Terminations">
-          <TerminationStatus />
+          <Terminations />
         </TabsContent>
         <TabsContent value="Terminated">
           <Terminated />
