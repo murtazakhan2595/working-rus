@@ -28,10 +28,7 @@ import Err401 from "./app/modules/Error/Err401.jsx";
 import "react-toastify/dist/ReactToastify.css";
 import "./assets/css/globle.css";
 import axios from "axios";
-import {
-  setUserLogout,
-  setToken,
-} from "./state/slices/UserSlice.js";
+import { setUserLogout, setToken } from "./state/slices/UserSlice.js";
 import { handleUpdateProfile } from "data/Data";
 import CreateUpdateEmployee from "./app/modules/Employees/Screens/Create.jsx";
 import Employee from "./app/modules/Employees/Employee.jsx";
@@ -49,8 +46,8 @@ import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
-import ExitAndClearance from "app/modules/ExitAndClearance";
-import "./index.css"
+import { ExitAndClearance } from "app/modules/ExitAndClearance";
+import "./index.css";
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -128,7 +125,6 @@ function App() {
   console.log(userRole, userProfile);
   return (
     <>
-   
       <Routes>
         {isLogin && (
           <>
@@ -276,7 +272,6 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/confirm-password" element={<ResetPassword />} />
       </Routes>
-     
     </>
   );
 }

@@ -1,30 +1,28 @@
-import { updateExitData } from "app/hooks/employee";
-import { ExitRequestColumns } from "app/utils/Types/TableColumns";
-import { Card, CardContent } from "../../../components/ui/card.jsx";
-
-import TableCustom from "components/TableCustom";
-import { useState, useEffect } from "react";
+import { EmployeeResignationsColumns } from "app/utils/Types/TableColumns";
+import { Table } from "components";
+import React, { useState, useEffect } from "react";
 import ExitDetailsCard from "./ExitDetailsCard";
-import PageLoader from "components/PageLoader.jsx";
+import { connect } from "react-redux";
+import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
+import { ResignationStatusOptions } from "data/Data";
+import { FilterInput } from "components/form-control";
+import { PageLoader } from "components";
+import { Col, Row } from "reactstrap";
+import { StatusList } from "./Sections";
 
-const Resignations = ({ userProfile, resignations, reload, loading }) => {
+const Resignations = React.memo(({ userProfile }) => {
+  const [loading, setLoading] = useState(true);
+  const [selectedResignationId, setSelectedResignationId] = useState(null);
+  const [Resignations, setResignations] = useState(null);
+  const [filterData, setFilterData] = useState({
+    exit_category: "resignation",
+    status_resignation: StatusList(),
+    ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+  });
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
   });
-
-  const [selectedResignationId, setSelectedResignationId] = useState(null);
-
-  useEffect(() => {
-    // When resignations changes, ensure the selected resignation is still valid
-    if (
-      selectedResignationId &&
-      !resignations.find((item) => item.id === selectedResignationId)
-    ) {
-      setSelectedResignationId(null);
-    }
-  }, [resignations]);
-
   const onPageChange = (name, value) => {
     const pageOptions = options;
     if (pageOptions[name] !== value) {
@@ -32,103 +30,120 @@ const Resignations = ({ userProfile, resignations, reload, loading }) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
-
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
   };
 
-  const handleOptionSelect = async (selectedResignation, option) => {
+  const fetchData = async () => {
     try {
-      if (selectedResignation) {
-        selectedResignation = {
-          ...selectedResignation,
-          status_resignation: option,
-        };
-        const response = await updateExitData(selectedResignation);
-        if (response) {
-          reload();
-        }
-      }
-    } catch (error) {
-      console.error("Error updating application status:", error);
+      setLoading(true);
+      const response = await getEmployeesResignations({ filterData, options });
+      setResignations(response);
+    } catch (e) {
+      console.error(e);
     } finally {
+      setLoading(false);
     }
   };
+  useEffect(() => {
+    fetchData();
+  }, [options, filterData]);
+
+  useEffect(() => {
+    // When resignations changes, ensure the selected resignation is still valid
+    const resignations = Resignations?.results;
+    const selectedResignation =
+      resignations &&
+      resignations.find((item) => item.id === selectedResignationId);
+    if (selectedResignationId && !selectedResignation) {
+      setSelectedResignationId(null);
+    }
+  }, [Resignations]);
 
   const closeModal = () => {
     setSelectedResignationId(null);
-  };
-
-  const handleNext = () => {
-    const currentIndex = resignations.findIndex(
-      (item) => item.id === selectedResignationId
-    );
-    if (currentIndex < resignations.length - 1) {
-      setSelectedResignationId(resignations[currentIndex + 1].id);
-    }
-  };
-
-  const handlePrevious = () => {
-    const currentIndex = resignations.findIndex(
-      (item) => item.id === selectedResignationId
-    );
-    if (currentIndex > 0) {
-      setSelectedResignationId(resignations[currentIndex - 1].id);
-    }
+    fetchData();
   };
 
   const handleRowClicked = (index, data, row) => {
     setSelectedResignationId(row.id);
   };
 
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+
   return (
     <>
-      {loading ? (
-        <PageLoader />
-      ) : (
-        <Card>
-          <CardContent>
-            {selectedResignationId !== null && (
-              <ExitDetailsCard
-                resignation={resignations.find(
-                  (item) => item.id === selectedResignationId
-                )}
-                onClose={closeModal}
-                onNext={handleNext}
-                onPrevious={handlePrevious}
-                disableNext={
-                  resignations.findIndex(
-                    (item) => item.id === selectedResignationId
-                  ) >=
-                  resignations.length - 1
-                }
-                disablePrevious={
-                  resignations.findIndex(
-                    (item) => item.id === selectedResignationId
-                  ) <= 0
-                }
-                handleOptionSelect={handleOptionSelect}
-                reload
-              />
-            )}
-            <TableCustom
-              data={resignations || []}
-              columns={ExitRequestColumns(
-                handleOptionSelect,
-                handleRowClicked,
-                reload
-              )}
-              pagination={true}
-              dataTotalSize={resignations.length || 0}
-              tableOptions={tableOptions}
-            />
-          </CardContent>
-        </Card>
+      <div className="py-4 px-3 bg-white  flex flex-col gap-5">
+        <FilterInput
+          filters={[
+            {
+              type: "search",
+              placeholder: "Search by id",
+              name: "employee_id",
+            },
+            {
+              type: "select-one",
+              option:
+                activeTab === "Resignations"
+                  ? resignationStatus
+                  : terminationStatus,
+              name:
+                activeTab === "Resignations"
+                  ? "status_resignation"
+                  : "status_termination",
+              placeholder: "Status",
+            },
+          ]}
+          onChange={handleFilterChange}
+        />
+        {loading ? (
+          <PageLoader />
+        ) : (
+          <Row>
+            <Col lg={12}>
+              <div>
+                <Table
+                  data={Resignations?.results || []}
+                  columns={EmployeeResignationsColumns(handleRowClicked, () => {
+                    fetchData();
+                  })}
+                  pagination={true}
+                  dataTotalSize={Resignations?.count || 0}
+                  tableOptions={tableOptions}
+                />
+              </div>
+            </Col>
+          </Row>
+        )}
+      </div>
+
+      {selectedResignationId !== null && (
+        <ExitDetailsCard
+          resignationId={selectedResignationId}
+          onClose={closeModal}
+          resignationsList={Resignations?.results}
+          reload={fetchData}
+        />
       )}
     </>
   );
+});
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
 };
 
-export default Resignations;
+export default connect(mapStateToProps)(Resignations);

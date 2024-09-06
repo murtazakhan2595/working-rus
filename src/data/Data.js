@@ -6,11 +6,18 @@ import {
   fetchLeaveTypes,
   fetchDesignations,
   fetchProjects,
+  fetchOrganizations,
 } from "state/slices/CommonSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
 import { options } from "joi";
-import { ArrowDown, ArrowRight, CircleEllipsis, ArrowUp, Timer   } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowRight,
+  CircleEllipsis,
+  ArrowUp,
+  Timer,
+} from "lucide-react";
 
 export const countryOptions = Object.keys(getAllCountries()).map(
   (countryCode) => ({
@@ -218,7 +225,7 @@ export const typeOptions = [
     value: "Miscellaneous",
     label: (
       <div className="flex justify-center gap-x-2">
-        <CircleEllipsis  className="text-2xl text-[#935AF2]" />
+        <CircleEllipsis className="text-2xl text-[#935AF2]" />
         Miscellaneous
       </div>
     ),
@@ -266,7 +273,7 @@ export const PriorityList = [
     value: 1,
     label: (
       <div className="flex justify-center text-red-500 gap-x-2">
-        <ArrowUp className="text-2xl"  /> High
+        <ArrowUp className="text-2xl" /> High
       </div>
     ),
   },
@@ -284,7 +291,8 @@ export const PriorityListIcons = [
     value: 2,
     label: (
       <div className="flex justify-center text-yellow-500 gap-x-2">
-        <ArrowRight className="text-xl" />Medium
+        <ArrowRight className="text-xl" />
+        Medium
       </div>
     ),
   },
@@ -292,7 +300,8 @@ export const PriorityListIcons = [
     value: 1,
     label: (
       <div className="flex justify-center text-red-500 gap-x-2">
-        <ArrowUp className="text-2xl" />High
+        <ArrowUp className="text-2xl" />
+        High
       </div>
     ),
   },
@@ -305,15 +314,14 @@ export const status2Options = [
       <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10">
         Pending
       </div>
-      
-      
     ),
   },
   {
     value: "Inprogress",
     label: (
       <div className="items-center px-2 py-1 text-xs font-medium text-yellow-800 rounded-full bginline-flex bg-yellow-50 ring-1 ring-inset ring-yellow-600/20">
-        <Timer />In Progress
+        <Timer />
+        In Progress
       </div>
     ),
   },
@@ -422,7 +430,10 @@ export const TaskSortingFilters = [
       {
         label: "Selected Members",
         value: "asc",
-        options: [{ label: "ajwa", value: "90",name:"ajwa" }, { label: "ali", value: "91",name:"ali" }],
+        options: [
+          { label: "ajwa", value: "90", name: "ajwa" },
+          { label: "ali", value: "91", name: "ali" },
+        ],
       },
     ],
   },
@@ -482,6 +493,70 @@ export function getManagerSelected(managers, managersList) {
 
   return managers;
 }
+export const ResignationStatusOptions = [
+  { label: "Pending", value: "pending" },
+  { label: "Accepted by Manager", value: "accepted by manager" },
+  { label: "Rejected by Manager", value: "rejected by manager" },
+  { label: "Accepted by HR", value: "accepted by hr" },
+  { label: "Rejected by HR", value: "rejected by hr" },
+  { label: "Clearance initiated", value: "initiated clearance" },
+  { label: "Exit Interview", value: "exit interview" },
+];
+
+export const ResignationReasons = [
+  { value: "career-advance", label: "Career growth" },
+  { value: "better-opportunity", label: "Better opportunity" },
+  { value: "family-reasons", label: "Personal Reasons" },
+  { value: "relocation", label: "Relocation" },
+  { value: "health-reasons", label: "Health reasons" },
+  { value: "Job dissatisfaction", label: "Job dissatisfaction" },
+  { value: "Others", label: "Others" },
+];
+
+export const terminationReasonsOptions = [
+  {
+    value: 1,
+    label: "Poor Performance",
+  },
+  { value: 2, label: "Involuntary" },
+  {
+    value: 7,
+    label: "End of Contract",
+  },
+  { value: 3, label: "Retirement" },
+  { value: 4, label: "Layoff" },
+  { value: 5, label: "Dismissal" },
+  {
+    value: 6,
+    label: "Mutual Agreement",
+  },
+];
+
+export const NoticePeriod = [
+  {
+    value: "1 month",
+    label: "1 month",
+  },
+  {
+    value: "2 month",
+    label: "2 month",
+  },
+  {
+    value: "3 month",
+    label: "3 month",
+  },
+  {
+    value: "0 month",
+    label: "0 month",
+  },
+];
+export const TerminationStatusOptions = [
+  { label: "Viewd By Manager", value: "pending" },
+  { label: "Accepted by Employee", value: "accepted by employee" },
+  { label: "Rejected by Employee", value: "rejected by employee" },
+  { label: "Clearance initiated", value: "initiated clearance" },
+  { label: "Exit Interview", value: "exit interview" },
+];
 
 export const handleUpdateProfile = (dispatch, data) => {
   const userprofile = {
@@ -495,6 +570,7 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(fetchDepartments());
   dispatch(fetchLeaveTypes());
   dispatch(fetchDesignations());
+  dispatch(fetchOrganizations());
   dispatch(fetchReportingManagers());
   dispatch(fetchProjects(userprofile));
 };

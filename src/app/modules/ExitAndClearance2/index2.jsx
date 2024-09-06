@@ -6,16 +6,16 @@ import "react-toastify/dist/ReactToastify.css";
 import { getLeaveApplications } from "app/hooks/leaveManagment";
 import { Row, Col } from "reactstrap";
 import { getEmployeeExitData } from "app/hooks/employee";
-import StatCard from "./StatCard";
-import Resignations from "./Resignations";
-import Terminations from "./Terminations";
+import StatCard from "./StatCard2";
+import Resignations from "./Resignations2";
+import Terminations from "./Terminations2";
 import ExitRequestHeader from "./section/Header.jsx";
 import { CustomDarkButton } from "components/form-control";
 import { FilterInput } from "components/form-control";
 import { resignationStatus } from "data/Data";
 import { terminationStatus } from "data/Data";
 import RequestTerminationCard from "./RequestTerminationCard";
-import Terminated from "./Terminated";
+import Terminated from "./Terminated2";
 import SheetOnBorading from "components/ui/sheet-onBording-form";
 
 import {

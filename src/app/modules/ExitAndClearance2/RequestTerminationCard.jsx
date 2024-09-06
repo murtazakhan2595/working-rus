@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Formik } from "formik";
 import { Col, Form, Row } from "reactstrap";
 import { DateInput } from "components/form-control";
@@ -13,51 +13,14 @@ import { getAllCountries } from "countries-and-timezones";
 import moment from "moment";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
-import { terminationReasonsOptions } from "data/Data";
-import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 
 const { RxCross2 } = require("react-icons/rx");
 
-const RequestTerminationCard = ({
-  employees,
-  organizations,
-  closeModel,
-  userProfile,
-}) => {
+
+const RequestTerminationCard = ({ employees, closeModel }) => {
   const [initialValues, setInitialValues] = React.useState({});
-  const [employeeData, setEmployeeData] = React.useState([[]]);
-  const [loading, setLoading] = React.useState(false);
-  const [terminations, setTerminations] = React.useState([]);
-  const [filterEmployees, setFilterEmployees] = React.useState([]);
+  const [employeeData, setEmployeeData] = React.useState([[] ]);
   const formRef = React.createRef();
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await getEmployeesResignations({
-        filterData: {
-          exit_category: "termination",
-          ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
-        },
-      });
-      setTerminations(response.results);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const terminationsId = terminations.map((item) => item.employee_id);
-    const filter = employees.filter(
-      (item) => !terminationsId.includes(item.value)
-    );
-    setFilterEmployees(filter);
-  }, [terminations]);
 
   const employeeFootPrint = [
     {
@@ -82,6 +45,8 @@ const RequestTerminationCard = ({
   ];
 
   const handleEmployeeChange = async (field, value) => {
+    console.log("field", field);
+    console.log("value", value);
     try {
       const response = await getEmployeeData(value);
       const employeeDataArray = [
@@ -101,12 +66,7 @@ const RequestTerminationCard = ({
             title: "Work Location",
             data: getAllCountries()[response.employee_location]?.name || "",
           },
-          {
-            title: "Organization",
-            data: organizations.find(
-              (org) => org.value === response.organization
-            )?.label,
-          },
+          { title: "Organization", data: response.organization },
           {
             title: "Report To",
             data: <ManagerName value={response.direct_report} />,
@@ -120,43 +80,43 @@ const RequestTerminationCard = ({
         ],
       ];
       setEmployeeData(employeeDataArray);
+
     } catch (e) {
       console.error(e);
     }
   };
-  const handleSubmit = async (values, resetForm) => {
+  const handleSubmit =async (values, resetForm) => {
+    console.log(values);
     const payload = {
-      exit_date: values.last_working_day,
-      exit_interview_date: values.exit_interview_date,
+      exit_date: values.exit_interview_date,
       final_working_day: values.last_working_day,
       exit_category: "termination",
       termination_letter: values.termination_letter,
       notice_period: values.notice_period,
       employee_id: values.terminate_employee,
-      reason_of_termination: values.reason_for_terminating,
-      status_termination: "viwed by manager",
     };
-    try {
+    try{
       const response = await employeeExit(payload);
-      if (response) {
+      if(response){
         toast.success("Termination request submitted successfully");
         closeModel();
       }
-    } catch (e) {
+    }catch(e){
       console.error(e);
       toast.error("Failed to submit the form");
     }
+
   };
   return (
     <div
       className="fixed top-0 text-[#323333] right-0 w-[95%] h-[100vh] z-10 overflow-y-auto p-8 hideScroll bg-white"
       style={{ maxWidth: "806px", minHeight: "100vh" }}
     >
-      <div className="flex justify-between items-center ">
-        <h2 className="font-bold text-xl ">Termination</h2>
+      <div className="flex items-center justify-between ">
+        <h2 className="text-xl font-bold ">Termination</h2>
 
         <RxCross2
-          className=" cursor-pointer"
+          className="cursor-pointer "
           onClick={() => {
             closeModel();
           }}
@@ -174,22 +134,23 @@ const RequestTerminationCard = ({
               }}
               validate={(values) => {
                 const errors = {};
+                console.log(values);
 
                 return errors;
               }}
             >
               {(props) => (
-                <Form onSubmit={props.handleSubmit}>
+                <form onSubmit={props.handleSubmit}>
                   <Row>
-                    <div className=" flex flex-col lg:flex-row gap-8 overflow-visible no-scrollbar whitespace-break-spaces mb-4 ">
+                    <div className="flex flex-col gap-8 mb-4 overflow-visible lg:flex-row no-scrollbar whitespace-break-spaces">
                       {employeeData.map((infoGroup, index) => (
                         <div
                           key={index}
-                          className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4"
+                          className="grid w-full gap-4 sm:grid-cols-1 lg:grid-cols-2"
                         >
                           <SelectComponent
                             name="terminate_employee"
-                            options={filterEmployees}
+                            options={employees}
                             error={props.errors.terminate_employee}
                             touch={props.touched.terminate_employee}
                             value={props.values.terminate_employee}
@@ -203,10 +164,10 @@ const RequestTerminationCard = ({
                           {infoGroup.length > 0
                             ? infoGroup.map((info) => (
                                 <div
-                                  className="flex flex-col w-full border px-3 py-1 h-fit  rounded-md"
+                                  className="flex flex-col w-full px-3 py-1 border rounded-md h-fit"
                                   key={info.title}
                                 >
-                                  <div className="opacity-60 w-full ">
+                                  <div className="w-full opacity-60 ">
                                     {info.title}
                                   </div>
 
@@ -215,22 +176,23 @@ const RequestTerminationCard = ({
                                   </div>
                                 </div>
                               ))
-                            : employeeFootPrint.map((info) => {
-                                return (
-                                  <div
-                                    className="flex w-full border items-center px-3 py-[1rem] h-fit  rounded-md"
-                                    key={info.title}
-                                  >
-                                    <div className="opacity-60 w-full ">
-                                      {info.title}
-                                    </div>
+                            : employeeFootPrint.map((info)=>{
+                              return (
+                                <div
+                                  className="flex w-full border items-center px-3 py-[1rem] h-fit  rounded-md"
+                                  key={info.title}
+                                >
+                                  <div className="w-full opacity-60 ">
+                                    {info.title}
                                   </div>
-                                );
-                              })}
+
+                                </div>
+                              )
+                            })}
                         </div>
                       ))}
                     </div>
-                    <div className="font-bold text-lg mb-4">Exit Details</div>
+                    <div className="mb-4 text-lg font-bold">Exit Details</div>
                     <Col md={6}>
                       <DateInput
                         name={"last_working_day"}
@@ -288,13 +250,29 @@ const RequestTerminationCard = ({
                     <Col md={6} className="z-0">
                       <SelectComponent
                         name={"reason_for_terminating"}
-                        options={terminationReasonsOptions}
+                        options={[
+                          {
+                            value: "poor-performance",
+                            label: "Poor Performance",
+                          },
+                          { value: "involuntary", label: "Involuntary" },
+                          {
+                            value: "end-of-contract",
+                            label: "End of Contract",
+                          },
+                          { value: "retirement", label: "Retirement" },
+                          { value: "layoff", label: "Layoff" },
+                          { value: "dismissal", label: "Dismissal" },
+                          {
+                            value: "mutual-agreement",
+                            label: "Mutual Agreement",
+                          },
+                        ]}
                         error={props.errors.reason_for_terminating}
                         touch={props.touched.reason_for_terminating}
                         value={props.values.reason_for_terminating}
-                        label={"Reason for Terminating"}
+                        label={"Reason for leaving"}
                         onChange={(field, value) => {
-                          console.log("value", value);
                           props.setFieldValue(field, value);
                         }}
                       />
@@ -316,21 +294,21 @@ const RequestTerminationCard = ({
                       <div className="flex flex-row gap-9 ">
                         <button
                           type="submit"
-                          className="mt-4 bg-white border-2 border-black rounded-lg flex items-center justify-center gap-x-2 text-black font-lato text-base  w-48 h-12"
+                          className="flex items-center justify-center w-48 h-12 mt-4 text-base text-black bg-white border-2 border-black rounded-lg gap-x-2 font-lato"
                         >
                           Reset
                         </button>
 
                         <button
                           type="submit"
-                          className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base  w-48 h-12"
+                          className="flex items-center justify-center w-48 h-12 mt-4 text-base text-white bg-black rounded-lg gap-x-2 font-lato"
                         >
                           Submit
                         </button>
                       </div>
                     </Col>
                   </Row>
-                </Form>
+                </form>
               )}
             </Formik>
           </Col>
@@ -343,8 +321,6 @@ const mapStateToProps = (state) => {
   return {
     token: state.user.token,
     employees: state.emp.employees,
-    organizations: state.common.organizations,
-    userProfile: state.user.userProfile,
   };
 };
-export default connect(mapStateToProps)(RequestTerminationCard);
+export default  connect(mapStateToProps)(RequestTerminationCard);

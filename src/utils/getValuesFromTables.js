@@ -44,6 +44,12 @@ function LeaveType({ value }) {
   );
   return <>{response ? response.label : "N/A"}</>;
 }
+function TerminationStatus(status) {
+  const response = TerminationStatusOptions.find(
+    (option) => option.value === status
+  );
+  return response ? response.label : status ?? "N/A";
+}
 function LeaveTypeOfEmployee({ value, list }) {
   const response = list.find((option) => option.value === parseInt(value));
   return <>{response ? response.label : "N/A"}</>;
@@ -88,9 +94,27 @@ function ManagerName({ value }) {
   const manager = managers.find((option) => option.value === parseInt(value));
   return <>{manager ? manager.label : "N/A"}</>;
 }
+function ResignationStatus(status) {
+  const response = ResignationStatusOptions.find(
+    (option) => option.value === status
+  );
+  return response ? response.label : "N/A";
+}
+function ResignationReason(value) {
+  const response = ResignationReasons.find((option) => option.value === value);
+  return response ? response.label : "N/A";
+}
+function TerminationReason({ value }) {
+  const reason = terminationReasonsOptions.find(
+    (option) => option.value === value
+  );
+  console.log(value, reason, terminationReasonsOptions);
+  return reason ? reason.label : "Unknown Reason";
+}
 
 export {
   getCountryFullName,
+  ResignationReason,
   getEmployeeType,
   getWorkType,
   getJobType,
@@ -104,4 +128,7 @@ export {
   EmployeeID,
   UserRole,
   ProjectName,
+  TerminationStatus,
+  ResignationStatus,
+  TerminationReason,
 };
