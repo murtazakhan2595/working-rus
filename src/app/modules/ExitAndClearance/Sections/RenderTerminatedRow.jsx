@@ -10,6 +10,15 @@ import {
   ResignationReason,
   ManagerName,
 } from "utils/getValuesFromTables";
+import { EmployeeNameInfo } from "components";
+import { Labels } from "components/StatusLabel";
+
+import pdfIcon from "assets/images/pdfIcon.svg";
+import { getFileSizeInKB } from "utils/fileUtils";
+import { filebase64Download } from "utils/fileUtils";
+import { AiOutlineDownload } from "react-icons/ai";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { RxCross2 } from "react-icons/rx";
 
 const RenderTerminatedRow = ({
   terminatedEmployee,
