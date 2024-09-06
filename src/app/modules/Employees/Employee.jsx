@@ -31,6 +31,7 @@ export default function Component() {
   const [totalManagers, setTotalManager] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState('all');
   const navigate = useNavigate();
+  const [selectedValue, setSelectedValue] = React.useState("")
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -93,7 +94,6 @@ export default function Component() {
       return updatedFilters;
     });
   };
-
   // Extract unique employee statuses
   const employeeStatuses = ['all', ...new Set(employeeData?.results.map(employee => employee.employee_status))];
 

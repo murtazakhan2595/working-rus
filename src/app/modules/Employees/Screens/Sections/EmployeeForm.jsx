@@ -73,6 +73,57 @@ const EmployeeForm = ({
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
   const [date, setDate] = useState();
+  const [selectedValue, setSelectedValue] = React.useState("")
+
+  
+console.log(departments, "Daeprtmentlist")
+  
+  // const options = [
+    
+    
+  //   {
+  //     "value": 1,
+  //     "label": "Project Management"
+  // },
+  // {
+  //     "value": 12,
+  //     "label": "Operations"
+  // },
+  // {
+  //     "value": 13,
+  //     "label": "Pre Sales"
+  // },
+  // {
+  //     "value": 14,
+  //     "label": "HR"
+  // },
+  // {
+  //     "value": 15,
+  //     "label": "Sales"
+  // },
+  // {
+  //     "value": 16,
+  //     "label": "Marketing"
+  // },
+  // {
+  //     "value": 17,
+  //     "label": "Accounts"
+  // },
+  // {
+  //     "value": 18,
+  //     "label": "Development"
+  // },
+  // {
+  //     "value": 19,
+  //     "label": "Design"
+  // }
+  // ]
+
+// replace on change function
+  const handleChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedValue(value)
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -206,122 +257,122 @@ const EmployeeForm = ({
                       />
                     </div>
                     <div className="space-y-2">
-                    <TextInput
-                            name={"username"}
-                            error={props.errors?.username}
-                            touch={props.touched.username}
-                            value={props.values.username}
-                            label={"User Name"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                              validateUsername(value);
-                            }}
-                            />
+                      <TextInput
+                        name={"username"}
+                        error={props.errors?.username}
+                        touch={props.touched.username}
+                        value={props.values.username}
+                        label={"User Name"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                          validateUsername(value);
+                        }}
+                      />
                     </div>
                     <div className="space-y-2">
                       <TextInput
-                            name={"first_name"}
-                            error={props.errors?.first_name}
-                            touch={props.touched.first_name}
-                            value={props.values.first_name}
-                            label={"First Name"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
+                        name={"first_name"}
+                        error={props.errors?.first_name}
+                        touch={props.touched.first_name}
+                        value={props.values.first_name}
+                        label={"First Name"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
                     </div>
                     <div className="space-y-2">
                       <TextInput
-                            name={"last_name"}
-                            error={props.errors?.last_name}
-                            touch={props.touched.last_name}
-                            value={props.values.last_name}
-                            label={"Last Name"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
+                        name={"last_name"}
+                        error={props.errors?.last_name}
+                        touch={props.touched.last_name}
+                        value={props.values.last_name}
+                        label={"Last Name"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <EmailInput
-                            name={"work_email"}
-                            error={props.errors?.work_email}
-                            touch={props.touched.work_email}
-                            value={props.values.work_email}
-                            label={"Email"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                              setEmail && setEmail(value);
-                              validateEmail(value);
-                            }}
-                          />
+                      <EmailInput
+                        name={"work_email"}
+                        error={props.errors?.work_email}
+                        touch={props.touched.work_email}
+                        value={props.values.work_email}
+                        label={"Email"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                          setEmail && setEmail(value);
+                          validateEmail(value);
+                        }}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <div>
-                    <Label htmlFor="password">
-                              <span className="text-red-600">* </span>Password
-                            </Label>
-                            <Input
-                              type="password"
-                              maxLength="20"
-                              id="password"
-                              name="password"
-                              autoComplete="Off"
-                              placeholder={"Enter User Name"}
-                              onChange={(option) => {
-                                props.handleChange("password")(option);
-                              }}
-                              value={
-                                props.values?.password?.length <= 20
-                                  ? props.values.password
-                                  : ""
-                              }
-                              className={
-                                props.errors?.password && props.touched.password
-                                  ? "is-invalid"
-                                  : ""
-                              }
-                            />
-                            {props.errors?.password &&
-                              props.touched.password && (
-                                <div className="invalid-feedback">
-                                  {props.errors?.password}
-                                </div>
-                              )}
-                          </div>
+                      <div>
+                        <Label htmlFor="password">
+                          <span className="text-red-600">* </span>Password
+                        </Label>
+                        <Input
+                          type="password"
+                          maxLength="20"
+                          id="password"
+                          name="password"
+                          autoComplete="Off"
+                          placeholder={"Enter User Name"}
+                          onChange={(option) => {
+                            props.handleChange("password")(option);
+                          }}
+                          value={
+                            props.values?.password?.length <= 20
+                              ? props.values.password
+                              : ""
+                          }
+                          className={
+                            props.errors?.password && props.touched.password
+                              ? "is-invalid"
+                              : ""
+                          }
+                        />
+                        {props.errors?.password &&
+                          props.touched.password && (
+                            <div className="invalid-feedback">
+                              {props.errors?.password}
+                            </div>
+                          )}
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <PhoneNumberInput
-                            name={"mobile_no"}
-                            error={props.errors?.mobile_no}
-                            touch={props.touched.mobile_no}
-                            value={props.values.mobile_no}
-                            label={"Contact no."}
-                            countryCode={props.values.country_code}
-                            countryCodeName={"country_code"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
+                        name={"mobile_no"}
+                        error={props.errors?.mobile_no}
+                        touch={props.touched.mobile_no}
+                        value={props.values.mobile_no}
+                        label={"Contact no."}
+                        countryCode={props.values.country_code}
+                        countryCodeName={"country_code"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <TextAreaInput
-                            name={"residential_address"}
-                            error={props.errors?.residential_address}
-                            touch={props.touched?.residential_address}
-                            value={props.values?.residential_address}
-                            label={"Address"}
-                            required={true}
-                            maxRows={1}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
+                      <TextAreaInput
+                        name={"residential_address"}
+                        error={props.errors?.residential_address}
+                        touch={props.touched?.residential_address}
+                        value={props.values?.residential_address}
+                        label={"Address"}
+                        required={true}
+                        maxRows={1}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -329,142 +380,133 @@ const EmployeeForm = ({
                   <h3 className="text-lg font-semibold">Work Information</h3>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
-                    <SelectComponent
-                          name={"department_name"}
-                          options={departments}
-                          error={props.errors?.department_name}
-                          touch={props.touched.department_name}
-                          value={props.values.department_name}
-                          label={"Department"}
-                          required={true}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
+                       <SelectComponent
+                        name="Departments"
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        error={props.errors?.department_name}
+                        touch={props.touched.department_name}
+                        options={departments}
+                        label="Select Department"
+                        required={true}
+                        onChange={handleChange}
+                      />
+
                     </div>
                     <div className="space-y-2">
-                    <SelectComponent
-                          name={"employee_location"}
-                          options={countryOptions}
-                          error={props.errors?.employee_location}
-                          touch={props.touched.employee_location}
-                          value={props.values.employee_location}
-                          required={true}
-                          label={"Employee Location"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
+                      <SelectComponent
+                        name={"employee_location"}
+                        options={countryOptions}
+                        error={props.errors?.employee_location}
+                        touch={props.touched.employee_location}
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        required={true}
+                        label={"Employee Location"}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <SelectComponent
-                          name={"department_position"}
-                          options={designations}
-                          error={props.errors?.department_position}
-                          touch={props.touched.department_position}
-                          value={props.values.department_position}
-                          label={"Designation"}
-                          required={true}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
+                      <SelectComponent
+                        name={"department_position"}
+                        options={designations}
+                        error={props.errors?.department_position}
+                        touch={props.touched.department_position}
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        label={"Designation"}
+                        required={true}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <SelectComponent
-                          name={"user_role"}
-                          options={UserRoles}
-                          error={props.errors?.user_role}
-                          touch={props.touched.user_role}
-                          value={props.values.user_role}
-                          required={true}
-                          label={"Role"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
+                      <SelectComponent
+                        name={"user_role"}
+                        options={UserRoles}
+                        error={props.errors?.user_role}
+                        touch={props.touched.user_role}
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        required={true}
+                        label={"Role"}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <SelectComponent
-                            name={"employee_type"}
-                            options={jobRoles}
-                            error={props.errors?.employee_type}
-                            touch={props.touched.employee_type}
-                            value={props.values.employee_type}
-                            required={true}
-                            label={"Employee Type"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
+                      <SelectComponent
+                        name={"employee_type"}
+                        options={jobRoles}
+                        error={props.errors?.employee_type}
+                        touch={props.touched.employee_type}
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        required={true}
+                        label={"Employee Type"}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <SelectComponent
-                            name={"employee_status"}
-                            options={employeeStatus}
-                            error={props.errors?.employee_status}
-                            touch={props.touched.employee_status}
-                            value={props.values.employee_status}
-                            required={true}
-                            label={"Employee status"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
+                      <SelectComponent
+                        name={"employee_status"}
+                        options={employeeStatus}
+                        error={props.errors?.employee_status}
+                        touch={props.touched.employee_status}
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        required={true}
+                        label={"Employee status"}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <SelectComponent
-                          name={"employee_work_type"}
-                          options={workplaceTypes}
-                          error={props.errors?.employee_work_type}
-                          touch={props.touched.employee_work_type}
-                          value={props.values.employee_work_type}
-                          required={true}
-                          label={"Employee Work Type"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
+                      <SelectComponent
+                        name={"employee_work_type"}
+                        options={workplaceTypes}
+                        error={props.errors?.employee_work_type}
+                        touch={props.touched.employee_work_type}
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        required={true}
+                        label={"Employee Work Type"}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <SelectComponent
-                          name={"direct_report"}
-                          options={managers}
-                          error={props.errors?.direct_report}
-                          touch={props.touched.direct_report}
-                          value={props.values.direct_report}
-                          label={"Direct Report"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
+                      <SelectComponent
+                        name={"direct_report"}
+                        options={managers}
+                        error={props.errors?.direct_report}
+                        touch={props.touched.direct_report}
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        label={"Direct Report"}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <SelectMultiInputComponent
-                          name={"indirect_report"}
-                          options={managers}
-                          error={props.errors?.indirect_report}
-                          touch={props.touched.indirect_report}
-                          value={props.values.indirect_report}
-                          label={"Indirect Report"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
+                      <SelectMultiInputComponent
+                        name={"indirect_report"}
+                        options={managers}
+                        error={props.errors?.indirect_report}
+                        touch={props.touched.indirect_report}
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        label={"Indirect Report"}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="space-y-2">
-                    <SelectComponent
-                          name={"department_manager"}
-                          options={HeadOfDepartmentOptions}
-                          error={props.errors?.department_manager}
-                          touch={props.touched.department_manager}
-                          value={props.values.department_manager}
-                          required={true}
-                          label={"Department Head"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
+                      <SelectComponent
+                        name={"department_manager"}
+                        options={HeadOfDepartmentOptions}
+                        error={props.errors?.department_manager}
+                        touch={props.touched.department_manager}
+                        value={selectedValue}
+                        setValue={setSelectedValue}
+                        required={true}
+                        label={"Department Head"}
+                        onChange={handleChange}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="joiningDate">Joining Date</Label>

@@ -88,6 +88,7 @@ export default function MyTasks() {
       const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted && projectsData.results) {
         setAllProjects(projectsData.results);
+        console.log(projectsData.results, "PROJECTS DATA");
         fetchTasks(isMounted, projectsData.results);
       }
     } catch (error) {

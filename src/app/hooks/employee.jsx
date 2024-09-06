@@ -736,10 +736,7 @@ const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
       const response = await axios.get(
         `${baseUrl}/employeebanklist/${employeeid}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: headers()
         }
       );
 
@@ -766,10 +763,7 @@ const saveEmployeeBankDetailsData = async (
     try {
       await axios
         .patch(`${baseUrl}/emp/${employeeid}`, payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+         headers: headers()
         })
         .then(() => {
           return true;
