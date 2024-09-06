@@ -2,18 +2,24 @@ import React from "react";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { Tabs } from "components";
 import { Row, Col } from "reactstrap";
 import { getEmployeesExitCount } from "app/hooks/employeeExitAndClearance";
 import StatCard from "./StatCard";
 import Resignations from "./Resignations";
 import Terminations from "./Terminations";
-import { Header } from "./Sections";
 import { CustomDarkButton } from "components/form-control";
 import RequestTerminationCard from "./RequestTerminationCard";
 import Terminated from "./Terminated";
 import Resigned from "./Resigned";
 import { TerminationStatus } from "utils/getValuesFromTables";
+import SheetOnBorading from "components/ui/sheet-onBording-form";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "../../../src/@/components/ui/tabs";
+import { Header } from "components";
 
 const ExitAndClearance = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Resignations");

@@ -1,3 +1,7 @@
+import { ResignationStatusOptions } from "data/Data";
+import { terminationReasonsOptions } from "data/Data";
+import { TerminationStatusOptions } from "data/Data";
+import { ResignationReasons } from "data/Data";
 import {
   workTypeOptions,
   employeeTypeOptions,

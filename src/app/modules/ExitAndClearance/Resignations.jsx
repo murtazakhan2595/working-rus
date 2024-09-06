@@ -8,6 +8,8 @@ import { ResignationStatusOptions } from "data/Data";
 import { FilterInput } from "components/form-control";
 import { PageLoader } from "components";
 import { Col, Row } from "reactstrap";
+import { Card, CardContent } from "../../../components/ui/card.jsx";
+
 import { StatusList } from "./Sections";
 
 const Resignations = React.memo(({ userProfile }) => {
@@ -85,59 +87,80 @@ const Resignations = React.memo(({ userProfile }) => {
 
   return (
     <>
-      <div className="py-4 px-3 bg-white  flex flex-col gap-5">
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by id",
-              name: "employee_id",
-            },
-            {
-              type: "select-one",
-              option:
-                activeTab === "Resignations"
-                  ? resignationStatus
-                  : terminationStatus,
-              name:
-                activeTab === "Resignations"
-                  ? "status_resignation"
-                  : "status_termination",
-              placeholder: "Status",
-            },
-          ]}
-          onChange={handleFilterChange}
-        />
-        {loading ? (
-          <PageLoader />
-        ) : (
-          <Row>
-            <Col lg={12}>
-              <div>
-                <Table
-                  data={Resignations?.results || []}
-                  columns={EmployeeResignationsColumns(handleRowClicked, () => {
-                    fetchData();
-                  })}
-                  pagination={true}
-                  dataTotalSize={Resignations?.count || 0}
-                  tableOptions={tableOptions}
-                />
-              </div>
-            </Col>
-          </Row>
-        )}
-      </div>
-
-      {selectedResignationId !== null && (
-        <ExitDetailsCard
-          resignationId={selectedResignationId}
-          onClose={closeModal}
-          resignationsList={Resignations?.results}
-          reload={fetchData}
-        />
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <Card>
+          <CardContent>
+            {selectedResignationId !== null && (
+              <ExitDetailsCard
+                resignationId={selectedResignationId}
+                onClose={closeModal}
+                resignationsList={Resignations?.results}
+                reload={fetchData}
+              />
+            )}
+            <Table
+              data={Resignations?.results || []}
+              columns={EmployeeResignationsColumns(handleRowClicked, () => {
+                fetchData();
+              })}
+              pagination={true}
+              dataTotalSize={Resignations?.count || 0}
+              tableOptions={tableOptions}
+            />
+          </CardContent>
+        </Card>
       )}
     </>
+    // <>
+    //   <div className="py-4 px-3 bg-white  flex flex-col gap-5">
+    //     <FilterInput
+    //       filters={[
+    //         {
+    //           type: "search",
+    //           placeholder: "Search by id",
+    //           name: "employee_id",
+    //         },
+    //         {
+    //           type: "select-one",
+    //           option: ResignationStatusOptions,
+    //           name: "status_resignation",
+    //           placeholder: "Status",
+    //         },
+    //       ]}
+    //       onChange={handleFilterChange}
+    //     />
+    //     {loading ? (
+    //       <PageLoader />
+    //     ) : (
+    //       <Row>
+    //         <Col lg={12}>
+    //           <div>
+    //             <Table
+    //               data={Resignations?.results || []}
+    //               columns={EmployeeResignationsColumns(handleRowClicked, () => {
+    //                 fetchData();
+    //               })}
+    //               pagination={true}
+    //               dataTotalSize={Resignations?.count || 0}
+    //               tableOptions={tableOptions}
+    //             />
+    //           </div>
+    //         </Col>
+    //       </Row>
+    //     )}
+    //   </div>
+
+    //   {selectedResignationId !== null && (
+    //     <ExitDetailsCard
+    //       resignationId={selectedResignationId}
+    //       onClose={closeModal}
+    //       resignationsList={Resignations?.results}
+    //       reload={fetchData}
+    //     />
+    //   )}
+    // </>
   );
 });
 const mapStateToProps = (state) => {
