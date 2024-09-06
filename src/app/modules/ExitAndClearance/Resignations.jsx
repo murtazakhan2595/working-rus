@@ -11,6 +11,7 @@ import { Col, Row } from "reactstrap";
 import { Card, CardContent } from "../../../components/ui/card.jsx";
 
 import { StatusList } from "./Sections";
+import TableCustom from "components/TableCustom";
 
 const Resignations = React.memo(({ userProfile }) => {
   const [loading, setLoading] = useState(true);
@@ -100,7 +101,7 @@ const Resignations = React.memo(({ userProfile }) => {
                 reload={fetchData}
               />
             )}
-            <Table
+            <TableCustom
               data={Resignations?.results || []}
               columns={EmployeeResignationsColumns(handleRowClicked, () => {
                 fetchData();

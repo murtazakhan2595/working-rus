@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import {
-  ButtonDropdown,
-  DropdownToggle,
   DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "../../../../src/@/components/ui/dropdown-menu";
+import { Button } from "../../../../src/@/components/ui/button";
 import { useSelector } from "react-redux";
 import { saveEmployeeWorkInformationData } from "app/hooks/employee";
 import { IoMdArrowDropdown } from "react-icons/io";
@@ -59,28 +62,20 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
           </div>
         )
       ) : (
-        <ButtonDropdown
-          isOpen={openDropdownRow === row.id}
-          toggle={() => toggleDropdown(row.id)}
-        >
-          <DropdownToggle className="border-0 shadow-none bg-transparent">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             {viewMode ? (
-              <button
-                className="btn btn-outline-dark bg-white text-dark shadow-none"
-                style={{
-                  padding: ".35em .65em",
-                  fontSize: ".75em",
-                  minWidth: "100px",
-                  height: "32.25px",
-                }}
-              >
+              <Button variant="outline" className="">
                 <span className="flex justify-center">
                   Action
                   <IoMdArrowDropdown className="text-[20px]" />
                 </span>
-              </button>
+              </Button>
             ) : (
-              <button className="text-zinc-600 text-sm font-normal">
+              <Button
+                className="text-zinc-600 text-sm font-normal"
+                variant="outline"
+              >
                 <div className="flex items-center">
                   <StatusCircleLabel
                     label={ResignationStatus(status)}
@@ -88,25 +83,25 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                   />
                   <RiArrowDropDownLine className="text-xl text-zinc-600" />
                 </div>
-              </button>
+              </Button>
             )}
-          </DropdownToggle>
-          <DropdownMenu start className="p-6">
+          </DropdownMenuTrigger>
+          <DropdownMenuContent start className="p-6">
             {loggedInUser.role === 2 && (
               <>
                 {managerApproval !== "Approved" && (
-                  <DropdownItem
+                  <DropdownMenuLabel
                     onClick={() => handleOptionSelect("accepted by manager")}
                   >
                     <StatusCircleLabel label={"Accept"} status={"approved"} />
-                  </DropdownItem>
+                  </DropdownMenuLabel>
                 )}
                 {managerApproval !== "Rejected" && (
-                  <DropdownItem
+                  <DropdownMenuLabel
                     onClick={() => handleOptionSelect("rejected by manager")}
                   >
                     <StatusCircleLabel label={"Reject"} status={"rejected"} />
-                  </DropdownItem>
+                  </DropdownMenuLabel>
                 )}
               </>
             )}
@@ -114,31 +109,31 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
               (loggedInUser.role === 1 && (
                 <>
                   {HRApproval !== "Approved" && (
-                    <DropdownItem
+                    <DropdownMenuLabel
                       onClick={() => handleOptionSelect("accepted by hr")}
                     >
                       <StatusCircleLabel label={"Accept"} status={"approved"} />
-                    </DropdownItem>
+                    </DropdownMenuLabel>
                   )}
                   {HRApproval !== "Rejected" && (
-                    <DropdownItem
+                    <DropdownMenuLabel
                       onClick={() => handleOptionSelect("rejected by hr")}
                     >
                       <StatusCircleLabel label={"Reject"} status={"rejected"} />
-                    </DropdownItem>
+                    </DropdownMenuLabel>
                   )}
                   {resignationCurrentStep < 3 && (
-                    <DropdownItem
+                    <DropdownMenuLabel
                       onClick={() => handleOptionSelect("initiated clearance")}
                     >
                       <StatusCircleLabel
                         label={"Clearance"}
                         status={"Clearance"}
                       />
-                    </DropdownItem>
+                    </DropdownMenuLabel>
                   )}
                   {resignationCurrentStep !== 4 && (
-                    <DropdownItem
+                    <DropdownMenuLabel
                       onClick={() => {
                         if (!row.clearance_report)
                           toast.error(
@@ -155,12 +150,12 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                         label={"Exit Interview"}
                         status={"exit"}
                       />
-                    </DropdownItem>
+                    </DropdownMenuLabel>
                   )}
                 </>
               ))}
-          </DropdownMenu>
-        </ButtonDropdown>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   );
