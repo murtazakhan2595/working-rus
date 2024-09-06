@@ -5,19 +5,15 @@ import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 import { TerminationStatusOptions } from "data/Data";
 import { FilterInput } from "components/form-control";
 import { PageLoader, Table } from "components";
-import { Col, Row } from "reactstrap";
+import { Card, CardContent } from "../../../components/ui/card.jsx";
 import { ExitRequestColumns } from "app/utils/Types/TableColumns";
 import { StatusList } from "./Sections";
+import TableCustom from "components/TableCustom";
 
-const Terminations = ({ userProfile }) => {
+const Terminations = ({ userProfile, filterData }) => {
   const [loading, setLoading] = useState(true);
   const [selectedResignationId, setSelectedResignationId] = useState(null);
   const [Terminations, setTerminations] = useState(null);
-  const [filterData, setFilterData] = useState({
-    exit_category: "termination",
-    status_termination: StatusList(false),
-    ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
-  });
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -70,61 +66,29 @@ const Terminations = ({ userProfile }) => {
     setSelectedResignationId(row.id);
   };
 
-  const handleFilterChange = (filterName, filterValue) => {
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
-
   return (
     <>
-      <div className="py-4 px-3 bg-white flex flex-col gap-5">
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by id",
-              name: "employee_id",
-            },
-            {
-              type: "select",
-              option: TerminationStatusOptions,
-              name: "status_termination",
-              placeholder: "Status",
-            },
-          ]}
-          onChange={handleFilterChange}
-        />
-        {loading ? (
-          <PageLoader />
-        ) : (
-          <Row>
-            <Col lg={12}>
-              <div>
-                <Table
-                  data={Terminations?.results || []}
-                  columns={ExitRequestColumns(
-                    handleRowClicked,
-                    () => {
-                      fetchData();
-                    },
-                    userProfile.role === 2
-                  )}
-                  pagination={true}
-                  dataTotalSize={Terminations?.count || 0}
-                  tableOptions={tableOptions}
-                />
-              </div>
-            </Col>
-          </Row>
-        )}
-      </div>
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <Card>
+          <CardContent>
+            <TableCustom
+              data={Terminations?.results || []}
+              columns={ExitRequestColumns(
+                handleRowClicked,
+                () => {
+                  fetchData();
+                },
+                userProfile.role === 2
+              )}
+              pagination={true}
+              dataTotalSize={Terminations?.count || 0}
+              tableOptions={tableOptions}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {selectedResignationId !== null && (
         <ExitDetailsCard

@@ -6,15 +6,13 @@ import { FilterInput } from "components/form-control";
 import { Row, Col } from "reactstrap";
 import { ExitResignedColumns } from "app/utils/Types/TableColumns";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
+import { Card, CardContent } from "../../../components/ui/card.jsx";
+import TableCustom from "components/TableCustom.jsx";
 
-const Resigned = React.memo(({ userProfile, departments }) => {
+const Resigned = React.memo(({ userProfile, departments, filterData }) => {
   const [loading, setLoading] = useState(true);
   const [Resigned, setResigned] = useState(null);
-  const [filterData, setFilterData] = useState({
-    exit_category: "resignation",
-    status_resignation: ["exit interview"],
-    ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
-  });
+
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -48,56 +46,26 @@ const Resigned = React.memo(({ userProfile, departments }) => {
     fetchData();
   }, [options, filterData]);
 
-  const handleFilterChange = (filterName, filterValue) => {
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
-
   return (
-    <div className="py-4 px-3 bg-white  flex flex-col gap-3">
-      <FilterInput
-        filters={[
-          {
-            type: "search",
-            placeholder: "Search by id",
-            name: "employee_id",
-          },
-          {
-            type: "select",
-            option: departments,
-            name: "departments",
-            placeholder: "Department",
-          },
-        ]}
-        onChange={handleFilterChange}
-      />
+    <>
       {loading ? (
         <PageLoader />
       ) : (
-        <Row>
-          <Col lg={12}>
-            <div>
-              <Table
-                data={Resigned?.results || []}
-                columns={ExitResignedColumns}
-                hideTableHeader={true}
-                pagination={true}
-                dataTotalSize={Resigned?.count || 0}
-                tableOptions={tableOptions}
-                dataStyle={{ backgroundColor: "white" }}
-              />
-            </div>
-          </Col>
-        </Row>
+        <Card>
+          <CardContent>
+            <TableCustom
+              data={Resigned?.results || []}
+              columns={ExitResignedColumns}
+              hideTableHeader={true}
+              pagination={true}
+              dataTotalSize={Resigned?.count || 0}
+              tableOptions={tableOptions}
+              dataStyle={{ backgroundColor: "white" }}
+            />
+          </CardContent>
+        </Card>
       )}
-    </div>
+    </>
   );
 });
 const mapStateToProps = (state) => {

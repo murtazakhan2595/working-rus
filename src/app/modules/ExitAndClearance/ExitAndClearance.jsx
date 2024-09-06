@@ -20,6 +20,9 @@ import {
   TabsContent,
 } from "../../../src/@/components/ui/tabs";
 import { Header } from "components";
+import { StatusList } from "./Sections";
+import { FilterInput } from "components/form-control";
+import { ResignationStatusOptions } from "data/Data";
 
 const ExitAndClearance = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Resignations");
@@ -27,6 +30,11 @@ const ExitAndClearance = ({ userProfile }) => {
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
   const [openRequestTermination, setOpenRequestTermination] = useState(false);
+  const [filterData, setFilterData] = useState({
+    exit_category: "resignation",
+    status_resignation: StatusList(),
+    ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+  });
   const fetchData = async () => {
     try {
       const response = await getEmployeesExitCount(
@@ -50,6 +58,18 @@ const ExitAndClearance = ({ userProfile }) => {
   const closeRequestTerminationCard = () => {
     setOpenRequestTermination(false);
     fetchData();
+  };
+
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
   };
 
   return (
@@ -125,16 +145,35 @@ const ExitAndClearance = ({ userProfile }) => {
               )
             )}
           </TabsList>
+          <FilterInput
+            filters={[
+              {
+                type: "search",
+                placeholder: "Search by id",
+                name: "employee_id",
+              },
+              {
+                type: "select-one",
+                option: ResignationStatusOptions,
+                name: "status_resignation",
+                placeholder: "Status",
+              },
+            ]}
+            onChange={handleFilterChange}
+          />
         </div>
         <TabsContent value="Resignations">
-          <Resignations />
+          <Resignations filterData={filterData} />
         </TabsContent>
 
         <TabsContent value="Terminations">
-          <Terminations />
+          <Terminations filterData={filterData} />
+        </TabsContent>
+        <TabsContent value="Resigned">
+          <Resigned filterData={filterData} />
         </TabsContent>
         <TabsContent value="Terminated">
-          <Terminated />
+          <Terminated filterData={filterData} />
         </TabsContent>
       </Tabs>
     </div>

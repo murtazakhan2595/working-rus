@@ -13,15 +13,12 @@ import { Card, CardContent } from "../../../components/ui/card.jsx";
 import { StatusList } from "./Sections";
 import TableCustom from "components/TableCustom";
 
-const Resignations = React.memo(({ userProfile }) => {
+const Resignations = React.memo(({ filterData }) => {
   const [loading, setLoading] = useState(true);
   const [selectedResignationId, setSelectedResignationId] = useState(null);
   const [Resignations, setResignations] = useState(null);
-  const [filterData, setFilterData] = useState({
-    exit_category: "resignation",
-    status_resignation: StatusList(),
-    ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
-  });
+  const [isOpen, setIsOpen] = useState(false);
+
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -43,6 +40,7 @@ const Resignations = React.memo(({ userProfile }) => {
     try {
       setLoading(true);
       const response = await getEmployeesResignations({ filterData, options });
+      console.log("response", response);
       setResignations(response);
     } catch (e) {
       console.error(e);
@@ -51,6 +49,7 @@ const Resignations = React.memo(({ userProfile }) => {
     }
   };
   useEffect(() => {
+    console.log("calling");
     fetchData();
   }, [options, filterData]);
 
@@ -62,30 +61,21 @@ const Resignations = React.memo(({ userProfile }) => {
       resignations.find((item) => item.id === selectedResignationId);
     if (selectedResignationId && !selectedResignation) {
       setSelectedResignationId(null);
+      setIsOpen(false);
     }
   }, [Resignations]);
 
   const closeModal = () => {
     setSelectedResignationId(null);
+    setIsOpen(false);
     fetchData();
   };
 
   const handleRowClicked = (index, data, row) => {
     setSelectedResignationId(row.id);
+    setIsOpen(true);
   };
-
-  const handleFilterChange = (filterName, filterValue) => {
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
-
+  console.log("Resignations", Resignations);
   return (
     <>
       {loading ? (
@@ -93,14 +83,6 @@ const Resignations = React.memo(({ userProfile }) => {
       ) : (
         <Card>
           <CardContent>
-            {selectedResignationId !== null && (
-              <ExitDetailsCard
-                resignationId={selectedResignationId}
-                onClose={closeModal}
-                resignationsList={Resignations?.results}
-                reload={fetchData}
-              />
-            )}
             <TableCustom
               data={Resignations?.results || []}
               columns={EmployeeResignationsColumns(handleRowClicked, () => {
@@ -113,55 +95,15 @@ const Resignations = React.memo(({ userProfile }) => {
           </CardContent>
         </Card>
       )}
+      <ExitDetailsCard
+        resignationId={selectedResignationId}
+        onClose={closeModal}
+        resignationsList={Resignations?.results}
+        reload={fetchData}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
     </>
-    // <>
-    //   <div className="py-4 px-3 bg-white  flex flex-col gap-5">
-    //     <FilterInput
-    //       filters={[
-    //         {
-    //           type: "search",
-    //           placeholder: "Search by id",
-    //           name: "employee_id",
-    //         },
-    //         {
-    //           type: "select-one",
-    //           option: ResignationStatusOptions,
-    //           name: "status_resignation",
-    //           placeholder: "Status",
-    //         },
-    //       ]}
-    //       onChange={handleFilterChange}
-    //     />
-    //     {loading ? (
-    //       <PageLoader />
-    //     ) : (
-    //       <Row>
-    //         <Col lg={12}>
-    //           <div>
-    //             <Table
-    //               data={Resignations?.results || []}
-    //               columns={EmployeeResignationsColumns(handleRowClicked, () => {
-    //                 fetchData();
-    //               })}
-    //               pagination={true}
-    //               dataTotalSize={Resignations?.count || 0}
-    //               tableOptions={tableOptions}
-    //             />
-    //           </div>
-    //         </Col>
-    //       </Row>
-    //     )}
-    //   </div>
-
-    //   {selectedResignationId !== null && (
-    //     <ExitDetailsCard
-    //       resignationId={selectedResignationId}
-    //       onClose={closeModal}
-    //       resignationsList={Resignations?.results}
-    //       reload={fetchData}
-    //     />
-    //   )}
-    // </>
   );
 });
 const mapStateToProps = (state) => {
