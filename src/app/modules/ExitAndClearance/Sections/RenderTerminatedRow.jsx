@@ -12,6 +12,13 @@ import {
 } from "utils/getValuesFromTables";
 import { EmployeeNameInfo } from "components";
 import { Labels } from "components/StatusLabel";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../../../../src/@/components/ui/sheet";
 
 import {
   ViewDetailBox,
@@ -25,6 +32,7 @@ const RenderTerminatedRow = ({
 }) => {
   const [openTerminatedDetails, setOpenTerminatedDetails] = useState(null);
   const [terminatedDetailIndex, setTerminatedDetailIndex] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleTerminatedDetails = (terminatedEmp) => {
     setTerminatedDetailIndex(
@@ -33,9 +41,11 @@ const RenderTerminatedRow = ({
       )
     );
     setOpenTerminatedDetails(terminatedEmp);
+    setIsOpen(true);
   };
   const closeModal = () => {
     setOpenTerminatedDetails(null);
+    setIsOpen(false);
   };
   const next = () => {
     const nextIndex = terminatedDetailIndex + 1;
@@ -66,6 +76,8 @@ const RenderTerminatedRow = ({
           closeModel={closeModal}
           next={next}
           previous={previous}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       )}
       <div className="flex flex-row justify-between items-center  flex-wrap gap-x-10 gap-y-5 px-2 py-3 mt-3">
@@ -96,81 +108,96 @@ const RenderTerminatedRow = ({
   );
 };
 
-const TerminatedDetails = ({ terminatedData, closeModel, next, previous }) => {
+const TerminatedDetails = ({
+  terminatedData,
+  closeModel,
+  next,
+  previous,
+  isOpen,
+  setIsOpen,
+}) => {
   return (
-    <div className="bg-white view-modal-card hideScroll">
-      <ViewDetailHeader
-        onNextClick={next}
-        onPreviousClick={previous}
-        closeModel={closeModel}
-      />
-      <div className="mt-9">
-        <section className="flex flex-col mt-10 w-full max-md:max-w-full justify-start items-start gap-2">
-          <Labels label={"Terminated"} backgroungColor={`bg-[#f4e4eb]`} />
-          <h1 className="text-2xl font-bold text-zinc-800">
-            {terminatedData.emp_name}
-          </h1>
-          <p className=" text-base text-zinc-600">
-            ID: <EmployeeID value={terminatedData?.employee_id} /> |{" "}
-            <DesignationName value={terminatedData.position} /> I
-            <DepartmentName value={terminatedData.department_name} />
-          </p>
-        </section>
-        <section>
-          <ViewDetailBox
-            labelList={[
-              {
-                label: "Joining date",
-                value: moment(terminatedData?.joining_date).format(
-                  "DD-MM-YYYY"
-                ),
-              },
-              {
-                label: "Status",
-                value: ResignationStatus(terminatedData.status_resignation),
-              },
-              {
-                label: "Report to",
-                value: <ManagerName value={terminatedData.report_to} />,
-              },
-              {
-                label: "Reason for leaving",
-                value: ResignationReason(terminatedData.exit_type),
-              },
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetContent side="right" className="w-full p-6 sm:max-w-4xl ">
+        <div className="flex flex-col h-full">
+          <SheetHeader>
+            <ViewDetailHeader
+              onNextClick={next}
+              onPreviousClick={previous}
+              closeModel={closeModel}
+            />
+          </SheetHeader>
+          <div className="mt-4">
+            <section className="flex flex-col mt-10 w-full max-md:max-w-full justify-start items-start gap-2">
+              <Labels label={"Terminated"} backgroungColor={`bg-[#f4e4eb]`} />
+              <h1 className="text-2xl font-bold text-zinc-800">
+                {terminatedData.emp_name}
+              </h1>
+              <p className=" text-base text-zinc-600">
+                ID: <EmployeeID value={terminatedData?.employee_id} /> |{" "}
+                <DesignationName value={terminatedData.position} /> I
+                <DepartmentName value={terminatedData.department_name} />
+              </p>
+            </section>
+            <section>
+              <ViewDetailBox
+                labelList={[
+                  {
+                    label: "Joining date",
+                    value: moment(terminatedData?.joining_date).format(
+                      "DD-MM-YYYY"
+                    ),
+                  },
+                  {
+                    label: "Status",
+                    value: ResignationStatus(terminatedData.status_resignation),
+                  },
+                  {
+                    label: "Report to",
+                    value: <ManagerName value={terminatedData.report_to} />,
+                  },
+                  {
+                    label: "Reason for leaving",
+                    value: ResignationReason(terminatedData.exit_type),
+                  },
 
-              {
-                label: "Exit date",
-                value: moment(terminatedData?.exit_date).format("DD-MM-YYYY"),
-              },
+                  {
+                    label: "Exit date",
+                    value: moment(terminatedData?.exit_date).format(
+                      "DD-MM-YYYY"
+                    ),
+                  },
 
-              {
-                label: "Notice Period",
-                value: terminatedData.notice_period || "N/A",
-              },
-              {
-                label: "Phone no.",
-                value: `${terminatedData?.country_code || ""}${
-                  terminatedData?.mobile_no || ""
-                }`,
-              },
-            ]}
-          />
-          <ViewAttachmentDetail
-            title={"Attachments"}
-            attachments={[
-              {
-                name: `${terminatedData.emp_name} - Resignation letter`,
-                file: terminatedData?.termination_letter,
-              },
-              {
-                name: `${terminatedData.emp_name} - Clearance letter`,
-                file: terminatedData?.clearance_report,
-              },
-            ]}
-          />
-        </section>
-      </div>
-    </div>
+                  {
+                    label: "Notice Period",
+                    value: terminatedData.notice_period || "N/A",
+                  },
+                  {
+                    label: "Phone no.",
+                    value: `${terminatedData?.country_code || ""}${
+                      terminatedData?.mobile_no || ""
+                    }`,
+                  },
+                ]}
+              />
+              <ViewAttachmentDetail
+                title={"Attachments"}
+                attachments={[
+                  {
+                    name: `${terminatedData.emp_name} - Resignation letter`,
+                    file: terminatedData?.termination_letter,
+                  },
+                  {
+                    name: `${terminatedData.emp_name} - Clearance letter`,
+                    file: terminatedData?.clearance_report,
+                  },
+                ]}
+              />
+            </section>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 export default RenderTerminatedRow;

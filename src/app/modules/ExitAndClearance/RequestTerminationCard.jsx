@@ -15,6 +15,14 @@ import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
 import { terminationReasonsOptions } from "data/Data";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../../../src/@/components/ui/sheet";
+import { Button } from "../../../src/@/components/ui/button";
 
 const { RxCross2 } = require("react-icons/rx");
 
@@ -29,6 +37,7 @@ const RequestTerminationCard = ({
   const [loading, setLoading] = React.useState(false);
   const [terminations, setTerminations] = React.useState([]);
   const [filterEmployees, setFilterEmployees] = React.useState([]);
+  const [isOpen, setIsOpen] = React.useState(false);
   const formRef = React.createRef();
 
   const fetchData = async () => {
@@ -148,195 +157,194 @@ const RequestTerminationCard = ({
     }
   };
   return (
-    <div
-      className="fixed top-0 text-[#323333] right-0 w-[95%] h-[100vh] z-10 overflow-y-auto p-8 hideScroll bg-white"
-      style={{ maxWidth: "806px", minHeight: "100vh" }}
-    >
-      <div className="flex justify-between items-center ">
-        <h2 className="font-bold text-xl ">Termination</h2>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="default">Request Termination +</Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full p-0 sm:max-w-4xl ">
+        <div className="flex flex-col h-full">
+          <div className="flex-grow overflow-y-auto">
+            <div className="p-6">
+              <SheetHeader>
+                <SheetTitle>Termination</SheetTitle>
+              </SheetHeader>
+              <Formik
+                initialValues={initialValues}
+                ref={formRef}
+                onSubmit={(values, { resetForm }) => {
+                  handleSubmit(values, resetForm);
+                }}
+                validate={(values) => {
+                  const errors = {};
 
-        <RxCross2
-          className=" cursor-pointer"
-          onClick={() => {
-            closeModel();
-          }}
-        />
-      </div>
-
-      <div className="mt-10 pr-7">
-        <Row>
-          <Col lg={12}>
-            <Formik
-              initialValues={initialValues}
-              ref={formRef}
-              onSubmit={(values, { resetForm }) => {
-                handleSubmit(values, resetForm);
-              }}
-              validate={(values) => {
-                const errors = {};
-
-                return errors;
-              }}
-            >
-              {(props) => (
-                <Form onSubmit={props.handleSubmit}>
-                  <Row>
-                    <div className=" flex flex-col lg:flex-row gap-8 overflow-visible no-scrollbar whitespace-break-spaces mb-4 ">
-                      {employeeData.map((infoGroup, index) => (
-                        <div
-                          key={index}
-                          className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4"
-                        >
-                          <SelectComponent
-                            name="terminate_employee"
-                            options={filterEmployees}
-                            error={props.errors.terminate_employee}
-                            touch={props.touched.terminate_employee}
-                            value={props.values.terminate_employee}
-                            required
-                            label="Select Employee"
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                              handleEmployeeChange(field, value);
-                            }}
-                          />
-                          {infoGroup.length > 0
-                            ? infoGroup.map((info) => (
-                                <div
-                                  className="flex flex-col w-full border px-3 py-1 h-fit  rounded-md"
-                                  key={info.title}
-                                >
-                                  <div className="opacity-60 w-full ">
-                                    {info.title}
-                                  </div>
-
-                                  <div className="w-full">
-                                    {info.data || "-----"}
-                                  </div>
-                                </div>
-                              ))
-                            : employeeFootPrint.map((info) => {
-                                return (
+                  return errors;
+                }}
+              >
+                {(props) => (
+                  <form
+                    onSubmit={props.handleSubmit}
+                    className="mt-6 space-y-6"
+                  >
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        {employeeData.map((infoGroup, index) => (
+                          <div
+                            key={index}
+                            className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4"
+                          >
+                            <SelectComponent
+                              name="terminate_employee"
+                              options={filterEmployees}
+                              error={props.errors.terminate_employee}
+                              touch={props.touched.terminate_employee}
+                              value={props.values.terminate_employee}
+                              required
+                              label="Select Employee"
+                              onChange={(field, value) => {
+                                props.setFieldValue(field, value);
+                                handleEmployeeChange(field, value);
+                              }}
+                            />
+                            {infoGroup.length > 0
+                              ? infoGroup.map((info) => (
                                   <div
-                                    className="flex w-full border items-center px-3 py-[1rem] h-fit  rounded-md"
+                                    className="flex flex-col w-full border px-3 py-1 h-fit  rounded-md"
                                     key={info.title}
                                   >
                                     <div className="opacity-60 w-full ">
                                       {info.title}
                                     </div>
-                                  </div>
-                                );
-                              })}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="font-bold text-lg mb-4">Exit Details</div>
-                    <Col md={6}>
-                      <DateInput
-                        name={"last_working_day"}
-                        error={props.errors.last_working_day}
-                        touch={props.touched.last_working_day}
-                        value={props.values.last_working_day}
-                        label={"Last Working Day"}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                      />
-                    </Col>
-                    <Col md={6}>
-                      <SelectComponent
-                        name={"notice_period"}
-                        options={[
-                          {
-                            value: "1 month",
-                            label: "1 month",
-                          },
-                          {
-                            value: "2 month",
-                            label: "2 month",
-                          },
-                          {
-                            value: "3 month",
-                            label: "3 month",
-                          },
-                          {
-                            value: "0 month",
-                            label: "0 month",
-                          },
-                        ]}
-                        error={props.errors.notice_period}
-                        touch={props.touched.notice_period}
-                        value={props.values.notice_period}
-                        label={"Notice Period"}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                      />
-                    </Col>
-                    <Col md={6}>
-                      <DateInput
-                        name={"exit_interview_date"}
-                        error={props.errors.exit_interview_date}
-                        touch={props.touched.exit_interview_date}
-                        value={props.values.exit_interview_date}
-                        label={"Exit Interview Date"}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                      />
-                    </Col>
-                    <Col md={6} className="z-0">
-                      <SelectComponent
-                        name={"reason_for_terminating"}
-                        options={terminationReasonsOptions}
-                        error={props.errors.reason_for_terminating}
-                        touch={props.touched.reason_for_terminating}
-                        value={props.values.reason_for_terminating}
-                        label={"Reason for Terminating"}
-                        onChange={(field, value) => {
-                          console.log("value", value);
-                          props.setFieldValue(field, value);
-                        }}
-                      />
-                    </Col>
-                    <Col md="12">
-                      <FileInput
-                        name={"termination_letter"}
-                        error={props.errors?.termination_letter}
-                        touch={props.touched?.termination_letter}
-                        value={props.values?.termination_letter}
-                        label={"Upload Termination Letter or drag it here"}
-                        required={true}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                      />
-                    </Col>
-                    <Col md="12">
-                      <div className="flex flex-row gap-9 ">
-                        <button
-                          type="submit"
-                          className="mt-4 bg-white border-2 border-black rounded-lg flex items-center justify-center gap-x-2 text-black font-lato text-base  w-48 h-12"
-                        >
-                          Reset
-                        </button>
 
-                        <button
-                          type="submit"
-                          className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base  w-48 h-12"
-                        >
-                          Submit
-                        </button>
+                                    <div className="w-full">
+                                      {info.data || "-----"}
+                                    </div>
+                                  </div>
+                                ))
+                              : employeeFootPrint.map((info) => {
+                                  return (
+                                    <div
+                                      className="flex w-full border items-center px-3 py-[1rem] h-fit  rounded-md"
+                                      key={info.title}
+                                    >
+                                      <div className="opacity-60 w-full ">
+                                        {info.title}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                          </div>
+                        ))}
+                        <div className="font-bold text-lg mb-4">
+                          Exit Details
+                        </div>
+                        <Col md={6}>
+                          <DateInput
+                            name={"last_working_day"}
+                            error={props.errors.last_working_day}
+                            touch={props.touched.last_working_day}
+                            value={props.values.last_working_day}
+                            label={"Last Working Day"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </Col>
+                        <Col md={6}>
+                          <SelectComponent
+                            name={"notice_period"}
+                            options={[
+                              {
+                                value: "1 month",
+                                label: "1 month",
+                              },
+                              {
+                                value: "2 month",
+                                label: "2 month",
+                              },
+                              {
+                                value: "3 month",
+                                label: "3 month",
+                              },
+                              {
+                                value: "0 month",
+                                label: "0 month",
+                              },
+                            ]}
+                            error={props.errors.notice_period}
+                            touch={props.touched.notice_period}
+                            value={props.values.notice_period}
+                            label={"Notice Period"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </Col>
+                        <Col md={6}>
+                          <DateInput
+                            name={"exit_interview_date"}
+                            error={props.errors.exit_interview_date}
+                            touch={props.touched.exit_interview_date}
+                            value={props.values.exit_interview_date}
+                            label={"Exit Interview Date"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </Col>
+                        <Col md={6} className="z-0">
+                          <SelectComponent
+                            name={"reason_for_terminating"}
+                            options={terminationReasonsOptions}
+                            error={props.errors.reason_for_terminating}
+                            touch={props.touched.reason_for_terminating}
+                            value={props.values.reason_for_terminating}
+                            label={"Reason for Terminating"}
+                            onChange={(field, value) => {
+                              console.log("value", value);
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </Col>
+                        <Col md="12">
+                          <FileInput
+                            name={"termination_letter"}
+                            error={props.errors?.termination_letter}
+                            touch={props.touched?.termination_letter}
+                            value={props.values?.termination_letter}
+                            label={"Upload Termination Letter or drag it here"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </Col>
+                        <Col md="12">
+                          <div className="flex flex-row gap-9 ">
+                            <button
+                              type="submit"
+                              className="mt-4 bg-white border-2 border-black rounded-lg flex items-center justify-center gap-x-2 text-black font-lato text-base  w-48 h-12"
+                            >
+                              Reset
+                            </button>
+
+                            <button
+                              type="submit"
+                              className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base  w-48 h-12"
+                            >
+                              Submit
+                            </button>
+                          </div>
+                        </Col>
                       </div>
-                    </Col>
-                  </Row>
-                </Form>
-              )}
-            </Formik>
-          </Col>
-        </Row>
-      </div>
-    </div>
+                    </div>
+                  </form>
+                )}
+              </Formik>
+            </div>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 const mapStateToProps = (state) => {

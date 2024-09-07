@@ -73,58 +73,8 @@ const ExitAndClearance = ({ userProfile }) => {
   };
 
   return (
-    // <div className="screen bg-[#F0F1F2]">
-    //   {openRequestTermination && (
-    //     <RequestTerminationCard closeModel={closeRequestTerminationCard} />
-    //   )}
-    //   <Header
-    //     title="Exit Requests"
-    //     content={
-    //       userProfile.role !== 2 ? (
-    //         <CustomDarkButton
-    //           label={"Request termination +"}
-    //           onClick={() => setOpenRequestTermination(!openRequestTermination)}
-    //         />
-    //       ) : (
-    //         <></>
-    //       )
-    //     }
-    //   />
-    //   <Row className="bg-[#F0F1F2] relative">
-    //     <Col lg={12}>
-    //       <StatCard
-    //         totalExit={totalExit}
-    //         approvedResignation={approvedResignation}
-    //         rejectedResignation={rejectedResignation}
-    //       />
-    //     </Col>
-    //     <Col lg={12}>
-    //       <div className="   m-2 mb-0 0">
-    //         <Tabs
-    //           tabs={[
-    //             ...["Resignations", "Terminations"],
-    //             ...(userProfile.role !== 2 ? ["Resigned", "Terminated"] : []),
-    //           ]}
-    //           onTabChange={(value) => {
-    //             setActiveTab(value);
-    //           }}
-    //         />
-    //       </div>
-    //     </Col>
-    //     <Col lg={12}>
-    //       <>
-    //         {activeTab === "Resignations" && <Resignations />}
-    //         {activeTab === "Terminations" && <Terminations />}
-    //         {activeTab === "Terminated" && <Terminated />}
-    //         {activeTab === "Resigned" && <Resigned />}
-    //       </>
-    //     </Col>
-    //     <br />
-    //   </Row>
-    // </div>
-
     <div className="flex flex-col gap-4 profile-management">
-      <Header content={<SheetOnBorading />} />
+      <Header content={<RequestTerminationCard />} />
       <StatCard
         totalExit={totalExit}
         approvedResignation={approvedResignation}
