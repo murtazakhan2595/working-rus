@@ -27,6 +27,8 @@ import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { ResignationStatusView } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignationAction } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
+import { TerminationStatusView } from "app/modules/ExitAndClearance/Sections";
+import { RenderTerminationAction } from "app/modules/ExitAndClearance/Sections";
 
 export const LeaveHistoryColumns = (updateLeaveType) => [
   {
@@ -158,15 +160,22 @@ export const MyLeavesColumns = [
   },
 ];
 export const ExitRequestColumns = (
-  handleOptionSelect,
   handleRowClicked,
   reload,
-  hideAction = false
+  hideActions = false
 ) => {
   const columns = [
     {
       dataField: "emp_name",
       text: "Employees",
+      width: "25%",
+      formatter: (cell, row) => (
+        <EmployeeNameInfo
+          name={cell}
+          department={row.department_name}
+          position={row.position}
+        />
+      ),
       onClick: (recordIndex, data, row) => {
         handleRowClicked(recordIndex, data, row);
       },
@@ -188,6 +197,7 @@ export const ExitRequestColumns = (
     {
       dataField: "exit_date",
       text: "Exit date",
+      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
     },
     {
       dataField: "",
@@ -212,31 +222,20 @@ export const ExitRequestColumns = (
     {
       dataField: "status_resignation",
       text: "Status",
-      formatter: (cell, row) => (
-        <ApplicationStatus row={row} isTableViewButton={true} />
-      ),
+      formatter: (cell, row) => <TerminationStatusView row={row} />,
     },
   ];
-
-  // Conditionally add the Action column if hideAction is false
-  if (!hideAction) {
+  if (!hideActions) {
     columns.push({
       dataField: "",
       text: "Action",
       formatter: (cell, row) => (
-        <RenderExitTableAction
-          row={row}
-          handleOptionSelect={handleOptionSelect}
-          reload={reload}
-          isTableStyle={true}
-        />
+        <RenderTerminationAction row={row} reload={reload} />
       ),
     });
   }
-
   return columns;
 };
-
 export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
   const columns = [
     {

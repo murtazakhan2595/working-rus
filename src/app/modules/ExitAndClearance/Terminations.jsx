@@ -14,6 +14,7 @@ const Terminations = ({ userProfile, filterData }) => {
   const [loading, setLoading] = useState(true);
   const [selectedResignationId, setSelectedResignationId] = useState(null);
   const [Terminations, setTerminations] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -56,14 +57,17 @@ const Terminations = ({ userProfile, filterData }) => {
       termination.find((item) => item.id === selectedResignationId);
     if (selectedResignationId && !selectedResignation) {
       setSelectedResignationId(null);
+      setIsOpen(false);
     }
   }, [Terminations]);
   const closeModal = () => {
     setSelectedResignationId(null);
+    setIsOpen(false);
     fetchData();
   };
   const handleRowClicked = (index, data, row) => {
     setSelectedResignationId(row.id);
+    setIsOpen(true);
   };
 
   return (
@@ -89,7 +93,7 @@ const Terminations = ({ userProfile, filterData }) => {
           </CardContent>
         </Card>
       )}
-
+      {console.log(selectedResignationId)}
       {selectedResignationId !== null && (
         <ExitDetailsCard
           resignationId={selectedResignationId}
@@ -97,6 +101,8 @@ const Terminations = ({ userProfile, filterData }) => {
           resignationsList={Terminations?.results}
           reload={fetchData}
           isResignation={false}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       )}
     </>

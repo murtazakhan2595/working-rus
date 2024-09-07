@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import {
-  ButtonDropdown,
-  DropdownToggle,
   DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "../../../../src/@/components/ui/dropdown-menu";
+import { Button } from "../../../../src/@/components/ui/button";
 import { Status } from "./index";
 import { StatusViewIcon } from "components/StatusLabel";
 
@@ -24,54 +27,40 @@ const TerminationStatusView = ({ row, buttonTitle = "View" }) => {
   const employeeApproval = Status(status, 0);
 
   return (
-    <div>
-      <ButtonDropdown
-        isOpen={openDropdownRow === row.id}
-        toggle={() => toggleDropdown(row.id)}
-      >
-        <DropdownToggle className="border-0 shadow-none bg-transparent p-0">
-          <button
-            className="btn btn-outline-dark bg-white text-dark shadow-none"
-            style={{
-              padding: ".35em .65em",
-              fontSize: ".94em",
-              minWidth: "100px",
-              height: "35px",
-              width: "auto",
-            }}
-          >
-            {buttonTitle}
-          </button>
-        </DropdownToggle>
-        <DropdownMenu start className="p-3 ml-2 shadow ">
-          <DropdownItem className={`${itemClassName} fw-bold`}>
-            <span>Termination Status</span>
-          </DropdownItem>
-          <DropdownItem className={`${itemClassName}`}>
-            <span className={`${spanClassName}`}>
-              <StatusViewIcon status={"Approved"} /> Viewed by Manager
-            </span>
-          </DropdownItem>
-          <DropdownItem className={`${itemClassName}`}>
-            <span className={`${spanClassName}`}>
-              <StatusViewIcon status={employeeApproval} />
-              {`${Message(employeeApproval)} by Employee`}
-            </span>
-          </DropdownItem>
-          <DropdownItem className={`${itemClassName}`}>
-            <span className={`${spanClassName}`}>
-              <StatusViewIcon status={Status(status, 3)} />
-              Clearance initiated
-            </span>
-          </DropdownItem>
-          <DropdownItem className={`${itemClassName}`}>
-            <span className={`${spanClassName}`}>
-              <StatusViewIcon status={Status(status, 4)} /> Exit Interview
-            </span>
-          </DropdownItem>
-        </DropdownMenu>
-      </ButtonDropdown>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button aria-haspopup="true" variant="outline" className="">
+          {buttonTitle}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-3 ml-2 shadow">
+        <DropdownMenuLabel className={`${itemClassName} fw-bold`}>
+          <span>Termination Status</span>
+        </DropdownMenuLabel>
+        <DropdownMenuLabel className={`${itemClassName}`}>
+          <span className={`${spanClassName}`}>
+            <StatusViewIcon status={"Approved"} /> Viewed by Manager
+          </span>
+        </DropdownMenuLabel>
+        <DropdownMenuLabel className={`${itemClassName}`}>
+          <span className={`${spanClassName}`}>
+            <StatusViewIcon status={employeeApproval} />
+            {`${Message(employeeApproval)} by Employee`}
+          </span>
+        </DropdownMenuLabel>
+        <DropdownMenuLabel className={`${itemClassName}`}>
+          <span className={`${spanClassName}`}>
+            <StatusViewIcon status={Status(status, 3)} />
+            Clearance initiated
+          </span>
+        </DropdownMenuLabel>
+        <DropdownMenuLabel className={`${itemClassName}`}>
+          <span className={`${spanClassName}`}>
+            <StatusViewIcon status={Status(status, 4)} /> Exit Interview
+          </span>
+        </DropdownMenuLabel>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

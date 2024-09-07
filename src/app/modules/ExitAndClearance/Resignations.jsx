@@ -95,14 +95,16 @@ const Resignations = React.memo(({ filterData }) => {
           </CardContent>
         </Card>
       )}
-      <ExitDetailsCard
-        resignationId={selectedResignationId}
-        onClose={closeModal}
-        resignationsList={Resignations?.results}
-        reload={fetchData}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      />
+      {selectedResignationId !== null && (
+        <ExitDetailsCard
+          resignationId={selectedResignationId}
+          onClose={closeModal}
+          resignationsList={Resignations?.results}
+          reload={fetchData}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
+      )}
     </>
   );
 });

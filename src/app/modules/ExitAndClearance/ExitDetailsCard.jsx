@@ -1,12 +1,6 @@
 import moment from "moment";
 import React, { useState, useRef } from "react";
 import { RenderResignationAction, RenderTerminationAction } from "./Sections";
-// import {
-//   ViewDetailHeader,
-//   Labels,
-//   ViewDetailBox,
-//   ViewAttachmentDetail,
-// } from "components";
 import {
   DepartmentName,
   DesignationName,
@@ -16,11 +10,7 @@ import {
   ResignationStatus,
   ManagerName,
 } from "utils/getValuesFromTables";
-import { RxCross2 } from "react-icons/rx";
-import pdfIcon from "assets/images/pdfIcon.svg";
-import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { AiOutlineDownload } from "react-icons/ai";
-import { filebase64Download, getFileSizeInKB } from "utils/fileUtils";
+
 import { Formik } from "formik";
 import { FileInput } from "components/form-control";
 import { Col, Row, Form, Button } from "reactstrap";
@@ -35,7 +25,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../../../src/@/components/ui/sheet";
-
+import {
+  ViewDetailHeader,
+  ViewDetailBox,
+  ViewAttachmentDetail,
+} from "./Sections/DetailViewPanel";
 const ExitDetailsCard = ({
   onClose,
   resignationId,
@@ -45,10 +39,8 @@ const ExitDetailsCard = ({
   isOpen,
   setIsOpen,
 }) => {
-  console.log("resig list", resignationsList);
-  console.log("resig id", resignationId);
   const [resignation, setResignation] = useState(
-    resignationsList.find((item) => item.id === resignationId)
+    resignationsList?.find((item) => item.id === resignationId)
   );
   const [currentResignationId, setCurrentResignationId] =
     useState(resignationId);
@@ -121,12 +113,12 @@ const ExitDetailsCard = ({
               <div className="flex flex-wrap items-center justify-between w-full">
                 <div className="flex flex-col gap-2 justify-start max-w-[70%]">
                   <h1 className="text-2xl font-bold text-zinc-800 mb-0">
-                    {resignation.emp_name}
+                    {resignation?.emp_name}
                   </h1>
                   <p className=" text-base text-zinc-600">
                     ID: <EmployeeID value={resignation?.employee_id} /> |{" "}
-                    <DesignationName value={resignation.position} /> |
-                    <DepartmentName value={resignation.department_name} />
+                    <DesignationName value={resignation?.position} /> |
+                    <DepartmentName value={resignation?.department_name} />
                   </p>
                 </div>
                 {isResignation ? (
@@ -148,20 +140,20 @@ const ExitDetailsCard = ({
                   {
                     label: "Status",
                     value: isResignation
-                      ? ResignationStatus(resignation.status_resignation)
-                      : TerminationStatus(resignation.status_termination),
+                      ? ResignationStatus(resignation?.status_resignation)
+                      : TerminationStatus(resignation?.status_termination),
                   },
                   {
                     label: "Report to",
-                    value: <ManagerName value={resignation.report_to} />,
+                    value: <ManagerName value={resignation?.report_to} />,
                   },
                   {
                     label: "Reason for leaving",
                     value: isResignation ? (
-                      ResignationReason(resignation.exit_type)
+                      ResignationReason(resignation?.exit_type)
                     ) : (
                       <TerminationReason
-                        value={resignation.reason_of_termination}
+                        value={resignation?.reason_of_termination}
                       />
                     ),
                   },
@@ -173,7 +165,7 @@ const ExitDetailsCard = ({
 
                   {
                     label: "Notice Period",
-                    value: resignation.notice_period || "N/A",
+                    value: resignation?.notice_period || "N/A",
                   },
                   {
                     label: "Phone no.",
@@ -187,7 +179,7 @@ const ExitDetailsCard = ({
                 title={"Attachments"}
                 attachments={[
                   {
-                    name: `${resignation.emp_name} - ${
+                    name: `${resignation?.emp_name} - ${
                       isResignation ? "Resignation" : "Termination"
                     } letter`,
                     file: isResignation
@@ -260,91 +252,6 @@ const ExitDetailsCard = ({
         </div>
       </SheetContent>
     </Sheet>
-  );
-};
-
-const ViewDetailBox = ({ labelList }) => {
-  return (
-    <div className="mt-3">
-      <div class="grid grid-cols-3 gap-x-8 gap-y-4 mb-4 border border-gray-400 rounded-lg pr-3 pl-4 py-4">
-        {labelList &&
-          labelList.map((data, index) => {
-            return (
-              <div className="text-left" key={index}>
-                <p class="text-[14px] font-normal">{data?.label}</p>
-                <p class="text-[14px] font-semibold">{data?.value ?? "N/A"}</p>
-              </div>
-            );
-          })}
-      </div>
-    </div>
-  );
-};
-
-const ViewAttachmentDetail = ({ title, attachments }) => {
-  return (
-    <div className="mt-3">
-      <h3 className="font-bold text-base text-[#323333] text-left">{title}</h3>
-      {attachments &&
-        attachments.map((attachment, index) => {
-          if (!attachment.file || !attachment?.file?.file) return "";
-          return (
-            <div
-              key={index}
-              className="bg-[#F0F1F2] rounded-lg p-2 flex justify-between items-center my-3"
-            >
-              <div className="flex gap-x-3">
-                <img src={pdfIcon} alt="" />
-                <p class="text-[14px] text-[#323333]">
-                  <span>{attachment?.name}</span>
-                  <span>
-                    <p className="self-start mt-1 text-xs leading-none text-zinc-600 text-left">
-                      {getFileSizeInKB(attachment?.file?.file)} KB
-                    </p>
-                  </span>
-                </p>
-              </div>
-              <div
-                className="flex gap-x-2 cursor-pointer"
-                onClick={() =>
-                  filebase64Download(attachment?.file, attachment?.name)
-                }
-              >
-                <p class="text-[14px] text-[#323333]">Download</p>
-                <AiOutlineDownload />
-              </div>
-            </div>
-          );
-        })}
-    </div>
-  );
-};
-
-const ViewDetailHeader = ({ onNextClick, onPreviousClick, title }) => {
-  return (
-    <div className=" items-center border-b border-[#D7E4FF] b-2">
-      <div className="flex flex-wrap">
-        <div className="flex">
-          <span className="text-xl m-auto">{title}</span>
-        </div>
-        <div className="flex justify-center ">
-          <button
-            className="flex items-center px-2 py-2"
-            onClick={() => {
-              onPreviousClick();
-            }}
-          >
-            <IoChevronBack className="" /> Previous
-          </button>
-          <button
-            className="flex items-center px-2 py-2"
-            onClick={() => onNextClick()}
-          >
-            Next <IoChevronForward className="" />
-          </button>
-        </div>
-      </div>
-    </div>
   );
 };
 
