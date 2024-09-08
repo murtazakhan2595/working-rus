@@ -52,14 +52,21 @@ const SelectComponent = ({
   required,
 }) => {
   const [open, setOpen] = useState(false);
-  
+
   return (
     <div>
       <Label for={name}>
         {required && <span className="text-red-600">* </span>} {label}
       </Label>
       {error && touch && <div className="text-red-600">{error || ""}</div>}
-      <Select>
+      <Select
+        value={value}
+        onValueChange={(newValue) => {
+          onChange(name, newValue);
+        }}
+        required={required}
+        disabled={disabled}
+      >
         <SelectTrigger>
           <SelectValue placeholder={label} />
         </SelectTrigger>
@@ -686,70 +693,73 @@ const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
   const [openDepartment, setOpenDepartment] = useState(false);
   const [selectedValue, setValue] = useState("");
 
-
   const handleInputChange = (filter, event) => {
     onChange(filter.name, event.target.value);
-    
   };
-  
 
   const renderInputField = (filter, index) => {
-    return <input
-      key={index}
-      type={filter.type}
-      placeholder={filter.placeholder}
-      className={`${filter.className ?? classNamesStyle} ${filter.width ?? width} ${filter.height ?? height}`}
-      name={filter.name}
-      id={filter.name}
-      onChange={(event) => handleInputChange(filter, event)}
-    />
-  }
+    return (
+      <input
+        key={index}
+        type={filter.type}
+        placeholder={filter.placeholder}
+        className={`${filter.className ?? classNamesStyle} ${
+          filter.width ?? width
+        } ${filter.height ?? height}`}
+        name={filter.name}
+        id={filter.name}
+        onChange={(event) => handleInputChange(filter, event)}
+      />
+    );
+  };
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
-    return (<Popover key={index} open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {filter.option.value
-            ? filter.option.find((option) => option.value === value)?.label
-            : filter.placeholder}
-          <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Search..." />
-          <CommandList>
-            <CommandEmpty>No option found.</CommandEmpty>
-            <CommandGroup>
-              {filter.option.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
-                    onChange(filter.name, option.value);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={`mr-2 h-4 w-4 ${
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>)
-  }
+    return (
+      <Popover key={index} open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-[200px] justify-between"
+          >
+            {filter.option.value
+              ? filter.option.find((option) => option.value === value)?.label
+              : filter.placeholder}
+            <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0">
+          <Command>
+            <CommandInput placeholder="Search..." />
+            <CommandList>
+              <CommandEmpty>No option found.</CommandEmpty>
+              <CommandGroup>
+                {filter.option.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={(currentValue) => {
+                      setValue(currentValue === value ? "" : currentValue);
+                      onChange(filter.name, option.value);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={`mr-2 h-4 w-4 ${
+                        value === option.value ? "opacity-100" : "opacity-0"
+                      }`}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    );
+  };
 
   const renderDatePicker = (filter, index) => {
     const date = filter.value ? new Date(moment(filter.value)) : null;
@@ -788,7 +798,12 @@ const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
             case "text":
               return renderInputField(filter, index);
             case "select-one":
-              return renderPopoverSelect(filter, index, openDepartment, setOpenDepartment);
+              return renderPopoverSelect(
+                filter,
+                index,
+                openDepartment,
+                setOpenDepartment
+              );
             case "select-two":
               return renderPopoverSelect(
                 filter,
@@ -797,12 +812,7 @@ const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
                 setOpenDesignation
               );
             case "select-three":
-              return renderPopoverSelect(
-                filter,
-                index,
-                openRole,
-                setOpenRole,
-              );
+              return renderPopoverSelect(filter, index, openRole, setOpenRole);
             case "date":
               return renderDatePicker(filter, index);
             case "sorting":

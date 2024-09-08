@@ -23,6 +23,7 @@ import {
   SheetTrigger,
 } from "../../../src/@/components/ui/sheet";
 import { Button } from "../../../src/@/components/ui/button";
+import { TextInput } from "components/form-control";
 
 const { RxCross2 } = require("react-icons/rx");
 
@@ -91,6 +92,7 @@ const RequestTerminationCard = ({
   ];
 
   const handleEmployeeChange = async (field, value) => {
+    console.log("value", value);
     try {
       const response = await getEmployeeData(value);
       const employeeDataArray = [
@@ -128,6 +130,7 @@ const RequestTerminationCard = ({
           },
         ],
       ];
+      console.log("employeeDataArray", employeeDataArray);
       setEmployeeData(employeeDataArray);
     } catch (e) {
       console.error(e);
@@ -150,6 +153,7 @@ const RequestTerminationCard = ({
       if (response) {
         toast.success("Termination request submitted successfully");
         closeModel();
+        setIsOpen(false);
       }
     } catch (e) {
       console.error(e);
@@ -186,155 +190,137 @@ const RequestTerminationCard = ({
                     className="mt-6 space-y-6"
                   >
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        {employeeData.map((infoGroup, index) => (
-                          <div
-                            key={index}
-                            className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4"
-                          >
+                      {employeeData.map((infoGroup, index) => (
+                        <div
+                          key={index}
+                          className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4"
+                        >
+                          <div className="space-y-2">
                             <SelectComponent
-                              name="terminate_employee"
+                              name={"terminate_employee"}
                               options={filterEmployees}
                               error={props.errors.terminate_employee}
                               touch={props.touched.terminate_employee}
                               value={props.values.terminate_employee}
                               required
-                              label="Select Employee"
+                              label={"Select Employee"}
                               onChange={(field, value) => {
+                                console.log("changing value", value);
                                 props.setFieldValue(field, value);
                                 handleEmployeeChange(field, value);
                               }}
                             />
-                            {infoGroup.length > 0
-                              ? infoGroup.map((info) => (
-                                  <div
-                                    className="flex flex-col w-full border px-3 py-1 h-fit  rounded-md"
-                                    key={info.title}
-                                  >
-                                    <div className="opacity-60 w-full ">
-                                      {info.title}
-                                    </div>
-
-                                    <div className="w-full">
-                                      {info.data || "-----"}
-                                    </div>
+                          </div>
+                          {infoGroup.length > 0
+                            ? infoGroup.map((info) => (
+                                <div className="space-y-2 flex flex-col justify-end">
+                                  {console.log("info", info)}
+                                  <TextInput
+                                    value={info.data}
+                                    name={info.title}
+                                    label={info.title}
+                                    disabled={true}
+                                  />
+                                </div>
+                              ))
+                            : employeeFootPrint.map((info) => {
+                                return (
+                                  <div className="space-y-2 flex flex-col justify-end">
+                                    <TextInput
+                                      value={info.title}
+                                      disabled={true}
+                                    />
                                   </div>
-                                ))
-                              : employeeFootPrint.map((info) => {
-                                  return (
-                                    <div
-                                      className="flex w-full border items-center px-3 py-[1rem] h-fit  rounded-md"
-                                      key={info.title}
-                                    >
-                                      <div className="opacity-60 w-full ">
-                                        {info.title}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                          </div>
-                        ))}
-                        <div className="font-bold text-lg mb-4">
-                          Exit Details
+                                );
+                              })}
                         </div>
-                        <Col md={6}>
-                          <DateInput
-                            name={"last_working_day"}
-                            error={props.errors.last_working_day}
-                            touch={props.touched.last_working_day}
-                            value={props.values.last_working_day}
-                            label={"Last Working Day"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </Col>
-                        <Col md={6}>
-                          <SelectComponent
-                            name={"notice_period"}
-                            options={[
-                              {
-                                value: "1 month",
-                                label: "1 month",
-                              },
-                              {
-                                value: "2 month",
-                                label: "2 month",
-                              },
-                              {
-                                value: "3 month",
-                                label: "3 month",
-                              },
-                              {
-                                value: "0 month",
-                                label: "0 month",
-                              },
-                            ]}
-                            error={props.errors.notice_period}
-                            touch={props.touched.notice_period}
-                            value={props.values.notice_period}
-                            label={"Notice Period"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </Col>
-                        <Col md={6}>
-                          <DateInput
-                            name={"exit_interview_date"}
-                            error={props.errors.exit_interview_date}
-                            touch={props.touched.exit_interview_date}
-                            value={props.values.exit_interview_date}
-                            label={"Exit Interview Date"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </Col>
-                        <Col md={6} className="z-0">
-                          <SelectComponent
-                            name={"reason_for_terminating"}
-                            options={terminationReasonsOptions}
-                            error={props.errors.reason_for_terminating}
-                            touch={props.touched.reason_for_terminating}
-                            value={props.values.reason_for_terminating}
-                            label={"Reason for Terminating"}
-                            onChange={(field, value) => {
-                              console.log("value", value);
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </Col>
-                        <Col md="12">
-                          <FileInput
-                            name={"termination_letter"}
-                            error={props.errors?.termination_letter}
-                            touch={props.touched?.termination_letter}
-                            value={props.values?.termination_letter}
-                            label={"Upload Termination Letter or drag it here"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </Col>
-                        <Col md="12">
-                          <div className="flex flex-row gap-9 ">
-                            <button
-                              type="submit"
-                              className="mt-4 bg-white border-2 border-black rounded-lg flex items-center justify-center gap-x-2 text-black font-lato text-base  w-48 h-12"
-                            >
-                              Reset
-                            </button>
+                      ))}
+                      <div className="font-bold text-lg mb-4 text-plum-1100">
+                        Exit Details
+                      </div>
+                      <div className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4">
+                        <DateInput
+                          name={"last_working_day"}
+                          error={props.errors.last_working_day}
+                          touch={props.touched.last_working_day}
+                          value={props.values.last_working_day}
+                          label={"Last Working Day"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                        <SelectComponent
+                          name={"notice_period"}
+                          options={[
+                            {
+                              value: "1 month",
+                              label: "1 month",
+                            },
+                            {
+                              value: "2 month",
+                              label: "2 month",
+                            },
+                            {
+                              value: "3 month",
+                              label: "3 month",
+                            },
+                            {
+                              value: "0 month",
+                              label: "0 month",
+                            },
+                          ]}
+                          error={props.errors.notice_period}
+                          touch={props.touched.notice_period}
+                          value={props.values.notice_period}
+                          label={"Notice Period"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                        <DateInput
+                          name={"exit_interview_date"}
+                          error={props.errors.exit_interview_date}
+                          touch={props.touched.exit_interview_date}
+                          value={props.values.exit_interview_date}
+                          label={"Exit Interview Date"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                        <SelectComponent
+                          name={"reason_for_terminating"}
+                          options={terminationReasonsOptions}
+                          error={props.errors.reason_for_terminating}
+                          touch={props.touched.reason_for_terminating}
+                          value={props.values.reason_for_terminating}
+                          label={"Reason for Terminating"}
+                          onChange={(field, value) => {
+                            console.log("value", value);
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <FileInput
+                        name={"termination_letter"}
+                        error={props.errors?.termination_letter}
+                        touch={props.touched?.termination_letter}
+                        value={props.values?.termination_letter}
+                        label={"Upload Termination Letter or drag it here"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                        }}
+                      />
 
-                            <button
-                              type="submit"
-                              className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base  w-48 h-12"
-                            >
-                              Submit
-                            </button>
-                          </div>
-                        </Col>
+                      <div className="p-6 border-t border-gray-200 bg-gray-50">
+                        <div className="flex justify-end space-x-4">
+                          <Button variant="outline" size="lg" type="submit">
+                            Reset
+                          </Button>
+                          <Button type="submit" size="lg" variant="default">
+                            Submit
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </form>

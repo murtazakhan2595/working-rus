@@ -29,7 +29,6 @@ const ExitAndClearance = ({ userProfile }) => {
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
-  const [openRequestTermination, setOpenRequestTermination] = useState(false);
   const [filterData, setFilterData] = useState({
     exit_category: "resignation",
     status_resignation: StatusList(),
@@ -56,7 +55,6 @@ const ExitAndClearance = ({ userProfile }) => {
   }, []);
 
   const closeRequestTerminationCard = () => {
-    setOpenRequestTermination(false);
     fetchData();
   };
 
@@ -74,7 +72,11 @@ const ExitAndClearance = ({ userProfile }) => {
 
   return (
     <div className="flex flex-col gap-4 profile-management">
-      <Header content={<RequestTerminationCard />} />
+      <Header
+        content={
+          <RequestTerminationCard closeModel={closeRequestTerminationCard} />
+        }
+      />
       <StatCard
         totalExit={totalExit}
         approvedResignation={approvedResignation}
