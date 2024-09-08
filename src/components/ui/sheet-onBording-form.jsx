@@ -1,57 +1,48 @@
-
-
-
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
 import { Label } from "../../src/@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../src/@/components/ui/select"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../../src/@/components/ui/sheet"
-
 import { Calendar } from "../../src/@/components/ui/calendar"
-import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "../../src/@/components/ui/form"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import React, { useEffect, useState } from "react";
-
-
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
-import { EmployeeInformation } from "app/utils/Types/Employee.jsx";
-import { getEmployeeInformation } from "app/utils/MappingObjects/mapEmployeeData.jsx";
+import { EmployeeInformation } from "../../app/utils/Types/Employee";
+import { getEmployeeInformation } from "../../app/utils/MappingObjects/mapEmployeeData"
 import {
   getEmployeeData,
   getNewEmployeeCode,
   saveEmployeeWorkInformationData,
-} from "app/hooks/employee.jsx";
-import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
-import { validationEmployeeInfoFormSchema } from "app/utils/FormSchema/employeeFormSchema.jsx";
+} from "../../app/hooks/employee";
+import { fetchEmployees, fetchReportingManagers } from "../../state/slices/EmpSlice";
+import { validationEmployeeInfoFormSchema } from "../../app/utils/FormSchema/employeeFormSchema";
+
 import {
   HeadOfDepartmentOptions,
   employeeStatus,
   jobRoles,
   workplaceTypes,
   UserRoles,
-} from "data/Data";
+} from "../../data/Data";
 
-import { countryOptions } from "data/Data";
 import {
   EmailInput,
   PhoneNumberInput,
   TextAreaInput,
   TextInput,
-} from "components/form-control.jsx";
-
-
-import {
   SelectComponent,
   SelectMultiInputComponent,
   DateInput,
-} from "components/form-control";
+} from "../../components/form-control";
 
 
+
+
+import { countries } from "country-data";
 function getManagersStringSelected(managers) {
   if (managers) {
     const matchingObjects = managers.map((obj) => {
@@ -61,6 +52,7 @@ function getManagersStringSelected(managers) {
   }
   return [];
 }
+
 const SheetOnBorading = ({
   isEditMode,
   nextStep,
@@ -75,7 +67,7 @@ const SheetOnBorading = ({
   const formRef = React.createRef();
   const [date, setDate] = useState();
   const [isOpen, setIsOpen] = useState(false)
-  
+
   let dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState(EmployeeInformation);
@@ -83,7 +75,25 @@ const SheetOnBorading = ({
   const [isLoading, setIsLoading] = useState(true);
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
-  
+
+  // ?popovers
+  const [selectedDepartment, setSelectedDepartment] = React.useState("")
+  const [selectedCountry, setSelectedCountry] = React.useState("")
+  const [selectedDesignation, setSelectedDesignations] = React.useState("")
+  const [selectedUserRole, setSelectedUserRole] = React.useState("")
+  const [selectedJobRoles, setSelectedJobRoles] = React.useState("")
+  const [selectedEmployeeStatus, setSelectedEmployeeStatus] = React.useState("")
+  const [selectedWorkPlaceType, setSelectedWorkPlaceType] = React.useState("")
+  const [selectedDirectManges, setSelectedDirectManges] = React.useState("")
+  const [selectedInDirectMangers, setSelectedInDirectMangers] = React.useState("")
+  const [selectedHeadofDepartment, setSelectedHeadofDepartment] = React.useState("")
+
+  const countryOptions = countries.all
+    .filter((country) => country.countryCallingCodes && country.countryCallingCodes.length > 0)
+    .map((country) => ({
+      value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
+      label: `${country.name} (+${country.countryCallingCodes[0].replace("+", "")})`,
+    }));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -153,7 +163,7 @@ const SheetOnBorading = ({
       if (
         error.response &&
         error.response.data.username[0] ===
-          "A user with that username already exists."
+        "A user with that username already exists."
       ) {
         toast.error("A user with that username already exists.", {
           position: toast.POSITION.TOP_RIGHT,
@@ -168,6 +178,52 @@ const SheetOnBorading = ({
       setIsLoading(false);
     }
   };
+
+
+
+
+
+  const handleDepartmentChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedDepartment(value)
+  }
+  const handleCountryChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedCountry(value)
+  }
+
+  const handleDesignationsChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedDesignations(value)
+  }
+  const handleUserRoleChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedUserRole(value)
+  }
+  const handleJobRolesChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedJobRoles(value)
+  }
+  const handleEmployeeStatusChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedEmployeeStatus(value)
+  }
+  const handleWorkPlaceTypeChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedWorkPlaceType(value)
+  }
+  const handleDirectMangersChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedDirectManges(value)
+  }
+  const handleInDirectMangersChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedInDirectMangers(value)
+  }
+  const handleHeadofDepartmentChange = (name, value) => {
+    console.log(`Selected ${name}: ${value}`)
+    setSelectedHeadofDepartment(value)
+  }
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
@@ -181,46 +237,46 @@ const SheetOnBorading = ({
                 <SheetTitle>Add Employee</SheetTitle>
               </SheetHeader>
               <Formik
-              initialValues={formData}
-              innerRef={formRef}
-              onSubmit={(values, { resetForm }) => {
-                handleSubmit(values, resetForm);
-              }}
-              validate={(values) => {
-                const errors = validationEmployeeInfoFormSchema(
-                  values,
-                  isEditMode
-                );
-                if (values.work_email && emailAlreadyExist) {
-                  errors.work_email = "Email already exist";
-                }
-                if (values.username && usernameAlreadyExist) {
-                  errors.username = "Username already exist";
-                }
-                return errors;
-              }}
-            >
-              {(props) => (
-              <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Employee Details</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                      <TextInput
-                        name={"employeeId"}
-                        error={props.errors?.employeeId}
-                        touch={props.touched?.employeeId}
-                        value={empId}
-                        label={"Employee ID"}
-                        required={true}
-                        disabled={true}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                    <TextInput
+                initialValues={formData}
+                innerRef={formRef}
+                onSubmit={(values, { resetForm }) => {
+                  handleSubmit(values, resetForm);
+                }}
+                validate={(values) => {
+                  const errors = validationEmployeeInfoFormSchema(
+                    values,
+                    isEditMode
+                  );
+                  if (values.work_email && emailAlreadyExist) {
+                    errors.work_email = "Email already exist";
+                  }
+                  if (values.username && usernameAlreadyExist) {
+                    errors.username = "Username already exist";
+                  }
+                  return errors;
+                }}
+              >
+                {(props) => (
+                  <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Employee Details</h3>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"employeeId"}
+                            error={props.errors?.employeeId}
+                            touch={props.touched?.employeeId}
+                            value={empId}
+                            label={"Employee ID"}
+                            required={true}
+                            disabled={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
                             name={"username"}
                             error={props.errors?.username}
                             touch={props.touched.username}
@@ -231,10 +287,10 @@ const SheetOnBorading = ({
                               props.handleChange(field)(value);
                               validateUsername(value);
                             }}
-                            />
-                    </div>
-                    <div className="space-y-2">
-                      <TextInput
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
                             name={"first_name"}
                             error={props.errors?.first_name}
                             touch={props.touched.first_name}
@@ -245,9 +301,9 @@ const SheetOnBorading = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                    </div>
-                    <div className="space-y-2">
-                      <TextInput
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
                             name={"last_name"}
                             error={props.errors?.last_name}
                             touch={props.touched.last_name}
@@ -258,9 +314,9 @@ const SheetOnBorading = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                    </div>
-                    <div className="space-y-2">
-                    <EmailInput
+                        </div>
+                        <div className="space-y-2">
+                          <EmailInput
                             name={"work_email"}
                             error={props.errors?.work_email}
                             touch={props.touched.work_email}
@@ -273,10 +329,10 @@ const SheetOnBorading = ({
                               validateEmail(value);
                             }}
                           />
-                    </div>
-                    <div className="space-y-2">
-                    <div>
-                    <Label htmlFor="password">
+                        </div>
+                        <div className="space-y-2">
+                          <div>
+                            <Label htmlFor="password">
                               <span className="text-red-600">* </span>Password
                             </Label>
                             <Input
@@ -307,11 +363,11 @@ const SheetOnBorading = ({
                                 </div>
                               )}
                           </div>
-                    </div>
-                    <div className="space-y-2">
-                      <PhoneNumberInput
+                        </div>
+                        <div className="space-y-2">
+                          <PhoneNumberInput
                             name={"mobile_no"}
-                            error={props.errors?.mobile_no}
+                            error={props.errors.mobile_no}
                             touch={props.touched.mobile_no}
                             value={props.values.mobile_no}
                             label={"Contact no."}
@@ -319,12 +375,13 @@ const SheetOnBorading = ({
                             countryCodeName={"country_code"}
                             required={true}
                             onChange={(field, value) => {
-                              props.handleChange(field)(value);
+                              props.setFieldValue(field, value);
                             }}
+                            countryOptions={countryOptions} // Pass the country options here
                           />
-                    </div>
-                    <div className="space-y-2">
-                    <TextAreaInput
+                        </div>
+                        <div className="space-y-2">
+                          <TextAreaInput
                             name={"residential_address"}
                             error={props.errors?.residential_address}
                             touch={props.touched?.residential_address}
@@ -336,193 +393,174 @@ const SheetOnBorading = ({
                               props.handleChange(field)(value);
                             }}
                           />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Work Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <SelectComponent
-                          name={"department_name"}
-                          options={departments}
-                          error={props.errors?.department_name}
-                          touch={props.touched.department_name}
-                          value={props.values.department_name}
-                          label={"Department"}
-                          required={true}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                    <SelectComponent
-                          name={"employee_location"}
-                          options={countryOptions}
-                          error={props.errors?.employee_location}
-                          touch={props.touched.employee_location}
-                          value={props.values.employee_location}
-                          required={true}
-                          label={"Employee Location"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                    <SelectComponent
-                          name={"department_position"}
-                          options={designations}
-                          error={props.errors?.department_position}
-                          touch={props.touched.department_position}
-                          value={props.values.department_position}
-                          label={"Designation"}
-                          required={true}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                    <SelectComponent
-                          name={"user_role"}
-                          options={UserRoles}
-                          error={props.errors?.user_role}
-                          touch={props.touched.user_role}
-                          value={props.values.user_role}
-                          required={true}
-                          label={"Role"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                    <SelectComponent
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Work Information</h3>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <SelectComponent
+                            name="Departments"
+                            value={selectedDepartment}
+                            setValue={setSelectedDepartment}
+                            error={props.errors?.department_name}
+                            touch={props.touched.department_name}
+                            options={departments}
+                            label="Select Department"
+                            required={true}
+                            onChange={handleDepartmentChange}
+                          />
+
+                        </div>
+                        <div className="space-y-2">
+                          <SelectComponent
+                            name={"employee_location"}
+                            options={countryOptions}
+                            error={props.errors?.employee_location}
+                            touch={props.touched.employee_location}
+                            value={selectedCountry}
+                            setValue={setSelectedCountry}
+                            required={true}
+                            label={"Employee Location"}
+                            onChange={handleCountryChange}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectComponent
+                            name={"department_position"}
+                            options={designations}
+                            error={props.errors?.department_position}
+                            touch={props.touched.department_position}
+                            value={selectedDesignation}
+                            setValue={setSelectedDesignations}
+                            label={"Designation"}
+                            required={true}
+                            onChange={handleDesignationsChange}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectComponent
+                            name={"user_role"}
+                            options={UserRoles}
+                            error={props.errors?.user_role}
+                            touch={props.touched.user_role}
+                            value={selectedUserRole}
+                            setValue={setSelectedUserRole}
+                            required={true}
+                            label={"Role"}
+                            onChange={handleUserRoleChange}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectComponent
                             name={"employee_type"}
                             options={jobRoles}
                             error={props.errors?.employee_type}
                             touch={props.touched.employee_type}
-                            value={props.values.employee_type}
+                            value={selectedJobRoles}
+                            setValue={setSelectedJobRoles}
                             required={true}
                             label={"Employee Type"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
+                            onChange={handleJobRolesChange}
                           />
-                    </div>
-                    <div className="space-y-2">
-                    <SelectComponent
+                        </div>
+                        <div className="space-y-2">
+                          <SelectComponent
                             name={"employee_status"}
                             options={employeeStatus}
                             error={props.errors?.employee_status}
                             touch={props.touched.employee_status}
-                            value={props.values.employee_status}
+                            value={selectedEmployeeStatus}
+                            setValue={setSelectedEmployeeStatus}
                             required={true}
                             label={"Employee status"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
+                            onChange={handleEmployeeStatusChange}
                           />
-                    </div>
-                    <div className="space-y-2">
-                    <SelectComponent
-                          name={"employee_work_type"}
-                          options={workplaceTypes}
-                          error={props.errors?.employee_work_type}
-                          touch={props.touched.employee_work_type}
-                          value={props.values.employee_work_type}
+                        </div>
+                        <div className="space-y-2">
+                          <SelectComponent
+                            name={"employee_work_type"}
+                            options={workplaceTypes}
+                            error={props.errors?.employee_work_type}
+                            touch={props.touched.employee_work_type}
+                            value={selectedWorkPlaceType}
+                            setValue={setSelectedWorkPlaceType}
+                            required={true}
+                            label={"Employee Work Type"}
+                            onChange={handleWorkPlaceTypeChange}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectComponent
+                            name={"direct_report"}
+                            options={managers}
+                            error={props.errors?.direct_report}
+                            touch={props.touched.direct_report}
+                            value={selectedDirectManges}
+                            setValue={setSelectedDirectManges}
+                            label={"Direct Report"}
+                            onChange={handleDirectMangersChange}
+                          />
+                        </div>
+                        <div className="space-y-2">
+
+                          <SelectMultiInputComponent
+                            name={"indirect_report"}
+                            options={managers}
+                            error={props.errors?.indirect_report}
+                            touch={props.touched.indirect_report}
+                            value={selectedInDirectMangers}
+                            required={true}
+                            setValue={setSelectedInDirectMangers}
+                            label={"Indirect Report"}
+                            onChange={handleInDirectMangersChange}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectComponent
+                            name={"department_manager"}
+                            options={HeadOfDepartmentOptions}
+                            error={props.errors?.department_manager}
+                            touch={props.touched.department_manager}
+                            value={selectedHeadofDepartment}
+                            setValue={setSelectedHeadofDepartment}
+                            required={true}
+                            label={"Department Head"}
+                            onChange={handleHeadofDepartmentChange}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <DateInput
+                          name={"joining_date"}
+                          error={props.errors?.joining_date}
+                          touch={props.touched.joining_date}
+                          value={props.values.joining_date}
                           required={true}
-                          label={"Employee Work Type"}
+                          label={"Joining Date"}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                    <SelectComponent
-                          name={"direct_report"}
-                          options={managers}
-                          error={props.errors?.direct_report}
-                          touch={props.touched.direct_report}
-                          value={props.values.direct_report}
-                          label={"Direct Report"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                    <SelectMultiInputComponent
-                          name={"indirect_report"}
-                          options={managers}
-                          error={props.errors?.indirect_report}
-                          touch={props.touched.indirect_report}
-                          value={props.values.indirect_report}
-                          label={"Indirect Report"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                    <SelectComponent
-                          name={"department_manager"}
-                          options={HeadOfDepartmentOptions}
-                          error={props.errors?.department_manager}
-                          touch={props.touched.department_manager}
-                          value={props.values.department_manager}
-                          required={true}
-                          label={"Department Head"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="joiningDate">Joining Date</Label>
-                      <div className="flex">
-                        <Input
-                          id="joiningDate"
-                          type="text"
-                          placeholder="Select date"
-                          value={date ? format(date, "PPP") : ""}
-                          readOnly
-                          className="w-[calc(100%-40px)]"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-[40px] px-0"
-                          onClick={() => setDate(new Date())}
-                        >
-                          <CalendarIcon className="w-4 h-4" />
-                        </Button>
+
+                            
+                         />
+
+                        </div>
                       </div>
-                      {date && (
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={setDate}
-                          className="border rounded-md"
-                        />
-                      )}
                     </div>
-                  </div>
-                </div>
-                <div className="p-6 border-t border-gray-200 bg-gray-50">
-            <div className="flex justify-end space-x-4">
-              <Button variant="outline" size="lg"  onClick={() => setIsOpen(false)}>Cancel</Button>
-              <Button type="submit" size="lg" variant="default" >{id ? "Update" : "Add"}</Button>
+                    <div className="p-6 border-t border-gray-200 bg-gray-50">
+                      <div className="flex justify-end space-x-4">
+                        <Button variant="outline" size="lg">
+                          <Link to="/profile-management">Cancel</Link></Button>
+                        <Button type="submit" size="lg" variant="default" >{id ? "Update" : "Add"}</Button>
+                      </div>
+                    </div>
+                  </form>
+                )}
+              </Formik>
             </div>
           </div>
-              </form>
-            )}
-          </Formik>
-            </div>
-          </div>
-          
+
         </div>
       </SheetContent>
     </Sheet>

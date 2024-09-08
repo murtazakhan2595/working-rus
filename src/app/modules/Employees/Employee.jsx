@@ -16,7 +16,7 @@ import {
   getEmployeeCustomList,
 } from 'app/hooks/general.jsx';
 import { PageLoader } from 'components';
-import SheetOnBorading from "../../../components/ui/sheet-onBording-form";
+import SheetOnBoarding from "../../../components/ui/sheet-onBording-form";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../../src/@/components/ui/tabs"
 
 
@@ -31,6 +31,7 @@ export default function Component() {
   const [totalManagers, setTotalManager] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState('all');
   const navigate = useNavigate();
+  const [selectedValue, setSelectedValue] = React.useState("")
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -51,7 +52,7 @@ export default function Component() {
       setIsLoading(true);
       try {
         const data = await getEmployeeCustomList({ options, filterData });
-        console.log(data, "In Employee page")
+        // console.log(data, "In Employee page")
         setEmployeeData(data);
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
@@ -93,7 +94,6 @@ export default function Component() {
       return updatedFilters;
     });
   };
-
   // Extract unique employee statuses
   const employeeStatuses = ['all', ...new Set(employeeData?.results.map(employee => employee.employee_status))];
 
@@ -126,7 +126,7 @@ export default function Component() {
   const employeeStatus = ["All", "Active", "Inactive"]
   return (
     <div className="flex flex-col gap-4 profile-management">
-      <Header content={<SheetOnBorading />} />
+      <Header content={<SheetOnBoarding />} />
 
       {Blocks([
         { label: 'Total Employees', value: totalEmployee, icon: UsersRound },

@@ -147,7 +147,7 @@ const BankInformation = ({ nextstep, baseUrl, token, employeeId, isEditMode, pre
                                                 regEx={/^[a-zA-Z0-9]*$/}
                                             />
                                         </div>
-                                        <div className="space-y-2">
+                                        <div className="col-span-2 space-y-2">
                                             <TextInput
                                                 name={'branch_address'}
                                                 error={props.errors.branch_address}

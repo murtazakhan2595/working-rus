@@ -50,6 +50,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "countries-and-timezones": "^3.5.1",
+    "country-data": "^0.0.31",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.9",
     "embla-carousel-react": "^8.2.0",

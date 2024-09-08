@@ -16,6 +16,8 @@ import { PageLoader } from "components";
 import { getContactInfo } from "app/utils/MappingObjects/mapEmployeeData.jsx";
 import { validationEmployeeContactInfoFormSchema } from 'app/utils/FormSchema/employeeFormSchema'
 import { Button } from "components/ui/button";
+import { countries } from "country-data";
+
 
 
 const ContactInformation = ({
@@ -28,6 +30,15 @@ const ContactInformation = ({
   const [contactInfo, setContactInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
+
+  const countryOptions = countries.all
+  .filter((country) => country.countryCallingCodes && country.countryCallingCodes.length > 0)
+  .map((country) => ({
+    value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
+    label: `${country.name} (+${country.countryCallingCodes[0].replace("+", "")})`,
+  }));
+
+  
   useEffect(() => {
     getEmployeeContactInfo(employeeId)
       .then((response) => {
@@ -77,19 +88,21 @@ const ContactInformation = ({
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
+                      
                       <PhoneNumberInput
-                        name="emergency_phone_no"
-                        error={props.errors.emergency_phone_no}
-                        touch={props.touched.emergency_phone_no}
-                        value={props.values.emergency_phone_no}
-                        countryCode={props.values.emergency_country_code}
-                        countryCodeName={'emergency_country_code'}
-                        label="Emergency Contact"
-                        required
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
+                          name={"emergency_phone_no"}
+                          error={props.errors.mobile_no}
+                          touch={props.touched.mobile_no}
+                          value={props.values.mobile_no}
+                          label="Emergency Contact"
+                          countryCode={props.values.country_code}
+                          countryCodeName={"emergency_country_code"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                          countryOptions={countryOptions} // Pass the country options here
+                        />
                     </div>
                     <div className="space-y-2">
                       <TextInput
