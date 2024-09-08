@@ -1,13 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../src/@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationLink,
-  PaginationNext
-} from "../src/@/components/ui/pagination";
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from "../src/@/components/ui/pagination";
 
 export default function TableCustom({
   columns,
@@ -20,7 +13,7 @@ export default function TableCustom({
   pagination = true,
   itemsPerPage = 10,
   className = "",
-  showHeader = true,  // Show header by default
+  showHeader = true, // Show header by default
 }) {
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
@@ -31,8 +24,8 @@ export default function TableCustom({
   const toggleExpandRow = (rowId) => {
     setExpandedRow(expandedRow === rowId ? null : rowId);
   };
-  const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState({ key: 'name', order: 'asc' });
   const [statusFilter, setStatusFilter] = useState('all');
   const [designationFilter, setDesignationFilter] = useState('all');
@@ -43,7 +36,6 @@ export default function TableCustom({
         const searchValue = search.toLowerCase();
         const statusFilterValue = statusFilter === "all" ? "" : statusFilter;
         const designationFilterValue = designationFilter === "all" ? "" : designationFilter;
-
         return (
           (employee.name && employee.name.toLowerCase().includes(searchValue)) ||
           (employee.email && employee.email.toLowerCase().includes(searchValue)) ||
@@ -67,7 +59,7 @@ export default function TableCustom({
     return employees.slice(startIndex, startIndex + itemsPerPage);
   }, [employees, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(dataTotalSize / itemsPerPage); 
+  const totalPages = Math.ceil(dataTotalSize / itemsPerPage);
 
   const handleSort = (key) => {
     setSort((prevSort) => ({
@@ -76,11 +68,7 @@ export default function TableCustom({
     }));
   };
 
-
   const handlePageChange = (name, page) => {
-    // if (tableOptions.onPageChange) {
-    //   tableOptions.onPageChange( name ,page);
-    // }
     if (page >= 1 && page <= totalPages) {
       tableOptions.onPageChange("page", page);
     }
@@ -92,7 +80,7 @@ export default function TableCustom({
         <div>
           <div className="">
             <Table>
-              {showHeader && (  // Conditionally render the table header
+              {showHeader && Array.isArray(columns) && (
                 <TableHeader>
                   <TableRow>
                     {columns.map((column, index) => (
@@ -104,8 +92,7 @@ export default function TableCustom({
                       >
                         {column.text}
                         {sort.key === column.dataField && (
-                         <span className="ml-1">{sort.order === 'asc' ? '↑' : '↓'}</span>
-
+                          <span className="ml-1">{sort.order === 'asc' ? '↑' : '↓'}</span>
                         )}
                       </TableHead>
                     ))}
@@ -122,7 +109,7 @@ export default function TableCustom({
                           else if (tableOptions?.onRowClick) tableOptions.onRowClick(row);
                         }}
                       >
-                        {columns.map((column, index) => (
+                        {Array.isArray(columns) && columns.map((column, index) => (
                           <TableCell
                             className={`${column.onClick ? "cursor-pointer " : ""}`}
                             key={index}
@@ -132,9 +119,7 @@ export default function TableCustom({
                               else if (column.onClick) column.onClick(recordIndex, data, row);
                             }}
                           >
-                            {column.formatter
-                              ? column.formatter(row[column.dataField], row, data, index)
-                              : row[column.dataField]}
+                            {column.formatter ? column.formatter(row[column.dataField], row, data, index) : row[column.dataField]}
                           </TableCell>
                         ))}
                       </TableRow>
@@ -149,7 +134,7 @@ export default function TableCustom({
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={columns.length} className="text-center">
+                    <TableCell colSpan={columns.length} className="py-4 text-center">
                       No data available
                     </TableCell>
                   </TableRow>
@@ -157,35 +142,22 @@ export default function TableCustom({
               </TableBody>
             </Table>
           </div>
-          {pagination && totalPages > 1 && (
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      onClick={() => handlePageChange('page', page)}
-                      isActive={options.page}
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => handlePageChange('page', options.page + 1 )}
-                    disabled={currentPage === totalPages}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
         </div>
+        {pagination && (
+          <Pagination>
+            <PaginationContent>
+              <PaginationPrevious onClick={() => handlePageChange("page", currentPage - 1)} />
+              {Array.from({ length: totalPages }, (_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink onClick={() => handlePageChange("page", index + 1)}>
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationNext onClick={() => handlePageChange("page", currentPage + 1)} />
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </>
   );

@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Form } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
   getEmployeeContactInfo,
   saveEmployeeContactInfoData,
-} from "app/hooks/employee";
+} from "../../../../../app/hooks/employee"
+
 import {
 
   TextInput,
   PhoneNumberInput,
   TextAreaInput,
-} from "components/form-control.jsx";
+} from "../../../../../components/form-control.jsx";
 import { PageLoader } from "components";
-import { getContactInfo } from "app/utils/MappingObjects/mapEmployeeData.jsx";
-import { validationEmployeeContactInfoFormSchema } from 'app/utils/FormSchema/employeeFormSchema'
-import { Button } from "components/ui/button";
-import { countries } from "country-data";
+import { getContactInfo } from "../../../../../app/utils/MappingObjects/mapEmployeeData.jsx";
+import { validationEmployeeContactInfoFormSchema } from '../../../../../app/utils/FormSchema/employeeFormSchema'
+import { Button } from "../../../../../components/ui/button";
+import  countries  from "country-data";
 
 
 

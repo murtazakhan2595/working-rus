@@ -19,19 +19,16 @@ import {
 import {RenderJobTitle} from "app/modules/Dashboard/Screens/TalentSphere/Sections";
 import moment from "moment";
 import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
-import { IoIosArrowDown } from "react-icons/io";
-import { downloadCV } from "app/hooks/recruitment";
-import { AiOutlineDownload } from "react-icons/ai";
-import { BsBoxArrowUpRight } from "react-icons/bs";
-import { IoBagCheckOutline } from "react-icons/io5";
+
 import { Link } from "react-router-dom";
 import { ExternalLink, } from "lucide-react";
-export const DashbaordJobApplicationColumns = (navigate) => [
+import { Badge } from "../../../../../components/ui/badge";
+export const DashboardJobApplicationColumns = (navigate) => [
   {
     dataField: "id",
     text: "Open Jobs",
     formatter: (cell, row) => <RenderJobTitle row={row} />,
-    width: "40%",
+    
   },
 
   {
@@ -62,6 +59,34 @@ export const DashbaordJobApplicationColumns = (navigate) => [
     ),
   },
 ];
+export const DashboardOnGoingColumns = (navigate) =>[
+  {
+    dataField: "id",
+    text: "Open Jobs",
+    formatter: (cell, row) => <RenderJobTitle row={row} />,
+  },
+  {
+    dataField: "full_name",
+    text:"Name",
+    formatter: (cell, row) => <EmployeeNameInfo row={row} />,
+    
+  },
+  {
+    dataField: "job_title",
+    text: "Job Title",
+    formatter: (cell, row) => <RenderJobTitle row={row} />,
+  },
+  {
+    dataField: "application_status",
+    text: "Application Status",
+    formatter: ({ value }) => <Badge variant="outline" className="text-xs">{value}</Badge>,
+  }
+  // { Header: 'ID', accessor: 'id' },
+  // { Header: 'Full Name', accessor: 'full_name' },
+  // { Header: 'Job Title', accessor: 'job_title' },
+  // { Header: 'Application Status', accessor: 'application_status', Cell: ({ value }) => <Badge variant="outline" className="text-xs">{value}</Badge> },
+];
+
 
 export const DashboardLeaveTrackerColumns = [
   {

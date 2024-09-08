@@ -10,7 +10,7 @@ import { Card, CardHeader, CardContent, CardTitle} from "../../../../components/
 import { Button } from '../../../../src/@/components/ui/button';
 import { Table, TableRow,  TableBody, TableCell } from "../../../../src/@/components/ui/table";
 // import { Avatar, AvatarImage, AvatarFallback } from "../../../../src/@/components/ui/avatar"
-import { TableCustom } from 'components/TableCustom';
+import { CustomTable } from 'components/CustomTable';
 import Avatar from "components/ui/Avatar";
 export default function AllProjects(){
 

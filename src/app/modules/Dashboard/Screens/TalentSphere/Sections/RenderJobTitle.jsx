@@ -1,6 +1,5 @@
 import React from "react";
-import { IoBagCheckOutline } from "react-icons/io5";
-import { useState, useEffect } from "react";
+
 
 export default function RenderJobTitle({ row }) {
   return (

@@ -5,6 +5,9 @@
 .lucide-dot {
     display: none !important
 }
+.custom-sheet-width {
+    max-width: 50%!important; /* Adjust the width as needed */
+  }
 
 
 @layer components {

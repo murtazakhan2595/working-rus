@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "../src/@/components/ui/popover";
-import { ChevronsUpDown, Check, FileUp, CircleX } from "lucide-react";
+import { ChevronsUpDown, Check, FileUp, CircleX, SearchIcon } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -450,7 +450,7 @@ const PhoneNumberInput = ({
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" role="combobox" aria-expanded={open} className="justify-start w-full rounded-r-lg">
-                {selectedCountryCode ? `+${selectedCountryCode}` : "Select a code"}
+                {selectedCountryCode ? `+${selectedCountryCode}` : "Select code"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[300px]">
@@ -482,7 +482,7 @@ const PhoneNumberInput = ({
             autoComplete="Off"
             placeholder={"Enter  " + label}
             value={inputValue}
-            className={error && touch ? "is-invalid" : "rounded-l-lg"}
+            className={error && touch ? "is-invalid rounded-l-lg" : "rounded-l-lg"}
             onChange={handleInputChange}
           />
         </div>
@@ -828,9 +828,9 @@ function dropdownStyles(backgrounddivor, fontSize, height) {
   };
 }
 
-const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
+const FilterInput = ({ filters, onChange, value, isClearable = true, type }) => {
   const classNamesStyle =
-    "focus:outline-none focus:border-none bg-[#FAFBFC] py-2 pl-2 shadow-input placeholder-[#5C5E64] border-none rounded-md";
+    "";
   const width = "w-56";
   const height = "h-[38px]";
   const [openRole, setOpenRole] = useState(false);
@@ -846,7 +846,11 @@ const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
 
 
   const renderInputField = (filter, index) => {
-    return <input
+    return(
+      <div className="relative">
+      <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
+      <Input
+   
       key={index}
       type={filter.type}
       placeholder={filter.placeholder}
@@ -855,6 +859,8 @@ const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
       id={filter.name}
       onChange={(event) => handleInputChange(filter, event)}
     />
+    </div>
+    ) 
   }
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
