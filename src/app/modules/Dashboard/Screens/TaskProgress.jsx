@@ -124,7 +124,7 @@ export default function Component() {
                 <CommandList>
                   <CommandEmpty>No framework found.</CommandEmpty>
                   <CommandGroup>
-                    {frameworks.map((framework) => (
+                    {frameworks?.map((framework) => (
                       <CommandItem
                         key={framework.value}
                         value={framework.value}

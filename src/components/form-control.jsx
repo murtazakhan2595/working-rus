@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // import Select from "react-select";
 import { Label } from "../src/@/components/ui/label";
 import DatePicker from "react-datepicker";
@@ -9,21 +9,13 @@ import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-  SelectContent,
-  SelectItem,
-} from "../src/@/components/ui/select";
+
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-
 } from "../src/@/components/ui/popover";
-import { ChevronsUpDown, Check, FileUp } from "lucide-react";
+import { ChevronsUpDown, Check, FileUp, CircleX } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -32,16 +24,12 @@ import {
   CommandItem,
   CommandList,
 } from "../src/@/components/ui/command";
-
-
 import { cn } from './../src/@/lib/utils';
-
-
-
-import { format } from "date-fns"
+import { format, parse, isValid } from 'date-fns';
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from '../src/@/components/ui/calendar';
-import { countries } from "country-data";
+
+
 
 
 const SelectComponent = ({
@@ -55,105 +43,161 @@ const SelectComponent = ({
   disabled,
   required,
   onChange,
+
+
+  
 }) => {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
 
   const handleSelect = (currentValue) => {
-    setValue(currentValue === value ? "" : currentValue)
-    setOpen(false)
-    onChange(name, currentValue)
-  }
+    const newValue = currentValue === value ? "" : currentValue;
+    setValue(newValue);
+    setOpen(false);
+    onChange(name, newValue);
+  };
 
   return (
-    
-    <div>
-      <Label
-        className={` ${value ? "" : ""}`}
-        for={name}
-      >
+    <div className="flex flex-col gap-4">
+      <Label className={` ${value ? "" : ""}`} htmlFor={name}>
         {required && <span className="text-red-600">* </span>} {label}
       </Label>
-      
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="justify-between w-full"
-        >
-          {value
-            ? options.find((option) => option.value === value)?.label
-            : label}
-          <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
-        <Command>
-          <CommandInput placeholder={`Search ${label}...`} />
-          <CommandList>
-            <CommandEmpty>No {label} found.</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={() => handleSelect(option.value)}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-      {error && touch && <div className="text-red-600">{error || ""}</div>}
-    </Popover>
-    </div>
-  )
-}
 
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="justify-between w-full"
+            disabled={disabled}
+          >
+            {value
+              ? options.find((option) => option.value === value)?.label
+              : label}
+            <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[300px] p-0">
+          <Command>
+            <CommandInput placeholder={"Enter " + label} />
+            <CommandList>
+              <CommandEmpty>No {label} found.</CommandEmpty>
+              <CommandGroup>
+                {options?.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={() => handleSelect(option.value)}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === option.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      
+      {error && touch && <div className="text-red-600">{error}</div>}
+    </div>
+  );
+};
 
 const SelectMultiInputComponent = ({
   name,
-  value,
+  options,
   error,
   touch,
-  onChange,
-  options,
+  value,
+  setValue,
   label,
-  disabled,
+  onChange,
   required,
 }) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleSelect = (option) => {
+    const newValue = value.includes(option)
+      ? value.filter((item) => item !== option)
+      : [...value, option];
+    setValue(newValue);
+    onChange(name, newValue);
+  };
+
+  const handleRemove = (option) => {
+    const newValue = value.filter((item) => item !== option);
+    setValue(newValue);
+    onChange(name, newValue);
+  };
+
   return (
     <div>
-      <Label
-        className={`text-baseGray ${value ? "date-floating-label" : ""}`}
-        for={name}
-      >
+      <label className={`${value ? "" : ""}`} htmlFor={name}>
         {required && <span className="text-red-600">* </span>} {label}
-      </Label>
+      </label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="flex-wrap justify-between w-full h-fit"
+          >
+            <div className="flex flex-wrap justify-between w-full gap-2">
+              {value.length > 0 ? (
+                value.map((val) => (
+                  <span
+                    key={val}
+                    className="bg-plum-300 text-plum-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-lg flex items-center"
+                  >
+                    {options.find((opt) => opt.value === val)?.label}
+                    <CircleX
+                      className="ml-1 text-sm text-red-600 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemove(val);
+                      }}
+                    />
+                  </span>
+                ))
+              ) : (
+                <span>{label}</span>
+              )}
+              <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+            </div>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[300px] p-0">
+          <Command>
+            <CommandInput placeholder="Search options..." />
+            <CommandList>
+              <CommandEmpty>No options found.</CommandEmpty>
+              <CommandGroup>
+                {options.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    onSelect={() => handleSelect(option.value)}
+                  >
+                    <Check
+                      className={`mr-2 h-4 w-4 ${
+                        value.includes(option.value) ? "opacity-100" : "opacity-0"
+                      }`}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
       {error && touch && <div className="text-red-600">{error}</div>}
-      <Select>
-        <SelectTrigger>
-          <SelectValue placeholder={label} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
     </div>
   );
 };
@@ -170,55 +214,91 @@ const DateInput = ({
   minDate,
 }) => {
 
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState();
+  const [inputValue, setInputValue] = useState("");
+  const [calendarDate, setCalendarDate] = useState();
+
+  useEffect(() => {
+    if (date) {
+      setInputValue(format(date, "MM/dd/yyyy"));
+      setCalendarDate(date);
+    }
+  }, [date]);
+
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setInputValue(value);
+  
+    const parsedDate = parse(value, "MM/dd/yyyy", new Date());
+    if (isValid(parsedDate)) {
+      setDate(parsedDate);
+      setCalendarDate(parsedDate);
+    }
+  };
+
+  const handleInputBlur = () => {
+    if (date) {
+      setInputValue(format(date, "MM/dd/yyyy"));
+    } else {
+      setInputValue("");
+    }
+  };
+
+  const handleCalendarSelect = (selectedDate) => {
+    setDate(selectedDate);
+    if (selectedDate) {
+      setInputValue(format(selectedDate, "MM/dd/yyyy"));
+      setCalendarDate(selectedDate);
+    }
+  };
+
   return (
-    <>
-      
-      <div className="">
-      <Label for={name} className={`${value ? "" : ""}`}>
-          {required && <span className="text-red-600">* </span>} {label}
-          </Label>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-             name={name}
-            id={name}
-            autoComplete="off"
-            minDate={minDate}
-            disabled={disabled}
-            variant={"outline"}
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
-            aria-label="Select date"
-          >
-            <CalendarIcon className="w-4 h-4 mr-2" />
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
+    <div className="flex flex-col gap-4">
+    <Label
+        className={` ${value ? "" : ""}`}
+        for={name}
+      >
+        {required && <span className="text-red-600">* </span>} {label}
+      </Label>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant={"outline"}
+          className={cn(
+            "w-full justify-start text-left font-normal",
+            !date && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon className="w-4 h-4 mr-2" />
+          {date ? format(date, "MMMM d, yyyy") : <span>Pick a date</span>}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <div className="flex flex-col p-2 space-y-2">
+          <Input
+            type="text"
+            placeholder="MM/DD/YYYY"
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            className="w-[240px]"
+          />
           <Calendar
             mode="single"
             selected={date}
-            onSelect={setDate}
+            onSelect={handleCalendarSelect}
+            month={calendarDate}
+            onMonthChange={setCalendarDate}
+            disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
             initialFocus
           />
-        </PopoverContent>
-      </Popover>
-      <Input
-        type="date"
-        id="date-input-native"
-        name="date-input-native"
-        value={date ? format(date, "yyyy-MM-dd") : ""}
-        onChange={(e) => setDate(new Date(e.target.value))}
-        className="w-auto sr-only"
-        aria-hidden="true"
-      />
-    </div>
-    </>
+        </div>
+      </PopoverContent>
+    </Popover>
+    {error && touch && <div className="text-red-600">{error}</div>}
+  </div>
   );
-};
+}
 
 const TextInput = ({
   name,
@@ -234,10 +314,10 @@ const TextInput = ({
 }) => {
   return (
     <>
-      <div>
+     <div className="flex flex-col gap-4">
         <Label className="" htmlFor={name}>
+        {label}
           {required && <span className="text-red-600">* </span>}
-          {label}
         </Label>
         <Input
           type="text"
@@ -245,7 +325,7 @@ const TextInput = ({
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter" + label}
+          placeholder={"Enter " + label}
           value={value ?? ""}
           disabled={disabled}
           className={error && touch ? "is-invalid" : ""}
@@ -266,11 +346,45 @@ const TextInput = ({
     </>
   );
 };
+const PasswordInput = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  disabled,
+  required,
+  maxLength,
+}) => {
+  return (
+    <div className="flex flex-col gap-4">
+      <Label htmlFor={name}>
+      {label}
+        {required && <span className="text-red-600">* </span>}
+        
+      </Label>
+      <Input
+        type="password"
+        maxLength={maxLength || 20}
+        id={name}
+        name={name}
+        autoComplete="off"
+        placeholder={`Enter ${label}`}
+        value={value ?? ""}
+        disabled={disabled}
+        className={error && touch ? "is-invalid" : ""}
+        onChange={onChange}
+      />
+      {error && touch && <div className="text-red-600">{error}</div>}
+    </div>
+  );
+};
 
 const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
   return (
     <>
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex flex-row gap-4 items-cEnter">
         <Input
           id={name}
           type="checkbox"
@@ -295,6 +409,7 @@ const PhoneNumberInput = ({
   error,
   touch,
   onChange,
+  required,
   countryOptions, // Receive the country options here
 }) => {
   const [selectedCountryCode, setSelectedCountryCode] = useState("");
@@ -328,7 +443,7 @@ const PhoneNumberInput = ({
   };
 
   return (
-    <div className="">
+    <div className="flex flex-col gap-4">
       <Label check>{label}</Label>
       <div className="grid grid-cols-6 gap-0">
         <div className="col-span-2 col-start-1">
@@ -344,7 +459,7 @@ const PhoneNumberInput = ({
                 <CommandList>
                   <CommandEmpty>No country found.</CommandEmpty>
                   <CommandGroup>
-                    {countryOptions.map((option) => (
+                    {countryOptions?.map((option) => (
                       <CommandItem
                         key={option.value}
                         value={option.value}
@@ -365,13 +480,15 @@ const PhoneNumberInput = ({
             name={name}
             disabled={disabled}
             autoComplete="Off"
-            placeholder={"Enter " + label}
+            placeholder={"Enter  " + label}
             value={inputValue}
             className={error && touch ? "is-invalid" : "rounded-l-lg"}
             onChange={handleInputChange}
           />
         </div>
+         
       </div>
+      {error && touch && <div className="text-red-600">{error}</div>}
     </div>
   );
 };
@@ -386,8 +503,7 @@ const EmailInput = ({
   required,
 }) => {
   return (
-    <>
-      <div>
+    <div className="flex flex-col gap-4">
         <Label className="text-baseGray" htmlFor={name}>
           {required && <span className="text-red-600">* </span>}
           {label}
@@ -398,7 +514,7 @@ const EmailInput = ({
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter" + label}
+          placeholder={"Enter " + label}
           value={value}
           className={error && touch ? "is-invalid" : ""}
           onChange={(option) => {
@@ -410,12 +526,12 @@ const EmailInput = ({
 
         {error && touch && <div className="text-red-600">{error}</div>}
       </div>
-    </>
+
   );
 };
 const CustomButton = ({ label, onClick, disabled }) => {
   return (
-    <div className="flex justify-end">
+    <div className="flex flex-col gap-4">
       <Button
         className="bg-[#323333] text-[#F7F8FA] w-40 h-12 font-lato text-base font-semibold"
         onClick={onClick}
@@ -582,7 +698,7 @@ const TextAreaInput = ({
 }) => {
   return (
     <>
-      <div>
+      <div className="flex flex-col gap-4">
         <Label
           className={`text-baseGray ${value ? "active" : ""}`}
           htmlFor={name}
@@ -590,14 +706,14 @@ const TextAreaInput = ({
           {required && <span className="text-red-600">* </span>}
           {label}
         </Label>
-        {error && touch && <div className="text-red-600">{error}</div>}
+
         <Input
           type="textarea"
           maxLength={maxLength ?? "5000"}
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter " + label}
+          placeholder={"Enter  " + label}
           value={value}
           rows={maxRows ?? 1}
           disabled={disabled}
@@ -611,6 +727,7 @@ const TextAreaInput = ({
             }
           }}
         />
+                {error && touch && <div className="text-red-600">{error}</div>}
       </div>
     </>
   );
@@ -629,7 +746,7 @@ const TextAreaEditorInput = ({
 }) => {
   return (
     <>
-      <div>
+      <div className="flex flex-col gap-4">
         <Label className="pt-4 mt-1 text-baseGray" htmlFor={name}>
           {required && <span className="text-red-600">* </span>}
           {label}
@@ -761,7 +878,7 @@ const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
           <CommandList>
             <CommandEmpty>No option found.</CommandEmpty>
             <CommandGroup>
-              {filter.option.map((option) => (
+              {filter.option?.map((option) => (
                 <CommandItem
                   key={option.value}
                   value={option.value}
@@ -815,7 +932,7 @@ const FilterInput = ({ filters, onChange, value, isClearable = true }) => {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
       {filters &&
-        filters.map((filter, index) => {
+        filters?.map((filter, index) => {
           switch (filter.type) {
             case "search":
             case "text":
@@ -876,4 +993,5 @@ export {
   CustomLightOutlineButton,
   CheckBoxInput,
   TextAreaEditorInput,
+  PasswordInput
 };

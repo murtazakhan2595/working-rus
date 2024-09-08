@@ -84,7 +84,7 @@ export function getMenuList(pathname, userRole) {
         createMenu("/travel-details", "Travel Details"),
         createMenu("/exit-clearance", "Exit & Clearance"),
         createMenu("/create-employee", "Employee Creation"),
-        createMenu("/customise-employees", "Customize Employee"),
+        createMenu("/edit-employee", "Customize Employee"),
         createMenu("/relocation", "Relocation"),
         createMenu("/internal", "Internal"),
         createMenu("/external", "External"),
