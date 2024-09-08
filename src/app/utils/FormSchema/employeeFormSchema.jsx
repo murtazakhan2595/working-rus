@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const validationEmployeeInfoFormSchema = (values, isEditMode) => {
+const validationEmployeeInfoFormSchema = (values, isEditMode, selectedUserRole) => {
   const errors = {};
   if (!isEditMode) {
     if (!values.first_name) errors.first_name = "First name is required";
@@ -14,22 +14,23 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     if (!values.residential_address)
       errors.residential_address = "Address is required";
   }
-  if (!values.selectedUserRole) errors.selectedUserRole = "User role is required";
-  if (!values.selectedDepartment)
-    errors.selectedDepartment = "Department is required";
-  if (!values.designations)
-    errors.designations = "Designation is required";
-  if (!values.selectedHeadofDepartment)
-    errors.selectedHeadofDepartment = "Manager is required";
-  if (!values.selectedJobRoles) errors.selectedJobRoles = "Employee type is required";
-  if (!values.selectedWorkPlaceType)
-    errors.selectedWorkPlaceType = "Work type is required";
-  if (!values.selectedCountry)
-    errors.selectedCountry = "Work location is required";
-  if (!values.selectedEmployeeStatus) errors.selectedEmployeeStatus = "Status is required";
+  if (!selectedUserRole) errors.selectedUserRole = "User role is required";
+  if (!values.department_name)
+    errors.department_name = "Department is required";
+  if (!values.department_position)
+    errors.department_position = "Designation is required";
+  if (!values.department_manager)
+    errors.department_manager = "Manager is required";
+  if (!values.employee_type) errors.employee_type = "Employee type is required";
+  if (!values.employee_work_type)
+    errors.employee_work_type = "Work type is required";
+  if (!values.employee_location)
+    errors.employee_location = "Work location is required";
+  if (!values.employee_status) errors.employee_status = "Status is required";
   if (!values.joining_date) errors.joining_date = "Joining date is required";
   return errors;
 };
+
 
 const validationEmployeeContactInfoFormSchema = (values) => {
   const errors = {};
@@ -144,10 +145,10 @@ const validationAcademicRecordSchema = Joi.object({
 });
 
 const validationDepartmentInfoFormSchema = Joi.object({
-  selectedDepartment: Joi.string().required().label("Department Name").messages({
+  department_name: Joi.string().required().label("Department Name").messages({
     "string.empty": `Department Name is required`,
   }),
-  designations: Joi.string()
+  department_position: Joi.string()
     .regex(/^[a-zA-Z\s]+$/)
     .required()
     .label("Position")
@@ -155,22 +156,22 @@ const validationDepartmentInfoFormSchema = Joi.object({
       "string.empty": `Position is required`,
       "string.pattern.base": `Position must only contain letters and spaces`,
     }),
-  selectedEmployeeStatus: Joi.string().required().label("Employee status").messages({
+  employee_status: Joi.string().required().label("Employee status").messages({
     "string.empty": `Employee Status is required`,
   }),
-  selectedWorkPlaceType: Joi.string().required().label("Work Type").messages({
+  employee_work_type: Joi.string().required().label("Work Type").messages({
     "string.empty": `Work Type is required`,
   }),
-  selectedCountry: Joi.string()
+  employee_location: Joi.string()
     .required()
     .label("Employee Location")
     .messages({
       "string.empty": `Employee Location is required`,
     }),
-  selectedJobRoles: Joi.string().required().label("Employee type").messages({
+  employee_type: Joi.string().required().label("Employee type").messages({
     "string.empty": `Employee type is required`,
   }),
-  selectedHeadofDepartment: Joi.string()
+  department_manager: Joi.string()
     .required()
     .label("Department Manger")
     .messages({
@@ -184,7 +185,7 @@ const validationDepartmentInfoFormSchema = Joi.object({
       "string.empty": "Joining Date is required",
       "string.pattern.base": 'Joining Date must be in "DD-MM-YYYY" format',
     }),
-  selectedDirectManges: Joi.string().required(),
+  direct_report: Joi.string().required(),
 });
 
 const validationBankDetailsFormSchema = Joi.object({

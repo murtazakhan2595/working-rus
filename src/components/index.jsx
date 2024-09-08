@@ -3,7 +3,7 @@ import PageLoader from "./PageLoader";
 import Tabs from "./Tabs";
 import StatusLabel from "./StatusLabel";
 import EmployeeNameInfo from "./EmployeeNameInfo";
-import Table from "./TableCustom";
+import Table from "./CustomTable";
 import BarChart  from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
 export{

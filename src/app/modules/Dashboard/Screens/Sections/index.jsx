@@ -1,2 +1,2 @@
-import {DashboardLeaveTrackerColumns,DashbaordJobApplicationColumns} from './TableColumns';
-export {DashboardLeaveTrackerColumns,DashbaordJobApplicationColumns};
+import {DashboardLeaveTrackerColumns,DashboardJobApplicationColumns} from './TableColumns';
+export {DashboardLeaveTrackerColumns,DashboardJobApplicationColumns as DashbaordJobApplicationColumns};

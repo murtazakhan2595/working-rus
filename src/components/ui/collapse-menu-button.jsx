@@ -54,7 +54,7 @@ export function CollapseMenuButton({
           variant={active ? "secondary" : "ghost"}
           className={cn(
             "justify-start w-full h-10 mb-1  hover:bg-plum-500 hover:text-plum-900",
-            active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : "",
+            active ? "bg-plum-300 text-plum-1100 rounded-full" : "",
            
              
            
@@ -99,7 +99,7 @@ export function CollapseMenuButton({
             variant={active ? "secondary" : "ghost"}
             className={cn(
               "justify-start w-full h-10 mb-1  hover:bg-plum-500 hover:text-plum-900",
-              active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : "",
+              active ? "bg-plum-300 text-plum-1100 rounded-full" : "",
               
             )}
             asChild
@@ -133,7 +133,7 @@ export function CollapseMenuButton({
                 variant={active ? "secondary" : "ghost"}
                 className={cn(
                   "justify-start w-full h-10 mb-1  hover:bg-plum-500 hover:text-plum-900",
-                  active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : "",
+                  active ? "bg-plum-300 text-plum-1100 rounded-full" : "",
                     isOpen
                             ? "w-full" : "w-[75%]"
                   

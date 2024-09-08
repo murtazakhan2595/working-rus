@@ -232,8 +232,8 @@ const SheetOnBorading = ({
       <div side="right" className="w-full p-0 " open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex flex-col ">
           <div className="flex-grow ">
-            <div className="p-6">
-              <CardHeader>
+            <div className="p-0">
+              <CardHeader className="prose">
               <CardTitle>
               Add Employee
               </CardTitle>
@@ -242,6 +242,7 @@ const SheetOnBorading = ({
               <Formik
                 initialValues={formData}
                 innerRef={formRef}
+                
                 onSubmit={(values, { resetForm }) => {
                   console.log('Form Data:', values); // Log form data to console
         handleSubmit(values, resetForm);
@@ -251,8 +252,12 @@ const SheetOnBorading = ({
                 validate={(values) => {
                   const errors = validationEmployeeInfoFormSchema(
                     values,
-                    isEditMode
-                  );
+                    isEditMode,
+                    selectedDepartment,
+                    selectedUserRole,
+                    selectedJobRoles,
+                    
+                    );
                   if (values.work_email && emailAlreadyExist) {
                     errors.work_email = "Email already exist";
                   }
@@ -285,8 +290,8 @@ const SheetOnBorading = ({
                           <TextInput
                             name={"username"}
                             error={props.errors?.username}
-                            touch={props.touched.username}
-                            value={props.values.username}
+                            touch={props.touched?.username}
+                            value={props.values?.username}
                             label={"User Name"}
                             required={true}
                             onChange={(field, value) => {
@@ -299,8 +304,8 @@ const SheetOnBorading = ({
                           <TextInput
                             name={"first_name"}
                             error={props.errors?.first_name}
-                            touch={props.touched.first_name}
-                            value={props.values.first_name}
+                            touch={props.touched?.first_name}
+                            value={props.values?.first_name}
                             label={"First Name"}
                             required={true}
                             onChange={(field, value) => {
@@ -312,8 +317,8 @@ const SheetOnBorading = ({
                           <TextInput
                             name={"last_name"}
                             error={props.errors?.last_name}
-                            touch={props.touched.last_name}
-                            value={props.values.last_name}
+                            touch={props.touched?.last_name}
+                            value={props.values?.last_name}
                             label={"Last Name"}
                             required={true}
                             onChange={(field, value) => {
@@ -325,8 +330,8 @@ const SheetOnBorading = ({
                           <EmailInput
                             name={"work_email"}
                             error={props.errors?.work_email}
-                            touch={props.touched.work_email}
-                            value={props.values.work_email}
+                            touch={props.touched?.work_email}
+                            value={props.values?.work_email}
                             label={"Email"}
                             required={true}
                             onChange={(field, value) => {
@@ -353,17 +358,17 @@ const SheetOnBorading = ({
                               }}
                               value={
                                 props.values?.password?.length <= 20
-                                  ? props.values.password
+                                  ? props.values?.password
                                   : ""
                               }
                               className={
-                                props.errors?.password && props.touched.password
+                                props.errors?.password && props.touched?.password
                                   ? "is-invalid"
                                   : ""
                               }
                             />
                             {props.errors?.password &&
-                              props.touched.password && (
+                              props.touched?.password && (
                                 <div className="invalid-feedback">
                                   {props.errors?.password}
                                 </div>
@@ -374,11 +379,11 @@ const SheetOnBorading = ({
                           <PhoneNumberInput
                             name={"mobile_no"}
                             error={props.errors.mobile_no}
-                            touch={props.touched.mobile_no}
-                            value={props.values.mobile_no}
+                            touch={props.touched?.mobile_no}
+                            value={props.values?.mobile_no}
                             required={true}
                             label={"Contact no."}
-                            countryCode={props.values.country_code}
+                            countryCode={props.values?.country_code}
                             countryCodeName={"country_code"}
                            
                             onChange={(field, value) => {
@@ -404,15 +409,15 @@ const SheetOnBorading = ({
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Work Information</h3>
+                      <h3 className="text-lg font-semibold">Official Information</h3>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <SelectComponent
                             name={"department_name"}
                             value={selectedDepartment}
                             setValue={setSelectedDepartment}
-                            error={props.errors?.department_name}
-                            touch={props.touched.department_name}
+                            error={props.errors?.selectedDepartment}
+                            touch={props.touched?.selectedDepartment}
                             options={departments}
                             label="Select Department"
                             required={true}
@@ -425,7 +430,7 @@ const SheetOnBorading = ({
                             name={"employee_location"}
                             options={countryOptions}
                             error={props.errors?.employee_location}
-                            touch={props.touched.employee_location}
+                            touch={props.touched?.employee_location}
                             value={selectedCountry}
                             setValue={setSelectedCountry}
                             required={true}
@@ -438,7 +443,7 @@ const SheetOnBorading = ({
                             name={"department_position"}
                             options={designations}
                             error={props.errors?.department_position}
-                            touch={props.touched.department_position}
+                            touch={props.touched?.department_position}
                             value={selectedDesignation}
                             setValue={setSelectedDesignations}
                             label={"Designation"}
@@ -450,8 +455,8 @@ const SheetOnBorading = ({
                           <SelectComponent
                             name={"user_role"}
                             options={UserRoles}
-                            error={props.errors?.user_role}
-                            touch={props.touched.user_role}
+                            error={props.errors?.selectedUserRole}
+                            touch={props.touched?.selectedUserRole}
                             value={selectedUserRole}
                             setValue={setSelectedUserRole}
                             required={true}
@@ -464,7 +469,7 @@ const SheetOnBorading = ({
                             name={"employee_type"}
                             options={jobRoles}
                             error={props.errors?.employee_type}
-                            touch={props.touched.employee_type}
+                            touch={props.touched?.employee_type}
                             value={selectedJobRoles}
                             setValue={setSelectedJobRoles}
                             required={true}
@@ -477,7 +482,7 @@ const SheetOnBorading = ({
                             name={"employee_status"}
                             options={employeeStatus}
                             error={props.errors?.employee_status}
-                            touch={props.touched.employee_status}
+                            touch={props.touched?.employee_status}
                             value={selectedEmployeeStatus}
                             setValue={setSelectedEmployeeStatus}
                             required={true}
@@ -490,7 +495,7 @@ const SheetOnBorading = ({
                             name={"employee_work_type"}
                             options={workplaceTypes}
                             error={props.errors?.employee_work_type}
-                            touch={props.touched.employee_work_type}
+                            touch={props.touched?.employee_work_type}
                             value={selectedWorkPlaceType}
                             setValue={setSelectedWorkPlaceType}
                             required={true}
@@ -503,7 +508,7 @@ const SheetOnBorading = ({
                             name={"direct_report"}
                             options={managers}
                             error={props.errors?.direct_report}
-                            touch={props.touched.direct_report}
+                            touch={props.touched?.direct_report}
                             value={selectedDirectManges}
                             setValue={setSelectedDirectManges}
                             label={"Direct Report"}
@@ -516,7 +521,7 @@ const SheetOnBorading = ({
                             name={"indirect_report"}
                             options={managers}
                             error={props.errors?.indirect_report}
-                            touch={props.touched.indirect_report}
+                            touch={props.touched?.indirect_report}
                             value={selectedInDirectMangers}
                             required={true}
                             setValue={setSelectedInDirectMangers}
@@ -529,7 +534,7 @@ const SheetOnBorading = ({
                             name={"department_manager"}
                             options={HeadOfDepartmentOptions}
                             error={props.errors?.department_manager}
-                            touch={props.touched.department_manager}
+                            touch={props.touched?.department_manager}
                             value={selectedHeadofDepartment}
                             setValue={setSelectedHeadofDepartment}
                             required={true}
@@ -541,8 +546,8 @@ const SheetOnBorading = ({
                           <DateInput
                           name={"joining_date"}
                           error={props.errors?.joining_date}
-                          touch={props.touched.joining_date}
-                          value={props.values.joining_date}
+                          touch={props.touched?.joining_date}
+                          value={props.values?.joining_date}
                           required={true}
                           label={"Joining Date"}
                           onChange={(field, value) => {

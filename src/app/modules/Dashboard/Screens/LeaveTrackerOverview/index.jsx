@@ -8,7 +8,7 @@ import { getFilteredLeaveApplication } from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import { getDesignationList } from "app/hooks/general";
 import { RenderLeaveStatusDropdown } from "./Sections";
-import TableCustom from "components/TableCustom";
+import CustomTable from "components/CustomTable";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
 import { Button } from "components/ui/button";
 
@@ -144,10 +144,10 @@ export default function LeaveTrackerOverview() {
                     type: "search",
                     placeholder: "Name/ID",
                     name: "id_and_first_name",
-                    width: "w-[100px]",
-                    height: "h-[32px]",
+                    width: "",
+                    height: "",
                     className:
-                      "focus:outline-none focus:border-non bg-[#F0F1F2] py-1 pl-2 text-[12px] placeholder-[#5C5E64] border-none rounded-md",
+                      "",
                   },
                   {
                     type: "select",
@@ -178,7 +178,7 @@ export default function LeaveTrackerOverview() {
         
                
           </div>
-          <TableCustom className=""
+          <CustomTable className=""
               showHeader={true}
               columns={DashboardLeaveTrackerColumns}
               data={applications.slice(0, 5)}
