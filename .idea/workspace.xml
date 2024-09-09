@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="c3e80740-91a2-4821-bca7-c422ca7f1465" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/ui/CustomSheet.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/ui/OnBoardingSheet.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/ui/SheetComponent.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/ui/Stats.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/hooks/employee.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/hooks/employee.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/AllProjects.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/AllProjects.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/LeaveTrackerOverview/Sections/RenderLeaveStatusDropdown.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/LeaveTrackerOverview/Sections/RenderLeaveStatusDropdown.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/LeaveTrackerOverview/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/LeaveTrackerOverview/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/MyTasks.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/MyTasks.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/Sections/TableColumns.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/Sections/TableColumns.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/Sections/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/Sections/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/TalentSphere/Sections/RenderJobTitle.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/TalentSphere/Sections/RenderJobTitle.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/TalentSphere/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/TalentSphere/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/TaskProgress.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Dashboard/Screens/TaskProgress.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Employee.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Employee.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/AddProfile/OnboardComplete.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/AddProfile/OnboardComplete.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/BankInformation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/BankInformation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/CertificationsInformation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/CertificationsInformation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/ContactInformation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/ContactInformation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/EducationInformation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/EducationInformation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/ExperienceInformation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/ExperienceInformation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/IdentificationInformation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/IdentificationInformation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/PersonalInformation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Profile/PersonalInformation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Sections/EmployeeForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Sections/EmployeeForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Sections/ExperianceForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/modules/Employees/Screens/Sections/ExperianceForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/utils/FormSchema/employeeFormSchema.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/utils/FormSchema/employeeFormSchema.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TableCustom.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CustomTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/form-control.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/form-control.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/collapse-menu-button.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/collapse-menu-button.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/input.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/input.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/menu.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/menu.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/sheet-onBording-form.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/sheet-onBording-form.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/@/components/ui/calendar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/@/components/ui/calendar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/@/lib/menu-list.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/@/lib/menu-list.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2lpAGMcGq80PJOSYmeF0n2pK2B9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c3e80740-91a2-4821-bca7-c422ca7f1465" name="Changes" comment="" />
+      <created>1725866550287</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1725866550287</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

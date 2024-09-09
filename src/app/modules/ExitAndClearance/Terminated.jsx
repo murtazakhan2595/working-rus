@@ -6,7 +6,7 @@ import { Row, Col } from "reactstrap";
 import { ExitTerminatedColumns } from "app/utils/Types/TableColumns";
 import { FilterInput } from "components/form-control";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
-import TableCustom from "components/TableCustom";
+import TableCustom from "components/CustomTable";
 import { Card, CardContent } from "../../../components/ui/card.jsx";
 
 const Terminated = ({ userProfile, departments, filterData }) => {

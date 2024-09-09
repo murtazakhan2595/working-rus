@@ -7,7 +7,7 @@ import { Row, Col } from "reactstrap";
 import { ExitResignedColumns } from "app/utils/Types/TableColumns";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 import { Card, CardContent } from "../../../components/ui/card.jsx";
-import TableCustom from "components/TableCustom.jsx";
+import TableCustom from "components/CustomTable";
 
 const Resigned = React.memo(({ userProfile, departments, filterData }) => {
   const [loading, setLoading] = useState(true);

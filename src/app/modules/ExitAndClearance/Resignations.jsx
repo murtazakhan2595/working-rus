@@ -11,7 +11,7 @@ import { Col, Row } from "reactstrap";
 import { Card, CardContent } from "../../../components/ui/card.jsx";
 
 import { StatusList } from "./Sections";
-import TableCustom from "components/TableCustom";
+import TableCustom from "components/CustomTable";
 
 const Resignations = React.memo(({ filterData }) => {
   const [loading, setLoading] = useState(true);

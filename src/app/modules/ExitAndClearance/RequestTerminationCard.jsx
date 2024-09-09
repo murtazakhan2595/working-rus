@@ -22,8 +22,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../../../src/@/components/ui/sheet";
-import { Button } from "../../../src/@/components/ui/button";
+import { Button } from "components/ui/button";
 import { TextInput } from "components/form-control";
+import { department } from "data/Data";
 
 const { RxCross2 } = require("react-icons/rx");
 
@@ -32,6 +33,9 @@ const RequestTerminationCard = ({
   organizations,
   closeModel,
   userProfile,
+  designations,
+  departments,
+  managers,
 }) => {
   const [initialValues, setInitialValues] = React.useState({});
   const [employeeData, setEmployeeData] = React.useState([[]]);
@@ -50,6 +54,7 @@ const RequestTerminationCard = ({
           ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
         },
       });
+      console.log(response);
       setTerminations(response.results);
     } catch (e) {
       console.error(e);
@@ -99,13 +104,20 @@ const RequestTerminationCard = ({
         [
           {
             title: "Designation",
-            data: <DesignationName value={response.department_position} />,
+            data:
+              designations.find(
+                (option) =>
+                  option.value === parseInt(response.department_position)
+              )?.label || "N/A",
           },
           { title: "First Name", data: response.first_name },
           { title: "Last Name", data: response.last_name },
           {
             title: "Department",
-            data: <DepartmentName value={response.department_name} />,
+            data:
+              departments.find(
+                (option) => option.value === parseInt(response.department_name)
+              )?.label || "N/A",
           },
           { title: "Phone Number", data: response.mobile_no },
           {
@@ -120,7 +132,10 @@ const RequestTerminationCard = ({
           },
           {
             title: "Report To",
-            data: <ManagerName value={response.direct_report} />,
+            data:
+              managers.find(
+                (option) => option.value === parseInt(response.direct_report)
+              )?.label || "N/A",
           },
           {
             title: "Joining Date",
@@ -148,7 +163,9 @@ const RequestTerminationCard = ({
       reason_of_termination: values.reason_for_terminating,
       status_termination: "viwed by manager",
     };
+    console.log("payload", payload);
     try {
+      console.log("payload", payload);
       const response = await employeeExit(payload);
       if (response) {
         toast.success("Termination request submitted successfully");
@@ -176,6 +193,7 @@ const RequestTerminationCard = ({
                 initialValues={initialValues}
                 ref={formRef}
                 onSubmit={(values, { resetForm }) => {
+                  console.log("here values", values);
                   handleSubmit(values, resetForm);
                 }}
                 validate={(values) => {
@@ -339,6 +357,9 @@ const mapStateToProps = (state) => {
     employees: state.emp.employees,
     organizations: state.common.organizations,
     userProfile: state.user.userProfile,
+    designations: state.common.designations,
+    departments: state.common.departments,
+    managers: state.emp.reportingManagers,
   };
 };
 export default connect(mapStateToProps)(RequestTerminationCard);

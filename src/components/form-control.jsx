@@ -15,7 +15,13 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "../src/@/components/ui/popover";
-import { ChevronsUpDown, Check, FileUp, CircleX, SearchIcon } from "lucide-react";
+import {
+  ChevronsUpDown,
+  Check,
+  FileUp,
+  CircleX,
+  SearchIcon,
+} from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -24,13 +30,10 @@ import {
   CommandItem,
   CommandList,
 } from "../src/@/components/ui/command";
-import { cn } from './../src/@/lib/utils';
-import { format, parse, isValid } from 'date-fns';
+import { cn } from "./../src/@/lib/utils";
+import { format, parse, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from '../src/@/components/ui/calendar';
-
-
-
+import { Calendar } from "../src/@/components/ui/calendar";
 
 const SelectComponent = ({
   name,
@@ -43,15 +46,14 @@ const SelectComponent = ({
   disabled,
   required,
   onChange,
-
-
-  
 }) => {
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (currentValue) => {
     const newValue = currentValue === value ? "" : currentValue;
-    setValue(newValue);
+    if (setValue) {
+      setValue(newValue);
+    }
     setOpen(false);
     onChange(name, newValue);
   };
@@ -103,7 +105,7 @@ const SelectComponent = ({
           </Command>
         </PopoverContent>
       </Popover>
-      
+
       {error && touch && <div className="text-red-600">{error}</div>}
     </div>
   );
@@ -186,7 +188,9 @@ const SelectMultiInputComponent = ({
                   >
                     <Check
                       className={`mr-2 h-4 w-4 ${
-                        value.includes(option.value) ? "opacity-100" : "opacity-0"
+                        value.includes(option.value)
+                          ? "opacity-100"
+                          : "opacity-0"
                       }`}
                     />
                     {option.label}
@@ -213,7 +217,6 @@ const DateInput = ({
   required,
   minDate,
 }) => {
-
   const [date, setDate] = useState();
   const [inputValue, setInputValue] = useState("");
   const [calendarDate, setCalendarDate] = useState();
@@ -226,9 +229,10 @@ const DateInput = ({
   }, [date]);
 
   const handleInputChange = (event) => {
+    console.log("input value change ////////////////////");
     const value = event.target.value;
     setInputValue(value);
-  
+
     const parsedDate = parse(value, "MM/dd/yyyy", new Date());
     if (isValid(parsedDate)) {
       setDate(parsedDate);
@@ -249,56 +253,56 @@ const DateInput = ({
     if (selectedDate) {
       setInputValue(format(selectedDate, "MM/dd/yyyy"));
       setCalendarDate(selectedDate);
+      onChange(name, format(selectedDate, "yyyy-MM-dd"));
     }
   };
 
   return (
     <div className="flex flex-col gap-4">
-    <Label
-        className={` ${value ? "" : ""}`}
-        for={name}
-      >
+      <Label className={` ${value ? "" : ""}`} for={name}>
         {required && <span className="text-red-600">* </span>} {label}
       </Label>
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant={"outline"}
-          className={cn(
-            "w-full justify-start text-left font-normal",
-            !date && "text-muted-foreground"
-          )}
-        >
-          <CalendarIcon className="w-4 h-4 mr-2" />
-          {date ? format(date, "MMMM d, yyyy") : <span>Pick a date</span>}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <div className="flex flex-col p-2 space-y-2">
-          <Input
-            type="text"
-            placeholder="MM/DD/YYYY"
-            value={inputValue}
-            onChange={handleInputChange}
-            onBlur={handleInputBlur}
-            className="w-[240px]"
-          />
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={handleCalendarSelect}
-            month={calendarDate}
-            onMonthChange={setCalendarDate}
-            disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-            initialFocus
-          />
-        </div>
-      </PopoverContent>
-    </Popover>
-    {error && touch && <div className="text-red-600">{error}</div>}
-  </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "w-full justify-start text-left font-normal",
+              !date && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="w-4 h-4 mr-2" />
+            {date ? format(date, "MMMM d, yyyy") : <span>Pick a date</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <div className="flex flex-col p-2 space-y-2">
+            <Input
+              type="text"
+              placeholder="MM/DD/YYYY"
+              value={inputValue}
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              className="w-[240px]"
+            />
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={handleCalendarSelect}
+              month={calendarDate}
+              onMonthChange={setCalendarDate}
+              disabled={(date) =>
+                date > new Date() || date < new Date("1900-01-01")
+              }
+              initialFocus
+            />
+          </div>
+        </PopoverContent>
+      </Popover>
+      {error && touch && <div className="text-red-600">{error}</div>}
+    </div>
   );
-}
+};
 
 const TextInput = ({
   name,
@@ -314,9 +318,9 @@ const TextInput = ({
 }) => {
   return (
     <>
-     <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
         <Label className="" htmlFor={name}>
-        {label}
+          {label}
           {required && <span className="text-red-600">* </span>}
         </Label>
         <Input
@@ -360,9 +364,8 @@ const PasswordInput = ({
   return (
     <div className="flex flex-col gap-4">
       <Label htmlFor={name}>
-      {label}
+        {label}
         {required && <span className="text-red-600">* </span>}
-        
       </Label>
       <Input
         type="password"
@@ -397,7 +400,6 @@ const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
           }}
         />
         <Label check>{label}</Label>
-
       </div>
     </>
   );
@@ -421,7 +423,9 @@ const PhoneNumberInput = ({
       (option) => option.value === value
     );
     if (selectedOption) {
-      console.log(`Selected Country: ${selectedOption.label}, Calling Code: ${selectedOption.value}`); // Log selected country and calling code
+      console.log(
+        `Selected Country: ${selectedOption.label}, Calling Code: ${selectedOption.value}`
+      ); // Log selected country and calling code
       setSelectedCountryCode(selectedOption.value);
       setInputValue(`+${selectedOption.value}`); // Set input value to phone code
       onChange("country_code", selectedOption.value); // Update the country code in the parent component
@@ -449,8 +453,15 @@ const PhoneNumberInput = ({
         <div className="col-span-2 col-start-1">
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" role="combobox" aria-expanded={open} className="justify-start w-full rounded-r-lg">
-                {selectedCountryCode ? `+${selectedCountryCode}` : "Select code"}
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="justify-start w-full rounded-r-lg"
+              >
+                {selectedCountryCode
+                  ? `+${selectedCountryCode}`
+                  : "Select code"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[300px]">
@@ -482,11 +493,12 @@ const PhoneNumberInput = ({
             autoComplete="Off"
             placeholder={"Enter  " + label}
             value={inputValue}
-            className={error && touch ? "is-invalid rounded-l-lg" : "rounded-l-lg"}
+            className={
+              error && touch ? "is-invalid rounded-l-lg" : "rounded-l-lg"
+            }
             onChange={handleInputChange}
           />
         </div>
-         
       </div>
       {error && touch && <div className="text-red-600">{error}</div>}
     </div>
@@ -504,29 +516,28 @@ const EmailInput = ({
 }) => {
   return (
     <div className="flex flex-col gap-4">
-        <Label className="text-baseGray" htmlFor={name}>
-          {required && <span className="text-red-600">* </span>}
-          {label}
-        </Label>
-        <Input
-          type="email"
-          maxLength="100"
-          id={name}
-          name={name}
-          autoComplete="Off"
-          placeholder={"Enter " + label}
-          value={value}
-          className={error && touch ? "is-invalid" : ""}
-          onChange={(option) => {
-            const regExTelephone = /^[A-Za-z0-9.@]+$/;
-            const value = option.target.value;
-            if (!value || regExTelephone.test(value)) onChange(name, value);
-          }}
-        />
+      <Label className="text-baseGray" htmlFor={name}>
+        {required && <span className="text-red-600">* </span>}
+        {label}
+      </Label>
+      <Input
+        type="email"
+        maxLength="100"
+        id={name}
+        name={name}
+        autoComplete="Off"
+        placeholder={"Enter " + label}
+        value={value}
+        className={error && touch ? "is-invalid" : ""}
+        onChange={(option) => {
+          const regExTelephone = /^[A-Za-z0-9.@]+$/;
+          const value = option.target.value;
+          if (!value || regExTelephone.test(value)) onChange(name, value);
+        }}
+      />
 
-        {error && touch && <div className="text-red-600">{error}</div>}
-      </div>
-
+      {error && touch && <div className="text-red-600">{error}</div>}
+    </div>
   );
 };
 const CustomButton = ({ label, onClick, disabled }) => {
@@ -573,7 +584,6 @@ const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
 const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
   return (
     <>
-
       <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
         <div className="relative overflow-hidden w-[110px]">
           {value?.file ? (
@@ -594,8 +604,10 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
         </div>
         <div className="">
           <div>
-            <Label htmlFor="picture">  Add Profile Picture</Label>
-            <Input id="picture" type="file"
+            <Label htmlFor="picture"> Add Profile Picture</Label>
+            <Input
+              id="picture"
+              type="file"
               accept="image/*"
               onChange={(e) => {
                 const selectedFile = e.target.files[0];
@@ -622,14 +634,9 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
 
             {error && touch && <div className="text-red-600">{error}</div>}
           </div>
-          <span
-
-          >
-            JPEG or PNG. Max size of 100KB
-          </span>
+          <span>JPEG or PNG. Max size of 100KB</span>
         </div>
       </div>
-
     </>
   );
 };
@@ -647,8 +654,10 @@ const FileInput = ({
       <div className="w-full justify-start gap-1.5 mb-4">
         <Label htmlFor={name} className="flex flex-row gap-4">
           <FileUp className="" />
-          {`Upload Your ${label || "file"}`}</Label>
-        <Input id={name}
+          {`Upload Your ${label || "file"}`}
+        </Label>
+        <Input
+          id={name}
           className="w-full"
           type="file"
           name={name}
@@ -675,7 +684,8 @@ const FileInput = ({
 
               reader.readAsDataURL(selectedFile);
             }
-          }} />
+          }}
+        />
       </div>
 
       {error && touch && <div className="text-red-500 ">{error}</div>}
@@ -727,7 +737,7 @@ const TextAreaInput = ({
             }
           }}
         />
-                {error && touch && <div className="text-red-600">{error}</div>}
+        {error && touch && <div className="text-red-600">{error}</div>}
       </div>
     </>
   );
@@ -828,9 +838,14 @@ function dropdownStyles(backgrounddivor, fontSize, height) {
   };
 }
 
-const FilterInput = ({ filters, onChange, value, isClearable = true, type }) => {
-  const classNamesStyle =
-    "";
+const FilterInput = ({
+  filters,
+  onChange,
+  value,
+  isClearable = true,
+  type,
+}) => {
+  const classNamesStyle = "";
   const width = "w-56";
   const height = "h-[38px]";
   const [openRole, setOpenRole] = useState(false);
@@ -838,75 +853,76 @@ const FilterInput = ({ filters, onChange, value, isClearable = true, type }) => 
   const [openDepartment, setOpenDepartment] = useState(false);
   const [selectedValue, setValue] = useState("");
 
-
   const handleInputChange = (filter, event) => {
     onChange(filter.name, event.target.value);
-
   };
 
-
   const renderInputField = (filter, index) => {
-    return(
+    return (
       <div className="relative">
-      <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
-      <Input
-   
-      key={index}
-      type={filter.type}
-      placeholder={filter.placeholder}
-      className={`${filter.className ?? classNamesStyle} ${filter.width ?? width} ${filter.height ?? height}`}
-      name={filter.name}
-      id={filter.name}
-      onChange={(event) => handleInputChange(filter, event)}
-    />
-    </div>
-    ) 
-  }
+        <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
+        <Input
+          key={index}
+          type={filter.type}
+          placeholder={filter.placeholder}
+          className={`${filter.className ?? classNamesStyle} ${
+            filter.width ?? width
+          } ${filter.height ?? height}`}
+          name={filter.name}
+          id={filter.name}
+          onChange={(event) => handleInputChange(filter, event)}
+        />
+      </div>
+    );
+  };
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
-    return (<Popover key={index} open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {filter.option.value
-            ? filter.option.find((option) => option.value === value)?.label
-            : filter.placeholder}
-          <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Search..." />
-          <CommandList>
-            <CommandEmpty>No option found.</CommandEmpty>
-            <CommandGroup>
-              {filter.option?.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
-                    onChange(filter.name, option.value);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={`mr-2 h-4 w-4 ${value === option.value ? "opacity-100" : "opacity-0"
+    return (
+      <Popover key={index} open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-[200px] justify-between"
+          >
+            {filter.option.value
+              ? filter.option.find((option) => option.value === value)?.label
+              : filter.placeholder}
+            <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0">
+          <Command>
+            <CommandInput placeholder="Search..." />
+            <CommandList>
+              <CommandEmpty>No option found.</CommandEmpty>
+              <CommandGroup>
+                {filter.option?.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={(currentValue) => {
+                      setValue(currentValue === value ? "" : currentValue);
+                      onChange(filter.name, option.value);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={`mr-2 h-4 w-4 ${
+                        value === option.value ? "opacity-100" : "opacity-0"
                       }`}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>)
-  }
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    );
+  };
 
   const renderDatePicker = (filter, index) => {
     const date = filter.value ? new Date(moment(filter.value)) : null;
@@ -915,8 +931,9 @@ const FilterInput = ({ filters, onChange, value, isClearable = true, type }) => 
         <DatePicker
           name={filter.name}
           id={filter.name}
-          className={`${filter.className ?? classNamesStyle} ${filter.width ?? width
-            } ${filter.height ?? height}`}
+          className={`${filter.className ?? classNamesStyle} ${
+            filter.width ?? width
+          } ${filter.height ?? height}`}
           dropdownMode="select"
           placeholderText={filter.placeholder}
           selected={date}
@@ -944,7 +961,12 @@ const FilterInput = ({ filters, onChange, value, isClearable = true, type }) => 
             case "text":
               return renderInputField(filter, index);
             case "select-one":
-              return renderPopoverSelect(filter, index, openDepartment, setOpenDepartment);
+              return renderPopoverSelect(
+                filter,
+                index,
+                openDepartment,
+                setOpenDepartment
+              );
             case "select-two":
               return renderPopoverSelect(
                 filter,
@@ -953,12 +975,7 @@ const FilterInput = ({ filters, onChange, value, isClearable = true, type }) => 
                 setOpenDesignation
               );
             case "select-three":
-              return renderPopoverSelect(
-                filter,
-                index,
-                openRole,
-                setOpenRole,
-              );
+              return renderPopoverSelect(filter, index, openRole, setOpenRole);
             case "date":
               return renderDatePicker(filter, index);
             case "sorting":
@@ -999,5 +1016,5 @@ export {
   CustomLightOutlineButton,
   CheckBoxInput,
   TextAreaEditorInput,
-  PasswordInput
+  PasswordInput,
 };

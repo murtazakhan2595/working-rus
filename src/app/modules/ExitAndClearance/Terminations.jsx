@@ -8,7 +8,7 @@ import { PageLoader, Table } from "components";
 import { Card, CardContent } from "../../../components/ui/card.jsx";
 import { ExitRequestColumns } from "app/utils/Types/TableColumns";
 import { StatusList } from "./Sections";
-import TableCustom from "components/TableCustom";
+import TableCustom from "components/CustomTable";
 
 const Terminations = ({ userProfile, filterData }) => {
   const [loading, setLoading] = useState(true);
@@ -34,6 +34,8 @@ const Terminations = ({ userProfile, filterData }) => {
     onPageChange: onPageChange,
   };
 
+  console.log("filterData", filterData);
+  console.log("options", options);
   const fetchData = async () => {
     try {
       setLoading(true);

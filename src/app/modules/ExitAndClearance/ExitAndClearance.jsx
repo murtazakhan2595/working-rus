@@ -69,6 +69,37 @@ const ExitAndClearance = ({ userProfile }) => {
       return updatedFilters;
     });
   };
+  const handleTabChange = (tab) => {
+    console.log(tab);
+    if (tab === "Resignations") {
+      setFilterData({
+        status_resignation: StatusList(),
+        ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+        exit_category: "resignation",
+      });
+    } else if (tab === "Terminations") {
+      setFilterData({
+        ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+
+        exit_category: "termination",
+      });
+    } else if (tab === "Resigned") {
+      setFilterData({
+        ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+
+        exit_category: "resignation",
+        status_resignation: ["exit interview"],
+      });
+    } else if (tab === "Terminated") {
+      setFilterData({
+        ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+
+        exit_category: "termination",
+        status_termination: ["exit interview"],
+      });
+    }
+    setActiveTab(tab);
+  };
 
   return (
     <div className="flex flex-col gap-4 profile-management">
@@ -85,7 +116,7 @@ const ExitAndClearance = ({ userProfile }) => {
       <Tabs
         defaultValue="Resignations"
         className="w-full"
-        onValueChange={setActiveTab}
+        onValueChange={handleTabChange}
       >
         <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="inline-flex items-center justify-center p-1 bg-white rounded-lg h-9 text-mauve-900">

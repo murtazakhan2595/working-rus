@@ -79,6 +79,7 @@ const getEmployeesExitCount = async (payload) => {
 };
 
 const getEmployeesResignations = async (payload) => {
+  console.log("getEmployeesResignations", payload);
   const filterData = payload?.filterData ?? {};
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -91,6 +92,7 @@ const getEmployeesResignations = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+    console.log("getemployeeresignation", response);
     if (response.status === 200) {
       const resignationData = response.data;
       return {
