@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { Row, Col } from "reactstrap";
 import { getEmployeesExitCount } from "app/hooks/employeeExitAndClearance";
-import StatCard from "./StatCard";
 import Resignations from "./Resignations";
 import Terminations from "./Terminations";
 import { CustomDarkButton } from "components/form-control";
@@ -12,7 +11,10 @@ import RequestTerminationCard from "./RequestTerminationCard";
 import Terminated from "./Terminated";
 import Resigned from "./Resigned";
 import { TerminationStatus } from "utils/getValuesFromTables";
-import SheetOnBorading from "components/ui/sheet-onBording-form";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { ImExit } from "react-icons/im";
+import { RxCrossCircled } from "react-icons/rx";
+
 import {
   Tabs,
   TabsList,
@@ -23,6 +25,7 @@ import { Header } from "components";
 import { StatusList } from "./Sections";
 import { FilterInput } from "components/form-control";
 import { ResignationStatusOptions } from "data/Data";
+import Stats from "components/ui/Stats";
 
 const ExitAndClearance = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("Resignations");
@@ -101,6 +104,15 @@ const ExitAndClearance = ({ userProfile }) => {
     setActiveTab(tab);
   };
 
+  const statsData = [
+    { label: "Total Exits", value: totalExit, icon: ImExit },
+    { label: "Accepted", value: approvedResignation, icon: FaRegCheckCircle },
+    {
+      label: "Rejected",
+      value: rejectedResignation,
+      icon: RxCrossCircled,
+    },
+  ];
   return (
     <div className="flex flex-col gap-4 profile-management">
       <Header
@@ -108,11 +120,7 @@ const ExitAndClearance = ({ userProfile }) => {
           <RequestTerminationCard closeModel={closeRequestTerminationCard} />
         }
       />
-      <StatCard
-        totalExit={totalExit}
-        approvedResignation={approvedResignation}
-        rejectedResignation={rejectedResignation}
-      />
+      <Stats stats={statsData} />
       <Tabs
         defaultValue="Resignations"
         className="w-full"
