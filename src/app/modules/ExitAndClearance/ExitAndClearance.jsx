@@ -26,8 +26,9 @@ import { StatusList } from "./Sections";
 import { FilterInput } from "components/form-control";
 import { ResignationStatusOptions } from "data/Data";
 import Stats from "components/ui/Stats";
+import { TerminationStatusOptions } from "data/Data";
 
-const ExitAndClearance = ({ userProfile }) => {
+const ExitAndClearance = ({ userProfile, departments }) => {
   const [activeTab, setActiveTab] = useState("Resignations");
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
@@ -62,6 +63,13 @@ const ExitAndClearance = ({ userProfile }) => {
   };
 
   const handleFilterChange = (filterName, filterValue) => {
+    if (
+      filterName === "status_resignation" ||
+      (filterName === "status_termination" && filterValue)
+    ) {
+      console.log("filterValue", filterValue);
+      filterValue = [filterValue];
+    }
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -113,6 +121,23 @@ const ExitAndClearance = ({ userProfile }) => {
       icon: RxCrossCircled,
     },
   ];
+
+  const getFilterInputOptions = () => {
+    if (activeTab === "Resignations") {
+      return ResignationStatusOptions;
+    } else if (activeTab === "Terminations") {
+      return TerminationStatusOptions;
+    } else {
+      return departments;
+    }
+  };
+
+  const filterNameMapping = {
+    Resignations: "status_resignation",
+    Terminations: "status_termination",
+    Resigned: "department_name",
+    Terminated: "department_name",
+  };
   return (
     <div className="flex flex-col gap-4 profile-management">
       <Header
@@ -145,8 +170,8 @@ const ExitAndClearance = ({ userProfile }) => {
               },
               {
                 type: "select-one",
-                option: ResignationStatusOptions,
-                name: "status_resignation",
+                option: getFilterInputOptions(),
+                name: filterNameMapping[activeTab],
                 placeholder: "Status",
               },
             ]}
@@ -174,6 +199,7 @@ const ExitAndClearance = ({ userProfile }) => {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
+    departments: state.common.departments,
   };
 };
 
