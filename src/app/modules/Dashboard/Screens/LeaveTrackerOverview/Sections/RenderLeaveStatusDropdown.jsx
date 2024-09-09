@@ -37,7 +37,7 @@ const RenderLeaveStatusDropdown = ({ status, setFilterOption }) => {
           <CommandList>
             <CommandEmpty>No status found.</CommandEmpty>
             <CommandGroup>
-              {StatusDropdown.map((item) => (
+              {StatusDropdown?.map((item) => (
                 <CommandItem
                   key={item.value}
                   value={item.value}

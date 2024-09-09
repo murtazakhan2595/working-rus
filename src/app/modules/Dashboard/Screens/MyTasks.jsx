@@ -50,7 +50,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "../../../../src/@/components/ui/dropdown-menu";
-import TableCustom from "components/TableCustom";
+import CustomTable from "components/CustomTable";
 import { StatusLabel } from "components";
 import { Status } from "app/modules/LeaveManagment/Sections";
 
@@ -88,6 +88,7 @@ export default function MyTasks() {
       const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted && projectsData.results) {
         setAllProjects(projectsData.results);
+        // console.log(projectsData.results, "PROJECTS DATA");
         fetchTasks(isMounted, projectsData.results);
       }
     } catch (error) {
@@ -107,8 +108,8 @@ export default function MyTasks() {
           ? {}
           : { filterData: { project_id: [filterOption.id] } };
       const tasksData = await getAllTasks(filter);
-      console.log(tasksData, "TASKS DATA");
-      console.log(tasksData, "TASKS DATA");
+      // console.log(tasksData, "TASKS DATA");
+      // console.log(tasksData, "TASKS DATA");
       if (isMounted) {
         const mergedResult = mergeTasksWithProjects(tasksData, projects);
         setTasks(mergedResult);
@@ -131,7 +132,7 @@ export default function MyTasks() {
   }, [filterData]);
 
   useEffect(() => {
-    console.log(AllProjects);
+    // console.log(AllProjects);
     const dynamicOptions = AllProjects.map((project) => ({
       label: project.name,
       onClick: () => {
@@ -151,8 +152,8 @@ export default function MyTasks() {
     setOptions(dynamicOptions);
   }, [AllProjects]);
 
-  console.log(options, "OPTIONS");
-  console.log(options, "OPTIONS");
+  // console.log(options, "OPTIONS");
+  // console.log(options, "OPTIONS");
 
   useEffect(() => {
     if (AllProjects.length > 0) {
@@ -337,9 +338,9 @@ const getStatusLabel = (status) => {
   }
 };
 function RenderTask({ tasks }) {
-  console.log(tasks, "HELLO TASKS")
+  // console.log(tasks, "HELLO TASKS")
   return (
-    <TableCustom
+    <CustomTable
     showHeader={false}
     columns={[
       {

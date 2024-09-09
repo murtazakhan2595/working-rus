@@ -1,15 +1,16 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { DashbaordJobApplicationColumns } from "app/modules/Dashboard/Screens/Sections";
-import { fetchJobPosts, getJobApplications, getJobApplicants } from "app/hooks/recruitment";
+import { DashboardJobApplicationColumns, DashboardOnGoingColumns } from "../../../../../app/modules/Dashboard/Screens/Sections/TableColumns";
+
+import { fetchJobPosts, getJobApplicants } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
 import { Button } from 'components/ui/button';
-import TableCustom from './../../../../../components/TableCustom';
-import { Briefcase, Users, UserCheck, UserPlus } from "lucide-react";
-import { Separator } from "../../../../../src/@/components/ui/separator";
+import CustomTable from '../../../../../components/CustomTable';
+import { Briefcase, UserPlus, UserCheck, Users } from "lucide-react";
+import Stats from "./../../../../../components/ui/Stats";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../../../../src/@/components/ui/table";
 import { Badge } from "../../../../../components/ui/badge";
 
@@ -18,6 +19,10 @@ const TalentSphere = () => {
   const [applicantsData, setApplicantsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplicantsLoading, setIsApplicantsLoading] = useState(true);
+  const [jobOpenings, setJobOpenings] = useState(0);
+  const [applications, setApplications] = useState(0);
+  const [shortlisted, setShortlisted] = useState(0);
+  const [interviewed, setInterviewed] = useState(0);
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -25,6 +30,8 @@ const TalentSphere = () => {
       setIsLoading(true);
       const data = await fetchJobPosts();
       setPosts(data.results);
+      setJobOpenings(data.results.length); // Set job openings count
+      setInterviewed(data.results.length); // Set job openings count
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
@@ -37,6 +44,8 @@ const TalentSphere = () => {
       const applicants = await getJobApplicants();
       if (applicants) {
         setApplicantsData(applicants);
+        setApplications(applicants.length); // Set applications count
+        setShortlisted(applicants.filter(applicant => applicant.status === 'shortlisted').length); // Set shortlisted count
       }
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -49,6 +58,13 @@ const TalentSphere = () => {
     fetchData();
     fetchLists();
   }, []);
+
+  const statsData = [
+    { icon: Briefcase, label: "Job Openings", value: jobOpenings },
+    { icon: UserPlus, label: "Applications", value: applications },
+    { icon: UserCheck, label: "Shortlisted", value: shortlisted },
+    { icon: Users, label: "Interviewed", value: interviewed },
+  ];
 
   return (
     <>
@@ -67,15 +83,16 @@ const TalentSphere = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <StatsTalent />
+          {/* <StatsTalent jobOpenings={jobOpenings} applications={applications} shortlisted={shortlisted} /> */}
+          <Stats stats= {statsData}  />
           {isLoading ? (
             <PageLoader />
           ) : (
-            <TableCustom
-              columns={DashbaordJobApplicationColumns(navigate)}
+            <CustomTable
+              showHeader={true}
+              columns={DashboardJobApplicationColumns(navigate)}
               data={posts.slice(0, 5)}
               pagination={false}
-              dataStyle={{ backgroundColor: "white" }}
               rowExpand={false}
               tableOptions={{ onRowClick: false }}
             />
@@ -92,7 +109,7 @@ const TalentSphere = () => {
           {isApplicantsLoading ? (
             <PageLoader />
           ) : (
-            <OnGoingApplicatns applicantsData={applicantsData} />
+            <OnGoingApplications applicantsData={applicantsData} />
           )}
         </CardContent>
       </Card>
@@ -102,39 +119,8 @@ const TalentSphere = () => {
 
 export default TalentSphere;
 
-function StatsTalent() {
-  return (
-    <div className="w-full p-6">
-      <div className="flex flex-wrap items-start justify-between xl:flex-nowrap xl:items-center">
-        <StatItem icon={Briefcase} label="Job Opening" value="6" />
-        <Separator orientation="vertical" className="w-px mx-2 h-14" />
-        <StatItem icon={UserPlus} label="Applications" value="50" />
-        <Separator orientation="vertical" className="w-px mx-2 h-14" />
-        <StatItem icon={UserCheck} label="Shortlisted" value="20" />
-        <Separator orientation="vertical" className="w-px mx-2 h-14" />
-        <StatItem icon={Users} label="Interview" value="5" />
-      </div>
-    </div>
-  );
-}
 
-function StatItem({ icon: Icon, label, value }) {
-  return (
-    <div className="flex flex-row items-center gap-2">
-      <div className="flex items-center justify-center p-4 rounded-full bg-mauve-200">
-      <Icon className="h-7 w-7 text-plum-1100" aria-hidden="true" />
-      </div>
-       
-      <div className="flex flex-col items-start">
-      <div className="text-2xl font-bold leading-none tabular-nums">{value}</div>
-        <div className="font-xl medium text-muted-foreground">{label}</div>
-      </div>
-      
-    </div>
-  );
-}
-
-const OnGoingApplicatns = ({ applicantsData }) => {
+const OnGoingApplications = ({ applicantsData }) => {
   return (
     <div className="h-full overflow-y-auto hideScroll">
       <Table className="min-w-full bg-white">

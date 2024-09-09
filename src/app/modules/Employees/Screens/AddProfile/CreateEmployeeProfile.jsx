@@ -10,9 +10,10 @@ import CertificationsInformation from "../Profile/CertificationsInformation";
 import logo from "../../../../../assets/images/tecbrix-logo.png";
 import IdentificationInformation from "../Profile/IdentificationInformation";
 import OnboardComplete from "./OnboardComplete";
-import { CardHeader, CardBody, Row, Col } from "reactstrap";
+
 import { useSelector } from "react-redux";
 import { toast, } from "react-toastify";
+import { Card, CardTitle, CardContent, CardHeader, CardDescription } from "components/ui/card";
 
 const CreateEmployeeProfile = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -35,11 +36,11 @@ const CreateEmployeeProfile = () => {
 
   return (
     <>
-      <div className="flex justify-center h-screen">
-        <div className="flex flex-col w-full min-h-full">
+      <div className="flex justify-center">
+        <div className="flex flex-col ">
           {/*  */}
           <div className="screen">
-            <div className="max-w-[750px] block mx-auto">
+            <div className="min-w-[750px]">
               {currentTab === 1 && (
                 <Welcome
                   employeeId={id}
@@ -64,15 +65,15 @@ const CreateEmployeeProfile = () => {
               )}
               {currentTab !== 1 && currentTab !== 9 &&
                 <>
+                <Card className="">
+
                   <CardHeader>
-                    <Row>
-                      <Col lg={12}>
-                        <h4 className="">{getTitle()}</h4>
-                      </Col>
-                    </Row>
+                    <CardTitle>
+                    <h4 className="">{getTitle()}</h4>
+                    </CardTitle>
                   </CardHeader>
-                  <CardBody>
-                    {currentTab === 2 && (
+                  <CardContent>
+                  {currentTab === 2 && (
                       <PersonalInformation
                         employeeId={id}
                         nextstep={() => {
@@ -153,7 +154,8 @@ const CreateEmployeeProfile = () => {
                         }}
                       />
                     )}
-                  </CardBody>
+                    </CardContent>
+                </Card>
                 </>
               }
             </div>

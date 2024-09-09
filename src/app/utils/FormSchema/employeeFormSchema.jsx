@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const validationEmployeeInfoFormSchema = (values, isEditMode) => {
+const validationEmployeeInfoFormSchema = (values, isEditMode, selectedUserRole) => {
   const errors = {};
   if (!isEditMode) {
     if (!values.first_name) errors.first_name = "First name is required";
@@ -14,7 +14,7 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     if (!values.residential_address)
       errors.residential_address = "Address is required";
   }
-  if (!values.user_role) errors.user_role = "User role is required";
+  if (!selectedUserRole) errors.selectedUserRole = "User role is required";
   if (!values.department_name)
     errors.department_name = "Department is required";
   if (!values.department_position)
@@ -30,6 +30,7 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (!values.joining_date) errors.joining_date = "Joining date is required";
   return errors;
 };
+
 
 const validationEmployeeContactInfoFormSchema = (values) => {
   const errors = {};

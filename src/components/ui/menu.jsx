@@ -21,13 +21,13 @@ const Menu = ({ isOpen, userRole }) => {
   const pathname = window.location.pathname; // Get the current pathname
   const menuList = getMenuList(pathname, userRole) || [];
 
-  console.log(menuList, "MENU LIST IS THIS")
+  // console.log(menuList, "MENU LIST IS THIS")
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
       <nav className="w-full h-full ">
       <ul className="flex flex-col min-h-[calc(100vh-48px-36px-16px-32px)] lg:min-h-[calc(100vh-32px-40px-32px)] items-start space-y-1 ">
-        {menuList?.map(({groupLabel, menus}, index)=> console.log(menus, "MENUS YE HAI"))}
+        {/* {menuList?.map(({groupLabel, menus}, index)=> console.log(menus, "MENUS YE HAI"))} */}
     {menuList.map(({ groupLabel, menus }, index) => (
       <li className={cn("w-full", groupLabel ? "" : "")} key={index}>
         {(isOpen && groupLabel) || isOpen === undefined ? (
@@ -50,7 +50,7 @@ const Menu = ({ isOpen, userRole }) => {
         ) : (
           <p className="pb-2"></p>
         )}
-        {menus && menus.map(({to, label, icon: Icon, active, submenus}, index)=> console.log(label, submenus, "LABEL SUBMENUS"))}
+        {/* {menus && menus.map(({to, label, icon: Icon, active, submenus}, index)=> console.log(label, submenus, "LABEL SUBMENUS"))} */}
         {menus &&
           menus.map(({ to, label, icon: Icon, active, submenus }, index) =>
             submenus && submenus.length > 0 ? (
@@ -73,7 +73,7 @@ const Menu = ({ isOpen, userRole }) => {
                         variant={active ? "secondary" : "ghost"}
                         className={cn(
                           "justify-start w-full h-10 mb-1  hover:bg-plum-500 hover:text-plum-900",
-                          active ? "bg-[#fdf7fd] text-plum-1100 rounded-full" : "",
+                          active ? "bg-plum-300 text-plum-1100 rounded-full" : "",
                          
                             isOpen
                             ? "w-full" : "w-[75%]"
