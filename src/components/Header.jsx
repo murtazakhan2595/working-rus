@@ -7,7 +7,7 @@ const Header = ({ content }) => {
   const [pathName, setPathName] = useState("");
 
   useEffect(() => {
-    const path = location.pathname.replace(/^\//, '');
+    const path = location.pathname.replace(/^\//, "");
     const pathNames = {
       "people-team": "People Team",
       "self-service": "Self Service",
@@ -17,12 +17,13 @@ const Header = ({ content }) => {
       "people-engagement": "People Engagement",
       "personal-development": "Personal Development",
       "leave-tracker": "Leave Tracker",
-      "performance": "Performance",
-      "reports": "Reports",
-      "dashboard": "Dashboard",
-      "services": "Services",
-      "profile": "Profile",
+      performance: "Performance",
+      reports: "Reports",
+      dashboard: "Dashboard",
+      services: "Services",
+      profile: "Profile",
       "profile-management": "Profile Management",
+      "exit-clearance": "Exit Requests",
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);

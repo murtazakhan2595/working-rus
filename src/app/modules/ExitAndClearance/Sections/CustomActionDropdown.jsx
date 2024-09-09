@@ -5,7 +5,6 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
-import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FaRegCircle } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";

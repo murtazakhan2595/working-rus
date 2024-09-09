@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import {
-  ButtonDropdown,
-  DropdownToggle,
   DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "../../../../src/@/components/ui/dropdown-menu";
+import { Button } from "../../../../src/@/components/ui/button";
+
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FaRegCircle } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";
-
-
 
 const RenderExitTableAction = ({
   row,
@@ -42,86 +44,78 @@ const RenderExitTableAction = ({
     loggedInUser.role === 3;
 
   return (
-    <div>
-      <ButtonDropdown
-        isOpen={openDropdownRow === row.id}
-        toggle={() => toggleDropdown(row.id)}
-      >
-        <DropdownToggle className="border-0 shadow-none bg-transparent">
-          <button
-            className="text-zinc-600 text-sm font-normal"
-          >
-            <div className="flex items-center gap-[6px]">
-              {status.includes("accepted by manager") ? (
-                <FaRegCircle className="text-lime-600" />
-              ) : status.includes("rejected by manager") ? (
-                <FaRegCircle className="text-red-600" />
-              ) : status.includes("accepted by hr") ? (
-                <FaRegCircle className="text-green-600" />
-              ) : status.includes("rejected by hr") ? (
-                <FaRegCircle className="text-gray-600" />
-              ) : (
-                <FaRegCircle className="text-gray-600" />
-              )}
-              <div className="flex items-center capitalize">
-                {status}
-                <RiArrowDropDownLine className="text-xl text-zinc-600" />
-              </div>
+    <DropdownMenu
+      isOpen={openDropdownRow === row.id}
+      toggle={() => toggleDropdown(row.id)}
+    >
+      <DropdownMenuTrigger asChild>
+        <Button className="text-zinc-600 text-sm font-normal" variant="outline">
+          <div className="flex items-center gap-[6px]">
+            {status.includes("accepted by manager") ? (
+              <FaRegCircle className="text-lime-600" />
+            ) : status.includes("rejected by manager") ? (
+              <FaRegCircle className="text-red-600" />
+            ) : status.includes("accepted by hr") ? (
+              <FaRegCircle className="text-green-600" />
+            ) : status.includes("rejected by hr") ? (
+              <FaRegCircle className="text-gray-600" />
+            ) : (
+              <FaRegCircle className="text-gray-600" />
+            )}
+            <div className="flex items-center capitalize">
+              {status}
+              <RiArrowDropDownLine className="text-xl text-zinc-600" />
             </div>
-          </button>
-        </DropdownToggle>
-        <DropdownMenu start className="p-6">
-          {isMangerView && (
-            <>
-              <DropdownItem
-                onClick={() => handleOptionSelect(row, "accepted by manager")}
-              >
-                <div className={`p-2 flex gap-[6px] items-center`}>
-                  <FaRegCircle className="text-lime-600" />
-                  <div className="text-zinc-600 text-sm font-normal">
-                    Accept
-                  </div>
+          </div>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent start className="p-2">
+        {isMangerView && (
+          <>
+            <DropdownMenuLabel
+              onClick={() => handleOptionSelect(row, "accepted by manager")}
+            >
+              <div className={`flex gap-[6px] items-center`}>
+                <FaRegCircle className="text-lime-600" />
+                <div className="text-zinc-600 text-sm font-normal">Accept</div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuLabel
+              onClick={() => handleOptionSelect(row, "rejected by manager")}
+            >
+              <div className={`flex gap-[6px]`}>
+                <FaRegCircle className="text-red-600" />
+                <div className="text-zinc-600 text-sm font-normal">Reject</div>
+              </div>
+            </DropdownMenuLabel>
+          </>
+        )}
+        {isHrView && (
+          <>
+            <DropdownMenuLabel
+              onClick={() => handleOptionSelect(row, "accepted by hr")}
+            >
+              <div className={`flex gap-[6px] items-center`}>
+                <FaRegCircle className="text-green-600" />
+                <div className="text-zinc-600 text-sm font-normal">
+                  Accept by HR
                 </div>
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => handleOptionSelect(row, "rejected by manager")}
-              >
-                <div className={`p-2 flex gap-[6px]`}>
-                  <FaRegCircle className="text-red-600" />
-                  <div className="text-zinc-600 text-sm font-normal">
-                    Reject
-                  </div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuLabel
+              onClick={() => handleOptionSelect(row, "rejected by hr")}
+            >
+              <div className={`flex gap-[6px]`}>
+                <FaRegCircle className="text-gray-600" />
+                <div className="text-zinc-600 text-sm font-normal">
+                  Reject by HR
                 </div>
-              </DropdownItem>
-            </>
-          )}
-          {isHrView && (
-            <>
-              <DropdownItem
-                onClick={() => handleOptionSelect(row, "accepted by hr")}
-              >
-                <div className={`p-2 flex gap-[6px] items-center`}>
-                  <FaRegCircle className="text-green-600" />
-                  <div className="text-zinc-600 text-sm font-normal">
-                    Accept by HR
-                  </div>
-                </div>
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => handleOptionSelect(row, "rejected by hr")}
-              >
-                <div className={`p-2 flex gap-[6px]`}>
-                  <FaRegCircle className="text-gray-600" />
-                  <div className="text-zinc-600 text-sm font-normal">
-                    Reject by HR
-                  </div>
-                </div>
-              </DropdownItem>
-            </>
-          )}
-        </DropdownMenu>
-      </ButtonDropdown>
-    </div>
+              </div>
+            </DropdownMenuLabel>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

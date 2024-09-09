@@ -1,15 +1,20 @@
 import React, { useState } from "react";
-import {
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
 import { StatusIcon } from "app/modules/LeaveManagment/Sections";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "../../../../src/@/components/ui/dropdown-menu";
+import { Button } from "../../../../src/@/components/ui/button";
 
-const ApplicationStatus = ({ row, isTableViewButton=false }) => {
-  const status = row.exit_category==="resignation"? row.status_resignation
-    : row.status_termination;
+const ApplicationStatus = ({ row, isTableViewButton = false }) => {
+  const status =
+    row.exit_category === "resignation"
+      ? row.status_resignation
+      : row.status_termination;
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
 
   const spanClassName = "text-[14px] flex justify-start items-center";
@@ -43,19 +48,18 @@ const ApplicationStatus = ({ row, isTableViewButton=false }) => {
       return stepIndex <= 3 ? "Approved" : "Pending";
     } else if (status === "accepted by hr") {
       return stepIndex <= 4 ? "Approved" : "Pending";
-    } else if(status === "rejected by manager") {
+    } else if (status === "rejected by manager") {
       return stepIndex < 1
         ? "Approved"
         : stepIndex === 1
         ? "Declined"
         : "Pending";
-    }
-    else if(status === "rejected by hr") {
+    } else if (status === "rejected by hr") {
       return stepIndex < 4
-      ? "Approved"
-      : stepIndex === 4
-      ? "Declined"
-      : "Pending";
+        ? "Approved"
+        : stepIndex === 4
+        ? "Declined"
+        : "Pending";
     }
     return "Pending";
   };
@@ -66,8 +70,7 @@ const ApplicationStatus = ({ row, isTableViewButton=false }) => {
       return stepIndex <= 1 ? "Approved" : "Pending";
     } else if (status === "accepted by employee") {
       return stepIndex <= 2 ? "Approved" : "Pending";
-    } 
-     else if(status === "rejected by employee") {
+    } else if (status === "rejected by employee") {
       return stepIndex < 3
         ? "Approved"
         : stepIndex === 3
@@ -78,51 +81,36 @@ const ApplicationStatus = ({ row, isTableViewButton=false }) => {
   };
 
   return (
-    <div>
-      <ButtonDropdown
-        isOpen={openDropdownRow === row.id}
-        toggle={() => toggleDropdown(row.id)}
-      >
-        <DropdownToggle className="border-0 shadow-none bg-transparent p-0">
-          {isTableViewButton ? (
-            <button className="h-[35px] px-[34px] py-2.5 rounded-[5px] border border-[#323233] justify-center items-center gap-2.5 inline-flex">
-              <div className="text-[#323233] text-[15px] font-normal font-['Lato'] leading-[19px]">
-                View
-              </div>
-            </button>
-          ) : (
-            <button className="px-[34px] py-2.5 rounded-[5px] border border-[#323233] justify-center items-center gap-2.5 flex">
-              <div className="text-[#323233] text-[15px] font-normal ">
-                View status
-              </div>
-            </button>
-          )}
-        </DropdownToggle>
-        <DropdownMenu start className="p-3 ml-2 shadow ">
-          <DropdownItem className={`${itemClassName} fw-bold`}>
-            <span>Your Application Status</span>
-          </DropdownItem>
-          {row.exit_category === "resignation" &&
-            statusStepsResignation.map((step, index) => (
-              <DropdownItem key={index} className={`${itemClassName}`}>
-                <span className={`${spanClassName}`}>
-                  <StatusIcon status={getStatusIconResignation(index)} />{" "}
-                  {step.text}
-                </span>
-              </DropdownItem>
-            ))}
-          {row.exit_category === "termination" &&
-            statusStepsTermination.map((step, index) => (
-              <DropdownItem key={index} className={`${itemClassName}`}>
-                <span className={`${spanClassName}`}>
-                  <StatusIcon status={getStatusIconTermination(index)} />{" "}
-                  {step.text}
-                </span>
-              </DropdownItem>
-            ))}
-        </DropdownMenu>
-      </ButtonDropdown>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button aria-haspopup="true" variant="outline" className="">
+          {isTableViewButton ? "View" : "View status"}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel className={`${itemClassName} fw-bold`}>
+          Your Application Status
+        </DropdownMenuLabel>
+        {row.exit_category === "resignation" &&
+          statusStepsResignation.map((step, index) => (
+            <DropdownMenuItem key={index} className={`${itemClassName}`}>
+              <span className={`${spanClassName}`}>
+                <StatusIcon status={getStatusIconResignation(index)} />{" "}
+                {step.text}
+              </span>
+            </DropdownMenuItem>
+          ))}
+        {row.exit_category === "termination" &&
+          statusStepsTermination.map((step, index) => (
+            <DropdownMenuItem key={index} className={`${itemClassName}`}>
+              <span className={`${spanClassName}`}>
+                <StatusIcon status={getStatusIconTermination(index)} />{" "}
+                {step.text}
+              </span>
+            </DropdownMenuItem>
+          ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

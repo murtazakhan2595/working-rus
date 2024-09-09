@@ -35,7 +35,7 @@ const ExitRequestDetails = ({ userProfile, exitData }) => {
       { title: "Phone no.", data: userData?.mobile_no },
     ],
   ];
-
+  console.log("exitInfo", exitInfo);
   const getDataByHooks = async () => {
     setLoading(true);
     try {

@@ -23,9 +23,12 @@ import { AiOutlineDownload } from "react-icons/ai";
 import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
 import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
 import { filebase64Download } from "utils/fileUtils";
-import RenderTerminatedRow from "app/modules/ExitAndClearance/section/RenderTerminatedRow";
-
-
+import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
+import { ResignationStatusView } from "app/modules/ExitAndClearance/Sections";
+import { RenderResignationAction } from "app/modules/ExitAndClearance/Sections";
+import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
+import { TerminationStatusView } from "app/modules/ExitAndClearance/Sections";
+import { RenderTerminationAction } from "app/modules/ExitAndClearance/Sections";
 
 export const LeaveHistoryColumns = (updateLeaveType) => [
   {
@@ -85,7 +88,7 @@ export const EmployeeColumns = [
   {
     dataField: "name",
     text: "Employees",
-    
+
     formatter: (cell, row) => (
       <EmployeeNameInfo
         name={`${row.first_name} ${row.last_name}`}
@@ -157,15 +160,22 @@ export const MyLeavesColumns = [
   },
 ];
 export const ExitRequestColumns = (
-  handleOptionSelect,
   handleRowClicked,
   reload,
-  hideAction = false
+  hideActions = false
 ) => {
   const columns = [
     {
       dataField: "emp_name",
       text: "Employees",
+      width: "25%",
+      formatter: (cell, row) => (
+        <EmployeeNameInfo
+          name={cell}
+          department={row.department_name}
+          position={row.position}
+        />
+      ),
       onClick: (recordIndex, data, row) => {
         handleRowClicked(recordIndex, data, row);
       },
@@ -187,6 +197,7 @@ export const ExitRequestColumns = (
     {
       dataField: "exit_date",
       text: "Exit date",
+      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
     },
     {
       dataField: "",
@@ -211,31 +222,93 @@ export const ExitRequestColumns = (
     {
       dataField: "status_resignation",
       text: "Status",
-      formatter: (cell, row) => (
-        <ApplicationStatus row={row} isTableViewButton={true} />
-      ),
+      formatter: (cell, row) => <TerminationStatusView row={row} />,
     },
   ];
-
-  // Conditionally add the Action column if hideAction is false
-  if (!hideAction) {
+  if (!hideActions) {
     columns.push({
       dataField: "",
       text: "Action",
       formatter: (cell, row) => (
-        <RenderExitTableAction
-          row={row}
-          handleOptionSelect={handleOptionSelect}
-          reload={reload}
-          isTableStyle={true}
-        />
+        <RenderTerminationAction row={row} reload={reload} />
       ),
     });
   }
-
   return columns;
 };
-
+export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
+  const columns = [
+    {
+      dataField: "emp_name",
+      text: "Employees",
+      formatter: (cell, row) => (
+        <EmployeeNameInfo
+          name={cell}
+          department={row.department_name}
+          position={row.position}
+        />
+      ),
+      width: "25%",
+      onClick: (recordIndex, data, row) => {
+        handleRowClicked(recordIndex, data, row);
+      },
+    },
+    {
+      dataField: "employee_id",
+      text: "ID",
+      formatter: (cell) => <EmployeeID value={cell} />,
+    },
+    {
+      dataField: "report_to",
+      text: "Report To",
+      formatter: (cell, row) => <ManagerName value={cell} />,
+    },
+    {
+      dataField: "notice_period",
+      text: "Notice Period",
+    },
+    {
+      dataField: "exit_date",
+      text: "Exit date",
+      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+    },
+    {
+      dataField: "",
+      text: "Application",
+      formatter: (cell, row) => (
+        <>
+          {row?.resignation_letter ? (
+            <div className="justify-start items-center gap-2.5 inline-flex">
+              <div className="text-[#5c5e64] text-base font-normal">File</div>
+              <button
+                onClick={() =>
+                  filebase64Download(row?.resignation_letter, row?.emp_name)
+                }
+              >
+                <AiOutlineDownload />
+              </button>
+            </div>
+          ) : (
+            "N/A"
+          )}
+        </>
+      ),
+    },
+    {
+      dataField: "status_resignation",
+      text: "Status",
+      formatter: (cell, row) => <ResignationStatusView row={row} />,
+    },
+    {
+      dataField: "",
+      text: "Action",
+      formatter: (cell, row) => (
+        <RenderResignationAction row={row} reload={reload} />
+      ),
+    },
+  ];
+  return columns;
+};
 export const AllJobApplicationColumns = (
   handleOptionSelect,
   setViewApplicationDetails
@@ -386,7 +459,6 @@ export const AllLeavesApplicationColumns = (reload, userRole) => {
   return columns;
 };
 
-
 export const LeaveAllotmentColumns = (reload) => [
   {
     dataField: "employee_id",
@@ -401,7 +473,7 @@ export const LeaveAllotmentColumns = (reload) => [
   },
 ];
 
-export const ExitTerminatedColumns = (reload) => [
+export const ExitTerminatedColumns = [
   {
     dataField: "employee_id",
     text: "",
@@ -409,8 +481,16 @@ export const ExitTerminatedColumns = (reload) => [
       <RenderTerminatedRow
         terminatedEmployee={row}
         terminatedEmployeeList={list}
-        reload={reload}
       />
+    ),
+  },
+];
+export const ExitResignedColumns = [
+  {
+    dataField: "employee_id",
+    text: "",
+    formatter: (cell, row, list) => (
+      <RenderResignedRow resignedEmployee={row} resignedEmployeeList={list} />
     ),
   },
 ];
