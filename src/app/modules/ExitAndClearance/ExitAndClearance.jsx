@@ -135,8 +135,8 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const filterNameMapping = {
     Resignations: "status_resignation",
     Terminations: "status_termination",
-    Resigned: "department_name",
-    Terminated: "department_name",
+    Resigned: "departments",
+    Terminated: "departments",
   };
   return (
     <div className="flex flex-col gap-4 profile-management">
