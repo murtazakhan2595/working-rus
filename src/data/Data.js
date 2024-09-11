@@ -1,4 +1,5 @@
 import { CiViewBoard } from "react-icons/ci";
+import { countries } from "country-data";
 
 import { getAllCountries } from "countries-and-timezones";
 import {
@@ -26,6 +27,24 @@ export const countryOptions = Object.keys(getAllCountries()).map(
   })
 );
 
+export const countriesCallingCodes = countries.all
+  .filter(
+    (country) =>
+      country.countryCallingCodes && country.countryCallingCodes.length > 0
+  )
+  .map((country) => ({
+    value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
+    label: `${country.name} (+${country.countryCallingCodes[0].replace(
+      "+",
+      ""
+    )})`,
+  }));
+export const countriesList = countries.all.map((country) => {
+  return {
+    value: country.name,
+    label: country.name,
+  };
+});
 export const tasksTitle = [
   { label: "Task Name", width: "w-44" },
 
@@ -556,6 +575,19 @@ export const TerminationStatusOptions = [
   { label: "Rejected by Employee", value: "rejected by employee" },
   { label: "Clearance initiated", value: "initiated clearance" },
   { label: "Exit Interview", value: "exit interview" },
+];
+
+export const salaryTypeOptions = [
+  { value: "monthly", label: "Monthly" },
+  { value: "weekly", label: "Weekly" },
+  { value: "per_hour", label: "Per Hour" },
+  { value: "yearly", label: "Yearly" },
+  { value: "contract", label: "Contract" },
+];
+export const payoutPeriodOptions = [
+  { value: "monthly", label: "Monthly" },
+  { value: "weekly", label: "Weekly" },
+  { value: "per_hour", label: "Per Hour" },
 ];
 
 export const handleUpdateProfile = (dispatch, data) => {

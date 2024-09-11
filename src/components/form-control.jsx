@@ -31,12 +31,13 @@ import {
   CommandList,
 } from "../src/@/components/ui/command";
 import { cn } from "./../src/@/lib/utils";
-import {Select} from "../src/@/components/ui/select";
+import { format, parse, isValid } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "../src/@/components/ui/calendar";
 
 const SelectComponent = ({
   name,
   value,
-  setValue,
   error,
   touch,
   options,
@@ -48,10 +49,12 @@ const SelectComponent = ({
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (currentValue) => {
-    const newValue = currentValue === value ? "" : currentValue;
-    if (setValue) {
-      setValue(newValue);
-    }
+    console.log("currentValue", currentValue);
+    console.log("value", value);
+    const newValue =
+      currentValue === value || (currentValue === null && value === null)
+        ? ""
+        : currentValue;
     setOpen(false);
     onChange(name, newValue);
   };
@@ -114,25 +117,24 @@ const SelectMultiInputComponent = ({
   options,
   error,
   touch,
-  value,
-  setValue,
+  value = [],
   label,
   onChange,
   required,
 }) => {
   const [open, setOpen] = React.useState(false);
-
+  if (value === null || typeof value === "string") {
+    value = [];
+  }
   const handleSelect = (option) => {
     const newValue = value.includes(option)
       ? value.filter((item) => item !== option)
       : [...value, option];
-    setValue(newValue);
     onChange(name, newValue);
   };
 
   const handleRemove = (option) => {
     const newValue = value.filter((item) => item !== option);
-    setValue(newValue);
     onChange(name, newValue);
   };
 
@@ -151,7 +153,7 @@ const SelectMultiInputComponent = ({
           >
             <div className="flex flex-wrap justify-between w-full gap-2">
               {value.length > 0 ? (
-                value.map((val) => (
+                value?.map((val) => (
                   <span
                     key={val}
                     className="bg-plum-300 text-plum-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-lg flex items-center"
@@ -204,10 +206,6 @@ const SelectMultiInputComponent = ({
   );
 };
 
-
-
-
-
 const DateInput = ({
   name,
   value,
@@ -219,92 +217,92 @@ const DateInput = ({
   required,
   minDate,
 }) => {
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [isDayOpen, setIsDayOpen] = useState(false);
-  const [isMonthOpen, setIsMonthOpen] = useState(false);
-  const [isYearOpen, setIsYearOpen] = useState(false);
+  const [date, setDate] = useState();
+  const [inputValue, setInputValue] = useState("");
+  const [calendarDate, setCalendarDate] = useState();
 
-  const handleDateChange = (name, value) => {
-    const newDate = selectedDate ? new Date(selectedDate) : new Date();
-
-    if (name === 'day') {
-      newDate.setDate(value);
-      console.log('Day selected:', value);
-    } else if (name === 'month') {
-      newDate.setMonth(value);
-      console.log('Month selected:', value);
-    } else if (name === 'year') {
-      newDate.setFullYear(value);
-      console.log('Year selected:', value);
+  useEffect(() => {
+    if (date) {
+      setInputValue(format(date, "MM/dd/yyyy"));
+      setCalendarDate(date);
     }
+  }, [date]);
 
-    setSelectedDate(newDate);
-    onChange(newDate); // Call the onChange prop to update the parent component's state
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setInputValue(value);
+
+    const parsedDate = parse(value, "MM/dd/yyyy", new Date());
+    if (isValid(parsedDate)) {
+      setDate(parsedDate);
+      setCalendarDate(parsedDate);
+    }
   };
 
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
-  const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-  const years = Array.from({ length: 101 }, (_, i) => new Date().getFullYear() - i);
+  const handleInputBlur = () => {
+    if (date) {
+      setInputValue(format(date, "MM/dd/yyyy"));
+    } else {
+      setInputValue("");
+    }
+  };
 
-  const renderCommand = (label, options, name, isOpen, setIsOpen) => (
-    <Popover isOpen={isOpen} onClose={() => setIsOpen(false)}>
-      <PopoverTrigger>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={isOpen}
-          disabled={disabled}
-          className="justify-between w-full"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {label}: {selectedDate ? (name === 'day' ? selectedDate.getDate() : name === 'month' ? months[selectedDate.getMonth()] : selectedDate.getFullYear()) : `Select ${label}`}
-          <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent>
-        <Command>
-          <CommandInput placeholder={`Enter ${label}`} />
-          <CommandList>
-            <CommandEmpty>No {label} found.</CommandEmpty>
-            <CommandGroup>
-              {options.map((option, index) => (
-                <CommandItem
-                  key={option}
-                  value={option}
-                  onSelect={() => handleDateChange(name, name === 'month' ? index : option)}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      selectedDate && (name === 'day' ? selectedDate.getDate() : name === 'month' ? selectedDate.getMonth() : selectedDate.getFullYear()) === (name === 'month' ? index : option) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
+  const handleCalendarSelect = (selectedDate) => {
+    setDate(selectedDate);
+    if (selectedDate) {
+      setInputValue(format(selectedDate, "MM/dd/yyyy"));
+      setCalendarDate(selectedDate);
+      onChange(name, format(selectedDate, "yyyy-MM-dd"));
+    }
+  };
 
   return (
-    <div className="flex flex-col w-full">
-      <label className={`${value ? "" : ""}`} htmlFor={name}>
+    <div className="flex flex-col gap-4">
+      <Label className={` ${value ? "" : ""}`} for={name}>
         {required && <span className="text-red-600">* </span>} {label}
-      </label>
-      <div className="flex  justify-between w-full gap-2 flex-col md:flex-row lg:flex-row xl:flex-row">
-      {renderCommand('Day', days, 'day', isDayOpen, setIsDayOpen)}
-      {renderCommand('Month', months, 'month', isMonthOpen, setIsMonthOpen)}
-      {renderCommand('Year', years, 'year', isYearOpen, setIsYearOpen)}
-      </div>
+      </Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "w-full justify-start text-left font-normal",
+              !date && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="w-4 h-4 mr-2" />
+            {date ? format(date, "MMMM d, yyyy") : <span>Pick a date</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <div className="flex flex-col p-2 space-y-2">
+            <Input
+              type="text"
+              placeholder="MM/DD/YYYY"
+              value={inputValue}
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              className="w-[240px]"
+            />
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={handleCalendarSelect}
+              month={calendarDate}
+              onMonthChange={setCalendarDate}
+              disabled={(date) =>
+                date > new Date() || date < new Date("1900-01-01")
+              }
+              initialFocus
+            />
+          </div>
+        </PopoverContent>
+      </Popover>
+      {error && touch && <div className="text-red-600">{error}</div>}
     </div>
   );
 };
+
 const TextInput = ({
   name,
   value,
@@ -366,6 +364,7 @@ const PasswordInput = ({
     <div className="flex flex-col gap-4">
       <Label htmlFor={name}>
         {label}
+        {label}
         {required && <span className="text-red-600">* </span>}
       </Label>
       <Input
@@ -418,8 +417,10 @@ const PhoneNumberInput = ({
   const [selectedCountryCode, setSelectedCountryCode] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSelectChange = (value) => {
+    console.log("select change", value);
     const selectedOption = countryOptions.find(
       (option) => option.value === value
     );
@@ -435,8 +436,10 @@ const PhoneNumberInput = ({
   };
 
   const handleInputChange = (event) => {
+    console.log("chaning");
     const regExTelephone = /^[0-9-]+$/;
     let value = event.target.value;
+    console.log("value", value);
     value = value.replace(`+${selectedCountryCode}`, "");
     if (value.includes("+")) {
       value = "";
@@ -467,14 +470,17 @@ const PhoneNumberInput = ({
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[300px]">
               <Command>
-                <CommandInput placeholder="Search country..." />
+                <CommandInput
+                  placeholder="Search country..."
+                  onValueChange={(value) => setSearchQuery(value)}
+                />
                 <CommandList>
                   <CommandEmpty>No country found.</CommandEmpty>
                   <CommandGroup>
                     {countryOptions?.map((option) => (
                       <CommandItem
-                        key={option.value}
-                        value={option.value}
+                        key={option.label}
+                        value={option.label}
                         onSelect={() => handleSelectChange(option.value)}
                       >
                         {option.label}
