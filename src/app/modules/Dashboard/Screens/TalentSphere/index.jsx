@@ -71,7 +71,7 @@ const TalentSphere = () => {
       <Card className="col-span-2">
         <CardHeader className="items-start p-6">
           <CardTitle className="flex flex-row justify-between w-full">
-            <div className="font-semibold text-plum-1100">Talent Sphere</div>
+            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">Talent Sphere</div>
             <div className="flex flex-row gap-4">
               <Button variant="outline">
                 <Link to="/jobs">View Detail</Link>
@@ -102,7 +102,7 @@ const TalentSphere = () => {
       <Card className="w-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1">
         <CardHeader>
           <CardTitle>
-            <div className="font-semibold text-plum-1100">Ongoing Process</div>
+            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">Ongoing Process</div>
           </CardTitle>
         </CardHeader>
         <CardContent>

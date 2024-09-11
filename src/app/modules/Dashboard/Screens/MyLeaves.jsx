@@ -39,7 +39,7 @@ export default function MyLeaves() {
    <Card className="w-full col-span-2">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
-          <div className="font-semibold text-plum-1100">My Leaves</div>
+          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">My Leaves</div>
        <Button variant="secondary">
             <Link to="/request-leave" >
               Add Request</Link>

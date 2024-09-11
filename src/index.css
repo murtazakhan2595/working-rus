@@ -5,14 +5,12 @@
 .lucide-dot {
     display: none !important
 }
-.custom-sheet-width {
-    max-width: 50%!important; /* Adjust the width as needed */
-  }
+
 
 
 @layer components {
     .font-heading {
-        @apply text-4xl font-bold text-primary;
+         @apply text-4xl font-bold text-primary;
     }
 }
 
@@ -110,11 +108,14 @@
         @apply bg-background text-foreground font-body;
     }
 
-    h1,
+    h1, .h1{
+        @apply text-5xl font-semibold leading-snug;
+    }
     h2,
     h3,
     h4,
     h5,
+    
     h6 {
         @apply font-heading;
     }

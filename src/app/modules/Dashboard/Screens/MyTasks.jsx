@@ -193,7 +193,7 @@ export default function MyTasks() {
       <Card className="">
         <CardHeader className="items-start pb-0">
           <CardTitle className="flex flex-row justify-between w-full">
-            <div className="font-semibold text-plum-1100">My Tasks</div>
+            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">My Tasks</div>
             <Button variant="secondary">
               <Link
                 to="#"
@@ -350,7 +350,7 @@ function RenderTask({ tasks }) {
           <div className="flex flex-col w-full gap-2">
             <div className="flex flex-row w-full gap-4">
               <div className=" font-base">{render.project_name}</div>
-              <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full border border-mauve-500">
+              <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full border border-mauve-500 flex items-center justify-center h-10">
                 {getStatusLabel(render.status)}
               </div>
             </div>

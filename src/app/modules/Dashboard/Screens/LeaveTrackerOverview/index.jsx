@@ -124,7 +124,7 @@ export default function LeaveTrackerOverview() {
     <Card className="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-1 ">
       <CardHeader className="items-start p-6">
         <CardTitle className="flex flex-row justify-between w-full">
-        <div className="font-semibold text-plum-1100">
+        <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg ">
             Leave Tracker 
           </div>
           <Button variant="outline">
@@ -137,7 +137,7 @@ export default function LeaveTrackerOverview() {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div className="flex justify-end gap-4 xl:flex-row lg:flex-col md:flex-col sm:flex-col">
+        <div className="flex flex-col items-end gap-4 md:flex-row lg:flex-row lg:justify-end">
         <FilterInput
                 filters={[
                   {
@@ -147,7 +147,7 @@ export default function LeaveTrackerOverview() {
                     width: "",
                     height: "",
                     className:
-                      "",
+                      "w-full md:w-[100%] lg:w-[100%]",
                   },
                   {
                     type: "select",
@@ -155,16 +155,12 @@ export default function LeaveTrackerOverview() {
                     name: "department_position",
                     placeholder: "Designation",
                     width: "w-32",
-                    className: {
-                      backgroundColor: "#F0F1F2",
-                      fontSize: "12px",
-                      height: "32px",
-                    },
+                    className: "w-full md:w-[100%] lg:w-[100%]l ",
                   },
                 ]}
                 onChange={handleFilterChange}
               />
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
               <RenderLeaveStatusDropdown
                 status={filterOption}
                 setFilterOption={setFilterOption}
@@ -193,7 +189,7 @@ export default function LeaveTrackerOverview() {
       <Card className="w-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1">
         <CardHeader>
           <CardTitle>
-          <div className="font-semibold text-plum-1100">
+          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
             Who's on Leave{""}
           </div>
           </CardTitle>
