@@ -1,9 +1,16 @@
-import { Button } from "../../../../../components/ui/button"
-import { Input } from "../../../../../components/ui/input"
-import { Label } from "../../../../../src/@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../../../components/ui/card"
+import { Button } from "../../../../../components/ui/button";
+import { Input } from "../../../../../components/ui/input";
+import { Label } from "../../../../../src/@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../../../../components/ui/card";
 
-import { format } from "date-fns"
+import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
@@ -11,16 +18,18 @@ import { useDispatch } from "react-redux";
 import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import { EmployeeInformation } from "../../../../../app/utils/Types/Employee";
-import { getEmployeeInformation } from "../../../../../app/utils/MappingObjects/mapEmployeeData"
+import { getEmployeeInformation } from "../../../../../app/utils/MappingObjects/mapEmployeeData";
 import {
   getEmployeeData,
   getNewEmployeeCode,
   saveEmployeeWorkInformationData,
 } from "../../../../../app/hooks/employee";
 
-import { fetchEmployees, fetchReportingManagers } from "../../../../../state/slices/EmpSlice";
+import {
+  fetchEmployees,
+  fetchReportingManagers,
+} from "../../../../../state/slices/EmpSlice";
 import { validationEmployeeInfoFormSchema } from "../../../../../app/utils/FormSchema/employeeFormSchema";
-
 
 import {
   HeadOfDepartmentOptions,
@@ -28,6 +37,8 @@ import {
   jobRoles,
   workplaceTypes,
   UserRoles,
+  countriesCallingCodes,
+  countriesList,
 } from "../../../../../data/Data";
 
 import {
@@ -40,10 +51,7 @@ import {
   DateInput,
 } from "../../../../../components/form-control";
 
-
-
-import { countries } from "country-data";
-import { Alert } from "../../../../../src/@/components/ui/alert"
+import { Alert } from "../../../../../src/@/components/ui/alert";
 
 function getManagersStringSelected(managers) {
   if (managers) {
@@ -68,7 +76,7 @@ const SheetOnBorading = ({
 }) => {
   const formRef = React.createRef();
   const [date, setDate] = useState();
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -79,23 +87,19 @@ const SheetOnBorading = ({
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   // ?popovers
-  const [selectedDepartment, setSelectedDepartment] = React.useState("")
-  const [selectedCountry, setSelectedCountry] = React.useState("")
-  const [selectedDesignation, setSelectedDesignations] = React.useState("")
-  const [selectedUserRole, setSelectedUserRole] = React.useState("")
-  const [selectedJobRoles, setSelectedJobRoles] = React.useState("")
-  const [selectedEmployeeStatus, setSelectedEmployeeStatus] = React.useState("")
-  const [selectedWorkPlaceType, setSelectedWorkPlaceType] = React.useState("")
-  const [selectedDirectManges, setSelectedDirectManges] = React.useState("")
-  const [selectedInDirectMangers, setSelectedInDirectMangers] = React.useState("")
-  const [selectedHeadofDepartment, setSelectedHeadofDepartment] = React.useState("")
-
-  const countryOptions = countries.all
-    .filter((country) => country.countryCallingCodes && country.countryCallingCodes.length > 0)
-    .map((country) => ({
-      value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
-      label: `${country.name} (+${country.countryCallingCodes[0].replace("+", "")})`,
-    }));
+  // const [selectedDepartment, setSelectedDepartment] = React.useState("");
+  // const [selectedCountry, setSelectedCountry] = React.useState("");
+  // const [selectedDesignation, setSelectedDesignations] = React.useState("");
+  // const [selectedUserRole, setSelectedUserRole] = React.useState("");
+  // const [selectedJobRoles, setSelectedJobRoles] = React.useState("");
+  // const [selectedEmployeeStatus, setSelectedEmployeeStatus] =
+  //   React.useState("");
+  // const [selectedWorkPlaceType, setSelectedWorkPlaceType] = React.useState("");
+  // const [selectedDirectManges, setSelectedDirectManges] = React.useState("");
+  // const [selectedInDirectMangers, setSelectedInDirectMangers] =
+  //   React.useState("");
+  // const [selectedHeadofDepartment, setSelectedHeadofDepartment] =
+  //   React.useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,7 +127,9 @@ const SheetOnBorading = ({
   }, [id]);
 
   const validateEmail = (email) => {
-    const employee = employees.filter((emp) => emp.work_email === email && emp.value !== id);
+    const employee = employees.filter(
+      (emp) => emp.work_email === email && emp.value !== id
+    );
     if (employee && employee.length > 0) {
       setEmailAlreadyExist(true);
     } else {
@@ -131,7 +137,9 @@ const SheetOnBorading = ({
     }
   };
   const validateUsername = (username) => {
-    const employee = employees.filter((emp) => emp.label === username && emp.value !== id);
+    const employee = employees.filter(
+      (emp) => emp.label === username && emp.value !== id
+    );
     if (employee && employee.length > 0) {
       setUsernameAlreadyExist(true);
     } else {
@@ -140,6 +148,7 @@ const SheetOnBorading = ({
   };
 
   const handleSubmit = async (data) => {
+    console.log(data);
     setIsLoading(true);
     try {
       // Check if an API call is already in progress
@@ -165,7 +174,7 @@ const SheetOnBorading = ({
       if (
         error.response &&
         error.response.data.username[0] ===
-        "A user with that username already exists."
+          "A user with that username already exists."
       ) {
         toast.error("A user with that username already exists.", {
           position: toast.POSITION.TOP_RIGHT,
@@ -181,83 +190,74 @@ const SheetOnBorading = ({
     }
   };
 
+  // const handleDepartmentChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedDepartment(value)
+  // }
+  // const handleCountryChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedCountry(value)
+  // }
 
-
-
-
-  const handleDepartmentChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedDepartment(value)
-  }
-  const handleCountryChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedCountry(value)
-  }
-
-  const handleDesignationsChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedDesignations(value)
-  }
-  const handleUserRoleChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedUserRole(value)
-  }
-  const handleJobRolesChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedJobRoles(value)
-  }
-  const handleEmployeeStatusChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedEmployeeStatus(value)
-  }
-  const handleWorkPlaceTypeChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedWorkPlaceType(value)
-  }
-  const handleDirectMangersChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedDirectManges(value)
-  }
-  const handleInDirectMangersChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedInDirectMangers(value)
-  }
-  const handleHeadofDepartmentChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedHeadofDepartment(value)
-  }
+  // const handleDesignationsChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedDesignations(value)
+  // }
+  // const handleUserRoleChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedUserRole(value)
+  // }
+  // const handleJobRolesChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedJobRoles(value)
+  // }
+  // const handleEmployeeStatusChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedEmployeeStatus(value)
+  // }
+  // const handleWorkPlaceTypeChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedWorkPlaceType(value)
+  // }
+  // const handleDirectMangersChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedDirectManges(value)
+  // }
+  // const handleInDirectMangersChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedInDirectMangers(value)
+  // }
+  // const handleHeadofDepartmentChange = (name, value) => {
+  //   console.log(`Selected ${name}: ${value}`)
+  //   setSelectedHeadofDepartment(value)
+  // }
   return (
     <>
-      
-      <div side="right" className="w-full p-0 " open={isOpen} onOpenChange={setIsOpen}>
+      <div
+        side="right"
+        className="w-full p-0 "
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      >
         <div className="flex flex-col ">
           <div className="flex-grow ">
             <div className="p-0">
               <CardHeader className="prose">
-              <CardTitle>
-              Add Employee
-              </CardTitle>
-                
+                <CardTitle>Add Employee</CardTitle>
               </CardHeader>
               <Formik
                 initialValues={formData}
                 innerRef={formRef}
-                
                 onSubmit={(values, { resetForm }) => {
-                  console.log('Form Data:', values); // Log form data to console
-        handleSubmit(values, resetForm);
-        setShowSuccess(true); // Show success message
-                  
+                  console.log("Form Data:", values); // Log form data to console
+                  handleSubmit(values, resetForm);
+                  setShowSuccess(true); // Show success message
                 }}
                 validate={(values) => {
                   const errors = validationEmployeeInfoFormSchema(
                     values,
-                    isEditMode,
-                    selectedDepartment,
-                    selectedUserRole,
-                    selectedJobRoles,
-                    
-                    );
+                    isEditMode
+                  );
                   if (values.work_email && emailAlreadyExist) {
                     errors.work_email = "Email already exist";
                   }
@@ -268,9 +268,14 @@ const SheetOnBorading = ({
                 }}
               >
                 {(props) => (
-                  <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                  <form
+                    onSubmit={props.handleSubmit}
+                    className="mt-6 space-y-6"
+                  >
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Employee Details</h3>
+                      <h3 className="text-lg font-semibold">
+                        Employee Details
+                      </h3>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <TextInput
@@ -362,14 +367,15 @@ const SheetOnBorading = ({
                                   : ""
                               }
                               className={
-                                props.errors?.password && props.touched?.password
+                                props.errors?.password &&
+                                props.touched?.password
                                   ? "is-invalid"
                                   : ""
                               }
                             />
                             {props.errors?.password &&
                               props.touched?.password && (
-                                <div className="invalid-feedback">
+                                <div className="invalid-feedback text-red-600">
                                   {props.errors?.password}
                                 </div>
                               )}
@@ -385,11 +391,10 @@ const SheetOnBorading = ({
                             label={"Contact no."}
                             countryCode={props.values?.country_code}
                             countryCodeName={"country_code"}
-                           
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}
-                            countryOptions={countryOptions} // Pass the country options here
+                            countryOptions={countriesCallingCodes} // Pass the country options here
                           />
                         </div>
                         <div className="space-y-2">
@@ -409,33 +414,36 @@ const SheetOnBorading = ({
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Official Information</h3>
+                      <h3 className="text-lg font-semibold">
+                        Official Information
+                      </h3>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <SelectComponent
                             name={"department_name"}
-                            value={selectedDepartment}
-                            setValue={setSelectedDepartment}
-                            error={props.errors?.selectedDepartment}
-                            touch={props.touched?.selectedDepartment}
                             options={departments}
-                            label="Select Department"
+                            error={props.errors?.department_name}
+                            touch={props.touched.department_name}
+                            value={props.values.department_name}
+                            label={"Department"}
                             required={true}
-                            onChange={handleDepartmentChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
-
                         </div>
                         <div className="space-y-2">
                           <SelectComponent
                             name={"employee_location"}
-                            options={countryOptions}
+                            options={countriesList}
                             error={props.errors?.employee_location}
-                            touch={props.touched?.employee_location}
-                            value={selectedCountry}
-                            setValue={setSelectedCountry}
+                            touch={props.touched.employee_location}
+                            value={props.values.employee_location}
                             required={true}
                             label={"Employee Location"}
-                            onChange={handleCountryChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
@@ -443,25 +451,27 @@ const SheetOnBorading = ({
                             name={"department_position"}
                             options={designations}
                             error={props.errors?.department_position}
-                            touch={props.touched?.department_position}
-                            value={selectedDesignation}
-                            setValue={setSelectedDesignations}
+                            touch={props.touched.department_position}
+                            value={props.values.department_position}
                             label={"Designation"}
                             required={true}
-                            onChange={handleDesignationsChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
                           <SelectComponent
                             name={"user_role"}
                             options={UserRoles}
-                            error={props.errors?.selectedUserRole}
-                            touch={props.touched?.selectedUserRole}
-                            value={selectedUserRole}
-                            setValue={setSelectedUserRole}
+                            error={props.errors?.user_role}
+                            touch={props.touched.user_role}
+                            value={props.values.user_role}
                             required={true}
                             label={"Role"}
-                            onChange={handleUserRoleChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
@@ -469,12 +479,13 @@ const SheetOnBorading = ({
                             name={"employee_type"}
                             options={jobRoles}
                             error={props.errors?.employee_type}
-                            touch={props.touched?.employee_type}
-                            value={selectedJobRoles}
-                            setValue={setSelectedJobRoles}
+                            touch={props.touched.employee_type}
+                            value={props.values.employee_type}
                             required={true}
                             label={"Employee Type"}
-                            onChange={handleJobRolesChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
@@ -482,12 +493,13 @@ const SheetOnBorading = ({
                             name={"employee_status"}
                             options={employeeStatus}
                             error={props.errors?.employee_status}
-                            touch={props.touched?.employee_status}
-                            value={selectedEmployeeStatus}
-                            setValue={setSelectedEmployeeStatus}
+                            touch={props.touched.employee_status}
+                            value={props.values.employee_status}
                             required={true}
                             label={"Employee status"}
-                            onChange={handleEmployeeStatusChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
@@ -495,12 +507,13 @@ const SheetOnBorading = ({
                             name={"employee_work_type"}
                             options={workplaceTypes}
                             error={props.errors?.employee_work_type}
-                            touch={props.touched?.employee_work_type}
-                            value={selectedWorkPlaceType}
-                            setValue={setSelectedWorkPlaceType}
+                            touch={props.touched.employee_work_type}
+                            value={props.values.employee_work_type}
                             required={true}
                             label={"Employee Work Type"}
-                            onChange={handleWorkPlaceTypeChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
@@ -508,25 +521,25 @@ const SheetOnBorading = ({
                             name={"direct_report"}
                             options={managers}
                             error={props.errors?.direct_report}
-                            touch={props.touched?.direct_report}
-                            value={selectedDirectManges}
-                            setValue={setSelectedDirectManges}
+                            touch={props.touched.direct_report}
+                            value={props.values.direct_report}
                             label={"Direct Report"}
-                            onChange={handleDirectMangersChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
-
                           <SelectMultiInputComponent
                             name={"indirect_report"}
                             options={managers}
                             error={props.errors?.indirect_report}
-                            touch={props.touched?.indirect_report}
-                            value={selectedInDirectMangers}
-                            required={true}
-                            setValue={setSelectedInDirectMangers}
+                            touch={props.touched.indirect_report}
+                            value={props.values.indirect_report}
                             label={"Indirect Report"}
-                            onChange={handleInDirectMangersChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
@@ -534,56 +547,58 @@ const SheetOnBorading = ({
                             name={"department_manager"}
                             options={HeadOfDepartmentOptions}
                             error={props.errors?.department_manager}
-                            touch={props.touched?.department_manager}
-                            value={selectedHeadofDepartment}
-                            setValue={setSelectedHeadofDepartment}
+                            touch={props.touched.department_manager}
+                            value={props.values.department_manager}
                             required={true}
                             label={"Department Head"}
-                            onChange={handleHeadofDepartmentChange}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                           />
                         </div>
                         <div className="space-y-2">
                           <DateInput
-                          name={"joining_date"}
-                          error={props.errors?.joining_date}
-                          touch={props.touched?.joining_date}
-                          value={props.values?.joining_date}
-                          required={true}
-                          label={"Joining Date"}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-
-                            
-                         />
-
+                            name={"joining_date"}
+                            error={props.errors?.joining_date}
+                            touch={props.touched?.joining_date}
+                            value={props.values?.joining_date}
+                            required={true}
+                            label={"Joining Date"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex justify-end space-x-4">
                         <Button variant="outline" size="lg">
-                          <Link to="/profile-management">Cancel</Link></Button>
-                        <Button type="submit" size="lg" variant="default" >{id ? "Update" : "Add"}</Button>
+                          <Link to="/profile-management">Cancel</Link>
+                        </Button>
+                        <Button type="submit" size="lg" variant="default">
+                          {id ? "Update" : "Add"}
+                        </Button>
                         {showSuccess && (
-            <Alert type="success" onClose={() => setShowSuccess(false)}>
-              Form submitted successfully!
-            </Alert>
-          )}
+                          <Alert
+                            type="success"
+                            onClose={() => setShowSuccess(false)}
+                          >
+                            Form submitted successfully!
+                          </Alert>
+                        )}
                       </div>
                     </div>
-                    
                   </form>
                 )}
               </Formik>
             </div>
           </div>
-
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 const mapStateToProps = (state) => {
   return {
     token: state.user.token,

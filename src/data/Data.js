@@ -1,4 +1,5 @@
 import { CiViewBoard } from "react-icons/ci";
+import { countries } from "country-data";
 
 import { getAllCountries } from "countries-and-timezones";
 import {
@@ -10,7 +11,13 @@ import {
 import { setUserProfile } from "state/slices/UserSlice.js";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
 import { options } from "joi";
-import { ArrowDown, ArrowRight, CircleEllipsis, ArrowUp, Timer   } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowRight,
+  CircleEllipsis,
+  ArrowUp,
+  Timer,
+} from "lucide-react";
 
 export const countryOptions = Object.keys(getAllCountries()).map(
   (countryCode) => ({
@@ -19,6 +26,24 @@ export const countryOptions = Object.keys(getAllCountries()).map(
   })
 );
 
+export const countriesCallingCodes = countries.all
+  .filter(
+    (country) =>
+      country.countryCallingCodes && country.countryCallingCodes.length > 0
+  )
+  .map((country) => ({
+    value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
+    label: `${country.name} (+${country.countryCallingCodes[0].replace(
+      "+",
+      ""
+    )})`,
+  }));
+export const countriesList = countries.all.map((country) => {
+  return {
+    value: country.name,
+    label: country.name,
+  };
+});
 export const tasksTitle = [
   { label: "Task Name", width: "w-44" },
 
@@ -218,7 +243,7 @@ export const typeOptions = [
     value: "Miscellaneous",
     label: (
       <div className="flex justify-center gap-x-2">
-        <CircleEllipsis  className="text-2xl text-[#935AF2]" />
+        <CircleEllipsis className="text-2xl text-[#935AF2]" />
         Miscellaneous
       </div>
     ),
@@ -266,7 +291,7 @@ export const PriorityList = [
     value: 1,
     label: (
       <div className="flex justify-center text-red-500 gap-x-2">
-        <ArrowUp className="text-2xl"  /> High
+        <ArrowUp className="text-2xl" /> High
       </div>
     ),
   },
@@ -284,7 +309,8 @@ export const PriorityListIcons = [
     value: 2,
     label: (
       <div className="flex justify-center text-yellow-500 gap-x-2">
-        <ArrowRight className="text-xl" />Medium
+        <ArrowRight className="text-xl" />
+        Medium
       </div>
     ),
   },
@@ -292,7 +318,8 @@ export const PriorityListIcons = [
     value: 1,
     label: (
       <div className="flex justify-center text-red-500 gap-x-2">
-        <ArrowUp className="text-2xl" />High
+        <ArrowUp className="text-2xl" />
+        High
       </div>
     ),
   },
@@ -305,15 +332,14 @@ export const status2Options = [
       <div className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10">
         Pending
       </div>
-      
-      
     ),
   },
   {
     value: "Inprogress",
     label: (
       <div className="items-center px-2 py-1 text-xs font-medium text-yellow-800 rounded-full bginline-flex bg-yellow-50 ring-1 ring-inset ring-yellow-600/20">
-        <Timer />In Progress
+        <Timer />
+        In Progress
       </div>
     ),
   },
@@ -422,7 +448,10 @@ export const TaskSortingFilters = [
       {
         label: "Selected Members",
         value: "asc",
-        options: [{ label: "ajwa", value: "90",name:"ajwa" }, { label: "ali", value: "91",name:"ali" }],
+        options: [
+          { label: "ajwa", value: "90", name: "ajwa" },
+          { label: "ali", value: "91", name: "ali" },
+        ],
       },
     ],
   },
