@@ -13,7 +13,7 @@ const EmployeeNameInfo = ({
 }) => {
   return (
     <div className="flex items-center">
-      <Avatar className=" h-14 w-14">
+      <Avatar className="hidden h-14 w-14 sm:inline">
                 <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
                 <AvatarFallback className="flex items-center justify-center rounded-full border-plum-500 bg-plum-300">{name?.charAt(0).toUpperCase() }</AvatarFallback>
               </Avatar>
@@ -27,7 +27,7 @@ const EmployeeNameInfo = ({
             <DesignationName value={position} /> |{" "}
             <DepartmentName value={department} />
           </div>
-          {id && <div>ID: {id}</div>}
+          {id && <div className="hidden sm:inline">ID: {id}</div>}
           {allotedLeave && <div>{`${allotedLeave} Leaves allotted`}</div>}
           {leaveTypes && <div>{`${leaveTypes} Leave types`}</div>}
         </div>

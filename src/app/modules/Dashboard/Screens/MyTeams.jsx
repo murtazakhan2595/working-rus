@@ -44,7 +44,7 @@ const MyTeams =({userProfile, employees})=>{
     <Card className={"h-[100%]"}>
     <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
-          <div className="font-semibold text-plum-1100">My Teams</div>
+          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">My Teams</div>
        <Button variant="outline">
             <Link to="/my-team" >
               View Detail</Link>

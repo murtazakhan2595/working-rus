@@ -290,7 +290,7 @@ const SheetOnBorading = ({
                       <h3 className="text-lg font-semibold">
                         Employee Details
                       </h3>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid  grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <TextInput
                             name={"employeeId"}
@@ -431,7 +431,7 @@ const SheetOnBorading = ({
                       <h3 className="text-lg font-semibold">
                         Official Information
                       </h3>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid  grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <SelectComponent
                             name={"department_name"}
@@ -573,6 +573,7 @@ const SheetOnBorading = ({
                               props.setFieldValue(field, value);
                             }}
                           />
+                          
                         </div>
                       </div>
                     </div>

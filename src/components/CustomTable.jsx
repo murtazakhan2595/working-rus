@@ -149,7 +149,7 @@ export default function TableCustom({
               <PaginationPrevious onClick={() => handlePageChange("page", currentPage - 1)} />
               {Array.from({ length: totalPages }, (_, index) => (
                 <PaginationItem key={index}>
-                  <PaginationLink onClick={() => handlePageChange("page", index + 1)}>
+                  <PaginationLink onClick={() => handlePageChange("page", index + 1)} className={"hover:bg-plum-300 data-[state=active]:bg-plum-500"}>
                     {index + 1}
                   </PaginationLink>
                 </PaginationItem>

@@ -47,7 +47,7 @@ export default function Component() {
     <Card className="flex flex-col min-h-[442px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
-          <div className="font-semibold text-plum-1100">Total Employees</div>
+          <div className="text-base text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg xl:text-2xl lg:text-xl md:text-lg">Total Employees</div>
           <Button variant="outline" className="">
             <Link to="/profile-management">View Details</Link>
           </Button>
