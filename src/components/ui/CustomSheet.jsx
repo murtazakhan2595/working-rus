@@ -7,7 +7,7 @@ export default function CustomSheet({ title, description, formData, onSubmit }) 
         <Button variant="outline">Open</Button>
       </SheetTrigger>
       <SheetContent>
-        <SheetHeader>
+        <SheetHeader className="text-left">
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>

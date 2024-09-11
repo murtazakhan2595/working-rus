@@ -1,6 +1,7 @@
-import { FaCheck } from "react-icons/fa6";
+
 import { BsCircleFill } from "react-icons/bs";
-import { RxCross2 } from "react-icons/rx";
+
+
 import { useSelector } from "react-redux";
 import {
   allotLeavesToEmployee,
@@ -8,6 +9,7 @@ import {
   updateLeaveStatus,
 } from "app/hooks/leaveManagment";
 import { toast } from "react-toastify";
+import { CircleCheck, CircleDot, X } from "lucide-react";
 export const Status = (status) => {
   if (!status) return "";
   if (status.includes("Approved")) return "Approved";
@@ -30,21 +32,21 @@ export const StatusIcon = ({ status }) => {
   status = Status(status);
   if (status === "Approved")
     return (
-      <FaCheck
+      <CircleCheck 
         className={`${className} bg-[#00C483] text-white`}
         style={style}
       />
     );
   else if (status === "Rejected")
     return (
-      <RxCross2
+      <X
         className={`${className} bg-[#EA4335] text-white`}
         style={style}
       />
     );
   else if (status === "Pending")
     return (
-      <BsCircleFill
+      <CircleDot 
         className={`${className} bg-[#E8E8E8]`}
         style={{
           ...{ style },

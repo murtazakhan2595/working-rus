@@ -30,7 +30,7 @@ const Header = ({ content }) => {
 
   return (
     <div className="px-4 py-4 d-flex justify-content-between">
-      <h4 className="font-bold capitalize">{pathName}</h4>
+      <h4 className="text-lg font-semibold capitalize text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">{pathName}</h4>
       <div className="flex flex-wrap justify-end gap-3">
         {/* <FilterInput
           filters={[

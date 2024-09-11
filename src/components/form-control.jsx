@@ -31,9 +31,7 @@ import {
   CommandList,
 } from "../src/@/components/ui/command";
 import { cn } from "./../src/@/lib/utils";
-import { format, parse, isValid } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "../src/@/components/ui/calendar";
+import {Select} from "../src/@/components/ui/select";
 
 const SelectComponent = ({
   name,
@@ -206,6 +204,10 @@ const SelectMultiInputComponent = ({
   );
 };
 
+
+
+
+
 const DateInput = ({
   name,
   value,
@@ -217,93 +219,92 @@ const DateInput = ({
   required,
   minDate,
 }) => {
-  const [date, setDate] = useState();
-  const [inputValue, setInputValue] = useState("");
-  const [calendarDate, setCalendarDate] = useState();
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isDayOpen, setIsDayOpen] = useState(false);
+  const [isMonthOpen, setIsMonthOpen] = useState(false);
+  const [isYearOpen, setIsYearOpen] = useState(false);
 
-  useEffect(() => {
-    if (date) {
-      setInputValue(format(date, "MM/dd/yyyy"));
-      setCalendarDate(date);
+  const handleDateChange = (name, value) => {
+    const newDate = selectedDate ? new Date(selectedDate) : new Date();
+
+    if (name === 'day') {
+      newDate.setDate(value);
+      console.log('Day selected:', value);
+    } else if (name === 'month') {
+      newDate.setMonth(value);
+      console.log('Month selected:', value);
+    } else if (name === 'year') {
+      newDate.setFullYear(value);
+      console.log('Year selected:', value);
     }
-  }, [date]);
 
-  const handleInputChange = (event) => {
-    console.log("input value change ////////////////////");
-    const value = event.target.value;
-    setInputValue(value);
-
-    const parsedDate = parse(value, "MM/dd/yyyy", new Date());
-    if (isValid(parsedDate)) {
-      setDate(parsedDate);
-      setCalendarDate(parsedDate);
-    }
+    setSelectedDate(newDate);
+    onChange(newDate); // Call the onChange prop to update the parent component's state
   };
 
-  const handleInputBlur = () => {
-    if (date) {
-      setInputValue(format(date, "MM/dd/yyyy"));
-    } else {
-      setInputValue("");
-    }
-  };
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const years = Array.from({ length: 101 }, (_, i) => new Date().getFullYear() - i);
 
-  const handleCalendarSelect = (selectedDate) => {
-    setDate(selectedDate);
-    if (selectedDate) {
-      setInputValue(format(selectedDate, "MM/dd/yyyy"));
-      setCalendarDate(selectedDate);
-      onChange(name, format(selectedDate, "yyyy-MM-dd"));
-    }
-  };
+  const renderCommand = (label, options, name, isOpen, setIsOpen) => (
+    <Popover isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <PopoverTrigger>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={isOpen}
+          disabled={disabled}
+          className="justify-between w-full"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {label}: {selectedDate ? (name === 'day' ? selectedDate.getDate() : name === 'month' ? months[selectedDate.getMonth()] : selectedDate.getFullYear()) : `Select ${label}`}
+          <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <Command>
+          <CommandInput placeholder={`Enter ${label}`} />
+          <CommandList>
+            <CommandEmpty>No {label} found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option, index) => (
+                <CommandItem
+                  key={option}
+                  value={option}
+                  onSelect={() => handleDateChange(name, name === 'month' ? index : option)}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      selectedDate && (name === 'day' ? selectedDate.getDate() : name === 'month' ? selectedDate.getMonth() : selectedDate.getFullYear()) === (name === 'month' ? index : option) ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
 
   return (
-    <div className="flex flex-col gap-4">
-      <Label className={` ${value ? "" : ""}`} for={name}>
+    <div className="flex flex-col w-full">
+      <label className={`${value ? "" : ""}`} htmlFor={name}>
         {required && <span className="text-red-600">* </span>} {label}
-      </Label>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant={"outline"}
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="w-4 h-4 mr-2" />
-            {date ? format(date, "MMMM d, yyyy") : <span>Pick a date</span>}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <div className="flex flex-col p-2 space-y-2">
-            <Input
-              type="text"
-              placeholder="MM/DD/YYYY"
-              value={inputValue}
-              onChange={handleInputChange}
-              onBlur={handleInputBlur}
-              className="w-[240px]"
-            />
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={handleCalendarSelect}
-              month={calendarDate}
-              onMonthChange={setCalendarDate}
-              disabled={(date) =>
-                date > new Date() || date < new Date("1900-01-01")
-              }
-              initialFocus
-            />
-          </div>
-        </PopoverContent>
-      </Popover>
-      {error && touch && <div className="text-red-600">{error}</div>}
+      </label>
+      <div className="flex  justify-between w-full gap-2 flex-col md:flex-row lg:flex-row xl:flex-row">
+      {renderCommand('Day', days, 'day', isDayOpen, setIsDayOpen)}
+      {renderCommand('Month', months, 'month', isMonthOpen, setIsMonthOpen)}
+      {renderCommand('Year', years, 'year', isYearOpen, setIsYearOpen)}
+      </div>
     </div>
   );
 };
-
 const TextInput = ({
   name,
   value,
@@ -958,7 +959,6 @@ const FilterInput = ({
         filters?.map((filter, index) => {
           switch (filter.type) {
             case "search":
-            case "text":
               return renderInputField(filter, index);
             case "select-one":
               return renderPopoverSelect(
