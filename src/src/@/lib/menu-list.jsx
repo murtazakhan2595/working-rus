@@ -2,7 +2,6 @@ import {
   Users,
   SquareStack,
   House,
-  ArrowLeftRight,
   Award,
   CalendarClockIcon,
   CalendarRange,
@@ -13,7 +12,7 @@ import {
   GalleryHorizontalEnd,
   UserRoundSearch,
   UsersRound,
-  Settings2,
+  BadgeDollarSign,
 } from "lucide-react";
 
 /**
@@ -38,8 +37,8 @@ import {
 export function getMenuList(pathname, userRole) {
   const userRolesMap = {
     isPeopleTeam: userRole === 1 || userRole === 3,
-    isSelfServiceHub:
-      userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
+    isSelfServiceHub:  userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
+    isPayroll: userRole === 1 || userRole === 2 || userRole === 3,    
     isTaskManagement:
       userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
     isTalentSphere: userRole === 1 || userRole === 2 || userRole === 3,
@@ -108,6 +107,22 @@ export function getMenuList(pathname, userRole) {
         createMenu("/exit-employee", "Exit"),
         createMenu("/letter1", "Type of Letter 1"),
         createMenu("/letter2", "Type of Letter 2"),
+      ],
+    ),
+  ];
+  const payrollMenus = [
+    createMenu(
+      "",
+      "Payroll",
+      BadgeDollarSign ,
+      [
+        createMenu("/payroll", "Employee Payrolls"),
+        createMenu("/salary-setup", "Salary Setup"),
+        createMenu("/loans", "Loans"),
+        createMenu("/claim-request", "Claim Request"),
+        createMenu("/play-run", "Play Run"),
+        createMenu("/payslips", "Payslips"),
+        
       ],
     ),
   ];
@@ -191,10 +206,10 @@ export function getMenuList(pathname, userRole) {
     ),
   ];
 
-  const payrollAndAttendanceMenus = [
+  const AndAttendanceMenus = [
     createMenu(
       "",
-      "Payroll & Attendance",
+      "Attendance",
       CalendarClockIcon,
       [
         createMenu("/payroll", "Payroll"),
@@ -244,6 +259,10 @@ export function getMenuList(pathname, userRole) {
       groupLabel: "",
       menus: selfServiceHubMenus,
     },
+    userRolesMap.isPayroll && {
+      groupLabel: "",
+      menus: payrollMenus,
+    },
     userRolesMap.isTaskManagement && {
       groupLabel: "",
       menus: taskManagementMenus,
@@ -255,7 +274,7 @@ export function getMenuList(pathname, userRole) {
     },
     userRolesMap.isPayrollAttendance && {
       groupLabel: "",
-      menus: payrollAndAttendanceMenus,
+      menus: AndAttendanceMenus,
     },
     userRolesMap.dailyTaskReportMenus && {
       groupLabel: "",

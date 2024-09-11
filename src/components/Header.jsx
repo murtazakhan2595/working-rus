@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { FilterInput } from "components/form-control";
+
+
 
 const Header = ({ content }) => {
   const location = useLocation();
@@ -11,7 +12,7 @@ const Header = ({ content }) => {
     const pathNames = {
       "people-team": "People Team",
       "self-service": "Self Service",
-      "talent-spere": "Talent Spere",
+      "talent-sphere": "Talent Sphere",
       "task-management": "Task Management",
       "pay-attendance": "Pay and Attendance",
       "people-engagement": "People Engagement",
@@ -24,6 +25,8 @@ const Header = ({ content }) => {
       profile: "Profile",
       "profile-management": "Profile Management",
       "exit-clearance": "Exit Requests",
+      "payroll": "Employees Payroll",
+      
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);
