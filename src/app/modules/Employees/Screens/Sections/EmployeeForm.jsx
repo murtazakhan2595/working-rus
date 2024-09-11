@@ -9,7 +9,19 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../../../components/ui/card";
+import { Button } from "../../../../../components/ui/button";
+import { Input } from "../../../../../components/ui/input";
+import { Label } from "../../../../../src/@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../../../../components/ui/card";
 
+import { format } from "date-fns";
 import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -19,12 +31,17 @@ import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import { EmployeeInformation } from "../../../../../app/utils/Types/Employee";
 import { getEmployeeInformation } from "../../../../../app/utils/MappingObjects/mapEmployeeData";
+import { getEmployeeInformation } from "../../../../../app/utils/MappingObjects/mapEmployeeData";
 import {
   getEmployeeData,
   getNewEmployeeCode,
   saveEmployeeWorkInformationData,
 } from "../../../../../app/hooks/employee";
 
+import {
+  fetchEmployees,
+  fetchReportingManagers,
+} from "../../../../../state/slices/EmpSlice";
 import {
   fetchEmployees,
   fetchReportingManagers,
@@ -76,6 +93,7 @@ const SheetOnBorading = ({
 }) => {
   const formRef = React.createRef();
   const [date, setDate] = useState();
+  const [isOpen, setIsOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   let dispatch = useDispatch();
@@ -130,6 +148,9 @@ const SheetOnBorading = ({
     const employee = employees.filter(
       (emp) => emp.work_email === email && emp.value !== id
     );
+    const employee = employees.filter(
+      (emp) => emp.work_email === email && emp.value !== id
+    );
     if (employee && employee.length > 0) {
       setEmailAlreadyExist(true);
     } else {
@@ -137,6 +158,9 @@ const SheetOnBorading = ({
     }
   };
   const validateUsername = (username) => {
+    const employee = employees.filter(
+      (emp) => emp.label === username && emp.value !== id
+    );
     const employee = employees.filter(
       (emp) => emp.label === username && emp.value !== id
     );
@@ -174,6 +198,7 @@ const SheetOnBorading = ({
       if (
         error.response &&
         error.response.data.username[0] ===
+          "A user with that username already exists."
           "A user with that username already exists."
       ) {
         toast.error("A user with that username already exists.", {
@@ -239,6 +264,12 @@ const SheetOnBorading = ({
         open={isOpen}
         onOpenChange={setIsOpen}
       >
+      <div
+        side="right"
+        className="w-full p-0 "
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      >
         <div className="flex flex-col ">
           <div className="flex-grow ">
             <div className="p-0">
@@ -249,6 +280,9 @@ const SheetOnBorading = ({
                 initialValues={formData}
                 innerRef={formRef}
                 onSubmit={(values, { resetForm }) => {
+                  console.log("Form Data:", values); // Log form data to console
+                  handleSubmit(values, resetForm);
+                  setShowSuccess(true); // Show success message
                   console.log("Form Data:", values); // Log form data to console
                   handleSubmit(values, resetForm);
                   setShowSuccess(true); // Show success message
@@ -268,6 +302,10 @@ const SheetOnBorading = ({
                 }}
               >
                 {(props) => (
+                  <form
+                    onSubmit={props.handleSubmit}
+                    className="mt-6 space-y-6"
+                  >
                   <form
                     onSubmit={props.handleSubmit}
                     className="mt-6 space-y-6"
@@ -367,6 +405,8 @@ const SheetOnBorading = ({
                                   : ""
                               }
                               className={
+                                props.errors?.password &&
+                                props.touched?.password
                                 props.errors?.password &&
                                 props.touched?.password
                                   ? "is-invalid"
@@ -572,14 +612,26 @@ const SheetOnBorading = ({
                       </div>
                     </div>
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
-                      <div className="flex justify-end space-x-4">
+                      <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                         <Button variant="outline" size="lg">
                           <Link to="/profile-management">Cancel</Link>
                         </Button>
                         <Button type="submit" size="lg" variant="default">
                           {id ? "Update" : "Add"}
                         </Button>
+                          <Link to="/profile-management">Cancel</Link>
+                        </Button>
+                        <Button type="submit" size="lg" variant="default">
+                          {id ? "Update" : "Add"}
+                        </Button>
                         {showSuccess && (
+                          <Alert
+                            type="success"
+                            onClose={() => setShowSuccess(false)}
+                          >
+                            Form submitted successfully!
+                          </Alert>
+                        )}
                           <Alert
                             type="success"
                             onClose={() => setShowSuccess(false)}
@@ -599,6 +651,8 @@ const SheetOnBorading = ({
     </>
   );
 };
+  );
+};
 const mapStateToProps = (state) => {
   return {
     token: state.user.token,
@@ -610,3 +664,4 @@ const mapStateToProps = (state) => {
   };
 };
 export default connect(mapStateToProps)(SheetOnBorading);
+

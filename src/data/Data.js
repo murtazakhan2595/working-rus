@@ -7,6 +7,7 @@ import {
   fetchLeaveTypes,
   fetchDesignations,
   fetchProjects,
+  fetchOrganizations,
 } from "state/slices/CommonSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
@@ -511,6 +512,70 @@ export function getManagerSelected(managers, managersList) {
 
   return managers;
 }
+export const ResignationStatusOptions = [
+  { label: "Pending", value: "pending" },
+  { label: "Accepted by Manager", value: "accepted by manager" },
+  { label: "Rejected by Manager", value: "rejected by manager" },
+  { label: "Accepted by HR", value: "accepted by hr" },
+  { label: "Rejected by HR", value: "rejected by hr" },
+  { label: "Clearance initiated", value: "initiated clearance" },
+  { label: "Exit Interview", value: "exit interview" },
+];
+
+export const ResignationReasons = [
+  { value: "career-advance", label: "Career growth" },
+  { value: "better-opportunity", label: "Better opportunity" },
+  { value: "family-reasons", label: "Personal Reasons" },
+  { value: "relocation", label: "Relocation" },
+  { value: "health-reasons", label: "Health reasons" },
+  { value: "Job dissatisfaction", label: "Job dissatisfaction" },
+  { value: "Others", label: "Others" },
+];
+
+export const terminationReasonsOptions = [
+  {
+    value: 1,
+    label: "Poor Performance",
+  },
+  { value: 2, label: "Involuntary" },
+  {
+    value: 7,
+    label: "End of Contract",
+  },
+  { value: 3, label: "Retirement" },
+  { value: 4, label: "Layoff" },
+  { value: 5, label: "Dismissal" },
+  {
+    value: 6,
+    label: "Mutual Agreement",
+  },
+];
+
+export const NoticePeriod = [
+  {
+    value: "1 month",
+    label: "1 month",
+  },
+  {
+    value: "2 month",
+    label: "2 month",
+  },
+  {
+    value: "3 month",
+    label: "3 month",
+  },
+  {
+    value: "0 month",
+    label: "0 month",
+  },
+];
+export const TerminationStatusOptions = [
+  { label: "Viewd By Manager", value: "pending" },
+  { label: "Accepted by Employee", value: "accepted by employee" },
+  { label: "Rejected by Employee", value: "rejected by employee" },
+  { label: "Clearance initiated", value: "initiated clearance" },
+  { label: "Exit Interview", value: "exit interview" },
+];
 
 export const handleUpdateProfile = (dispatch, data) => {
   const userprofile = {
@@ -524,6 +589,7 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(fetchDepartments());
   dispatch(fetchLeaveTypes());
   dispatch(fetchDesignations());
+  dispatch(fetchOrganizations());
   dispatch(fetchReportingManagers());
   dispatch(fetchProjects(userprofile));
 };

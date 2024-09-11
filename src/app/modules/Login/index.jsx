@@ -10,29 +10,26 @@ import Cookies from "universal-cookie";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { handleUpdateProfile } from "data/Data";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "./../../../src/@/components/ui/label";
 import NewLogo from "../.././../assets/images/NewLogo";
-import { setToken } from '../../../state/actions/UserAction.js';
-import cover  from "../../../assets/images/cover.jpg";
+import { setToken } from "../../../state/actions/UserAction.js";
+import cover from "../../../assets/images/cover.jpg";
 
-import { StepBack  } from 'lucide-react';
+import { StepBack } from "lucide-react";
 
 import { IoWarningOutline } from "react-icons/io5";
 
 import { useLocation } from "react-router-dom";
 
-
-
 import confirm from "../.././../assets/images/confirm.png";
 import { PiCaretCircleLeftFill } from "react-icons/pi";
 
-
 // function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
-   let baseUrl = useSelector((state) => state.user.baseUrl);
+  let baseUrl = useSelector((state) => state.user.baseUrl);
 
   let dispatch = useDispatch();
 
@@ -137,6 +134,7 @@ function Login() {
       // Simulating a response delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
+      console.log(error);
       console.log(error?.response?.data?.detail ?? "Login Failed");
       toast.error(error?.response?.data?.detail ?? "Login Failed", {
         position: toast.POSITION.TOP_RIGHT,
@@ -177,109 +175,104 @@ function Login() {
 
   return (
     <>
+      <div className="container max-w-full mx-auto ">
+        <div className="absolute hidden top-3 right-3">
+          <Button>
+            <Link className="flex items-center" to="/">
+              <StepBack className="w-4 h-4 mr-2" /> Go back
+            </Link>
+          </Button>
+        </div>
 
-    <div className="container max-w-full mx-auto ">
-      <div className="absolute hidden top-3 right-3">
-      <Button >
-            
-            <Link className="flex items-center" to="/"><StepBack  className="w-4 h-4 mr-2" /> Go back</Link> 
-         </Button>
-      </div>
-        
-      <div className={"lg:grid lg:grid-cols-2" }>
-      <div className="flex items-center justify-center">
-        <div className="grid gap-6 mx-auto">
-          <div className="grid justify-center gap-2 text-center">
-            <div className="ml-auto mr-auto">
-              <NewLogo />
-            </div>
-            <h1 className="text-3xl font-bold">Login</h1>
-            <p className="text-balance text-muted-foreground">
-              Enter your email below to login to your account
-            </p>
-          </div>
-          <div className="grid gap-4">
-            <form
-              className=""
-              onSubmit={handleSubmit}
-              method="POST"
-            ><div className="grid gap-2">
-                <Label htmlFor="username">Username / Login ID</Label>
-                <Input
-                  id="usrname"
-                  required
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  title="Enter Your Username"
-                  value={values.username}
-                  onChange={handleChange}
-                />
-                <div className="text-sm text-rose-500">{errors.username}</div>
-              </div>
-              <div className="relative grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    to="/forgot-password"
-                    className="inline-block ml-auto text-sm underline"
-                  >
-                    Forgot your password?
-                  </Link>
+        <div className={"lg:grid lg:grid-cols-2"}>
+          <div className="flex items-center justify-center">
+            <div className="grid gap-6 mx-auto">
+              <div className="grid justify-center gap-2 text-center">
+                <div className="ml-auto mr-auto">
+                  <NewLogo />
                 </div>
-                <Input id="password" required
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  title="Enter Your Password"
-                  value={values.password}
-                  onChange={handleChange}
-                  className="" />
-                <Button
-                  type="button"
-                  onClick={handlePasswordVisibility}
-                  className={`absolute top-[25px] right-0 bg-transparent${showPassword ? "text-gray-400" : ""
-                    }`}
-                >
-                  {showPassword ? (
-                    <BiShow className="text-gray-400" />
-                  ) : (
-                    <TbEyeClosed className="text-gray-400" />
-                  )}
-                </Button>
+                <h1 className="text-3xl font-bold">Login</h1>
+                <p className="text-balance text-muted-foreground">
+                  Enter your email below to login to your account
+                </p>
+              </div>
+              <div className="grid gap-4">
+                <form className="" onSubmit={handleSubmit} method="POST">
+                  <div className="grid gap-2">
+                    <Label htmlFor="username">Username / Login ID</Label>
+                    <Input
+                      id="usrname"
+                      required
+                      name="username"
+                      type="text"
+                      autoComplete="username"
+                      title="Enter Your Username"
+                      value={values.username}
+                      onChange={handleChange}
+                    />
+                    <div className="text-sm text-rose-500">
+                      {errors.username}
+                    </div>
+                  </div>
+                  <div className="relative grid gap-2">
+                    <div className="flex items-center">
+                      <Label htmlFor="password">Password</Label>
+                      <Link
+                        to="/forgot-password"
+                        className="inline-block ml-auto text-sm underline"
+                      >
+                        Forgot your password?
+                      </Link>
+                    </div>
+                    <Input
+                      id="password"
+                      required
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      title="Enter Your Password"
+                      value={values.password}
+                      onChange={handleChange}
+                      className=""
+                    />
+                    <Button
+                      type="button"
+                      onClick={handlePasswordVisibility}
+                      className={`absolute top-[25px] right-0 bg-transparent${
+                        showPassword ? "text-gray-400" : ""
+                      }`}
+                    >
+                      {showPassword ? (
+                        <BiShow className="text-gray-400" />
+                      ) : (
+                        <TbEyeClosed className="text-gray-400" />
+                      )}
+                    </Button>
 
-                <div className="text-sm text-rose-500">{errors.password}</div>
+                    <div className="text-sm text-rose-500">
+                      {errors.password}
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Button type="submit" className="w-full">
+                      {isLoading ? (
+                        <span className="animate-pulse">Logging in...</span>
+                      ) : (
+                        <span>Log In</span>
+                      )}
+                    </Button>
+                  </div>
+                </form>
               </div>
-              <div className="grid gap-2">
-              <Button type="submit" className="w-full">
-                {isLoading ? (
-                  <span className="animate-pulse">Logging in...</span>
-                ) : (
-                  <span>Log In</span>
-                )}
-              </Button>
-              </div>
-            </form>
+            </div>
+          </div>
+          <div className="items-center hidden bg-white lg:flex">
+            <img src={cover} alt="Login page Cover Image" />
           </div>
         </div>
       </div>
-      <div className="items-center hidden bg-white lg:flex">
-        <img src={cover} alt="Login page Cover Image" />       
-      </div>
-      </div>
-     
-    </div>
     </>
   );
 }
 
 export default Login;
-
-
-
-
-
-
-
-
-

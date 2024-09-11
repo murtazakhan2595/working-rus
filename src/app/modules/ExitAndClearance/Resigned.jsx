@@ -1,17 +1,18 @@
 import { connect } from "react-redux";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { Table, PageLoader } from "components";
-import { Row, Col } from "reactstrap";
-import { ExitTerminatedColumns } from "app/utils/Types/TableColumns";
 import { FilterInput } from "components/form-control";
+import { Row, Col } from "reactstrap";
+import { ExitResignedColumns } from "app/utils/Types/TableColumns";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
-import TableCustom from "components/CustomTable";
 import { Card, CardContent } from "../../../components/ui/card.jsx";
+import TableCustom from "components/CustomTable";
 
-const Terminated = ({ userProfile, departments, filterData }) => {
+const Resigned = React.memo(({ userProfile, departments, filterData }) => {
   const [loading, setLoading] = useState(true);
-  const [Terminated, setTerminated] = useState(null);
+  const [Resigned, setResigned] = useState(null);
+
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -23,16 +24,18 @@ const Terminated = ({ userProfile, departments, filterData }) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
   };
+
   const fetchData = async () => {
     try {
       setLoading(true);
       const response = await getEmployeesResignations({ filterData, options });
-      setTerminated(response);
+      setResigned(response);
     } catch (e) {
       console.error(e);
     } finally {
@@ -42,6 +45,7 @@ const Terminated = ({ userProfile, departments, filterData }) => {
   useEffect(() => {
     fetchData();
   }, [options, filterData]);
+
   return (
     <>
       {loading ? (
@@ -50,11 +54,11 @@ const Terminated = ({ userProfile, departments, filterData }) => {
         <Card>
           <CardContent>
             <TableCustom
-              data={Terminated?.results || []}
-              columns={ExitTerminatedColumns}
+              data={Resigned?.results || []}
+              columns={ExitResignedColumns}
               hideTableHeader={true}
               pagination={true}
-              dataTotalSize={Terminated?.count || 0}
+              dataTotalSize={Resigned?.count || 0}
               tableOptions={tableOptions}
               dataStyle={{ backgroundColor: "white" }}
             />
@@ -63,7 +67,7 @@ const Terminated = ({ userProfile, departments, filterData }) => {
       )}
     </>
   );
-};
+});
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
@@ -71,4 +75,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Terminated);
+export default connect(mapStateToProps)(Resigned);

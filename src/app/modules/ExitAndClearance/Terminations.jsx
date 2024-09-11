@@ -1,25 +1,24 @@
-import { updateExitData } from "app/hooks/employee";
-import { ExitRequestColumns } from "app/utils/Types/TableColumns";
-import { Table } from "components";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ExitDetailsCard from "./ExitDetailsCard";
-const Terminations = ({ userProfile, terminations, reload }) => {
+import { connect } from "react-redux";
+import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
+import { TerminationStatusOptions } from "data/Data";
+import { FilterInput } from "components/form-control";
+import { PageLoader, Table } from "components";
+import { Card, CardContent } from "../../../components/ui/card.jsx";
+import { ExitRequestColumns } from "app/utils/Types/TableColumns";
+import { StatusList } from "./Sections";
+import TableCustom from "components/CustomTable";
+
+const Terminations = ({ userProfile, filterData }) => {
+  const [loading, setLoading] = useState(true);
+  const [selectedResignationId, setSelectedResignationId] = useState(null);
+  const [Terminations, setTerminations] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
   });
-
-  const [selectedResignationId, setSelectedResignationId] = useState(null);
-
-  useEffect(() => {
-    // When terminations changes, ensure the selected resignation is still valid
-    if (
-      selectedResignationId &&
-      !terminations.find((item) => item.id === selectedResignationId)
-    ) {
-      setSelectedResignationId(null);
-    }
-  }, [terminations]);
 
   const onPageChange = (name, value) => {
     const pageOptions = options;
@@ -35,87 +34,86 @@ const Terminations = ({ userProfile, terminations, reload }) => {
     onPageChange: onPageChange,
   };
 
-  const handleOptionSelect = async (selectedResignation, option) => {
+  console.log("filterData", filterData);
+  console.log("options", options);
+  const fetchData = async () => {
     try {
-      if (selectedResignation) {
-        selectedResignation = {
-          ...selectedResignation,
-          status_resignation: option,
-        };
-        const response = await updateExitData(selectedResignation);
-        if (response) {
-          reload();
-        }
-      }
-    } catch (error) {
-      console.error("Error updating application status:", error);
+      setLoading(true);
+      const response = await getEmployeesResignations({ filterData, options });
+      setTerminations(response);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
+  useEffect(() => {
+    fetchData();
+  }, [options, filterData]);
 
+  useEffect(() => {
+    // When termination changes, ensure the selected resignation is still valid
+    const termination = Terminations?.results;
+    const selectedResignation =
+      termination &&
+      termination.find((item) => item.id === selectedResignationId);
+    if (selectedResignationId && !selectedResignation) {
+      setSelectedResignationId(null);
+      setIsOpen(false);
+    }
+  }, [Terminations]);
   const closeModal = () => {
     setSelectedResignationId(null);
+    setIsOpen(false);
+    fetchData();
   };
-
-  const handleNext = () => {
-    const currentIndex = terminations.findIndex(
-      (item) => item.id === selectedResignationId
-    );
-    if (currentIndex < terminations.length - 1) {
-      setSelectedResignationId(terminations[currentIndex + 1].id);
-    }
-  };
-
-  const handlePrevious = () => {
-    const currentIndex = terminations.findIndex(
-      (item) => item.id === selectedResignationId
-    );
-    if (currentIndex > 0) {
-      setSelectedResignationId(terminations[currentIndex - 1].id);
-    }
-  };
-
   const handleRowClicked = (index, data, row) => {
     setSelectedResignationId(row.id);
+    setIsOpen(true);
   };
+
   return (
-    <div>
-      <Table
-        data={terminations || []}
-        columns={ExitRequestColumns(
-          handleOptionSelect,
-          handleRowClicked,
-          reload,
-          true
-        )}
-        pagination={true}
-        dataTotalSize={terminations.length || 0}
-        tableOptions={tableOptions}
-      />
+    <>
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <Card>
+          <CardContent>
+            <TableCustom
+              data={Terminations?.results || []}
+              columns={ExitRequestColumns(
+                handleRowClicked,
+                () => {
+                  fetchData();
+                },
+                userProfile.role === 2
+              )}
+              pagination={true}
+              dataTotalSize={Terminations?.count || 0}
+              tableOptions={tableOptions}
+            />
+          </CardContent>
+        </Card>
+      )}
+      {console.log(selectedResignationId)}
       {selectedResignationId !== null && (
         <ExitDetailsCard
-          resignation={terminations.find(
-            (item) => item.id === selectedResignationId
-          )}
+          resignationId={selectedResignationId}
           onClose={closeModal}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          disableNext={
-            terminations.findIndex(
-              (item) => item.id === selectedResignationId
-            ) >=
-            terminations.length - 1
-          }
-          disablePrevious={
-            terminations.findIndex(
-              (item) => item.id === selectedResignationId
-            ) <= 0
-          }
-          handleOptionSelect={handleOptionSelect}
-          reload
+          resignationsList={Terminations?.results}
+          reload={fetchData}
+          isResignation={false}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       )}
-    </div>
+    </>
   );
 };
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
 
-export default Terminations;
+export default connect(mapStateToProps)(Terminations);

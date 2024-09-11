@@ -47,7 +47,7 @@ export default function AllProjects(){
    <Card className="w-full h-[100%]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
-          <div className="font-semibold text-plum-1100">{userProfile.role === 4 ? "My Projects" : "All Projects"}</div>
+          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">{userProfile.role === 4 ? "My Projects" : "All Projects"}</div>
           <Button variant="outline" className="">
             <Link to="/projects">View Details</Link>
           </Button>

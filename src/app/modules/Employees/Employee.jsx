@@ -118,9 +118,9 @@ export default function EmployeeManagement() {
       <Stats stats={statsData} /> {/* Ensure this line is present */}
       <Tabs defaultValue="all" className="w-full" onValueChange={setSelectedStatus}>
         <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="inline-flex items-center justify-center bg-white rounded-full -1 h text-mauve-900">
+          <TabsList className="inline-flex items-center justify-center p-2 bg-white rounded-full text-mauve-900">
             {employeeStatuses && employeeStatuses?.map(status => (
-              <TabsTrigger key={status} value={status} className="data-[state=active]:bg-plum-500 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium">
+              <TabsTrigger key={status} value={status} className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium">
                 {status?.charAt(0).toUpperCase() + status?.slice(1)}
               </TabsTrigger>
             ))}
