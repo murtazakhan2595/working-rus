@@ -254,7 +254,7 @@ const SheetOnBorading = ({
           <div className="flex-grow ">
             <div className="p-0">
               <CardHeader className="prose">
-                <CardTitle>Add Employee</CardTitle>
+                <CardTitle></CardTitle>
               </CardHeader>
               <Formik
                 initialValues={formData}
@@ -290,7 +290,7 @@ const SheetOnBorading = ({
                       <h3 className="text-lg font-semibold">
                         Employee Details
                       </h3>
-                      <div className="grid  grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                         <div className="space-y-2">
                           <TextInput
                             name={"employeeId"}
@@ -431,7 +431,7 @@ const SheetOnBorading = ({
                       <h3 className="text-lg font-semibold">
                         Official Information
                       </h3>
-                      <div className="grid  grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                         <div className="space-y-2">
                           <SelectComponent
                             name={"department_name"}
@@ -578,7 +578,7 @@ const SheetOnBorading = ({
                       </div>
                     </div>
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
-                      <div className="flex justify-end space-x-4">
+                      <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                         <Button variant="outline" size="lg">
                           <Link to="/profile-management">Cancel</Link>
                         </Button>

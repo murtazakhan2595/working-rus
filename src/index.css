@@ -108,7 +108,9 @@
         @apply bg-background text-foreground font-body;
     }
 
-    h1,
+    h1, .h1{
+        @apply text-5xl font-semibold leading-snug;
+    }
     h2,
     h3,
     h4,
