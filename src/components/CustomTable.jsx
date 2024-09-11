@@ -1,22 +1,6 @@
-import React, { useState, useMemo } from "react";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableFooter,
-} from "../src/@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationLink,
-  PaginationNext,
-} from "../src/@/components/ui/pagination";
-import { SelectComponent } from "./form-control";
+import React, { useState, useMemo } from 'react';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "../src/@/components/ui/table";
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from "../src/@/components/ui/pagination";
 
 export default function TableCustom({
   columns,
@@ -27,6 +11,7 @@ export default function TableCustom({
   renderExpandedContent,
   dataStyle,
   pagination = true,
+  itemsPerPage = 10,
   className = "",
   showHeader = true, // Show header by default
 }) {
@@ -35,39 +20,28 @@ export default function TableCustom({
     page: tableOptions?.page ?? 1,
     sizePerPage: tableOptions?.sizePerPage ?? 10,
   };
-  console.log(tableOptions, options);
 
   const toggleExpandRow = (rowId) => {
     setExpandedRow(expandedRow === rowId ? null : rowId);
   };
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [sort, setSort] = useState({ key: "name", order: "asc" });
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [designationFilter, setDesignationFilter] = useState("all");
+  const [sort, setSort] = useState({ key: 'name', order: 'asc' });
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [designationFilter, setDesignationFilter] = useState('all');
 
   const employees = useMemo(() => {
     return data
       .filter((employee) => {
         const searchValue = search.toLowerCase();
         const statusFilterValue = statusFilter === "all" ? "" : statusFilter;
-        const designationFilterValue =
-          designationFilter === "all" ? "" : designationFilter;
+        const designationFilterValue = designationFilter === "all" ? "" : designationFilter;
         return (
-          (employee.name &&
-            employee.name.toLowerCase().includes(searchValue)) ||
-          (employee.email &&
-            employee.email.toLowerCase().includes(searchValue)) ||
-          (employee.designation &&
-            employee.designation.toLowerCase().includes(searchValue)) ||
-          (statusFilterValue
-            ? employee.status &&
-              employee.status.toLowerCase() === statusFilterValue
-            : true) ||
-          (designationFilterValue
-            ? employee.designation &&
-              employee.designation.toLowerCase() === designationFilterValue
-            : true) ||
+          (employee.name && employee.name.toLowerCase().includes(searchValue)) ||
+          (employee.email && employee.email.toLowerCase().includes(searchValue)) ||
+          (employee.designation && employee.designation.toLowerCase().includes(searchValue)) ||
+          (statusFilterValue ? employee.status && employee.status.toLowerCase() === statusFilterValue : true) ||
+          (designationFilterValue ? employee.designation && employee.designation.toLowerCase() === designationFilterValue : true) ||
           (employee.leaveDate && employee.leaveDate.includes(searchValue))
         );
       })
@@ -81,16 +55,16 @@ export default function TableCustom({
   }, [data, search, sort, statusFilter, designationFilter]);
 
   const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * tableOptions.sizePerPage;
-    return employees.slice(startIndex, startIndex + tableOptions.sizePerPage);
-  }, [employees, currentPage, tableOptions.sizePerPage]);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return employees.slice(startIndex, startIndex + itemsPerPage);
+  }, [employees, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(dataTotalSize / tableOptions.sizePerPage);
+  const totalPages = Math.ceil(dataTotalSize / itemsPerPage);
 
   const handleSort = (key) => {
     setSort((prevSort) => ({
       key,
-      order: prevSort.key === key && prevSort.order === "asc" ? "desc" : "asc",
+      order: prevSort.key === key && prevSort.order === 'asc' ? 'desc' : 'asc',
     }));
   };
 
@@ -99,14 +73,6 @@ export default function TableCustom({
       tableOptions.onPageChange("page", page);
     }
   };
-
-  const handlePageSizeChange = (name, page) => {
-    if (tableOptions.onPageChange) {
-      tableOptions.onPageChange(name, page);
-    }
-  };
-
-  console.log(paginatedData.length);
 
   return (
     <>
@@ -126,9 +92,7 @@ export default function TableCustom({
                       >
                         {column.text}
                         {sort.key === column.dataField && (
-                          <span className="ml-1">
-                            {sort.order === "asc" ? "↑" : "↓"}
-                          </span>
+                          <span className="ml-1">{sort.order === 'asc' ? '↑' : '↓'}</span>
                         )}
                       </TableHead>
                     ))}
@@ -142,40 +106,22 @@ export default function TableCustom({
                       <TableRow
                         onClick={() => {
                           if (rowExpand) toggleExpandRow(row.id);
-                          else if (tableOptions?.onRowClick)
-                            tableOptions.onRowClick(row);
+                          else if (tableOptions?.onRowClick) tableOptions.onRowClick(row);
                         }}
                       >
-                        {Array.isArray(columns) &&
-                          columns.map((column, index) => (
-                            <TableCell
-                              className={`${
-                                column.onClick ? "cursor-pointer " : ""
-                              }`}
-                              key={index}
-                              style={{
-                                ...(column.width
-                                  ? { width: `${column.width}` }
-                                  : {}),
-                                ...dataStyle,
-                              }}
-                              onClick={() => {
-                                if (column.rowExpandOnClick)
-                                  toggleExpandRow(row.id);
-                                else if (column.onClick)
-                                  column.onClick(recordIndex, data, row);
-                              }}
-                            >
-                              {column.formatter
-                                ? column.formatter(
-                                    row[column.dataField],
-                                    row,
-                                    data,
-                                    index
-                                  )
-                                : row[column.dataField]}
-                            </TableCell>
-                          ))}
+                        {Array.isArray(columns) && columns.map((column, index) => (
+                          <TableCell
+                            className={`${column.onClick ? "cursor-pointer " : ""}`}
+                            key={index}
+                            style={{ ...(column.width ? { width: `${column.width}` } : {}), ...dataStyle }}
+                            onClick={() => {
+                              if (column.rowExpandOnClick) toggleExpandRow(row.id);
+                              else if (column.onClick) column.onClick(recordIndex, data, row);
+                            }}
+                          >
+                            {column.formatter ? column.formatter(row[column.dataField], row, data, index) : row[column.dataField]}
+                          </TableCell>
+                        ))}
                       </TableRow>
                       {expandedRow === row.id && renderExpandedContent && (
                         <TableRow>
@@ -188,10 +134,7 @@ export default function TableCustom({
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="py-4 text-center"
-                    >
+                    <TableCell colSpan={columns.length} className="py-4 text-center">
                       No data available
                     </TableCell>
                   </TableRow>
@@ -201,59 +144,21 @@ export default function TableCustom({
           </div>
         </div>
         {pagination && (
-          <div className="flex justify-between ">
-            <CustomPageSizePagination
-              sizePerPage={options.sizePerPage}
-              onPageChange={handlePageSizeChange}
-            />
-            <Pagination>
-              <PaginationContent>
-                <PaginationPrevious
-                  onClick={() => handlePageChange("page", currentPage - 1)}
-                />
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <PaginationItem key={index}>
-                    <PaginationLink
-                      onClick={() => handlePageChange("page", index + 1)}
-                    >
-                      {index + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationNext
-                  onClick={() => handlePageChange("page", currentPage + 1)}
-                />
-              </PaginationContent>
-            </Pagination>
-          </div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationPrevious onClick={() => handlePageChange("page", currentPage - 1)} />
+              {Array.from({ length: totalPages }, (_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink onClick={() => handlePageChange("page", index + 1)} className={"hover:bg-plum-300 data-[state=active]:bg-plum-500"}>
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationNext onClick={() => handlePageChange("page", currentPage + 1)} />
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
     </>
   );
 }
-
-const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
-  const [size, setSize] = useState(sizePerPage);
-  const handleSizeClick = (size) => {
-    onPageChange("page", 1);
-    onPageChange("sizePerPage", size);
-  };
-  return (
-    <div>
-      <SelectComponent
-        value={size}
-        options={[
-          { value: 10, label: 10 },
-          { value: 25, label: 25 },
-          { value: 50, label: 50 },
-          { value: 100, label: 100 },
-        ]}
-        onChange={(name, value) => {
-          console.log(value);
-          handleSizeClick(value);
-          setSize(value);
-        }}
-      />
-    </div>
-  );
-};
