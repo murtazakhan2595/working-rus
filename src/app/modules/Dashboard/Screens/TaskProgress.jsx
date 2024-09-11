@@ -103,7 +103,7 @@ export default function Component() {
     <Card className="flex flex-col min-h-[442px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
-          <div className="font-semibold text-plum-1100">{userProfile.role === 4 ? "My Progress" : "Project Progress"} </div>
+          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg ">{userProfile.role === 4 ? "My Progress" : "Project Progress"} </div>
          <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button

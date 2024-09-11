@@ -13,7 +13,7 @@ export default function FormateLeaveTrackerName({ row }) {
     <>
     <div className="flex items-center gap-2">
       <div className="flex flex-row items-center gap-4">
-      <Avatar className=" h-14 w-14">
+      <Avatar className="hidden h-14 w-14 sm:inline">
                 <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
                 <AvatarFallback className="flex items-center justify-center rounded-full border-plum-500 bg-plum-300">{name?.toUpperCase().charAt(0)}</AvatarFallback>
               </Avatar>

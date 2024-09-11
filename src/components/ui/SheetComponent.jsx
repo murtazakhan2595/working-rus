@@ -19,11 +19,11 @@ const SheetComponent = ({
   setIsOpen,
 }) => {
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen} >
       <SheetTrigger asChild>
         <Button variant="default">{sheetData.triggerText}</Button>
       </SheetTrigger>
-      <SheetContent className={`${contentClassName} overflow-y-auto `}>
+      <SheetContent className={`${contentClassName} overflow-y-auto sm:max-w-4xl`}>
         <SheetHeader className="prose">
           <SheetTitle>{sheetData.title}</SheetTitle>
           <SheetDescription className="text-mauve-900">
