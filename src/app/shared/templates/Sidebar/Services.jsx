@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 const ServicesList = [
   { icon: UsersRound, label: "People Team", description: "Manage your team's profiles, roles, and organizational structure", path: "/profile-management" },
   { icon: UserRoundCheck, label: "Self Service", description: "Enable employees to access and update their own information.", path: "/my-profile" },
-  { icon: UserRoundSearch, label: "Talent Spere", description: "Attract, hire, and retain the best talent for your organization.", path: "/talent-spere" },
+  { icon: UserRoundSearch, label: "Talent Sphere", description: "Attract, hire, and retain the best talent for your organization.", path: "/talent-sphere" },
   { icon: ListTodo, label: "Task Management", description: "Assign tasks, track progress, and collaborate on projects.", path: "/my-task" },
   { icon: CalendarClockIcon, label: "Pay and Attendance", description: "Manage employee payroll, timesheets, and attendance records.", path: "/payroll" },
   { icon: Crosshair, label: "People Engagement", description: "Foster a positive work culture and improve employee satisfaction.", path: "/people-engagement" },

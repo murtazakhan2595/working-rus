@@ -47,7 +47,9 @@ import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/Cr
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
 import { ExitAndClearance } from "app/modules/ExitAndClearance";
+import  EmployeesPayroll  from 'app/modules/payroll/EmployeesPayroll'
 import "./index.css";
+
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -222,7 +224,15 @@ function App() {
                     path="/profile/:id"
                     element={<EditEmployeeProfile />}
                   />
-                  <Route path="/payroll" element={<ComingSoon />} />
+                  <Route
+                    exact
+                    path="/payroll"
+                    element={<EmployeesPayroll />} />
+                  <Route path="/salary-setup" element={<ComingSoon />} />
+                  <Route path="/loans" element={<ComingSoon />} />
+                  <Route path="/claim-request" element={<ComingSoon />} />
+                  <Route path="/play-run" element={<ComingSoon />} />
+                  <Route path="/payslips" element={<ComingSoon />} />
                   <Route path="/attendance" element={<ComingSoon />} />
                   <Route path="/development-plan" element={<ComingSoon />} />
                   <Route path="/user/:id" element={<ViewEmployee />} />
