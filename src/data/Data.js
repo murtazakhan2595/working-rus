@@ -577,6 +577,19 @@ export const TerminationStatusOptions = [
   { label: "Exit Interview", value: "exit interview" },
 ];
 
+export const salaryTypeOptions = [
+  { value: "monthly", label: "Monthly" },
+  { value: "weekly", label: "Weekly" },
+  { value: "per_hour", label: "Per Hour" },
+  { value: "yearly", label: "Yearly" },
+  { value: "contract", label: "Contract" },
+];
+export const payoutPeriodOptions = [
+  { value: "monthly", label: "Monthly" },
+  { value: "weekly", label: "Weekly" },
+  { value: "per_hour", label: "Per Hour" },
+];
+
 export const handleUpdateProfile = (dispatch, data) => {
   const userprofile = {
     id: data.id,
