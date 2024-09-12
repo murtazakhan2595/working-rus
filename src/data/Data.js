@@ -581,8 +581,7 @@ export const salaryTypeOptions = [
   { value: "monthly", label: "Monthly" },
   { value: "weekly", label: "Weekly" },
   { value: "per_hour", label: "Per Hour" },
-  { value: "yearly", label: "Yearly" },
-  { value: "contract", label: "Contract" },
+  { value: "project_based", label: "Project based" },
 ];
 export const payoutPeriodOptions = [
   { value: "monthly", label: "Monthly" },
@@ -594,34 +593,34 @@ export const payoutPeriodOptions = [
 
 // Dummy data
 export const employeeData = {
-  id: 'TXB-0056',
-  name: 'Dennis Callis',
-  role: 'UI/UX Designer / Mid-Level Designer',
-  avatar: '/placeholder.svg?height=80&width=80',
-  costToCompany: '3,870.34',
-  costToCompanyWords: 'Three Thousand Eight Hundred And Seventy AED',
+  id: "TXB-0056",
+  name: "Dennis Callis",
+  role: "UI/UX Designer / Mid-Level Designer",
+  avatar: "/placeholder.svg?height=80&width=80",
+  costToCompany: "3,870.34",
+  costToCompanyWords: "Three Thousand Eight Hundred And Seventy AED",
   incrementsCount: 3,
-  lastIncrementDate: '5 months ago'
-}
+  lastIncrementDate: "5 months ago",
+};
 
 export const salaryBreakup = [
-  { component: 'Basic Pay', amount: '300.00' },
-  { component: 'Fixed Allowance', amount: '300.00' },
-  { component: 'Home Allowance', amount: '50.00' },
-  { component: 'Phone Allowance', amount: '50.00' },
-  { component: 'Travel Allowance', amount: '100.00' },
-  { component: 'Food Allowance', amount: '100.00' },
-]
+  { component: "Basic Pay", amount: "300.00" },
+  { component: "Fixed Allowance", amount: "300.00" },
+  { component: "Home Allowance", amount: "50.00" },
+  { component: "Phone Allowance", amount: "50.00" },
+  { component: "Travel Allowance", amount: "100.00" },
+  { component: "Food Allowance", amount: "100.00" },
+];
 
 export const salarySummary = {
-  'Joining Date': 'Jul 31, 2022',
-  'Last Revised Date': 'Aug 2, 2024',
-  'Experience': '2 years, 5 Months',
-  'Previous CTC': 'AED 7,901.51',
-  'Salary Type': 'Monthly',
-  'Current CTC': 'AED 7,901.51',
-  'Salary Package': 'Mid-level'
-}
+  "Joining Date": "Jul 31, 2022",
+  "Last Revised Date": "Aug 2, 2024",
+  Experience: "2 years, 5 Months",
+  "Previous CTC": "AED 7,901.51",
+  "Salary Type": "Monthly",
+  "Current CTC": "AED 7,901.51",
+  "Salary Package": "Mid-level",
+};
 export const handleUpdateProfile = (dispatch, data) => {
   const userprofile = {
     id: data.id,
