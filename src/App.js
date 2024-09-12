@@ -49,6 +49,8 @@ import EmployeesExit from "app/modules/EmployeesExit";
 import { ExitAndClearance } from "app/modules/ExitAndClearance";
 import  EmployeesPayroll  from 'app/modules/payroll/EmployeesPayroll'
 import "./index.css";
+import EmployeeSalaryDetails  from "app/modules/payroll/Screens/EmployeeSalaryDetails";
+import Payslip from "app/modules/payroll/Screens/EmployeePayslipDownload";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -228,7 +230,8 @@ function App() {
                     exact
                     path="/payroll"
                     element={<EmployeesPayroll />} />
-                  <Route path="/salary-setup" element={<ComingSoon />} />
+                  <Route path="/salary-setup" element={<EmployeeSalaryDetails />} />
+                  <Route path="/payslip" element={<Payslip />} />
                   <Route path="/loans" element={<ComingSoon />} />
                   <Route path="/claim-request" element={<ComingSoon />} />
                   <Route path="/play-run" element={<ComingSoon />} />

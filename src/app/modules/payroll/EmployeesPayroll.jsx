@@ -19,6 +19,8 @@ import { PageLoader } from 'components';
 import SheetOnBoarding from "../../../components/ui/OnBoardingSheet.jsx";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../../src/@/components/ui/tabs.jsx"
 import Stats from "../../../components/ui/Stats.jsx";
+import { Button } from 'components/ui/button.jsx';
+
 
 
 
@@ -114,7 +116,9 @@ export default function EmployeesPayroll() {
 
   return (
     <div className="flex flex-col gap-4 profile-management">
-      <Header content={<SheetOnBoarding />} />
+      <Header content={<Button onClick={() => navigate("/salary-setup")}>Employee Salary Detail</Button>}>
+      
+      </Header>
       <Stats stats={statsData} /> {/* Ensure this line is present */}
       <Tabs defaultValue="all" className="w-full" onValueChange={setSelectedStatus}>
         <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
@@ -129,8 +133,7 @@ export default function EmployeesPayroll() {
             filters={[
               { type: 'search', placeholder: 'Search by ID and Name', name: 'id_and_first_name' },
               { type: 'select-one', option: departments, name: 'department_name', placeholder: 'Department' },
-              { type: 'select-two', option: designations, name: 'department_position', placeholder: 'Designation' },
-              { type: 'select-three', option: UserRoles, name: 'user_role', placeholder: 'Role' },
+              { type: 'select-two', option: designations, name: 'department_position', placeholder: 'Designation' },  //replace this one with Salary Type
             ]}
             onChange={handleFilterChange}
           />

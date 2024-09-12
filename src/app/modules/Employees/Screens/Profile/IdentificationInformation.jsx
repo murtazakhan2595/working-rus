@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import { getAllCountries } from "countries-and-timezones";
-import { visaOptions } from "../../../../../data/Data.js";
+import { countriesList, visaOptions } from "../../../../../data/Data.js";
 import {
   FileInput,
   DateInput,
@@ -180,14 +180,15 @@ const IdentificationInformation = ({
                       <div className="space-y-2">
                         <SelectComponent
                           name="place_of_issuance"
-                          value={selectedCountryId}
-                          setValue={setSelectedCountryId}
+                          options={countriesList}
+                          value={props.values.place_of_issuance}
                           error={props.errors.place_of_issuance}
                           touch={props.touched.place_of_issuance}
-                          options={countryOptions}
                           label="Select Country"
                           required={true}
-                          onChange={handleCountryChangeId}
+                          onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                         />
                       </div>
                       <div className="space-y-2">
@@ -269,13 +270,14 @@ const IdentificationInformation = ({
                           <div className="space-y-2">
                             <SelectComponent
                               name={"Passport_Issuance_Country"}
-                              value={selectedCountryPassport}
-                              setValue={setSelectedCountryPassport}
+                              value={props.values.place_of_issuance}
                               error={props.errors.place_of_issuance}
                               touch={props.touched.place_of_issuance}
-                              options={countryOptions}
+                              options={countriesList}
                               label={"Passport Issuance Country"}
-                              onChange={handleCountryChangePassport}
+                              onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
 
 
                             />
@@ -349,14 +351,14 @@ const IdentificationInformation = ({
                           <div className="space-y-2">
                             <SelectComponent
                               name={"country_of_visa_issuance"}
-                              value={selectedCountryVisa}
-                              setValue={setSelectedCountryVisa}
-                              options={countryOptions}
+                              value={props.values.country_of_visa_issuance}
+                              options={countriesList}
                               error={props.errors.country_of_visa_issuance}
-                              touch={props.touched.country_of_visa_issuance}
-                            
+                              touch={props.touched.country_of_visa_issuance}                            
                               label={"Visa Issuance Country"}
-                              onChange={handleCountryChangeVisa}
+                              onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                             />
                           </div>
                           <div className="space-y-2">

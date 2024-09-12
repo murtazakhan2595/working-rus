@@ -12,7 +12,7 @@ import {
   TextInput,
 } from "../../../../../components/form-control";
 import PageLoader from "../../../../../components/PageLoader.jsx";
-import { maritalStatus } from "../../../../../data/Data.js";
+import { countriesCallingCodes, countriesList, maritalStatus } from "../../../../../data/Data.js";
 import {
   getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,
@@ -25,7 +25,7 @@ import { Button } from "../../../../../components/ui/button";
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from '../../../../../src/@/components/ui/calendar';
-import { countries } from "country-data";
+
 
 
 
@@ -47,13 +47,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
   const [selectedMaritalStatus, setSelectedMaritalStatus] = React.useState("")
   const [selectedCountry, setSelectedCountry] = React.useState("")
 
-  const countryOptions = countries.all
-  .filter((country) => country.countryCallingCodes && country.countryCallingCodes.length > 0)
-  .map((country) => ({
-    value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
-    label: `${country.name} (+${country.countryCallingCodes[0].replace("+", "")})`,
-  }));
-  
+ 
 
 
   
@@ -83,15 +77,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
     if (response) nextstep();
   };
 
-  const handleMaritalStatusChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedMaritalStatus(value)
-  }
 
-  const handleCountryChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedCountry(value)
-  }
   return (
     <>
       {isLoading ? (
@@ -168,20 +154,20 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                       </div>
                       <div className="space-y-2">
 
-                        <PhoneNumberInput
-                          name={"mobile_no"}
-                          error={props.errors.mobile_no}
-                          touch={props.touched.mobile_no}
-                          value={props.values.mobile_no}
-                          label={"Contact no."}
-                          countryCode={props.values.country_code}
-                          countryCodeName={"country_code"}
-                          required={true}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                          countryOptions={countryOptions} // Pass the country options here
-                        />
+                      <PhoneNumberInput
+                            name={"mobile_no"}
+                            error={props.errors.mobile_no}
+                            touch={props.touched?.mobile_no}
+                            value={props.values?.mobile_no}
+                            required={true}
+                            label={"Contact no."}
+                            countryCode={props.values?.country_code}
+                            countryCodeName={"country_code"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                            countryOptions={countriesCallingCodes} // Pass the country options here
+                          />
                       </div>
                       <div className="space-y-2">
                         <TextInput
@@ -252,13 +238,15 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                       <div className="space-y-2">
                         <SelectComponent
                           name={"nationality"}
-                          options={countryOptions}
-                          error={props.errors.nationality}
-                          touch={props.touched.nationality}
-                          value={selectedCountry}
-                          setValue={setSelectedCountry}
-                          label={"Nationality"}
-                          onChange={handleCountryChange}
+                          options={countriesList}
+                            error={props.errors?.employee_location}
+                            touch={props.touched.employee_location}
+                            value={props.values.employee_location}
+                            required={true}
+                            label={"Nationality"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
                         />
                       </div>
                       <div className="space-y-2">
@@ -276,16 +264,17 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <SelectComponent
-                          name={"marital_status"}
-                          options={maritalStatus}
-                          error={props.errors.marital_status}
-                          touch={props.touched.marital_status}
-                          value={selectedMaritalStatus}
-                          setValue={setSelectedMaritalStatus}
-                          label={"Martial Status"}
-                          onChange={handleMaritalStatusChange}
-                        />
+                      <SelectComponent
+                        name={"marital_status"}
+                        options={maritalStatus}
+                        error={props.errors.marital_status}
+                        touch={props.touched.marital_status}
+                        value={props.values.marital_status}
+                        label={"Martial Status"}
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                        }}
+                      />
                       </div>
                     </div>
                   </div>

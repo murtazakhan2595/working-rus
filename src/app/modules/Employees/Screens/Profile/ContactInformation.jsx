@@ -17,6 +17,7 @@ import { getContactInfo } from "../../../../../app/utils/MappingObjects/mapEmplo
 import { validationEmployeeContactInfoFormSchema } from '../../../../../app/utils/FormSchema/employeeFormSchema'
 import { Button } from "../../../../../components/ui/button";
 import  countries  from "country-data";
+import { countriesCallingCodes } from "data/Data";
 
 
 
@@ -101,7 +102,7 @@ const ContactInformation = ({
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
-                          countryOptions={countryOptions} // Pass the country options here
+                          countryOptions={countriesCallingCodes} // Pass the country options here
                         />
                     </div>
                     <div className="space-y-2">

@@ -88,7 +88,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
             <Col md={6}>
                 <SelectComponent
                     name={'employee_location'}
-                    options={countryOptions}
+                    options={countriesList}
                     error={errors.employee_location}
                     touch={touched.employee_location}
                     value={values.employee_location}
