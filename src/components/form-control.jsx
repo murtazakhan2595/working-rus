@@ -34,7 +34,7 @@ import { cn } from "./../src/@/lib/utils";
 import { format, parse, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../src/@/components/ui/calendar";
-import { PatternFormat } from "react-number-format";
+import { PatternFormat } from 'react-number-format';
 
 const SelectComponent = ({
   name,
@@ -50,6 +50,8 @@ const SelectComponent = ({
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (currentValue) => {
+    console.log("currentValue", currentValue);
+    console.log("value", value);
     const newValue =
       currentValue === value || (currentValue === null && value === null)
         ? ""
@@ -63,6 +65,7 @@ const SelectComponent = ({
       <Label className={` ${value ? "" : ""}`} htmlFor={name}>
         {required && <span className="text-red-600">* </span>} {label}
       </Label>
+
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -215,12 +218,8 @@ const DateInput = ({
   required,
   minDate,
 }) => {
-  const [date, setDate] = useState(
-    value ? parse(value, "yyyy-MM-dd", new Date()) : null
-  );
-  const [inputValue, setInputValue] = useState(
-    value ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") : ""
-  );
+  const [date, setDate] = useState(value ? parse(value, "yyyy-MM-dd", new Date()) : null);
+  const [inputValue, setInputValue] = useState(value ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") : "");
   const [calendarDate, setCalendarDate] = useState(date || new Date());
 
   // Sync the input field and calendar when the value changes externally
@@ -270,9 +269,7 @@ const DateInput = ({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className={`w-full justify-start text-left font-normal ${
-              !date ? "text-muted-foreground" : ""
-            }`}
+            className={`w-full justify-start text-left font-normal ${!date ? 'text-muted-foreground' : ''}`}
           >
             {date ? format(date, "d MMMM yyyy") : <span>Pick a date</span>}
           </Button>
@@ -415,20 +412,22 @@ const PhoneNumberInput = ({
   touch,
   onChange,
   required,
-  countryCode,
-  value,
   countryOptions, // Receive the country options here
 }) => {
-  const [selectedCountryCode, setSelectedCountryCode] = useState(countryCode);
-  const [inputValue, setInputValue] = useState(value);
+  const [selectedCountryCode, setSelectedCountryCode] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSelectChange = (value) => {
+    console.log("select change", value);
     const selectedOption = countryOptions.find(
       (option) => option.value === value
     );
     if (selectedOption) {
+      console.log(
+        `Selected Country: ${selectedOption.label}, Calling Code: ${selectedOption.value}`
+      ); // Log selected country and calling code
       setSelectedCountryCode(selectedOption.value);
       setInputValue(`+${selectedOption.value}`); // Set input value to phone code
       onChange("country_code", selectedOption.value); // Update the country code in the parent component
@@ -437,8 +436,10 @@ const PhoneNumberInput = ({
   };
 
   const handleInputChange = (event) => {
+    console.log("chaning");
     const regExTelephone = /^[0-9-]+$/;
     let value = event.target.value;
+    console.log("value", value);
     value = value.replace(`+${selectedCountryCode}`, "");
     if (value.includes("+")) {
       value = "";

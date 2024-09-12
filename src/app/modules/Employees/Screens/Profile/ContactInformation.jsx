@@ -4,32 +4,42 @@ import { connect } from "react-redux";
 import {
   getEmployeeContactInfo,
   saveEmployeeContactInfoData,
-} from "../../../../../app/hooks/employee";
+} from "../../../../../app/hooks/employee"
 
 import {
+
   TextInput,
   PhoneNumberInput,
   TextAreaInput,
 } from "../../../../../components/form-control.jsx";
 import { PageLoader } from "components";
 import { getContactInfo } from "../../../../../app/utils/MappingObjects/mapEmployeeData.jsx";
-import { validationEmployeeContactInfoFormSchema } from "../../../../../app/utils/FormSchema/employeeFormSchema";
+import { validationEmployeeContactInfoFormSchema } from '../../../../../app/utils/FormSchema/employeeFormSchema'
 import { Button } from "../../../../../components/ui/button";
-import countries from "country-data";
+import  countries  from "country-data";
 import { countriesCallingCodes } from "data/Data";
 
-const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
+
+
+const ContactInformation = ({
+  nextstep,
+  employeeId,
+  isEditMode,
+  prevStep,
+}) => {
   const formRef = React.createRef();
   const [contactInfo, setContactInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  // const countryOptions = countries.all
-  // .filter((country) => country.countryCallingCodes && country.countryCallingCodes.length > 0)
-  // .map((country) => ({
-  //   value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
-  //   label: `${country.name} (+${country.countryCallingCodes[0].replace("+", "")})`,
-  // }));
 
+  const countryOptions = countries.all
+  .filter((country) => country.countryCallingCodes && country.countryCallingCodes.length > 0)
+  .map((country) => ({
+    value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
+    label: `${country.name} (+${country.countryCallingCodes[0].replace("+", "")})`,
+  }));
+
+  
   useEffect(() => {
     getEmployeeContactInfo(employeeId)
       .then((response) => {
@@ -50,7 +60,6 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
     if (response) nextstep();
   };
 
-  console.log(contactInfo);
   return (
     <>
       {isLoading ? (
@@ -80,20 +89,21 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
+                      
                       <PhoneNumberInput
-                        name={"emergency_phone_no"}
-                        error={props.errors.mobile_no}
-                        touch={props.touched.mobile_no}
-                        value={props.values.mobile_no}
-                        label="Emergency Contact"
-                        countryCode={props.values.country_code}
-                        countryCodeName={"emergency_country_code"}
-                        required={true}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                        countryOptions={countriesCallingCodes} // Pass the country options here
-                      />
+                          name={"emergency_phone_no"}
+                          error={props.errors.mobile_no}
+                          touch={props.touched.mobile_no}
+                          value={props.values.mobile_no}
+                          label="Emergency Contact"
+                          countryCode={props.values.country_code}
+                          countryCodeName={"emergency_country_code"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                          countryOptions={countriesCallingCodes} // Pass the country options here
+                        />
                     </div>
                     <div className="space-y-2">
                       <TextInput
@@ -150,17 +160,12 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                     </div>
                     <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex justify-end space-x-4">
-                        {!isEditMode && (
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            onClick={() => {
-                              prevStep();
-                            }}
-                          >
-                            Back
-                          </Button>
-                        )}
+                        {!isEditMode &&
+                          <Button variant="outline" size="lg" onClick={() => {
+                            prevStep()
+                          }}
+                          >Back</Button>
+                        }
                         <Button
                           type="submit"
                           size="lg"
@@ -169,8 +174,9 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                             props.handleSubmit();
                           }}
                         >
-                          {isEditMode ? "Save" : "Next"}
+                          {isEditMode ? 'Save' : 'Next'}
                         </Button>
+
                       </div>
                     </div>
                   </div>

@@ -19,6 +19,9 @@ import { FaTimes } from "react-icons/fa"; // Import the close icon from react-ic
 import { CircleX, X } from "lucide-react";
 import { Button } from "../../../../../components/ui/button.jsx";
 
+
+
+
 const ExperienceInformation = ({
   nextstep,
   employeeId,
@@ -85,12 +88,14 @@ const ExperienceInformation = ({
               handleSubmit(values, resetForm);
             }}
             validate={(values) => {
-              const errors = validationEmployeeExperienceFormSchema(values);
+              // const errors = validationEmployeeExperienceFormSchema(values);
+              const errors = {};
               return errors;
             }}
           >
             {(props) => (
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                  
                 <div>
                   {props.values?.experiences &&
                     props.values.experiences.length > 0 &&
@@ -167,17 +172,12 @@ const ExperienceInformation = ({
 
                 <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
                   <div className="flex justify-end space-x-4">
-                    {!isEditMode && (
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={() => {
-                          prevStep();
-                        }}
-                      >
-                        Back
-                      </Button>
-                    )}
+                    {!isEditMode &&
+                      <Button variant="outline" size="lg" onClick={() => {
+                        prevStep()
+                      }}
+                      >Back</Button>
+                    }
                     <Button
                       type="submit"
                       size="lg"
@@ -186,14 +186,16 @@ const ExperienceInformation = ({
                         props.handleSubmit();
                       }}
                     >
-                      {isEditMode ? "Save" : "Next"}
+                      {isEditMode ? 'Save' : 'Next'}
                     </Button>
+
                   </div>
                 </div>
               </form>
             )}
           </Formik>
         </div>
+
       )}
     </>
   );
