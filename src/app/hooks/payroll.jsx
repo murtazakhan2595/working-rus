@@ -35,4 +35,23 @@ const getEmployeePayroll = async (payload) => {
   }
 };
 
-export { getEmployeePayroll };
+const getEmployeePayrollById = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/payroll/employee-payroll/${id}`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching payroll data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+};
+export { getEmployeePayroll, getEmployeePayrollById };

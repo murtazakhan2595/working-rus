@@ -28,7 +28,7 @@ const EmployeesPayroll = ({ departments }) => {
     onPageChange: onPageChange,
     onRowClick: (row) => {
       console.log("Row clicked:", row);
-      navigate(`/salary-setup/${row.id}`);
+      navigate(`/payroll/${row.id}`);
     },
   };
 
