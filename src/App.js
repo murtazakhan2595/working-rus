@@ -228,7 +228,7 @@ function App() {
                   />
                   <Route exact path="/payroll" element={<EmployeesPayroll />} />
                   <Route
-                    path="/salary-setup/:id"
+                    path="/payroll/:id"
                     element={<EmployeeSalaryDetails />}
                   />
                   <Route
