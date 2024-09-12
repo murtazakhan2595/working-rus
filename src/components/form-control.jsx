@@ -34,6 +34,7 @@ import { cn } from "./../src/@/lib/utils";
 import { format, parse, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../src/@/components/ui/calendar";
+import { PatternFormat } from 'react-number-format';
 
 const SelectComponent = ({
   name,
@@ -217,40 +218,43 @@ const DateInput = ({
   required,
   minDate,
 }) => {
-  const [date, setDate] = useState();
-  const [inputValue, setInputValue] = useState("");
-  const [calendarDate, setCalendarDate] = useState();
+  const [date, setDate] = useState(value ? parse(value, "yyyy-MM-dd", new Date()) : null);
+  const [inputValue, setInputValue] = useState(value ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") : "");
+  const [calendarDate, setCalendarDate] = useState(date || new Date());
 
+  // Sync the input field and calendar when the value changes externally
   useEffect(() => {
-    if (date) {
-      setInputValue(format(date, "MM/dd/yyyy"));
-      setCalendarDate(date);
+    if (value) {
+      const parsedDate = parse(value, "yyyy-MM-dd", new Date());
+      if (isValid(parsedDate)) {
+        setDate(parsedDate);
+        setInputValue(format(parsedDate, "dd/MM/yyyy"));
+        setCalendarDate(parsedDate);
+      }
     }
-  }, [date]);
+  }, [value]);
 
-  const handleInputChange = (event) => {
-    const value = event.target.value;
-    setInputValue(value);
+  // Handle manual input changes and sync with calendar
+  const handleInputChange = (values) => {
+    const { formattedValue } = values;
+    setInputValue(formattedValue);
 
-    const parsedDate = parse(value, "MM/dd/yyyy", new Date());
-    if (isValid(parsedDate)) {
-      setDate(parsedDate);
-      setCalendarDate(parsedDate);
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+    if (dateRegex.test(formattedValue)) {
+      const parsedDate = parse(formattedValue, "dd/MM/yyyy", new Date());
+      if (isValid(parsedDate)) {
+        setDate(parsedDate);
+        setCalendarDate(parsedDate); // Sync with the calendar
+        onChange(name, format(parsedDate, "yyyy-MM-dd"));
+      }
     }
   };
 
-  const handleInputBlur = () => {
-    if (date) {
-      setInputValue(format(date, "MM/dd/yyyy"));
-    } else {
-      setInputValue("");
-    }
-  };
-
+  // Handle date selection from the calendar and sync with input
   const handleCalendarSelect = (selectedDate) => {
-    setDate(selectedDate);
     if (selectedDate) {
-      setInputValue(format(selectedDate, "MM/dd/yyyy"));
+      setDate(selectedDate);
+      setInputValue(format(selectedDate, "dd/MM/yyyy"));
       setCalendarDate(selectedDate);
       onChange(name, format(selectedDate, "yyyy-MM-dd"));
     }
@@ -258,35 +262,31 @@ const DateInput = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <Label className={` ${value ? "" : ""}`} for={name}>
+      <Label htmlFor={name}>
         {required && <span className="text-red-600">* </span>} {label}
       </Label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            variant={"outline"}
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
+            variant="outline"
+            className={`w-full justify-start text-left font-normal ${!date ? 'text-muted-foreground' : ''}`}
           >
-            <CalendarIcon className="w-4 h-4 mr-2" />
-            {date ? format(date, "MMMM d, yyyy") : <span>Pick a date</span>}
+            {date ? format(date, "d MMMM yyyy") : <span>Pick a date</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <div className="flex flex-col p-2 space-y-2">
-            <Input
-              type="text"
-              placeholder="MM/DD/YYYY"
+            <PatternFormat
+              format="##/##/####"
+              placeholder="DD/MM/YYYY"
               value={inputValue}
-              onChange={handleInputChange}
-              onBlur={handleInputBlur}
-              className="w-[240px]"
+              onValueChange={handleInputChange}
+              customInput={Input}
+              className="w-[240px] text-center mx-auto"
             />
             <Calendar
               mode="single"
-              selected={date}
+              selected={calendarDate} // Ensure calendar is synced with input
               onSelect={handleCalendarSelect}
               month={calendarDate}
               onMonthChange={setCalendarDate}
