@@ -45,6 +45,26 @@ const validationEmployeeContactInfoFormSchema = (values) => {
   return errors;
 };
 
+const validateEmployeePersonalInfoForm = (values) => {
+  const errors = {};
+  if (!values.first_name) errors.first_name = "First Name is required";
+  if (!values.last_name) errors.last_name = "Last Name is required";
+  if (!values.mobile_no) {
+    errors.mobile_no = "Mobile Number is required";
+  }
+  if (!values.nationality) {
+    errors.nationality = "Nationality is required";
+  }
+  if (!values.other_email) {
+    errors.other_email = "Other email is required";
+  }
+  if (!values.nic) errors.nic = "ID Card no is required";
+  if (!values.father_name) errors.father_name = "Father Name is required";
+  if (!values.mother_name) errors.mother_name = "Mother Name is required";
+
+  return errors;
+};
+
 const validationEmployeeExperienceFormSchema = (values) => {
   const errors = {};
   if (values.experiences) {
@@ -66,6 +86,31 @@ const validationEmployeeExperienceFormSchema = (values) => {
       }
     });
   }
+  return errors;
+};
+
+const validateEmployeeBankInformationForm = (values) => {
+  const errors = {};
+  if (!values.bank_name) errors.bank_name = "Bank Name is required";
+  if (!values.account_title) errors.account_title = "Account Title is required";
+  if (!values.account_number)
+    errors.account_number = "Account Number is required";
+  if (!values.account_iban) errors.account_iban = "IBAN Number is required";
+  return errors;
+};
+
+const validateEmployeeEducationForm = (values) => {
+  const errors = {};
+  if (!values.education_level)
+    errors.education_level = "Education Level is required";
+  if (!values.program) errors.program = "Program is required";
+  if (!values.institute_name)
+    errors.institute_name = "Institute Name is required";
+  if (!values.edu_start_date) errors.edu_start_date = "Start Date is required";
+  if (!values.edu_end_date) errors.edu_end_date = "End Date is required";
+
+  console.log(values)
+  console.log(errors)
   return errors;
 };
 const validationPersonalInfoFormSchema = Joi.object({
@@ -251,4 +296,7 @@ export {
   validationEmployeeInfoFormSchema,
   validationEmployeeContactInfoFormSchema,
   validationEmployeeExperienceFormSchema,
+  validateEmployeePersonalInfoForm,
+  validateEmployeeBankInformationForm,
+  validateEmployeeEducationForm,
 };
