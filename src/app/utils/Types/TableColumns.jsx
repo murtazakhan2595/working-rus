@@ -522,7 +522,7 @@ export const EmployeePayrollColumns = [
   },
   {
     dataField: "latest_effective_date",
-    text: "Date of Joining",
+    text: "Last Revised Date",
   },
 
   {
