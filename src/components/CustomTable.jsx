@@ -48,6 +48,7 @@ export default function TableCustom({
   const [designationFilter, setDesignationFilter] = useState("all");
 
   const employees = useMemo(() => {
+    console.log("data", data);
     return data
       .filter((employee) => {
         const searchValue = search.toLowerCase();
@@ -150,6 +151,9 @@ export default function TableCustom({
                           else if (tableOptions?.onRowClick)
                             tableOptions.onRowClick(row);
                         }}
+                        className={`${
+                          tableOptions?.onRowClick ? "cursor-pointer" : ""
+                        }`}
                       >
                         {Array.isArray(columns) &&
                           columns.map((column, index) => (

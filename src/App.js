@@ -47,9 +47,9 @@ import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/Cr
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
 import { ExitAndClearance } from "app/modules/ExitAndClearance";
-import  EmployeesPayroll  from 'app/modules/payroll/EmployeesPayroll'
+import EmployeesPayroll from "app/modules/payroll/EmployeesPayroll";
 import "./index.css";
-import EmployeeSalaryDetails  from "app/modules/payroll/Screens/EmployeeSalaryDetails";
+import EmployeeSalaryDetails from "app/modules/payroll/Screens/EmployeeSalaryDetails";
 import Payslip from "app/modules/payroll/Screens/EmployeePayslipDownload";
 
 function App() {
@@ -226,11 +226,15 @@ function App() {
                     path="/profile/:id"
                     element={<EditEmployeeProfile />}
                   />
+                  <Route exact path="/payroll" element={<EmployeesPayroll />} />
                   <Route
-                    exact
-                    path="/payroll"
-                    element={<EmployeesPayroll />} />
-                  <Route path="/salary-setup" element={<EmployeeSalaryDetails />} />
+                    path="/payroll/:id"
+                    element={<EmployeeSalaryDetails />}
+                  />
+                  <Route
+                    path="/salary-setup"
+                    element={<EmployeeSalaryDetails />}
+                  />
                   <Route path="/payslip" element={<Payslip />} />
                   <Route path="/loans" element={<ComingSoon />} />
                   <Route path="/claim-request" element={<ComingSoon />} />

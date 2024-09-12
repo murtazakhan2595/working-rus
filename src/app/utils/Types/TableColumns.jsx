@@ -29,7 +29,9 @@ import { RenderResignationAction } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import { TerminationStatusView } from "app/modules/ExitAndClearance/Sections";
 import { RenderTerminationAction } from "app/modules/ExitAndClearance/Sections";
-
+import EmployeeDataInfo from "../../modules/payroll/Sections/EmployeeDataInfo";
+import { DesignationName } from "utils/getValuesFromTables";
+import { DepartmentName } from "utils/getValuesFromTables";
 export const LeaveHistoryColumns = (updateLeaveType) => [
   {
     dataField: "name",
@@ -492,5 +494,46 @@ export const ExitResignedColumns = [
     formatter: (cell, row, list) => (
       <RenderResignedRow resignedEmployee={row} resignedEmployeeList={list} />
     ),
+  },
+];
+
+export const EmployeePayrollColumns = [
+  {
+    dataField: "employee",
+    text: "ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
+  },
+  {
+    dataField: "name",
+    text: "Employee",
+    formatter: (cell, row) => (
+      <EmployeeDataInfo name={cell} email={row.work_email} />
+    ),
+  },
+  {
+    dataField: "department_role",
+    text: "Designation",
+    formatter: (cell) => <DesignationName value={cell} />,
+  },
+  {
+    dataField: "department_name",
+    text: "Department",
+    // formatter: (cell) => <DepartmentName value={cell} />,
+  },
+  {
+    dataField: "latest_effective_date",
+    text: "Last Revised Date",
+  },
+
+  {
+    dataField: "basic_salary",
+    text: "Total cost",
+    formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
+  },
+  ,
+  {
+    dataField: "salary_type",
+    text: "Salary Type",
+    formatter: (cell) => <div className="capitalize">{cell}</div>,
   },
 ];
