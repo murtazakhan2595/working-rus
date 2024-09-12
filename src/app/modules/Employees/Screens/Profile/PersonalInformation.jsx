@@ -1,5 +1,3 @@
-
-
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -12,22 +10,26 @@ import {
   TextInput,
 } from "../../../../../components/form-control";
 import PageLoader from "../../../../../components/PageLoader.jsx";
-import { countriesCallingCodes, countriesList, maritalStatus } from "../../../../../data/Data.js";
+import {
+  countriesCallingCodes,
+  countriesList,
+  maritalStatus,
+} from "../../../../../data/Data.js";
 import {
   getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,
 } from "../../../../hooks/employee";
-import { validationPersonalInfoFormSchema } from "../../../../utils/FormSchema/employeeFormSchema";
+import {
+  validateEmployeePersonalInfoForm,
+  validationPersonalInfoFormSchema,
+} from "../../../../utils/FormSchema/employeeFormSchema";
 import { getPersonalInfo } from "../../../../utils/MappingObjects/mapEmployeeData.jsx";
 import { Label } from "../../../../../src/@/components/ui/label";
 import { Input } from "../../../../../components/ui/input";
 import { Button } from "../../../../../components/ui/button";
-import { format } from "date-fns"
+import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from '../../../../../src/@/components/ui/calendar';
-
-
-
+import { Calendar } from "../../../../../src/@/components/ui/calendar";
 
 // Get country options for Select component but do not showing country calling code
 
@@ -37,33 +39,22 @@ import { Calendar } from '../../../../../src/@/components/ui/calendar';
 // }));
 
 const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
-
- 
   const formRef = React.createRef();
   const [personalInfo, setPersonalInfo] = useState({});
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [date, setDate] = useState(new Date());
-  const [selectedMaritalStatus, setSelectedMaritalStatus] = React.useState("")
-  const [selectedCountry, setSelectedCountry] = React.useState("")
+  const [selectedMaritalStatus, setSelectedMaritalStatus] = React.useState("");
+  const [selectedCountry, setSelectedCountry] = React.useState("");
 
- 
-
-
-  
-  
-  
- 
   useEffect(() => {
     getEmployeePersonalInfoData(employeeId)
       .then((response) => {
         setPersonalInfo(response);
         setIsLoading(false);
-        console.log("I am then");
       })
       .catch((error) => {
         console.log(error);
-        console.log("I am catch");
       });
   }, [baseUrl, employeeId, token]);
 
@@ -76,7 +67,6 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
     );
     if (response) nextstep();
   };
-
 
   return (
     <>
@@ -96,17 +86,10 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                 handleSubmit(values, resetForm);
               }}
               validate={(values) => {
-                const errors = {};
-                // for (let field in values) {
-                //     if (!values[`${field}`]) {
-                //         errors[`${field}`] = 'This field is required';
-                //     }
-                // }
+                const errors = { ...validateEmployeePersonalInfoForm(values) };
                 if (imageError) {
                   errors.profile_picture = imageError;
                 }
-                // console.log(values, errors)
-
                 return errors;
               }}
             >
@@ -153,21 +136,20 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         />
                       </div>
                       <div className="space-y-2">
-
-                      <PhoneNumberInput
-                            name={"mobile_no"}
-                            error={props.errors.mobile_no}
-                            touch={props.touched?.mobile_no}
-                            value={props.values?.mobile_no}
-                            required={true}
-                            label={"Contact no."}
-                            countryCode={props.values?.country_code}
-                            countryCodeName={"country_code"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                            countryOptions={countriesCallingCodes} // Pass the country options here
-                          />
+                        <PhoneNumberInput
+                          name={"mobile_no"}
+                          error={props.errors.mobile_no}
+                          touch={props.touched?.mobile_no}
+                          value={props.values?.mobile_no}
+                          required={true}
+                          label={"Contact no."}
+                          countryCode={props.values?.country_code}
+                          countryCodeName={"country_code"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                          countryOptions={countriesCallingCodes} // Pass the country options here
+                        />
                       </div>
                       <div className="space-y-2">
                         <TextInput
@@ -239,48 +221,45 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         <SelectComponent
                           name={"nationality"}
                           options={countriesList}
-                            error={props.errors?.employee_location}
-                            touch={props.touched.employee_location}
-                            value={props.values.employee_location}
-                            required={true}
-                            label={"Nationality"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
+                          error={props.errors.nationality}
+                          touch={props.touched.nationality}
+                          value={props.values.nationality}
+                          required={true}
+                          label={"Nationality"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
                         />
                       </div>
                       <div className="space-y-2">
-                      
                         <DateInput
-                         
                           name={"date_of_birth"}
-                        error={props.errors.date_of_birth}
-                        touch={props.touched.date_of_birth}
-                        value={props.values.date_of_birth}
-                        label={"Date of Birth"}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
+                          error={props.errors.date_of_birth}
+                          touch={props.touched.date_of_birth}
+                          value={props.values.date_of_birth}
+                          label={"Date of Birth"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
                         />
                       </div>
                       <div className="space-y-2">
-                      <SelectComponent
-                        name={"marital_status"}
-                        options={maritalStatus}
-                        error={props.errors.marital_status}
-                        touch={props.touched.marital_status}
-                        value={props.values.marital_status}
-                        label={"Martial Status"}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                      />
+                        <SelectComponent
+                          name={"marital_status"}
+                          options={maritalStatus}
+                          error={props.errors.marital_status}
+                          touch={props.touched.marital_status}
+                          value={props.values.marital_status}
+                          label={"Martial Status"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
                   <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
                     <div className="flex justify-end space-x-4">
-
                       <Button
                         type="submit"
                         size="lg"
@@ -289,15 +268,11 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           props.handleSubmit();
                         }}
                       >
-                        {isEditMode ? 'Save' : 'Next'}
+                        {isEditMode ? "Save" : "Next"}
                       </Button>
-
                     </div>
                   </div>
-                  <div>
-
-
-                  </div>
+                  <div></div>
                 </form>
               )}
             </Formik>
