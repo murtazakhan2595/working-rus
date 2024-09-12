@@ -22,7 +22,7 @@ import {
   allotLeavesToEmployee,
 } from "app/hooks/leaveManagment";
 import { FaChevronCircleLeft } from "react-icons/fa";
-import { countryOptions } from "data/Data";
+import { countriesList } from "data/Data";
 import { getLavefromEmployeeInfo } from "app/utils/MappingObjects/mapLeaveData";
 import { Leave } from "app/utils/Types/LeaveManagment";
 import moment from "moment";
@@ -353,7 +353,7 @@ const CreateLeaveRequest = ({
                               <Col md="6">
                                 <SelectComponent
                                   name="nationality"
-                                  options={countryOptions}
+                                  options={countriesList}
                                   error={props.errors.nationality}
                                   touch={props.touched.nationality}
                                   value={props.values.nationality}

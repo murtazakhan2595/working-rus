@@ -17,7 +17,7 @@ import {
   employeeTypeOptions,
   jobTypeOptions,
   workTypeOptions,
-  countryOptions,
+  countriesList,
 } from "data/Data.js";
 
 import PageLoader from "components/PageLoader.jsx";
@@ -181,7 +181,7 @@ const JobForm = forwardRef(
                       <Col md="6">
                         <SelectComponent
                           name="location"
-                          options={countryOptions}
+                          options={countriesList}
                           error={props.errors.location}
                           touch={props.touched.location}
                           value={props.values.location}

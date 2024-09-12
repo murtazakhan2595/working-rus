@@ -12,7 +12,7 @@ import { Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
-import { countryOptions, NoticePeriod, ResignationReasons } from "data/Data";
+import { countriesList, NoticePeriod, ResignationReasons } from "data/Data";
 
 function ExitRequestForm({
   reload,
@@ -50,12 +50,12 @@ function ExitRequestForm({
 
   return (
     <>
-      <div className="m-2 mt-0 bg-white px-2 py-4 rounded-b-md">
+      <div className="px-2 py-4 m-2 mt-0 bg-white rounded-b-md">
         {loading ? (
           <PageLoader />
         ) : (
           <div className="w-full lg:w-[80%]">
-            <div className="bg-white  w-full rounded-lg px-8">
+            <div className="w-full px-8 bg-white rounded-lg">
               <div className="flex justify-between">
                 <h2 className="text-[#323333] text-lg font-semibold">
                   Employee Information
@@ -63,7 +63,7 @@ function ExitRequestForm({
               </div>
               <div className="flex flex-col">
                 {/* Image Section */}
-                <div className=" w-full flex  sm:flex-col  md:flex-row lg:flex-row justify-center lg:items-center gap-4">
+                <div className="flex justify-center w-full gap-4  sm:flex-col md:flex-row lg:flex-row lg:items-center">
                   {userDetails?.profile_picture?.file ||
                   userDetails?.profile_picture ? (
                     <img
@@ -75,12 +75,12 @@ function ExitRequestForm({
                       className="w-24 h-24 rounded-full"
                     />
                   ) : (
-                    <div className="opacity-70 w-24 h-24 rounded-full bg-slate-100 text-center align-middle justify-center items-center flex">
+                    <div className="flex items-center justify-center w-24 h-24 text-center align-middle rounded-full opacity-70 bg-slate-100">
                       Profile
                     </div>
                   )}
-                  <div className="w-full flex flex-col my-auto">
-                    <div className="font-semibold text-lg">
+                  <div className="flex flex-col w-full my-auto">
+                    <div className="text-lg font-semibold">
                       {userDetails.first_name} {userDetails.last_name}
                     </div>
                     <div className="opacity-70">
@@ -90,7 +90,7 @@ function ExitRequestForm({
                 </div>
               </div>
             </div>
-            <div className="bg-white  w-full rounded-lg p-6 mb-6">
+            <div className="w-full p-6 mb-6 bg-white rounded-lg">
               <Row>
                 <Col lg={12}>
                   <Formik
@@ -166,7 +166,7 @@ function ExitRequestForm({
                           <Col md={6}>
                             <SelectComponent
                               name={"employee_location"}
-                              options={countryOptions}
+                              options={countriesList}
                               error={props.errors?.employee_location}
                               touch={props.touched.employee_location}
                               value={userDetails.employee_location}
@@ -297,14 +297,14 @@ function ExitRequestForm({
                             <div className="flex flex-row gap-9 ">
                               <button
                                 type="submit"
-                                className="mt-4 bg-white border-2 border-black rounded-lg flex items-center justify-center gap-x-2 text-black font-lato text-base  w-48 h-12"
+                                className="flex items-center justify-center w-48 h-12 mt-4 text-base text-black bg-white border-2 border-black rounded-lg gap-x-2 font-lato"
                               >
                                 Reset
                               </button>
 
                               <button
                                 type="submit"
-                                className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base  w-48 h-12"
+                                className="flex items-center justify-center w-48 h-12 mt-4 text-base text-white bg-black rounded-lg gap-x-2 font-lato"
                               >
                                 Submit
                               </button>

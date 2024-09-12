@@ -86,20 +86,7 @@ const SheetOnBorading = ({
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  // ?popovers
-  // const [selectedDepartment, setSelectedDepartment] = React.useState("");
-  // const [selectedCountry, setSelectedCountry] = React.useState("");
-  // const [selectedDesignation, setSelectedDesignations] = React.useState("");
-  // const [selectedUserRole, setSelectedUserRole] = React.useState("");
-  // const [selectedJobRoles, setSelectedJobRoles] = React.useState("");
-  // const [selectedEmployeeStatus, setSelectedEmployeeStatus] =
-  //   React.useState("");
-  // const [selectedWorkPlaceType, setSelectedWorkPlaceType] = React.useState("");
-  // const [selectedDirectManges, setSelectedDirectManges] = React.useState("");
-  // const [selectedInDirectMangers, setSelectedInDirectMangers] =
-  //   React.useState("");
-  // const [selectedHeadofDepartment, setSelectedHeadofDepartment] =
-  //   React.useState("");
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -190,47 +177,6 @@ const SheetOnBorading = ({
     }
   };
 
-  // const handleDepartmentChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedDepartment(value)
-  // }
-  // const handleCountryChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedCountry(value)
-  // }
-
-  // const handleDesignationsChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedDesignations(value)
-  // }
-  // const handleUserRoleChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedUserRole(value)
-  // }
-  // const handleJobRolesChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedJobRoles(value)
-  // }
-  // const handleEmployeeStatusChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedEmployeeStatus(value)
-  // }
-  // const handleWorkPlaceTypeChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedWorkPlaceType(value)
-  // }
-  // const handleDirectMangersChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedDirectManges(value)
-  // }
-  // const handleInDirectMangersChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedInDirectMangers(value)
-  // }
-  // const handleHeadofDepartmentChange = (name, value) => {
-  //   console.log(`Selected ${name}: ${value}`)
-  //   setSelectedHeadofDepartment(value)
-  // }
   return (
     <>
       <div
@@ -375,7 +321,7 @@ const SheetOnBorading = ({
                             />
                             {props.errors?.password &&
                               props.touched?.password && (
-                                <div className="invalid-feedback text-red-600">
+                                <div className="text-red-600 invalid-feedback">
                                   {props.errors?.password}
                                 </div>
                               )}

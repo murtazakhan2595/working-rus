@@ -17,12 +17,9 @@ import { connect } from "react-redux";
 import { addApplication } from "../../../hooks/recruitment.jsx";
 import { Header } from "../Sections/index.js";
 import { ApplicationDetail } from "../../../utils/Types/Recruitment.jsx";
-import { getAllCountries } from "countries-and-timezones";
+import { countriesList } from "data/Data.js";
 
-const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
-  value: countryCode,
-  label: getAllCountries()[countryCode].name,
-}));
+
 
 const JobApplicationForm = () => {
   const { id } = useParams();
@@ -124,7 +121,7 @@ const JobApplicationForm = () => {
                               <Col md={12}>
                                 <SelectComponent
                                   name={"location"}
-                                  options={countryOptions}
+                                  options={countriesList}
                                   error={props.errors.location}
                                   touch={props.touched.location}
                                   value={props.values.location}
