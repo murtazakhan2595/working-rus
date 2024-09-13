@@ -54,4 +54,78 @@ const getEmployeePayrollById = async (id) => {
     return [];
   }
 };
-export { getEmployeePayroll, getEmployeePayrollById };
+
+const saveSalaryRevision = async (payload) => {
+  try{
+    let URL = `${baseUrl}/payroll/salaryrevision/`;
+    if(payload?.id){
+      URL = `${baseUrl}/payroll/salaryrevision/${payload.id}/`;
+    }
+    const response = await axios.post(URL, payload, {
+      headers: headers(),
+    });
+    if(response.status === 201 || response.status === 200){
+      return true;
+    }
+  }catch(error){
+    console.error("Error saving salary revision:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+};
+
+const getSalaryRevision = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  console.log("filterData", filterData);
+  console.log("payload", payload);
+  const URL = `/payroll/salaryrevision/?ordering=-id&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching salary revision data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+}
+
+const getSalaryRevisionByPayrollId = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/payroll/salaryrevision/${id}`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching salary revision data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+}
+export {
+  getEmployeePayroll,
+  getEmployeePayrollById,
+  saveSalaryRevision,
+  getSalaryRevision,
+  getSalaryRevisionByPayrollId,
+};

@@ -51,7 +51,12 @@ import {
 } from "../../../../src/@/components/ui/command";
 import { format } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
-import { getEmployeePayrollById } from "app/hooks/payroll";
+import {
+  getEmployeePayrollById,
+  getSalaryRevisionByPayrollId,
+  getSalaryRevision,
+} from "app/hooks/payroll";
+import RevisedSalarySheet from './RevisedSalarySheet';
 
 // Dummy data
 const employeeData = {
@@ -117,6 +122,8 @@ const salaryRevisions = [
 export default function EmployeeSalaryDetails() {
   const [date, setDate] = React.useState();
   const [payrollDetails, setPayrollDetails] = React.useState({});
+  const [salaryRevisions, setSalaryRevisions] = React.useState([]);
+  const [selectedRevision, setSelectedRevision] = React.useState(null);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -128,6 +135,13 @@ export default function EmployeeSalaryDetails() {
       if (response) {
         setPayrollDetails(response);
       }
+
+      const salaryRevisionData = await getSalaryRevision(); // hardcode for now filter not woking on Backend
+      if(salaryRevisionData){
+        console.log("salaryRevisionData", salaryRevisionData);
+        setSalaryRevisions(salaryRevisionData.results);
+      }
+
     };
     fetchData();
   }, [id]);
@@ -136,9 +150,14 @@ export default function EmployeeSalaryDetails() {
     navigate(-1); // This will navigate to the previous page
     console.log("Back button clicked");
   };
-
+  const handleSalaryRevisionClicked = (revision) => {
+    console.log("Revision clicked", revision);
+    setSelectedRevision(revision);
+  }
+console.log("selectedRevision", selectedRevision);
   return (
     <div className="container p-4 mx-auto">
+      {selectedRevision && <RevisedSalarySheet payrollID={id} state={"view"} />}
       <div className="mb-4">
         <Button
           variant="ghost"
@@ -263,8 +282,9 @@ export default function EmployeeSalaryDetails() {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between w-full">
           <CardTitle className="text-plum-900">Salary Revisions</CardTitle>
+          <RevisedSalarySheet payrollID={id} state={"create"} />
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4 mb-4">
@@ -373,10 +393,16 @@ export default function EmployeeSalaryDetails() {
             </TableHeader>
             <TableBody>
               {salaryRevisions.map((revision, index) => (
-                <TableRow key={index}>
-                  <TableCell>AED {revision.revisedCTC}</TableCell>
-                  <TableCell>AED {revision.previousCTC}</TableCell>
-                  <TableCell>{revision.lastRevisedDate}</TableCell>
+                <TableRow
+                  key={index}
+                  onClick={() => {
+                    handleSalaryRevisionClicked(revision);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <TableCell>AED {revision.new_salary}</TableCell>
+                  <TableCell>AED {revision.previous_salary}</TableCell>
+                  <TableCell>{revision.effective_date}</TableCell>
                   <TableCell>{revision.status}</TableCell>
                   <TableCell>
                     <span
@@ -397,7 +423,7 @@ export default function EmployeeSalaryDetails() {
                       {revision.letterStatus}
                     </span>
                   </TableCell>
-                  <TableCell>{revision.reason}</TableCell>
+                  <TableCell>{revision.notes}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
