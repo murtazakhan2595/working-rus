@@ -66,7 +66,7 @@ function getManagersStringSelected(managers) {
 const SheetOnBorading = ({
   isEditMode,
   nextStep,
-  setShowSuccessModal,
+  setShowFormSubmittedModal,
   setEmail,
   id,
   employees,
@@ -85,8 +85,6 @@ const SheetOnBorading = ({
   const [isLoading, setIsLoading] = useState(true);
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -153,7 +151,7 @@ const SheetOnBorading = ({
           if (isEditMode) nextStep();
           else navigate("/profile-management");
         } else {
-          setShowSuccessModal && setShowSuccessModal(true);
+          setShowFormSubmittedModal && setShowFormSubmittedModal(true);
         }
       }
     } catch (error) {
@@ -197,7 +195,6 @@ const SheetOnBorading = ({
                 onSubmit={(values, { resetForm }) => {
                   console.log("Form Data:", values); // Log form data to console
                   handleSubmit(values, resetForm);
-                  setShowSuccess(true); // Show success message
                 }}
                 validate={(values) => {
                   const errors = validationEmployeeInfoFormSchema(
@@ -525,14 +522,6 @@ const SheetOnBorading = ({
                         <Button type="submit" size="lg" variant="default">
                           {id ? "Update" : "Add"}
                         </Button>
-                        {showSuccess && (
-                          <Alert
-                            type="success"
-                            onClose={() => setShowSuccess(false)}
-                          >
-                            Form submitted successfully!
-                          </Alert>
-                        )}
                       </div>
                     </div>
                   </form>

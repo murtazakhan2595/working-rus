@@ -45,6 +45,26 @@ const validationEmployeeContactInfoFormSchema = (values) => {
   return errors;
 };
 
+const validateEmployeePersonalInfoForm = (values) => {
+  const errors = {};
+  if (!values.first_name) errors.first_name = "First Name is required";
+  if (!values.last_name) errors.last_name = "Last Name is required";
+  if (!values.mobile_no) {
+    errors.mobile_no = "Mobile Number is required";
+  }
+  if (!values.nationality) {
+    errors.nationality = "Nationality is required";
+  }
+  if (!values.other_email) {
+    errors.other_email = "Other email is required";
+  }
+  if (!values.nic) errors.nic = "ID Card no is required";
+  if (!values.father_name) errors.father_name = "Father Name is required";
+  if (!values.mother_name) errors.mother_name = "Mother Name is required";
+
+  return errors;
+};
+
 const validationEmployeeExperienceFormSchema = (values) => {
   const errors = {};
   if (values.experiences) {
@@ -68,6 +88,49 @@ const validationEmployeeExperienceFormSchema = (values) => {
   }
   return errors;
 };
+
+const validateEmployeeBankInformationForm = (values) => {
+  const errors = {};
+  if (!values.bank_name) errors.bank_name = "Bank Name is required";
+  if (!values.account_title) errors.account_title = "Account Title is required";
+  if (!values.account_number)
+    errors.account_number = "Account Number is required";
+  if (!values.account_iban) errors.account_iban = "IBAN Number is required";
+  return errors;
+};
+
+const validateEmployeeEducationForm = (values) => {
+  const errors = { educations: [] };
+
+  values.educations.forEach((education, index) => {
+    const educationErrors = {};
+
+    if (!education.education_level)
+      educationErrors.education_level = "Education Level is required";
+    if (!education.program) educationErrors.program = "Program is required";
+    if (!education.institute_name)
+      educationErrors.institute_name = "Institute Name is required";
+    if (!education.edu_start_date)
+      educationErrors.edu_start_date = "Start Date is required";
+    if (!education.edu_end_date)
+      educationErrors.edu_end_date = "End Date is required";
+
+    if (Object.keys(educationErrors).length > 0) {
+      errors.educations[index] = educationErrors;
+    }
+  });
+
+  return errors;
+};
+
+const validateEmployeeIdentificationForm = (values) => {
+  const errors = {};
+  if (!values.living_country_id_no) errors.living_country_id_no = "Living Country ID is required";
+  if (!values.place_of_issuance) errors.place_of_issuance = "Place of Issuance is required";
+  console.log(values)
+  console.log(errors)
+   return errors; 
+}
 const validationPersonalInfoFormSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
   last_name: Joi.string().min(3).max(40).required().label("Last Name"),
@@ -251,4 +314,8 @@ export {
   validationEmployeeInfoFormSchema,
   validationEmployeeContactInfoFormSchema,
   validationEmployeeExperienceFormSchema,
+  validateEmployeePersonalInfoForm,
+  validateEmployeeBankInformationForm,
+  validateEmployeeEducationForm,
+  validateEmployeeIdentificationForm,
 };
