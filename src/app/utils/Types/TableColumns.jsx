@@ -507,7 +507,7 @@ export const EmployeePayrollColumns = [
     dataField: "name",
     text: "Employee",
     formatter: (cell, row) => (
-      <EmployeeDataInfo name={cell} email={row.work_email} />
+      <EmployeeDataInfo name={cell} email={row.work_email} src={row?.profile_picture?.file}/>
     ),
   },
   {
