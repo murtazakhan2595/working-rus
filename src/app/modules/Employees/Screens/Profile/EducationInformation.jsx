@@ -54,11 +54,13 @@ const EducationInformation = ({
   }, [baseUrl, employeeId, token]);
 
   const handleSubmit = async (data) => {
+    console.log("data", data);
     try {
       const response = await saveEmployeeAcademicRecordData(
         employeeId,
         data.educations
       );
+      console.log("response", response);
       if (response) nextstep();
     } catch (error) {
       console.error("Error saving academic records:", error);
@@ -67,9 +69,12 @@ const EducationInformation = ({
 
   const handleDelete = async (educationId, index, props) => {
     try {
-      await deleteEmployeeAcademicRecordData(baseUrl, employeeId, token, [
-        educationId,
-      ]);
+      console.log("educationId", educationId);
+      if(educationId){
+        await deleteEmployeeAcademicRecordData(baseUrl, employeeId, token, [
+          educationId,
+        ]);
+      }
       const newEducations = [...props.values.educations];
       newEducations.splice(index, 1);
       props.setFieldValue("educations", newEducations);
@@ -96,13 +101,20 @@ const EducationInformation = ({
               initialValues={{ educations: educations }}
               ref={formRef}
               onSubmit={(values, { resetForm }) => {
+                console.log("submit in formik")
                 handleSubmit(values);
               }}
-              validate={validateEmployeeEducationForm}
+              validate={(values) => {
+                const errors = validateEmployeeEducationForm(values)
+                console.log("errors", errors?.educations?.length)
+                if(errors?.educations?.length ===0){
+                  return {}
+                }
+                return errors
+              }}
             >
               {(props) => (
                 <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-                  {console.log("props", props)}
                   {props.values?.educations &&
                     props.values.educations.length > 0 &&
                     props.values.educations.map((education, index) => (
@@ -134,7 +146,7 @@ const EducationInformation = ({
                                   props.errors.educations[index]
                                     ?.education_level
                                 }
-                                touched={
+                                touch={
                                   props.touched.educations &&
                                   props.touched.educations[index]
                                     ?.education_level
@@ -157,7 +169,7 @@ const EducationInformation = ({
                                   props.errors.educations &&
                                   props.errors.educations[index]?.program
                                 }
-                                touched={
+                                touch={
                                   props.touched.educations &&
                                   props.touched.educations[index]?.program
                                 }
@@ -176,7 +188,7 @@ const EducationInformation = ({
                                   props.errors.educations &&
                                   props.errors.educations[index]?.institute_name
                                 }
-                                touched={
+                                touch={
                                   props.touched.educations &&
                                   props.touched.educations[index]
                                     ?.institute_name
@@ -196,7 +208,7 @@ const EducationInformation = ({
                                   props.errors.educations &&
                                   props.errors.educations[index]?.edu_start_date
                                 }
-                                touched={
+                                touch={
                                   props.touched.educations &&
                                   props.touched.educations[index]
                                     ?.edu_start_date
@@ -216,7 +228,7 @@ const EducationInformation = ({
                                   props.errors.educations &&
                                   props.errors.educations[index]?.edu_end_date
                                 }
-                                touched={
+                                touch={
                                   props.touched.educations &&
                                   props.touched.educations[index]?.edu_end_date
                                 }
@@ -236,7 +248,7 @@ const EducationInformation = ({
                                   props.errors.educations &&
                                   props.errors.educations[index]?.education_body
                                 }
-                                touched={
+                                touch={
                                   props.touched.educations &&
                                   props.touched.educations[index]
                                     ?.education_body
@@ -278,14 +290,7 @@ const EducationInformation = ({
                           Back
                         </Button>
                       )}
-                      <Button
-                        type="submit"
-                        size="lg"
-                        variant="default"
-                        onClick={() => {
-                          props.handleSubmit();
-                        }}
-                      >
+                      <Button size="lg" variant="default" type="submit">
                         {isEditMode ? "Save" : "Next"}
                       </Button>
                     </div>

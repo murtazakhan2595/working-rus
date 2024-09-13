@@ -100,19 +100,37 @@ const validateEmployeeBankInformationForm = (values) => {
 };
 
 const validateEmployeeEducationForm = (values) => {
-  const errors = {};
-  if (!values.education_level)
-    errors.education_level = "Education Level is required";
-  if (!values.program) errors.program = "Program is required";
-  if (!values.institute_name)
-    errors.institute_name = "Institute Name is required";
-  if (!values.edu_start_date) errors.edu_start_date = "Start Date is required";
-  if (!values.edu_end_date) errors.edu_end_date = "End Date is required";
+  const errors = { educations: [] };
 
-  console.log(values)
-  console.log(errors)
+  values.educations.forEach((education, index) => {
+    const educationErrors = {};
+
+    if (!education.education_level)
+      educationErrors.education_level = "Education Level is required";
+    if (!education.program) educationErrors.program = "Program is required";
+    if (!education.institute_name)
+      educationErrors.institute_name = "Institute Name is required";
+    if (!education.edu_start_date)
+      educationErrors.edu_start_date = "Start Date is required";
+    if (!education.edu_end_date)
+      educationErrors.edu_end_date = "End Date is required";
+
+    if (Object.keys(educationErrors).length > 0) {
+      errors.educations[index] = educationErrors;
+    }
+  });
+
   return errors;
 };
+
+const validateEmployeeIdentificationForm = (values) => {
+  const errors = {};
+  if (!values.living_country_id_no) errors.living_country_id_no = "Living Country ID is required";
+  if (!values.place_of_issuance) errors.place_of_issuance = "Place of Issuance is required";
+  console.log(values)
+  console.log(errors)
+   return errors; 
+}
 const validationPersonalInfoFormSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
   last_name: Joi.string().min(3).max(40).required().label("Last Name"),
@@ -299,4 +317,5 @@ export {
   validateEmployeePersonalInfoForm,
   validateEmployeeBankInformationForm,
   validateEmployeeEducationForm,
+  validateEmployeeIdentificationForm,
 };

@@ -22,6 +22,7 @@ import {
 
 
 import { Button } from "../../../../../components/ui/button";
+import { validateEmployeeIdentificationForm } from "app/utils/FormSchema/employeeFormSchema.jsx";
 
 
 // const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
@@ -139,25 +140,7 @@ const IdentificationInformation = ({
               onSubmit={(values, { resetForm }) => {
                 handleSubmit(values, resetForm);
               }}
-              validate={(values) => {
-                const errors = {};
-                console.log(values);
-                // if (values.experiences) {
-                //   values.experiences.forEach((value, index) => {
-                //     const experienceErrors = {};
-                //     Object.keys(value).forEach((field) => {
-                //       if (!value[field] && field !== 'disableEndDate') {
-                //         experienceErrors[field] = 'This field is required';
-                //       }
-                //     });
-                //     if (Object.keys(experienceErrors).length > 0) {
-                //       errors.experiences = errors.experiences || [];
-                //       errors.experiences[index] = experienceErrors;
-                //     }
-                //   });
-                //  }
-                return errors;
-              }}
+              validate={validateEmployeeIdentificationForm}
             >
               {(props) => (
                 <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
@@ -187,8 +170,8 @@ const IdentificationInformation = ({
                           label="Select Country"
                           required={true}
                           onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
+                            props.setFieldValue(field, value);
+                          }}
                         />
                       </div>
                       <div className="space-y-2">
@@ -276,10 +259,8 @@ const IdentificationInformation = ({
                               options={countriesList}
                               label={"Passport Issuance Country"}
                               onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-
-
+                                props.setFieldValue(field, value);
+                              }}
                             />
                           </div>
                           <div className="space-y-2">
@@ -334,7 +315,7 @@ const IdentificationInformation = ({
                       </div>
                       {props.values.is_visa_applicable && (
                         <>
-                        <h6 className="text-base">Visa Details</h6>
+                          <h6 className="text-base">Visa Details</h6>
                           <div className="col-span-2 space-y-2">
                             <TextInput
                               name={"entry_permit_number"}
@@ -354,11 +335,11 @@ const IdentificationInformation = ({
                               value={props.values.country_of_visa_issuance}
                               options={countriesList}
                               error={props.errors.country_of_visa_issuance}
-                              touch={props.touched.country_of_visa_issuance}                            
+                              touch={props.touched.country_of_visa_issuance}
                               label={"Visa Issuance Country"}
                               onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
+                                props.setFieldValue(field, value);
+                              }}
                             />
                           </div>
                           <div className="space-y-2">
@@ -425,7 +406,7 @@ const IdentificationInformation = ({
                               }}
                             />
                           </div>
-                          
+
                           <div className="space-y-2">
                             <DateInput
                               name={"visa_country_entry_date"}
@@ -463,8 +444,7 @@ const IdentificationInformation = ({
                               }}
                             />
                           </div>
-                          
-                          
+
                           <div className="space-y-2">
                             <FileInput
                               name={"visa_page"}
@@ -518,7 +498,7 @@ const IdentificationInformation = ({
                       </div>
                       {props.values.is_insurance_applicable && (
                         <>
-                        <h6 className="text-base">Insurance Details</h6>
+                          <h6 className="text-base">Insurance Details</h6>
                           <div className="col-span-2 space-y-2">
                             <TextInput
                               name={"dha_id"}
@@ -558,7 +538,7 @@ const IdentificationInformation = ({
                               }}
                             />
                           </div>
-                          
+
                           {/* <div className="space-y-2">
                           <DateInput
                             name={"Passport_Issuance_Date"}
@@ -626,12 +606,17 @@ const IdentificationInformation = ({
                     </div>
                     <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex justify-end space-x-4">
-                        {!isEditMode &&
-                          <Button variant="outline" size="lg" onClick={() => {
-                            prevStep()
-                          }}
-                          >Back</Button>
-                        }
+                        {!isEditMode && (
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            onClick={() => {
+                              prevStep();
+                            }}
+                          >
+                            Back
+                          </Button>
+                        )}
                         <Button
                           type="submit"
                           size="lg"
@@ -640,9 +625,8 @@ const IdentificationInformation = ({
                             props.handleSubmit();
                           }}
                         >
-                          {isEditMode ? 'Save' : 'Next'}
+                          {isEditMode ? "Save" : "Next"}
                         </Button>
-
                       </div>
                     </div>
                   </div>
