@@ -14,6 +14,13 @@ import Stats from "./../../../../../components/ui/Stats";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../../../../src/@/components/ui/table";
 import { Badge } from "../../../../../components/ui/badge";
 
+/**
+ * TalentSphere component
+ * 
+ * This component displays a dashboard for talent management, showing job openings, applications, shortlisted, and interviewed candidates.
+ * 
+ * @returns {JSX.Element} The TalentSphere component
+ */
 const TalentSphere = () => {
   const [posts, setPosts] = useState([]);
   const [applicantsData, setApplicantsData] = useState([]);
@@ -25,6 +32,13 @@ const TalentSphere = () => {
   const [interviewed, setInterviewed] = useState(0);
   const navigate = useNavigate();
 
+  /**
+   * Fetches job posts and updates the state
+   * 
+   * @async
+   * @returns {Promise<void>}
+   */
+  
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -38,7 +52,12 @@ const TalentSphere = () => {
       setIsLoading(false);
     }
   };
-
+/**
+   * Fetches job applicants and updates the state
+   * 
+   * @async
+   * @returns {Promise<void>}
+   */
   const fetchLists = async () => {
     try {
       const applicants = await getJobApplicants();
@@ -120,35 +139,41 @@ const TalentSphere = () => {
 export default TalentSphere;
 
 
-const OnGoingApplications = ({ applicantsData }) => {
-  return (
-    <div className="h-full overflow-y-auto hideScroll">
-      <Table className="min-w-full bg-white">
-        <TableHeader>
-          <TableRow>
-            <TableHead className="py-4">ID</TableHead>
-            <TableHead className="py-4">Full Name</TableHead>
-            <TableHead className="py-4">Job Title</TableHead>
-            <TableHead className="py-4 whitespace-nowrap">Application Status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {applicantsData.slice(0, 5).map((applicant) => (
-            <TableRow key={applicant.id} className="border-t">
-              <TableCell className="py-4 text-xs ">{applicant.id}</TableCell>
-              <TableCell className="py-4 text-sm font-bold ">
-                {applicant.full_name}
-              </TableCell>
-              <TableCell className="py-4 text-xs ">
-                {applicant.job_title}
-              </TableCell>
-              <TableCell className="py-4 text-sm leading-4 whitespace-nowrap">
-                <Badge variant="outline" className="text-xs">{applicant.application_status}</Badge>
-              </TableCell>
+// ...
+
+  /**
+   * OnGoingApplications component
+   * 
+   * This component displays a table of ongoing job applications
+   * 
+   * @param {object} applicantsData - The applicants data
+   * @returns {JSX.Element} The OnGoingApplications component
+   */
+  const OnGoingApplications = ({ applicantsData }) => {
+    return (
+      <div className="h-full overflow-y-auto hideScroll">
+        <Table className="min-w-full bg-white">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="py-4">ID</TableHead>
+              <TableHead className="py-4">Full Name</TableHead>
+              <TableHead className="py-4">Job Title</TableHead>
+              <TableHead className="py-4 whitespace-nowrap">Application Status</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-};
+          </TableHeader>
+          <TableBody>
+            {applicantsData.slice(0, 5).map((applicant) => (
+              <TableRow key={applicant.id} className="border-t">
+                <TableCell className="py-4 text-xs ">{applicant.id}</TableCell>
+                <TableCell className="py-4 text-sm font-bold ">{applicant.full_name}</TableCell>
+                <TableCell className="py-4 text-xs ">{applicant.job_title}</TableCell>
+                <TableCell className="py-4 text-sm leading-4 whitespace-nowrap">
+                  <Badge variant="outline" className="text-xs">{applicant.application_status}</Badge>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
