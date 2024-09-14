@@ -32,6 +32,15 @@ import { RenderTerminationAction } from "app/modules/ExitAndClearance/Sections";
 import EmployeeDataInfo from "../../modules/payroll/Sections/EmployeeDataInfo";
 import { DesignationName } from "utils/getValuesFromTables";
 import { DepartmentName } from "utils/getValuesFromTables";
+
+/**
+ * LeaveHistoryColumns
+ * 
+ * Returns an array of column definitions for the Leave History table.
+ * 
+ * @param {function} updateLeaveType - A function to update the leave type.
+ * @returns {array} An array of column definitions.
+ */
 export const LeaveHistoryColumns = (updateLeaveType) => [
   {
     dataField: "name",
@@ -80,7 +89,13 @@ export const LeaveHistoryColumns = (updateLeaveType) => [
     roWExpandOnClick: true,
   },
 ];
-
+/**
+ * EmployeeColumns
+ * 
+ * Returns an array of column definitions for the Employee table.
+ * 
+ * @returns {array} An array of column definitions.
+ */
 export const EmployeeColumns = [
   {
     dataField: "id",
@@ -129,7 +144,13 @@ export const EmployeeColumns = [
     formatter: (cell, row) => <EmployeeAction row={row} />,
   },
 ];
-
+/**
+ * MyLeavesColumns
+ * 
+ * Returns an array of column definitions for the My Leaves table.
+ * 
+ * @returns {array} An array of column definitions.
+ */
 export const MyLeavesColumns = [
   {
     dataField: "start_date",
@@ -161,6 +182,16 @@ export const MyLeavesColumns = [
     formatter: (cell, row) => <RenderStatus row={row} />,
   },
 ];
+/**
+ * ExitRequestColumns
+ * 
+ * Returns an array of column definitions for the Exit Request table.
+ * 
+ * @param {function} handleRowClicked - A function to handle row clicks.
+ * @param {function} reload - A function to reload the table.
+ * @param {boolean} hideActions - A boolean to hide actions.
+ * @returns {array} An array of column definitions.
+ */
 export const ExitRequestColumns = (
   handleRowClicked,
   reload,
@@ -238,6 +269,15 @@ export const ExitRequestColumns = (
   }
   return columns;
 };
+/**
+ * EmployeeResignationsColumns
+ * 
+ * Returns an array of column definitions for the Employee Resignations table.
+ * 
+ * @param {function} handleRowClicked - A function to handle row clicks.
+ * @param {function} reload - A function to reload the table.
+ * @returns {array} An array of column definitions.
+ */
 export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
   const columns = [
     {

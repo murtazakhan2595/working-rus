@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Card, CardBody, Row, Col, Button, Form, CardHeader } from "reactstrap";
 import { Formik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,7 +27,20 @@ import { Leave } from "app/utils/Types/LeaveManagment";
 import moment from "moment";
 import { validationLeaveRequestFormSchema } from "app/utils/FormSchema/leaveManagmentFormSchema";
 import { getEmployeeLeavesTypesList } from "utils/Lists";
-function getManagerSelected(managers) {
+import { Card, CardContent, CardHeader, } from "../../../components/ui/card";
+import { Button } from "../../../components/ui/button";
+import { StepBack } from "lucide-react";
+
+/**
+   * getManagerSelected function
+   *
+   * Returns an array of manager IDs from the selected managers
+   *
+   * @param {array} managers - The list of selected managers
+   *
+   * @returns {array} An array of manager IDs
+   */
+const getManagerSelected = (managers) => {
   if (managers) {
     const matchingObjects = managers.map((obj) => {
       return obj.value;
@@ -36,15 +48,28 @@ function getManagerSelected(managers) {
     return matchingObjects;
   }
   return "";
-}
+};
 
-const CreateLeaveRequest = ({
+/**
+ * CreateLeaveRequest component
+ *
+ * This component allows employees to create a new leave request.
+ *
+ * @param {object} userProfile - The current user's profile information
+ * @param {array} managers - The list of reporting managers
+ * @param {array} departments - The list of departments
+ * @param {array} designations - The list of designations
+ * @param {array} leaveTypes - The list of leave types
+ *
+ * @returns {JSX.Element} The CreateLeaveRequest component
+ */
+function CreateLeaveRequest({
   userProfile,
   managers,
   departments,
   designations,
   leaveTypes,
-}) => {
+}) {
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [leaveForm, setLeaveForm] = useState(Leave);
@@ -124,16 +149,24 @@ const CreateLeaveRequest = ({
     }
   };
 
-  const handleSubmit = async (values, { resetForm }) => {
+ /**
+   * handleSubmit function
+   *
+   * Handles the form submission and creates a new leave request
+   *
+   * @param {object} values - The form values
+   * @param {object} { resetForm } - The Formik resetForm function
+   */
+ const handleSubmit = async (values, { resetForm }) => {
     setIsLoading(true);
-    console.log("values",values);
+    console.log("values", values);
     try {
       // Extract the value from the report_to field
       const modifiedValues = {
         ...values,
         indirect_report_to: getManagerSelected(values.indirect_report_to),
       };
-      console.log("modifiedValues",modifiedValues);
+      console.log("modifiedValues", modifiedValues);
       const response = await addLeaveRequest(modifiedValues);
       if (response) {
         const leaveResponse = await allotLeavesToEmployee(
@@ -154,7 +187,15 @@ const CreateLeaveRequest = ({
       setIsLoading(false);
     }
   };
-  const setLeaveDays = (totalLeave, startDate) => {
+ /**
+   * setLeaveDays function
+   *
+   * Calculates the end date and rejoining date based on the start date and total leave days
+   *
+   * @param {number} totalLeave - The total number of leave days
+   * @param {string} startDate - The start date of the leave
+   */
+ const setLeaveDays = (totalLeave, startDate) => {
     startDate = startDate ? new Date(moment(startDate)) : null;
     if (startDate && !isNaN(startDate.getTime()) && totalLeave) {
       console.log(startDate.getDate());
@@ -189,48 +230,30 @@ const CreateLeaveRequest = ({
   };
 
   return (
-    <div className="screen bg-[#F0F1F2]">
-      <Row>
-        <Col lg={12} className="mx-auto">
-          <Card>
-            <CardHeader>
-              <Row>
-                <Col lg={10}>
-                  <div className="mb-0 h4 d-flex align-items-center">
-                    <i className="nav-icon fas fa-id-card-alt" />
-                    <span className="ml-2 fw-700">New Leave Request</span>
-                  </div>
-                </Col>
-                <Col lg={2}>
-                  <Link
-                    type="button"
-                    className="bg-transparent btn btn-light fw-700"
-                    to="/leave-tracker"
-                  >
-                    <span style={{ display: "inline-block" }}>Go Back</span>
-                    <FaChevronCircleLeft
-                      style={{
-                        display: "inline-block",
-                        marginLeft: "10px",
-                        marginBottom: "2px",
-                      }}
-                    />
-                  </Link>
-                </Col>
-              </Row>
-            </CardHeader>
+    <div className="">
+      <h3 className="text-lg font-semibold">
+        New Leave Request
+      </h3>
+      <div>
+        <div lg={12} className="relative mx-auto">
+          <div className="absolute top-3 right-3">
+            <Button >
 
-            <CardBody style={{ maxWidth: "800px" }}>
+              <Link className="flex items-center" to="/leave-tracker"><StepBack className="w-4 h-4 mr-2" /> Go back</Link>
+            </Button>
+          </div>
+          <Card>
+            <CardContent >
               <>
                 {isLoading ? (
-                  <Row>
-                    <Col lg={12}>
+                  <div>
+                    <div lg={12}>
                       <PageLoader />
-                    </Col>
-                  </Row>
+                    </div>
+                  </div>
                 ) : (
-                  <Row>
-                    <Col lg={12}>
+                  <div>
+                    <div lg={12}>
                       <Formik
                         initialValues={leaveForm}
                         enableReinitialize={true} // Ensure Formik updates initialValues when leaveForm changes
@@ -245,327 +268,325 @@ const CreateLeaveRequest = ({
                         }}
                       >
                         {(props) => (
-                          <form onSubmit={props.handleSubmit}>
-                            <h2 className="text-lg font-semibold text-baseGray font-lato">
-                              Application Date
-                            </h2>
-                            {/* {console.log(props.values)} */}
-                            <Row>
-                              <Col md="6">
-                                <DateInput
-                                  name="date"
-                                  error={props.errors.date}
-                                  touch={props.touched.date}
-                                  value={props.values.date}
-                                  label="Date"
-                                  required={true}
-                                  minDate={new Date()}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  disabled={true}
-                                />
-                              </Col>
-                            </Row>
-                            <h2 className="text-lg font-semibold text-baseGray font-lato">
-                              Employee Details
-                            </h2>
-                            <Row>
-                              <Col md="6">
-                                <TextInput
-                                  name="employee_id"
-                                  error={props.errors.employee_id}
-                                  touch={props.touched.employee_id}
-                                  value={
-                                    props.values.employee_id
-                                      ? `TXB-${props.values.employee_id
+                          <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-semibold">
+                                Application Date
+                              </h3>
+                              <div className="grid grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                  <DateInput
+                                    name="date"
+                                    error={props.errors.date}
+                                    touch={props.touched.date}
+                                    value={props.values.date}
+                                    label="Date"
+                                    required={true}
+                                    minDate={new Date()}
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                    disabled={true}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+
+                                  <TextInput
+                                    name="employee_id"
+                                    error={props.errors.employee_id}
+                                    touch={props.touched.employee_id}
+                                    value={
+                                      props.values.employee_id
+                                        ? `TXB-${props.values.employee_id
                                           .toString()
                                           .padStart(4, "0")}`
-                                      : ""
-                                  }
-                                  disabled={true}
-                                  label="Employee ID"
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6"></Col>
-
-                              <Col md={6}>
-                                <TextInput
-                                  name="name"
-                                  error={props.errors.name}
-                                  touch={props.touched.name}
-                                  value={props.values.name}
-                                  label="Name"
-                                  disabled={true}
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <SelectComponent
-                                  name="position"
-                                  options={designations}
-                                  error={props.errors.position}
-                                  touch={props.touched.position}
-                                  value={parseInt(props.values.position)}
-                                  disabled={true}
-                                  label="Position"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <SelectComponent
-                                  name="department"
-                                  options={departments}
-                                  error={props.errors.department}
-                                  touch={props.touched.department}
-                                  value={props.values.department}
-                                  disabled={true}
-                                  label="Department"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <DateInput
-                                  name="joining_date"
-                                  error={props.errors.joining_date}
-                                  touch={props.touched.joining_date}
-                                  value={props.values.joining_date}
-                                  label="Joining Date"
-                                  disabled={true}
-                                  required={true}
-                                  minDate={new Date()}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <SelectComponent
-                                  name="nationality"
-                                  options={countriesList}
-                                  error={props.errors.nationality}
-                                  touch={props.touched.nationality}
-                                  value={props.values.nationality}
-                                  disabled={true}
-                                  label="Nationality"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                            </Row>
-                            <h2 className="text-lg font-semibold text-baseGray font-lato">
-                              Leave Details
-                            </h2>
-                            <Row>
-                              <Col md="6">
-                                <DateInput
-                                  name="start_date"
-                                  error={props.errors.start_date}
-                                  touch={props.touched.start_date}
-                                  value={props.values.start_date}
-                                  label="Start Date"
-                                  required={true}
-                                  minDate={new Date()}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                    setLeaveDays(
-                                      props.values.total_leave,
-                                      value
-                                    );
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <DateInput
-                                  name="end_date"
-                                  error={props.errors.end_date}
-                                  touch={props.touched.end_date}
-                                  value={props.values.end_date}
-                                  label="End Date"
-                                  required={true}
-                                  minDate={
-                                    new Date(props.values.start_date) ||
-                                    new Date()
-                                  }
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-
-                              <Col md={6}>
-                                <DateInput
-                                  name="last_work_day"
-                                  error={props.errors.last_work_day}
-                                  touch={props.touched.last_work_day}
-                                  value={props.values.last_work_day}
-                                  label="Last Work Day"
-                                  required={true}
-                                  minDate={new Date()}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md={6}>
-                                <DateInput
-                                  name="rejoining_date"
-                                  error={props.errors.rejoining_date}
-                                  touch={props.touched.rejoining_date}
-                                  value={props.values.rejoining_date}
-                                  label="Rejoining Date"
-                                  required={true}
-                                  minDate={new Date()}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <TextInput
-                                  name="total_leave"
-                                  error={props.errors.total_leave}
-                                  touch={props.touched.total_leave}
-                                  value={props.values.total_leave}
-                                  label="Total Leave"
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    if (value) {
-                                      props.setFieldValue(
-                                        field,
-                                        parseInt(value)
-                                      );
-                                      calculateAllowedLeaves(
-                                        selectedLeaveTypeInfo,
-                                        parseInt(value),
-                                        props
-                                      );
-                                      setLeaveDays(
-                                        parseInt(value),
-                                        props.values.start_date
-                                      );
+                                        : ""
                                     }
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  regEx={/^[0-9]+$/}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <SelectComponent
-                                  name="leave_type"
-                                  options={employeeLeaveTypes}
-                                  error={props.errors.leave_type}
-                                  touch={props.touched.leave_type}
-                                  value={props.values.leave_type}
-                                  required={true}
-                                  label="Leave Type"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                    getAllotedLeaveInfo(value, props);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="12">
-                                <TextAreaInput
-                                  name="reason"
-                                  error={props.errors.reason}
-                                  touch={props.touched.reason}
-                                  value={props.values.reason}
-                                  label="Reason"
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <PhoneNumberInput
-                                  name={"contact_no"}
-                                  error={props.errors.contact_no}
-                                  touch={props.touched.contact_no}
-                                  value={props.values.contact_no}
-                                  label={"Contact Number"}
-                                  countryCode={props.values.country_code}
-                                  countryCodeName={"country_code"}
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              {/* <Col md="6">
-                                <SelectMultiInputComponent
-                                  name="indirect_report_to"
-                                  options={managers}
-                                  error={props.errors.indirect_report_to}
-                                  touch={props.touched.indirect_report_to}
-                                  value={props.values.indirect_report_to}
-                                  label="Reporting Manager"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col> */}
-                              <Col md="12">
-                                <TextInput
-                                  name="address_during_leave"
-                                  error={props.errors.address_during_leave}
-                                  touch={props.touched.address_during_leave}
-                                  value={props.values.address_during_leave}
-                                  label="Address During Leave"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col md="2">
-                                <Link
-                                  type="button"
-                                  className="btn btn-outline-dark w-100"
+                                    disabled={true}
+                                    label="Employee ID"
+                                    required={true}
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <TextInput
+                                    name="name"
+                                    error={props.errors.name}
+                                    touch={props.touched.name}
+                                    value={props.values.name}
+                                    label="Name"
+                                    disabled={true}
+                                    required={true}
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <SelectComponent
+                                    name="position"
+                                    options={designations}
+                                    error={props.errors.position}
+                                    touch={props.touched.position}
+                                    value={parseInt(props.values.position)}
+                                    disabled={true}
+                                    label="Position"
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <SelectComponent
+                                    name="department"
+                                    options={departments}
+                                    error={props.errors.department}
+                                    touch={props.touched.department}
+                                    value={props.values.department}
+                                    disabled={true}
+                                    label="Department"
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <DateInput
+                                    name="joining_date"
+                                    error={props.errors.joining_date}
+                                    touch={props.touched.joining_date}
+                                    value={props.values.joining_date}
+                                    label="Joining Date"
+                                    disabled={true}
+                                    required={true}
+                                    minDate={new Date()}
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <SelectComponent
+                                    name="nationality"
+                                    options={countriesList}
+                                    error={props.errors.nationality}
+                                    touch={props.touched.nationality}
+                                    value={props.values.nationality}
+                                    disabled={true}
+                                    label="Nationality"
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                              </div>
+
+                            </div>
+                            <div className="space-y-4">
+                              <h2 className="text-lg font-semibold text-baseGray font-lato">
+                                Leave Details
+                              </h2>
+                              <div className="grid grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                  <DateInput
+                                    name="start_date"
+                                    error={props.errors.start_date}
+                                    touch={props.touched.start_date}
+                                    value={props.values.start_date}
+                                    label="Start Date"
+                                    required={true}
+                                    minDate={new Date()}
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                      setLeaveDays(
+                                        props.values.total_leave,
+                                        value
+                                      );
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <DateInput
+                                    name="end_date"
+                                    error={props.errors.end_date}
+                                    touch={props.touched.end_date}
+                                    value={props.values.end_date}
+                                    label="End Date"
+                                    required={true}
+                                    minDate={
+                                      new Date(props.values.start_date) ||
+                                      new Date()
+                                    }
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <DateInput
+                                    name="last_work_day"
+                                    error={props.errors.last_work_day}
+                                    touch={props.touched.last_work_day}
+                                    value={props.values.last_work_day}
+                                    label="Last Work Day"
+                                    required={true}
+                                    minDate={new Date()}
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <DateInput
+                                    name="rejoining_date"
+                                    error={props.errors.rejoining_date}
+                                    touch={props.touched.rejoining_date}
+                                    value={props.values.rejoining_date}
+                                    label="Rejoining Date"
+                                    required={true}
+                                    minDate={new Date()}
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <TextInput
+                                    name="total_leave"
+                                    error={props.errors.total_leave}
+                                    touch={props.touched.total_leave}
+                                    value={props.values.total_leave}
+                                    label="Total Leave"
+                                    required={true}
+                                    onChange={(field, value) => {
+                                      if (value) {
+                                        props.setFieldValue(
+                                          field,
+                                          parseInt(value)
+                                        );
+                                        calculateAllowedLeaves(
+                                          selectedLeaveTypeInfo,
+                                          parseInt(value),
+                                          props
+                                        );
+                                        setLeaveDays(
+                                          parseInt(value),
+                                          props.values.start_date
+                                        );
+                                      }
+                                      props.setFieldValue(field, value);
+                                    }}
+                                    regEx={/^[0-9]+$/}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <SelectComponent
+                                    name="leave_type"
+                                    options={employeeLeaveTypes}
+                                    error={props.errors.leave_type}
+                                    touch={props.touched.leave_type}
+                                    value={props.values.leave_type}
+                                    required={true}
+                                    label="Leave Type"
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                      getAllotedLeaveInfo(value, props);
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <TextAreaInput
+                                    name="reason"
+                                    error={props.errors.reason}
+                                    touch={props.touched.reason}
+                                    value={props.values.reason}
+                                    label="Reason"
+                                    required={true}
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <PhoneNumberInput
+                                    name={"contact_no"}
+                                    error={props.errors.contact_no}
+                                    touch={props.touched.contact_no}
+                                    value={props.values.contact_no}
+                                    label={"Contact Number"}
+                                    countryCode={props.values.country_code}
+                                    countryCodeName={"country_code"}
+                                    required={true}
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <TextInput
+                                    name="address_during_leave"
+                                    error={props.errors.address_during_leave}
+                                    touch={props.touched.address_during_leave}
+                                    value={props.values.address_during_leave}
+                                    label="Address During Leave"
+                                    onChange={(field, value) => {
+                                      props.setFieldValue(field, value);
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="p-6 border-t border-gray-200 div-span-2 bg-gray-50">
+                              <div className="flex justify-end space-x-4">
+
+                                <Button
+                                  variant="outline"
+                                  size="lg"
                                   to="/leave-tracker"
                                 >
-                                  Cancel
-                                </Link>
-                              </Col>
-                              <Col md="4">
+                                  Back
+                                </Button>
+
                                 <Button
                                   type="submit"
-                                  className="btn btn-dark w-100"
+                                  size="lg"
+                                  variant="default"
+
                                 >
                                   Submit
                                 </Button>
-                              </Col>
-                            </Row>
+                              </div>
+                            </div>
+
                           </form>
                         )}
                       </Formik>
-                    </Col>
-                  </Row>
+                    </div>
+                  </div>
                 )}
               </>
-            </CardBody>
+            </CardContent>
           </Card>
-        </Col>
-      </Row>
+        </div>
+      </div>
       <ToastContainer />
     </div>
   );
 };
-
+/**
+ * mapStateToProps function
+ *
+ * Maps the state to props
+ *
+ * @param {object} state - The application state
+ *
+ * @returns {object} The mapped props
+ */
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
