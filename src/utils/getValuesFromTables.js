@@ -11,6 +11,7 @@ import {
   UserRoles,
 } from "data/Data";
 import { useSelector } from "react-redux";
+import  moment  from 'moment';
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -116,6 +117,17 @@ function TerminationReason({ value }) {
   return reason ? reason.label : "Unknown Reason";
 }
 
+function getExperience(joiningDate) {
+  const startDate = moment(joiningDate, "DD-MM-YYYY");
+  const endDate = moment(); // Current date
+  const duration = moment.duration(endDate.diff(startDate));
+
+  const years = Math.floor(duration.asYears());
+  const months = Math.floor(duration.asMonths()) % 12;
+  console.log("returning `${years} years, ${months} months`",`${years} years, ${months} months`);
+  return `${years} years, ${months} months`;
+}
+
 export {
   getCountryFullName,
   ResignationReason,
@@ -135,4 +147,5 @@ export {
   TerminationStatus,
   ResignationStatus,
   TerminationReason,
+  getExperience,
 };

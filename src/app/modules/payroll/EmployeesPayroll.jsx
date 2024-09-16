@@ -28,7 +28,7 @@ const EmployeesPayroll = ({ departments }) => {
     onPageChange: onPageChange,
     onRowClick: (row) => {
       console.log("Row clicked:", row);
-      navigate(`/payroll/${row.id}`);
+      navigate(`/payroll/${row.id}?employeeID=${row.employee}`);
     },
   };
 
@@ -37,7 +37,6 @@ const EmployeesPayroll = ({ departments }) => {
       setIsLoading(true);
       const response = await getEmployeePayroll({ options, filterData });
       if (response) {
-        console.log(response, "Employee Payroll Data");
         setEmployeeData(response);
       }
       setIsLoading(false);
@@ -94,7 +93,7 @@ const EmployeesPayroll = ({ departments }) => {
         <Card>
           <CardContent>
             <CustomTable
-              data={employeeData.results}
+              data={employeeData?.results || 0}
               columns={EmployeePayrollColumns}
               pagination={true}
               dataTotalSize={employeeData.count || 0}

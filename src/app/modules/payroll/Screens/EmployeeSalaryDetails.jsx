@@ -50,16 +50,22 @@ import {
   CommandList,
 } from "../../../../src/@/components/ui/command";
 import { format } from "date-fns";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   getEmployeePayrollById,
   getSalaryRevisionByPayrollId,
   getSalaryRevision,
 } from "app/hooks/payroll";
-import RevisedSalarySheet from './RevisedSalarySheet';
+import RevisedSalarySheet from "./RevisedSalarySheet";
+import {
+  DesignationName,
+  EmployeeID,
+  getExperience,
+} from "utils/getValuesFromTables";
+import { getEmployeeData } from "app/hooks/employee";
 
 // Dummy data
-const employeeData = {
+const dummyEmpData = {
   id: "TXB-0056",
   name: "Dennis Callis",
   role: "UI/UX Designer / Mid-Level Designer",
@@ -79,15 +85,6 @@ const salaryBreakup = [
   { component: "Food Allowance", amount: "100.00" },
 ];
 
-const salarySummary = {
-  "Joining Date": "Jul 31, 2022",
-  "Last Revised Date": "Aug 2, 2024",
-  Experience: "2 years, 5 Months",
-  "Previous CTC": "AED 7,901.51",
-  "Salary Type": "Monthly",
-  "Current CTC": "AED 7,901.51",
-  "Salary Package": "Mid-level",
-};
 
 const salaryRevisions = [
   {
@@ -96,7 +93,7 @@ const salaryRevisions = [
     previousCTC: "1000",
     lastRevisedDate: "Jul 29, 2024",
     status: "Pending",
-    letterStatus: "Issued",
+    revision_letter: "Issued",
     reason: "Promotion for outstanding perf",
   },
   {
@@ -105,7 +102,7 @@ const salaryRevisions = [
     previousCTC: "1000",
     lastRevisedDate: "Aug 3, 2024",
     status: "Pending",
-    letterStatus: "Not Issued",
+    revision_letter: "Not Issued",
     reason: "Increament for achivement in d",
   },
   {
@@ -114,7 +111,7 @@ const salaryRevisions = [
     previousCTC: "1000",
     lastRevisedDate: "Aug 3, 2024",
     status: "Approved",
-    letterStatus: "Draft",
+    revision_letter: "Draft",
     reason: "Increament for achivement in d",
   },
 ];
@@ -123,27 +120,69 @@ export default function EmployeeSalaryDetails() {
   const [date, setDate] = React.useState();
   const [payrollDetails, setPayrollDetails] = React.useState({});
   const [salaryRevisions, setSalaryRevisions] = React.useState([]);
+  const [employeeData, setEmployeeData] = React.useState({});
   const [selectedRevision, setSelectedRevision] = React.useState(null);
+  const [filterData, setFilterData] = React.useState({});
+  const [approvedRevisions, setApprovedRevisions] = React.useState(0);
+  const [pendingRevisions, setPendingRevisions] = React.useState(0);
+  const [rejectedRevisions, setRejectedRevisions] = React.useState(0);
+  const [lastIncrementDate, setLastIncrementDate] = React.useState(null);
+  const [latestApprovedSalaryRevision, setLatestApprovedSalaryRevision] =
+    React.useState({});
 
   const { id } = useParams();
+  const location = useLocation();
+  const employeeID = new URLSearchParams(location.search).get("employeeID");
+
   const navigate = useNavigate();
 
+  const fetchData = async () => {
+    const empData = await getEmployeeData(employeeID);
+    if (empData) {
+      setEmployeeData(empData);
+    }
+
+    const response = await getEmployeePayrollById(id);
+    if (response) {
+      setPayrollDetails(response);
+    }
+
+    const salaryRevisionData = await getSalaryRevision({
+      filterData,
+    }); // hardcode for now filter not woking on Backend
+    if (salaryRevisionData) {
+      console.log("salaryRevisionData in details", salaryRevisionData);
+      setSalaryRevisions(salaryRevisionData?.revision);
+      setApprovedRevisions(salaryRevisionData?.Approved_revision);
+      setPendingRevisions(salaryRevisionData?.Pending_Revision);
+      setRejectedRevisions(salaryRevisionData?.Rejected_application);
+      setLastIncrementDate(salaryRevisionData?.lastIncrementDate);
+    }
+
+    const approvedRevisions = salaryRevisionData?.revision?.filter(
+      (revision) => revision.revision_status === "APPROVED"
+    );
+
+    const latestApprovedSalaryRevision =
+      approvedRevisions.length > 0
+        ? approvedRevisions.reduce((latest, current) =>
+            new Date(current.last_revised_date) >
+            new Date(latest.last_revised_date)
+              ? current
+              : latest
+          )
+        : {};
+
+    setLatestApprovedSalaryRevision(latestApprovedSalaryRevision);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await getEmployeePayrollById(id);
-      console.log("employee details payrooll", response);
-      if (response) {
-        setPayrollDetails(response);
-      }
+    filterData?.employee_payroll && fetchData();
+  }, [filterData]);
 
-      const salaryRevisionData = await getSalaryRevision(); // hardcode for now filter not woking on Backend
-      if(salaryRevisionData){
-        console.log("salaryRevisionData", salaryRevisionData);
-        setSalaryRevisions(salaryRevisionData.results);
-      }
-
-    };
-    fetchData();
+  useEffect(() => {
+    if (employeeID) {
+      setFilterData({ employee_payroll: id });
+    }
   }, [id]);
 
   const handleBack = () => {
@@ -153,11 +192,22 @@ export default function EmployeeSalaryDetails() {
   const handleSalaryRevisionClicked = (revision) => {
     console.log("Revision clicked", revision);
     setSelectedRevision(revision);
-  }
-console.log("selectedRevision", selectedRevision);
+  };
+  const onClose = () => {
+    setSelectedRevision(null);
+    fetchData();
+  };
+
   return (
     <div className="container p-4 mx-auto">
-      {selectedRevision && <RevisedSalarySheet payrollID={id} state={"view"} />}
+      {selectedRevision && (
+        <RevisedSalarySheet
+          payrollID={id}
+          state={"view"}
+          selectedRevision={selectedRevision}
+          onClose={onClose}
+        />
+      )}
       <div className="mb-4">
         <Button
           variant="ghost"
@@ -172,21 +222,26 @@ console.log("selectedRevision", selectedRevision);
         <Card>
           <CardContent className="flex items-center pt-6 space-x-4">
             <Avatar className="w-20 h-20 ">
-              <AvatarImage src={employeeData.avatar} alt={employeeData.name} />
+              <AvatarImage
+                src={employeeData?.avatar}
+                alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
+              />
               <AvatarFallback className="bg-plum-400">
-                {employeeData.name
-                  .split(" ")
+                {`${employeeData?.first_name} ${employeeData?.last_name}`
+                  ?.split(" ")
                   .map((n) => n[0])
                   .join("")}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-base text-black">{employeeData.id}</p>
+              <p className="text-base text-black">
+                <EmployeeID value={employeeID} />
+              </p>
               <h2 className="text-2xl font-bold text-plum-900">
-                {employeeData.name}
+                {employeeData?.first_name} {employeeData?.last_name}
               </h2>
               <p className="text-base text-muted-foreground">
-                {employeeData.role}
+                <DesignationName value={employeeData?.department_position} />
               </p>
             </div>
           </CardContent>
@@ -200,10 +255,10 @@ console.log("selectedRevision", selectedRevision);
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-plum-900">
-              {employeeData.costToCompany} AED
+              {dummyEmpData.costToCompany} AED
             </div>
             <p className="text-xs text-muted-foreground">
-              {employeeData.costToCompanyWords}
+              {dummyEmpData.costToCompanyWords}
             </p>
           </CardContent>
         </Card>
@@ -216,10 +271,10 @@ console.log("selectedRevision", selectedRevision);
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-plum-900">
-              {employeeData.incrementsCount}
+              {approvedRevisions}
             </div>
             <p className="text-xs text-muted-foreground">
-              Last increment {employeeData.lastIncrementDate}
+              Last increment {lastIncrementDate}
             </p>
           </CardContent>
         </Card>
@@ -257,7 +312,14 @@ console.log("selectedRevision", selectedRevision);
           </CardContent>
         </Card>
         <div className="grid col-span-2 grid-rows-1 gap-4 mb-4 md:grid-rows-2">
-          <SalarySummary />
+          <SalarySummary
+            joiningDate={employeeData?.joining_date}
+            salaryType={payrollDetails?.salary_type}
+            payoutPeriod={payrollDetails?.payout_period}
+            lastRevisedDate={latestApprovedSalaryRevision?.last_revised_date}
+            previousCTC={latestApprovedSalaryRevision?.previous_salary}
+            currentCTC={latestApprovedSalaryRevision?.new_salary}
+          />
           <Card className="mb-4 h-fit">
             <CardHeader>
               <CardTitle className="text-plum-900">PaySlips</CardTitle>
@@ -284,11 +346,19 @@ console.log("selectedRevision", selectedRevision);
       <Card>
         <CardHeader className="flex flex-row items-center justify-between w-full">
           <CardTitle className="text-plum-900">Salary Revisions</CardTitle>
-          <RevisedSalarySheet payrollID={id} state={"create"} />
+          <RevisedSalarySheet
+            payrollID={id}
+            state={"create"}
+            onClose={onClose}
+          />
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4 mb-4">
-            {["Approved", "Pending", "Rejected"].map((status, index) => (
+            {[
+              { status: "Approved", count: approvedRevisions },
+              { status: "Pending", count: pendingRevisions },
+              { status: "Rejected", count: rejectedRevisions },
+            ].map(({ status, count }, index) => (
               <div key={index}>
                 <div className="flex flex-row items-center justify-between pb-2 space-y-0">
                   <div className="text-base font-medium text-black">
@@ -301,11 +371,7 @@ console.log("selectedRevision", selectedRevision);
                       status === "Rejected" ? "text-red-600" : ""
                     }`}
                   >
-                    {
-                      salaryRevisions.filter(
-                        (revision) => revision.status === status
-                      ).length
-                    }
+                    {count}
                   </div>
                 </div>
               </div>
@@ -343,7 +409,7 @@ console.log("selectedRevision", selectedRevision);
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-0">
                 <Command>
-                  <CommandInput placeholder="Search status..." />
+                  <CommandInput placeholder="Search status..." onValueChange={(value)=>{console.log(value)}}/>
                   <CommandList>
                     <CommandEmpty>No status found.</CommandEmpty>
                     <CommandGroup heading="Statuses">
@@ -392,7 +458,7 @@ console.log("selectedRevision", selectedRevision);
               </TableRow>
             </TableHeader>
             <TableBody>
-              {salaryRevisions.map((revision, index) => (
+              {salaryRevisions?.map((revision, index) => (
                 <TableRow
                   key={index}
                   onClick={() => {
@@ -400,27 +466,27 @@ console.log("selectedRevision", selectedRevision);
                   }}
                   className="cursor-pointer"
                 >
-                  <TableCell>AED {revision.new_salary}</TableCell>
-                  <TableCell>AED {revision.previous_salary}</TableCell>
-                  <TableCell>{revision.effective_date}</TableCell>
-                  <TableCell>{revision.status}</TableCell>
+                  <TableCell>AED {revision?.new_salary}</TableCell>
+                  <TableCell>AED {revision?.previous_salary}</TableCell>
+                  <TableCell>{revision?.last_revised_date}</TableCell>
+                  <TableCell>{revision?.revision_status}</TableCell>
                   <TableCell>
                     <span
                       className={`bg-${
-                        revision.letterStatus === "Issued"
+                        revision.revision_letter === "Issued"
                           ? "green"
-                          : revision.letterStatus === "Not Issued"
+                          : revision.revision_letter === "Not Issued"
                           ? "red"
                           : "blue"
                       }-100 text-${
-                        revision.letterStatus === "Issued"
+                        revision.revision_letter === "Issued"
                           ? "green"
-                          : revision.letterStatus === "Not Issued"
+                          : revision.revision_letter === "Not Issued"
                           ? "red"
                           : "blue"
                       }-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded`}
                     >
-                      {revision.letterStatus}
+                      {revision.revision_letter}
                     </span>
                   </TableCell>
                   <TableCell>{revision.notes}</TableCell>
@@ -434,18 +500,8 @@ console.log("selectedRevision", selectedRevision);
   );
 }
 
-const dummyData = {
-  joiningDate: "Jul 31, 2022",
-  experience: "2 years, 5 Months",
-  salaryType: "Hourly",
-  payoutPeriod: "Monthly",
-  lastRevisedDate: "Aug 2, 2024",
-  previousCTC: "AED 7,901.51",
-  currentCTC: "AED 7,901.51",
-};
 function SalarySummary({
   joiningDate,
-  experience,
   salaryType,
   payoutPeriod,
   lastRevisedDate,
@@ -465,35 +521,33 @@ function SalarySummary({
           <div className="space-y-4">
             <div className="flex flex-row gap-6">
               <p className="">Joining Date</p>
-              <p className="font-medium text-black">{dummyData.joiningDate}</p>
+              <p className="font-medium text-black">{joiningDate}</p>
             </div>
             <div className="flex flex-row gap-6">
               <p className="">Experience</p>
-              <p className="font-medium text-black">{dummyData.experience}</p>
+              <p className="font-medium text-black">{getExperience(joiningDate)} </p>
             </div>
             <div className="flex flex-row gap-6">
               <p className="">Salary Type</p>
-              <p className="font-medium text-black">{dummyData.salaryType}</p>
+              <p className="font-medium text-black">{salaryType}</p>
             </div>
             <div className="flex flex-row gap-6">
               <p className="">Payout Period</p>
-              <p className="font-medium text-black">{dummyData.payoutPeriod}</p>
+              <p className="font-medium text-black">{payoutPeriod}</p>
             </div>
           </div>
           <div className="space-y-4">
             <div className="flex flex-row gap-6">
               <p className="">Last Revised Date</p>
-              <p className="font-medium text-black">
-                {dummyData.lastRevisedDate}
-              </p>
+              <p className="font-medium text-black">{lastRevisedDate}</p>
             </div>
             <div className="flex flex-row gap-6">
               <p className="">Previous CTC</p>
-              <p className="font-medium text-black">{dummyData.previousCTC}</p>
+              <p className="font-medium text-black">{previousCTC}</p>
             </div>
             <div className="flex flex-row gap-6">
               <p className="">Current CTC</p>
-              <p className="font-medium text-black">{dummyData.currentCTC}</p>
+              <p className="font-medium text-black">{currentCTC}</p>
             </div>
           </div>
         </div>

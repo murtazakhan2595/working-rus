@@ -1,6 +1,7 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { handleLogout } from "./general";
+import  moment  from 'moment';
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -31,7 +32,7 @@ const getEmployeePayroll = async (payload) => {
     if (error?.response?.status === 401) {
       handleLogout();
     }
-    return [];
+    return { results: [], count: 0 };
   }
 };
 
@@ -56,18 +57,32 @@ const getEmployeePayrollById = async (id) => {
 };
 
 const saveSalaryRevision = async (payload) => {
-  try{
-    let URL = `${baseUrl}/payroll/salaryrevision/`;
-    if(payload?.id){
-      URL = `${baseUrl}/payroll/salaryrevision/${payload.id}/`;
+  console.log("payload of saveSalaryRevision", payload);
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/payroll/salaryrevision/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    } else {
+      const response = await axios.post(
+        `${baseUrl}/payroll/salaryrevision/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
     }
-    const response = await axios.post(URL, payload, {
-      headers: headers(),
-    });
-    if(response.status === 201 || response.status === 200){
-      return true;
-    }
-  }catch(error){
+  } catch (error) {
     console.error("Error saving salary revision:", error);
     if (error?.response?.status === 401) {
       handleLogout();
@@ -77,6 +92,7 @@ const saveSalaryRevision = async (payload) => {
 };
 
 const getSalaryRevision = async (payload) => {
+  console.log("payload", payload);
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -91,7 +107,26 @@ const getSalaryRevision = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+    console.log("response", response.data);
     if (response.status === 200) {
+      const salaryRevisions = response.data.revision;
+        const approvedRevisions = salaryRevisions.filter(
+          (revision) => revision.revision_status === "APPROVED"
+        );
+      const lastApprovedRevision = approvedRevisions.sort(
+        (a, b) => new Date(b.last_revised_date) - new Date(a.last_revised_date)
+      )[0];
+
+      // Calculate how long ago the last revision was
+      const lastIncrementDate = lastApprovedRevision
+        ? lastApprovedRevision.last_revised_date
+        : null;
+      if (lastIncrementDate) {
+        const timeAgo = moment(lastIncrementDate).fromNow(); // "5 months ago", "3 days ago", etc.
+        console.log(`Last increment was: ${timeAgo}`);
+        response.data.lastIncrementDate = timeAgo;
+        
+      }
       return response.data;
     }
   } catch (error) {
@@ -101,7 +136,7 @@ const getSalaryRevision = async (payload) => {
     }
     return [];
   }
-}
+};
 
 const getSalaryRevisionByPayrollId = async (id) => {
   try {
@@ -121,11 +156,31 @@ const getSalaryRevisionByPayrollId = async (id) => {
     }
     return [];
   }
-}
+};
+
+const deleteSalaryRevision = async (id) => {
+  try {
+    const response = await axios.delete(
+      `${baseUrl}/payroll/salaryrevision/${id}`,
+      {
+        headers: headers(),
+      }
+    );
+    return true;
+  } catch (error) {
+    console.error("Error deleting salary revision data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+};
+
 export {
   getEmployeePayroll,
   getEmployeePayrollById,
   saveSalaryRevision,
   getSalaryRevision,
   getSalaryRevisionByPayrollId,
+  deleteSalaryRevision,
 };

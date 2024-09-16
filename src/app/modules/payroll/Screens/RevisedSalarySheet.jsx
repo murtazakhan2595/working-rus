@@ -1,55 +1,75 @@
-
-import { useState } from 'react';
-import { CardHeader } from 'components/ui/card';
-import { CardTitle } from 'components/ui/card';
-import SheetComponent from '../../../../components/ui/SheetComponent';
-import { useRef } from 'react';
-import { Formik } from 'formik';
+import { useState } from "react";
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
+import SheetComponent from "../../../../components/ui/SheetComponent";
+import { useRef } from "react";
+import { Formik } from "formik";
 import {
   TextInput,
   CheckBoxInput,
   TextAreaInput,
 } from "components/form-control";
 import { DateInput } from "components/form-control";
-import { Button } from 'components/ui/button';
-import { Link } from 'react-router-dom';
-import {saveSalaryRevision} from '../../../hooks/payroll';
-import { toast } from 'react-toastify';
-import {validateRevisedSalaryForm} from "../../../utils/FormSchema/payrollFormSchema";
+import { Button } from "components/ui/button";
+import { Link } from "react-router-dom";
+import { saveSalaryRevision,deleteSalaryRevision } from "../../../hooks/payroll";
+import { toast } from "react-toastify";
+import { validateRevisedSalaryForm } from "../../../utils/FormSchema/payrollFormSchema";
 
-export default function RevisedSalarySheet({payrollID, state}) {
-  console.log("payrollID", payrollID);
-  console.log("state", state);
-      const formRef = useRef();
-       const [isOpen, setIsOpen] = useState(state === "view");
-        const [formData, setFormData] = useState({
-        new_salary: "",
-        previous_salary: "",
-        revision_difference: "",
-        percentage: "",
-        effective_date: "",
-        notes: "",
-        
-        });
-      const formSheetData = {
-        triggerText: "Revise Salary",
-        title: "Revise Salary",
+export default function RevisedSalarySheet({ payrollID, selectedRevision, state, onClose }) {
+  const formRef = useRef();
+  const [isOpen, setIsOpen] = useState(state === "edit" || state === "view");
+  const [formState, setFormState] = useState(state);
+  const [formData, setFormData] = useState(
+    selectedRevision || {
+      new_salary: "",
+      previous_salary: "",
+      revision_difference: "",
+      percentage: "",
+      last_revised_date: "",
+      notes: "",
+      revision_letter: "DRAFT",
+      revision_status: "PENDING",
+    }
+  );
+  const formSheetData = {
+    triggerText: "Revise Salary",
+    title: "Revise Salary",
 
-        description: null,
-        footer: null,
-      };
-        const handleSubmit =async (values, resetForm) => {
-          console.log(values);
-          values.employee_payroll = payrollID;
-          values.organization = 1; // need to remove this this will handle on bakcend
-          const response = await saveSalaryRevision(values);
-          if(response){
-            resetForm();
-            setIsOpen(false);
-            toast.success("Salary revised successfully");
-          }
-        };
+    description: null,
+    footer: null,
+  };
 
+  // console.log("payrollID", payrollID);
+  // console.log("formState", formState);
+  console.log("selectedRevision", selectedRevision);
+  const handleSubmit = async (values, resetForm) => {
+    console.log(values);
+    values.employee_payroll = payrollID;
+    values.organization = 1; // need to remove this this will handle on bakcend
+    const response = await saveSalaryRevision(values);
+    if (response) {
+      resetForm();
+      setIsOpen(false);
+      handleSheetClose(false)
+      toast.success("Salary revised successfully");
+    }
+  };
+  const handleEdit = () => {
+    setFormState("edit");
+  };
+  const onDelete = async () => {
+    const response = await deleteSalaryRevision(selectedRevision.id);
+    toast.success("Salary revision deleted successfully");
+    handleSheetClose(false)
+  };
+
+    const handleSheetClose = (isOpenState) => {
+      setIsOpen(isOpenState);
+      if (!isOpenState) {
+        onClose(); // Fetch new data when the sheet is closed
+      }
+    };
 
   return (
     <>
@@ -58,22 +78,73 @@ export default function RevisedSalarySheet({payrollID, state}) {
           sheetData={formSheetData}
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
-          setIsOpen={setIsOpen}
+           setIsOpen={handleSheetClose}
         >
-          <RevisedSalaryForm
-            formData={formData}
-            formRef={formRef}
-            handleSubmit={handleSubmit}
-            validateRevisedSalaryForm={validateRevisedSalaryForm}
-            isEditMode={false}
-             isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          />
+          {formState === "view" ? (
+            <RevisedSalaryView
+              isOpen={isOpen}
+               setIsOpen={handleSheetClose}
+              selectedRevision={selectedRevision}
+              onEdit={handleEdit}
+              onDelete={onDelete}
+            />
+          ) : (
+            <RevisedSalaryForm
+              formData={formData}
+              formRef={formRef}
+              handleSubmit={handleSubmit}
+              validateRevisedSalaryForm={validateRevisedSalaryForm}
+              isEditMode={formState === "edit"}
+              isOpen={isOpen}
+               setIsOpen={handleSheetClose}
+            />
+          )}
         </SheetComponent>
       </div>
     </>
   );
 }
+
+const RevisedSalaryView = ({
+  isOpen,
+  setIsOpen,
+  selectedRevision,
+  onEdit,
+  onDelete,
+}) => {
+  return (
+    <div
+      side="right"
+      className="w-full p-0 "
+      open={isOpen}
+      onOpenChange={setIsOpen}
+    >
+      <div className="flex flex-col ">
+        <div className="flex-grow ">
+          <div className="p-0">
+            <div className="flex items-center justify-between">
+              <div>profile</div>
+              <div className="flex items-center gap-3">
+                <Button onClick={onEdit}> Edit</Button>
+                <Button onClick={onDelete}> Delete</Button>
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              {selectedRevision.new_salary}
+              {selectedRevision.previous_salary}
+              {selectedRevision.revision_difference}
+              {selectedRevision.percentage}
+              {selectedRevision.last_revised_date}
+              {selectedRevision.notes}
+              {selectedRevision.revision_letter}
+              {selectedRevision.revision_status}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const RevisedSalaryForm = ({
   formData,
@@ -81,12 +152,9 @@ const RevisedSalaryForm = ({
   handleSubmit,
   validateRevisedSalaryForm,
   isEditMode,
-  id,
   isOpen,
   setIsOpen,
 }) => {
- 
-
   return (
     <div
       side="right"
@@ -106,18 +174,13 @@ const RevisedSalaryForm = ({
               }}
               validate={(values) => {
                 const errors = validateRevisedSalaryForm(values, isEditMode);
-                console.log("Errors", errors);
                 return errors;
               }}
             >
               {(props) => (
                 <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                   <div className="space-y-4">
-                    {console.log(
-                      "props",
-                      props,
-                      props.errors?.new_salary && props.touched?.new_salary
-                    )}
+       
                     <div className="space-y-2">
                       <TextInput
                         name={"new_salary"}
@@ -172,14 +235,13 @@ const RevisedSalaryForm = ({
                     </div>
                     <div className="space-y-2">
                       <DateInput
-                        name={"effective_date"}
-                        error={props.errors?.effective_date}
-                        touch={props.touched?.effective_date}
-                        value={props.values?.effective_date}
+                        name={"last_revised_date"}
+                        error={props.errors?.last_revised_date}
+                        touch={props.touched?.last_revised_date}
+                        value={props.values?.last_revised_date}
                         required={true}
                         label={"Last Revised Date"}
                         onChange={(field, value) => {
-                          console.log("field", field, value);
                           props.setFieldValue(field, value);
                         }}
                       />
@@ -222,7 +284,7 @@ const RevisedSalaryForm = ({
                         variant="default"
                         disabled={!props.values.condition}
                       >
-                        {id ? "Update" : "Save"}
+                        {isEditMode ? "Update" : "Save"}
                       </Button>
                     </div>
                   </div>
