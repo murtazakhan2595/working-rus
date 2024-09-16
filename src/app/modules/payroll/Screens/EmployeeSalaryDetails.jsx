@@ -55,6 +55,7 @@ import {
   getEmployeePayrollById,
   getSalaryRevisionByPayrollId,
   getSalaryRevision,
+  getEmployeeEarnAndDeduction,
 } from "app/hooks/payroll";
 import RevisedSalarySheet from "./RevisedSalarySheet";
 import {
@@ -63,20 +64,11 @@ import {
   getExperience,
 } from "utils/getValuesFromTables";
 import { getEmployeeData } from "app/hooks/employee";
+import {numberToWords} from "utils/renderValues.js";
 
 // Dummy data
-const dummyEmpData = {
-  id: "TXB-0056",
-  name: "Dennis Callis",
-  role: "UI/UX Designer / Mid-Level Designer",
-  avatar: "/placeholder.svg?height=80&width=80",
-  costToCompany: "3,870.34",
-  costToCompanyWords: "Three Thousand Eight Hundred And Seventy AED",
-  incrementsCount: 3,
-  lastIncrementDate: "5 months ago",
-};
 
-const salaryBreakup = [
+const dummySalaryBreakup = [
   { component: "Basic Pay", amount: "300.00" },
   { component: "Fixed Allowance", amount: "300.00" },
   { component: "Home Allowance", amount: "50.00" },
@@ -86,35 +78,6 @@ const salaryBreakup = [
 ];
 
 
-const salaryRevisions = [
-  {
-    date: "Jul 29, 2024",
-    revisedCTC: "2000",
-    previousCTC: "1000",
-    lastRevisedDate: "Jul 29, 2024",
-    status: "Pending",
-    revision_letter: "Issued",
-    reason: "Promotion for outstanding perf",
-  },
-  {
-    date: "Aug 3, 2024",
-    revisedCTC: "2000",
-    previousCTC: "1000",
-    lastRevisedDate: "Aug 3, 2024",
-    status: "Pending",
-    revision_letter: "Not Issued",
-    reason: "Increament for achivement in d",
-  },
-  {
-    date: "Aug 3, 2024",
-    revisedCTC: "2000",
-    previousCTC: "1000",
-    lastRevisedDate: "Aug 3, 2024",
-    status: "Approved",
-    revision_letter: "Draft",
-    reason: "Increament for achivement in d",
-  },
-];
 
 export default function EmployeeSalaryDetails() {
   const [date, setDate] = React.useState();
@@ -127,6 +90,8 @@ export default function EmployeeSalaryDetails() {
   const [pendingRevisions, setPendingRevisions] = React.useState(0);
   const [rejectedRevisions, setRejectedRevisions] = React.useState(0);
   const [lastIncrementDate, setLastIncrementDate] = React.useState(null);
+  const [salaryBreakup, setSalaryBreakup] = React.useState([]);
+  const [costToCompany, setCostToCompany] = React.useState(0);
   const [latestApprovedSalaryRevision, setLatestApprovedSalaryRevision] =
     React.useState({});
 
@@ -147,6 +112,11 @@ export default function EmployeeSalaryDetails() {
       setPayrollDetails(response);
     }
 
+    const salaryBreakup = await getEmployeeEarnAndDeduction({})
+    if(salaryBreakup){
+      setSalaryBreakup(salaryBreakup.results);
+      setCostToCompany(salaryBreakup.totalAmount);
+    }
     const salaryRevisionData = await getSalaryRevision({
       filterData,
     }); // hardcode for now filter not woking on Backend
@@ -255,11 +225,9 @@ export default function EmployeeSalaryDetails() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-plum-900">
-              {dummyEmpData.costToCompany} AED
+              {costToCompany} AED
             </div>
-            <p className="text-xs text-muted-foreground">
-              {dummyEmpData.costToCompanyWords}
-            </p>
+            <p className="text-xs text-muted-foreground">{numberToWords(costToCompany)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -293,7 +261,7 @@ export default function EmployeeSalaryDetails() {
               <div className="flex flex-row font-bold text-left"></div>
               {salaryBreakup.map((item, index) => (
                 <div className="flex flex-row gap-4" key={index}>
-                  <div className="flex-1">{item.component}</div>
+                  <div className="flex-1">{item.type_name}</div>
                   <div className="flex-1 text-right">AED {item.amount}</div>
                 </div>
               ))}
@@ -301,12 +269,7 @@ export default function EmployeeSalaryDetails() {
                 <div className="flex-1 mb-4 text-lg font-medium text-black">
                   Total Salary in AED
                 </div>
-                <div className="flex-1 text-right">
-                  AED{" "}
-                  {salaryBreakup
-                    .reduce((total, item) => total + parseFloat(item.amount), 0)
-                    .toFixed(2)}
-                </div>
+                <div className="flex-1 text-right">AED {costToCompany}</div>
               </div>
             </div>
           </CardContent>
@@ -409,7 +372,12 @@ export default function EmployeeSalaryDetails() {
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-0">
                 <Command>
-                  <CommandInput placeholder="Search status..." onValueChange={(value)=>{console.log(value)}}/>
+                  <CommandInput
+                    placeholder="Search status..."
+                    onValueChange={(value) => {
+                      console.log(value);
+                    }}
+                  />
                   <CommandList>
                     <CommandEmpty>No status found.</CommandEmpty>
                     <CommandGroup heading="Statuses">

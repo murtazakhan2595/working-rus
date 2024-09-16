@@ -92,12 +92,9 @@ const saveSalaryRevision = async (payload) => {
 };
 
 const getSalaryRevision = async (payload) => {
-  console.log("payload", payload);
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  console.log("filterData", filterData);
-  console.log("payload", payload);
   const URL = `/payroll/salaryrevision/?ordering=-id&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
@@ -176,6 +173,39 @@ const deleteSalaryRevision = async (id) => {
   }
 };
 
+const getEmployeeEarnAndDeduction = async (payload)=>{
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/payroll/employee-earn-deduction/?ordering=-id&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+
+  try{
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    console.log("response", response.data);
+    if (response.status === 200) {
+       
+        response.data.totalAmount =response.data.results
+           .reduce((total, item) => total + parseFloat(item.amount), 0)
+           .toFixed(2);
+       
+      return response.data;
+    }
+
+  }catch(error){
+    console.error("Error fetching salary revision data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+}
+
 export {
   getEmployeePayroll,
   getEmployeePayrollById,
@@ -183,4 +213,5 @@ export {
   getSalaryRevision,
   getSalaryRevisionByPayrollId,
   deleteSalaryRevision,
+  getEmployeeEarnAndDeduction,
 };
