@@ -74,7 +74,6 @@ const getEmployeePersonalInfoData = async (employeeid) => {
       // Assuming response.data is the personal info object
       if (response.status === 200) {
         const employeeData = getPersonalInfo(response.data);
-        console.log(employeeData);
         return employeeData;
       }
     } catch (error) {
@@ -121,7 +120,6 @@ const getEmployeeContactInfo = async (employeeid) => {
       // Assuming response.data is the personal info object
       if (response.status === 200) {
         const employeeData = getContactInfo(response.data);
-        console.log(employeeData);
         return employeeData;
       }
     } catch (error) {
@@ -319,7 +317,6 @@ const getEmployeeCVDetailData = async (employeeid) => {
             response.data.length > 0
           ) {
             const employeeData = getCVDetails(response.data[0]);
-            console.log(employeeData);
             return employeeData;
           }
         });
@@ -400,7 +397,6 @@ const getEmployeeProfessionalExperianceData = async (employeeid) => {
       );
       if (response.status === 200) {
         const employeeData = await getProfessionalExperiance(response.data);
-        console.log(employeeData);
         return employeeData;
       }
     } catch (error) {
@@ -569,7 +565,6 @@ const getEmployeeAcademicRecordData = async (employeeid) => {
       );
       if (response.status === 200) {
         const employeeData = getAcademicRecord(response.data);
-        console.log(employeeData);
         return employeeData;
       }
     } catch (error) {
@@ -623,7 +618,6 @@ const getEmployeeCerficationData = async (employeeid) => {
       );
       if (response.status === 200) {
         const employeeData = getCertifications(response.data);
-        console.log(employeeData);
         return employeeData;
       }
     } catch (error) {
@@ -675,29 +669,25 @@ const saveEmployeeCertificationData = async (employeeid, payloadAttachment) => {
   return false;
 };
 
-const getEmployeeWorkInformationData = async (baseUrl, employeeid, token) => {
+const getEmployeeWorkInformationData = async (employeeid) => {
   if (employeeid) {
     try {
       const response = await axios.get(
-        `${baseUrl}/employeeDepartmentlist/${employeeid}`,
+        `${baseUrl}/emp/${employeeid}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: headers(),
         }
       );
       const employeeData = getWorkInformation(response.data);
-      console.log(employeeData);
       return employeeData;
     } catch (error) {
       if (error?.response?.status === 401) {
         handleLogout();
       }
-      console.error("Error fetching Personal Info data :", error);
+      console.error("Error fetching employeee work information data :", error);
     }
   }
-  return EmployeeDepartmentInfo;
+  return null;
 };
 
 const saveEmployeeWorkInformationData = async (employeeid, payload) => {
@@ -741,7 +731,6 @@ const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
       );
 
       const employeeData = getBankDetails(response.data);
-      console.log(employeeData);
       return employeeData;
     } catch (error) {
       if (error?.response?.status === 401) {

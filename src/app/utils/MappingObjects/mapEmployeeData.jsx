@@ -175,6 +175,7 @@ function getCertifications(data) {
 
 function getWorkInformation(data) {
   const department = EmployeeDepartmentInfo;
+  department.employeeName= data.first_name + " " + data.last_name;
   department.department_name = data?.department_name ?? "";
   department.department_position = data?.department_position ?? "";
   department.direct_report = data?.direct_report ?? "";
