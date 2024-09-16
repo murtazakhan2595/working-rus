@@ -204,6 +204,7 @@ const SelectMultiInputComponent = ({
   );
 };
 
+
 const DateInput = ({
   name,
   value,
@@ -293,9 +294,9 @@ const DateInput = ({
               onSelect={handleCalendarSelect}
               month={calendarDate}
               onMonthChange={setCalendarDate}
-              disabled={(date) =>
-                date > new Date() || date < new Date("1900-01-01")
-              }
+              // disabled={(date) =>
+              //   date > new Date() || date < new Date("1900-01-01")
+              // }
               initialFocus
             />
           </div>
@@ -305,7 +306,6 @@ const DateInput = ({
     </div>
   );
 };
-
 const TextInput = ({
   name,
   value,
