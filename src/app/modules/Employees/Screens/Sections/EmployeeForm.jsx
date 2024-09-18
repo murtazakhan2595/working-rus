@@ -73,10 +73,11 @@ const SheetOnBorading = ({
   designations,
   departments,
   managers,
+  isOpen,
+  setIsOpen
 }) => {
   const formRef = React.createRef();
   const [date, setDate] = useState();
-  const [isOpen, setIsOpen] = useState(false);
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -516,8 +517,15 @@ const SheetOnBorading = ({
                     </div>
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                        <Button variant="outline" size="lg">
-                          <Link to="/profile-management">Cancel</Link>
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={() => {
+                            setIsOpen(false);
+                          }}
+                          type="button"
+                        >
+                          Cancel
                         </Button>
                         <Button type="submit" size="lg" variant="default">
                           {id ? "Update" : "Add"}

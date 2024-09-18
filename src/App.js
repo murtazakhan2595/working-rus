@@ -235,7 +235,7 @@ function App() {
                     path="/salary-setup"
                     element={<EmployeeSalaryDetails />}
                   />
-                  <Route path="/payslip" element={<Payslip />} />
+                  <Route path="/payslip/:id" element={<Payslip />} />
                   <Route path="/loans" element={<ComingSoon />} />
                   <Route path="/claim-request" element={<ComingSoon />} />
                   <Route path="/play-run" element={<ComingSoon />} />

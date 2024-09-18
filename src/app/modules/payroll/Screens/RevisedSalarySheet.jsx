@@ -16,14 +16,20 @@ import { saveSalaryRevision,deleteSalaryRevision } from "../../../hooks/payroll"
 import { toast } from "react-toastify";
 import { validateRevisedSalaryForm } from "../../../utils/FormSchema/payrollFormSchema";
 
-export default function RevisedSalarySheet({ payrollID, selectedRevision, state, onClose }) {
+export default function RevisedSalarySheet({
+  payrollID,
+  selectedRevision,
+  state,
+  onClose,
+  previousCTC,
+}) {
   const formRef = useRef();
   const [isOpen, setIsOpen] = useState(state === "edit" || state === "view");
   const [formState, setFormState] = useState(state);
   const [formData, setFormData] = useState(
     selectedRevision || {
       new_salary: "",
-      previous_salary: "",
+      previous_salary: previousCTC,
       revision_difference: "",
       percentage: "",
       last_revised_date: "",
@@ -51,7 +57,7 @@ export default function RevisedSalarySheet({ payrollID, selectedRevision, state,
     if (response) {
       resetForm();
       setIsOpen(false);
-      handleSheetClose(false)
+      handleSheetClose(false);
       toast.success("Salary revised successfully");
     }
   };
@@ -61,15 +67,15 @@ export default function RevisedSalarySheet({ payrollID, selectedRevision, state,
   const onDelete = async () => {
     const response = await deleteSalaryRevision(selectedRevision.id);
     toast.success("Salary revision deleted successfully");
-    handleSheetClose(false)
+    handleSheetClose(false);
   };
 
-    const handleSheetClose = (isOpenState) => {
-      setIsOpen(isOpenState);
-      if (!isOpenState) {
-        onClose(); // Fetch new data when the sheet is closed
-      }
-    };
+  const handleSheetClose = (isOpenState) => {
+    setIsOpen(isOpenState);
+    if (!isOpenState) {
+      onClose(); // Fetch new data when the sheet is closed
+    }
+  };
 
   return (
     <>
@@ -78,12 +84,12 @@ export default function RevisedSalarySheet({ payrollID, selectedRevision, state,
           sheetData={formSheetData}
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
-           setIsOpen={handleSheetClose}
+          setIsOpen={handleSheetClose}
         >
           {formState === "view" ? (
             <RevisedSalaryView
               isOpen={isOpen}
-               setIsOpen={handleSheetClose}
+              setIsOpen={handleSheetClose}
               selectedRevision={selectedRevision}
               onEdit={handleEdit}
               onDelete={onDelete}
@@ -96,7 +102,7 @@ export default function RevisedSalarySheet({ payrollID, selectedRevision, state,
               validateRevisedSalaryForm={validateRevisedSalaryForm}
               isEditMode={formState === "edit"}
               isOpen={isOpen}
-               setIsOpen={handleSheetClose}
+              setIsOpen={handleSheetClose}
             />
           )}
         </SheetComponent>
@@ -155,6 +161,15 @@ const RevisedSalaryForm = ({
   isOpen,
   setIsOpen,
 }) => {
+
+  const updateValues = (value) => {
+    const previous_salary = formData.previous_salary;
+    const revision_difference = value - previous_salary;
+    const percentage = (revision_difference / previous_salary) * 100;
+    formRef.current.setFieldValue("revision_difference", revision_difference);
+    formRef.current.setFieldValue("percentage", percentage.toFixed(2));
+
+  }
   return (
     <div
       side="right"
@@ -180,7 +195,6 @@ const RevisedSalaryForm = ({
               {(props) => (
                 <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                   <div className="space-y-4">
-       
                     <div className="space-y-2">
                       <TextInput
                         name={"new_salary"}
@@ -191,6 +205,7 @@ const RevisedSalaryForm = ({
                         required={true}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
+                          updateValues(value);
                         }}
                       />
                     </div>
@@ -202,6 +217,7 @@ const RevisedSalaryForm = ({
                         touch={props.touched?.previous_salary}
                         value={props.values?.previous_salary}
                         label={"Previous CTC (Per Month)"}
+                        disabled={true}
                         required={true}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
@@ -216,6 +232,7 @@ const RevisedSalaryForm = ({
                         touch={props.touched?.revision_difference}
                         value={props.values?.revision_difference}
                         label={"Revision Difference"}
+                        disabled={true}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
@@ -228,6 +245,7 @@ const RevisedSalaryForm = ({
                         touch={props.touched?.percentage}
                         value={props.values?.percentage}
                         label={"Percentage"}
+                        disabled={true}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
@@ -275,8 +293,8 @@ const RevisedSalaryForm = ({
                   </div>
                   <div className="p-6 border-t border-gray-200 bg-gray-50">
                     <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                      <Button variant="outline" size="lg">
-                        <Link to="#">Cancel</Link>
+                      <Button variant="outline" size="lg" onClick={()=>{setIsOpen(false)}}>
+                        Cancel{" "}
                       </Button>
                       <Button
                         type="submit"
