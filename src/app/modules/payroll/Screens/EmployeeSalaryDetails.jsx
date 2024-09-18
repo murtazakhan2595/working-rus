@@ -65,18 +65,7 @@ import {
 } from "utils/getValuesFromTables";
 import { getEmployeeData } from "app/hooks/employee";
 import {numberToWords} from "utils/renderValues.js";
-
-// Dummy data
-
-const dummySalaryBreakup = [
-  { component: "Basic Pay", amount: "300.00" },
-  { component: "Fixed Allowance", amount: "300.00" },
-  { component: "Home Allowance", amount: "50.00" },
-  { component: "Phone Allowance", amount: "50.00" },
-  { component: "Travel Allowance", amount: "100.00" },
-  { component: "Food Allowance", amount: "100.00" },
-];
-
+import { PageLoader } from "components";
 
 
 export default function EmployeeSalaryDetails() {
@@ -91,17 +80,19 @@ export default function EmployeeSalaryDetails() {
   const [rejectedRevisions, setRejectedRevisions] = React.useState(0);
   const [lastIncrementDate, setLastIncrementDate] = React.useState(null);
   const [salaryBreakup, setSalaryBreakup] = React.useState([]);
-  const [costToCompany, setCostToCompany] = React.useState(0);
   const [latestApprovedSalaryRevision, setLatestApprovedSalaryRevision] =
     React.useState({});
+  const [loading, setLoading] = React.useState(true);
 
   const { id } = useParams();
   const location = useLocation();
   const employeeID = new URLSearchParams(location.search).get("employeeID");
+  console.log("Loading...", loading)
 
   const navigate = useNavigate();
 
   const fetchData = async () => {
+    setLoading(true);
     const empData = await getEmployeeData(employeeID);
     if (empData) {
       setEmployeeData(empData);
@@ -114,14 +105,12 @@ export default function EmployeeSalaryDetails() {
 
     const salaryBreakup = await getEmployeeEarnAndDeduction({})
     if(salaryBreakup){
-      setSalaryBreakup(salaryBreakup.results);
-      setCostToCompany(salaryBreakup.totalAmount);
+      setSalaryBreakup(salaryBreakup);
     }
     const salaryRevisionData = await getSalaryRevision({
       filterData,
     }); // hardcode for now filter not woking on Backend
     if (salaryRevisionData) {
-      console.log("salaryRevisionData in details", salaryRevisionData);
       setSalaryRevisions(salaryRevisionData?.revision);
       setApprovedRevisions(salaryRevisionData?.Approved_revision);
       setPendingRevisions(salaryRevisionData?.Pending_Revision);
@@ -144,6 +133,7 @@ export default function EmployeeSalaryDetails() {
         : {};
 
     setLatestApprovedSalaryRevision(latestApprovedSalaryRevision);
+    setLoading(false)
   };
   useEffect(() => {
     filterData?.employee_payroll && fetchData();
@@ -157,16 +147,18 @@ export default function EmployeeSalaryDetails() {
 
   const handleBack = () => {
     navigate(-1); // This will navigate to the previous page
-    console.log("Back button clicked");
   };
   const handleSalaryRevisionClicked = (revision) => {
-    console.log("Revision clicked", revision);
     setSelectedRevision(revision);
   };
   const onClose = () => {
     setSelectedRevision(null);
     fetchData();
   };
+
+  if(loading){
+    return <PageLoader />;
+  }
 
   return (
     <div className="container p-4 mx-auto">
@@ -225,9 +217,11 @@ export default function EmployeeSalaryDetails() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-plum-900">
-              {costToCompany} AED
+              {Number(salaryBreakup.totalEarnings)} AED
             </div>
-            <p className="text-xs text-muted-foreground">{numberToWords(costToCompany)}</p>
+            <p className="text-xs text-muted-foreground">
+              {numberToWords(Number(salaryBreakup.totalEarnings))}
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -259,7 +253,7 @@ export default function EmployeeSalaryDetails() {
             </h3>
             <div className="flex flex-col gap-4">
               <div className="flex flex-row font-bold text-left"></div>
-              {salaryBreakup.map((item, index) => (
+              {salaryBreakup.earnings?.map((item, index) => (
                 <div className="flex flex-row gap-4" key={index}>
                   <div className="flex-1">{item.type_name}</div>
                   <div className="flex-1 text-right">AED {item.amount}</div>
@@ -269,7 +263,9 @@ export default function EmployeeSalaryDetails() {
                 <div className="flex-1 mb-4 text-lg font-medium text-black">
                   Total Salary in AED
                 </div>
-                <div className="flex-1 text-right">AED {costToCompany}</div>
+                <div className="flex-1 text-right">
+                  AED {salaryBreakup.totalEarnings}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -298,7 +294,12 @@ export default function EmployeeSalaryDetails() {
                   <SelectItem value="mar">March</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="secondary" onClick={() => navigate("/payslip")}>
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  navigate(`/payslip/${id}?employeeID=${employeeID}`)
+                }
+              >
                 Download Slip
               </Button>
             </CardContent>
@@ -313,6 +314,7 @@ export default function EmployeeSalaryDetails() {
             payrollID={id}
             state={"create"}
             onClose={onClose}
+            previousCTC={latestApprovedSalaryRevision?.new_salary}
           />
         </CardHeader>
         <CardContent>
@@ -374,9 +376,7 @@ export default function EmployeeSalaryDetails() {
                 <Command>
                   <CommandInput
                     placeholder="Search status..."
-                    onValueChange={(value) => {
-                      console.log(value);
-                    }}
+                    onValueChange={(value) => {}}
                   />
                   <CommandList>
                     <CommandEmpty>No status found.</CommandEmpty>

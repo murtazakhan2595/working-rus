@@ -5,6 +5,8 @@ import EmployeeForm from 'app/modules/Employees/Screens/Sections/EmployeeForm';
 
 const OnBoardingSheet = () => {
   const formRef = useRef();
+    const [isOpen, setIsOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -40,7 +42,8 @@ const OnBoardingSheet = () => {
 
   return (
     <div>
-      <SheetComponent sheetData={formSheetData} contentClassName="custom-sheet-width">
+      <SheetComponent sheetData={formSheetData} contentClassName="custom-sheet-width"
+      isOpen={isOpen} setIsOpen={setIsOpen}>
         <EmployeeForm
           formData={formData}
           formRef={formRef}
@@ -51,6 +54,8 @@ const OnBoardingSheet = () => {
           usernameAlreadyExist={false}
           empId="12345"
           validateUsername={validateUsername}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       </SheetComponent>
     </div>

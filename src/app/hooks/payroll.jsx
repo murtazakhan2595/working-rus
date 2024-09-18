@@ -187,14 +187,44 @@ const getEmployeeEarnAndDeduction = async (payload)=>{
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
-    console.log("response", response.data);
-    if (response.status === 200) {
-       
-        response.data.totalAmount =response.data.results
+    const responseEarnDededuction = await axios.get(
+      `${baseUrl}/payroll/earn-deduction-type/`,
+      {
+        headers: headers(),
+      }
+    );
+    console.log("response", responseEarnDededuction.data);
+    if (response.status === 200 && responseEarnDededuction.status === 200) {
+       const earnDeduction = responseEarnDededuction.data.results;
+        response.data.results.map((item)=>{
+          item.income_type = earnDeduction.find(
+            (earnDeduction) => earnDeduction.id === item.income_type
+          )?.income_type;
+        })
+         const earnings = response.data.results.filter(
+           (item) => item.income_type === "earning"
+         );
+
+         const deductions = response.data.results.filter(
+           (item) => item.income_type === "deduction"
+         );
+
+         // Calculate total amounts for earnings and deductions
+         const totalEarnings = earnings
            .reduce((total, item) => total + parseFloat(item.amount), 0)
            .toFixed(2);
-       
-      return response.data;
+
+         const totalDeductions = deductions
+           .reduce((total, item) => total + parseFloat(item.amount), 0)
+           .toFixed(2);
+         
+         const data = {
+            earnings,
+            deductions,
+            totalEarnings,
+            totalDeductions,
+          };
+         return data;
     }
 
   }catch(error){
