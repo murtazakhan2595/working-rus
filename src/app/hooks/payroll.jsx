@@ -193,7 +193,7 @@ const getEmployeeEarnAndDeduction = async (payload)=>{
         headers: headers(),
       }
     );
-    console.log("response", responseEarnDededuction.data);
+    console.log("response employee ern dec", response.data);
     if (response.status === 200 && responseEarnDededuction.status === 200) {
        const earnDeduction = responseEarnDededuction.data.results;
         response.data.results.map((item)=>{
@@ -236,6 +236,52 @@ const getEmployeeEarnAndDeduction = async (payload)=>{
   }
 }
 
+const getPayslip = async (payload) =>{
+   const pageNo = payload?.options?.page ?? "";
+   const pageSize = payload?.options?.sizePerPage ?? "";
+   const filterData = payload?.filterData ?? {};
+   const URL = `/payroll/payslip/?ordering=-id&${
+     pageNo ? `page=${pageNo}&` : ""
+   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+     JSON.stringify(filterData)
+   )}`;
+   try{
+      const response = await axios.get(`${baseUrl}${URL}`, {
+        headers: headers(),
+      });
+      if(response.status === 200){
+        return response.data;
+      }
+      
+   }catch(error){
+      console.error("Error fetching salary revision data:", error);
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      return [];
+    }
+}
+
+const updateSalaryRevisionStatus = async (payload) => {
+  try {
+    const response = await axios.patch(
+      `${baseUrl}/payroll/salaryrevision//${payload.id}`,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error updating salary revision status:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+}
 export {
   getEmployeePayroll,
   getEmployeePayrollById,
@@ -244,4 +290,6 @@ export {
   getSalaryRevisionByPayrollId,
   deleteSalaryRevision,
   getEmployeeEarnAndDeduction,
+  getPayslip,
+  updateSalaryRevisionStatus,
 };

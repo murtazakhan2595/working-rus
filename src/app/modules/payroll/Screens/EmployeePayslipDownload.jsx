@@ -4,12 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../../.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../src/@/components/ui/table"
 import { usePDF } from 'react-to-pdf'
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import {
-  getEmployeePayrollById,
-  getSalaryRevisionByPayrollId,
-  getSalaryRevision,
-  getEmployeeEarnAndDeduction,
-} from "app/hooks/payroll";
+import { getPayslip } from "app/hooks/payroll";
 import RevisedSalarySheet from "./RevisedSalarySheet";
 import {
   DesignationName,
@@ -19,6 +14,7 @@ import {
 import { getEmployeeData } from "app/hooks/employee";
 import { numberToWords } from "utils/renderValues.js";
 import { PageLoader } from "components";
+import moment from "moment";
 
 
 const employeeData = {
@@ -51,7 +47,7 @@ export default function Payslip() {
 
   const [employeeData, setEmployeeData] = React.useState({});
   const [filterData, setFilterData] = React.useState({});
-  const [salaryBreakup, setSalaryBreakup] = React.useState([]);
+  const [payslip, setPaySlip] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
 
     React.useState({});
@@ -66,10 +62,10 @@ export default function Payslip() {
       setEmployeeData(empData);
     }
 
-    const salaryBreakup = await getEmployeeEarnAndDeduction({});
-    if (salaryBreakup) {
-      console.log("salaryBreakup", salaryBreakup);
-      setSalaryBreakup(salaryBreakup);
+    const payslip = await getPayslip({ filterData });
+    if (payslip) {
+      console.log("payslip", payslip);
+      setPaySlip(payslip?.results[0]);
     }
     setLoading(false);
   };
@@ -93,7 +89,7 @@ export default function Payslip() {
   const totalDeductions = deductionsData.reduce((sum, item) => sum + item.amount, 0);
   const netPay = totalEarnings - totalDeductions;
 
-  console.log("salaryBreakup", salaryBreakup);
+  console.log("payslip", payslip);
 
   return (
     <div className="container p-4 mx-auto">
@@ -112,7 +108,8 @@ export default function Payslip() {
         ) : (
           <CardContent className="space-y-6">
             <h2 className="mt-4 text-xl font-semibold text-plum-900">
-              Payslip for the month of {employeeData.payPeriod}
+              Payslip for the month of{" "}
+              {moment(payslip.generated_at).format("MMMM YYYY")}
             </h2>
 
             <div className="grid grid-cols-2 gap-4">
@@ -148,11 +145,13 @@ export default function Payslip() {
                       </TableRow>
                       <TableRow>
                         <TableCell>Pay Period</TableCell>
-                        <TableCell>{employeeData.payPeriod}</TableCell>
+                        <TableCell>{moment(payslip.generated_at).format('MMMM YYYY')}</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Pay Date</TableCell>
-                        <TableCell>{employeeData.payDate}</TableCell>
+                        <TableCell>
+                          {moment(payslip.generated_at).format("DD/MM/YYYY")}
+                        </TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -164,10 +163,10 @@ export default function Payslip() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-4xl font-bold text-plum-900">
-                    {salaryBreakup.totalEarnings} AED
+                    {payslip.basic_salary} AED
                   </div>
                   <p className="mt-2 text-sm text-gray-600">
-                    {numberToWords(salaryBreakup.totalEarnings)}
+                    {numberToWords(Number(payslip.basic_salary))}
                   </p>
                   <div className="flex justify-between mt-4">
                     <div>
@@ -201,9 +200,9 @@ export default function Payslip() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {salaryBreakup.earnings?.map((item, index) => (
+                      {payslip.total_earnings?.map((item, index) => (
                         <TableRow key={index}>
-                          <TableCell>{item.type_name}</TableCell>
+                          <TableCell>{item.description}</TableCell>
                           <TableCell className="text-right">
                             AED {Number(item.amount).toFixed(2)}
                           </TableCell>
@@ -212,7 +211,7 @@ export default function Payslip() {
                       <TableRow className="font-bold">
                         <TableCell>Total in AED</TableCell>
                         <TableCell className="text-right">
-                          AED {Number(salaryBreakup.totalEarnings).toFixed(2)}
+                          AED {Number(payslip.gross_salary).toFixed(2)}
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -232,9 +231,9 @@ export default function Payslip() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {salaryBreakup.deductions?.map((item, index) => (
+                      {payslip.total_deductions?.map((item, index) => (
                         <TableRow key={index}>
-                          <TableCell>{item.type_name}</TableCell>
+                          <TableCell>{item.description}</TableCell>
                           <TableCell className="text-right">
                             AED {Number(item.amount).toFixed(2)}
                           </TableCell>
@@ -243,7 +242,10 @@ export default function Payslip() {
                       <TableRow className="font-bold">
                         <TableCell>Total in AED</TableCell>
                         <TableCell className="text-right">
-                          AED {Number(salaryBreakup.totalDeductions).toFixed(2)}
+                          AED{" "}
+                          {Number(
+                            payslip.gross_salary - payslip.net_salary
+                          ).toFixed(2)}
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -262,24 +264,22 @@ export default function Payslip() {
                     <TableRow>
                       <TableCell>Earnings</TableCell>
                       <TableCell className="text-right">
-                        AED {Number(salaryBreakup.totalEarnings)?.toFixed(2)}
+                        AED {Number(payslip.gross_salary)?.toFixed(2)}
                       </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Deductions</TableCell>
                       <TableCell className="text-right">
                         (-) AED{" "}
-                        {Number(salaryBreakup.totalDeductions)?.toFixed(2)}
+                        {Number(
+                          payslip.gross_salary - payslip.net_salary
+                        )?.toFixed(2)}
                       </TableCell>
                     </TableRow>
                     <TableRow className="font-bold">
                       <TableCell>Total in AED</TableCell>
                       <TableCell className="text-right">
-                        AED{" "}
-                        {Number(
-                          salaryBreakup.totalEarnings -
-                            salaryBreakup.totalDeductions
-                        ).toFixed(2)}
+                        AED {Number(payslip?.net_salary).toFixed(2)}
                       </TableCell>
                     </TableRow>
                   </TableBody>
