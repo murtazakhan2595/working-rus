@@ -66,6 +66,9 @@ import {
 import { getEmployeeData } from "app/hooks/employee";
 import {numberToWords} from "utils/renderValues.js";
 import { PageLoader } from "components";
+import { revisionLetterOptions, revisionStatusOptions } from "../../../../data/Data";
+import {FilterInput, SelectComponent} from "../../../../components/form-control";
+import { updateSalaryRevisionStatus } from "../../../hooks/payroll";
 
 
 export default function EmployeeSalaryDetails() {
@@ -83,10 +86,12 @@ export default function EmployeeSalaryDetails() {
   const [latestApprovedSalaryRevision, setLatestApprovedSalaryRevision] =
     React.useState({});
   const [loading, setLoading] = React.useState(true);
+  const [revisionLoading, setRevisionLoading] = React.useState(false);
 
   const { id } = useParams();
   const location = useLocation();
   const employeeID = new URLSearchParams(location.search).get("employeeID");
+   const fromMyPayroll =new URLSearchParams(location.search).get("fromMyPayroll") === "true";
   console.log("Loading...", loading)
 
   const navigate = useNavigate();
@@ -103,7 +108,9 @@ export default function EmployeeSalaryDetails() {
       setPayrollDetails(response);
     }
 
-    const salaryBreakup = await getEmployeeEarnAndDeduction({})
+    const salaryBreakup = await getEmployeeEarnAndDeduction({
+      filterData:  { employee_payroll: id }
+    });
     if(salaryBreakup){
       setSalaryBreakup(salaryBreakup);
     }
@@ -160,9 +167,34 @@ export default function EmployeeSalaryDetails() {
     return <PageLoader />;
   }
 
+    const handleFilterChange = (filterName, filterValue) => {
+      setFilterData((prevFilters) => {
+        const updatedFilters = { ...prevFilters };
+        if (filterValue === "") {
+          delete updatedFilters[filterName];
+        } else {
+          updatedFilters[filterName] = filterValue;
+        }
+        return updatedFilters;
+      });
+    };
+
+const handleStatusChange = async (name, value, revision) => {
+  setRevisionLoading(true)
+  if(name === "revision_status"){
+    revision.revision_status = value;
+  }
+  else if(name === "revision_letter"){
+    revision.revision_letter = value;
+  }
+  const response = await updateSalaryRevisionStatus(revision);
+  if(response){
+    fetchData()
+  }
+}
   return (
     <div className="container p-4 mx-auto">
-      {selectedRevision && (
+      {selectedRevision && !fromMyPayroll && (
         <RevisedSalarySheet
           payrollID={id}
           state={"view"}
@@ -310,12 +342,14 @@ export default function EmployeeSalaryDetails() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between w-full">
           <CardTitle className="text-plum-900">Salary Revisions</CardTitle>
-          <RevisedSalarySheet
-            payrollID={id}
-            state={"create"}
-            onClose={onClose}
-            previousCTC={latestApprovedSalaryRevision?.new_salary}
-          />
+          {!fromMyPayroll && (
+            <RevisedSalarySheet
+              payrollID={id}
+              state={"create"}
+              onClose={onClose}
+              previousCTC={latestApprovedSalaryRevision?.new_salary}
+            />
+          )}
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4 mb-4">
@@ -343,76 +377,23 @@ export default function EmployeeSalaryDetails() {
             ))}
           </div>
           <div className="flex mb-4 space-x-4">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-[240px] justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-[240px] justify-start text-left font-normal"
-                >
-                  <Filter className="w-4 h-4 mr-2" />
-                  <span>Revision Status</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <Command>
-                  <CommandInput
-                    placeholder="Search status..."
-                    onValueChange={(value) => {}}
-                  />
-                  <CommandList>
-                    <CommandEmpty>No status found.</CommandEmpty>
-                    <CommandGroup heading="Statuses">
-                      <CommandItem>Approved</CommandItem>
-                      <CommandItem>Pending</CommandItem>
-                      <CommandItem>Rejected</CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-[240px] justify-start text-left font-normal"
-                >
-                  <Filter className="w-4 h-4 mr-2" />
-                  <span>Revision Letter</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search letter status..." />
-                  <CommandList>
-                    <CommandEmpty>No status found.</CommandEmpty>
-                    <CommandGroup heading="Letter Statuses">
-                      <CommandItem>Issued</CommandItem>
-                      <CommandItem>Not Issued</CommandItem>
-                      <CommandItem>Draft</CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <FilterInput
+              filters={[
+                {
+                  type: "select-one",
+                  option: revisionStatusOptions,
+                  name: "revision_status",
+                  placeholder: "Revision Status",
+                },
+                {
+                  type: "select-two",
+                  option: revisionLetterOptions,
+                  name: "revision_letter",
+                  placeholder: "Revision Letter",
+                },
+              ]}
+              onChange={handleFilterChange}
+            />
           </div>
           <Table>
             <TableHeader>
@@ -427,37 +408,83 @@ export default function EmployeeSalaryDetails() {
             </TableHeader>
             <TableBody>
               {salaryRevisions?.map((revision, index) => (
-                <TableRow
-                  key={index}
-                  onClick={() => {
-                    handleSalaryRevisionClicked(revision);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <TableCell>AED {revision?.new_salary}</TableCell>
-                  <TableCell>AED {revision?.previous_salary}</TableCell>
-                  <TableCell>{revision?.last_revised_date}</TableCell>
-                  <TableCell>{revision?.revision_status}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`bg-${
-                        revision.revision_letter === "Issued"
-                          ? "green"
-                          : revision.revision_letter === "Not Issued"
-                          ? "red"
-                          : "blue"
-                      }-100 text-${
-                        revision.revision_letter === "Issued"
-                          ? "green"
-                          : revision.revision_letter === "Not Issued"
-                          ? "red"
-                          : "blue"
-                      }-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded`}
-                    >
-                      {revision.revision_letter}
-                    </span>
+                <TableRow key={index} className="cursor-pointer">
+                  {console.log(revision)}
+                  <TableCell
+                    onClick={() => {
+                      handleSalaryRevisionClicked(revision);
+                    }}
+                  >
+                    AED {revision?.new_salary}
                   </TableCell>
-                  <TableCell>{revision.notes}</TableCell>
+                  <TableCell
+                    onClick={() => {
+                      handleSalaryRevisionClicked(revision);
+                    }}
+                  >
+                    AED {revision?.previous_salary}
+                  </TableCell>
+                  <TableCell
+                    onClick={() => {
+                      handleSalaryRevisionClicked(revision);
+                    }}
+                  >
+                    {revision?.last_revised_date}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <div className="capitalize">
+                        {revision.revision_status.toLowerCase()}
+                      </div>
+                      <StatusDropdown
+                        name="revision_status"
+                        value={revision?.revision_status}
+                        revision={revision}
+                        handleChange={handleStatusChange}
+                        statuses={revisionStatusOptions}
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`capitalize bg-${
+                          revision.revision_letter?.toLowerCase() === "issued"
+                            ? "green"
+                            : revision.revision_letter?.toLowerCase() ===
+                              "not issued"
+                            ? "red"
+                            : "blue"
+                        }-100 text-${
+                          revision.revision_letter?.toLowerCase() === "issued"
+                            ? "green"
+                            : revision.revision_letter?.toLowerCase() ===
+                              "not issued"
+                            ? "red"
+                            : "blue"
+                        }-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded`}
+                      >
+                        {/* {revision.revision_letter?.toLowerCase()} */}
+                        <div className="capitalize">
+                          {revision.revision_letter.toLowerCase()}
+                        </div>
+                      </span>
+                      <StatusDropdown
+                        name="revision_letter"
+                        value={revision?.revision_letter}
+                        revision={revision}
+                        handleChange={handleStatusChange}
+                        statuses={revisionLetterOptions}
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell
+                    onClick={() => {
+                      handleSalaryRevisionClicked(revision);
+                    }}
+                  >
+                    {revision.notes}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -523,3 +550,48 @@ function SalarySummary({
     </Card>
   );
 }
+
+
+
+const StatusDropdown = ({name, value, handleChange, revision, statuses}) => {
+  // const statuses = [
+  //   { value: "PENDING", label: "Pending" },
+  //   { value: "APPROVED", label: "Approved"},
+  //   { value: "REJECTED", label: "Rejected" }
+  // ];
+
+  return (
+    <>
+      
+      <Select
+        defaultValue={value}
+        onValueChange={(value) => {
+          console.log("value", value);
+          handleChange(name,value, revision);
+        }}
+        className=""
+      >
+        <SelectTrigger className="flex gap-6 justify-between items-center px-3 py-2 w-full text-xs font-semibold leading-none text-teal-700 bg-white rounded-md max-w-[40px] border-none">
+          {/* <SelectValue placeholder="Select status" /> */}
+        </SelectTrigger>
+        <SelectContent className="w-[136px]">
+          {statuses.map((status) => (
+            <SelectItem key={status.value} value={status.value}>
+              <div
+                className={`flex gap-2 items-center px-2 py-1.5 w-full ${
+                  status.value === "approved"
+                    ? "text-fuchsia-700 bg-fuchsia-50 rounded-[999px]"
+                    : "bg-white"
+                }`}
+              >
+                <span className="flex-1 shrink self-stretch my-auto basis-0">
+                  {status.label}
+                </span>
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </>
+  );
+};

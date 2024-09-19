@@ -51,6 +51,7 @@ import EmployeesPayroll from "app/modules/payroll/EmployeesPayroll";
 import "./index.css";
 import EmployeeSalaryDetails from "app/modules/payroll/Screens/EmployeeSalaryDetails";
 import Payslip from "app/modules/payroll/Screens/EmployeePayslipDownload";
+import MyPayroll from "./app/modules/payroll/Screens/MyPayroll.jsx";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -172,6 +173,8 @@ function App() {
               <Route path="/leave-history" element={<LeaveHistory />} />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-calender" element={<ComingSoon />} />
+              <Route path="/my-payroll" element={<MyPayroll />} />
+              <Route path="/payroll/:id" element={<EmployeeSalaryDetails />} />
 
               {(userRole === 4 || userRole === 2) && (
                 <Route
@@ -227,10 +230,7 @@ function App() {
                     element={<EditEmployeeProfile />}
                   />
                   <Route exact path="/payroll" element={<EmployeesPayroll />} />
-                  <Route
-                    path="/payroll/:id"
-                    element={<EmployeeSalaryDetails />}
-                  />
+
                   <Route
                     path="/salary-setup"
                     element={<EmployeeSalaryDetails />}

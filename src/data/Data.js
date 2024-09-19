@@ -583,6 +583,16 @@ export const salaryTypeOptions = [
   { value: "per_hour", label: "Per Hour" },
   { value: "project_based", label: "Project based" },
 ];
+export const revisionLetterOptions = [
+  { value: "NOT ISSUED", label: "Not Issued" },
+  { value: "DRAFT", label: "Draft" },
+  { value: "ISSUED", label: "Issued" },
+];
+export const revisionStatusOptions = [
+  { value: "PENDING", label: "Pending" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "REJECTED", label: "Rejected" },
+];
 export const payoutPeriodOptions = [
   { value: "monthly", label: "Monthly" },
   { value: "weekly", label: "Weekly" },

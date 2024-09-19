@@ -104,6 +104,7 @@ export function getMenuList(pathname, userRole) {
         createMenu("/leave-tracker", "Leave Tracker"),
         createMenu("/files-data", "Files & Data"),
         createMenu("/my-travel-details", "My Travel Details"),
+        createMenu("/my-payroll", "My Payroll"),
         createMenu("/exit-employee", "Exit"),
         createMenu("/letter1", "Type of Letter 1"),
         createMenu("/letter2", "Type of Letter 2"),
