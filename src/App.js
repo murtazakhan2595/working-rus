@@ -47,11 +47,15 @@ import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/Cr
 import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
 import { ExitAndClearance } from "app/modules/ExitAndClearance";
-import EmployeesPayroll from "app/modules/payroll/EmployeesPayroll";
 import "./index.css";
-import EmployeeSalaryDetails from "app/modules/payroll/Screens/EmployeeSalaryDetails";
-import Payslip from "app/modules/payroll/Screens/EmployeePayslipDownload";
-import MyPayroll from "./app/modules/payroll/Screens/MyPayroll.jsx";
+import {
+  Payslip,
+  EmployeeSalaryDetails,
+  EmployeesPayroll,
+  MyPayroll,
+  SalarySetup,
+  SalarySetupDetail,
+} from "app/modules/payroll";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -230,11 +234,9 @@ function App() {
                     element={<EditEmployeeProfile />}
                   />
                   <Route exact path="/payroll" element={<EmployeesPayroll />} />
+                  <Route exact path="/payroll/salary-setup/:id" element={<SalarySetupDetail />} />
 
-                  <Route
-                    path="/salary-setup"
-                    element={<EmployeeSalaryDetails />}
-                  />
+                  <Route path="/salary-setup" element={<SalarySetup />} />
                   <Route path="/payslip/:id" element={<Payslip />} />
                   <Route path="/loans" element={<ComingSoon />} />
                   <Route path="/claim-request" element={<ComingSoon />} />
