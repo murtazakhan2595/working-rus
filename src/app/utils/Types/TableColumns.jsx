@@ -577,3 +577,71 @@ export const EmployeePayrollColumns = [
     formatter: (cell) => <div className="capitalize">{cell}</div>,
   },
 ];
+
+export const SalaryComponentColumns = [
+  {
+    dataField: "name",
+    text: "Component Name",
+  },
+  {
+    dataField: "income_type",
+    text: "Component Type",
+  },
+  {
+    dataField: "amount_type",
+    text: "Amount Type",
+  },
+  {
+    dataField: "amount",
+    text: "Amount",
+  },
+  {
+    dataField: "component_status",
+    text: "Active",
+  },
+];
+
+export const SalarySetupColumns = [
+  {
+    dataField: "id",
+    text: "ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
+  },
+  {
+    dataField: "",
+    text: "Employees",
+    formatter: (cell, row) => (
+      <>
+        {row.first_name} {row.last_name}
+      </>
+    ),
+  },
+  {
+    dataField: "department_name",
+    text: "Department",
+    formatter: (cell) => <DepartmentName value={cell} />,
+  },
+  {
+    dataField: "basic_salary",
+    text: "Salary",
+  },
+  {
+    dataField: "salary_type",
+    text: "Salary Type",
+  },
+  {
+    dataField: "",
+    text: "",
+    formatter: (cell, row) => {
+      if(row.new){
+        return (
+          <div class="h-[22px] px-3 py-[3px] rounded-[999px] border border-[#f1d1f3] justify-end items-center gap-1.5 inline-flex">
+            <div class="text-[#ab4aba] text-xs font-semibold">
+              New
+            </div>
+          </div>
+        );
+      }
+    }
+  },
+];
