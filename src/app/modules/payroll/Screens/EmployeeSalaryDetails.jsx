@@ -179,9 +179,14 @@ export default function EmployeeSalaryDetails() {
       });
     };
 
-const handleStatusSelect = async (status, revision) => {
+const handleStatusChange = async (name, value, revision) => {
   setRevisionLoading(true)
-  revision.revision_status = status;
+  if(name === "revision_status"){
+    revision.revision_status = value;
+  }
+  else if(name === "revision_letter"){
+    revision.revision_letter = value;
+  }
   const response = await updateSalaryRevisionStatus(revision);
   if(response){
     fetchData()
@@ -389,76 +394,6 @@ const handleStatusSelect = async (status, revision) => {
               ]}
               onChange={handleFilterChange}
             />
-            {/* <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-[240px] justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-[240px] justify-start text-left font-normal"
-                >
-                  <Filter className="w-4 h-4 mr-2" />
-                  <span>Revision Status</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <Command>
-                  <CommandInput
-                    placeholder="Search status..."
-                    onValueChange={(value) => {}}
-                  />
-                  <CommandList>
-                    <CommandEmpty>No status found.</CommandEmpty>
-                    <CommandGroup heading="Statuses">
-                      <CommandItem>Approved</CommandItem>
-                      <CommandItem>Pending</CommandItem>
-                      <CommandItem>Rejected</CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-[240px] justify-start text-left font-normal"
-                >
-                  <Filter className="w-4 h-4 mr-2" />
-                  <span>Revision Letter</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search letter status..." />
-                  <CommandList>
-                    <CommandEmpty>No status found.</CommandEmpty>
-                    <CommandGroup heading="Letter Statuses">
-                      <CommandItem>Issued</CommandItem>
-                      <CommandItem>Not Issued</CommandItem>
-                      <CommandItem>Draft</CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover> */}
           </div>
           <Table>
             <TableHeader>
@@ -473,9 +408,8 @@ const handleStatusSelect = async (status, revision) => {
             </TableHeader>
             <TableBody>
               {salaryRevisions?.map((revision, index) => (
-                
                 <TableRow key={index} className="cursor-pointer">
-                {console.log(revision)}
+                  {console.log(revision)}
                   <TableCell
                     onClick={() => {
                       handleSalaryRevisionClicked(revision);
@@ -498,34 +432,51 @@ const handleStatusSelect = async (status, revision) => {
                     {revision?.last_revised_date}
                   </TableCell>
                   <TableCell>
-                    <span className="capitalize">
+                    <div className="flex items-center gap-2">
+                      <div className="capitalize">
+                        {revision.revision_status.toLowerCase()}
+                      </div>
                       <StatusDropdown
+                        name="revision_status"
                         value={revision?.revision_status}
                         revision={revision}
-                        handleStatusSelect={handleStatusSelect}
+                        handleChange={handleStatusChange}
+                        statuses={revisionStatusOptions}
                       />
-                    </span>
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <span
-                      className={`capitalize bg-${
-                        revision.revision_letter?.toLowerCase() === "issued"
-                          ? "green"
-                          : revision.revision_letter?.toLowerCase() ===
-                            "not issued"
-                          ? "red"
-                          : "blue"
-                      }-100 text-${
-                        revision.revision_letter?.toLowerCase() === "issued"
-                          ? "green"
-                          : revision.revision_letter?.toLowerCase() ===
-                            "not issued"
-                          ? "red"
-                          : "blue"
-                      }-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded`}
-                    >
-                      {revision.revision_letter?.toLowerCase()}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`capitalize bg-${
+                          revision.revision_letter?.toLowerCase() === "issued"
+                            ? "green"
+                            : revision.revision_letter?.toLowerCase() ===
+                              "not issued"
+                            ? "red"
+                            : "blue"
+                        }-100 text-${
+                          revision.revision_letter?.toLowerCase() === "issued"
+                            ? "green"
+                            : revision.revision_letter?.toLowerCase() ===
+                              "not issued"
+                            ? "red"
+                            : "blue"
+                        }-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded`}
+                      >
+                        {/* {revision.revision_letter?.toLowerCase()} */}
+                        <div className="capitalize">
+                          {revision.revision_letter.toLowerCase()}
+                        </div>
+                      </span>
+                      <StatusDropdown
+                        name="revision_letter"
+                        value={revision?.revision_letter}
+                        revision={revision}
+                        handleChange={handleStatusChange}
+                        statuses={revisionLetterOptions}
+                      />
+                    </div>
                   </TableCell>
                   <TableCell
                     onClick={() => {
@@ -602,21 +553,21 @@ function SalarySummary({
 
 
 
-const StatusDropdown = ({value, handleStatusSelect, revision}) => {
-  const statuses = [
-    { value: "PENDING", label: "Pending" },
-    { value: "APPROVED", label: "Approved"},
-    { value: "REJECTED", label: "Rejected" }
-  ];
+const StatusDropdown = ({name, value, handleChange, revision, statuses}) => {
+  // const statuses = [
+  //   { value: "PENDING", label: "Pending" },
+  //   { value: "APPROVED", label: "Approved"},
+  //   { value: "REJECTED", label: "Rejected" }
+  // ];
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="capitalize">{value.toLowerCase()}</div>
+    <>
+      
       <Select
         defaultValue={value}
         onValueChange={(value) => {
           console.log("value", value);
-          handleStatusSelect(value, revision);
+          handleChange(name,value, revision);
         }}
         className=""
       >
@@ -641,6 +592,6 @@ const StatusDropdown = ({value, handleStatusSelect, revision}) => {
           ))}
         </SelectContent>
       </Select>
-    </div>
+    </>
   );
 };
