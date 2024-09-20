@@ -18,6 +18,7 @@ import {
 } from "../../../../src/@/components/ui/tabs";
 import SalaryComponent from "../Sections/SalaryComponent";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
+import AddComponentSheet from "../Sections/AddComponentSheet.jsx";
 
 
 const SalarySetup = ({ departments }) => {
@@ -76,7 +77,7 @@ setSalarySetupData(data)
   return (
     <div className="flex flex-col gap-4 profile-management">
       {" "}
-      <Header></Header>
+      <Header content={activeTab === "components" && <AddComponentSheet/>}/>
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}

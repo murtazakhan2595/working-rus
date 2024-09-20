@@ -32,8 +32,8 @@ const SheetComponent = ({
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
     const handleInteractOutside = (e) => {
-      e.preventDefault();
-      setShowConfirmationModal(true);
+      // e.preventDefault();
+      // setShowConfirmationModal(true);
     };
 
     const closeModal = () => {

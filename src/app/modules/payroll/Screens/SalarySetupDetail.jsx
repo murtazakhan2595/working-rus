@@ -73,43 +73,66 @@ import {
   SelectComponent,
   TextInput,
 } from "../../../../components/form-control";
-import { updateSalaryRevisionStatus } from "../../../hooks/payroll";
+import {
+  getEarnAndDeduction,
+  updateSalaryRevisionStatus,
+} from "../../../hooks/payroll";
+import AddAdditionalEarningSheet from "../Sections/AddAdditionalEarningSheet";
 
-  const payslip = {
-    total_earnings: [
-      { description: "Basic Salary", amount: 5000 },
-      { description: "Housing Allowance", amount: 2000 },
-      { description: "Transportation Allowance", amount: 500 },
-    ],
-    total_deductions: [
-      { description: "Tax", amount: 300 },
-      { description: "Health Insurance", amount: 200 },
-    ],
-    gross_salary: 7500, // Total of earnings
-    net_salary: 7000, // Gross salary minus deductions
-  };
-
+const payslip = {
+  total_earnings: [
+    { description: "Basic Salary", amount: 5000 },
+    { description: "Housing Allowance", amount: 2000 },
+    { description: "Transportation Allowance", amount: 500 },
+  ],
+  total_deductions: [
+    { description: "Tax", amount: 300 },
+    { description: "Health Insurance", amount: 200 },
+  ],
+  gross_salary: 7500, // Total of earnings
+  net_salary: 7000, // Gross salary minus deductions
+};
 
 const SalarySetupDetail = () => {
-
-
-      const [employeeData, setEmployeeData] = React.useState({});
+  const [employeeData, setEmployeeData] = React.useState({});
+  const [payrollId, setPayrollId] = React.useState(null);
+  const [earnAndDeduction, setEarnAndDeductions] = React.useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
 
-
-    useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       const response = await getEmployeeData(id);
       if (response) {
         setEmployeeData(response);
       }
+
     };
     fetchData();
-    }, [id]);
+  }, [id]);
+
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      const response = await getEmployeePayrollById(id);
+      if (response) {
+        setPayrollId(response.id);
+        const earnAndDeductions = await getEmployeeEarnAndDeduction({
+          filterData: { employee_payroll: response.id },
+        });
+        if (earnAndDeductions) {
+          console.log(earnAndDeductions);
+          setEarnAndDeductions(earnAndDeductions.results);
+        }
+      }
+    };
+    fetchData();
+  },[id])
   const handleBack = () => {
-    navigate(-1); 
+    navigate(-1);
   };
+
+  console.log("INFO", employeeData, payrollId, earnAndDeduction);
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
@@ -238,12 +261,32 @@ const SalarySetupDetail = () => {
           </CardContent>
         </Card>
       </div>
-      <Card className="flex items-center justify-between w-full">
-        <CardHeader>
-          <CardTitle>Employee Deductions</CardTitle>
+      <Card className="">
+        <CardHeader className="flex flex-row items-center justify-between w-full">
+          <CardTitle>Additional Earnings and Deductions</CardTitle>
+          <AddAdditionalEarningSheet />
         </CardHeader>
-        <CardContent className="p-0 pr-6">
-            <Button>Add</Button>
+        <CardContent className="">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Component</TableHead>
+                <TableHead>Component Type</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Payable Month</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {earnAndDeduction?.map((revision, index) => (
+                <TableRow key={index} className="cursor-pointer">
+                  <TableCell>AED</TableCell>
+                  <TableCell>AED</TableCell>
+                  <TableCell>sdfsd</TableCell>
+                  <TableCell>sdfsdf</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>
@@ -251,5 +294,3 @@ const SalarySetupDetail = () => {
 };
 
 export default SalarySetupDetail;
-
-
