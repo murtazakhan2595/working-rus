@@ -251,10 +251,6 @@ const RequestTerminationForm = ({
                               value: "3 month",
                               label: "3 month",
                             },
-                            {
-                              value: "0 month",
-                              label: "0 month",
-                            },
                           ]}
                           error={props.errors.notice_period}
                           touch={props.touched.notice_period}
