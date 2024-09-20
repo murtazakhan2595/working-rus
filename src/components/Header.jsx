@@ -27,6 +27,7 @@ const Header = ({ content }) => {
       "exit-clearance": "Exit Requests",
       "payroll": "Employees Payroll",
       "salary-setup": "Salary Setup",
+      "exit-employee":"Employee Offboarding"
       
     };
     setPathName(pathNames[path] || "Dashboard");

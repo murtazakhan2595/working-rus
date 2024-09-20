@@ -2,15 +2,13 @@ import React from "react";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { Row, Col } from "reactstrap";
 import { getEmployeesExitCount } from "app/hooks/employeeExitAndClearance";
 import Resignations from "./Resignations";
 import Terminations from "./Terminations";
-import { CustomDarkButton } from "components/form-control";
 import RequestTerminationCard from "./RequestTerminationCard";
 import Terminated from "./Terminated";
 import Resigned from "./Resigned";
-import { TerminationStatus } from "utils/getValuesFromTables";
+// import { TerminationStatus } from "utils/getValuesFromTables";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
 import { RxCrossCircled } from "react-icons/rx";
@@ -81,7 +79,6 @@ const ExitAndClearance = ({ userProfile, departments }) => {
     });
   };
   const handleTabChange = (tab) => {
-    console.log(tab);
     if (tab === "Resignations") {
       setFilterData({
         status_resignation: StatusList(),
