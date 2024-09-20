@@ -87,7 +87,6 @@ const RequestTerminationForm = ({
   ];
 
   const handleEmployeeChange = async (field, value) => {
-    console.log("value", value);
     try {
       const response = await getEmployeeData(value);
       const employeeDataArray = [
@@ -141,6 +140,12 @@ const RequestTerminationForm = ({
       console.error(e);
     }
   };
+
+  const handleReset = (resetForm) => {
+    setEmployeeData([[]]);
+    resetForm(); 
+  };
+
   return (
     <>
       <div
@@ -189,7 +194,6 @@ const RequestTerminationForm = ({
                               required
                               label={"Select Employee"}
                               onChange={(field, value) => {
-                                console.log("changing value", value);
                                 props.setFieldValue(field, value);
                                 handleEmployeeChange(field, value);
                               }}
@@ -198,7 +202,6 @@ const RequestTerminationForm = ({
                           {infoGroup.length > 0
                             ? infoGroup.map((info) => (
                                 <div className="space-y-2 flex flex-col justify-end">
-                                  {console.log("info", info)}
                                   <TextInput
                                     value={info.data}
                                     name={info.title}
@@ -298,7 +301,12 @@ const RequestTerminationForm = ({
 
                       <div className="p-6 border-t border-gray-200 bg-gray-50">
                         <div className="flex justify-end space-x-4">
-                          <Button variant="outline" size="lg" type="submit">
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            type="button"
+                            onClick={() => handleReset(props.resetForm)} 
+                          >
                             Reset
                           </Button>
                           <Button type="submit" size="lg" variant="default">
