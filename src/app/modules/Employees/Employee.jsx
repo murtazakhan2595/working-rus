@@ -47,7 +47,6 @@ export default function EmployeeManagement() {
   };
 
   useEffect(() => {
-    console.log("Employee Page", options);
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -108,7 +107,6 @@ export default function EmployeeManagement() {
   ];
 
   // Add console.log for statsData
-  console.log(statsData, "Stats Data");
 
   // Filter employees based on selected status
   const filteredEmployees = employeeData.results.filter((employee) => {
@@ -117,7 +115,6 @@ export default function EmployeeManagement() {
   });
 
   const employeeStatus = ["All", "Active", "Inactive"];
-  console.log(filteredEmployees.length);
   return (
     <div className="flex flex-col gap-4 profile-management">
       <Header content={<SheetOnBoarding />} />
