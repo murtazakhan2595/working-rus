@@ -20,7 +20,12 @@ import {
  * @property {string} groupLabel - The label for the group.
  * @property {Menu[]} menus - The list of menus in the group.
  */
-
+// export const UserRoles = [
+//   { value: 1, label: "Super Admin" },
+//   { value: 2, label: "Manager" },
+//   { value: 3, label: "HR" },
+//   { value: 4, label: "Employee" },
+// ];
 /**
  * @typedef {Object} Menu
  * @property {string} to - The URL of the menu item.
@@ -69,24 +74,24 @@ export function getMenuList(pathname, userRole) {
 
   const commonMenus = [
     createMenu("/", "Dashboard", House),
-    createMenu("/services", "Services", SquareStack),
+    // createMenu("/services", "Services", SquareStack),
   ];
 
   const peopleTeamMenus = [
     createMenu(
       "",
-      "People Team",
+      "Team Management",
       Users,
       [
         createMenu("/profile-management", "Profile Management"),
-        createMenu("/settings", "Profile Settings"),
-        createMenu("/travel-details", "Travel Details"),
+        // createMenu("/settings", "Profile Settings"),
+        // createMenu("/travel-details", "Travel Details"),
         createMenu("/exit-clearance", "Exit & Clearance"),
         createMenu("/create-employee", "Employee Creation"),
         createMenu("/edit-employee", "Customize Employee"),
-        createMenu("/relocation", "Relocation"),
-        createMenu("/internal", "Internal"),
-        createMenu("/external", "External"),
+        // createMenu("/relocation", "Relocation"),
+        // createMenu("/internal", "Internal"),
+        // createMenu("/external", "External"),
       ],
     ),
   ];
@@ -94,20 +99,20 @@ export function getMenuList(pathname, userRole) {
   const selfServiceHubMenus = [
     createMenu(
       "",
-      "Self Service Hub",
+      "Employee Portal ",
       UserRoundCheck,
       [
         createMenu("/my-profile", "My Profile"),
         createMenu("/my-team", "My Team"),
-        createMenu("/calendar", "Calendar"),
-        createMenu("/attendance", "Attendance"),
+        // createMenu("/calendar", "Calendar"),  
+        // createMenu("/attendance", "Attendance"),
         createMenu("/leave-tracker", "Leave Tracker"),
-        createMenu("/files-data", "Files & Data"),
-        createMenu("/my-travel-details", "My Travel Details"),
+        // createMenu("/files-data", "Files & Data"),
+        // createMenu("/my-travel-details", "My Travel Details"),
         createMenu("/my-payroll", "My Payroll"),
         createMenu("/exit-employee", "Exit"),
-        createMenu("/letter1", "Type of Letter 1"),
-        createMenu("/letter2", "Type of Letter 2"),
+        // createMenu("/letter1", "Type of Letter 1"),
+        // createMenu("/letter2", "Type of Letter 2"),
       ],
     ),
   ];
@@ -119,7 +124,7 @@ export function getMenuList(pathname, userRole) {
       [
         createMenu("/payroll", "Employee Payrolls"),
         createMenu("/salary-setup", "Salary Setup"),
-        createMenu("/loans", "Loans"),
+        // createMenu("/loans", "Loans"),
         createMenu("/claim-request", "Claim Request"),
         createMenu("/play-run", "Play Run"),
         createMenu("/payslips", "Payslips"),
@@ -138,10 +143,10 @@ export function getMenuList(pathname, userRole) {
       "Task Management",
       ListTodo,
       [
-        createMenu("/my-task", "My Task"),
-        createMenu("/my-team", "My Team DTR"),
+        // createMenu("/my-task", "My Task"),
+        // createMenu("/my-team", "My Team DTR"),
         createMenu("/projects", "Project Board"),
-        createMenu("/attendence", "Time Management"),
+        // createMenu("/attendence", "Time Management"),
       ],
       pathname === "/my-task"
     ),
@@ -150,15 +155,15 @@ export function getMenuList(pathname, userRole) {
       "Leave Management",
       CalendarRange,
       [
-        ...(userRole === 4
-          ? [createMenu("/leave-tracker", "Leave Tracker")]
-          : []),
-        createMenu("/leave-requests", "Leave Request"),
-        createMenu("/leave-calender", "Calendar"),
+        // ...(userRole === 4
+        //   ? [createMenu("/leave-tracker", "Leave Tracker")]
+        //   : []),
+        createMenu("/request-leave", "Leave Request"),
+        // createMenu("/leave-calender", "Calendar"),
         createMenu("/leave-history", "Leave History"),
         createMenu("/leave-allotement", "Leave Allotment"),
-        createMenu("/leave-balance", "Holidays"),
-        createMenu("/leave-type", "Leave Type"),
+        // createMenu("/leave-balance", "Holidays"),
+        // createMenu("/leave-type", "Leave Type"),
       ],
       pathname === "/leave-tracker"
     ),
@@ -170,11 +175,11 @@ export function getMenuList(pathname, userRole) {
       "Talent Sphere",
       UserRoundSearch,
       [
-        createMenu("/personnel-requisition", "Personnel Requisition"),
+        // createMenu("/personnel-requisition", "Personnel Requisition"),
         createMenu("/jobs", "Jobs"),
         createMenu("/applicants", "Applicants"),
-        createMenu("/referrals", "Referrals"),
-        createMenu("/on-boarding", "On Boarding"),
+        // createMenu("/referrals", "Referrals"),
+        // createMenu("/on-boarding", "On Boarding"),
       ],
       pathname === "/personnel-requisition"
     ),
@@ -186,10 +191,10 @@ export function getMenuList(pathname, userRole) {
       "Daily Task Report",
       FileChartColumnIncreasing,
       [
-        createMenu("/create-task", "Create Task"),
-        createMenu("/my-dtr", "My DTR"),
+        // createMenu("/create-task", "Create Task"),
+        // createMenu("/my-dtr", "My DTR"),
       ],
-      pathname === "/daily-task-report"
+      // pathname === "/daily-task-report"
     ),
   ];
 
@@ -199,9 +204,9 @@ export function getMenuList(pathname, userRole) {
       "Personal Development",
       UsersRound,
       [
-        createMenu("/learn", "Learn"),
-        createMenu("/career-planning", "Career Planning"),
-        createMenu("/succession-plan", "Succession Plan"),
+        // createMenu("/learn", "Learn"),
+        // createMenu("/career-planning", "Career Planning"),
+        // createMenu("/succession-plan", "Succession Plan"),
       ],
       pathname === "/learn"
     ),
