@@ -31,7 +31,6 @@ export default function TableCustom({
   className = "",
   showHeader = true, // Show header by default
 }) {
-  console.log(tableOptions);
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
     page: tableOptions?.page ?? 1,
@@ -48,7 +47,6 @@ export default function TableCustom({
   const [designationFilter, setDesignationFilter] = useState("all");
 
   const employees = useMemo(() => {
-    console.log("data", data);
     return data
       .filter((employee) => {
         const searchValue = search.toLowerCase();
@@ -254,7 +252,6 @@ const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
           { value: 100, label: 100 },
         ]}
         onChange={(name, value) => {
-          console.log(value);
           handleSizeClick(value);
           setSize(value);
         }}
