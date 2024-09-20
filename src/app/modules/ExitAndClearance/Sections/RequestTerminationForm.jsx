@@ -17,6 +17,7 @@ import { getAllCountries } from "countries-and-timezones";
 import { FileInput } from "components/form-control";
 import moment from "moment";
 import { connect } from "react-redux";
+import { NoticePeriod } from "data/Data";
 
 const RequestTerminationForm = ({
   employees,
@@ -238,20 +239,7 @@ const RequestTerminationForm = ({
                         />
                         <SelectComponent
                           name={"notice_period"}
-                          options={[
-                            {
-                              value: "1 month",
-                              label: "1 month",
-                            },
-                            {
-                              value: "2 month",
-                              label: "2 month",
-                            },
-                            {
-                              value: "3 month",
-                              label: "3 month",
-                            },
-                          ]}
+                          options={NoticePeriod}
                           error={props.errors.notice_period}
                           touch={props.touched.notice_period}
                           value={props.values.notice_period}

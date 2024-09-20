@@ -523,12 +523,12 @@ export const ResignationStatusOptions = [
 ];
 
 export const ResignationReasons = [
-  { value: "career-advance", label: "Career growth" },
+  // { value: "career-advance", label: "Career growth" },
   { value: "better-opportunity", label: "Better opportunity" },
   { value: "family-reasons", label: "Personal Reasons" },
   { value: "relocation", label: "Relocation" },
   { value: "health-reasons", label: "Health reasons" },
-  { value: "Job dissatisfaction", label: "Job dissatisfaction" },
+  // { value: "Job dissatisfaction", label: "Job dissatisfaction" },
   { value: "Others", label: "Others" },
 ];
 
@@ -564,10 +564,10 @@ export const NoticePeriod = [
     value: "3 month",
     label: "3 month",
   },
-  {
-    value: "0 month",
-    label: "0 month",
-  },
+  // {
+  //   value: "0 month",
+  //   label: "0 month",
+  // },
 ];
 export const TerminationStatusOptions = [
   { label: "Viewd By Manager", value: "pending" },

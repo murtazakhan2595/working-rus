@@ -15,6 +15,7 @@ import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
 import { terminationReasonsOptions } from "data/Data";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
+import { NoticePeriod } from "data/Data";
 
 const { RxCross2 } = require("react-icons/rx");
 
@@ -246,24 +247,7 @@ const RequestTerminationCard = ({
                     <Col md={6}>
                       <SelectComponent
                         name={"notice_period"}
-                        options={[
-                          {
-                            value: "1 month",
-                            label: "1 month",
-                          },
-                          {
-                            value: "2 month",
-                            label: "2 month",
-                          },
-                          {
-                            value: "3 month",
-                            label: "3 month",
-                          },
-                          {
-                            value: "0 month",
-                            label: "0 month",
-                          },
-                        ]}
+                        options={NoticePeriod}
                         error={props.errors.notice_period}
                         touch={props.touched.notice_period}
                         value={props.values.notice_period}

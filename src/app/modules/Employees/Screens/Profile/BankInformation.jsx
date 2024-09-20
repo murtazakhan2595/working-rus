@@ -140,10 +140,11 @@ const BankInformation = ({
                         error={props.errors.swift_code}
                         touch={props.touched.swift_code}
                         value={props.values.swift_code}
-                        label={"Swift Code"}
+                        label={"Routing Code"}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
+                        maxLength={10}
                         regEx={/^[a-zA-Z0-9]*$/}
                       />
                     </div>
