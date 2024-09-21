@@ -103,7 +103,7 @@ export function getMenuList(pathname, userRole) {
       UserRoundCheck,
       [
         createMenu("/my-profile", "My Profile"),
-        createMenu("/my-team", "My Team"),
+        // createMenu("/my-team", "My Team"),
         // createMenu("/calendar", "Calendar"),  
         // createMenu("/attendance", "Attendance"),
         createMenu("/leave-tracker", "Leave Tracker"),
