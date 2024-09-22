@@ -1,11 +1,10 @@
 import React, { useRef, useState } from 'react';
 import SheetComponent from './SheetComponent';
-
 import EmployeeForm from 'app/modules/Employees/Screens/Sections/EmployeeForm';
 
 const OnBoardingSheet = () => {
   const formRef = useRef();
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -35,15 +34,21 @@ const OnBoardingSheet = () => {
   const formSheetData = {
     triggerText: 'Add New Employee',
     title: 'Add New Employee',
-
     description: 'Please fill out the form below to add a new employee.',
     footer: null,
+   
   };
 
   return (
     <div>
-      <SheetComponent sheetData={formSheetData} contentClassName="custom-sheet-width"
-      isOpen={isOpen} setIsOpen={setIsOpen}>
+      <SheetComponent
+        {...formSheetData}
+        onSubmit={handleSubmit}
+        width="860px"
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        contentClassName="custom-sheet-width"
+      >
         <EmployeeForm
           formData={formData}
           formRef={formRef}

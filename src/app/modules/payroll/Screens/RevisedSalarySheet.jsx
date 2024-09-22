@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { CardHeader } from "components/ui/card";
-import { CardTitle } from "components/ui/card";
 import SheetComponent from "../../../../components/ui/SheetComponent";
 import { useRef } from "react";
 import { Formik } from "formik";
@@ -76,6 +74,7 @@ export default function RevisedSalarySheet({
       onClose(); // Fetch new data when the sheet is closed
     }
   };
+ ;
 
   return (
     <>
@@ -85,6 +84,11 @@ export default function RevisedSalarySheet({
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
           setIsOpen={handleSheetClose}
+          {...formSheetData}
+        onSubmit={handleSubmit}
+        width="500px"
+      
+       
         >
           {formState === "view" ? (
             <RevisedSalaryView
