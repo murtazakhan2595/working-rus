@@ -80,12 +80,11 @@ export default function RevisedSalarySheet({
     <>
       <div>
         <SheetComponent
-          sheetData={formSheetData}
+         {...formSheetData}
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
           setIsOpen={handleSheetClose}
-          {...formSheetData}
-        onSubmit={handleSubmit}
+        
         width="500px"
       
        
