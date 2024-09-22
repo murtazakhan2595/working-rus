@@ -11,60 +11,88 @@ import {
 } from "../../src/@/components/ui/sheet";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
-  DialogCancel,
-  DialogAction,
 } from "../../src/@/components/ui/dialog";
-import { Button } from "components/ui/button";
+import { Button } from "../../components/ui/button";
+import { Label } from "../../src/@/components/ui/label";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../src/@/components/ui/textarea";
 
 const SheetComponent = ({
-  sheetData,
-  children,
-  contentClassName,
+  title,
+  description,
+  formData,
+  onSubmit,
+  triggerText,
+  width = '100%',
   isOpen,
   setIsOpen,
+  children,
+  contentClassName,
+  footer,
 }) => {
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
-    const handleInteractOutside = (e) => {
-      // e.preventDefault();
-      // setShowConfirmationModal(true);
-    };
+  const handleInteractOutside = (e) => {
+    e.preventDefault();
+    setShowConfirmationModal(true);
+  };
 
-    const closeModal = () => {
-      setShowConfirmationModal(false);
-    };
+  const closeModal = () => {
+    setShowConfirmationModal(false);
+  };
 
-    const handleDiscardChanges = () => {
-      setShowConfirmationModal(false);
-      setIsOpen(false); // Close the sheet
-    };
+  const handleDiscardChanges = () => {
+    setShowConfirmationModal(false);
+    setIsOpen(false);
+  };
 
   return (
     <>
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <Button variant="default">{sheetData.triggerText}</Button>
+          <Button variant="default">{triggerText}</Button>
         </SheetTrigger>
         <SheetContent
+          style={{ width }}
           className={`${contentClassName} overflow-y-auto sm:max-w-4xl`}
           onInteractOutside={handleInteractOutside}
         >
-          <SheetHeader className="prose">
-            <SheetTitle>{sheetData.title}</SheetTitle>
+          <SheetHeader className="prose text-left">
+            <SheetTitle>{title}</SheetTitle>
             <SheetDescription className="text-mauve-900">
-              {sheetData.description}
+              {description}
             </SheetDescription>
           </SheetHeader>
+          
+          {formData && (
+            <div className="grid gap-4 py-4">
+              {formData.map((field, index) => (
+                <div key={index} className="grid items-center grid-cols-4 gap-4">
+                  <Label htmlFor={field.id} className="text-right">
+                    {field.label}
+                  </Label>
+                  {field.type === 'input' ? (
+                    <Input id={field.id} name={field.id} defaultValue={field.value} className="col-span-3" />
+                  ) : (
+                    <Textarea id={field.id} name={field.id} placeholder={field.placeholder} className="col-span-3" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          
           {children}
-          <SheetFooter>{sheetData.footer}</SheetFooter>
+          
+          <SheetFooter>
+            {footer }
+          </SheetFooter>
         </SheetContent>
       </Sheet>
+      
       {/* Confirmation Dialog */}
       {showConfirmationModal && (
         <Dialog
@@ -78,14 +106,14 @@ const SheetComponent = ({
             <p>
               Any unsaved changes will be discarded. Do you want to proceed?
             </p>
-          <DialogFooter>
-            <Button variant="secondary" onClick={closeModal}>
-              Keep
-            </Button>
-            <Button variant="danger" onClick={handleDiscardChanges}>
-              Discard
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button variant="secondary" onClick={closeModal}>
+                Keep
+              </Button>
+              <Button variant="destructive" onClick={handleDiscardChanges}>
+                Discard
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       )}

@@ -58,30 +58,7 @@ const SalaryComponent = () => {
     console.log("INFO component", component);
   return (
     <div className="flex flex-col gap-4 profile-management">
-      <div className="flex justify-end">
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by ID and Name",
-              name: "id_and_first_name",
-            },
-            {
-              type: "select-one",
-              option: [],
-              name: "department_name",
-              placeholder: "Department",
-            },
-            {
-              type: "select-two",
-              option: [],
-              name: "department_position",
-              placeholder: "Designation",
-            },
-          ]}
-          onChange={handleFilterChange}
-        />
-      </div>
+      
       {isLoading ? (
         <PageLoader />
       ) : (
