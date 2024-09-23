@@ -31,7 +31,6 @@ export default function TableCustom({
   className = "",
   showHeader = true, // Show header by default
 }) {
-  console.log(tableOptions);
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
     page: tableOptions?.page ?? 1,
@@ -48,7 +47,6 @@ export default function TableCustom({
   const [designationFilter, setDesignationFilter] = useState("all");
 
   const employees = useMemo(() => {
-    console.log("data", data);
     return data
       .filter((employee) => {
         const searchValue = search.toLowerCase();
@@ -84,16 +82,10 @@ export default function TableCustom({
 
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * options.sizePerPage;
-    console.log("startIndex", startIndex);
-    console.log("tableOptions.sizePerPage", options.sizePerPage);
-    console.log(
-      "startIndex + options.itemsPerPage,",
-      startIndex + itemsPerPage
-    );
+
     return employees.slice(startIndex, startIndex + options.sizePerPage);
   }, [employees, currentPage, options.sizePerPage]);
 
-  console.log("paginated data", paginatedData);
   const totalPages = Math.ceil(dataTotalSize / options.sizePerPage);
 
   const handleSort = (key) => {
@@ -260,7 +252,6 @@ const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
           { value: 100, label: 100 },
         ]}
         onChange={(name, value) => {
-          console.log(value);
           handleSizeClick(value);
           setSize(value);
         }}

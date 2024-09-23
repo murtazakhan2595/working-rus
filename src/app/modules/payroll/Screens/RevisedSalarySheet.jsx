@@ -293,7 +293,13 @@ const RevisedSalaryForm = ({
                   </div>
                   <div className="p-6 border-t border-gray-200 bg-gray-50">
                     <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                      <Button variant="outline" size="lg" onClick={()=>{setIsOpen(false)}}>
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={() => {
+                          setIsOpen(false);
+                        }}
+                      >
                         Cancel{" "}
                       </Button>
                       <Button

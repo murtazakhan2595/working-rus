@@ -1,4 +1,3 @@
-"'use client'";
 
 import React, { useEffect } from "react";
 import {
@@ -130,8 +129,8 @@ export default function EmployeeSalaryDetails() {
     );
 
     const latestApprovedSalaryRevision =
-      approvedRevisions.length > 0
-        ? approvedRevisions.reduce((latest, current) =>
+      approvedRevisions?.length > 0
+        ? approvedRevisions?.reduce((latest, current) =>
             new Date(current.last_revised_date) >
             new Date(latest.last_revised_date)
               ? current

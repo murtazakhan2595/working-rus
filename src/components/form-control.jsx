@@ -15,6 +15,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "../src/@/components/ui/popover";
+import { RadioGroup, RadioGroupItem } from "../src/@/components/ui/radio-group";
+
 import {
   ChevronsUpDown,
   Check,
@@ -34,6 +36,7 @@ import { cn } from "./../src/@/lib/utils";
 import { format, parse, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../src/@/components/ui/calendar";
+
 import { PatternFormat } from "react-number-format";
 
 const SelectComponent = ({
@@ -306,6 +309,46 @@ const DateInput = ({
     </div>
   );
 };
+
+const RadioGroupInput = ({
+  name,
+  value,
+  error,
+  touch,
+  options,
+  label,
+  disabled,
+  required,
+  onChange,
+}) => {
+   const defaultValue = value || (options.length > 0 ? options[0].value : "");
+  return (
+    <div>
+      {label && <label className="font-medium">{label}</label>}
+      <RadioGroup
+        defaultValue={options[0]?.value}
+        value={defaultValue}
+        onValueChange={(value) => {
+          onChange(name, value);
+        }}
+      >
+        <div className="flex items-center justify-around">
+          {options.map((option) => (
+            <div key={option.value} className="flex items-center space-x-2">
+              <RadioGroupItem
+                value={option.value}
+                id={option.value}
+                disabled={disabled}
+              />
+              <Label htmlFor={option.value}>{option.label}</Label>
+            </div>
+          ))}
+        </div>
+      </RadioGroup>
+      {touch && error && <div className="text-red-500 text-sm">{error}</div>}
+    </div>
+  );
+};
 const TextInput = ({
   name,
   value,
@@ -317,21 +360,24 @@ const TextInput = ({
   required,
   regEx,
   maxLength,
+  placeholder,
 }) => {
   return (
     <>
       <div className="flex flex-col gap-4">
-        <Label className="" htmlFor={name}>
-          {label}
-          {required && <span className="text-red-600">* </span>}
-        </Label>
+        {label && (
+          <Label className="" htmlFor={name}>
+            {label}
+            {required && <span className="text-red-600">* </span>}
+          </Label>
+        )}
         <Input
           type="text"
           maxLength={maxLength ?? "100"}
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter " + label}
+          placeholder={ label?"Enter " + label : placeholder}
           value={value ?? ""}
           disabled={disabled}
           className={error && touch ? "is-invalid" : ""}
@@ -1005,6 +1051,8 @@ const FilterInput = ({
   );
 };
 
+
+
 export {
   SelectComponent,
   SelectMultiInputComponent,
@@ -1022,4 +1070,5 @@ export {
   CheckBoxInput,
   TextAreaEditorInput,
   PasswordInput,
+  RadioGroupInput,
 };
