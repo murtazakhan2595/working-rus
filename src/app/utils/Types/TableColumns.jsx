@@ -32,6 +32,7 @@ import { RenderTerminationAction } from "app/modules/ExitAndClearance/Sections";
 import EmployeeDataInfo from "../../modules/payroll/Sections/EmployeeDataInfo";
 import { DesignationName } from "utils/getValuesFromTables";
 import { DepartmentName } from "utils/getValuesFromTables";
+import { Switch } from "../../../src/@/components/ui/switch";
 
 /**
  * LeaveHistoryColumns
@@ -578,7 +579,7 @@ export const EmployeePayrollColumns = [
   },
 ];
 
-export const SalaryComponentColumns = [
+export const SalaryComponentColumns =(onCheckedChange)=> [
   {
     dataField: "name",
     text: "Component Name",
@@ -586,18 +587,31 @@ export const SalaryComponentColumns = [
   {
     dataField: "income_type",
     text: "Component Type",
+    formatter: (cell) => <div className="capitalize">{cell}</div>,
   },
   {
-    dataField: "amount_type",
+    dataField: "amounts_types",
     text: "Amount Type",
+    formatter: (cell) => <div className="capitalize">{cell}</div>,
   },
   {
-    dataField: "amount",
+    dataField: "amounts",
     text: "Amount",
   },
   {
-    dataField: "component_status",
+    dataField: "is_active",
     text: "Active",
+    formatter: (cell, row) => {
+      return (
+        <Switch
+          id="activate"
+          checked={cell}
+          onCheckedChange={(value)=>{
+            onCheckedChange(value, row)
+          }}
+        />
+      );
+    },
   },
 ];
 
@@ -633,12 +647,10 @@ export const SalarySetupColumns = [
     dataField: "",
     text: "",
     formatter: (cell, row) => {
-      if(row.new){
+      if (!(row.salary && row.salary_type)) {
         return (
           <div class="h-[22px] px-3 py-[3px] rounded-[999px] border border-[#f1d1f3] justify-end items-center gap-1.5 inline-flex">
-            <div class="text-[#ab4aba] text-xs font-semibold">
-              New
-            </div>
+            <div class="text-[#ab4aba] text-xs font-semibold">New</div>
           </div>
         );
       }

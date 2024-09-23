@@ -55,6 +55,7 @@ import {
 } from "../../../../components/form-control";
 import {
   getEarnAndDeduction,
+  getEmployeePayroll,
   updateSalaryRevisionStatus,
 } from "../../../hooks/payroll";
 import AddAdditionalEarningSheet from "../Sections/AddAdditionalEarningSheet";
@@ -76,43 +77,89 @@ const payslip = {
 const SalarySetupDetail = () => {
   const [employeeData, setEmployeeData] = React.useState({});
   const [payrollId, setPayrollId] = React.useState(null);
-  const [earnAndDeduction, setEarnAndDeductions] = React.useState([]);
+  const [earnAndDeductionType, setEarnAndDeductionsType] = React.useState([]);
+  const [earnAndDeductions, setEarnAndDeductions] = React.useState([]);
+  const [monthlyGrossSalary, setMonthlyGrossSalary] = React.useState();
+  const [earnings, setEarnings] = React.useState([]);
+  const [deductions, setDeductions] = React.useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
 
+
+    useEffect(() => {
+      const fetchData = async () => {
+        const response = await getEmployeePayroll({
+          filterData: { employee_id: id },
+        });
+        // 
+        if (response) {
+          setPayrollId(response?.results[0]?.id);
+          console.log("RESPONSE", response?.results[0]);
+          const earnAndDeductions = await getEmployeeEarnAndDeduction({
+            filterData: { employee_payroll: response?.results[0]?.id },
+          });
+          console.log("EARNANDDEDUCTIONS", earnAndDeductions);
+          if (earnAndDeductions) {
+            // console.log(earnAndDeductions);
+            setEarnAndDeductions(earnAndDeductions);
+          }
+        }
+      };
+      fetchData();
+    }, [id]);
+console.log("EARNANDDEDUCTIONS",earnAndDeductions)
   useEffect(() => {
     const fetchData = async () => {
       const response = await getEmployeeData(id);
+
       if (response) {
         setEmployeeData(response);
       }
 
+      const earnAndDeductionType = await getEarnAndDeduction()
+      if (earnAndDeductionType) {
+        setEarnAndDeductionsType(earnAndDeductionType.results);
+      }
     };
     fetchData();
   }, [id]);
 
-
-  useEffect(()=>{
-    const fetchData = async () => {
-      const response = await getEmployeePayrollById(id);
-      if (response) {
-        setPayrollId(response.id);
-        const earnAndDeductions = await getEmployeeEarnAndDeduction({
-          filterData: { employee_payroll: response.id },
-        });
-        if (earnAndDeductions) {
-          console.log(earnAndDeductions);
-          setEarnAndDeductions(earnAndDeductions.results);
-        }
-      }
-    };
-    fetchData();
-  },[id])
   const handleBack = () => {
     navigate(-1);
   };
 
-  console.log("INFO", employeeData, payrollId, earnAndDeduction);
+  console.log("INFO", earnAndDeductionType);
+  const handleSalaryCalculate = () =>{
+    console.log("Monthly Gross Salary", monthlyGrossSalary);
+    console.log("earnAndDeductionType", earnAndDeductionType);
+    const basic = monthlyGrossSalary * 0.4;
+    const houseAllowance = monthlyGrossSalary * 0.4;
+    const foodAllowance = basic * 0.4;
+    const otherAllowance =
+      monthlyGrossSalary - (basic + houseAllowance + foodAllowance);
+
+    const professionalTax = 250; 
+    const earnings = [
+      { name: "Basic", amounts: "Fixed, 40% of Gross", monthly_amount: basic },
+      {
+        name: "House Allowance",
+        amounts: "Fixed, 40% of Gross",
+        monthly_amount: houseAllowance,
+      },
+      {
+        name: "Food Allowance",
+        amounts: "Fixed, 40% of Basic",
+        monthly_amount: foodAllowance,
+      },
+      {
+        name: "Other Allowance",
+        amounts: "Fixed flat",
+        monthly_amount: otherAllowance,
+      },
+    ];
+    setEarnings(earnings);
+    setDeductions([{ name: "Professional Tax", amounts: "Fixed", monthly_amount: professionalTax }]);
+  }
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
@@ -165,10 +212,14 @@ const SalarySetupDetail = () => {
             <div className="flex items-center">
               <TextInput
                 name={"add_value"}
+                value={monthlyGrossSalary || ""}
                 label={"Add Value"}
-                onChange={(name, value) => console.log(name, value)}
+                onChange={(name, value) => setMonthlyGrossSalary(value)}
               />
-              <Button variant="primary"> Calculate</Button>
+              <Button variant="primary" onClick={handleSalaryCalculate}>
+                {" "}
+                Calculate
+              </Button>
             </div>
             <div class="text-[#8b8d98] text-sm">Hourly Rate : AED 0.00</div>
           </div>
@@ -183,16 +234,18 @@ const SalarySetupDetail = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Earning types</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>Components</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead className="text-right">Monthly Amount</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {payslip.total_earnings?.map((item, index) => (
+                {earnings?.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell>{item.description}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.amounts}</TableCell>
                     <TableCell className="text-right">
-                      AED {Number(item.amount).toFixed(2)}
+                      {item.monthly_amount}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -214,16 +267,18 @@ const SalarySetupDetail = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Deduction types</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>Components</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead className="text-right">Monthly Amount</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {payslip.total_deductions?.map((item, index) => (
+                {deductions?.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell>{item.description}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.amounts}</TableCell>
                     <TableCell className="text-right">
-                      AED {Number(item.amount).toFixed(2)}
+                      {item.monthly_amount}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -257,12 +312,20 @@ const SalarySetupDetail = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {earnAndDeduction?.map((revision, index) => (
+              {earnAndDeductions?.earnings?.map((item, index) => (
                 <TableRow key={index} className="cursor-pointer">
-                  <TableCell>AED</TableCell>
-                  <TableCell>AED</TableCell>
-                  <TableCell>sdfsd</TableCell>
-                  <TableCell>sdfsdf</TableCell>
+                  <TableCell>{item?.type_name}</TableCell>
+                  <TableCell>{item?.income_type}</TableCell>
+                  <TableCell>{item?.amount}</TableCell>
+                  <TableCell>{item?.month}</TableCell>
+                </TableRow>
+              ))}
+              {earnAndDeductions?.deductions?.map((item, index) => (
+                <TableRow key={index} className="cursor-pointer">
+                  <TableCell>{item?.type_name}</TableCell>
+                  <TableCell>{item?.income_type}</TableCell>
+                  <TableCell>{item?.amount}</TableCell>
+                  <TableCell>{item?.month}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

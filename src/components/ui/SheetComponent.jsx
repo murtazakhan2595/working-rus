@@ -53,9 +53,9 @@ const SheetComponent = ({
   return (
     <>
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
+        {triggerText && <SheetTrigger asChild>
           <Button variant="default">{triggerText}</Button>
-        </SheetTrigger>
+        </SheetTrigger>}
         <SheetContent
           style={{ width }}
           className={`${contentClassName} overflow-y-auto sm:max-w-4xl`}

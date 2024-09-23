@@ -13,6 +13,7 @@ const getEmployeePayroll = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
+  console.log("filterData", filterData);
   const URL = `/payroll/employee-payroll/?ordering=-id&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
@@ -301,42 +302,9 @@ const getEarnAndDeduction = async (payload) => {
 
 const getSalarySetupData = async (payload) => {
   try {
-    const empData = await getEmployeeCustomList({
-      filterData: payload.filterData,
-    });
-    const empPayroll = await getEmployeePayroll({
-      filterData: payload.filterData,
-    });
-    console.log("empData", empData.results);
-    console.log("empPayroll", empPayroll.results);
-    const employees = empData.results;
-    const payrolls = empPayroll.results;
-
-    // Create a Map for payroll lookup by employee ID
-    const payrollMap = new Map(
-      payrolls.map((payroll) => [payroll.employee, payroll])
-    );
-
-    // Merge payroll data into employee list or mark employee as 'new'
-    const mergedData = employees.map((employee) => {
-      const payroll = payrollMap.get(employee.id);
-      return payroll
-        ? {
-            ...employee,
-            basic_salary: payroll.basic_salary,
-            salary_type: payroll.salary_type,
-          }
-        : {
-            ...employee,
-            new: true,
-          };
-    });
-    mergedData.sort((a, b) => {
-      return (a.new === true ? 1 : 0) - (b.new === true ? 1 : 0);
-    });
-
-    console.log("mergedData", mergedData);
-    return mergedData;
+    const empData = await getEmployeeCustomList(payload);
+    console.log("empData", empData);
+    return empData;
   } catch (err) {
     console.error("Error fetching salary setup data:", err);
     if (err?.response?.status === 401) {
@@ -346,8 +314,96 @@ const getSalarySetupData = async (payload) => {
   }
 };
 
+const saveEarnAndDeduction = async (payload) => {
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/payroll/earn-deduction-type/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    } else {
+      const response = await axios.post(
+        `${baseUrl}/payroll/earn-deduction-type/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving earn and deduction data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+}
+
+const deleteEarnAndDeduction = async (id) => {
+  try {
+    const response = await axios.delete(
+      `${baseUrl}/payroll/earn-deduction-type/${id}`,
+      {
+        headers: headers(),
+      }
+    );
+    return true;
+  } catch (error) {
+    console.error("Error deleting earn and deduction data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+}
+
+const saveEmployeePayroll = async (payload) => {
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/payroll/employee-payroll/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    } else {
+      const response = await axios.post(
+        `${baseUrl}/payroll/employee-payroll/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving employee payroll data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+}
+
+
 export {
   getEmployeePayroll,
+  saveEmployeePayroll,
   getEmployeePayrollById,
   saveSalaryRevision,
   getSalaryRevision,
@@ -358,4 +414,6 @@ export {
   updateSalaryRevisionStatus,
   getEarnAndDeduction,
   getSalarySetupData,
+  saveEarnAndDeduction,
+  deleteEarnAndDeduction,
 };
