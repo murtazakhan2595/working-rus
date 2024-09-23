@@ -72,50 +72,57 @@ const SalarySetup = ({ departments }) => {
     });
   };
 
+
+  const tabsData = [
+    { value: "salary", label: "Salary" },
+    { value: "components", label: "Components" },
+  ]
+  const filters = activeTab === "salary"
+    ? [
+	{
+        type: "select-one",
+        option: departments,
+        name: "department_name",
+        placeholder: "Department",
+      },
+      {
+        type: "select-two",
+        option: salaryTypeOptions,
+        name: "salary_type",
+        placeholder: "Salary Type",
+      }
+      ]
+    : [
+      { type: "search", placeholder: "Search by ID and Name", name: "id_and_first_name", }, { type: "select-one", option: [], name: "department_name", placeholder: "Department", }, { type: "select-two", option: [], name: "department_position", placeholder: "Designation", }
+      
+      ]
   return (
-    <div className="flex flex-col gap-4 profile-management">
-      {" "}
-      <Header content={activeTab === "components" && <AddComponentSheet />} />
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className=""
-        defaultValue="salary"
-      >
-        <TabsList className="flex items-center w-fit text-sm font-medium leading-tight min-h-[40px] bg-white rounded-xl border border-gray-100 border-solid p-1">
-          <TabsTrigger
-            value="salary"
-            className="flex-1 px-3 py-2 rounded-md min-h-[32px]"
-          >
-            Salary
-          </TabsTrigger>
-          <TabsTrigger
-            value="components"
-            className="flex-1 px-3 py-2 rounded-md min-h-[32px]"
-          >
-            Components
-          </TabsTrigger>
-        </TabsList>
+    <div className="flex flex-col gap-4 salary-startup">
+      
+      <Header content={activeTab === "components" && <AddComponentSheet/>}/>
+      
+        <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="salary">
+        <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+            <TabsList className="flex justify-center mb-4">
+              {tabsData?.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <div className="flex justify-end">
+              <FilterInput
+                filters={filters}
+                onChange={handleFilterChange}
+              />
+            </div>
+        </div>
         <TabsContent value="salary">
-          <div className="flex flex-col justify-end gap-4 items-end mb-4">
-            <FilterInput
-              filters={[
-                {
-                  type: "select-one",
-                  option: departments,
-                  name: "department_name",
-                  placeholder: "Department",
-                },
-                {
-                  type: "select-two",
-                  option: salaryTypeOptions,
-                  name: "salary_type",
-                  placeholder: "Salary Type",
-                },
-              ]}
-              onChange={handleFilterChange}
-            />
-          </div>
+          
           {isLoading ? (
             <PageLoader />
           ) : (
@@ -135,7 +142,7 @@ const SalarySetup = ({ departments }) => {
         <TabsContent value="components">
           <SalaryComponent />
         </TabsContent>
-      </Tabs>
+        </Tabs>
     </div>
   );
 };

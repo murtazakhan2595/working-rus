@@ -68,10 +68,11 @@ const RequestTerminationCard = ({
   };
   return (
     <SheetComponent
-      sheetData={formSheetData}
+      {...formSheetData}
       contentClassName="custom-sheet-width"
       isOpen={isOpen}
       setIsOpen={setIsOpen}
+      width="500px"
     >
       <RequestTerminationForm
         formData={initialValues}

@@ -179,14 +179,8 @@ function App() {
               <Route path="/leave-calender" element={<ComingSoon />} />
               <Route path="/my-payroll" element={<MyPayroll />} />
               <Route path="/payroll/:id" element={<EmployeeSalaryDetails />} />
+              <Route exact path="/exit-employee" element={<EmployeesExit />} />
 
-              {(userRole === 4 || userRole === 2) && (
-                <Route
-                  exact
-                  path="/exit-employee"
-                  element={<EmployeesExit />}
-                />
-              )}
               {userRole === 1 && (
                 <>
                   <Route path="/create-task" element={<CreateTask />} />
@@ -234,7 +228,11 @@ function App() {
                     element={<EditEmployeeProfile />}
                   />
                   <Route exact path="/payroll" element={<EmployeesPayroll />} />
-                  <Route exact path="/payroll/salary-setup/:id" element={<SalarySetupDetail />} />
+                  <Route
+                    exact
+                    path="/payroll/salary-setup/:id"
+                    element={<SalarySetupDetail />}
+                  />
 
                   <Route path="/salary-setup" element={<SalarySetup />} />
                   <Route path="/payslip/:id" element={<Payslip />} />

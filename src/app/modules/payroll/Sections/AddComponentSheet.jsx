@@ -106,10 +106,11 @@ const AddComponentSheet = ({ component, openSheet, reload }) => {
     <>
       <div>
         <SheetComponent
-          sheetData={formSheetData}
+         {...formSheetData}
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
           setIsOpen={setIsOpen}
+          width="500px"
         >
           {component && !isEdit ? (
             <ViewComponent

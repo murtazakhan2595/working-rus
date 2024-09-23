@@ -1,78 +1,100 @@
-import { connect } from "react-redux";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { IoCalendarOutline } from "react-icons/io5";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import ViewJobDetails from "./ViewJobDetails";
-import { fetchJobPosts } from "app/hooks/recruitment";
-import { jobIcon } from "assets/images";
-import { BsBoxArrowUpRight } from "react-icons/bs";
-import { PiDotsThreeOutlineFill } from "react-icons/pi";
-import { Labels } from "../Sections";
-import { Tabs, Header, PageLoader } from "components";
-import {
-  getEmployeeType,
-  getWorkType,
-  getJobType,
-  getWorkLocation,
-} from "utils/getValuesFromTables";
-import { JobSortingFilters } from "data/Data";
-import moment from "moment";
-import { LiaBriefcaseSolid } from "react-icons/lia";
-import { FilterInput } from "components/form-control";
-import { Row, Col } from "reactstrap";
+'use client'
 
-const JobsDataTable = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedJob, setSelectedPost] = useState(null);
+import React, { useEffect, useState } from "react";
+import { BriefcaseIcon, CalendarIcon, UsersIcon } from "lucide-react";
+import Header from "../../../../components/Header";
+import { FilterInput } from "components/form-control";
+import { useNavigate, Link } from "react-router-dom";
+import { fetchJobPosts } from "app/hooks/recruitment";
+import { PageLoader } from "components";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "../../../../src/@/components/ui/tabs";
+import Stats from "../../../../components/ui/Stats";
+import {
+  JobSortingFilters,
+  jobsStatusOptions
+} from '../../../../data/Data';
+
+import JobListingsTable from './JobListingsTable';
+
+import { buttonVariants } from "components/ui/button";
+
+
+
+
+
+const safeNumberDisplay = (value) => {
+  return Number.isNaN(value) || value === undefined || value === null ? '-' : value;
+};
+
+export default function JobsDataTable() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [posts, setPosts] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({});
   const [sortData, setSortData] = useState("dsc");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [selectedStatus, setSelectedStatus] = useState('');
 
-  const getPosts = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchJobPosts(filterData, sortData);
-      setPosts(data);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setLoading(false);
-    }
+  const navigate = useNavigate();
+
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
-  
+
+ 
   useEffect(() => {
+    const getPosts = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchJobPosts(filterData, sortData);
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     getPosts();
   }, [filterData, sortData]);
 
-  const handleDotsClick = (post) => {
-    setSelectedPost(post);
-  };
-
-  const closeModal = () => {
-    getPosts();
-    setSelectedPost(null);
-  };
-
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
+    onPageChange("page", 1);
     if (filterName === "sort_by_date") {
       setSortData(filterCheckStatus ? filterValue : "dsc");
+    } else {
+      setFilterData((prevFilters) => {
+        const updatedFilters = { ...prevFilters };
+        if (!filterValue || filterCheckStatus === false) {
+          delete updatedFilters[filterName];
+        } else {
+          updatedFilters[filterName] = filterCheckStatus === false ? "" : filterValue;
+        }
+        return updatedFilters;
+      });
     }
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (!filterValue || filterCheckStatus === false) {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] =
-          filterCheckStatus === false ? "" : filterValue;
-      }
-      return updatedFilters;
-    });
   };
+
+  const statsData = [
+    { label: "Total Jobs", value: safeNumberDisplay(posts.count), icon: BriefcaseIcon },
+    { label: "Open Jobs", value: safeNumberDisplay(posts.results.filter(job => job.status === "live").length), icon: CalendarIcon },
+    { label: "Total Applications", value: safeNumberDisplay(posts.results.reduce((sum, job) => sum + (job.total_applications || 0), 0)), icon: UsersIcon },
+  ];
+
+
+
+
+
+ 
+
+  
+
   return (
-    <div className="screen bg-[#F0F1F2]">
-      <Header
+<>
+    {/* <Header
         title="Jobs"
         content={
           <FilterInput
@@ -90,137 +112,86 @@ const JobsDataTable = () => {
           />
         }
       />
-      <Row className="bg-[#F0F1F2] relative">
-        {selectedJob && (
-          <Col md={6}>
-            <ViewJobDetails jobId={selectedJob.id} onClose={closeModal} />
-          </Col>
-        )}
-        <Col lg={12}>
-          <div className="rounded-top bg-white p-2 m-2">
-            <Tabs
-              tabs={["All", "Open", "Closed"]}
-              onTabChange={(value) => {
-                handleFilterChange(
-                  "status",
-                  value === "Open"
-                    ? "live"
-                    : value === "Closed"
-                    ? "expired"
-                    : ""
-                );
-              }}
-              buttonLabel={"Add New Job"}
+      <div className="p-2 m-2 bg-white rounded-top">
+        <Tabs
+          tabs={["All", "Open", "Closed"]}
+          onTabChange={(value) => {
+            handleFilterChange(
+              "status",
+              value === "Open"
+                ? "live"
+                : value === "Closed"
+                ? "expired"
+                : ""
+            )
+
+            filters={[
+              {
+                type: "sorting",
+                option: JobSortingFilters,
+                name: "sorting",
+                placeholder: "Sort By",
+                values: filterData,
+                mainHeading: "Sort",
+              },
+            ]}
+            onChange={handleFilterChange}
+          }}
+          buttonLabel={"Add New Job"}
+        />
+      </div> */}
+    
+    <div className="flex flex-col gap-4 job-management">
+      <Header
+        content={
+          <Link to="/job-post" className={buttonVariants({ variant: "default" })}>Add New Job</Link>
+
+        }
+      />
+      <Stats stats={statsData} />
+      <Tabs
+        defaultValue=""
+        className="w-full"
+        onValueChange={setSelectedStatus}
+      >
+        <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+          <TabsList className="inline-flex items-center justify-center p-2 bg-white rounded-full text-mauve-900">
+            {jobsStatusOptions.map((status) => (
+              <TabsTrigger
+                key={status.value}
+                value={status.value}
+                className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+              >
+                {status.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <div className="flex items-center space-x-4">
+            <FilterInput
+              filters={[
+                {
+                  type: "search",
+                  placeholder: "Search by Job Title",
+                  name: "Job_Title",
+                },
+              ]}
+              onChange={handleFilterChange}
             />
-          </div>
-        </Col>
-        <Col lg={12}>
-          {loading ? (
-            <PageLoader />
-          ) : (
-            <RenderJobs jobsList={posts} handleDotsClick={handleDotsClick} />
-          )}
-        </Col>
-        <br />
-      </Row>
-    </div>
-  );
-};
-
-const RenderJobs = ({ jobsList, handleDotsClick }) => {
-  return (
-    <div className="m-2 bg-white">
-      {jobsList?.results && jobsList.results.length > 0 ? (
-        jobsList?.results.map((job) => (
-          <div className={`whitespace-nowrap`} key={job.id}>
-            <div className="px-4 pt-5">
-              <RenderJob job={job} handleDotsClick={handleDotsClick} />
-            </div>
-          </div>
-        ))
-      ) : (
-        <div
-          className="flex justify-center items-center"
-          style={{ minHeight: "20vh" }}
-        >
-          No records to display
-        </div>
-      )}
-    </div>
-  );
-};
-
-const RenderJob = ({ job, handleDotsClick }) => {
-  const employeeType = getEmployeeType(job.Employee_Type);
-  const workType = getWorkType(job.Work_type);
-  const workLocation = getWorkLocation(job.location);
-  const jobType = getJobType(job.Job_Type);
-  return (
-    <div className="flex flex-col justify-between gap-y-10 border-b px-2 pb-4">
-      <div className="flex justify-between">
-        <div className="flex items-center gap-x-2">
-          <img src={jobIcon} alt="" />
-          <div>
-            <p className="text-baseGray text-base">{job.id}</p>
-            <h3
-              className="text-[20px] text-baseGray font-bold cursor-pointer"
-              onClick={() => {
-                handleDotsClick(job);
-              }}
-            >
-              {job.Job_Title}
-            </h3>
+           
           </div>
         </div>
-        <div className="text-base text-baseGray flex items-center gap-x-4">
-          <Link
-            to="/applicants"
-            state={{ jobId: job.id }}
-            className="border px-3 py-2 rounded-md border-gray-400"
-          >
-            View applications
-          </Link>
-          <Link to={`/job-description/${job.id}`}>
-            <BsBoxArrowUpRight className="text-xl cursor-pointer opacity-80" />
-          </Link>
-          <PiDotsThreeOutlineFill className="text-xl cursor-pointer opacity-80" />
-        </div>
-      </div>
-      <div className="flex items-start justify-between ">
-        <div className="text-base text-baseGray flex items-center gap-x-2 py-2">
-          <IoCalendarOutline className="text-lg" />
-          {`${moment(job.updated_at).format("DD-MM-YYYY")} to ${moment(
-            job.Deadline
-          ).format("DD-MM-YYYY")}`}
-          <LiaBriefcaseSolid className="text-lg" />
-          {job.total_applications} applications
-        </div>
-        <div className="flex justify-end items-center gap-x-2 gap-y-2 flex-wrap">
-          <Labels
-            label={job.status === "live" ? "Open" : "Close"}
-            iconDot={true}
-            iconColor={`${
-              job.status === "live" ? "bg-green-500" : "bg-red-500"
-            }`}
-            backgroungColor={`${
-              job.status === "live" ? "bg-green-100" : "bg-red-100"
-            }`}
-          />
-          <Labels label={employeeType} />
-          <Labels label={workType} />
-          <Labels label={workLocation} />
-          <Labels label={jobType} />
-        </div>
-      </div>
+        {jobsStatusOptions.map((status) => (
+          <TabsContent key={status.value} value={status.value}>
+            {isLoading ? (
+              <PageLoader />
+            ) : (
+              <JobListingsTable />
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
+    </>
   );
-};
 
-const mapStateToProps = (state) => {
-  return {
-    token: state.user.token,
-    baseUrl: state.user.baseUrl,
-  };
-};
-
-export default connect(mapStateToProps)(JobsDataTable);
+}

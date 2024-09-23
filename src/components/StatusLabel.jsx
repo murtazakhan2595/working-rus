@@ -5,6 +5,7 @@ import { BsCircleFill } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import { Badge } from "../components/ui/badge";
 
 export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   if (!label) return "";
@@ -12,15 +13,19 @@ export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
     <>
       <div
         className={`flex text-capitalize items-center text-baseGray font-lato text-base font-normal rounded-2xl px-3 py-1 ${
-          backgroungColor ?? "bg-[#E6E9F0]"
+          backgroungColor ?? "bg-plum-500"
         }`}
       >
         {src && <img src={src} alt="" className="mr-1" />}
         {iconDot && (
           <span className={`w-3 h-3 rounded-full mr-2 ${iconColor}`}></span>
         )}
-        {label}
+        
       </div>
+      {/* <Badge variant="secondary" className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full">
+
+      {label}
+         </Badge> */}
     </>
   );
 };
@@ -29,32 +34,32 @@ export const StatusLabel = ({ status, value }) => {
   if (!status) {
     return "";
   }
-  let classname = "";
+  let className = "";
   if (status === "Onboard") {
-    classname = "label-green-2FD115";
+    className = "label-green-2FD115";
   } else if (status === "Contacted" || status === "warning-orange") {
-    classname = "label-warning-FF9900";
+    className = "label-warning-FF9900";
   } else if (status === "warning") {
-    classname = "label-warning";
+    className = "label-warning";
   } else if (status === "Offered") {
-    classname = "label-warning-D5D912";
+    className = "label-warning-D5D912";
   } else if (status === "Rejected") {
-    classname = "label-danger";
+    className = "label-danger";
   } else if (status === "Declined" || status === "Denied") {
-    classname = "label-Denied";
+    className = "label-Denied";
   } else if (status === "Selected" || status === "Approved") {
-    classname = "label-success";
+    className = "label-success";
   } else if (status === "Shortlisted") {
-    classname = "label-green-28D9AC";
+    className = "label-green-28D9AC";
   } else if (status === "Pending") {
-    classname = "label-Pending";
+    className = "label-Pending";
   } else {
-    classname = "label-draft";
+    className = "label-draft";
   }
   return (
     <>
       <span
-        className={`p-2 ${classname} badge`}
+        className={`p-2 ${className} badge`}
         style={{ color: "#323333", minWidth: "100px", fontWeight: "normal" }}
       >
         {value ?? status}
@@ -66,14 +71,14 @@ export const StatusLabel = ({ status, value }) => {
 export const LabelHolo = ({ text, color }) => {
   return (
     <div
-      className="flex items-center space-x-2 mx-1"
+      className="flex items-center mx-1 space-x-2"
       style={{ borderBottom: "0.75px solid #5C5E64" }}
     >
       <span
         className={`w-3 h-3 rounded-full ${color}`}
         style={{ backgroundColor: color }}
       ></span>
-      <span className="text-gray-600 ml-0">{` ${text}`}</span>
+      <span className="ml-0 text-gray-600">{` ${text}`}</span>
     </div>
   );
 };
@@ -95,7 +100,7 @@ export const StatusCircleLabel = ({ label, status }) => {
       ) : (
         <FaRegCircle className="text-gray-600" />
       )}
-      <div className="capitalize text-zinc-600 text-sm font-normal">
+      <div className="text-sm font-normal capitalize text-zinc-600">
         {label ?? status}
       </div>
     </div>

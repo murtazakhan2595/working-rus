@@ -24,7 +24,7 @@ const AddAdditionalEarningSheet = () => {
    const [amountInputs, setAmountInputs] = useState({});
    const [selectedRadio, setSelectedRadio] = useState(""); 
   const formSheetData = {
-    triggerText: "Add",
+    triggerText: "Add Additional Earnings",
     title: "Add Additional Earnings",
 
     description: null,
@@ -61,14 +61,20 @@ const AddAdditionalEarningSheet = () => {
       setSelectedRadio(value);
      setAmountInputs((prev) => ({ ...prev, [value]: "" }));
    };
+
+  
   return (
     <>
       <div>
         <SheetComponent
-          sheetData={formSheetData}
-          contentClassName="custom-sheet-width"
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          
+        
+          {...formSheetData}
+        onSubmit={handleSubmit}
+        width="500px"
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        contentClassName="custom-sheet-width"
         >
           <Formik
             initialValues={initialValues}

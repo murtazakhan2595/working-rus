@@ -11,13 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../../components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../../src/@/components/ui/select";
+
 import {
   Table,
   TableBody,
@@ -27,27 +21,13 @@ import {
   TableRow,
 } from "../../../../src/@/components/ui/table";
 import {
-  DollarSign,
-  TrendingUp,
-  Calendar,
+
   ArrowLeft,
-  CalendarIcon,
-  Filter,
+
 } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../../../src/@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../../../../src/@/components/ui/command";
-import { format } from "date-fns";
+
+
+
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   getEmployeePayrollById,
@@ -223,7 +203,7 @@ console.log("EARNANDDEDUCTIONS",earnAndDeductions)
         <CardHeader>
           <CardTitle className="text-plum-900">Salary</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4 items-start pt-6 space-x-4">
+        <CardContent className="flex flex-col items-start gap-4 pt-6 space-x-4">
           <div className="text-lg font-semibold text-black">
             {" "}
             Monthly Gross Salary
@@ -281,7 +261,7 @@ console.log("EARNANDDEDUCTIONS",earnAndDeductions)
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Employee Deductions</CardTitle>
+            <CardTitle>Employee Deductions </CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
