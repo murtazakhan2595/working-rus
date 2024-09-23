@@ -139,18 +139,47 @@ const ComponentForm = ({
   setIsOpen,
   editMode,
 }) => {
-  const [amountInputs, setAmountInputs] = useState({});
+    const [amountInputs, setAmountInputs] = useState({
+      option1: "", // For Flat Amount
+      option2: "", // For Percentage of Gross
+      option3: "", // For Percentage of Basic
+    });
   const [selectedRadio, setSelectedRadio] = useState("");
   const handleRadioChange = (value) => {
     // Reset the amount input for the selected radio option
     setSelectedRadio(value);
     setAmountInputs((prev) => ({ ...prev, [value]: "" }));
   };
+  const formatValueForBackend = (option, value) => {
+    if (option === "option1") {
+      return `AED ${parseFloat(value).toFixed(2)} Flat Amount`; // Flat Amount
+    } else if (option === "option2") {
+      return `${value}% of Gross`; // Percentage of Gross
+    } else if (option === "option3") {
+      return `${value}% of Basic`; // Percentage of Basic
+    }
+    return value;
+  };
+   const handleFormSubmit = (values) => {
+     const formattedAmount = formatValueForBackend(
+       selectedRadio,
+       amountInputs[selectedRadio]
+     );
+
+     const finalValues = {
+       ...values,
+       amounts: formattedAmount, // Add the formatted value
+     };
+
+     handleSubmit(finalValues); // Call the provided handleSubmit with formatted values
+   };
+
+
   return (
     <Formik
       initialValues={earnAndDeduction}
       // validationSchema={validationSchema}
-      onSubmit={handleSubmit}
+      onSubmit={handleFormSubmit}
     >
       {(props) => (
         <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
@@ -220,23 +249,48 @@ const ComponentForm = ({
                 </div>
                 <div className="flex flex-col space-y-4">
                   <RadioGroup defaultValue="" onValueChange={handleRadioChange}>
-                    {["option1", "option2", "option3"].map((option) => (
-                      <div className="flex items-center" key={option}>
+                    {[
+                      { value: "option1", label: "Flat Amount" },
+                      { value: "option2", label: "Percentage of Gross" },
+                      { value: "option3", label: "Percentage of Basic" },
+                    ].map((option) => (
+                      <div
+                        className="flex items-center space-x-4"
+                        key={option.value}
+                      >
+                        {/* Label before radio button */}
+                        <div className="text-zinc-900">{option.label}</div>
+
+                        {/* Radio Button */}
                         <RadioGroupItem
-                          value={option}
-                          id={`r${option.slice(-1)}`}
+                          value={option.value}
+                          id={`r${option.value.slice(-1)}`}
                         />
+
+                        {/* Text Input */}
                         <TextInput
                           value={
-                            selectedRadio === option ? props.values.amounts : ""
+                            selectedRadio === option.value
+                              ? amountInputs[option.value]
+                              : ""
                           }
-                          onChange={(field, value) => {
-                            if (selectedRadio === option) {
-                              props.setFieldValue("amounts", value);
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            // Keep the raw value in state
+                            setAmountInputs((prev) => ({
+                              ...prev,
+                              [option.value]: value,
+                            }));
+                            if (selectedRadio === option.value) {
+                              props.setFieldValue("amounts", value); // Store raw value in form state
                             }
                           }}
-                          placeholder="Enter %"
-                          disabled={selectedRadio !== option}
+                          placeholder={
+                            option.value === "option1"
+                              ? "Enter amount"
+                              : "Enter percentage"
+                          }
+                          disabled={selectedRadio !== option.value}
                         />
                       </div>
                     ))}
