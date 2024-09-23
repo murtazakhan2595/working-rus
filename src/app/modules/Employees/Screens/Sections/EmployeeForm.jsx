@@ -39,6 +39,7 @@ import {
   UserRoles,
   countriesCallingCodes,
   countriesList,
+  salaryTypeOptions,
 } from "../../../../../data/Data";
 
 import {
@@ -52,6 +53,10 @@ import {
 } from "../../../../../components/form-control";
 
 import { Alert } from "../../../../../src/@/components/ui/alert";
+import { IdCard } from "lucide";
+import { EmployeeID } from "utils/getValuesFromTables";
+import { getEmployeeid } from "utils/getValuesFromTables";
+import { saveEmployeePayroll } from "app/hooks/payroll";
 
 function getManagersStringSelected(managers) {
   if (managers) {
@@ -95,12 +100,14 @@ const SheetOnBorading = ({
           const response = await getEmployeeData(id);
           const employeeData = await getEmployeeInformation(response);
           setFormData(employeeData);
-          setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
+          // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
+          setEmpId(employeeData.id);
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
         } else {
           const response = await getNewEmployeeCode();
-          setEmpId(`TXB-${response.toString().padStart(4, "0")}`);
+          // setEmpId(`TXB-${response.toString().padStart(4, "0")}`);
+          setEmpId(response);
         }
       } catch (error) {
         console.log(error);
@@ -132,10 +139,14 @@ const SheetOnBorading = ({
       setUsernameAlreadyExist(false);
     }
   };
-
   const handleSubmit = async (data) => {
     console.log(data);
     setIsLoading(true);
+    const employeePayroll = {
+      salary: data.salary,
+      salary_type: data.salary_type,
+      employee: empId,
+    };
     try {
       // Check if an API call is already in progress
       data.indirect_report = data?.indirect_report
@@ -154,6 +165,8 @@ const SheetOnBorading = ({
         } else {
           setShowFormSubmittedModal && setShowFormSubmittedModal(true);
         }
+
+        await saveEmployeePayroll(employeePayroll);
       }
     } catch (error) {
       setFormData(data);
@@ -198,6 +211,7 @@ const SheetOnBorading = ({
                   handleSubmit(values, resetForm);
                 }}
                 validate={(values) => {
+                  console.log(values);
                   const errors = validationEmployeeInfoFormSchema(
                     values,
                     isEditMode
@@ -226,7 +240,7 @@ const SheetOnBorading = ({
                             name={"employeeId"}
                             error={props.errors?.employeeId}
                             touch={props.touched?.employeeId}
-                            value={empId}
+                            value={getEmployeeid(empId)}
                             label={"Employee ID"}
                             required={true}
                             disabled={true}
@@ -508,6 +522,38 @@ const SheetOnBorading = ({
                             value={props.values?.joining_date}
                             required={true}
                             label={"Joining Date"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Salary Details</h3>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"salary"}
+                            error={props.errors?.salary}
+                            touch={props.touched?.salary}
+                            value={props.values?.salary}
+                            label={"Employee Salary"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectComponent
+                            name={"salary_type"}
+                            options={salaryTypeOptions}
+                            error={props.errors?.salary_type}
+                            touch={props.touched.salary_type}
+                            value={props.values.salary_type}
+                            label={"Salary Type"}
+                            required={true}
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}

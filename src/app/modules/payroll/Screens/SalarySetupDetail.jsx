@@ -75,6 +75,7 @@ import {
 } from "../../../../components/form-control";
 import {
   getEarnAndDeduction,
+  getEmployeePayroll,
   updateSalaryRevisionStatus,
 } from "../../../hooks/payroll";
 import AddAdditionalEarningSheet from "../Sections/AddAdditionalEarningSheet";
@@ -97,13 +98,36 @@ const SalarySetupDetail = () => {
   const [employeeData, setEmployeeData] = React.useState({});
   const [payrollId, setPayrollId] = React.useState(null);
   const [earnAndDeductionType, setEarnAndDeductionsType] = React.useState([]);
-  const [earnAndDeduction, setEarnAndDeduction] = React.useState([]);
+  const [earnAndDeductions, setEarnAndDeductions] = React.useState([]);
   const [monthlyGrossSalary, setMonthlyGrossSalary] = React.useState();
   const [earnings, setEarnings] = React.useState([]);
   const [deductions, setDeductions] = React.useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
 
+
+    useEffect(() => {
+      const fetchData = async () => {
+        const response = await getEmployeePayroll({
+          filterData: { employee_id: id },
+        });
+        // 
+        if (response) {
+          setPayrollId(response?.results[0]?.id);
+          console.log("RESPONSE", response?.results[0]);
+          const earnAndDeductions = await getEmployeeEarnAndDeduction({
+            filterData: { employee_payroll: response?.results[0]?.id },
+          });
+          console.log("EARNANDDEDUCTIONS", earnAndDeductions);
+          if (earnAndDeductions) {
+            // console.log(earnAndDeductions);
+            setEarnAndDeductions(earnAndDeductions);
+          }
+        }
+      };
+      fetchData();
+    }, [id]);
+console.log("EARNANDDEDUCTIONS",earnAndDeductions)
   useEffect(() => {
     const fetchData = async () => {
       const response = await getEmployeeData(id);
@@ -308,7 +332,7 @@ const SalarySetupDetail = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {earnAndDeduction?.earnings?.map((item, index) => (
+              {earnAndDeductions?.earnings?.map((item, index) => (
                 <TableRow key={index} className="cursor-pointer">
                   <TableCell>{item?.type_name}</TableCell>
                   <TableCell>{item?.income_type}</TableCell>
@@ -316,7 +340,7 @@ const SalarySetupDetail = () => {
                   <TableCell>{item?.month}</TableCell>
                 </TableRow>
               ))}
-              {earnAndDeduction?.deductions?.map((item, index) => (
+              {earnAndDeductions?.deductions?.map((item, index) => (
                 <TableRow key={index} className="cursor-pointer">
                   <TableCell>{item?.type_name}</TableCell>
                   <TableCell>{item?.income_type}</TableCell>
