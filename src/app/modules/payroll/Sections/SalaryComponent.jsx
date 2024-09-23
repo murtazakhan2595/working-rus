@@ -75,30 +75,7 @@ const SalaryComponent = () => {
       {selectedComponent && (
         <AddComponentSheet component={selectedComponent} openSheet={true} reload={fetchData} />
       )}
-      <div className="flex justify-end">
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by ID and Name",
-              name: "id_and_first_name",
-            },
-            {
-              type: "select-one",
-              option: [],
-              name: "department_name",
-              placeholder: "Department",
-            },
-            {
-              type: "select-two",
-              option: [],
-              name: "department_position",
-              placeholder: "Designation",
-            },
-          ]}
-          onChange={handleFilterChange}
-        />
-      </div>
+
       {isLoading ? (
         <PageLoader />
       ) : (

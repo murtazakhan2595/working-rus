@@ -53,8 +53,8 @@ const SheetComponent = ({
   return (
     <>
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        {sheetData.triggerText && <SheetTrigger asChild>
-          <Button variant="default">{sheetData.triggerText}</Button>
+        {triggerText && <SheetTrigger asChild>
+          <Button variant="default">{triggerText}</Button>
         </SheetTrigger>}
         <SheetContent
           style={{ width }}
