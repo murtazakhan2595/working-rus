@@ -132,7 +132,7 @@ const SalarySetupDetail = () => {
     navigate(-1);
   };
 
-  console.log("INFO", employeeData, payrollId, earnAndDeduction);
+  console.log("INFO", earnAndDeduction);
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
@@ -277,12 +277,20 @@ const SalarySetupDetail = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {earnAndDeduction?.map((revision, index) => (
+              {earnAndDeduction?.earnings?.map((item, index) => (
                 <TableRow key={index} className="cursor-pointer">
-                  <TableCell>AED</TableCell>
-                  <TableCell>AED</TableCell>
-                  <TableCell>sdfsd</TableCell>
-                  <TableCell>sdfsdf</TableCell>
+                  <TableCell>{item?.type_name}</TableCell>
+                  <TableCell>{item?.income_type}</TableCell>
+                  <TableCell>{item?.amount}</TableCell>
+                  <TableCell>{item?.month}</TableCell>
+                </TableRow>
+              ))}
+              {earnAndDeduction?.deductions?.map((item, index) => (
+                <TableRow key={index} className="cursor-pointer">
+                  <TableCell>{item?.type_name}</TableCell>
+                  <TableCell>{item?.income_type}</TableCell>
+                  <TableCell>{item?.amount}</TableCell>
+                  <TableCell>{item?.month}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
