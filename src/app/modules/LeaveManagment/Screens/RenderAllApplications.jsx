@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col } from "reactstrap";
 import { AllLeavesApplicationColumns } from "app/utils/Types/TableColumns";
-import { Table, PageLoader } from "components";
+import {  PageLoader } from "components";
 import { getLeaveApplications } from "app/hooks/leaveManagment";
 import { useSelector } from "react-redux";
 import { connect } from "react-redux";
+import TableCustom from "components/CustomTable";
 
 const RenderAllApplications = ({ reload, userProfile }) => {
   const [applications, setApplications] = useState([]);
@@ -60,7 +61,7 @@ const RenderAllApplications = ({ reload, userProfile }) => {
           <Row>
             <Col lg={12}>
               <div>
-                <Table
+                <TableCustom
                   data={applications?.results || []}
                   columns={AllLeavesApplicationColumns(reload,loggedInUser.role)}
                   pagination={true}

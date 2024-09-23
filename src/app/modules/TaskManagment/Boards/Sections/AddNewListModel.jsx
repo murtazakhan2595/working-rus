@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { RxCross2 } from "react-icons/rx";
-import { Card, Row, Col, Button, Form } from "reactstrap";
+import { Card, Row, Col, Button } from "reactstrap";
 import { Formik } from "formik";
 import { TextInput } from "components/form-control.jsx";
 import { addBoard, getBoardById } from "app/hooks/taskManagment";

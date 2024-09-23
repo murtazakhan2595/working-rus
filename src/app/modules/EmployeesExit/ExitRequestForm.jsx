@@ -14,6 +14,7 @@ import { ManagerName } from "utils/getValuesFromTables";
 import { getAllCountries } from "countries-and-timezones";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
+import { NoticePeriod } from "data/Data";
 
 const PersonalInformation = ({
   personalInfo,
@@ -162,24 +163,7 @@ const PersonalInformation = ({
                         <Col md={6}>
                           <SelectComponent
                             name={"notice_period"}
-                            options={[
-                              {
-                                value: "1 month",
-                                label: "1 month",
-                              },
-                              {
-                                value: "2 month",
-                                label: "2 month",
-                              },
-                              {
-                                value: "3 month",
-                                label: "3 month",
-                              },
-                              {
-                                value: "0 month",
-                                label: "0 month",
-                              },
-                            ]}
+                            options={NoticePeriod}
                             error={props.errors.reason_for_leaving}
                             touch={props.touched.reason_for_leaving}
                             value={props.values.reason_for_leaving}
