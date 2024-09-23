@@ -48,9 +48,9 @@ const SheetComponent = ({
   return (
     <>
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
+        {sheetData.triggerText && <SheetTrigger asChild>
           <Button variant="default">{sheetData.triggerText}</Button>
-        </SheetTrigger>
+        </SheetTrigger>}
         <SheetContent
           className={`${contentClassName} overflow-y-auto sm:max-w-4xl`}
           onInteractOutside={handleInteractOutside}

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "../../../../components/ui/card.jsx";
 import { SalarySetupColumns } from "app/utils/Types/TableColumns";
@@ -20,13 +19,12 @@ import SalaryComponent from "../Sections/SalaryComponent";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
 import AddComponentSheet from "../Sections/AddComponentSheet.jsx";
 
-
 const SalarySetup = ({ departments }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-   const [activeTab, setActiveTab] = useState("components");
-   const [salarySetupData, setSalarySetupData] = useState([]);
+  const [activeTab, setActiveTab] = useState("components");
+  const [salarySetupData, setSalarySetupData] = useState([]);
   const navigate = useNavigate();
 
   const onPageChange = (name, value) => {
@@ -43,17 +41,17 @@ const SalarySetup = ({ departments }) => {
     },
   };
 
-   useEffect(()=>{
+  useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const data =await getSalarySetupData({options,filterData});
-      if(data){
-setSalarySetupData(data)
+      const data = await getSalarySetupData({ options, filterData });
+      if (data) {
+        setSalarySetupData(data);
       }
       setIsLoading(false);
-    }
+    };
     fetchData();
-  },[options,filterData])
+  }, [options, filterData]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -77,7 +75,7 @@ setSalarySetupData(data)
   return (
     <div className="flex flex-col gap-4 profile-management">
       {" "}
-      <Header content={activeTab === "components" && <AddComponentSheet/>}/>
+      <Header content={activeTab === "components" && <AddComponentSheet />} />
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
@@ -124,10 +122,10 @@ setSalarySetupData(data)
             <Card>
               <CardContent>
                 <CustomTable
-                  data={salarySetupData || []}
+                  data={salarySetupData?.results || []}
                   columns={SalarySetupColumns}
                   pagination={true}
-                  dataTotalSize={salarySetupData?.length}
+                  dataTotalSize={salarySetupData?.count || 0}
                   tableOptions={tableOptions}
                 />
               </CardContent>
@@ -148,5 +146,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(SalarySetup);
-
-
