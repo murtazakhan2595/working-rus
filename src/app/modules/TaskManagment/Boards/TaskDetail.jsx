@@ -1,21 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { CiEdit } from "react-icons/ci";
-import { FiSend } from "react-icons/fi";
-import { BsCheckCircle } from "react-icons/bs";
-import { HiOutlinePaperClip } from "react-icons/hi";
 import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
 import { IoCalendarOutline } from "react-icons/io5";
 import { RxCross2, RxPerson } from "react-icons/rx";
-import { AiOutlineDownload, AiOutlineFile, AiOutlinePaperClip, AiOutlineSend } from "react-icons/ai";
+import { AiOutlineDownload, AiOutlineFile, AiOutlinePaperClip, } from "react-icons/ai";
 import { FaRegImage } from "react-icons/fa";
-import { BiDotsVerticalRounded } from "react-icons/bi";
 import { RiSendPlaneFill } from "react-icons/ri";
 import { LiaCommentAlt } from "react-icons/lia";
 import { PriorityList } from "data/Data";
 import { MembersList } from "../Sections";
 import moment from "moment";
-import { fetchComments, postComment, getBoardById, addAttachments, getAttachmentById } from "app/hooks/taskManagment";
+import {  postComment, getBoardById,  getAttachmentById } from "app/hooks/taskManagment";
 import { EmployeeName } from "utils/getValuesFromTables";
 import { connect, useSelector } from "react-redux";
 import EditCard from "./EditCard";
@@ -234,16 +229,16 @@ const handleFileChange = (event) => {
           <div onClick={onClose} className="flex justify-end mb-3">
             <RxCross2 className="text-baseGray" />
           </div>
-          <header className="flex justify-between items-center">
+          <header className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-[#323333] font-lato">
               {task?.name}
             </h1>
             <button
-              className="flex items-center space-x-2 border border-gray-500 rounded text-gray-500 hover:text-gray-700 px-2 py-1"
+              className="flex items-center px-2 py-1 space-x-2 text-gray-500 border border-gray-500 rounded hover:text-gray-700"
               onClick={editDetails}
             >
               <CiEdit />
-              <span className="text-base font-lato font-medium">Edit</span>
+              <span className="text-base font-medium font-lato">Edit</span>
             </button>
           </header>
 
@@ -256,11 +251,11 @@ const handleFileChange = (event) => {
             </span>
           </div>
 
-          <div className="mb-4 border border-gray-400 rounded-lg px-3 py-3">
-            <div className="flex items-center space-x-10 mb-3">
+          <div className="px-3 py-3 mb-4 border border-gray-400 rounded-lg">
+            <div className="flex items-center mb-3 space-x-10">
               <div className="flex items-center gap-x-2">
                 <IoCalendarOutline className="text-baseGray" />
-                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                <span className="ml-auto text-base font-bold font-lato text-baseGray">
                   Start Date
                 </span>
               </div>
@@ -268,10 +263,10 @@ const handleFileChange = (event) => {
                 {moment(task?.start_date).format("DD MMMM, YY")}
               </span>
             </div>
-            <div className="flex items-center space-x-10 mb-3">
+            <div className="flex items-center mb-3 space-x-10">
               <div className="flex items-center gap-x-2">
                 <RxPerson className="text-baseGray" />
-                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                <span className="ml-auto text-base font-bold font-lato text-baseGray">
                   Created By
                 </span>
               </div>
@@ -279,10 +274,10 @@ const handleFileChange = (event) => {
                 <EmployeeName value={task?.assigned_by} />
               </span>
             </div>
-            <div className="flex items-center space-x-10 mb-3">
+            <div className="flex items-center mb-3 space-x-10">
               <div className="flex items-center gap-x-2">
                 <IoCalendarOutline className="text-baseGray" />
-                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                <span className="ml-auto text-base font-bold font-lato text-baseGray">
                   Due Date
                 </span>
               </div>
@@ -290,10 +285,10 @@ const handleFileChange = (event) => {
                 {moment(task?.end_date).format("DD MMMM, YY")}
               </span>
             </div>
-            <div className="flex items-center space-x-10 mb-3">
+            <div className="flex items-center mb-3 space-x-10">
               <div className="flex items-center gap-x-2">
                 <PiUsersLight className="text-baseGray" />
-                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                <span className="ml-auto text-base font-bold font-lato text-baseGray">
                   Assigne
                 </span>
               </div>
@@ -302,7 +297,7 @@ const handleFileChange = (event) => {
             <div className="flex items-center space-x-10">
               <div className="flex items-center gap-x-2">
                 <PiHeadlightsBold className="text-baseGray" />
-                <span className="ml-auto text-base font-lato font-bold text-baseGray">
+                <span className="ml-auto text-base font-bold font-lato text-baseGray">
                   Priority
                 </span>
               </div>
@@ -320,7 +315,7 @@ const handleFileChange = (event) => {
               Description
             </h2>
             <p
-              className="text-sm text-gray-700 mt-2"
+              className="mt-2 text-sm text-gray-700"
               dangerouslySetInnerHTML={{ __html: task?.description }}
             />
           </div>
@@ -333,7 +328,7 @@ const handleFileChange = (event) => {
             {attachments.map((attachment) => (
               <div
                 key={attachment.id}
-                className="flex items-center justify-between w-auto my-1 bg-gray-100 p-2 rounded-lg shadow-md"
+                className="flex items-center justify-between w-auto p-2 my-1 bg-gray-100 rounded-lg shadow-md"
                 onClick={(e) => {
                   if (!e.target.closest(".download-icon")) {
                     const dataURL = attachment?.attachments.file;
@@ -347,8 +342,8 @@ const handleFileChange = (event) => {
                 }}
               >
                 <div className="flex items-center">
-                  <FaRegImage className="h-4 w-4 text-gray-500" />
-                  <span className="ml-4 font-lato text-baseGray text-sm">
+                  <FaRegImage className="w-4 h-4 text-gray-500" />
+                  <span className="ml-4 text-sm font-lato text-baseGray">
                     {attachment?.attachments.name}
                   </span>
                 </div>
@@ -358,7 +353,7 @@ const handleFileChange = (event) => {
                     download
                     className="text-gray-500 hover:text-gray-700 download-icon"
                   >
-                    <AiOutlineDownload className="h-5 w-5" />
+                    <AiOutlineDownload className="w-5 h-5" />
                   </a>
                 </div>
               </div>
@@ -376,7 +371,7 @@ const handleFileChange = (event) => {
               <div className="relative w-full">
                 {newAttachment?.name && (
                   <div className="flex items-center gap-2 pb-2">
-                    <AiOutlineFile className="h-5 w-5 text-black" />
+                    <AiOutlineFile className="w-5 h-5 text-black" />
                     <span className="text-sm text-black">
                       {newAttachment.name}
                     </span>
@@ -391,11 +386,11 @@ const handleFileChange = (event) => {
                   ref={commentRef}
                 />
                 {showDropdown && (
-                  <div className="absolute z-10  top-0 left-0 mt-8 mx-auto shadow-lg rounded-lg bg-white max-h-32 overflow-y-auto ">
+                  <div className="absolute top-0 left-0 z-10 mx-auto mt-8 overflow-y-auto bg-white rounded-lg shadow-lg max-h-32 ">
                     {filteredUsers.map((user) => (
                       <div
                         key={user.value}
-                        className="p-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2 mb-1"
+                        className="flex items-center gap-2 p-2 mb-1 cursor-pointer hover:bg-gray-100"
                         onClick={() => handleUserSelect(user)}
                       >
                         <UserInitials user={user} />
@@ -416,13 +411,13 @@ const handleFileChange = (event) => {
               />
               <AiOutlinePaperClip
                 onClick={handleFileClick}
-                className="h-5 w-5 text-black mx-2 cursor-pointer"
+                className="w-5 h-5 mx-2 text-black cursor-pointer"
               />
               <div
-                className="bg-black rounded-full w-6 h-6 flex justify-center items-center mr-1"
+                className="flex items-center justify-center w-6 h-6 mr-1 bg-black rounded-full"
                 onClick={handleAddComment}
               >
-                <RiSendPlaneFill className="h-3 w-3 text-white cursor-pointer" />
+                <RiSendPlaneFill className="w-3 h-3 text-white cursor-pointer" />
               </div>
             </div>
           </div>
@@ -430,11 +425,11 @@ const handleFileChange = (event) => {
             {comments?.map((comment, index) => (
               <div key={index} className="flex items-start space-x-3">
                 <div className="flex-shrink-0">
-                  <div className="h-9 w-9 rounded-full bg-pink-500 flex items-center justify-center text-white font-semibold">
+                  <div className="flex items-center justify-center font-semibold text-white bg-pink-500 rounded-full h-9 w-9">
                     <EmployeeName value={comment.user_id} length={2} />
                   </div>
                 </div>
-                <div className="flex justify-between items-center w-full ">
+                <div className="flex items-center justify-between w-full ">
                   <div>
                     {comment?.commentattach?.length > 0 &&
                       comment?.attachments?.length > 0 &&
@@ -450,7 +445,7 @@ const handleFileChange = (event) => {
                             );
                           }}
                         >
-                          <AiOutlineFile className="h-5 w-5 text-black" />
+                          <AiOutlineFile className="w-5 h-5 text-black" />
                           <span className="text-sm text-black">
                             {comment?.attachments[0]?.attachment?.name}
                           </span>
