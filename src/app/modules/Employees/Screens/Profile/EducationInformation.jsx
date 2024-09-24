@@ -13,20 +13,13 @@ import {
   DateInput,
   SelectComponent,
   TextInput,
-  CustomDarkButton,
-  CustomLightOutlineButton,
   FileInput,
 } from "components/form-control";
 import { educationTypeOptions } from "data/Data.js";
 import { Link } from "react-router-dom";
 
-import { Label } from "../../../../../src/@/components/ui/label";
-import { Input } from "../../../../../components/ui/input";
 import { Button } from "../../../../../components/ui/button";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "../../../../../src/@/components/ui/calendar";
-import { CircleX, X } from "lucide-react";
+import { CircleX } from "lucide-react";
 import { validateEmployeeEducationForm } from "app/utils/FormSchema/employeeFormSchema";
 const EducationInformation = ({
   nextstep,
@@ -39,8 +32,6 @@ const EducationInformation = ({
   const formRef = React.createRef();
   const [educations, setEducations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [date, setDate] = useState(new Date());
-  const [selectedValue, setSelectedValue] = useState("");
 
   useEffect(() => {
     getEmployeeAcademicRecordData(employeeId)
@@ -82,10 +73,7 @@ const EducationInformation = ({
       console.error("Error deleting education:", error);
     }
   };
-  const handleChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`);
-    setSelectedValue(value);
-  };
+
   return (
     <div>
       {isLoading ? (
@@ -138,7 +126,7 @@ const EducationInformation = ({
                               <SelectComponent
                                 options={educationTypeOptions}
                                 name={`educations[${index}].education_level`}
-                                value={props.values.educations}
+                                value={education.education_level}
                                 label={"Educational Level"}
                                 required
                                 error={
