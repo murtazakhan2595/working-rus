@@ -36,7 +36,6 @@ const OnBoardingSheet = () => {
     title: 'Add New Employee',
     description: 'Please fill out the form below to add a new employee.',
     footer: null,
-   
   };
 
   return (

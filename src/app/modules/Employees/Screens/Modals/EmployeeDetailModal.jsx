@@ -1,5 +1,4 @@
 import React from "react";
-import { Modal, ModalHeader, ModalBody } from "reactstrap";
 import {
   PersonalInformation,
   ContactInformation,
@@ -10,6 +9,8 @@ import {
   IdentificationInformation,
 } from "../Profile";
 import EmployeeForm from "../Sections/EmployeeForm";
+import SheetComponent from "components/ui/SheetComponent";
+
 function EmployeeDetailModal({
   openModal,
   closeModal,
@@ -28,86 +29,93 @@ function EmployeeDetailModal({
   };
   return (
     <>
-      <div className="contact-modal-screen">
-        <Modal isOpen={openModal} className="px-3 py-4 modal-success">
-          <ModalHeader toggle={closeModal} tag="h4">
-            <h6 className="">{getTitle(currentClick)}</h6>
-          </ModalHeader>
-          <ModalBody>
-            {currentClick === 1 && (
-              <PersonalInformation
-                employeeId={employeeId}
-                isEditMode={true}
-                nextstep={() => {
-                  closeModal();
-                }}
-              />
-            )}
-            {currentClick === 2 && (
-              <ContactInformation
-                employeeId={employeeId}
-                nextstep={() => {
-                  closeModal();
-                }}
-                isEditMode={true}
-              />
-            )}
-            {currentClick === 3 && (
-              <BankInformation
-                employeeId={employeeId}
-                nextstep={() => {
-                  closeModal();
-                }}
-                isEditMode={true}
-              />
-            )}
-            {currentClick === 4 && (
-              <ExperienceInformation
-                employeeId={employeeId}
-                nextstep={() => {
-                  closeModal();
-                }}
-                isEditMode={true}
-              />
-            )}
-            {currentClick === 5 && (
-              <EducationInformation
-                employeeId={employeeId}
-                nextstep={() => {
-                  closeModal();
-                }}
-                isEditMode={true}
-              />
-            )}
-            {currentClick === 6 && (
-              <CertificationsInformation
-                employeeId={employeeId}
-                nextstep={() => {
-                  closeModal();
-                }}
-                isEditMode={true}
-              />
-            )}
-            {currentClick === 7 && (
-              <IdentificationInformation
-                employeeId={employeeId}
-                nextstep={() => {
-                  closeModal();
-                }}
-                isEditMode={true}
-              />
-            )}
-            {currentClick === 8 && (
-              <EmployeeForm
-                id={employeeId}
-                nextstep={() => {
-                  closeModal();
-                }}
-                isEditMode={true}
-              />
-            )}
-          </ModalBody>
-        </Modal>
+      <div>
+        <SheetComponent
+          {...{
+            triggerText: getTitle(currentClick),
+            title: getTitle(currentClick),
+            description: null,
+            footer: null,
+          }}
+          // onSubmit={handleSubmit}
+          width="860px"
+          isOpen={openModal}
+          setIsOpen={closeModal}
+          contentClassName="custom-sheet-width"
+        >
+          {currentClick === 1 && (
+            <PersonalInformation
+              employeeId={employeeId}
+              isEditMode={true}
+              nextstep={() => {
+                closeModal();
+              }}
+            />
+          )}
+          {currentClick === 2 && (
+            <ContactInformation
+              employeeId={employeeId}
+              nextstep={() => {
+                closeModal();
+              }}
+              isEditMode={true}
+            />
+          )}
+          {currentClick === 3 && (
+            <BankInformation
+              employeeId={employeeId}
+              nextstep={() => {
+                closeModal();
+              }}
+              isEditMode={true}
+            />
+          )}
+          {currentClick === 4 && (
+            <ExperienceInformation
+              employeeId={employeeId}
+              nextstep={() => {
+                closeModal();
+              }}
+              isEditMode={true}
+            />
+          )}
+          {currentClick === 5 && (
+            <EducationInformation
+              employeeId={employeeId}
+              nextstep={() => {
+                closeModal();
+              }}
+              isEditMode={true}
+            />
+          )}
+          {currentClick === 6 && (
+            <CertificationsInformation
+              employeeId={employeeId}
+              nextstep={() => {
+                closeModal();
+              }}
+              isEditMode={true}
+            />
+          )}
+          {currentClick === 7 && (
+            <IdentificationInformation
+              employeeId={employeeId}
+              nextstep={() => {
+                closeModal();
+              }}
+              isEditMode={true}
+            />
+          )}
+          {currentClick === 8 && (
+            <EmployeeForm
+              id={employeeId}
+              nextstep={() => {
+                closeModal();
+              }}
+              isEditMode={true}
+            />
+          )}
+        </SheetComponent>
       </div>
     </>
   );
