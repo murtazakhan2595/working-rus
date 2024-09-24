@@ -175,11 +175,14 @@ const ComponentForm = ({
      handleSubmit(finalValues); // Call the provided handleSubmit with formatted values
    };
 
+   
+
 
   return (
     <Formik
       initialValues={earnAndDeduction}
       // validationSchema={validationSchema}
+      enableReinitialize={true}
       onSubmit={handleFormSubmit}
     >
       {(props) => (
@@ -275,9 +278,7 @@ const ComponentForm = ({
                               ? amountInputs[option.value]
                               : ""
                           }
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            // Keep the raw value in state
+                          onChange={(field, value) => {
                             setAmountInputs((prev) => ({
                               ...prev,
                               [option.value]: value,

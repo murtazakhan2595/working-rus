@@ -67,8 +67,8 @@ import {numberToWords} from "utils/renderValues.js";
 import { PageLoader } from "components";
 import { revisionLetterOptions, revisionStatusOptions } from "../../../../data/Data";
 import {FilterInput, SelectComponent} from "../../../../components/form-control";
-import { updateSalaryRevisionStatus } from "../../../hooks/payroll";
-
+import { getEarnAndDeduction, updateSalaryRevisionStatus } from "../../../hooks/payroll";
+import {calculateEarningsAndDeductions} from "../Sections/CalculationsHelperFunctions"
 
 export default function EmployeeSalaryDetails() {
   const [date, setDate] = React.useState();
@@ -81,7 +81,9 @@ export default function EmployeeSalaryDetails() {
   const [pendingRevisions, setPendingRevisions] = React.useState(0);
   const [rejectedRevisions, setRejectedRevisions] = React.useState(0);
   const [lastIncrementDate, setLastIncrementDate] = React.useState(null);
-  const [salaryBreakup, setSalaryBreakup] = React.useState([]);
+  const [earnings, setEarnings] = React.useState([]);
+  const [totalEarnings, setTotalEarnings] = React.useState(0);
+
   const [latestApprovedSalaryRevision, setLatestApprovedSalaryRevision] =
     React.useState({});
   const [loading, setLoading] = React.useState(true);
@@ -91,11 +93,11 @@ export default function EmployeeSalaryDetails() {
   const location = useLocation();
   const employeeID = new URLSearchParams(location.search).get("employeeID");
    const fromMyPayroll =new URLSearchParams(location.search).get("fromMyPayroll") === "true";
-  console.log("Loading...", loading)
 
   const navigate = useNavigate();
 
   const fetchData = async () => {
+    console.log("doign something ....")
     setLoading(true);
     const empData = await getEmployeeData(employeeID);
     if (empData) {
@@ -106,12 +108,15 @@ export default function EmployeeSalaryDetails() {
     if (response) {
       setPayrollDetails(response);
     }
-
-    const salaryBreakup = await getEmployeeEarnAndDeduction({
-      filterData:  { employee_payroll: id }
-    });
-    if(salaryBreakup){
-      setSalaryBreakup(salaryBreakup);
+    console.log("EMPLOYEE PAYROLL", response)
+    const earnAndDeduction = await getEarnAndDeduction();
+    console.log("EARN AND DEDUCTION", earnAndDeduction)
+    if (earnAndDeduction && response) {
+      const { earnings, deductions, totalEarnings, totalDeductions } =
+        calculateEarningsAndDeductions(response.basic_salary, earnAndDeduction.results);
+     
+      setEarnings(earnings);
+      setTotalEarnings(totalEarnings);
     }
     const salaryRevisionData = await getSalaryRevision({
       filterData,
@@ -248,10 +253,10 @@ const handleStatusChange = async (name, value, revision) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-plum-900">
-              {Number(salaryBreakup.totalEarnings)} AED
+              {Number(totalEarnings)} AED
             </div>
             <p className="text-xs text-muted-foreground">
-              {numberToWords(Number(salaryBreakup.totalEarnings))}
+              {numberToWords(Number(totalEarnings))}
             </p>
           </CardContent>
         </Card>
@@ -284,19 +289,19 @@ const handleStatusChange = async (name, value, revision) => {
             </h3>
             <div className="flex flex-col gap-4">
               <div className="flex flex-row font-bold text-left"></div>
-              {salaryBreakup.earnings?.map((item, index) => (
+              {earnings?.map((item, index) => (
                 <div className="flex flex-row gap-4" key={index}>
-                  <div className="flex-1">{item.type_name}</div>
-                  <div className="flex-1 text-right">AED {item.amount}</div>
+                  <div className="flex-1">{item.name}</div>
+                  <div className="flex-1 text-right">
+                    AED {item.monthly_amount}
+                  </div>
                 </div>
               ))}
               <div className="flex flex-row font-bold">
                 <div className="flex-1 mb-4 text-lg font-medium text-black">
                   Total Salary in AED
                 </div>
-                <div className="flex-1 text-right">
-                  AED {salaryBreakup.totalEarnings}
-                </div>
+                <div className="flex-1 text-right">AED {totalEarnings}</div>
               </div>
             </div>
           </CardContent>
@@ -307,7 +312,7 @@ const handleStatusChange = async (name, value, revision) => {
             salaryType={payrollDetails?.salary_type}
             payoutPeriod={payrollDetails?.payout_period}
             lastRevisedDate={latestApprovedSalaryRevision?.last_revised_date}
-            previousCTC={latestApprovedSalaryRevision?.previous_salary}
+            previousCTC={latestApprovedSalaryRevision?.previous_salary || totalEarnings}
             currentCTC={latestApprovedSalaryRevision?.new_salary}
           />
           <Card className="mb-4 h-fit">
@@ -346,7 +351,7 @@ const handleStatusChange = async (name, value, revision) => {
               payrollID={id}
               state={"create"}
               onClose={onClose}
-              previousCTC={latestApprovedSalaryRevision?.new_salary}
+              previousCTC={latestApprovedSalaryRevision?.new_salary || totalEarnings}
             />
           )}
         </CardHeader>
@@ -408,7 +413,6 @@ const handleStatusChange = async (name, value, revision) => {
             <TableBody>
               {salaryRevisions?.map((revision, index) => (
                 <TableRow key={index} className="cursor-pointer">
-                  {console.log(revision)}
                   <TableCell
                     onClick={() => {
                       handleSalaryRevisionClicked(revision);
@@ -565,7 +569,6 @@ const StatusDropdown = ({name, value, handleChange, revision, statuses}) => {
       <Select
         defaultValue={value}
         onValueChange={(value) => {
-          console.log("value", value);
           handleChange(name,value, revision);
         }}
         className=""

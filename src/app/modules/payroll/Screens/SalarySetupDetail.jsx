@@ -20,13 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../src/@/components/ui/table";
-import {
-
-  ArrowLeft,
-
-} from "lucide-react";
-
-
+import { ArrowLeft } from "lucide-react";
 
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
@@ -56,23 +50,15 @@ import {
 import {
   getEarnAndDeduction,
   getEmployeePayroll,
+  saveEmployeePayroll,
   updateSalaryRevisionStatus,
 } from "../../../hooks/payroll";
 import AddAdditionalEarningSheet from "../Sections/AddAdditionalEarningSheet";
-
-const payslip = {
-  total_earnings: [
-    { description: "Basic Salary", amount: 5000 },
-    { description: "Housing Allowance", amount: 2000 },
-    { description: "Transportation Allowance", amount: 500 },
-  ],
-  total_deductions: [
-    { description: "Tax", amount: 300 },
-    { description: "Health Insurance", amount: 200 },
-  ],
-  gross_salary: 7500, // Total of earnings
-  net_salary: 7000, // Gross salary minus deductions
-};
+import { toast } from "react-toastify";
+import {
+  
+calculateEarningsAndDeductions
+} from "../Sections/CalculationsHelperFunctions.jsx"
 
 const SalarySetupDetail = () => {
   const [employeeData, setEmployeeData] = React.useState({});
@@ -82,32 +68,30 @@ const SalarySetupDetail = () => {
   const [monthlyGrossSalary, setMonthlyGrossSalary] = React.useState();
   const [earnings, setEarnings] = React.useState([]);
   const [deductions, setDeductions] = React.useState([]);
+  const [totalEarnings, setTotalEarnings] = React.useState(0);
+  const [totalDeductions, setTotalDeductions] = React.useState(0);
   const navigate = useNavigate();
   const { id } = useParams();
 
-
-    useEffect(() => {
-      const fetchData = async () => {
-        const response = await getEmployeePayroll({
-          filterData: { employee_id: id },
+  console.log("payroll id", payrollId);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getEmployeePayroll({
+        filterData: { employee_id: id },
+      });
+      //
+      if (response) {
+        setPayrollId(response?.results[0]?.id);
+        const earnAndDeductions = await getEmployeeEarnAndDeduction({
+          filterData: { employee_payroll: response?.results[0]?.id },
         });
-        // 
-        if (response) {
-          setPayrollId(response?.results[0]?.id);
-          console.log("RESPONSE", response?.results[0]);
-          const earnAndDeductions = await getEmployeeEarnAndDeduction({
-            filterData: { employee_payroll: response?.results[0]?.id },
-          });
-          console.log("EARNANDDEDUCTIONS", earnAndDeductions);
-          if (earnAndDeductions) {
-            // console.log(earnAndDeductions);
-            setEarnAndDeductions(earnAndDeductions);
-          }
+        if (earnAndDeductions) {
+          setEarnAndDeductions(earnAndDeductions);
         }
-      };
-      fetchData();
-    }, [id]);
-console.log("EARNANDDEDUCTIONS",earnAndDeductions)
+      }
+    };
+    fetchData();
+  }, [id]);
   useEffect(() => {
     const fetchData = async () => {
       const response = await getEmployeeData(id);
@@ -116,7 +100,7 @@ console.log("EARNANDDEDUCTIONS",earnAndDeductions)
         setEmployeeData(response);
       }
 
-      const earnAndDeductionType = await getEarnAndDeduction()
+      const earnAndDeductionType = await getEarnAndDeduction();
       if (earnAndDeductionType) {
         setEarnAndDeductionsType(earnAndDeductionType.results);
       }
@@ -128,38 +112,28 @@ console.log("EARNANDDEDUCTIONS",earnAndDeductions)
     navigate(-1);
   };
 
-  console.log("INFO", earnAndDeductionType);
-  const handleSalaryCalculate = () =>{
-    console.log("Monthly Gross Salary", monthlyGrossSalary);
-    console.log("earnAndDeductionType", earnAndDeductionType);
-    const basic = monthlyGrossSalary * 0.4;
-    const houseAllowance = monthlyGrossSalary * 0.4;
-    const foodAllowance = basic * 0.4;
-    const otherAllowance =
-      monthlyGrossSalary - (basic + houseAllowance + foodAllowance);
 
-    const professionalTax = 250; 
-    const earnings = [
-      { name: "Basic", amounts: "Fixed, 40% of Gross", monthly_amount: basic },
-      {
-        name: "House Allowance",
-        amounts: "Fixed, 40% of Gross",
-        monthly_amount: houseAllowance,
-      },
-      {
-        name: "Food Allowance",
-        amounts: "Fixed, 40% of Basic",
-        monthly_amount: foodAllowance,
-      },
-      {
-        name: "Other Allowance",
-        amounts: "Fixed flat",
-        monthly_amount: otherAllowance,
-      },
-    ];
-    setEarnings(earnings);
-    setDeductions([{ name: "Professional Tax", amounts: "Fixed", monthly_amount: professionalTax }]);
-  }
+const handleSalaryCalculate = () => {
+
+  const { earnings, deductions, totalEarnings, totalDeductions } =
+    calculateEarningsAndDeductions(monthlyGrossSalary, earnAndDeductionType);
+
+  setEarnings(earnings);
+  setDeductions(deductions);
+  setTotalEarnings(totalEarnings);
+  setTotalDeductions(totalDeductions);
+};
+  const handleSalarySave =async () => {
+    const payload = {
+      id: payrollId,
+      basic_salary: monthlyGrossSalary,
+      is_new: false
+    };
+    const response = await saveEmployeePayroll(payload);
+    if(response){
+      toast.success("Salary Saved Successfully");
+    }
+  };
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
@@ -208,20 +182,18 @@ console.log("EARNANDDEDUCTIONS",earnAndDeductions)
             {" "}
             Monthly Gross Salary
           </div>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center">
-              <TextInput
-                name={"add_value"}
-                value={monthlyGrossSalary || ""}
-                label={"Add Value"}
-                onChange={(name, value) => setMonthlyGrossSalary(value)}
-              />
-              <Button variant="primary" onClick={handleSalaryCalculate}>
-                {" "}
-                Calculate
-              </Button>
-            </div>
+          <div className="flex items-center gap-6 w-full">
+            <TextInput
+              name={"add_value"}
+              value={monthlyGrossSalary || ""}
+              onChange={(name, value) => setMonthlyGrossSalary(value)}
+            />
+            <Button variant="primary" onClick={handleSalaryCalculate}>
+              {" "}
+              Calculate
+            </Button>
             <div class="text-[#8b8d98] text-sm">Hourly Rate : AED 0.00</div>
+            <Button onClick={handleSalarySave}>Save</Button>
           </div>
         </CardContent>
       </Card>
@@ -252,7 +224,7 @@ console.log("EARNANDDEDUCTIONS",earnAndDeductions)
                 <TableRow className="font-bold">
                   <TableCell>Total in AED</TableCell>
                   <TableCell className="text-right">
-                    AED {Number(payslip.gross_salary).toFixed(2)}
+                    AED {Number(totalEarnings).toFixed(2)}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -285,10 +257,7 @@ console.log("EARNANDDEDUCTIONS",earnAndDeductions)
                 <TableRow className="font-bold">
                   <TableCell>Total in AED</TableCell>
                   <TableCell className="text-right">
-                    AED{" "}
-                    {Number(payslip.gross_salary - payslip.net_salary).toFixed(
-                      2
-                    )}
+                    AED {Number(totalDeductions).toFixed(2)}
                   </TableCell>
                 </TableRow>
               </TableBody>
