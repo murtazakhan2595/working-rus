@@ -1,39 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "../../../components/ui/card.jsx";
+import { Card, CardContent } from "../../../components/ui/card";
 import { EmployeeColumns } from "app/utils/Types/TableColumns";
 import CustomTable from "components/CustomTable";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import Header from "../../../components/Header";
-import { FilterInput } from "components/form-control.jsx";
-import { UserRoles } from "data/Data.js";
-import { useNavigate } from "react-router-dom";
+import { FilterInput, SelectComponent } from "components/form-control";
+import { UserRoles } from "data/Data";
 import {
   getDepartmentList,
   getDesignationList,
   getEmployeeCustomList,
-} from "app/hooks/general.jsx";
+} from "app/hooks/general";
 import { PageLoader } from "components";
-import SheetOnBoarding from "../../../components/ui/OnBoardingSheet.jsx";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "../../../src/@/components/ui/tabs";
+import SheetOnBoarding from "../../../components/ui/OnBoardingSheet";
+import { Tabs, TabsContent } from "../../../src/@/components/ui/tabs";
 import Stats from "../../../components/ui/Stats";
 
 export default function EmployeeManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [empStatuses, setEmpStatuses] = useState(["all"]);
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [filterData, setFilterData] = useState({});
   const [totalEmployee, setTotalEmployee] = useState(0);
   const [activeEmployee, setActiveEmployee] = useState(0);
-  const [totalManagers, setTotalManager] = useState(0);
+  const [totalManagers, setTotalManagers] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const navigate = useNavigate();
-  const [selectedValue, setSelectedValue] = React.useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
 
   const onPageChange = (name, value) => {
@@ -51,11 +45,21 @@ export default function EmployeeManagement() {
       setIsLoading(true);
       try {
         const data = await getEmployeeCustomList({ options, filterData });
-        // console.log(data, "In Employee page")
         setEmployeeData(data);
+        setFilteredEmployees(
+          data.results.filter((employee) =>
+            selectedStatus === "all"
+              ? true
+              : employee.employee_status === selectedStatus
+          )
+        );
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
-        setTotalManager(data.TotalManager || 0);
+        setTotalManagers(data.TotalManager || 0);
+        setEmpStatuses([
+          "all",
+          ...new Set(data.results.map((e) => e.employee_status)),
+        ]);
       } catch (error) {
         console.error("Error fetching employees:", error);
       } finally {
@@ -68,12 +72,14 @@ export default function EmployeeManagement() {
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const departmentResponse = await getDepartmentList();
+        const [departmentResponse, designationResponse] = await Promise.all([
+          getDepartmentList(),
+          getDesignationList(),
+        ]);
         setDepartments(departmentResponse);
-        const designationResponse = await getDesignationList();
         setDesignations(designationResponse);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching lists:", error);
       }
     };
     fetchLists();
@@ -92,51 +98,41 @@ export default function EmployeeManagement() {
     });
   };
 
-  // Extract unique employee statuses
-  const employeeStatuses = [
-    "all",
-    ...new Set(
-      employeeData?.results.map((employee) => employee.employee_status)
-    ),
-  ];
-
   const statsData = [
     { label: "Total Employees", value: totalEmployee, icon: UsersRound },
     { label: "Managers", value: totalManagers, icon: Contact },
     { label: "Active Employees", value: activeEmployee, icon: UserRoundCheck },
   ];
 
-  // Add console.log for statsData
+  const onEmpStatusChange = (newStatus) => {
+    setFilteredEmployees(
+      employeeData.results.filter((employee) =>
+        newStatus === "all" ? true : employee.employee_status === newStatus
+      )
+    );
+    setSelectedStatus(newStatus);
+  };
 
-  // Filter employees based on selected status
-  const filteredEmployees = employeeData.results.filter((employee) => {
-    if (selectedStatus === "all") return true;
-    return employee.employee_status === selectedStatus;
-  });
-
-  const employeeStatus = ["All", "Active", "Inactive"];
   return (
     <div className="flex flex-col gap-4 profile-management">
       <Header content={<SheetOnBoarding />} />
-      <Stats stats={statsData} /> {/* Ensure this line is present */}
+      <Stats stats={statsData} />
       <Tabs
         defaultValue="all"
         className="w-full"
         onValueChange={setSelectedStatus}
       >
         <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="inline-flex items-center justify-center p-2 bg-white rounded-full text-mauve-900">
-            {employeeStatuses &&
-              employeeStatuses?.map((status) => (
-                <TabsTrigger
-                  key={status}
-                  value={status}
-                  className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-                >
-                  {status?.charAt(0).toUpperCase() + status?.slice(1)}
-                </TabsTrigger>
-              ))}
-          </TabsList>
+          <SelectComponent
+            name="Employee Status"
+            value={selectedStatus}
+            options={empStatuses.map((status) => ({
+              value: status,
+              label: status.charAt(0).toUpperCase() + status.slice(1),
+            }))}
+            onChange={(name, newStatus) => onEmpStatusChange(newStatus)}
+            classes="flex-row"
+          />
           <FilterInput
             filters={[
               {
@@ -166,7 +162,7 @@ export default function EmployeeManagement() {
             onChange={handleFilterChange}
           />
         </div>
-        {employeeStatuses.map((status) => (
+        {empStatuses.map((status) => (
           <TabsContent key={status} value={status}>
             {isLoading ? (
               <PageLoader />

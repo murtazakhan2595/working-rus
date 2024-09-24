@@ -49,6 +49,7 @@ const SelectComponent = ({
   disabled,
   required,
   onChange,
+  classes
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -62,7 +63,7 @@ const SelectComponent = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={`${classes || "flex flex-col gap-4"}`}>
       <Label className={` ${value ? "" : ""}`} htmlFor={name}>
         {required && <span className="text-red-600">* </span>} {label}
       </Label>
