@@ -169,8 +169,8 @@ const getEmployeeCustomList = async (payload) => {
       const employeeData = {
         count: employeeDataResponse.total_count,
         results: employeeDataResponse.employees,
-        ActiveEmployee: employeeDataResponse.total_employees,
-        TotalEmployee: employeeDataResponse.active_employees,
+        ActiveEmployee: employeeDataResponse.active_employees,
+        TotalEmployee: employeeDataResponse.total_employees,
         TotalManager: employeeDataResponse.total_managers,
       };
       return employeeData;

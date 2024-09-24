@@ -198,6 +198,7 @@ export const UserRoles = [
 ];
 
 export const employeeStatus = [
+  { label: "All", value: "All" },
   { label: "Active", value: "Active" },
   { label: "Terminated", value: "Terminated" },
   { label: "Deceased", value: "Deceased" },
