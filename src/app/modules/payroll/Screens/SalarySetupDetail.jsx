@@ -20,13 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../src/@/components/ui/table";
-import {
-
-  ArrowLeft,
-
-} from "lucide-react";
-
-
+import { ArrowLeft } from "lucide-react";
 
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
@@ -56,23 +50,15 @@ import {
 import {
   getEarnAndDeduction,
   getEmployeePayroll,
+  saveEmployeePayroll,
   updateSalaryRevisionStatus,
 } from "../../../hooks/payroll";
 import AddAdditionalEarningSheet from "../Sections/AddAdditionalEarningSheet";
-
-const payslip = {
-  total_earnings: [
-    { description: "Basic Salary", amount: 5000 },
-    { description: "Housing Allowance", amount: 2000 },
-    { description: "Transportation Allowance", amount: 500 },
-  ],
-  total_deductions: [
-    { description: "Tax", amount: 300 },
-    { description: "Health Insurance", amount: 200 },
-  ],
-  gross_salary: 7500, // Total of earnings
-  net_salary: 7000, // Gross salary minus deductions
-};
+import { toast } from "react-toastify";
+import {
+  
+calculateEarningsAndDeductions
+} from "../Sections/CalculationsHelperFunctions.jsx"
 
 const SalarySetupDetail = () => {
   const [employeeData, setEmployeeData] = React.useState({});
@@ -82,84 +68,91 @@ const SalarySetupDetail = () => {
   const [monthlyGrossSalary, setMonthlyGrossSalary] = React.useState();
   const [earnings, setEarnings] = React.useState([]);
   const [deductions, setDeductions] = React.useState([]);
+  const [totalEarnings, setTotalEarnings] = React.useState(0);
+  const [totalDeductions, setTotalDeductions] = React.useState(0);
+  const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
   const { id } = useParams();
 
-
-    useEffect(() => {
-      const fetchData = async () => {
-        const response = await getEmployeePayroll({
-          filterData: { employee_id: id },
-        });
-        // 
-        if (response) {
-          setPayrollId(response?.results[0]?.id);
-          console.log("RESPONSE", response?.results[0]);
-          const earnAndDeductions = await getEmployeeEarnAndDeduction({
-            filterData: { employee_payroll: response?.results[0]?.id },
-          });
-          console.log("EARNANDDEDUCTIONS", earnAndDeductions);
-          if (earnAndDeductions) {
-            // console.log(earnAndDeductions);
-            setEarnAndDeductions(earnAndDeductions);
-          }
-        }
-      };
-      fetchData();
-    }, [id]);
-console.log("EARNANDDEDUCTIONS",earnAndDeductions)
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getEmployeeData(id);
-
+      setLoading(true);
+      const response = await getEmployeePayroll({
+        filterData: { employee_id: id },
+      });
+      //
       if (response) {
-        setEmployeeData(response);
+        setPayrollId(response?.results[0]?.id);
+        console.log(
+          "response?.results[0]?.basic_salary",
+          response?.results[0]?.basic_salary
+        );
+        setMonthlyGrossSalary(response?.results[0]?.basic_salary);
+        const earnAndDeductions = await getEmployeeEarnAndDeduction({
+          filterData: { employee_payroll: response?.results[0]?.id },
+        });
+        if (earnAndDeductions) {
+          setEarnAndDeductions(earnAndDeductions);
+        }
       }
+        const empData = await getEmployeeData(id);
 
-      const earnAndDeductionType = await getEarnAndDeduction()
-      if (earnAndDeductionType) {
-        setEarnAndDeductionsType(earnAndDeductionType.results);
-      }
+        if (empData) {
+          setEmployeeData(empData);
+        }
+
+        const earnAndDeductionType = await getEarnAndDeduction();
+        if (earnAndDeductionType) {
+          setEarnAndDeductionsType(earnAndDeductionType.results);
+          handleSalaryCalculate(
+            earnAndDeductionType.results,
+            response?.results[0]?.basic_salary
+          );
+        }
+      setLoading(false);
     };
     fetchData();
   }, [id]);
+
 
   const handleBack = () => {
     navigate(-1);
   };
 
-  console.log("INFO", earnAndDeductionType);
-  const handleSalaryCalculate = () =>{
-    console.log("Monthly Gross Salary", monthlyGrossSalary);
-    console.log("earnAndDeductionType", earnAndDeductionType);
-    const basic = monthlyGrossSalary * 0.4;
-    const houseAllowance = monthlyGrossSalary * 0.4;
-    const foodAllowance = basic * 0.4;
-    const otherAllowance =
-      monthlyGrossSalary - (basic + houseAllowance + foodAllowance);
 
-    const professionalTax = 250; 
-    const earnings = [
-      { name: "Basic", amounts: "Fixed, 40% of Gross", monthly_amount: basic },
-      {
-        name: "House Allowance",
-        amounts: "Fixed, 40% of Gross",
-        monthly_amount: houseAllowance,
-      },
-      {
-        name: "Food Allowance",
-        amounts: "Fixed, 40% of Basic",
-        monthly_amount: foodAllowance,
-      },
-      {
-        name: "Other Allowance",
-        amounts: "Fixed flat",
-        monthly_amount: otherAllowance,
-      },
-    ];
-    setEarnings(earnings);
-    setDeductions([{ name: "Professional Tax", amounts: "Fixed", monthly_amount: professionalTax }]);
+const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) => {
+  console.log("monthlyGrossSalary", monthlyGrossSalary);
+  console.log("earnAndDeductionType", initialEarnAndDeductionType);
+  // Check if the necessary values are present
+  if (
+    !monthlyGrossSalary ||
+    !initialEarnAndDeductionType ||
+    initialEarnAndDeductionType.length === 0
+  ) {
+    return;
   }
+  const { earnings, deductions, totalEarnings, totalDeductions } =
+    calculateEarningsAndDeductions(
+      monthlyGrossSalary,
+      initialEarnAndDeductionType
+    );
+
+  setEarnings(earnings);
+  setDeductions(deductions);
+  setTotalEarnings(totalEarnings);
+  setTotalDeductions(totalDeductions);
+};
+  const handleSalarySave =async () => {
+    const payload = {
+      id: payrollId,
+      basic_salary: monthlyGrossSalary,
+      is_new: false
+    };
+    const response = await saveEmployeePayroll(payload);
+    if(response){
+      toast.success("Salary Saved Successfully");
+    }
+  };
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
@@ -172,166 +165,168 @@ console.log("EARNANDDEDUCTIONS",earnAndDeductions)
           Detail
         </Button>
       </div>
-      <Card className="mb-4">
-        <CardContent className="flex items-center pt-6 space-x-4">
-          <Avatar className="w-20 h-20 ">
-            <AvatarImage
-              src={employeeData?.avatar}
-              alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
-            />
-            <AvatarFallback className="bg-plum-400">
-              {`${employeeData?.first_name} ${employeeData?.last_name}`
-                ?.split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="text-base text-black">
-              <EmployeeID value={id} />
-            </p>
-            <h2 className="text-2xl font-bold text-plum-900">
-              {employeeData?.first_name} {employeeData?.last_name}
-            </h2>
-            <p className="text-base text-muted-foreground">
-              <DesignationName value={employeeData?.department_position} />
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle className="text-plum-900">Salary</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col items-start gap-4 pt-6 space-x-4">
-          <div className="text-lg font-semibold text-black">
-            {" "}
-            Monthly Gross Salary
-          </div>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center">
-              <TextInput
-                name={"add_value"}
-                value={monthlyGrossSalary || ""}
-                label={"Add Value"}
-                onChange={(name, value) => setMonthlyGrossSalary(value)}
-              />
-              <Button variant="primary" onClick={handleSalaryCalculate}>
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <>
+          <Card className="mb-4">
+            <CardContent className="flex items-center pt-6 space-x-4">
+              <Avatar className="w-20 h-20 ">
+                <AvatarImage
+                  src={employeeData?.avatar}
+                  alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
+                />
+                <AvatarFallback className="bg-plum-400">
+                  {`${employeeData?.first_name} ${employeeData?.last_name}`
+                    ?.split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-base text-black">
+                  <EmployeeID value={id} />
+                </p>
+                <h2 className="text-2xl font-bold text-plum-900">
+                  {employeeData?.first_name} {employeeData?.last_name}
+                </h2>
+                <p className="text-base text-muted-foreground">
+                  <DesignationName value={employeeData?.department_position} />
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="mb-4">
+            <CardHeader>
+              <CardTitle className="text-plum-900">Salary</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col items-start gap-4 pt-6 space-x-4">
+              <div className="text-lg font-semibold text-black">
                 {" "}
-                Calculate
-              </Button>
-            </div>
-            <div class="text-[#8b8d98] text-sm">Hourly Rate : AED 0.00</div>
+                Monthly Gross Salary
+              </div>
+              <div className="flex items-center gap-6 w-full">
+                <TextInput
+                  name={"add_value"}
+                  value={monthlyGrossSalary || ""}
+                  onChange={(name, value) => setMonthlyGrossSalary(value)}
+                />
+                <Button onClick={()=>{handleSalaryCalculate(earnAndDeductionType, monthlyGrossSalary)}}> Calculate</Button>
+                <div class="text-[#8b8d98] text-sm">Hourly Rate : AED 0.00</div>
+                <Button onClick={handleSalarySave}>Save</Button>
+              </div>
+            </CardContent>
+          </Card>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Employee Earnings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Components</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead className="text-right">
+                        Monthly Amount
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {earnings?.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.amounts}</TableCell>
+                        <TableCell className="text-right">
+                          {item.monthly_amount}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow className="font-bold">
+                      <TableCell>Total in AED</TableCell>
+                      <TableCell className="text-right">
+                        AED {Number(totalEarnings).toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Employee Deductions </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Components</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead className="text-right">
+                        Monthly Amount
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {deductions?.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.amounts}</TableCell>
+                        <TableCell className="text-right">
+                          {item.monthly_amount}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow className="font-bold">
+                      <TableCell>Total in AED</TableCell>
+                      <TableCell className="text-right">
+                        AED {Number(totalDeductions).toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Employee Earnings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Components</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead className="text-right">Monthly Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {earnings?.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>{item.amounts}</TableCell>
-                    <TableCell className="text-right">
-                      {item.monthly_amount}
-                    </TableCell>
+          <Card className="">
+            <CardHeader className="flex flex-row items-center justify-between w-full">
+              <CardTitle>Additional Earnings and Deductions</CardTitle>
+              <AddAdditionalEarningSheet />
+            </CardHeader>
+            <CardContent className="">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Component</TableHead>
+                    <TableHead>Component Type</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Payable Month</TableHead>
                   </TableRow>
-                ))}
-                <TableRow className="font-bold">
-                  <TableCell>Total in AED</TableCell>
-                  <TableCell className="text-right">
-                    AED {Number(payslip.gross_salary).toFixed(2)}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Employee Deductions </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Components</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead className="text-right">Monthly Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {deductions?.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>{item.amounts}</TableCell>
-                    <TableCell className="text-right">
-                      {item.monthly_amount}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                <TableRow className="font-bold">
-                  <TableCell>Total in AED</TableCell>
-                  <TableCell className="text-right">
-                    AED{" "}
-                    {Number(payslip.gross_salary - payslip.net_salary).toFixed(
-                      2
-                    )}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
-      <Card className="">
-        <CardHeader className="flex flex-row items-center justify-between w-full">
-          <CardTitle>Additional Earnings and Deductions</CardTitle>
-          <AddAdditionalEarningSheet />
-        </CardHeader>
-        <CardContent className="">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Component</TableHead>
-                <TableHead>Component Type</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Payable Month</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {earnAndDeductions?.earnings?.map((item, index) => (
-                <TableRow key={index} className="cursor-pointer">
-                  <TableCell>{item?.type_name}</TableCell>
-                  <TableCell>{item?.income_type}</TableCell>
-                  <TableCell>{item?.amount}</TableCell>
-                  <TableCell>{item?.month}</TableCell>
-                </TableRow>
-              ))}
-              {earnAndDeductions?.deductions?.map((item, index) => (
-                <TableRow key={index} className="cursor-pointer">
-                  <TableCell>{item?.type_name}</TableCell>
-                  <TableCell>{item?.income_type}</TableCell>
-                  <TableCell>{item?.amount}</TableCell>
-                  <TableCell>{item?.month}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {earnAndDeductions?.earnings?.map((item, index) => (
+                    <TableRow key={index} className="cursor-pointer">
+                      <TableCell>{item?.type_name}</TableCell>
+                      <TableCell>{item?.income_type}</TableCell>
+                      <TableCell>{item?.amount}</TableCell>
+                      <TableCell>{item?.month}</TableCell>
+                    </TableRow>
+                  ))}
+                  {earnAndDeductions?.deductions?.map((item, index) => (
+                    <TableRow key={index} className="cursor-pointer">
+                      <TableCell>{item?.type_name}</TableCell>
+                      <TableCell>{item?.income_type}</TableCell>
+                      <TableCell>{item?.amount}</TableCell>
+                      <TableCell>{item?.month}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 };

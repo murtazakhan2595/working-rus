@@ -109,7 +109,7 @@ export default function Payslip() {
           <CardContent className="space-y-6">
             <h2 className="mt-4 text-xl font-semibold text-plum-900">
               Payslip for the month of{" "}
-              {moment(payslip.generated_at).format("MMMM YYYY")}
+              {moment(payslip?.generated_at).format("MMMM YYYY")}
             </h2>
 
             <div className="grid grid-cols-2 gap-4">
@@ -145,12 +145,12 @@ export default function Payslip() {
                       </TableRow>
                       <TableRow>
                         <TableCell>Pay Period</TableCell>
-                        <TableCell>{moment(payslip.generated_at).format('MMMM YYYY')}</TableCell>
+                        <TableCell>{moment(payslip?.generated_at).format('MMMM YYYY')}</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Pay Date</TableCell>
                         <TableCell>
-                          {moment(payslip.generated_at).format("DD/MM/YYYY")}
+                          {moment(payslip?.generated_at).format("DD/MM/YYYY")}
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -163,10 +163,10 @@ export default function Payslip() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-4xl font-bold text-plum-900">
-                    {payslip.basic_salary} AED
+                    {payslip?.basic_salary} AED
                   </div>
                   <p className="mt-2 text-sm text-gray-600">
-                    {numberToWords(Number(payslip.basic_salary))}
+                    {numberToWords(Number(payslip?.basic_salary))}
                   </p>
                   <div className="flex justify-between mt-4">
                     <div>
@@ -200,7 +200,7 @@ export default function Payslip() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {payslip.total_earnings?.map((item, index) => (
+                      {payslip?.total_earnings?.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell>{item.description}</TableCell>
                           <TableCell className="text-right">
@@ -211,7 +211,7 @@ export default function Payslip() {
                       <TableRow className="font-bold">
                         <TableCell>Total in AED</TableCell>
                         <TableCell className="text-right">
-                          AED {Number(payslip.gross_salary).toFixed(2)}
+                          AED {Number(payslip?.gross_salary).toFixed(2)}
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -231,7 +231,7 @@ export default function Payslip() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {payslip.total_deductions?.map((item, index) => (
+                      {payslip?.total_deductions?.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell>{item.description}</TableCell>
                           <TableCell className="text-right">
@@ -244,7 +244,7 @@ export default function Payslip() {
                         <TableCell className="text-right">
                           AED{" "}
                           {Number(
-                            payslip.gross_salary - payslip.net_salary
+                            payslip?.gross_salary - payslip?.net_salary
                           ).toFixed(2)}
                         </TableCell>
                       </TableRow>
@@ -264,7 +264,7 @@ export default function Payslip() {
                     <TableRow>
                       <TableCell>Earnings</TableCell>
                       <TableCell className="text-right">
-                        AED {Number(payslip.gross_salary)?.toFixed(2)}
+                        AED {Number(payslip?.gross_salary)?.toFixed(2)}
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -272,7 +272,7 @@ export default function Payslip() {
                       <TableCell className="text-right">
                         (-) AED{" "}
                         {Number(
-                          payslip.gross_salary - payslip.net_salary
+                          payslip?.gross_salary - payslip?.net_salary
                         )?.toFixed(2)}
                       </TableCell>
                     </TableRow>
