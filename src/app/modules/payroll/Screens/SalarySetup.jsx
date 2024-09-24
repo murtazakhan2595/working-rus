@@ -22,6 +22,8 @@ import AddComponentSheet from "../Sections/AddComponentSheet.jsx";
 const SalarySetup = ({ departments }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [filterData, setFilterData] = useState({});
+  const [componentFilterData, setComponentFilterData] = useState({});
+
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [activeTab, setActiveTab] = useState("components");
   const [salarySetupData, setSalarySetupData] = useState([]);
@@ -41,6 +43,7 @@ const SalarySetup = ({ departments }) => {
     },
   };
 
+  console.log("FILTER DATA", filterData, componentFilterData);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -53,7 +56,8 @@ const SalarySetup = ({ departments }) => {
     fetchData();
   }, [options, filterData]);
 
-  const handleFilterChange = (filterName, filterValue) => {
+  // Separate handler for Salary filters
+  const handleSalaryFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     if (filterName === "department_name") {
       const department = departments.find(
@@ -72,57 +76,92 @@ const SalarySetup = ({ departments }) => {
     });
   };
 
+  // Separate handler for Component filters
+  const handleComponentFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    const updatedFilters = { ...componentFilterData };
+    if (filterValue === "") {
+      delete updatedFilters[filterName];
+    } else {
+      updatedFilters[filterName] = filterValue;
+    }
+    setComponentFilterData(updatedFilters); // Update component filters
+  };
 
   const tabsData = [
     { value: "salary", label: "Salary" },
     { value: "components", label: "Components" },
-  ]
-  const filters = activeTab === "salary"
-    ? [
-	{
-        type: "select-one",
-        option: departments,
-        name: "department_name",
-        placeholder: "Department",
-      },
-      {
-        type: "select-two",
-        option: salaryTypeOptions,
-        name: "salary_type",
-        placeholder: "Salary Type",
-      }
-      ]
-    : [
-      { type: "search", placeholder: "Search by ID and Name", name: "id_and_first_name", }, { type: "select-one", option: [], name: "department_name", placeholder: "Department", }, { type: "select-two", option: [], name: "department_position", placeholder: "Designation", }
-      
-      ]
+  ];
+  const filters =
+    activeTab === "salary"
+      ? [
+          {
+            type: "select-one",
+            option: departments,
+            name: "department_name",
+            placeholder: "Department",
+          },
+          {
+            type: "select-two",
+            option: salaryTypeOptions,
+            name: "salary_type",
+            placeholder: "Salary Type",
+          },
+        ]
+      : [
+          {
+            type: "search",
+            placeholder: "Component Name",
+            name: "name",
+          },
+          {
+            type: "select-one",
+            option: [{ value:"earning", label:"Earning"}, { value:"deduction", label:"Deduction"}],
+            name: "income_type",
+            placeholder: "Component Type",
+          },
+          {
+            type: "select-two",
+            option: [{ value: "true", label: "Active" }, { value: "false", label: "Inactive" }],
+            name: "is_active",
+            placeholder: "Active",
+          },
+        ];
+
+        console.log("ACTIVE TAB", activeTab);
   return (
     <div className="flex flex-col gap-4 salary-startup">
-      
-      <Header content={activeTab === "components" && <AddComponentSheet/>}/>
-      
-        <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="salary">
+      <Header content={activeTab === "components" && <AddComponentSheet />} />
+
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        defaultValue="salary"
+      >
         <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
-            <TabsList className="flex justify-center mb-4">
-              {tabsData?.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            <div className="flex justify-end">
-              <FilterInput
-                filters={filters}
-                onChange={handleFilterChange}
-              />
-            </div>
+          <TabsList className="flex justify-center mb-4">
+            {tabsData?.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <div className="flex justify-end">
+            <FilterInput
+              filters={filters}
+              onChange={
+                activeTab === "salary"
+                  ? handleSalaryFilterChange
+                  : handleComponentFilterChange
+              } // Dynamic filter handler
+            />
+          </div>
         </div>
         <TabsContent value="salary">
-          
           {isLoading ? (
             <PageLoader />
           ) : (
@@ -140,9 +179,9 @@ const SalarySetup = ({ departments }) => {
           )}
         </TabsContent>
         <TabsContent value="components">
-          <SalaryComponent />
+          <SalaryComponent componentFilterData ={componentFilterData}/>
         </TabsContent>
-        </Tabs>
+      </Tabs>
     </div>
   );
 };

@@ -11,9 +11,8 @@ import { getEarnAndDeduction } from "app/hooks/payroll.jsx";
 import { saveEarnAndDeduction } from "app/hooks/payroll.jsx";
 import AddComponentSheet from "./AddComponentSheet.jsx";
 
-const SalaryComponent = () => {
+const SalaryComponent = ({ componentFilterData }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({});
   const [component, setComponent] = useState([]);
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -33,47 +32,42 @@ const SalaryComponent = () => {
 
   const fetchData = async () => {
     setIsLoading(true);
-    const response = await getEarnAndDeduction({ options, filterData });
+    const response = await getEarnAndDeduction({
+      options,
+      filterData:{...componentFilterData},
+    });
     if (response) {
       setComponent(response.results);
     }
     setIsLoading(false);
-  }
+  };
   useEffect(() => {
     fetchData();
-  }, [options, filterData]);
+  }, [options, componentFilterData]);
 
-    const handleFilterChange = (filterName, filterValue) => {
-      onPageChange("page", 1);
-      setFilterData((prevFilters) => {
-        const updatedFilters = { ...prevFilters };
-        if (filterValue === "") {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterValue;
-        }
-        return updatedFilters;
-      });
-    };
 
-    const onCheckedChange = async (value, component)=>{
-      console.log("INFO", value, component);
-      const updatedComponent = {...component, is_active: value}
-      const response = await saveEarnAndDeduction(updatedComponent);
-      if(response){
-        setComponent((prevState) =>
-          prevState.map((item) =>
-            item.id === updatedComponent.id ? updatedComponent : item
-          )
-        );
-      }
+  const onCheckedChange = async (value, component) => {
+    console.log("INFO", value, component);
+    const updatedComponent = { ...component, is_active: value };
+    const response = await saveEarnAndDeduction(updatedComponent);
+    if (response) {
+      setComponent((prevState) =>
+        prevState.map((item) =>
+          item.id === updatedComponent.id ? updatedComponent : item
+        )
+      );
     }
+  };
 
-    console.log("INFO component", component);
+  console.log("INFO component", component);
   return (
     <div className="flex flex-col gap-4 profile-management">
       {selectedComponent && (
-        <AddComponentSheet component={selectedComponent} openSheet={true} reload={fetchData} />
+        <AddComponentSheet
+          component={selectedComponent}
+          openSheet={true}
+          reload={fetchData}
+        />
       )}
 
       {isLoading ? (
