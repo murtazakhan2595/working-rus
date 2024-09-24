@@ -179,6 +179,7 @@ function App() {
               <Route path="/leave-calender" element={<ComingSoon />} />
               <Route path="/my-payroll" element={<MyPayroll />} />
               <Route path="/payroll/:id" element={<EmployeeSalaryDetails />} />
+              <Route path="/payslip/:id" element={<Payslip />} />
               <Route exact path="/exit-employee" element={<EmployeesExit />} />
 
               {userRole === 1 && (
@@ -235,7 +236,6 @@ function App() {
                   />
 
                   <Route path="/salary-setup" element={<SalarySetup />} />
-                  <Route path="/payslip/:id" element={<Payslip />} />
                   <Route path="/loans" element={<ComingSoon />} />
                   <Route path="/claim-request" element={<ComingSoon />} />
                   <Route path="/play-run" element={<ComingSoon />} />

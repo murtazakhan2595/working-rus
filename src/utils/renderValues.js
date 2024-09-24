@@ -122,7 +122,7 @@ export function numberToWords(number) {
   const [integerPart, decimalPart] = number.toString().split(".");
 
   // Convert integer part
-  let result = convertToWords(parseInt(integerPart)) + " Dollars";
+  let result = convertToWords(parseInt(integerPart)) + " AED";
 
   // Optional: Handle decimal part (cents)
   if (decimalPart) {
