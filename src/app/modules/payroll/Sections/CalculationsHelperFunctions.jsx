@@ -44,6 +44,7 @@ export const calculateEarningsAndDeductions = (
   };
 
   earnAndDeductionType.forEach((item) => {
+     if (!item.is_active) return;
     const parsedAmount = parseFormattedValue(item.amounts);
 
     if (item.income_type === "earning") {
