@@ -264,7 +264,7 @@ const updateSalaryRevisionStatus = async (payload) => {
       }
     );
     if (response.status === 200) {
-      return true;
+      return response.data;
     }
   } catch (error) {
     console.error("Error updating salary revision status:", error);
