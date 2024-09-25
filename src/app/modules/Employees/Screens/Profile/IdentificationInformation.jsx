@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 
 import { Formik } from "formik";
 import { connect } from "react-redux";
-import { getAllCountries } from "countries-and-timezones";
 import { countriesList, visaOptions } from "../../../../../data/Data.js";
 import {
   FileInput,
@@ -13,10 +12,8 @@ import {
 } from "../../../../../components/form-control";
 import PageLoader from "../../../../../components/PageLoader.jsx";
 import {
-  getEmployeeVisaDetailsFiles,
   getEmployeeVisaDetailData,
   saveEmployeeVisaDetailData,
-  getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,
 } from "../../../../hooks/employee.jsx";
 
@@ -32,10 +29,6 @@ import { validateEmployeeIdentificationForm } from "app/utils/FormSchema/employe
 
 
 
-const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
-  value: countryCode,
-  label: getAllCountries()[countryCode].name,
-}));
 
 const IdentificationInformation = ({
   nextstep,
@@ -46,9 +39,6 @@ const IdentificationInformation = ({
   const formRef = React.createRef();
   const [isLoading, setIsLoading] = useState(true);
   const [visaDetails, setVisaDetails] = useState({});
-  const [selectedCountryId, setSelectedCountryId] = React.useState("")
-  const [selectedCountryPassport, setSelectedCountryPassport] = React.useState("")
-  const [selectedCountryVisa, setSelectedCountryVisa] = React.useState("")
 
   useEffect(() => {
     const fetchVisaDetails = async () => {
@@ -110,18 +100,6 @@ const IdentificationInformation = ({
       console.error("Error in handleSubmit:", error);
     }
   };
-  const handleCountryChangeId = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedCountryId(value)
-  }
-  const handleCountryChangePassport = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedCountryPassport(value)
-  }
-  const handleCountryChangeVisa = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedCountryVisa(value)
-  }
 
   return (
     <>
@@ -253,9 +231,9 @@ const IdentificationInformation = ({
                           <div className="space-y-2">
                             <SelectComponent
                               name={"Passport_Issuance_Country"}
-                              value={props.values.place_of_issuance}
-                              error={props.errors.place_of_issuance}
-                              touch={props.touched.place_of_issuance}
+                              value={props.values.Passport_Issuance_Country}
+                              error={props.errors.Passport_Issuance_Country}
+                              touch={props.touched.Passport_Issuance_Country}
                               options={countriesList}
                               label={"Passport Issuance Country"}
                               onChange={(field, value) => {

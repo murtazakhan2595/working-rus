@@ -437,7 +437,7 @@ const PasswordInput = ({
 const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
   return (
     <>
-      <div className="flex flex-row gap-4 items-cEnter">
+      <div className="flex flex-row gap-4 items-center">
         <Input
           id={name}
           type="checkbox"
