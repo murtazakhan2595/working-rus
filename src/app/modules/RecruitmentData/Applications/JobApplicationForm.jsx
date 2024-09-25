@@ -1,6 +1,6 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
 import React, { useState, useRef } from "react";
-import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col, Button } from "reactstrap";
 import { Formik } from "formik";
 import {
   TextInput,
@@ -17,7 +17,7 @@ import { connect } from "react-redux";
 import { addApplication } from "../../../hooks/recruitment.jsx";
 import { Header } from "../Sections/index.js";
 import { ApplicationDetail } from "../../../utils/Types/Recruitment.jsx";
-import { countriesList } from "data/Data.js";
+import { countriesList, countriesCallingCodes } from "data/Data.js";
 
 
 
@@ -144,6 +144,7 @@ const JobApplicationForm = () => {
                                   onChange={(field, value) => {
                                     props.setFieldValue(field, value);
                                   }}
+                                  countryOptions={countriesCallingCodes} 
                                 />
                               </Col>
                               <Col md="6">
