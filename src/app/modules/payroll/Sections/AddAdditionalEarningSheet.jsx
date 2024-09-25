@@ -16,13 +16,26 @@ import { getEarnAndDeduction } from "app/hooks/payroll";
 import { Formik } from "formik";
 import { RadioGroupInput } from "components/form-control";
 import { TextInput } from "components/form-control";
-import { DateInput } from "components/form-control";
+import { SelectComponent
+ } from "components/form-control";
+import { monthsOptions } from "data/Data";
+import { toast } from "react-toastify";
+import { saveEmployeeEarnDeduction } from "app/hooks/payroll";
 
-const AddAdditionalEarningSheet = () => {
+const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [earnings, setEarnings] = useState([]);
-   const [amountInputs, setAmountInputs] = useState({});
-   const [selectedRadio, setSelectedRadio] = useState(""); 
+  const [amountInputs, setAmountInputs] = useState({
+    option1: "", // For Flat Amount
+    option2: "", // For Percentage of Gross
+    option3: "", // For Percentage of Basic
+  });
+  const [selectedRadio, setSelectedRadio] = useState("");
+  const handleRadioChange = (value) => {
+    // Reset the amount input for the selected radio option
+    setSelectedRadio(value);
+    setAmountInputs((prev) => ({ ...prev, [value]: "" }));
+  };
   const formSheetData = {
     triggerText: "Add Additional Earnings",
     title: "Add Additional Earnings",
@@ -33,48 +46,49 @@ const AddAdditionalEarningSheet = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getEarnAndDeduction()
+      const response = await getEarnAndDeduction();
       if (response) {
-        console.log(response)
-        setEarnings(response.results)
+        console.log(response);
+        setEarnings(response.results);
       }
+    };
+    fetchData();
+  }, []);
+
+  const initialValues = {
+    income_type: "",
+    amount_type: "fixed",
+    amount: "",
+    month: "",
+  };
+
+  const handleSubmit = async (values) => {
+    console.log("Form Values:", values);
+    const response = await saveEmployeeEarnDeduction({
+      ...values,
+      employee_payroll: payrollId,
+    });
+    if (response) {
+      reload();
+      toast.success("Earning added successfully");
     }
-    fetchData()
-  },[])
+  };
+  const getSelectedEarning = (selectedId) => {
+    return earnings.find(
+      (earning) => Number(earning.id) === Number(selectedId)
+    );
+  };
 
-    const initialValues = {
-      selectedEarning: "",
-      amount_type: "",
-      amount: "",
-      payable_month:""
-    };
-
-    const handleSubmit = (values) => {
-      console.log("Form Values:", values);
-      // Handle form submission logic here
-    };
- const getSelectedEarning = (selectedId) => {
-   return earnings.find((earning) => Number(earning.id) === Number(selectedId));
- };
-   const handleRadioChange = (value) => {
-     // Reset the amount input for the selected radio option
-      setSelectedRadio(value);
-     setAmountInputs((prev) => ({ ...prev, [value]: "" }));
-   };
-
-  
   return (
     <>
       <div>
         <SheetComponent
-          
-        
           {...formSheetData}
-        onSubmit={handleSubmit}
-        width="500px"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        contentClassName="custom-sheet-width"
+          onSubmit={handleSubmit}
+          width="500px"
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          contentClassName="custom-sheet-width"
         >
           <Formik
             initialValues={initialValues}
@@ -93,7 +107,7 @@ const AddAdditionalEarningSheet = () => {
                     </div>
                     <Select
                       onValueChange={(value) =>
-                        props.setFieldValue("selectedEarning", value)
+                        props.setFieldValue("income_type", value)
                       }
                     >
                       {console.log(props.values)}
@@ -119,7 +133,7 @@ const AddAdditionalEarningSheet = () => {
                   </div>
                 </div>
 
-                {props.values.selectedEarning && (
+                {props.values.income_type && (
                   <>
                     <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
                       <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
@@ -152,25 +166,54 @@ const AddAdditionalEarningSheet = () => {
                             defaultValue=""
                             onValueChange={handleRadioChange}
                           >
-                            {["option1", "option2", "option3"].map((option) => (
-                              <div className="flex items-center" key={option}>
+                            {[
+                              { value: "option1", label: "Flat Amount" },
+                              {
+                                value: "option2",
+                                label: "Percentage of Gross",
+                              },
+                              {
+                                value: "option3",
+                                label: "Percentage of Basic",
+                              },
+                            ].map((option) => (
+                              <div
+                                className="flex items-center space-x-4"
+                                key={option.value}
+                              >
+                                {/* Label before radio button */}
+                                <div className="text-zinc-900">
+                                  {option.label}
+                                </div>
+
+                                {/* Radio Button */}
                                 <RadioGroupItem
-                                  value={option}
-                                  id={`r${option.slice(-1)}`}
+                                  value={option.value}
+                                  id={`r${option.value.slice(-1)}`}
                                 />
+
+                                {/* Text Input */}
                                 <TextInput
                                   value={
-                                    selectedRadio === option
-                                      ? props.values.amount
+                                    selectedRadio === option.value
+                                      ? amountInputs[option.value]
                                       : ""
                                   }
                                   onChange={(field, value) => {
-                                    if (selectedRadio === option) {
-                                      props.setFieldValue("amount", value);
+                                    setAmountInputs((prev) => ({
+                                      ...prev,
+                                      [option.value]: value,
+                                    }));
+                                    if (selectedRadio === option.value) {
+                                      props.setFieldValue("amount", value); // Store raw value in form state
                                     }
                                   }}
-                                  placeholder="Enter %"
-                                  disabled={selectedRadio !== option}
+                                  placeholder={
+                                    option.value === "option1"
+                                      ? "Enter amount"
+                                      : "Enter percentage"
+                                  }
+                                  disabled={selectedRadio !== option.value}
                                 />
                               </div>
                             ))}
@@ -187,13 +230,15 @@ const AddAdditionalEarningSheet = () => {
                         <div className="pt-4">
                           <div>Pick a month</div>
                         </div>
-                        <DateInput
-                          name={"payable_month"}
-                          error={props.errors?.payable_month}
-                          touch={props.touched?.payable_month}
-                          value={props.values?.payable_month}
+                        <SelectComponent
+                          name={"month"}
+                          value={props.values?.month}
+                          error={props.errors?.month}
+                          touch={props.touched?.month}
+                          options={monthsOptions}
+                          label={"Month"}
                           onChange={(field, value) => {
-                            props.setFieldValue(field, value);
+                            props.handleChange(field)(value);
                           }}
                         />
                       </div>
@@ -212,11 +257,7 @@ const AddAdditionalEarningSheet = () => {
                     >
                       Cancel{" "}
                     </Button>
-                    <Button
-                      type="submit"
-                      size="lg"
-                      variant="default"
-                    >
+                    <Button type="submit" size="lg" variant="default">
                       {"Save"}
                     </Button>
                   </div>

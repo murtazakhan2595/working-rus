@@ -62,8 +62,8 @@ const AddComponentSheet = ({ component, openSheet, reload }) => {
   );
   useEffect(() => {
     if (openSheet || component) {
-      setIsOpen(true); 
-       setIsEdit(false);
+      setIsOpen(true);
+      setIsEdit(false);
     } else {
       setIsOpen(false); // Close the sheet otherwise
     }
@@ -80,15 +80,13 @@ const AddComponentSheet = ({ component, openSheet, reload }) => {
     console.log("Form Values:", values);
     const response = await saveEarnAndDeduction(values);
     if (response) {
-      if(values.id){
+      if (values.id) {
         toast.success("Component updated successfully");
-
-      }
-      else{
+      } else {
         toast.success("Component added successfully");
       }
       setIsOpen(false);
-      reload()
+      reload();
     }
   };
 
@@ -98,7 +96,7 @@ const AddComponentSheet = ({ component, openSheet, reload }) => {
     if (response) {
       toast.success("Component deleted successfully");
       setIsOpen(false);
-      reload()
+      reload();
     }
   };
 
@@ -106,7 +104,7 @@ const AddComponentSheet = ({ component, openSheet, reload }) => {
     <>
       <div>
         <SheetComponent
-         {...formSheetData}
+          {...formSheetData}
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
           setIsOpen={setIsOpen}
@@ -140,11 +138,11 @@ const ComponentForm = ({
   setIsOpen,
   editMode,
 }) => {
-    const [amountInputs, setAmountInputs] = useState({
-      option1: "", // For Flat Amount
-      option2: "", // For Percentage of Gross
-      option3: "", // For Percentage of Basic
-    });
+  const [amountInputs, setAmountInputs] = useState({
+    option1: "", // For Flat Amount
+    option2: "", // For Percentage of Gross
+    option3: "", // For Percentage of Basic
+  });
   const [selectedRadio, setSelectedRadio] = useState("");
   const handleRadioChange = (value) => {
     // Reset the amount input for the selected radio option
@@ -161,22 +159,19 @@ const ComponentForm = ({
     }
     return value;
   };
-   const handleFormSubmit = (values) => {
-     const formattedAmount = formatValueForBackend(
-       selectedRadio,
-       amountInputs[selectedRadio]
-     );
+  const handleFormSubmit = (values) => {
+    const formattedAmount = formatValueForBackend(
+      selectedRadio,
+      amountInputs[selectedRadio]
+    );
 
-     const finalValues = {
-       ...values,
-       amounts: formattedAmount, // Add the formatted value
-     };
+    const finalValues = {
+      ...values,
+      amounts: formattedAmount, // Add the formatted value
+    };
 
-     handleSubmit(finalValues); // Call the provided handleSubmit with formatted values
-   };
-
-   
-
+    handleSubmit(finalValues); // Call the provided handleSubmit with formatted values
+  };
 
   return (
     <Formik
@@ -333,7 +328,6 @@ const ComponentForm = ({
   );
 };
 
-
 const ViewComponent = ({ component, handleComponentDelete, setIsEdit }) => {
   const details = [
     { label: "Amount Type", value: component.amounts_types },
@@ -355,13 +349,19 @@ const ViewComponent = ({ component, handleComponentDelete, setIsEdit }) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="default" size="sm" onClick={()=>{setIsEdit(true)}}>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => {
+              setIsEdit(true);
+            }}
+          >
             Edit
           </Button>
-          <AlertDialog >
+          <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="" className="">
-                Delete 
+                Delete
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

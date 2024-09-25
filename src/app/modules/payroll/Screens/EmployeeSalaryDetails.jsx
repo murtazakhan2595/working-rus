@@ -67,7 +67,7 @@ import {numberToWords} from "utils/renderValues.js";
 import { PageLoader } from "components";
 import { revisionLetterOptions, revisionStatusOptions } from "../../../../data/Data";
 import {FilterInput, SelectComponent} from "../../../../components/form-control";
-import { getEarnAndDeduction, updateSalaryRevisionStatus } from "../../../hooks/payroll";
+import { getEarnAndDeduction, saveEmployeePayroll, updateSalaryRevisionStatus } from "../../../hooks/payroll";
 import {calculateEarningsAndDeductions} from "../Sections/CalculationsHelperFunctions"
 
 export default function EmployeeSalaryDetails() {
@@ -194,7 +194,18 @@ const handleStatusChange = async (name, value, revision) => {
   const response = await updateSalaryRevisionStatus(revision);
   if(response){
     fetchData()
+    if(revision.revision_status === "APPROVED"){
+      await saveEmployeePayroll({
+        id,
+        basic_salary:revision.new_salary
+      });
+    }
   }
+  console.log(revision)
+
+
+  setRevisionLoading(false)
+
 }
   return (
     <div className="container p-4 mx-auto">

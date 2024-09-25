@@ -168,7 +168,7 @@ const RevisedSalaryForm = ({
   const updateValues = (value) => {
     const previous_salary = formData.previous_salary;
     const revision_difference = value - previous_salary;
-    const percentage = (revision_difference / previous_salary) * 100;
+    const percentage = (revision_difference / (previous_salary === 0?1:previous_salary)) * 100;
     formRef.current.setFieldValue("revision_difference", revision_difference);
     formRef.current.setFieldValue("percentage", percentage.toFixed(2));
 
