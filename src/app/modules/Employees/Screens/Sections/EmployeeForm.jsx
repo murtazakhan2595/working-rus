@@ -163,7 +163,11 @@ const SheetOnBorading = ({
           if (isEditMode) nextStep();
           else navigate("/profile-management");
         } else {
+          toast.success("Employee Added Successfully!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
           setShowFormSubmittedModal && setShowFormSubmittedModal(true);
+          setIsOpen(false)
         }
 
         await saveEmployeePayroll(employeePayroll);
