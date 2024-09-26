@@ -603,13 +603,21 @@ export const SalaryComponentColumns =(onCheckedChange)=> [
     text: "Active",
     formatter: (cell, row) => {
       return (
-        <Switch
-          id="activate"
-          checked={cell}
-          onCheckedChange={(value)=>{
-            onCheckedChange(value, row)
+        <div
+          onClick={(event) => {
+            // Stop the event propagation to prevent onRowClick from being triggered
+            event.stopPropagation();
           }}
-        />
+        >
+          <Switch
+            id="activate"
+            checked={cell}
+            onCheckedChange={(value) => {
+              // The event is handled by the div, so no need to stop it here
+              onCheckedChange(value, row);
+            }}
+          />
+        </div>
       );
     },
   },
@@ -636,7 +644,7 @@ export const SalarySetupColumns = [
     formatter: (cell) => <DepartmentName value={cell} />,
   },
   {
-    dataField: "basic_salary",
+    dataField: "salary",
     text: "Salary",
   },
   {
@@ -644,16 +652,16 @@ export const SalarySetupColumns = [
     text: "Salary Type",
   },
   {
-    dataField: "",
+    dataField: "is_new",
     text: "",
     formatter: (cell, row) => {
-      if (!(row.salary && row.salary_type)) {
+      if (cell === null || cell === true) {
         return (
           <div class="h-[22px] px-3 py-[3px] rounded-[999px] border border-[#f1d1f3] justify-end items-center gap-1.5 inline-flex">
             <div class="text-[#ab4aba] text-xs font-semibold">New</div>
           </div>
         );
       }
-    }
+    },
   },
 ];

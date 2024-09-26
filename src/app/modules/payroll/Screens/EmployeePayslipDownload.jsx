@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../../../../components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../../../components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../src/@/components/ui/table"
@@ -29,25 +29,36 @@ const employeeData = {
   absentDays: 11,
 }
 
-const earningsData = [
-  { type: 'Basic', amount: 250.90 },
-  { type: 'House Allowance', amount: 250.90 },
-  { type: 'Transport Allowance', amount: 250.90 },
-  { type: 'Food Allowance', amount: 250.90 },
-  { type: 'Other Allowances', amount: 250.90 },
-  { type: 'Reimbursements or Claims', amount: 250.90 },
-]
+// Dummy Earnings Data
+const dummyEarningsData = [
+  { description: 'Basic Salary', amount: 2000 },
+  { description: 'House Allowance', amount: 500 },
+  { description: 'Transport Allowance', amount: 300 },
+  { description: 'Medical Allowance', amount: 200 },
+  { description: 'Other Allowances', amount: 150 },
+];
 
-const deductionsData = [
-  { type: 'Professional Tax', amount: 250.90 },
-  { type: 'Leaves', amount: 250.90 },
-]
-
+// Dummy Deductions Data
+const dummyDeductionsData = [
+  { description: 'Tax', amount: 200 },
+  { description: 'Insurance', amount: 100 },
+];
 export default function Payslip() {
 
   const [employeeData, setEmployeeData] = React.useState({});
   const [filterData, setFilterData] = React.useState({});
-  const [payslip, setPaySlip] = React.useState([]);
+    const [payslip, setPayslip] = useState({
+      generated_at: new Date(),
+      total_earnings: dummyEarningsData,
+      total_deductions: dummyDeductionsData,
+      gross_salary: dummyEarningsData.reduce(
+        (acc, item) => acc + item.amount,
+        0
+      ),
+      net_salary:
+        dummyEarningsData.reduce((acc, item) => acc + item.amount, 0) -
+        dummyDeductionsData.reduce((acc, item) => acc + item.amount, 0),
+    });
     const [loading, setLoading] = React.useState(true);
 
     React.useState({});
@@ -62,11 +73,11 @@ export default function Payslip() {
       setEmployeeData(empData);
     }
 
-    const payslip = await getPayslip({ filterData });
-    if (payslip) {
-      console.log("payslip", payslip);
-      setPaySlip(payslip?.results[0]);
-    }
+  //   const payslip = await getPayslip({ filterData });
+  //   if (payslip) {
+  //     console.log("payslip", payslip);
+  //     setPaySlip(payslip?.results[0]);
+  //   }
     setLoading(false);
   };
   useEffect(() => {
@@ -85,9 +96,15 @@ export default function Payslip() {
     page: { margin: 5 },
   });
 
-  const totalEarnings = earningsData.reduce((sum, item) => sum + item.amount, 0);
-  const totalDeductions = deductionsData.reduce((sum, item) => sum + item.amount, 0);
-  const netPay = totalEarnings - totalDeductions;
+    const totalEarnings = payslip.total_earnings.reduce(
+      (sum, item) => sum + item.amount,
+      0
+    );
+    const totalDeductions = payslip.total_deductions.reduce(
+      (sum, item) => sum + item.amount,
+      0
+    );
+    const netPay = totalEarnings - totalDeductions;
 
   console.log("payslip", payslip);
 
