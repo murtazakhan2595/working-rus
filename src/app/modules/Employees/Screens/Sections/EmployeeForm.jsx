@@ -159,6 +159,7 @@ const SheetOnBorading = ({
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
         if (data.id) {
+          await saveEmployeePayroll(employeePayroll);
           toast.success("Employee Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -168,7 +169,6 @@ const SheetOnBorading = ({
           setShowFormSubmittedModal && setShowFormSubmittedModal(true);
         }
 
-        await saveEmployeePayroll(employeePayroll);
       }
     } catch (error) {
       setFormData(data);
