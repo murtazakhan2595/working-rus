@@ -65,6 +65,7 @@ export default function Payslip() {
     React.useState({});
     const { id } = useParams();
     const location = useLocation();
+    const navigate = useNavigate()
     const employeeID = new URLSearchParams(location.search).get("employeeID");
 
   const fetchData = async () => {
