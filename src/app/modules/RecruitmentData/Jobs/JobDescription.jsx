@@ -73,7 +73,7 @@ const JobDescription = ({ baseUrl }) => {
                     <span className="mx-2">•</span>
                     <span>{getJobType(jobDetails?.Job_Type)}</span>
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-900">
                     Apply before{" "}
                     {moment(jobDetails?.Deadline).format("DD-MM-YYYY")} •{" "}
                     {calculateRemainingDays(jobDetails?.Deadline)}
