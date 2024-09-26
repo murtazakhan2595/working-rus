@@ -120,10 +120,16 @@ export default function EmployeeSalaryDetails() {
       filterData,
     }); // hardcode for now filter not woking on Backend
     if (salaryRevisionData) {
-      setSalaryRevisions(salaryRevisionData?.revision);
-      setApprovedRevisions(salaryRevisionData?.Approved_revision);
-      setPendingRevisions(salaryRevisionData?.Pending_Revision);
-      setRejectedRevisions(salaryRevisionData?.Rejected_application);
+      const revisions = salaryRevisionData?.revision || [];
+      // Calculate the lengths based on the revision array
+      const approvedRevisions = revisions.filter(revision => revision.revision_status === "APPROVED").length;
+      const pendingRevisions = revisions.filter(revision => revision.revision_status === "PENDING").length;
+      const rejectedRevisions = revisions.filter(revision => revision.revision_status === "REJECTED").length;
+  
+      setSalaryRevisions(revisions);
+      setApprovedRevisions(approvedRevisions);
+      setPendingRevisions(pendingRevisions);
+      setRejectedRevisions(rejectedRevisions);
       setLastIncrementDate(salaryRevisionData?.lastIncrementDate);
     }
 
@@ -155,7 +161,7 @@ export default function EmployeeSalaryDetails() {
   }, [id]);
 
   const handleBack = () => {
-    navigate(-1); // This will navigate to the previous page
+    navigate(fromMyPayroll ? -2 : -1);
   };
   const handleSalaryRevisionClicked = (revision) => {
     setSelectedRevision(revision);
@@ -453,13 +459,15 @@ const handleStatusChange = async (name, value, revision) => {
                       <div className="capitalize">
                         {revision.revision_status.toLowerCase()}
                       </div>
-                      <StatusDropdown
+                      {!fromMyPayroll &&
+                        <StatusDropdown
                         name="revision_status"
                         value={revision?.revision_status}
                         revision={revision}
                         handleChange={handleStatusChange}
                         statuses={revisionStatusOptions}
-                      />
+                        />
+                      }
                     </div>
                   </TableCell>
                   <TableCell>
@@ -486,6 +494,7 @@ const handleStatusChange = async (name, value, revision) => {
                           {revision.revision_letter.toLowerCase()}
                         </div>
                       </span>
+                      {!fromMyPayroll &&
                       <StatusDropdown
                         name="revision_letter"
                         value={revision?.revision_letter}
@@ -493,6 +502,7 @@ const handleStatusChange = async (name, value, revision) => {
                         handleChange={handleStatusChange}
                         statuses={revisionLetterOptions}
                       />
+                      }
                     </div>
                   </TableCell>
                   <TableCell
