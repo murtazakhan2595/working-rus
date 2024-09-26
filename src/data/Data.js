@@ -594,6 +594,21 @@ export const revisionStatusOptions = [
   { value: "APPROVED", label: "Approved" },
   { value: "REJECTED", label: "Rejected" },
 ];
+export const monthsOptions = [
+  { value: "January", label: "January" },
+  { value: "February", label: "February" },
+  { value: "March", label: "March" },
+  { value: "April", label: "April" },
+  { value: "May", label: "May" },
+  { value: "June", label: "June" },
+  { value: "July", label: "July" },
+  { value: "August", label: "August" },
+  { value: "September", label: "September" },
+  { value: "October", label: "October" },
+  { value: "November", label: "November" },
+  { value: "December", label: "December" },
+];
+
 export const payoutPeriodOptions = [
   { value: "monthly", label: "Monthly" },
   { value: "weekly", label: "Weekly" },

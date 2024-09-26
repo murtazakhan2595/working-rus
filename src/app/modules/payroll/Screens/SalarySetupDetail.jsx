@@ -74,27 +74,26 @@ const SalarySetupDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const response = await getEmployeePayroll({
-        filterData: { employee_id: id },
-      });
-      //
-      if (response) {
-        setPayrollId(response?.results[0]?.id);
-        console.log(
-          "response?.results[0]?.basic_salary",
-          response?.results[0]?.basic_salary
-        );
-        setMonthlyGrossSalary(response?.results[0]?.basic_salary);
-        const earnAndDeductions = await getEmployeeEarnAndDeduction({
-          filterData: { employee_payroll: response?.results[0]?.id },
+      const fetchData = async () => {
+        setLoading(true);
+        const response = await getEmployeePayroll({
+          filterData: { employee_id: id },
         });
-        if (earnAndDeductions) {
-          setEarnAndDeductions(earnAndDeductions);
+        //
+        if (response) {
+          setPayrollId(response?.results[0]?.id);
+          console.log(
+            "response?.results[0]?.basic_salary",
+            response?.results[0]?.basic_salary
+          );
+          setMonthlyGrossSalary(response?.results[0]?.basic_salary);
+          const earnAndDeductions = await getEmployeeEarnAndDeduction({
+            filterData: { employee_payroll: response?.results[0]?.id },
+          });
+          if (earnAndDeductions) {
+            setEarnAndDeductions(earnAndDeductions);
+          }
         }
-      }
         const empData = await getEmployeeData(id);
 
         if (empData) {
@@ -109,8 +108,9 @@ const SalarySetupDetail = () => {
             response?.results[0]?.basic_salary
           );
         }
-      setLoading(false);
-    };
+        setLoading(false);
+      };
+  useEffect(() => {
     fetchData();
   }, [id]);
 
@@ -211,7 +211,17 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
                   value={monthlyGrossSalary || ""}
                   onChange={(name, value) => setMonthlyGrossSalary(value)}
                 />
-                <Button onClick={()=>{handleSalaryCalculate(earnAndDeductionType, monthlyGrossSalary)}}> Calculate</Button>
+                <Button
+                  onClick={() => {
+                    handleSalaryCalculate(
+                      earnAndDeductionType,
+                      monthlyGrossSalary
+                    );
+                  }}
+                >
+                  {" "}
+                  Calculate
+                </Button>
                 <div class="text-[#8b8d98] text-sm">Hourly Rate : AED 0.00</div>
                 <Button onClick={handleSalarySave}>Save</Button>
               </div>
@@ -292,7 +302,7 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
           <Card className="">
             <CardHeader className="flex flex-row items-center justify-between w-full">
               <CardTitle>Additional Earnings and Deductions</CardTitle>
-              <AddAdditionalEarningSheet />
+              <AddAdditionalEarningSheet reload={fetchData} payrollId={payrollId}/>
             </CardHeader>
             <CardContent className="">
               <Table>

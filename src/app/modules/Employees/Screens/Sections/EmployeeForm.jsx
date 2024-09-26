@@ -141,11 +141,13 @@ const SheetOnBorading = ({
   };
   const handleSubmit = async (data) => {
     console.log(data);
+    // return
     setIsLoading(true);
     const employeePayroll = {
-      salary: data.salary,
+      basic_salary: data.salary,
       salary_type: data.salary_type,
       employee: empId,
+      is_new: true,
     };
     try {
       // Check if an API call is already in progress

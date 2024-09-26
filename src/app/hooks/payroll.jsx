@@ -264,7 +264,7 @@ const updateSalaryRevisionStatus = async (payload) => {
       }
     );
     if (response.status === 200) {
-      return true;
+      return response.data;
     }
   } catch (error) {
     console.error("Error updating salary revision status:", error);
@@ -400,6 +400,39 @@ const saveEmployeePayroll = async (payload) => {
   }
 }
 
+const saveEmployeeEarnDeduction = async (payload) => {
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/payroll/employee-earn-deduction/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    } else {
+      const response = await axios.post(
+        `${baseUrl}/payroll/employee-earn-deduction/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving employee earn and deduction data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+}
 
 export {
   getEmployeePayroll,
@@ -416,4 +449,5 @@ export {
   getSalarySetupData,
   saveEarnAndDeduction,
   deleteEarnAndDeduction,
+  saveEmployeeEarnDeduction,
 };

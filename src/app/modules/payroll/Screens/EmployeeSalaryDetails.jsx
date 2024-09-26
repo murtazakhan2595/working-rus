@@ -67,7 +67,7 @@ import {numberToWords} from "utils/renderValues.js";
 import { PageLoader } from "components";
 import { revisionLetterOptions, revisionStatusOptions } from "../../../../data/Data";
 import {FilterInput, SelectComponent} from "../../../../components/form-control";
-import { getEarnAndDeduction, updateSalaryRevisionStatus } from "../../../hooks/payroll";
+import { getEarnAndDeduction, saveEmployeePayroll, updateSalaryRevisionStatus } from "../../../hooks/payroll";
 import {calculateEarningsAndDeductions} from "../Sections/CalculationsHelperFunctions"
 
 export default function EmployeeSalaryDetails() {
@@ -83,6 +83,7 @@ export default function EmployeeSalaryDetails() {
   const [lastIncrementDate, setLastIncrementDate] = React.useState(null);
   const [earnings, setEarnings] = React.useState([]);
   const [totalEarnings, setTotalEarnings] = React.useState(0);
+  console.log("EMPLOYEE DATA", employeeData);
 
   const [latestApprovedSalaryRevision, setLatestApprovedSalaryRevision] =
     React.useState({});
@@ -97,7 +98,6 @@ export default function EmployeeSalaryDetails() {
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    console.log("doign something ....")
     setLoading(true);
     const empData = await getEmployeeData(employeeID);
     if (empData) {
@@ -108,9 +108,7 @@ export default function EmployeeSalaryDetails() {
     if (response) {
       setPayrollDetails(response);
     }
-    console.log("EMPLOYEE PAYROLL", response)
     const earnAndDeduction = await getEarnAndDeduction();
-    console.log("EARN AND DEDUCTION", earnAndDeduction)
     if (earnAndDeduction && response) {
       const { earnings, deductions, totalEarnings, totalDeductions } =
         calculateEarningsAndDeductions(response.basic_salary, earnAndDeduction.results);
@@ -194,7 +192,17 @@ const handleStatusChange = async (name, value, revision) => {
   const response = await updateSalaryRevisionStatus(revision);
   if(response){
     fetchData()
+    if(revision.revision_status === "APPROVED"){
+      await saveEmployeePayroll({
+        id,
+        basic_salary:revision.new_salary
+      });
+    }
   }
+
+
+  setRevisionLoading(false)
+
 }
   return (
     <div className="container p-4 mx-auto">
@@ -204,6 +212,7 @@ const handleStatusChange = async (name, value, revision) => {
           state={"view"}
           selectedRevision={selectedRevision}
           onClose={onClose}
+          employeeData={employeeData}
         />
       )}
       <div className="mb-4">
@@ -312,7 +321,9 @@ const handleStatusChange = async (name, value, revision) => {
             salaryType={payrollDetails?.salary_type}
             payoutPeriod={payrollDetails?.payout_period}
             lastRevisedDate={latestApprovedSalaryRevision?.last_revised_date}
-            previousCTC={latestApprovedSalaryRevision?.previous_salary || totalEarnings}
+            previousCTC={
+              latestApprovedSalaryRevision?.previous_salary || totalEarnings
+            }
             currentCTC={latestApprovedSalaryRevision?.new_salary}
           />
           <Card className="mb-4 h-fit">
@@ -351,7 +362,10 @@ const handleStatusChange = async (name, value, revision) => {
               payrollID={id}
               state={"create"}
               onClose={onClose}
-              previousCTC={latestApprovedSalaryRevision?.new_salary || totalEarnings}
+              previousCTC={
+                latestApprovedSalaryRevision?.new_salary || totalEarnings
+              }
+              employeeData={employeeData}
             />
           )}
         </CardHeader>
@@ -556,12 +570,7 @@ function SalarySummary({
 
 
 
-const StatusDropdown = ({name, value, handleChange, revision, statuses}) => {
-  // const statuses = [
-  //   { value: "PENDING", label: "Pending" },
-  //   { value: "APPROVED", label: "Approved"},
-  //   { value: "REJECTED", label: "Rejected" }
-  // ];
+export const StatusDropdown = ({name, value, handleChange, revision, statuses}) => {
 
   return (
     <>
