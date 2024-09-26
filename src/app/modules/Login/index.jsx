@@ -125,7 +125,7 @@ function Login() {
 
   return (
     <>
-      <div className="container max-w-full mx-auto ">
+      <div className="max-w-full">
         <div className="absolute hidden top-3 right-3">
           <Button>
             <Link className="flex items-center" to="/">
@@ -217,7 +217,7 @@ function Login() {
             </div>
           </div>
           <div className="items-center hidden bg-white lg:flex">
-            <img className="w-full" src={cover} alt="Login page Cover" />
+            <img className="w-full max-h-screen" src={cover} alt="Login page Cover" />
           </div>
         </div>
       </div>
