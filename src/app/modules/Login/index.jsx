@@ -1,5 +1,5 @@
 // Done
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BiShow } from "react-icons/bi";
 import { TbEyeClosed } from "react-icons/tb";
 import axios from "axios";
@@ -20,14 +20,6 @@ import cover from "../../../assets/images/cover.jpg";
 
 import { StepBack } from "lucide-react";
 
-import { IoWarningOutline } from "react-icons/io5";
-
-import { useLocation } from "react-router-dom";
-
-import confirm from "../.././../assets/images/confirm.png";
-import { PiCaretCircleLeftFill } from "react-icons/pi";
-
-// function Login({ setUserProfile, baseUrl, setToken }) {
 function Login() {
   let baseUrl = useSelector((state) => state.user.baseUrl);
 
@@ -41,29 +33,12 @@ function Login() {
     username: currentUname ? currentUname : "",
     password: currentPwd ? currentPwd : "",
   });
-  const [isChecked, setIsChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
-  const [isPopupVisible, setPopupVisible] = useState(!navigator.onLine);
   const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
-
-  // const handleUpdateProfile = (data) => {
-  //   dispatch(setUserProfile(data));
-  //   dispatch(fetchDepartments());
-  //   dispatch(fetchLeaveTypes());
-  //   dispatch(fetchDesignations());
-  // };
-
-  const handleCheckboxChange = (e) => {
-    setIsChecked(e.target.checked);
-  };
 
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
-  };
-
-  const handleClosePopup = () => {
-    setPopupVisible(false);
   };
 
   const handleSubmit = async (e) => {
@@ -71,8 +46,6 @@ function Login() {
 
     // Check for internet connection
     if (!navigator.onLine) {
-      // Show the custom pop-up with a message
-      setPopupVisible(true);
       return;
     }
 
@@ -109,12 +82,6 @@ function Login() {
             username: "",
             password: "",
           });
-
-          // Save username and password in cookies if "Keep me Signed In" is checked
-          if (isChecked) {
-            cookies.set("uname", values.username, { path: "*" });
-            cookies.set("pwd", values.password, { path: "*" });
-          }
 
           // Display success message
           toast.success("Login successful!", {
@@ -156,23 +123,6 @@ function Login() {
     }));
   };
 
-  useEffect(() => {
-    // Event listener for online/offline changes
-    const handleConnectionChange = () => {
-      setPopupVisible(!navigator.onLine);
-    };
-
-    // Attach event listener
-    window.addEventListener("online", handleConnectionChange);
-    window.addEventListener("offline", handleConnectionChange);
-
-    // Clean up the event listener on component unmount
-    return () => {
-      window.removeEventListener("online", handleConnectionChange);
-      window.removeEventListener("offline", handleConnectionChange);
-    };
-  }, []);
-
   return (
     <>
       <div className="container max-w-full mx-auto ">
@@ -193,7 +143,7 @@ function Login() {
                 </div>
                 <h1 className="text-3xl font-bold">Login</h1>
                 <p className="text-balance text-muted-foreground">
-                  Enter your email below to login to your account
+                  Enter your credentials below to login to your account
                 </p>
               </div>
               <div className="grid gap-4">
@@ -267,7 +217,7 @@ function Login() {
             </div>
           </div>
           <div className="items-center hidden bg-white lg:flex">
-            <img src={cover} alt="Login page Cover Image" />
+            <img className="w-full" src={cover} alt="Login page Cover" />
           </div>
         </div>
       </div>
