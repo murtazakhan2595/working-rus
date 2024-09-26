@@ -14,6 +14,7 @@ import {
 import { getEmployeeData } from "app/hooks/employee";
 import { numberToWords } from "utils/renderValues.js";
 import { PageLoader } from "components";
+import { ArrowLeft } from "lucide-react";
 import moment from "moment";
 
 
@@ -88,10 +89,22 @@ export default function Payslip() {
   const totalEarnings = earningsData.reduce((sum, item) => sum + item.amount, 0);
   const totalDeductions = deductionsData.reduce((sum, item) => sum + item.amount, 0);
   const netPay = totalEarnings - totalDeductions;
+  const navigate = useNavigate();
 
   console.log("payslip", payslip);
 
   return (
+    <>
+      <div className="mb-4">
+        <Button
+          variant="ghost"
+          onClick={()=>{navigate(-1)}}
+          className="p-4 text-xl text-balance"
+        >
+          <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
+          Payroll Detail
+        </Button>
+      </div>
     <div className="container p-4 mx-auto">
       <Card ref={targetRef} className="w-full max-w-4xl mx-auto">
         <CardHeader className="text-white bg-plum-600">
@@ -312,5 +325,6 @@ export default function Payslip() {
         </CardFooter>
       </Card>
     </div>
+    </>
   );
 }
