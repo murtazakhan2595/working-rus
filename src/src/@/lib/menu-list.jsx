@@ -88,7 +88,7 @@ export function getMenuList(pathname, userRole) {
         // createMenu("/travel-details", "Travel Details"),
         createMenu("/exit-clearance", "Exit & Clearance"),
         createMenu("/create-employee", "Employee Creation"),
-        createMenu("/edit-employee", "Customize Employee"),
+        // createMenu("/edit-employee", "Customize Employee"),
         // createMenu("/relocation", "Relocation"),
         // createMenu("/internal", "Internal"),
         // createMenu("/external", "External"),
@@ -125,9 +125,9 @@ export function getMenuList(pathname, userRole) {
         createMenu("/payroll", "Employee Payrolls"),
         createMenu("/salary-setup", "Salary Setup"),
         // createMenu("/loans", "Loans"),
-        createMenu("/claim-request", "Claim Request"),
-        createMenu("/play-run", "Play Run"),
-        createMenu("/payslips", "Payslips"),
+        // createMenu("/claim-request", "Claim Request"),
+        // createMenu("/play-run", "Play Run"),
+        // createMenu("/payslips", "Payslips"),
         
       ],
     ),
@@ -212,18 +212,18 @@ export function getMenuList(pathname, userRole) {
     ),
   ];
 
-  const AndAttendanceMenus = [
-    createMenu(
-      "",
-      "Attendance",
-      CalendarClockIcon,
-      [
-        createMenu("/payroll", "Payroll"),
-        createMenu("/attendance", "Attendance"),
-      ],
-      pathname === "/payroll"
-    ),
-  ];
+  // const AndAttendanceMenus = [
+  //   createMenu(
+  //     "",
+  //     "Attendance",
+  //     CalendarClockIcon,
+  //     [
+  //       createMenu("/payroll", "Payroll"),
+  //       createMenu("/attendance", "Attendance"),
+  //     ],
+  //     pathname === "/payroll"
+  //   ),
+  // ];
 
   const peopleEngagementMenus = [
     createMenu(
@@ -278,10 +278,10 @@ export function getMenuList(pathname, userRole) {
       groupLabel: "",
       menus: performanceManagementMenus,
     },
-    userRolesMap.isPayrollAttendance && {
-      groupLabel: "",
-      menus: AndAttendanceMenus,
-    },
+    // userRolesMap.isPayrollAttendance && {
+    //   groupLabel: "",
+    //   menus: AndAttendanceMenus,
+    // },
     userRolesMap.dailyTaskReportMenus && {
       groupLabel: "",
       menus: dailyTaskReportMenus,

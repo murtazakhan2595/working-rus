@@ -122,7 +122,7 @@ const SalarySetup = ({ departments }) => {
           },
           {
             type: "select-two",
-            option: [{ value: "true", label: "Active" }, { value: "false", label: "Inactive" }],
+            option: [{ value: true, label: "Active" }, { value: false, label: "Inactive" }],
             name: "is_active",
             placeholder: "Active",
           },

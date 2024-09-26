@@ -57,6 +57,7 @@ export default function RevisedSalarySheet({
     console.log(values);
     values.employee_payroll = payrollID;
     values.organization = 1; // need to remove this this will handle on bakcend
+    values.effective_date = values.last_revised_date;
     const response = await saveSalaryRevision(values);
     if (response) {
       resetForm();
