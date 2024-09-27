@@ -615,6 +615,19 @@ export const payoutPeriodOptions = [
   { value: "per_hour", label: "Per Hour" },
 ];
 
+export const ClaimExpenseTypeOptions = [
+  {
+    value: "Travel, Transportation & Logistics Expenses",
+    label: "Travel, Transportation & Logistics Expenses",
+  },
+  { value: "Accommodation", label: "Accommodation" },
+  { value: "Meals & Entertainment", label: "Meals & Entertainment" },
+  { value: "Office Supplies", label: "Office Supplies" },
+  { value: "Professional Development", label: "Professional Development" },
+  { value: "Equipment & Software", label: "Equipment & Software" },
+  { value: "Medical & Wellness", label: "Medical & Wellness" },
+  { value: "Miscellaneous", label: "Miscellaneous" },
+];
 // EmployeesSalaryDetails data
 
 // Dummy data

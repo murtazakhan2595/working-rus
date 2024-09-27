@@ -49,7 +49,8 @@ const SelectComponent = ({
   disabled,
   required,
   onChange,
-  classes
+  classes,
+  placeholder,
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -76,9 +77,17 @@ const SelectComponent = ({
             className="justify-between w-full"
             disabled={disabled}
           >
-            {value
-              ? options.find((option) => option.value === value)?.label
-              : label}
+            {value || label ? (
+              value ? (
+                options.find((option) => option.value === value)?.label
+              ) : (
+                label
+              )
+            ) : (
+              <span className="text-neutral-400 text-sm font-normal">
+                {placeholder}
+              </span>
+            )}
             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
           </Button>
         </PopoverTrigger>
@@ -208,7 +217,6 @@ const SelectMultiInputComponent = ({
   );
 };
 
-
 const DateInput = ({
   name,
   value,
@@ -268,9 +276,11 @@ const DateInput = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <Label htmlFor={name}>
-        {required && <span className="text-red-600">* </span>} {label}
-      </Label>
+      {label && (
+        <Label htmlFor={name}>
+          {required && <span className="text-red-600">* </span>} {label}
+        </Label>
+      )}
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -322,7 +332,7 @@ const RadioGroupInput = ({
   required,
   onChange,
 }) => {
-   const defaultValue = value || (options.length > 0 ? options[0].value : "");
+  const defaultValue = value || (options.length > 0 ? options[0].value : "");
   return (
     <div>
       {label && <label className="font-medium">{label}</label>}
@@ -378,7 +388,7 @@ const TextInput = ({
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={ label?"Enter " + label : placeholder}
+          placeholder={label ? "Enter " + label : placeholder}
           value={value ?? ""}
           disabled={disabled}
           className={error && touch ? "is-invalid" : ""}
@@ -758,17 +768,18 @@ const TextAreaInput = ({
   regEx,
   maxLength,
   maxRows,
+  placeholder
 }) => {
   return (
     <>
       <div className="flex flex-col gap-4">
-        <Label
+       {label && <Label
           className={`text-baseGray ${value ? "active" : ""}`}
           htmlFor={name}
         >
           {required && <span className="text-red-600">* </span>}
           {label}
-        </Label>
+        </Label>}
 
         <Input
           type="textarea"
@@ -776,7 +787,7 @@ const TextAreaInput = ({
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={"Enter  " + label}
+          placeholder={label? "Enter " + label : placeholder}
           value={value}
           rows={maxRows ?? 1}
           disabled={disabled}
@@ -1051,8 +1062,6 @@ const FilterInput = ({
     </div>
   );
 };
-
-
 
 export {
   SelectComponent,
