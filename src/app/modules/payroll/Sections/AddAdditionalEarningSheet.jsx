@@ -5,7 +5,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "../../../../src/@/components/ui/select";
 import {
   RadioGroup,
@@ -74,9 +73,10 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
     }
   };
   const getSelectedEarning = (selectedId) => {
-    return earnings.find(
+    const earning = earnings.find(
       (earning) => Number(earning.id) === Number(selectedId)
     );
+    return `${earning?.name} ${earning.income_type}`
   };
 
   return (
@@ -110,17 +110,8 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
                         props.setFieldValue("income_type", value)
                       }
                     >
-                      {console.log(props.values)}
                       <SelectTrigger className="w-[80%]">
-                        {props.values.selectedEarning
-                          ? `${
-                              getSelectedEarning(props.values.selectedEarning)
-                                ?.name
-                            } ${
-                              getSelectedEarning(props.values.selectedEarning)
-                                ?.income_type
-                            }`
-                          : ""}
+                        {props.values.income_type ? getSelectedEarning(props.values.income_type) : ""}
                       </SelectTrigger>
                       <SelectContent>
                         {earnings.map((earning) => (
