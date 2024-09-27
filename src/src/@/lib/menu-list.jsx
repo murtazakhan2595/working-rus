@@ -99,7 +99,7 @@ export function getMenuList(pathname, userRole) {
   const selfServiceHubMenus = [
     createMenu(
       "",
-      "Employee Portal ",
+      "Self Service Hub ",
       UserRoundCheck,
       [
         createMenu("/my-profile", "My Profile"),
