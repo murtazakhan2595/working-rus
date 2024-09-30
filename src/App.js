@@ -55,7 +55,8 @@ import {
   MyPayroll,
   SalarySetup,
   SalarySetupDetail,
-  PayRun
+  PayRun,
+  CreatePayRun,
 } from "app/modules/payroll";
 
 function App() {
@@ -234,6 +235,10 @@ function App() {
                     exact
                     path="/payroll/salary-setup/:id"
                     element={<SalarySetupDetail />}
+                  />
+                  <Route
+                    path="/payroll/create-payrun"
+                    element={<CreatePayRun />}
                   />
 
                   <Route path="/salary-setup" element={<SalarySetup />} />

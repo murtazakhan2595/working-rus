@@ -9,6 +9,7 @@ import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import { Calendar as LucideCalendar } from "lucide-react";
 
 import {
   Popover,
@@ -219,6 +220,7 @@ const DateInput = ({
   disabled,
   required,
   minDate,
+  className,
 }) => {
   const [date, setDate] = useState(
     value ? parse(value, "yyyy-MM-dd", new Date()) : null
@@ -267,10 +269,12 @@ const DateInput = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <Label htmlFor={name}>
-        {required && <span className="text-red-600">* </span>} {label}
-      </Label>
+    <div className={`flex flex-col gap-4 ${className}`}>
+      {label && (
+        <Label htmlFor={name}>
+          {required && <span className="text-red-600">* </span>} {label}
+        </Label>
+      )}
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -279,7 +283,14 @@ const DateInput = ({
               !date ? "text-muted-foreground" : ""
             }`}
           >
-            {date ? format(date, "d MMMM yyyy") : <span>Pick a date</span>}
+            {date ? (
+              format(date, "d MMMM yyyy")
+            ) : (
+              <div className="flex items-center gap-2">
+                <LucideCalendar size={16}/>
+                <div>Pick a date</div>
+              </div>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
