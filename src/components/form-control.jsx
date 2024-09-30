@@ -509,8 +509,8 @@ const PhoneNumberInput = ({
   return (
     <div className="flex flex-col gap-4">
       <Label check>{label}</Label>
-      <div className="grid grid-cols-6 gap-0">
-        <div className="col-span-2 col-start-1">
+      <div className="flex items-center ">
+        <div className="flex-shrink-0 w-fit">
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -548,7 +548,7 @@ const PhoneNumberInput = ({
             </PopoverContent>
           </Popover>
         </div>
-        <div className="col-span-4 col-start-3">
+        <div className="col-span-4 col-start-3 w-full">
           <Input
             id={name}
             name={name}
