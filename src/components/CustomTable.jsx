@@ -30,8 +30,12 @@ export default function TableCustom({
   itemsPerPage = 10,
   className = "",
   showHeader = true, // Show header by default
+  selectable = false,
+  selectedRows,
+  setSelectedRows,
 }) {
   const [expandedRow, setExpandedRow] = useState(null);
+
   const options = {
     page: tableOptions?.page ?? 1,
     sizePerPage: tableOptions?.sizePerPage ?? 10,
@@ -106,6 +110,30 @@ export default function TableCustom({
       tableOptions.onPageChange(name, page);
     }
   };
+
+  // Handle row selection
+  const handleSelectRow = (rowId) => {
+    console.log("ROWID", rowId);
+    console.log("SELECTED ROWS", selectedRows);
+    setSelectedRows((prevSelected) => {
+      if (prevSelected.includes(rowId)) {
+        // Deselect the specific row
+        return prevSelected.filter((id) => id !== rowId);
+      } else {
+        // Select the specific row
+        return [...prevSelected, rowId];
+      }
+    });
+  };
+
+  // Handle select all rows
+  const handleSelectAllRows = () => {
+    if (selectedRows.length === paginatedData.length) {
+      setSelectedRows([]); // Deselect all rows
+    } else {
+      setSelectedRows(paginatedData.map((row) => row.id)); // Select all rows
+    }
+  };
   return (
     <>
       <div className={`space-y-4 ${className}`}>
@@ -115,6 +143,19 @@ export default function TableCustom({
               {showHeader && Array.isArray(columns) && (
                 <TableHeader>
                   <TableRow>
+                    {selectable && (
+                      <TableHead className="p-0 w-[0px] text-right m-0">
+                        <input
+                          type="checkbox"
+                          onChange={handleSelectAllRows}
+                          checked={
+                            paginatedData.length > 0 &&
+                            selectedRows.length === paginatedData.length
+                          }
+                          className="w-4 h-4 accent-[#ab4aba] border-[#ab4aba] border-[2px] outline-none rounded focus:ring-0"
+                        />
+                      </TableHead>
+                    )}
                     {columns.map((column, index) => (
                       <TableHead
                         key={index}
@@ -147,6 +188,16 @@ export default function TableCustom({
                           tableOptions?.onRowClick ? "cursor-pointer" : ""
                         }`}
                       >
+                        {selectable && (
+                          <TableCell className="p-0 pl-1 w-[0px] text-right ml-0">
+                            <input
+                              type="checkbox"
+                              onChange={() => handleSelectRow(row.id)}
+                              checked={selectedRows.includes(row.id)}
+                              className="w-4 h-4 accent-[#ab4aba] border-[#ab4aba] border-[2px] outline-none rounded focus:ring-0"
+                            />
+                          </TableCell>
+                        )}
                         {Array.isArray(columns) &&
                           columns.map((column, index) => (
                             <TableCell

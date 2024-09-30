@@ -97,24 +97,20 @@ export function getMenuList(pathname, userRole) {
   ];
 
   const selfServiceHubMenus = [
-    createMenu(
-      "",
-      "Self Service Hub ",
-      UserRoundCheck,
-      [
-        createMenu("/my-profile", "My Profile"),
-        // createMenu("/my-team", "My Team"),
-        // createMenu("/calendar", "Calendar"),  
-        // createMenu("/attendance", "Attendance"),
-        createMenu("/leave-tracker", "Leave Tracker"),
-        // createMenu("/files-data", "Files & Data"),
-        // createMenu("/my-travel-details", "My Travel Details"),
-        createMenu("/my-payroll", "My Payroll"),
-        createMenu("/exit-employee", "Exit"),
-        // createMenu("/letter1", "Type of Letter 1"),
-        // createMenu("/letter2", "Type of Letter 2"),
-      ],
-    ),
+    createMenu("", "Self Service Hub ", UserRoundCheck, [
+      createMenu("/my-profile", "My Profile"),
+      // createMenu("/my-team", "My Team"),
+      // createMenu("/calendar", "Calendar"),
+      // createMenu("/attendance", "Attendance"),
+      createMenu("/leave-tracker", "Leave Tracker"),
+      // createMenu("/files-data", "Files & Data"),
+      // createMenu("/my-travel-details", "My Travel Details"),
+      createMenu("/my-payroll", "My Payroll"),
+      createMenu("/my-claims", "My Claims"),
+      createMenu("/exit-employee", "Exit"),
+      // createMenu("/letter1", "Type of Letter 1"),
+      // createMenu("/letter2", "Type of Letter 2"),
+    ]),
   ];
   const payrollMenus = [
     createMenu(
@@ -125,7 +121,7 @@ export function getMenuList(pathname, userRole) {
         createMenu("/payroll", "Employee Payrolls"),
         createMenu("/salary-setup", "Salary Setup"),
         // createMenu("/loans", "Loans"),
-        // createMenu("/claim-request", "Claim Request"),
+        createMenu("/claim-request", "Claim Request"),
         createMenu("/pay-run", "Pay Run"),
         // createMenu("/payslips", "Payslips"),
         

@@ -667,6 +667,46 @@ export const SalarySetupColumns = [
 ];
 
 
+export const ClaimRequestColumns = [
+  {
+    dataField: "employee_id",
+    text: "ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
+  },
+  {
+    dataField: "employee_name",
+    text: "Employees",
+    formatter: (cell, row) => (
+      <EmployeeNameInfo
+        name={cell}
+        department={row.department_name}
+        position={row.position}
+      />
+    ),
+  },
+  {
+    dataField: "expense_type",
+    text: "Expense type",
+  },
+  {
+    dataField: "date_of_expense",
+    text: "Date of Expense",
+  },
+  {
+    dataField: "amount",
+    text: "Amount",
+  },
+  {
+    dataField: "receipt",
+    text: "Receipt",
+  },
+  {
+    dataField: "status",
+    text: "Status",
+  },
+];
+
+
 export const createPayrunColumns = [
   {
     dataField: "id",
