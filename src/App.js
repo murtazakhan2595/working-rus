@@ -55,6 +55,7 @@ import {
   MyPayroll,
   SalarySetup,
   SalarySetupDetail,
+  PayRun
 } from "app/modules/payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 
@@ -240,7 +241,7 @@ function App() {
                   <Route path="/salary-setup" element={<SalarySetup />} />
                   <Route path="/loans" element={<ComingSoon />} />
                   <Route path="/claim-request" element={<ClaimRequest />} />
-                  <Route path="/play-run" element={<ComingSoon />} />
+                  <Route path="/pay-run" element={<PayRun />} />
                   <Route path="/payslips" element={<ComingSoon />} />
                   <Route path="/attendance" element={<ComingSoon />} />
                   <Route path="/development-plan" element={<ComingSoon />} />

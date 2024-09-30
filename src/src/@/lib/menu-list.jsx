@@ -122,7 +122,7 @@ export function getMenuList(pathname, userRole) {
         createMenu("/salary-setup", "Salary Setup"),
         // createMenu("/loans", "Loans"),
         createMenu("/claim-request", "Claim Request"),
-        // createMenu("/play-run", "Play Run"),
+        createMenu("/pay-run", "Pay Run"),
         // createMenu("/payslips", "Payslips"),
         
       ],
