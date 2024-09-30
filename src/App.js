@@ -57,6 +57,7 @@ import {
   SalarySetupDetail,
   PayRun
 } from "app/modules/payroll";
+import { ClaimRequest, MyClaims } from "app/modules/claims";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -182,6 +183,7 @@ function App() {
               <Route path="/payroll/:id" element={<EmployeeSalaryDetails />} />
               <Route path="/payslip/:id" element={<Payslip />} />
               <Route exact path="/exit-employee" element={<EmployeesExit />} />
+              <Route path="/my-claims" element={<MyClaims />} />
 
               {userRole === 1 && (
                 <>
@@ -238,7 +240,7 @@ function App() {
 
                   <Route path="/salary-setup" element={<SalarySetup />} />
                   <Route path="/loans" element={<ComingSoon />} />
-                  <Route path="/claim-request" element={<ComingSoon />} />
+                  <Route path="/claim-request" element={<ClaimRequest />} />
                   <Route path="/pay-run" element={<PayRun />} />
                   <Route path="/payslips" element={<ComingSoon />} />
                   <Route path="/attendance" element={<ComingSoon />} />
