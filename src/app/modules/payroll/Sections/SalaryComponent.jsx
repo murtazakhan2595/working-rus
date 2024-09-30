@@ -73,8 +73,6 @@ const SalaryComponent = ({ componentFilterData }) => {
       {isLoading ? (
         <PageLoader />
       ) : (
-        <Card>
-          <CardContent>
             <CustomTable
               data={component}
               columns={SalaryComponentColumns(onCheckedChange)}
@@ -82,8 +80,6 @@ const SalaryComponent = ({ componentFilterData }) => {
               dataTotalSize={0}
               tableOptions={tableOptions}
             />
-          </CardContent>
-        </Card>
       )}
     </div>
   );

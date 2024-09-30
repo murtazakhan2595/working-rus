@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "../../../../components/ui/card.jsx";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "../../../../components/ui/card.jsx";
 import { SalarySetupColumns } from "app/utils/Types/TableColumns";
 import CustomTable from "components/CustomTable";
 import Header from "../../../../components/Header.jsx";
@@ -150,7 +154,7 @@ const SalarySetup = ({ departments }) => {
               </TabsTrigger>
             ))}
           </TabsList>
-          <div className="flex justify-end">
+          {/* <div className="flex justify-end">
             <FilterInput
               filters={filters}
               onChange={
@@ -159,14 +163,44 @@ const SalarySetup = ({ departments }) => {
                   : handleComponentFilterChange
               } // Dynamic filter handler
             />
-          </div>
+          </div> */}
         </div>
-        <TabsContent value="salary">
-          {isLoading ? (
-            <PageLoader />
-          ) : (
-            <Card>
-              <CardContent>
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="h-[47px] flex-col justify-center items-start inline-flex">
+                <div className="flex-col justify-start items-start flex">
+                  <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
+                    {activeTab === "components"
+                      ? "Components"
+                      : "Employee Salaries"}
+                  </div>
+                </div>
+                <div className="pt-1.5 flex-col justify-start items-start flex">
+                  <div className="flex-col justify-start items-start flex">
+                    <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
+                      {activeTab === "components"
+                        ? "Types details are listed here"
+                        : "Payrolls of all employees are listed below"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <FilterInput
+                filters={filters}
+                onChange={
+                  activeTab === "salary"
+                    ? handleSalaryFilterChange
+                    : handleComponentFilterChange
+                } // Dynamic filter handler
+              />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <TabsContent value="salary">
+              {isLoading ? (
+                <PageLoader />
+              ) : (
                 <CustomTable
                   data={salarySetupData?.results || []}
                   columns={SalarySetupColumns}
@@ -174,13 +208,13 @@ const SalarySetup = ({ departments }) => {
                   dataTotalSize={salarySetupData?.count || 0}
                   tableOptions={tableOptions}
                 />
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-        <TabsContent value="components">
-          <SalaryComponent componentFilterData ={componentFilterData}/>
-        </TabsContent>
+              )}
+            </TabsContent>
+            <TabsContent value="components">
+              <SalaryComponent componentFilterData={componentFilterData} />
+            </TabsContent>
+          </CardContent>
+        </Card>
       </Tabs>
     </div>
   );
