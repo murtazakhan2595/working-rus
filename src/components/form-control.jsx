@@ -244,9 +244,20 @@ const DateInput = ({
         setDate(parsedDate);
         setInputValue(format(parsedDate, "dd/MM/yyyy"));
         setCalendarDate(parsedDate);
+      } else {
+        resetFields();
       }
+    } else {
+      resetFields();
     }
   }, [value]);
+
+   const resetFields = () => {
+     setDate(null);
+     setInputValue("");
+     setCalendarDate(new Date());
+     onChange(name, ""); // Reset the form value
+   };
 
   // Handle manual input changes and sync with calendar
   const handleInputChange = (values) => {
