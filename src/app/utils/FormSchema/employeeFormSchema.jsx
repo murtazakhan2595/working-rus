@@ -39,9 +39,9 @@ const validationEmployeeContactInfoFormSchema = (values) => {
     errors.emergency_relation = "Contact Relation is required";
   if (!values.emergency_phone_no)
     errors.emergency_phone_no = "Phone number is required";
-  if (!values.current_address) errors.current_address = "Address is required";
-  if (!values.residential_address)
-    errors.residential_address = "Address is required";
+  if (!values.emergency_permanent_address) errors.emergency_permanent_address = "Permanent Address is required";
+  if (!values.emergency_current_address)
+    errors.emergency_current_address = "Current Address is required";
   return errors;
 };
 
