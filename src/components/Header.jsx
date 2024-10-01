@@ -25,12 +25,12 @@ const Header = ({ content }) => {
       profile: "Profile",
       "profile-management": "Profile Management",
       "exit-clearance": "Exit Requests",
-      "payroll": "Employees Payroll",
+      payroll: "Employees Payroll",
       "pay-run": "Pay Run",
       "salary-setup": "Salary Setup",
-      "exit-employee":"Employee Offboarding",
+      "exit-employee": "Employee Offboarding",
       "claim-request": "Claim Request",
-      
+      "my-claims": "My Claims",
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);

@@ -33,6 +33,10 @@ import EmployeeDataInfo from "../../modules/payroll/Sections/EmployeeDataInfo";
 import { DesignationName } from "utils/getValuesFromTables";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { Switch } from "../../../src/@/components/ui/switch";
+import { getExpenseType } from "utils/getValuesFromTables";
+import { Download } from "lucide-react";
+import { downloadAttachment } from "utils/fileUtils";
+import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 
 /**
  * LeaveHistoryColumns
@@ -677,32 +681,45 @@ export const ClaimRequestColumns = [
     dataField: "employee_name",
     text: "Employees",
     formatter: (cell, row) => (
-      <EmployeeNameInfo
-        name={cell}
-        department={row.department_name}
-        position={row.position}
+      <EmployeeDataInfo
+        name={`${row?.first_name} ${row?.last_name}`}
+        email={`${row?.work_email}`}
+        id={row?.id}
       />
     ),
   },
   {
     dataField: "expense_type",
     text: "Expense type",
+    formatter: (cell) => <>{getExpenseType(cell)}</>,
   },
   {
-    dataField: "date_of_expense",
+    dataField: "payment_date",
     text: "Date of Expense",
   },
   {
     dataField: "amount",
     text: "Amount",
+    formatter: (cell) => <>{`AED ${cell}`}</>,
   },
   {
-    dataField: "receipt",
+    dataField: "attachment",
     text: "Receipt",
+    formatter: (cell, row) => (
+      <div
+        className="items-center gap-2 inline-flex cursor-pointer"
+        onClick={() => downloadAttachment(cell.file, cell.name)}
+      >
+        {console.log(cell)}
+        <Download size={16} color="#ab4aba" />
+        <div className="text-[#ab4aba] text-sm font-medium ">Recipt</div>
+      </div>
+    ),
   },
   {
     dataField: "status",
     text: "Status",
+    formatter: (cell) => <ClaimRequestStatus status={cell} />,
   },
 ];
 
@@ -762,21 +779,34 @@ export const MyClaimsRequestColumns = [
   {
     dataField: "expense_type",
     text: "Expense Type",
+    formatter: (cell) => <>{getExpenseType(cell)}</>,
   },
   {
-    dataField: "date_of_expense",
+    dataField: "payment_date",
     text: "date of Expense",
   },
   {
     dataField: "amount",
     text: "Amount",
+    formatter: (cell) => <>{`AED ${cell}`}</>,
   },
   {
-    dataField: "",
+    dataField: "attachment",
     text: "Receipt",
+    formatter: (cell, row) => (
+      <div
+        className="items-center gap-2 inline-flex cursor-pointer"
+        onClick={() => downloadAttachment(cell.file, cell.name)}
+      >
+      {console.log(cell)}
+        <Download size={16} color="#ab4aba" />
+        <div className="text-[#ab4aba] text-sm font-medium ">Recipt</div>
+      </div>
+    ),
   },
   {
     dataField: "status",
     text: "Status",
-  }
+    formatter: (cell) => <ClaimRequestStatus status={cell} />,
+  },
 ];

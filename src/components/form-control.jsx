@@ -56,10 +56,12 @@ const SelectComponent = ({
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (currentValue) => {
+    console.log("currentValue", currentValue);
     const newValue =
       currentValue === value || (currentValue === null && value === null)
         ? ""
         : currentValue;
+    console.log("newValue", newValue);
     setOpen(false);
     onChange(name, newValue);
   };

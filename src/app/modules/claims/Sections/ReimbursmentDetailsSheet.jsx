@@ -3,36 +3,75 @@ import SheetComponent from "../../../../components/ui/SheetComponent";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import moment from "moment";
 import { Button } from "components/ui/button";
+import { getExpenseType } from "utils/getValuesFromTables";
+import { getFileSizeInKB } from "utils/fileUtils";
+import { Paperclip } from "lucide-react";
+import { filebase64Download } from "utils/fileUtils";
+import statusApprovedIcon from "assets/images/status-approved.png";  
+import statusPendingIcon from "assets/images/status-pending.svg";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { saveReimbursement } from "app/hooks/payroll";
 
+// Function to calculate "X days ago"
+const calculateTimeAgo = (date) => {
+  if (!date) return null; // Handle null dates
+  const now = moment(); // Current date
+  const approvalDate = moment(date); // Approval date
+  const diffInDays = now.diff(approvalDate, "days"); // Difference in days
 
-const ReimbursmentDetailsSheet = ({ claimRequest, isOpen, setIsOpen }) => {
-      const detailItems = [
-        { label: "Expense type", value: claimRequest.expense_type },
-        { label: "Amount", value: claimRequest.amount },
-        { label: "Date of Expense", value: claimRequest.date_of_expense },
-        { label: "Description", value: claimRequest.description },
-        {
-          label: "Attachments",
-          value: claimRequest?.attachments || "No attachments provided",
-        },
-      ];
-      const approvalSteps = [
-        {
-          icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/c85cb64c-2e0e-42fc-a08c-3a4e0a5554f9?placeholderIfAbsent=true&apiKey=8843d3a010584163b752e26820feff04",
-          text: "Manager Approval",
-          time: "2d ago",
-        },
-        {
-          icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/1b686abe-67d0-4cbe-9e76-ca6031d5db4e?placeholderIfAbsent=true&apiKey=8843d3a010584163b752e26820feff04",
-          text: "HR Approval",
-          time: "1d ago",
-        },
-        {
-          icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/2584d53ed62dd9532f6ca89e85bff7b29908da4e89590e986dc2f0dcb3b79782?placeholderIfAbsent=true&apiKey=8843d3a010584163b752e26820feff04",
-          text: "Final Approval",
-          time: null,
-        },
-      ];
+  if (diffInDays === 0) {
+    return "Today"; // If it's the same day
+  } else if (diffInDays === 1) {
+    return "1d ago"; // If it was 1 day ago
+  } else {
+    return `${diffInDays}d ago`; // Otherwise, show X days ago
+  }
+};
+
+const ReimbursmentDetailsSheet = ({
+  claimRequest,
+  isOpen,
+  setIsOpen,
+  isMyClaims,
+  employeeData,
+  reload
+}) => {
+  const detailItems = [
+    {
+      label: "Expense type",
+      value: getExpenseType(claimRequest.expense_type),
+    },
+    { label: "Amount", value: claimRequest.amount },
+    { label: "Date of Expense", value: claimRequest.payment_date },
+    { label: "Description", value: claimRequest.description },
+  ];
+  const approvalSteps = [
+    {
+      icon:
+        claimRequest?.status_manager?.status === "approved"
+          ? statusApprovedIcon
+          : statusPendingIcon,
+      text: "Manager Approval",
+      time: calculateTimeAgo(claimRequest?.status_manager?.date),
+    },
+    {
+      icon:
+        claimRequest?.status_hr?.status === "approved"
+          ? statusApprovedIcon
+          : statusPendingIcon,
+      text: "HR Approval",
+      time: calculateTimeAgo(claimRequest?.status_hr?.date),
+    },
+    {
+      icon:
+        claimRequest?.status_superadmin?.status === "approved"
+          ? statusApprovedIcon
+          : statusPendingIcon,
+      text: "Final Approval",
+      time: calculateTimeAgo(claimRequest?.status_superadmin?.date),
+    },
+  ];
   const formSheetData = {
     triggerText: null,
     title: "Reimbursment requests",
@@ -40,6 +79,39 @@ const ReimbursmentDetailsSheet = ({ claimRequest, isOpen, setIsOpen }) => {
     description: null,
     footer: null,
   };
+  const userProfile = useSelector((state) => state.user.userProfile);
+
+  const handleStatusChange = async (status) => {
+    console.log(userProfile);
+    if(userProfile.role === 3){
+      claimRequest.status_hr = {
+        status: status,
+        date: moment().format("YYYY-MM-DD"),
+      };
+    }
+    if(userProfile.role === 2){
+      claimRequest.status_manager = {
+        status: status,
+        date: moment().format("YYYY-MM-DD"),
+      };
+    }
+    if (userProfile.role === 1) {
+      claimRequest.status_superadmin = {
+        status: status,
+        date: moment().format("YYYY-MM-DD"),
+      };
+    }
+    if(claimRequest?.status_manager?.status === "approved" && claimRequest?.status_hr?.status === "approved" && claimRequest?.status_superadmin?.status === "approved"){
+      claimRequest.statue = "approved";
+    }
+     const response = await saveReimbursement(claimRequest);
+     if (response) {
+       toast.success("Claim request updated successfully");
+       setIsOpen(false);
+       reload()
+     }
+  }
+
   return (
     <div>
       <SheetComponent
@@ -50,9 +122,9 @@ const ReimbursmentDetailsSheet = ({ claimRequest, isOpen, setIsOpen }) => {
         width="500px"
       >
         <EmployeeDataInfo
-          name={`Dennis Callis`}
-          email={"lorri73@gmail.com"}
-          id={1234}
+          name={`${employeeData?.first_name} ${employeeData?.last_name}`}
+          email={`${employeeData?.work_email}`}
+          id={employeeData?.id}
         />
         <div className="font-inter mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
           <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
@@ -71,6 +143,30 @@ const ReimbursmentDetailsSheet = ({ claimRequest, isOpen, setIsOpen }) => {
                     </div>
                   </div>
                 ))}
+                <div className="flex gap-4 items-center mt-4 max-w-full">
+                  <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
+                    <div>Attachment</div>
+                  </div>
+                  <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Paperclip size={16} />
+                      <div className="text-[#1c2024] text-sm font-medium ">
+                        Receipt
+                      </div>
+                      <div className="text-[#8b8d98] text-sm font-normal">
+                        {getFileSizeInKB(claimRequest?.attachment?.file)}KB
+                      </div>
+                    </div>
+                    <button
+                      className="text-[#ab4aba] text-xs font-semibold "
+                      onClick={() => {
+                        filebase64Download(claimRequest?.attachment);
+                      }}
+                    >
+                      Download
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -122,12 +218,13 @@ const ReimbursmentDetailsSheet = ({ claimRequest, isOpen, setIsOpen }) => {
             </section>
           </section>
         </div>
+        {!isMyClaims && (
           <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
             <Button
               variant="outline"
               size="lg"
               onClick={() => {
-                setIsOpen(false);
+                handleStatusChange("rejected");
               }}
             >
               Reject
@@ -138,12 +235,13 @@ const ReimbursmentDetailsSheet = ({ claimRequest, isOpen, setIsOpen }) => {
               variant="default"
               className=" bg-[#1c2024] text-white"
               onClick={() => {
-                setIsOpen(false);
+                handleStatusChange("approved");
               }}
             >
               Accept
             </Button>
-        </div>
+          </div>
+        )}
       </SheetComponent>
     </div>
   );

@@ -51,8 +51,7 @@ export default function TableCustom({
   const [designationFilter, setDesignationFilter] = useState("all");
 
   const employees = useMemo(() => {
-    return data
-      .filter((employee) => {
+    return data?.filter((employee) => {
         const searchValue = search.toLowerCase();
         const statusFilterValue = statusFilter === "all" ? "" : statusFilter;
         const designationFilterValue =
@@ -87,7 +86,7 @@ export default function TableCustom({
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * options.sizePerPage;
 
-    return employees.slice(startIndex, startIndex + options.sizePerPage);
+    return employees?.slice(startIndex, startIndex + options.sizePerPage);
   }, [employees, currentPage, options.sizePerPage]);
 
   const totalPages = Math.ceil(dataTotalSize / options.sizePerPage);
@@ -175,7 +174,7 @@ export default function TableCustom({
                 </TableHeader>
               )}
               <TableBody>
-                {paginatedData.length > 0 ? (
+                {paginatedData?.length > 0 ? (
                   paginatedData.map((row, recordIndex) => (
                     <React.Fragment key={row.id}>
                       <TableRow

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SheetComponent from "../../../../components/ui/SheetComponent";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import moment from "moment";
@@ -14,15 +14,22 @@ import {
 } from "components/form-control";
 import { DateInput } from "components/form-control";
 import { ClaimExpenseTypeOptions } from "data/Data";
+import { getEmployeePayroll } from "app/hooks/payroll";
+import { connect } from "react-redux";
+import { saveReimbursement } from "app/hooks/payroll";
+import { toast } from "react-toastify";
 
-const ReimbursmentDetailsRequest = () => {
+const ReimbursmentDetailsRequest = ({ userProfile }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [newAttachment, setNewAttachment] = useState(null);
+  const [payroll, setPayroll] = useState({});
+
   const claimRequest = {
     expense_type: "",
-    date_of_expense: "",
+    payment_date: "",
     amount: "",
     description: "",
-    attachments: "",
+    attachment: "",
   };
   const formSheetData = {
     triggerText: "Send Request",
@@ -32,9 +39,66 @@ const ReimbursmentDetailsRequest = () => {
     footer: null,
   };
 
-  const handleFormSubmit = (values) => {
+  useEffect(() => {
+    const fetchPayroll = async () => {
+      try {
+        const response = await getEmployeePayroll({
+          filterData: { employee_id: userProfile.id },
+        });
+        setPayroll(response?.results[0]);
+      } catch (error) {
+        console.error("Error fetching payroll data:", error);
+      }
+    };
+    fetchPayroll();
+  }, []);
+
+  const handleFormSubmit = async (values) => {
+    values.attachment = newAttachment ? newAttachment : "";
+
+    values.status_hr = {
+      status: "pending",
+    };
+    values.status_manager = {
+      status: "pending",
+    };
+    values.status_superadmin = {
+      status: "pending",
+    };
+    values.status = "pending";
+    values.is_paid = false;
+    values.employee_payroll = payroll.id;
     console.log(values);
+      const response  = await saveReimbursement(values);
+      if(response){
+        toast.success("Reimbursement request sent successfully");
+        setIsOpen(false);
+      }
   };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0]; // Get the selected file
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (event) => {
+        const fileData = {
+          name: file.name, // File name
+          file: event.target.result, // Base64 data URL
+        };
+        setNewAttachment(fileData); // Update state with file data
+        console.log("File uploaded:", fileData);
+      };
+
+      reader.onerror = (error) => {
+        console.error("Error reading file:", error); // Handle errors
+      };
+
+      reader.readAsDataURL(file); // Read file as data URL
+    }
+  };
+  console.log("newAttachment", newAttachment);
 
   return (
     <div>
@@ -53,6 +117,7 @@ const ReimbursmentDetailsRequest = () => {
         >
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+              {console.log("props", props)}
               <div className={`flex w-full flex-col rounded-lg`}>
                 <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium  tracking-[0px] text-zinc-900">
                   <div className="flex h-[7px] flex-shrink-0 items-end px-px">
@@ -68,7 +133,7 @@ const ReimbursmentDetailsRequest = () => {
                     value={props.values?.expense_type}
                     options={ClaimExpenseTypeOptions}
                     onChange={(field, value) => {
-                      props.handleChange(field)(value);
+                      props.setFieldValue(field, value);
                     }}
                     placeholder="Select"
                   />
@@ -93,10 +158,10 @@ const ReimbursmentDetailsRequest = () => {
                         <div>Date of Expense</div>
                       </div>
                       <DateInput
-                        name={"date_of_expense"}
-                        error={props.errors?.date_of_expense}
-                        touch={props.touched?.date_of_expense}
-                        value={props.values?.date_of_expense}
+                        name={"payment_date"}
+                        error={props.errors?.payment_date}
+                        touch={props.touched?.payment_date}
+                        value={props.values?.payment_date}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
@@ -131,52 +196,72 @@ const ReimbursmentDetailsRequest = () => {
                             <div>
                               <div className="flex items-center text-[#8b8d98] text-sm  gap-2">
                                 <Paperclip size={16} />
-                                <span className="text-[#ab4aba] text-sm font-semibold ">
-                                  Upload a file
-                                </span>
-                                or drag and drop
+                                {newAttachment && newAttachment.name ? (
+                                  <span className="mr-2">
+                                    {newAttachment.name}
+                                  </span>
+                                ) : (
+                                  <>
+                                    <span className="text-[#ab4aba] text-sm font-semibold ">
+                                      Upload a file
+                                    </span>
+                                    <span>or drag and drop</span>
+                                  </>
+                                )}
                               </div>
-                              <div className="w-[263px] h-3 pl-8 pr-[26.62px] flex-col justify-start items-start inline-flex">
-                                <div className="text-[#8b8d98] text-xs  ">
-                                  PNG, JPG, GIF up to 10MB
+                              {!(newAttachment && newAttachment.name) && (
+                                <div className="w-[263px] h-3 pl-8 pr-[26.62px] flex-col justify-start items-start inline-flex">
+                                  <div className="text-[#8b8d98] text-xs  ">
+                                    PNG, JPG, GIF up to 10MB
+                                  </div>
                                 </div>
-                              </div>
+                              )}
                             </div>
-                            <Button className="bg-white border border-[#e8e8ec] text-[#1c2024]">
+                            <Button
+                              className="bg-white border border-[#e8e8ec] text-[#1c2024]"
+                              onClick={() =>
+                                document.getElementById("fileInput").click()
+                              }
+                            >
                               Upload
                             </Button>
                           </div>
                         </div>
-                        <Button className="bg-white border border-[#e8e8ec] text-[#1c2024] text-sm font-medium w-fit">
+                        {/* Hidden file input */}
+                        <input
+                          id="fileInput"
+                          type="file"
+                          accept="image/png, image/jpeg, image/gif"
+                          style={{ display: "none" }} // Hide the file input
+                          onChange={handleFileChange} // Call the file change handler
+                        />
+                        {/* <Button className="bg-white border border-[#e8e8ec] text-[#1c2024] text-sm font-medium w-fit">
                           + Add another
-                        </Button>
+                        </Button> */}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-                <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => {
-                      setIsOpen(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="lg"
-                    variant="default"
-                    className=" bg-[#1c2024] text-white"
-                    onClick={() => {
-                      setIsOpen(false);
-                    }}
-                  >
-                    Submit
-                  </Button>
-                </div>
+              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="lg"
+                  variant="default"
+                  className=" bg-[#1c2024] text-white"
+                >
+                  Submit
+                </Button>
+              </div>
             </form>
           )}
         </Formik>
@@ -185,4 +270,10 @@ const ReimbursmentDetailsRequest = () => {
   );
 };
 
-export default ReimbursmentDetailsRequest;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+
+export default connect(mapStateToProps)(ReimbursmentDetailsRequest);
