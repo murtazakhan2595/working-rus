@@ -47,7 +47,6 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
     const fetchData = async () => {
       const response = await getEarnAndDeduction();
       if (response) {
-        console.log(response);
         setEarnings(response.results);
       }
     };
@@ -62,7 +61,6 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
   };
 
   const handleSubmit = async (values) => {
-    console.log("Form Values:", values);
     const response = await saveEmployeeEarnDeduction({
       ...values,
       employee_payroll: payrollId,
@@ -72,6 +70,33 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
       toast.success("Earning added successfully");
     }
   };
+
+
+
+    const formatValueForBackend = (option, value, amountType) => {
+      if (option === "option1") {
+        return `AED ${parseFloat(value).toFixed(2)} ${amountType === "fixed"? "Fixed":"Variable"} Amount`; // Flat Amount
+      } else if (option === "option2") {
+        return `${value}% of Gross`; // Percentage of Gross
+      } else if (option === "option3") {
+        return `${value}% of Basic`; // Percentage of Basic
+      }
+      return value;
+    };
+    const handleFormSubmit = (values) => {
+      const formattedAmount = formatValueForBackend(
+        selectedRadio,
+        amountInputs[selectedRadio],
+        values.amount_type,
+      );
+
+      const finalValues = {
+        ...values,
+        amount: formattedAmount, // Add the formatted value
+      };
+      handleSubmit(finalValues);
+    };
+
   const getSelectedEarning = (selectedId) => {
     const earning = earnings.find(
       (earning) => Number(earning.id) === Number(selectedId)
@@ -84,7 +109,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
       <div>
         <SheetComponent
           {...formSheetData}
-          onSubmit={handleSubmit}
+          onSubmit={handleFormSubmit}
           width="500px"
           isOpen={isOpen}
           setIsOpen={setIsOpen}
@@ -93,7 +118,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
           <Formik
             initialValues={initialValues}
             // validationSchema={validationSchema}
-            onSubmit={handleSubmit}
+            onSubmit={handleFormSubmit}
           >
             {(props) => (
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
@@ -111,7 +136,9 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
                       }
                     >
                       <SelectTrigger className="w-[80%]">
-                        {props.values.income_type ? getSelectedEarning(props.values.income_type) : ""}
+                        {props.values.income_type
+                          ? getSelectedEarning(props.values.income_type)
+                          : ""}
                       </SelectTrigger>
                       <SelectContent>
                         {earnings.map((earning) => (
@@ -142,7 +169,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
                             value={props.values?.amount_type}
                             options={[
                               { value: "fixed", label: "Fixed" },
-                              { value: "variable", label: "Variable" },
+                              { value: "percentage", label: "Variable" },
                             ]}
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
@@ -237,20 +264,20 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
                   </>
                 )}
 
-                  <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      onClick={() => {
-                        setIsOpen(false);
-                      }}
-                    >
-                      Cancel{" "}
-                    </Button>
-                    <Button type="submit" size="lg" variant="default">
-                      {"Save"}
-                    </Button>
-                  </div>
+                <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => {
+                      setIsOpen(false);
+                    }}
+                  >
+                    Cancel{" "}
+                  </Button>
+                  <Button type="submit" size="lg" variant="default">
+                    {"Save"}
+                  </Button>
+                </div>
               </form>
             )}
           </Formik>

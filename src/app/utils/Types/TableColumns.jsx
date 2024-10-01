@@ -583,7 +583,7 @@ export const EmployeePayrollColumns = [
   },
 ];
 
-export const SalaryComponentColumns =(onCheckedChange)=> [
+export const SalaryComponentColumns = (onCheckedChange) => [
   {
     dataField: "name",
     text: "Component Name",
@@ -710,7 +710,6 @@ export const ClaimRequestColumns = [
         className="items-center gap-2 inline-flex cursor-pointer"
         onClick={() => downloadAttachment(cell.file, cell.name)}
       >
-        {console.log(cell)}
         <Download size={16} color="#ab4aba" />
         <div className="text-[#ab4aba] text-sm font-medium ">Recipt</div>
       </div>
@@ -798,7 +797,6 @@ export const MyClaimsRequestColumns = [
         className="items-center gap-2 inline-flex cursor-pointer"
         onClick={() => downloadAttachment(cell.file, cell.name)}
       >
-      {console.log(cell)}
         <Download size={16} color="#ab4aba" />
         <div className="text-[#ab4aba] text-sm font-medium ">Recipt</div>
       </div>

@@ -302,7 +302,10 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
           <Card className="">
             <CardHeader className="flex flex-row items-center justify-between w-full">
               <CardTitle>Additional Earnings and Deductions</CardTitle>
-              <AddAdditionalEarningSheet reload={fetchData} payrollId={payrollId}/>
+              <AddAdditionalEarningSheet
+                reload={fetchData}
+                payrollId={payrollId}
+              />
             </CardHeader>
             <CardContent className="">
               <Table>
@@ -318,7 +321,9 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
                   {earnAndDeductions?.earnings?.map((item, index) => (
                     <TableRow key={index} className="cursor-pointer">
                       <TableCell>{item?.type_name}</TableCell>
-                      <TableCell>{item?.income_type}</TableCell>
+                      <TableCell className="capitalize">
+                        {item?.income_type}
+                      </TableCell>
                       <TableCell>{item?.amount}</TableCell>
                       <TableCell>{item?.month}</TableCell>
                     </TableRow>
@@ -326,7 +331,9 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
                   {earnAndDeductions?.deductions?.map((item, index) => (
                     <TableRow key={index} className="cursor-pointer">
                       <TableCell>{item?.type_name}</TableCell>
-                      <TableCell>{item?.income_type}</TableCell>
+                      <TableCell className="capitalize">
+                        {item?.income_type}
+                      </TableCell>
                       <TableCell>{item?.amount}</TableCell>
                       <TableCell>{item?.month}</TableCell>
                     </TableRow>
