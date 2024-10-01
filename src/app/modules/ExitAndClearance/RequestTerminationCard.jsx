@@ -27,7 +27,13 @@ const RequestTerminationCard = ({
   departments,
   managers,
 }) => {
-  const [initialValues, setInitialValues] = React.useState({});
+  const [initialValues, setInitialValues] = React.useState({
+    terminate_employee: "",
+    reason_for_terminating: "",
+    notice_period: "",
+    last_working_day: "",
+    exit_interview_date:"",
+  });
 
   const [isOpen, setIsOpen] = React.useState(false);
   const formRef = React.createRef();
@@ -72,7 +78,6 @@ const RequestTerminationCard = ({
       contentClassName="custom-sheet-width"
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      width="500px"
     >
       <RequestTerminationForm
         formData={initialValues}
