@@ -11,7 +11,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from "../../../../src/@/components/ui/radio-group";
-import { Button } from "../../../../src/@/components/ui/button";
+import { Button } from "../../../../components/ui/button";
 import { getEarnAndDeduction } from "app/hooks/payroll";
 import { Formik } from "formik";
 import { RadioGroupInput } from "components/form-control";
@@ -149,9 +149,11 @@ const ComponentForm = ({
     setSelectedRadio(value);
     setAmountInputs((prev) => ({ ...prev, [value]: "" }));
   };
-  const formatValueForBackend = (option, value) => {
+  const formatValueForBackend = (option, value, amountType) => {
     if (option === "option1") {
-      return `AED ${parseFloat(value).toFixed(2)} Flat Amount`; // Flat Amount
+      return `AED ${parseFloat(value).toFixed(2)} ${
+        amountType === "fixed" ? "Fixed" : "Variable"
+      } Amount`; 
     } else if (option === "option2") {
       return `${value}% of Gross`; // Percentage of Gross
     } else if (option === "option3") {
@@ -162,7 +164,8 @@ const ComponentForm = ({
   const handleFormSubmit = (values) => {
     const formattedAmount = formatValueForBackend(
       selectedRadio,
-      amountInputs[selectedRadio]
+      amountInputs[selectedRadio],
+      values.amounts_types
     );
 
     const finalValues = {
@@ -230,13 +233,13 @@ const ComponentForm = ({
                 </div>
                 <div>
                   <RadioGroupInput
-                    name={"amounts_type"}
-                    error={props.errors?.amounts_type}
-                    touch={props.touched?.amounts_type}
-                    value={props.values?.amounts_type}
+                    name={"amounts_types"}
+                    error={props.errors?.amounts_types}
+                    touch={props.touched?.amounts_types}
+                    value={props.values?.amounts_types}
                     options={[
                       { value: "fixed", label: "Fixed" },
-                      { value: "variable", label: "Variable" },
+                      { value: "percentage", label: "Variable" },
                     ]}
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
@@ -306,21 +309,19 @@ const ComponentForm = ({
               <Label htmlFor="is_active">Activate</Label>
             </div>
           </>
-          <div className="p-6 border-t border-gray-200 bg-gray-50">
-            <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  setIsOpen(false);
-                }}
-              >
-                Cancel{" "}
-              </Button>
-              <Button type="submit" size="lg" variant="default">
-                {"Save"}
-              </Button>
-            </div>
+          <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => {
+                setIsOpen(false);
+              }}
+            >
+              Cancel{" "}
+            </Button>
+            <Button type="submit" size="lg" variant="default">
+              {"Save"}
+            </Button>
           </div>
         </form>
       )}

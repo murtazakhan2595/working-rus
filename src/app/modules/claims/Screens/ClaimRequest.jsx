@@ -7,115 +7,33 @@ import CustomTable from "components/CustomTable";
 import { ClaimRequestColumns } from "app/utils/Types/TableColumns.jsx";
 import ReimbursmentDetailsSheet from "../Sections/ReimbursmentDetailsSheet.jsx";
 import ReimbursmentDetailsRequest from "../Sections/ReimbursmentDetailsRequest.jsx";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { MyClaimsRequestColumns } from "app/utils/Types/TableColumns.jsx";
+import { getReimbursement } from "app/hooks/payroll.jsx";
+import PageLoader from "components/PageLoader.jsx";
+import { getEmployeePayroll } from "app/hooks/payroll.jsx";
+import { getEmployeeData } from "app/hooks/employee.jsx";
 
-const claimRequests = [
-  {
-    id: 1,
-    employee_id: 1,
-    employee_name: "John Doe",
-    department_name: "Finance",
-    position: "Accountant",
-    expense_type: "Travel",
-    date_of_expense: "2024-09-01",
-    amount: "$500",
-    receipt: "Receipt_001.pdf",
-    status: "Approved",
-  },
-  {
-    id: 2,
-    employee_id: 2,
-    employee_name: "Jane Smith",
-    department_name: "HR",
-    position: "HR Manager",
-    expense_type: "Training",
-    date_of_expense: "2024-09-02",
-    amount: "$300",
-    receipt: "Receipt_002.pdf",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    employee_id: 3,
-    employee_name: "Michael Brown",
-    department_name: "IT",
-    position: "Software Engineer",
-    expense_type: "Equipment",
-    date_of_expense: "2024-09-03",
-    amount: "$1000",
-    receipt: "Receipt_003.pdf",
-    status: "Rejected",
-  },
-  {
-    id: 4,
-    employee_id: 4,
-    employee_name: "Emily Clark",
-    department_name: "Marketing",
-    position: "Marketing Coordinator",
-    expense_type: "Advertisement",
-    date_of_expense: "2024-09-04",
-    amount: "$700",
-    receipt: "Receipt_004.pdf",
-    status: "Approved",
-  },
-];
 
-const myClaimsData = [
-  {
-    expense_type: "Travel",
-    amount: "$500",
-    date_of_expense: "2024-09-01",
-    status: "Approved",
-    receipt: "Receipt_001.pdf",
-  },
-  {
-    expense_type: "Accommodation",
-    amount: "$300",
-    date_of_expense: "2024-09-03",
-    status: "Pending",
-    receipt: "Receipt_002.pdf",
-  },
-  {
-    expense_type: "Meals",
-    amount: "$100",
-    date_of_expense: "2024-09-05",
-    status: "Rejected",
-    receipt: "Receipt_003.pdf",
-  },
-  {
-    expense_type: "Office Supplies",
-    amount: "$150",
-    date_of_expense: "2024-09-10",
-    status: "Approved",
-    receipt: "Receipt_004.pdf",
-  },
-  {
-    expense_type: "Transportation",
-    amount: "$75",
-    date_of_expense: "2024-09-12",
-    status: "Pending",
-    receipt: "Receipt_005.pdf",
-  },
-];
 
-const ClaimRequest = () => {
+const ClaimRequest = ({userProfile}) => {
   const [filterData, setFilterData] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedClaimRequest, setSelectedClaimRequest] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const [myClaims, setMyClaims] = useState(null);
+  const [employeeData, setEmployeeData] = useState(null);
+  const [claimRequests, setClaimRequests] = useState({});
   const pathname = location.pathname;
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
-  const userProfile = useSelector((state) => state.user.userProfile);
-
-
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -138,7 +56,49 @@ const ClaimRequest = () => {
       return updatedFilters;
     });
   };
+
   const isMyClaims = pathname === "/my-claims";
+
+
+  const fetchMyClaims = async () => {
+     setLoading(true);
+    const payroll = await getEmployeePayroll({
+      filterData: { employee_id: userProfile.id },
+    });
+    
+    const empData = await getEmployeeData(userProfile.id);
+    if (empData) {
+      setEmployeeData(empData);
+    }
+    const response = await getReimbursement({
+      filterData: { employee_payroll: payroll?.results[0]?.id },
+    });
+    if (response) {
+      console.log(response);
+      setMyClaims(response);
+    }
+    setLoading(false);
+  };
+
+  const fetchClaimRequests = async () => {
+    setLoading(true);
+    const response = await getReimbursement({ filterData });
+    if (response) {
+      setClaimRequests(response);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+   
+    
+    if (isMyClaims) {
+      fetchMyClaims();
+    } else {
+      fetchClaimRequests();
+    }
+    
+  }, []);
 
   return (
     <div className="flex flex-col gap-4 salary-startup">
@@ -147,6 +107,9 @@ const ClaimRequest = () => {
           claimRequest={selectedClaimRequest}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
+          isMyClaims={isMyClaims}
+          employeeData={employeeData}
+          reload = {fetchClaimRequests}
         />
       )}
       <Header content={isMyClaims ? <ReimbursmentDetailsRequest /> : null} />
@@ -189,19 +152,22 @@ const ClaimRequest = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {isMyClaims ? (
+          {loading ? (
+            <PageLoader />
+          ) : isMyClaims ? (
             <CustomTable
-              data={myClaimsData}
+              data={myClaims?.results}
               columns={MyClaimsRequestColumns}
               pagination={true}
-              dataTotalSize={0}
+              dataTotalSize={myClaims?.count}
+              tableOptions={tableOptions}
             />
           ) : (
             <CustomTable
-              data={claimRequests}
+              data={claimRequests?.results}
               columns={ClaimRequestColumns}
               pagination={true}
-              dataTotalSize={0}
+              dataTotalSize={claimRequests?.count}
               tableOptions={tableOptions}
               selectable={true}
               setSelectedRows={setSelectedRows}
@@ -214,4 +180,10 @@ const ClaimRequest = () => {
   );
 };
 
-export default ClaimRequest;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+
+export default connect(mapStateToProps)(ClaimRequest);
