@@ -756,3 +756,27 @@ export const createPayrunColumns = [
     ),
   },
 ];
+
+
+export const MyClaimsRequestColumns = [
+  {
+    dataField: "expense_type",
+    text: "Expense Type",
+  },
+  {
+    dataField: "date_of_expense",
+    text: "date of Expense",
+  },
+  {
+    dataField: "amount",
+    text: "Amount",
+  },
+  {
+    dataField: "",
+    text: "Receipt",
+  },
+  {
+    dataField: "status",
+    text: "Status",
+  }
+];

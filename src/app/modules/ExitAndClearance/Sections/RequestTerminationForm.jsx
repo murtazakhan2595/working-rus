@@ -18,6 +18,7 @@ import { FileInput } from "components/form-control";
 import moment from "moment";
 import { connect } from "react-redux";
 import { NoticePeriod } from "data/Data";
+import { validateTerminationForm } from "app/utils/FormSchema/exitAndClearanceFormSchema";
 
 const RequestTerminationForm = ({
   employees,
@@ -165,14 +166,9 @@ const RequestTerminationForm = ({
                 initialValues={formData}
                 ref={formRef}
                 onSubmit={(values, { resetForm }) => {
-                  console.log("here values", values);
                   handleSubmit(values, resetForm);
                 }}
-                validate={(values) => {
-                  const errors = {};
-
-                  return errors;
-                }}
+                validate={validateTerminationForm}
               >
                 {(props) => (
                   <form
@@ -190,9 +186,9 @@ const RequestTerminationForm = ({
                               name={"terminate_employee"}
                               options={filterEmployees}
                               error={props.errors.terminate_employee}
-                              touch={props.touched.terminate_employee}
-                              value={props.values.terminate_employee}
-                              required
+                              touch={props.touched?.terminate_employee}
+                              value={props.values?.terminate_employee}
+                              required={true}
                               label={"Select Employee"}
                               onChange={(field, value) => {
                                 props.setFieldValue(field, value);
@@ -233,6 +229,7 @@ const RequestTerminationForm = ({
                           touch={props.touched.last_working_day}
                           value={props.values.last_working_day}
                           label={"Last Working Day"}
+                          required={true}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
@@ -244,6 +241,7 @@ const RequestTerminationForm = ({
                           touch={props.touched.notice_period}
                           value={props.values.notice_period}
                           label={"Notice Period"}
+                          required={true}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
@@ -254,6 +252,7 @@ const RequestTerminationForm = ({
                           touch={props.touched.exit_interview_date}
                           value={props.values.exit_interview_date}
                           label={"Exit Interview Date"}
+                          required={true}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
@@ -265,8 +264,8 @@ const RequestTerminationForm = ({
                           touch={props.touched.reason_for_terminating}
                           value={props.values.reason_for_terminating}
                           label={"Reason for Terminating"}
+                          required={true}
                           onChange={(field, value) => {
-                            console.log("value", value);
                             props.setFieldValue(field, value);
                           }}
                         />
@@ -289,7 +288,7 @@ const RequestTerminationForm = ({
                             variant="outline"
                             size="lg"
                             type="button"
-                            onClick={() => handleReset(props.resetForm)} 
+                            onClick={() => handleReset(props.resetForm)}
                           >
                             Reset
                           </Button>

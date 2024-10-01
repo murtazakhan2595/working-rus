@@ -9,6 +9,7 @@ import ReimbursmentDetailsSheet from "../Sections/ReimbursmentDetailsSheet.jsx";
 import ReimbursmentDetailsRequest from "../Sections/ReimbursmentDetailsRequest.jsx";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { MyClaimsRequestColumns } from "app/utils/Types/TableColumns.jsx";
 
 const claimRequests = [
   {
@@ -58,6 +59,44 @@ const claimRequests = [
     amount: "$700",
     receipt: "Receipt_004.pdf",
     status: "Approved",
+  },
+];
+
+const myClaimsData = [
+  {
+    expense_type: "Travel",
+    amount: "$500",
+    date_of_expense: "2024-09-01",
+    status: "Approved",
+    receipt: "Receipt_001.pdf",
+  },
+  {
+    expense_type: "Accommodation",
+    amount: "$300",
+    date_of_expense: "2024-09-03",
+    status: "Pending",
+    receipt: "Receipt_002.pdf",
+  },
+  {
+    expense_type: "Meals",
+    amount: "$100",
+    date_of_expense: "2024-09-05",
+    status: "Rejected",
+    receipt: "Receipt_003.pdf",
+  },
+  {
+    expense_type: "Office Supplies",
+    amount: "$150",
+    date_of_expense: "2024-09-10",
+    status: "Approved",
+    receipt: "Receipt_004.pdf",
+  },
+  {
+    expense_type: "Transportation",
+    amount: "$75",
+    date_of_expense: "2024-09-12",
+    status: "Pending",
+    receipt: "Receipt_005.pdf",
   },
 ];
 
@@ -123,7 +162,9 @@ const ClaimRequest = () => {
               <div className="pt-1.5 flex-col justify-start items-start flex">
                 <div className="flex-col justify-start items-start flex">
                   <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
-                   {isMyClaims?"Your reimburment request status is displyed": " All employee reimbursements are displayed"}
+                    {isMyClaims
+                      ? "Your reimburment request status is displyed"
+                      : " All employee reimbursements are displayed"}
                   </div>
                 </div>
               </div>
@@ -148,16 +189,25 @@ const ClaimRequest = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <CustomTable
-            data={claimRequests}
-            columns={ClaimRequestColumns}
-            pagination={true}
-            dataTotalSize={0}
-            tableOptions={tableOptions}
-            selectable={true}
-            setSelectedRows={setSelectedRows}
-            selectedRows={selectedRows}
-          />
+          {isMyClaims ? (
+            <CustomTable
+              data={myClaimsData}
+              columns={MyClaimsRequestColumns}
+              pagination={true}
+              dataTotalSize={0}
+            />
+          ) : (
+            <CustomTable
+              data={claimRequests}
+              columns={ClaimRequestColumns}
+              pagination={true}
+              dataTotalSize={0}
+              tableOptions={tableOptions}
+              selectable={true}
+              setSelectedRows={setSelectedRows}
+              selectedRows={selectedRows}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

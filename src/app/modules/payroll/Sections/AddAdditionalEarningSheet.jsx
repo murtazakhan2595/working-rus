@@ -10,7 +10,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from "../../../../src/@/components/ui/radio-group";
-import {Button} from "../../../../src/@/components/ui/button";
+import { Button } from "../../../../components/ui/button";
 import { getEarnAndDeduction } from "app/hooks/payroll";
 import { Formik } from "formik";
 import { RadioGroupInput } from "components/form-control";
@@ -237,8 +237,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
                   </>
                 )}
 
-                <div className="p-6 border-t border-gray-200 bg-gray-50">
-                  <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+                  <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
                     <Button
                       variant="outline"
                       size="lg"
@@ -252,7 +251,6 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
                       {"Save"}
                     </Button>
                   </div>
-                </div>
               </form>
             )}
           </Formik>
