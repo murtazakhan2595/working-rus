@@ -10,10 +10,12 @@ import {
 } from "../../../../src/@/components/ui/tabs.jsx";
 import PayRunAndPaySlipCard from "../Sections/PayRunAndPaySlipCard.jsx";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
+import { useNavigate } from "react-router-dom";
 
 const PayRun = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("runPayroll");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,7 +42,7 @@ const PayRun = () => {
       paymentDate: "",
       numberofEmployees: "",
       buttonLabel: "Create Pay Run",
-      onBtnClick: () => {},
+      onBtnClick: () => navigate("/payroll/create-payrun"),
     },
     {
       title: "Process Pay Run for September 2024",

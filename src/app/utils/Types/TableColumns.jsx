@@ -706,6 +706,58 @@ export const ClaimRequestColumns = [
   },
 ];
 
+
+export const createPayrunColumns = [
+  {
+    dataField: "id",
+    text: "ID",
+    sort: true,
+  },
+  {
+    dataField: "employee",
+    text: "Employee",
+    formatter: (cell, row) => (
+      <>
+        <div>{row.name}</div>
+        <div style={{ fontSize: "12px", color: "#6c757d" }}>{row.email}</div>
+      </>
+    ),
+  },
+  {
+    dataField: "department",
+    text: "Department",
+  },
+  {
+    dataField: "grossPay",
+    text: "Gross Pay",
+  },
+  {
+    dataField: "earnings",
+    text: "Earnings",
+  },
+  {
+    dataField: "deductions",
+    text: "Deductions",
+  },
+  {
+    dataField: "claims",
+    text: "Claims",
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell, row) => (
+      <div>
+        {row.status === "EOS" && <span style={{ color: "red" }}>EOS</span>}
+        {row.status === "Withhold" && (
+          <span style={{ color: "#6c757d" }}>Withhold</span>
+        )}
+      </div>
+    ),
+  },
+];
+
+
 export const MyClaimsRequestColumns = [
   {
     dataField: "expense_type",
