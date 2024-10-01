@@ -35,7 +35,7 @@ export default function TableCustom({
   setSelectedRows,
 }) {
   const [expandedRow, setExpandedRow] = useState(null);
-
+  console.log("selected rows", selectedRows);
   const options = {
     page: tableOptions?.page ?? 1,
     sizePerPage: tableOptions?.sizePerPage ?? 10,
@@ -186,7 +186,9 @@ export default function TableCustom({
                         }}
                         className={`${
                           tableOptions?.onRowClick ? "cursor-pointer" : ""
-                        }`}
+                        }
+                        ${selectedRows?.includes(row.id) ? "bg-[#fdf7fd]" : ""}
+                        `}
                       >
                         {selectable && (
                           <TableCell className="p-0 pl-1 w-[0px] text-right ml-0">

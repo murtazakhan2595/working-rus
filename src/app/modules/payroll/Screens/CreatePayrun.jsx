@@ -24,7 +24,7 @@ const employeesData = [
     status: null,
   },
   {
-    id: "TXB-0190",
+    id: "TXB-0191",
     name: "Jerry Helfer",
     email: "patrick615@outlook.com",
     department: "Design Team",
@@ -35,7 +35,7 @@ const employeesData = [
     status: null,
   },
   {
-    id: "TXB-0190",
+    id: "TXB-0192",
     name: "Iva Ryan",
     email: "c.a.glasser@outlook.com",
     department: "Design Team",
@@ -46,7 +46,7 @@ const employeesData = [
     status: "EOS", // End of service
   },
   {
-    id: "TXB-0190",
+    id: "TXB-0193",
     name: "Lorri Warf",
     email: "lorri71@gaol.com",
     department: "Business Analyst",
@@ -57,7 +57,7 @@ const employeesData = [
     status: null,
   },
   {
-    id: "TXB-0190",
+    id: "TXB-0194",
     name: "Daniel Hamilton",
     email: "rodger913@aol.com",
     department: "Business Analyst",
@@ -68,7 +68,7 @@ const employeesData = [
     status: null,
   },
   {
-    id: "TXB-0190",
+    id: "TXB-0195",
     name: "Mary Freund",
     email: "kurt_bates@outlook.com",
     department: "Design Team",
@@ -79,6 +79,7 @@ const employeesData = [
     status: "Withhold",
   },
 ];
+
 
 const CreatePayRun = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -151,15 +152,6 @@ const CreatePayRun = () => {
           <div className="text-[#ab4aba] text-2xl font-medium ">
             Payment Date
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className=" text-sm font-medium ">Pick a date</div>
-            <DateInput
-              className="w-[220px]"
-              onChange={(name, value) => {
-                console.log(name, value);
-              }}
-            />
-          </div>
         </CardContent>
       </Card>
       <Card>
@@ -167,18 +159,23 @@ const CreatePayRun = () => {
           <div className="flex items-center justify-between">
             <div className="h-[47px] flex-col justify-center items-start inline-flex">
               <div className="flex-col justify-start items-start flex">
-                <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
+                <div className="self-stretch text-[#ab4aba] text-2xl font-medium  ">
                   Employees Summary
                 </div>
               </div>
               <div className="pt-1.5 flex-col justify-start items-start flex">
                 <div className="flex-col justify-start items-start flex">
-                  <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
+                  <div className="self-stretch text-[#8b8d98] text-sm  ">
                     Employee payroll runs generated are here
                   </div>
                 </div>
               </div>
             </div>
+           {selectedRows?.length>0 && <Button className=" px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex">
+              <div className="text-center text-[#1c2024] text-sm font-medium ">
+                Withhold Salary
+              </div>
+            </Button>}
           </div>
         </CardHeader>
         <CardContent>
