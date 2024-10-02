@@ -159,13 +159,13 @@ const SheetOnBorading = ({
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
         if (data.id) {
-          await saveEmployeePayroll(employeePayroll);
           toast.success("Employee Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
           if (isEditMode) nextStep();
           else navigate("/profile-management");
         } else {
+          await saveEmployeePayroll(employeePayroll);
           toast.success("Employee Added Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });

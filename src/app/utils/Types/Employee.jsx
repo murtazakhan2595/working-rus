@@ -118,6 +118,8 @@ const EmployeeInformation = {
     employee_location: null,
     employee_status: null,
     joining_date: null,
+    salary: null,
+    salary_type: null
 }
 const EmployeeProfessionalExperiance = {
   id: null,
