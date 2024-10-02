@@ -616,19 +616,16 @@ export const payoutPeriodOptions = [
 ];
 
 export const ClaimExpenseTypeOptions = [
-  {
-    value: "Travel, Transportation & Logistics Expenses",
-    label: "Travel, Transportation & Logistics Expenses",
-  },
-  { value: "Accommodation", label: "Accommodation" },
-  { value: "Meals & Entertainment", label: "Meals & Entertainment" },
-  { value: "Office Supplies", label: "Office Supplies" },
-  { value: "Professional Development", label: "Professional Development" },
-  { value: "Equipment & Software", label: "Equipment & Software" },
-  { value: "Medical & Wellness", label: "Medical & Wellness" },
-  { value: "Miscellaneous", label: "Miscellaneous" },
+  { value: 2, label: "Travel, Transportation & Logistics Expenses" },
+  { value: 1, label: "Accommodation" },
+  { value: 3, label: "Meals & Entertainment" },
+  { value: 4, label: "Office Supplies" },
+  { value: 5, label: "Professional Development" },
+  { value: 6, label: "Equipment & Software" },
+  { value: 7, label: "Medical & Wellness" },
+  { value: 8, label: "Miscellaneous" },
 ];
-// EmployeesSalaryDetails data
+
 
 // Dummy data
 export const employeeData = {

@@ -12,6 +12,7 @@ import {
 } from "data/Data";
 import { useSelector } from "react-redux";
 import  moment  from 'moment';
+import { ClaimExpenseTypeOptions } from "data/Data";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -132,6 +133,12 @@ function getExperience(joiningDate) {
   console.log("returning `${years} years, ${months} months`",`${years} years, ${months} months`);
   return `${years} years, ${months} months`;
 }
+function getExpenseType(value) {
+  const response = ClaimExpenseTypeOptions.find(
+    (option) => option.value === value
+  );
+  return response ? response.label : "N/A";
+}
 
 export {
   getCountryFullName,
@@ -154,4 +161,5 @@ export {
   ResignationStatus,
   TerminationReason,
   getExperience,
+  getExpenseType,
 };

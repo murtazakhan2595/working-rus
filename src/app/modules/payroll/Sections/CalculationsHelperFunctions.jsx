@@ -13,6 +13,7 @@ const calculateAmount = (parsedValue, type, base) => {
 };
 
 const parseFormattedValue = (formattedValue) => {
+  console.log("formattedValue", formattedValue);
   // Check for "Flat Amount" format
   if (formattedValue.includes("Flat Amount")) {
     // Example: "AED 1200.00 Flat Amount" -> { type: "flat_amount", value: 1200.00 }
@@ -42,8 +43,16 @@ const parseFormattedValue = (formattedValue) => {
     };
   }
 
-  // Return the value as is if no matching format is found
-  return formattedValue;
+  // Check for "Variable Amount" format
+  if (formattedValue.includes("Variable Amount")) {
+    // Example: "AED 111.00 Variable Amount" -> { type: "variable_amount", value: 111.00 }
+    return {
+      type: "variable_amount",
+      value: parseFloat(
+        formattedValue.replace(/AED\s|Variable Amount/g, "").trim()
+      ),
+    };
+  }
 };
 
 export const calculateEarningsAndDeductions = (
@@ -54,6 +63,21 @@ export const calculateEarningsAndDeductions = (
   const deductions = [];
   let totalEarnings = 0;
   let totalDeductions = 0;
+  console.log("calculate",earnAndDeductionType);
+
+  // Helper function to calculate percentage-based values
+  const calculateAmount = (parsedValue, type , base) => {
+    if (type === "flat_amount") {
+      return parsedValue;
+    }
+    else if(type === "variable_amount"){
+      return parsedValue
+    }
+    else if (typeof parsedValue === "number" && parsedValue <= 100 && type === "percentage") {
+      return (base * parsedValue) / 100;
+    }
+    return parsedValue;
+  };
 
   earnAndDeductionType.forEach((item) => {
     if (!item.is_active) return;
