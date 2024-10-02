@@ -46,7 +46,7 @@ export default function TableCustom({
   };
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sort, setSort] = useState({ key: "name", order: "asc" });
+  const [sort, setSort] = useState({ key: "id", order: "desc" });
   const [statusFilter, setStatusFilter] = useState("all");
   const [designationFilter, setDesignationFilter] = useState("all");
 

@@ -1,6 +1,6 @@
 import { Button } from "components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,79 +10,16 @@ import {
 import { DateInput } from "components/form-control";
 import CustomTable from "components/CustomTable";
 import { createPayrunColumns } from "app/utils/Types/TableColumns";
-
-const employeesData = [
-  {
-    id: "TXB-0190",
-    name: "Ricky Smith",
-    email: "katie58@gaol.com",
-    department: "Business Analyst",
-    grossPay: "AED 2000",
-    earnings: "AED 4200",
-    deductions: "0.00",
-    claims: "0.00",
-    status: null,
-  },
-  {
-    id: "TXB-0191",
-    name: "Jerry Helfer",
-    email: "patrick615@outlook.com",
-    department: "Design Team",
-    grossPay: "AED 1000",
-    earnings: "AED 4200",
-    deductions: "0.00",
-    claims: "0.00",
-    status: null,
-  },
-  {
-    id: "TXB-0192",
-    name: "Iva Ryan",
-    email: "c.a.glasser@outlook.com",
-    department: "Design Team",
-    grossPay: "AED 4000",
-    earnings: "AED 4200",
-    deductions: "0.00",
-    claims: "0.00",
-    status: "EOS", // End of service
-  },
-  {
-    id: "TXB-0193",
-    name: "Lorri Warf",
-    email: "lorri71@gaol.com",
-    department: "Business Analyst",
-    grossPay: "AED 3000",
-    earnings: "AED 4200",
-    deductions: "AED 5300",
-    claims: "0.00",
-    status: null,
-  },
-  {
-    id: "TXB-0194",
-    name: "Daniel Hamilton",
-    email: "rodger913@aol.com",
-    department: "Business Analyst",
-    grossPay: "AED 2500",
-    earnings: "AED 4200",
-    deductions: "0.00",
-    claims: "0.00",
-    status: null,
-  },
-  {
-    id: "TXB-0195",
-    name: "Mary Freund",
-    email: "kurt_bates@outlook.com",
-    department: "Design Team",
-    grossPay: "AED 4200",
-    earnings: "AED 5300",
-    deductions: "0.00",
-    claims: "0.00",
-    status: "Withhold",
-  },
-];
+import { getEmployeePayroll } from "app/hooks/payroll";
+import { getEarnAndDeduction } from "app/hooks/payroll";
 
 
 const CreatePayRun = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [filterData, setFilterData] = useState({});
+  const [employeeData, setEmployeeData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [component, setComponent] = useState([]);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -102,6 +39,24 @@ const CreatePayRun = () => {
     { title: "Employees' Net Pay", value: "36,58,484.00 AED" },
     { title: "Total Employees'", value: "200" },
   ];
+    useEffect(() => {
+      const fetchData = async () => {
+        setIsLoading(true);
+        const response = await getEmployeePayroll({ options, filterData });
+        if (response) {
+          setEmployeeData(response);
+        }
+
+        const earnAndDeductions = await getEarnAndDeduction({
+          filterData: { is_active: true },
+        });
+        if (earnAndDeductions) {
+          setComponent(earnAndDeductions.results);
+        }
+        setIsLoading(false);
+      };
+      fetchData();
+    }, [options, filterData]);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-10 justify-between items-center h-11">
@@ -171,19 +126,21 @@ const CreatePayRun = () => {
                 </div>
               </div>
             </div>
-           {selectedRows?.length>0 && <Button className=" px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex">
-              <div className="text-center text-[#1c2024] text-sm font-medium ">
-                Withhold Salary
-              </div>
-            </Button>}
+            {selectedRows?.length > 0 && (
+              <Button className=" px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex">
+                <div className="text-center text-[#1c2024] text-sm font-medium ">
+                  Withhold Salary
+                </div>
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent>
           <CustomTable
-            data={employeesData}
-            columns={createPayrunColumns}
+            data={employeeData?.results || []}
+            columns={createPayrunColumns(component)}
             pagination={true}
-            dataTotalSize={0}
+            dataTotalSize={employeeData.count || 0}
             tableOptions={tableOptions}
             selectable={true}
             setSelectedRows={setSelectedRows}
