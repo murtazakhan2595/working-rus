@@ -13,7 +13,6 @@ const calculateAmount = (parsedValue, type, base) => {
 };
 
 const parseFormattedValue = (formattedValue) => {
-  console.log("formattedValue", formattedValue);
   // Check for "Flat Amount" format
   if (formattedValue.includes("Flat Amount")) {
     // Example: "AED 1200.00 Flat Amount" -> { type: "flat_amount", value: 1200.00 }
@@ -127,8 +126,6 @@ export const calculateTotalMonthlyEarningsAndDeductions = (
   salary,
   components
 ) => {
-  // console.log("salary", salary);
-  // console.log("components", components);
   let totalEarnings = 0;
   let totalDeductions = 0;
   components.forEach((item) => {
@@ -137,7 +134,6 @@ export const calculateTotalMonthlyEarningsAndDeductions = (
     if (item.income_type === "earning") {
       const monthlyAmount = calculateAmount(value, type, salary);
       totalEarnings += monthlyAmount;
-      console.log("Total Earningsssss", totalEarnings);
     } else {
       const monthlyAmount = calculateAmount(value, type, salary);
       totalDeductions += monthlyAmount;
@@ -145,8 +141,6 @@ export const calculateTotalMonthlyEarningsAndDeductions = (
   });
   const otherAllowance = salary - totalEarnings;
   totalEarnings += otherAllowance;
-  // console.log("Total Earnings", totalEarnings);
-  // console.log("Total Deductions", totalDeductions);
   return {
     totalEarnings,
     totalDeductions,

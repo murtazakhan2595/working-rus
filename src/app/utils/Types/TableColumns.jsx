@@ -724,7 +724,7 @@ export const ClaimRequestColumns = [
 ];
 
 
-export const createPayrunColumns =(components)=> [
+export const createPayrunColumns = (components) => [
   {
     dataField: "employee",
     text: "ID",
@@ -754,15 +754,24 @@ export const createPayrunColumns =(components)=> [
   {
     dataField: "",
     text: "Earnings",
-    formatter: (cell, row) =>{
-     const {totalEarnings} = calculateTotalMonthlyEarningsAndDeductions(5000, components);
-      // const {totalEarnings} = calculateTotalMonthlyEarningsAndDeductions(row.basic_salary, components);
-      return <>{totalEarnings}</>;
-    }
+    formatter: (cell, row) => {
+      const { totalEarnings } = calculateTotalMonthlyEarningsAndDeductions(
+        row.basic_salary,
+        components
+      );
+      return <>{"AED "+totalEarnings}</>;
+    },
   },
   {
-    dataField: "deductions",
+    dataField: "",
     text: "Deductions",
+    formatter: (cell, row) => {
+      const { totalDeductions } = calculateTotalMonthlyEarningsAndDeductions(
+        row.basic_salary,
+        components
+      );
+      return <>{ totalDeductions>0?("AED "+totalDeductions):"0.00"} </>;
+    },
   },
   {
     dataField: "claims",

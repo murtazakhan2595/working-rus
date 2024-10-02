@@ -33,9 +33,10 @@ export default function TableCustom({
   selectable = false,
   selectedRows,
   setSelectedRows,
+  disabledRows,
 }) {
   const [expandedRow, setExpandedRow] = useState(null);
-  console.log("selected rows", selectedRows);
+  console.log("disabledrows", disabledRows);
   const options = {
     page: tableOptions?.page ?? 1,
     sizePerPage: tableOptions?.sizePerPage ?? 10,
@@ -51,7 +52,8 @@ export default function TableCustom({
   const [designationFilter, setDesignationFilter] = useState("all");
 
   const employees = useMemo(() => {
-    return data?.filter((employee) => {
+    return data
+      ?.filter((employee) => {
         const searchValue = search.toLowerCase();
         const statusFilterValue = statusFilter === "all" ? "" : statusFilter;
         const designationFilterValue =
@@ -187,6 +189,7 @@ export default function TableCustom({
                           tableOptions?.onRowClick ? "cursor-pointer" : ""
                         }
                         ${selectedRows?.includes(row.id) ? "bg-[#fdf7fd]" : ""}
+                         ${disabledRows?.includes(row.id) ? "opacity-50" : ""}
                         `}
                       >
                         {selectable && (

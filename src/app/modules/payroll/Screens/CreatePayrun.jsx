@@ -12,6 +12,7 @@ import CustomTable from "components/CustomTable";
 import { createPayrunColumns } from "app/utils/Types/TableColumns";
 import { getEmployeePayroll } from "app/hooks/payroll";
 import { getEarnAndDeduction } from "app/hooks/payroll";
+import { toast } from "react-toastify";
 
 
 const CreatePayRun = () => {
@@ -20,6 +21,7 @@ const CreatePayRun = () => {
   const [employeeData, setEmployeeData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [component, setComponent] = useState([]);
+  const [withheldRows, setWithheldRows] = useState([]);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -39,24 +41,58 @@ const CreatePayRun = () => {
     { title: "Employees' Net Pay", value: "36,58,484.00 AED" },
     { title: "Total Employees'", value: "200" },
   ];
-    useEffect(() => {
-      const fetchData = async () => {
-        setIsLoading(true);
-        const response = await getEmployeePayroll({ options, filterData });
-        if (response) {
-          setEmployeeData(response);
-        }
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const response = await getEmployeePayroll({ options, filterData });
+      if (response) {
+        setEmployeeData(response);
+      }
 
-        const earnAndDeductions = await getEarnAndDeduction({
-          filterData: { is_active: true },
-        });
-        if (earnAndDeductions) {
-          setComponent(earnAndDeductions.results);
-        }
-        setIsLoading(false);
-      };
-      fetchData();
-    }, [options, filterData]);
+      const earnAndDeductions = await getEarnAndDeduction({
+        filterData: { is_active: true },
+      });
+      if (earnAndDeductions) {
+        setComponent(earnAndDeductions.results);
+      }
+      setIsLoading(false);
+    };
+    fetchData();
+  }, [options, filterData]);
+
+
+
+  // Function to handle withholding salary
+  const handleWithholdSalary = () => {
+    setWithheldRows((prev) => [...selectedRows, ...prev]);
+    setSelectedRows([]); // Reset selected rows after withholding
+  };
+
+  // Function to handle providing salary back for selected withheld rows
+  const handleProvideSalary = () => {
+    // Remove selected withheld rows from withheldRows state
+    setWithheldRows((prev) => prev.filter((id) => !selectedRows.includes(id)));
+    setSelectedRows([]); // Reset selected rows after providing salary back
+  };
+  // Determine the selected row types
+  const normalSelectedRows = selectedRows.filter(
+    (row) => !withheldRows.includes(row)
+  );
+  const withheldSelectedRows = selectedRows.filter((row) =>
+    withheldRows.includes(row)
+  );
+
+  const showWithholdButton = normalSelectedRows.length > 0;
+  const showProvideButton = withheldSelectedRows.length > 0;
+  console.log("SHOWWITHHOLDBUTTON", showWithholdButton);
+  console.log("SHOWPROVIDEBUTTON", showProvideButton);
+
+    useEffect(() => {
+      if(showWithholdButton && showProvideButton)
+      {
+        toast.error("You can't select both Withhold and Provide Salary Back at the same time");
+      }
+    }, [showWithholdButton, showProvideButton]);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-10 justify-between items-center h-11">
@@ -126,10 +162,23 @@ const CreatePayRun = () => {
                 </div>
               </div>
             </div>
-            {selectedRows?.length > 0 && (
-              <Button className=" px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex">
-                <div className="text-center text-[#1c2024] text-sm font-medium ">
+            {showWithholdButton && !showProvideButton && (
+              <Button
+                className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
+                onClick={handleWithholdSalary}
+              >
+                <div className="text-center text-[#1c2024] text-sm font-medium">
                   Withhold Salary
+                </div>
+              </Button>
+            )}
+            {showProvideButton && !showWithholdButton && (
+              <Button
+                className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
+                onClick={handleProvideSalary}
+              >
+                <div className="text-center text-[#1c2024] text-sm font-medium">
+                  Provide Salary Back
                 </div>
               </Button>
             )}
@@ -145,6 +194,7 @@ const CreatePayRun = () => {
             selectable={true}
             setSelectedRows={setSelectedRows}
             selectedRows={selectedRows}
+            disabledRows={withheldRows}
           />
         </CardContent>
       </Card>
