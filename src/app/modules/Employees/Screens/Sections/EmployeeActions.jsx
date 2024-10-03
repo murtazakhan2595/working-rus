@@ -37,7 +37,7 @@ const EmployeeAction = ({ row }) => {
     <DropdownMenuContent align="end">
       <DropdownMenuLabel>More Actions</DropdownMenuLabel>
       <DropdownMenuItem onClick={() => navigate(`/profile/${row.id}`)}>Edit Profile</DropdownMenuItem>
-      <DropdownMenuItem onClick={() => navigate(`/edit-employee`)}>Edit Employee</DropdownMenuItem>
+      <DropdownMenuItem onClick={() => navigate(`/edit-employee/${row.id}`)}>Edit Employee</DropdownMenuItem>
       <DropdownMenuItem onClick={() => navigate(`/user/${row.id}`)}>View Profile</DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

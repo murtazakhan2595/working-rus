@@ -2,15 +2,10 @@ import { Button } from "../../../../../components/ui/button";
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "../../../../../src/@/components/ui/label";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "../../../../../components/ui/card";
 
-import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
@@ -52,11 +47,9 @@ import {
   DateInput,
 } from "../../../../../components/form-control";
 
-import { Alert } from "../../../../../src/@/components/ui/alert";
-import { IdCard } from "lucide";
-import { EmployeeID } from "utils/getValuesFromTables";
 import { getEmployeeid } from "utils/getValuesFromTables";
 import { saveEmployeePayroll } from "app/hooks/payroll";
+import { PageLoader } from "components";
 
 function getManagersStringSelected(managers) {
   if (managers) {
@@ -83,6 +76,8 @@ const SheetOnBorading = ({
 }) => {
   const formRef = React.createRef();
   const [date, setDate] = useState();
+
+  console.log("RECEIVED ID:", id)
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -195,6 +190,10 @@ const SheetOnBorading = ({
     }
   };
 
+  if(isLoading){
+    return <PageLoader/>
+  }
+
   return (
     <>
       <div
@@ -207,7 +206,7 @@ const SheetOnBorading = ({
           <div className="flex-grow ">
             <div className="p-0">
               <CardHeader className="prose">
-                <CardTitle>Add Employee</CardTitle>
+                <CardTitle> {id ? "Update" : "Add"} Employee</CardTitle>
               </CardHeader>
               <Formik
                 initialValues={formData}
