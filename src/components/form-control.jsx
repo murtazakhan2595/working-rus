@@ -231,6 +231,7 @@ const DateInput = ({
   required,
   minDate,
   className,
+  placeholder
 }) => {
   const [date, setDate] = useState(
     value ? parse(value, "yyyy-MM-dd", new Date()) : null
@@ -308,8 +309,8 @@ const DateInput = ({
               format(date, "d MMMM yyyy")
             ) : (
               <div className="flex items-center gap-2">
-                <LucideCalendar size={16}/>
-                <div>Pick a date</div>
+                <LucideCalendar size={16} />
+                <div>{placeholder ? placeholder : "Pick a date"}</div>
               </div>
             )}
           </Button>

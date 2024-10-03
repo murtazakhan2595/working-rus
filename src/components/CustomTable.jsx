@@ -114,8 +114,6 @@ export default function TableCustom({
 
   // Handle row selection
   const handleSelectRow = (rowId) => {
-    console.log("ROWID", rowId);
-    console.log("SELECTED ROWS", selectedRows);
     setSelectedRows((prevSelected) => {
       if (prevSelected.includes(rowId)) {
         // Deselect the specific row
@@ -194,12 +192,19 @@ export default function TableCustom({
                       >
                         {selectable && (
                           <TableCell className="p-0 pl-1 w-[0px] text-right ml-0">
-                            <input
-                              type="checkbox"
-                              onChange={() => handleSelectRow(row.id)}
-                              checked={selectedRows.includes(row.id)}
-                              className="w-4 h-4 accent-[#ab4aba] border-[#ab4aba] border-[2px] outline-none rounded focus:ring-0"
-                            />
+                            <div
+                              onClick={(event) => {
+                                // Stop the event propagation to prevent onRowClick from being triggered
+                                event.stopPropagation();
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                onChange={() => handleSelectRow(row.id)}
+                                checked={selectedRows.includes(row.id)}
+                                className="w-4 h-4 accent-[#ab4aba] border-[#ab4aba] border-[2px] outline-none rounded focus:ring-0"
+                              />
+                            </div>
                           </TableCell>
                         )}
                         {Array.isArray(columns) &&

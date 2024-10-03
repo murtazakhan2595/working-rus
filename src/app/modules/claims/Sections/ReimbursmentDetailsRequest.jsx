@@ -19,7 +19,7 @@ import { connect } from "react-redux";
 import { saveReimbursement } from "app/hooks/payroll";
 import { toast } from "react-toastify";
 
-const ReimbursmentDetailsRequest = ({ userProfile }) => {
+const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newAttachment, setNewAttachment] = useState(null);
   const [payroll, setPayroll] = useState({});
@@ -72,6 +72,7 @@ const ReimbursmentDetailsRequest = ({ userProfile }) => {
       const response  = await saveReimbursement(values);
       if(response){
         toast.success("Reimbursement request sent successfully");
+        reload();
         setIsOpen(false);
       }
   };
