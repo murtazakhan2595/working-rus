@@ -29,7 +29,7 @@ const SalarySetup = ({ departments }) => {
   const [componentFilterData, setComponentFilterData] = useState({});
 
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [activeTab, setActiveTab] = useState("components");
+  const [activeTab, setActiveTab] = useState("salary");
   const [salarySetupData, setSalarySetupData] = useState([]);
   const navigate = useNavigate();
 
@@ -59,6 +59,7 @@ const SalarySetup = ({ departments }) => {
     };
     fetchData();
   }, [options, filterData]);
+  console.log("SALARY SETUP DATA", salarySetupData);
 
   // Separate handler for Salary filters
   const handleSalaryFilterChange = (filterName, filterValue) => {

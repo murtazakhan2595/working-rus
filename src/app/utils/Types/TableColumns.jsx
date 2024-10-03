@@ -37,6 +37,7 @@ import { getExpenseType } from "utils/getValuesFromTables";
 import { Download } from "lucide-react";
 import { downloadAttachment } from "utils/fileUtils";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
+import { calculateTotalMonthlyEarningsAndDeductions } from "app/modules/payroll/Sections/CalculationsHelperFunctions";
 
 /**
  * LeaveHistoryColumns
@@ -723,53 +724,58 @@ export const ClaimRequestColumns = [
 ];
 
 
-export const createPayrunColumns = [
+export const createPayrunColumns = (components) => [
   {
-    dataField: "id",
+    dataField: "employee",
     text: "ID",
-    sort: true,
   },
   {
     dataField: "employee",
     text: "Employee",
     formatter: (cell, row) => (
       <>
-        <div>{row.name}</div>
-        <div style={{ fontSize: "12px", color: "#6c757d" }}>{row.email}</div>
+        <EmployeeDataInfo
+          name={row.name}
+          email={row.work_email}
+          src={row?.profile_picture?.file}
+        />
       </>
     ),
   },
   {
-    dataField: "department",
+    dataField: "department_name",
     text: "Department",
   },
   {
-    dataField: "grossPay",
+    dataField: "basic_salary",
     text: "Gross Pay",
+    formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
   },
   {
-    dataField: "earnings",
+    dataField: "",
     text: "Earnings",
+    formatter: (cell, row) => {
+      const { totalEarnings } = calculateTotalMonthlyEarningsAndDeductions(
+        row.basic_salary,
+        components
+      );
+      return <>{"AED "+totalEarnings}</>;
+    },
   },
   {
-    dataField: "deductions",
+    dataField: "",
     text: "Deductions",
+    formatter: (cell, row) => {
+      const { totalDeductions } = calculateTotalMonthlyEarningsAndDeductions(
+        row.basic_salary,
+        components
+      );
+      return <>{ totalDeductions>0?("AED "+totalDeductions):"0.00"} </>;
+    },
   },
   {
     dataField: "claims",
     text: "Claims",
-  },
-  {
-    dataField: "status",
-    text: "Status",
-    formatter: (cell, row) => (
-      <div>
-        {row.status === "EOS" && <span style={{ color: "red" }}>EOS</span>}
-        {row.status === "Withhold" && (
-          <span style={{ color: "#6c757d" }}>Withhold</span>
-        )}
-      </div>
-    ),
   },
 ];
 

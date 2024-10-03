@@ -1,6 +1,6 @@
 import { Button } from "components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,78 +10,18 @@ import {
 import { DateInput } from "components/form-control";
 import CustomTable from "components/CustomTable";
 import { createPayrunColumns } from "app/utils/Types/TableColumns";
+import { getEmployeePayroll } from "app/hooks/payroll";
+import { getEarnAndDeduction } from "app/hooks/payroll";
+import { toast } from "react-toastify";
 
-const employeesData = [
-  {
-    id: "TXB-0190",
-    name: "Ricky Smith",
-    email: "katie58@gaol.com",
-    department: "Business Analyst",
-    grossPay: "AED 2000",
-    earnings: "AED 4200",
-    deductions: "0.00",
-    claims: "0.00",
-    status: null,
-  },
-  {
-    id: "TXB-0190",
-    name: "Jerry Helfer",
-    email: "patrick615@outlook.com",
-    department: "Design Team",
-    grossPay: "AED 1000",
-    earnings: "AED 4200",
-    deductions: "0.00",
-    claims: "0.00",
-    status: null,
-  },
-  {
-    id: "TXB-0190",
-    name: "Iva Ryan",
-    email: "c.a.glasser@outlook.com",
-    department: "Design Team",
-    grossPay: "AED 4000",
-    earnings: "AED 4200",
-    deductions: "0.00",
-    claims: "0.00",
-    status: "EOS", // End of service
-  },
-  {
-    id: "TXB-0190",
-    name: "Lorri Warf",
-    email: "lorri71@gaol.com",
-    department: "Business Analyst",
-    grossPay: "AED 3000",
-    earnings: "AED 4200",
-    deductions: "AED 5300",
-    claims: "0.00",
-    status: null,
-  },
-  {
-    id: "TXB-0190",
-    name: "Daniel Hamilton",
-    email: "rodger913@aol.com",
-    department: "Business Analyst",
-    grossPay: "AED 2500",
-    earnings: "AED 4200",
-    deductions: "0.00",
-    claims: "0.00",
-    status: null,
-  },
-  {
-    id: "TXB-0190",
-    name: "Mary Freund",
-    email: "kurt_bates@outlook.com",
-    department: "Design Team",
-    grossPay: "AED 4200",
-    earnings: "AED 5300",
-    deductions: "0.00",
-    claims: "0.00",
-    status: "Withhold",
-  },
-];
 
 const CreatePayRun = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [filterData, setFilterData] = useState({});
+  const [employeeData, setEmployeeData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [component, setComponent] = useState([]);
+  const [withheldRows, setWithheldRows] = useState([]);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -101,6 +41,58 @@ const CreatePayRun = () => {
     { title: "Employees' Net Pay", value: "36,58,484.00 AED" },
     { title: "Total Employees'", value: "200" },
   ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const response = await getEmployeePayroll({ options, filterData });
+      if (response) {
+        setEmployeeData(response);
+      }
+
+      const earnAndDeductions = await getEarnAndDeduction({
+        filterData: { is_active: true },
+      });
+      if (earnAndDeductions) {
+        setComponent(earnAndDeductions.results);
+      }
+      setIsLoading(false);
+    };
+    fetchData();
+  }, [options, filterData]);
+
+
+
+  // Function to handle withholding salary
+  const handleWithholdSalary = () => {
+    setWithheldRows((prev) => [...selectedRows, ...prev]);
+    setSelectedRows([]); // Reset selected rows after withholding
+  };
+
+  // Function to handle providing salary back for selected withheld rows
+  const handleProvideSalary = () => {
+    // Remove selected withheld rows from withheldRows state
+    setWithheldRows((prev) => prev.filter((id) => !selectedRows.includes(id)));
+    setSelectedRows([]); // Reset selected rows after providing salary back
+  };
+  // Determine the selected row types
+  const normalSelectedRows = selectedRows.filter(
+    (row) => !withheldRows.includes(row)
+  );
+  const withheldSelectedRows = selectedRows.filter((row) =>
+    withheldRows.includes(row)
+  );
+
+  const showWithholdButton = normalSelectedRows.length > 0;
+  const showProvideButton = withheldSelectedRows.length > 0;
+  console.log("SHOWWITHHOLDBUTTON", showWithholdButton);
+  console.log("SHOWPROVIDEBUTTON", showProvideButton);
+
+    useEffect(() => {
+      if(showWithholdButton && showProvideButton)
+      {
+        toast.error("You can't select both Withhold and Provide Salary Back at the same time");
+      }
+    }, [showWithholdButton, showProvideButton]);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-10 justify-between items-center h-11">
@@ -151,15 +143,6 @@ const CreatePayRun = () => {
           <div className="text-[#ab4aba] text-2xl font-medium ">
             Payment Date
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className=" text-sm font-medium ">Pick a date</div>
-            <DateInput
-              className="w-[220px]"
-              onChange={(name, value) => {
-                console.log(name, value);
-              }}
-            />
-          </div>
         </CardContent>
       </Card>
       <Card>
@@ -167,30 +150,51 @@ const CreatePayRun = () => {
           <div className="flex items-center justify-between">
             <div className="h-[47px] flex-col justify-center items-start inline-flex">
               <div className="flex-col justify-start items-start flex">
-                <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
+                <div className="self-stretch text-[#ab4aba] text-2xl font-medium  ">
                   Employees Summary
                 </div>
               </div>
               <div className="pt-1.5 flex-col justify-start items-start flex">
                 <div className="flex-col justify-start items-start flex">
-                  <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
+                  <div className="self-stretch text-[#8b8d98] text-sm  ">
                     Employee payroll runs generated are here
                   </div>
                 </div>
               </div>
             </div>
+            {showWithholdButton && !showProvideButton && (
+              <Button
+                className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
+                onClick={handleWithholdSalary}
+              >
+                <div className="text-center text-[#1c2024] text-sm font-medium">
+                  Withhold Salary
+                </div>
+              </Button>
+            )}
+            {showProvideButton && !showWithholdButton && (
+              <Button
+                className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
+                onClick={handleProvideSalary}
+              >
+                <div className="text-center text-[#1c2024] text-sm font-medium">
+                  Provide Salary Back
+                </div>
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent>
           <CustomTable
-            data={employeesData}
-            columns={createPayrunColumns}
+            data={employeeData?.results || []}
+            columns={createPayrunColumns(component)}
             pagination={true}
-            dataTotalSize={0}
+            dataTotalSize={employeeData.count || 0}
             tableOptions={tableOptions}
             selectable={true}
             setSelectedRows={setSelectedRows}
             selectedRows={selectedRows}
+            disabledRows={withheldRows}
           />
         </CardContent>
       </Card>

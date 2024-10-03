@@ -1,6 +1,18 @@
+// Helper function to calculate percentage-based values
+const calculateAmount = (parsedValue, type, base) => {
+  if (type === "flat_amount") {
+    return parsedValue;
+  } else if (
+    typeof parsedValue === "number" &&
+    parsedValue <= 100 &&
+    type === "percentage"
+  ) {
+    return (base * parsedValue) / 100;
+  }
+  return parsedValue;
+};
 
 const parseFormattedValue = (formattedValue) => {
-  console.log("formattedValue", formattedValue);
   // Check for "Flat Amount" format
   if (formattedValue.includes("Flat Amount")) {
     // Example: "AED 1200.00 Flat Amount" -> { type: "flat_amount", value: 1200.00 }
@@ -42,13 +54,10 @@ const parseFormattedValue = (formattedValue) => {
   }
 };
 
-
 export const calculateEarningsAndDeductions = (
   monthlyGrossSalary,
   earnAndDeductionType
 ) => {
-  console.log("calculate",earnAndDeductionType);
-  console.log("calculate",monthlyGrossSalary);
   const earnings = [];
   const deductions = [];
   let totalEarnings = 0;
@@ -70,14 +79,14 @@ export const calculateEarningsAndDeductions = (
   };
 
   earnAndDeductionType.forEach((item) => {
-     if (!item.is_active) return;
-     console.log("item",item.amounts);
-    const {type, value} = parseFormattedValue(item.amounts);
-    console.log("type, value",type,value);
+    if (!item.is_active) return;
+    console.log("item", item.amounts);
+    const { type, value } = parseFormattedValue(item.amounts);
+    console.log("type, value", type, value);
 
     if (item.income_type === "earning") {
       const monthlyAmount = calculateAmount(value, type, monthlyGrossSalary);
-      console.log("monthlyAmount",monthlyAmount);
+      console.log("monthlyAmount", monthlyAmount);
       earnings.push({
         name: item.name,
         amounts: item.amounts,
@@ -85,7 +94,7 @@ export const calculateEarningsAndDeductions = (
       });
       totalEarnings += monthlyAmount;
     } else {
-      const monthlyAmount = calculateAmount(value,type, monthlyGrossSalary);
+      const monthlyAmount = calculateAmount(value, type, monthlyGrossSalary);
       deductions.push({
         name: item.name,
         amounts: item.amounts,
@@ -101,13 +110,38 @@ export const calculateEarningsAndDeductions = (
     amounts: "Remaining after other earnings",
     monthly_amount: otherAllowance,
   });
-  console.log("Total earnings", earnings)
+  console.log("Total earnings", earnings);
 
   totalEarnings += otherAllowance;
 
   return {
     earnings,
     deductions,
+    totalEarnings,
+    totalDeductions,
+  };
+};
+
+export const calculateTotalMonthlyEarningsAndDeductions = (
+  salary,
+  components
+) => {
+  let totalEarnings = 0;
+  let totalDeductions = 0;
+  components.forEach((item) => {
+    const { type, value } = parseFormattedValue(item.amounts);
+
+    if (item.income_type === "earning") {
+      const monthlyAmount = calculateAmount(value, type, salary);
+      totalEarnings += monthlyAmount;
+    } else {
+      const monthlyAmount = calculateAmount(value, type, salary);
+      totalDeductions += monthlyAmount;
+    }
+  });
+  const otherAllowance = salary - totalEarnings;
+  totalEarnings += otherAllowance;
+  return {
     totalEarnings,
     totalDeductions,
   };

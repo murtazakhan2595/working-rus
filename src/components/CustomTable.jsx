@@ -33,9 +33,10 @@ export default function TableCustom({
   selectable = false,
   selectedRows,
   setSelectedRows,
+  disabledRows,
 }) {
   const [expandedRow, setExpandedRow] = useState(null);
-
+  console.log("disabledrows", disabledRows);
   const options = {
     page: tableOptions?.page ?? 1,
     sizePerPage: tableOptions?.sizePerPage ?? 10,
@@ -46,12 +47,13 @@ export default function TableCustom({
   };
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sort, setSort] = useState({ key: "name", order: "asc" });
+  const [sort, setSort] = useState({ key: "id", order: "desc" });
   const [statusFilter, setStatusFilter] = useState("all");
   const [designationFilter, setDesignationFilter] = useState("all");
 
   const employees = useMemo(() => {
-    return data?.filter((employee) => {
+    return data
+      ?.filter((employee) => {
         const searchValue = search.toLowerCase();
         const statusFilterValue = statusFilter === "all" ? "" : statusFilter;
         const designationFilterValue =
@@ -185,7 +187,10 @@ export default function TableCustom({
                         }}
                         className={`${
                           tableOptions?.onRowClick ? "cursor-pointer" : ""
-                        }`}
+                        }
+                        ${selectedRows?.includes(row.id) ? "bg-[#fdf7fd]" : ""}
+                         ${disabledRows?.includes(row.id) ? "opacity-50" : ""}
+                        `}
                       >
                         {selectable && (
                           <TableCell className="p-0 pl-1 w-[0px] text-right ml-0">
