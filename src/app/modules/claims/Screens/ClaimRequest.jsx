@@ -14,6 +14,11 @@ import { getReimbursement } from "app/hooks/payroll.jsx";
 import PageLoader from "components/PageLoader.jsx";
 import { getEmployeePayroll } from "app/hooks/payroll.jsx";
 import { getEmployeeData } from "app/hooks/employee.jsx";
+import { Button } from "components/ui/button";
+import { deleteReimbursement } from "app/hooks/payroll.jsx";
+import { toast } from "react-toastify";
+import { ClaimExpenseTypeOptions } from "data/Data.js";
+import { DateInput } from "components/form-control.jsx";
 
 
 
@@ -46,6 +51,8 @@ const ClaimRequest = ({userProfile}) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
+    console.log("filterName", filterName);
+    console.log("filterValue", filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -61,6 +68,7 @@ const ClaimRequest = ({userProfile}) => {
 
 
   const fetchMyClaims = async () => {
+    console.log("FETCHING MY CLAIMS")
      setLoading(true);
     const payroll = await getEmployeePayroll({
       filterData: { employee_id: userProfile.id },
@@ -71,7 +79,7 @@ const ClaimRequest = ({userProfile}) => {
       setEmployeeData(empData);
     }
     const response = await getReimbursement({
-      filterData: { employee_payroll: payroll?.results[0]?.id },
+      filterData: { employee_payroll: payroll?.results[0]?.id, ...filterData },
     });
     if (response) {
       console.log(response);
@@ -82,7 +90,18 @@ const ClaimRequest = ({userProfile}) => {
 
   const fetchClaimRequests = async () => {
     setLoading(true);
-    const response = await getReimbursement({ filterData });
+    console.log("userProfile in fetchclaimrequests", userProfile);
+    let filter = {}
+    if(userProfile.role === 2){
+      filter = { ...filterData, manager: userProfile.id };
+    }
+    else{
+      filter = { ...filterData };
+    }
+    console.log("filter", filter);
+    const response = await getReimbursement({
+      filterData: filter,
+    });
     if (response) {
       setClaimRequests(response);
     }
@@ -90,15 +109,76 @@ const ClaimRequest = ({userProfile}) => {
   }
 
   useEffect(() => {
-   
-    
     if (isMyClaims) {
       fetchMyClaims();
     } else {
       fetchClaimRequests();
     }
-    
-  }, []);
+  }, [filterData]);
+const handleDeleteClaims = async () => {
+  if (selectedRows.length === 0) return; // Ensure there are selected rows
+
+  setLoading(true); // Show loading while deleting claims
+
+  try {
+    // Find selected claims from claimRequests
+    const selectedClaimRequests = claimRequests?.results?.filter((claim) =>
+      selectedRows.includes(claim.id)
+    );
+
+    // Filter rejected claims (only those that can be deleted)
+    const rejectedClaims = selectedClaimRequests?.filter(
+      (claim) => claim.status_superadmin?.status === "rejected"
+    );
+
+    // Filter out non-rejected claims (pending or approved)
+    const nonRejectedClaims = selectedClaimRequests?.filter(
+      (claim) => claim.status_superadmin?.status !== "rejected"
+    );
+
+    // Show error if any non-rejected claims are selected
+    if (nonRejectedClaims.length > 0) {
+      toast.error("Only rejected claims can be deleted.");
+      setLoading(false);
+      return;
+    }
+
+    // Check if there are no rejected claims to delete
+    if (rejectedClaims.length === 0) {
+      toast.error("No rejected claims selected for deletion.");
+      setLoading(false);
+      return;
+    }
+
+    // Delete each rejected claim
+    const deletionPromises = rejectedClaims.map(async (claim) => {
+      const success = await deleteReimbursement(claim.id);
+      return success;
+    });
+
+    // Wait for all deletions to complete
+    const deletionResults = await Promise.all(deletionPromises);
+
+    // Check for failed deletions
+    const failedDeletions = deletionResults.filter(
+      (result) => result === false
+    );
+
+    if (failedDeletions.length === 0) {
+      toast.success("Rejected claims deleted successfully.");
+    } else {
+      toast.error(`${failedDeletions.length} claims failed to delete.`);
+    }
+
+    // Reload claim requests and reset selected rows after deletion
+    fetchClaimRequests();
+    setSelectedRows([]);
+  } catch (error) {
+    console.error("Error deleting claims:", error);
+  } finally {
+    setLoading(false); // Hide loading after completion
+  }
+};
 
   return (
     <div className="flex flex-col gap-4 salary-startup">
@@ -109,10 +189,16 @@ const ClaimRequest = ({userProfile}) => {
           setIsOpen={setIsOpen}
           isMyClaims={isMyClaims}
           employeeData={employeeData}
-          reload = {fetchClaimRequests}
+          reload={fetchClaimRequests}
         />
       )}
-      <Header content={isMyClaims ? <ReimbursmentDetailsRequest /> : null} />
+      <Header
+        content={
+          isMyClaims ? (
+            <ReimbursmentDetailsRequest reload={fetchMyClaims} />
+          ) : null
+        }
+      />
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -132,23 +218,39 @@ const ClaimRequest = ({userProfile}) => {
                 </div>
               </div>
             </div>
-            <FilterInput
-              filters={[
-                {
-                  type: "select-one",
-                  option: [],
-                  name: "department_name",
-                  placeholder: "Department",
-                },
-                {
-                  type: "select-two",
-                  option: [],
-                  name: "salary_type",
-                  placeholder: "Salary Type",
-                },
-              ]}
-              onChange={handleFilterChange}
-            />
+            <div className=" flex items-center gap-3">
+              {selectedRows.length > 0 && (
+                <Button onClick={handleDeleteClaims}>Delete</Button>
+              )}
+              <FilterInput
+                filters={[
+                  {
+                    type: "select-one",
+                    option: ClaimExpenseTypeOptions,
+                    name: "expense_type",
+                    placeholder: "Expense Type",
+                  },
+                  {
+                    type: "select-two",
+                    option: [
+                      { value: "pending", label: "Pending" },
+                      { value: "approved", label: "Approved" },
+                      { value: "rejected", label: "Rejected" },
+                    ],
+                    name: "status",
+                    placeholder: "Status",
+                  },
+                ]}
+                onChange={handleFilterChange}
+              />
+              <DateInput
+                placeholder="Date"
+                name="payment_date"
+                onChange={(field, value) => {
+                  handleFilterChange(field, value);
+                }}
+              />
+            </div>
           </div>
         </CardHeader>
         <CardContent>

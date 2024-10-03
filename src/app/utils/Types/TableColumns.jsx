@@ -674,19 +674,15 @@ export const SalarySetupColumns = [
 
 export const ClaimRequestColumns = [
   {
-    dataField: "employee_id",
+    dataField: "employeeid",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },
   {
-    dataField: "employee_name",
+    dataField: "full_name",
     text: "Employees",
     formatter: (cell, row) => (
-      <EmployeeDataInfo
-        name={`${row?.first_name} ${row?.last_name}`}
-        email={`${row?.work_email}`}
-        id={row?.id}
-      />
+      <EmployeeDataInfo name={cell} email={`${row?.work_email}`} />
     ),
   },
   {

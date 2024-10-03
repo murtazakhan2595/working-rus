@@ -245,7 +245,7 @@ function App() {
 
                   <Route path="/salary-setup" element={<SalarySetup />} />
                   <Route path="/loans" element={<ComingSoon />} />
-                  <Route path="/claim-request" element={<ClaimRequest />} />
+
                   <Route path="/pay-run" element={<PayRun />} />
                   <Route path="/payslips" element={<ComingSoon />} />
                   <Route path="/attendance" element={<ComingSoon />} />
@@ -270,6 +270,7 @@ function App() {
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
                   <Route path="/leave-requests" element={<LeaveRequest />} />
+                  <Route path="/claim-request" element={<ClaimRequest />} />
                 </>
               )}
             </Route>

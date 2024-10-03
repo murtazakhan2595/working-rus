@@ -12,6 +12,8 @@ import statusPendingIcon from "assets/images/status-pending.svg";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { saveReimbursement } from "app/hooks/payroll";
+import statusRejectedIcon from "assets/images/status-rejected.svg";
+
 
 // Function to calculate "X days ago"
 const calculateTimeAgo = (date) => {
@@ -46,32 +48,39 @@ const ReimbursmentDetailsSheet = ({
     { label: "Date of Expense", value: claimRequest.payment_date },
     { label: "Description", value: claimRequest.description },
   ];
-  const approvalSteps = [
-    {
-      icon:
-        claimRequest?.status_manager?.status === "approved"
-          ? statusApprovedIcon
-          : statusPendingIcon,
-      text: "Manager Approval",
-      time: calculateTimeAgo(claimRequest?.status_manager?.date),
-    },
-    {
-      icon:
-        claimRequest?.status_hr?.status === "approved"
-          ? statusApprovedIcon
-          : statusPendingIcon,
-      text: "HR Approval",
-      time: calculateTimeAgo(claimRequest?.status_hr?.date),
-    },
-    {
-      icon:
-        claimRequest?.status_superadmin?.status === "approved"
-          ? statusApprovedIcon
-          : statusPendingIcon,
-      text: "Final Approval",
-      time: calculateTimeAgo(claimRequest?.status_superadmin?.date),
-    },
-  ];
+const approvalSteps = [
+  {
+    icon:
+      claimRequest?.status_manager?.status === "approved"
+        ? statusApprovedIcon
+        : claimRequest?.status_manager?.status === "rejected"
+        ? statusRejectedIcon
+        : statusPendingIcon, // Check for rejected, else pending
+    text: "Manager Approval",
+    time: calculateTimeAgo(claimRequest?.status_manager?.date),
+  },
+  {
+    icon:
+      claimRequest?.status_hr?.status === "approved"
+        ? statusApprovedIcon
+        : claimRequest?.status_hr?.status === "rejected"
+        ? statusRejectedIcon
+        : statusPendingIcon, // Check for rejected, else pending
+    text: "HR Approval",
+    time: calculateTimeAgo(claimRequest?.status_hr?.date),
+  },
+  {
+    icon:
+      claimRequest?.status_superadmin?.status === "approved"
+        ? statusApprovedIcon
+        : claimRequest?.status_superadmin?.status === "rejected"
+        ? statusRejectedIcon
+        : statusPendingIcon, // Check for rejected, else pending
+    text: "Final Approval",
+    time: calculateTimeAgo(claimRequest?.status_superadmin?.date),
+  },
+];
+
   const formSheetData = {
     triggerText: null,
     title: "Reimbursment requests",
@@ -102,7 +111,13 @@ const ReimbursmentDetailsSheet = ({
       };
     }
     if(claimRequest?.status_manager?.status === "approved" && claimRequest?.status_hr?.status === "approved" && claimRequest?.status_superadmin?.status === "approved"){
-      claimRequest.statue = "approved";
+      claimRequest.status = "approved";
+      claimRequest.approval_date = moment().format("YYYY-MM-DD");
+    }
+    else if(status === "rejected"){
+      claimRequest.status = "rejected";
+      claimRequest.approval_date = null;
+      claimRequest.rejection_date= moment().format("YYYY-MM-DD");
     }
      const response = await saveReimbursement(claimRequest);
      if (response) {
@@ -122,9 +137,9 @@ const ReimbursmentDetailsSheet = ({
         width="500px"
       >
         <EmployeeDataInfo
-          name={`${employeeData?.first_name} ${employeeData?.last_name}`}
-          email={`${employeeData?.work_email}`}
-          id={employeeData?.id}
+          name={claimRequest.full_name}
+          email={claimRequest.work_email}
+          id={claimRequest.employeeid}
         />
         <div className="font-inter mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
           <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">

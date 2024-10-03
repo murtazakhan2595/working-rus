@@ -471,6 +471,8 @@ const getReimbursement = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
+  console.log("payload - ", payload)
+  console.log("filterData - ", filterData)
   const URL = `/payroll/reimbursement/?ordering=-id&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
@@ -491,7 +493,23 @@ const getReimbursement = async (payload) => {
     return [];
   }
 }
-
+const deleteReimbursement = async (id) => {
+  try {
+    const response = await axios.delete(
+      `${baseUrl}/payroll/reimbursement/${id}`,
+      {
+        headers: headers(),
+      }
+    );
+    return true;
+  } catch (error) {
+    console.error("Error deleting reimbursement data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+}
 export {
   getEmployeePayroll,
   saveEmployeePayroll,
@@ -510,4 +528,5 @@ export {
   saveEmployeeEarnDeduction,
   saveReimbursement,
   getReimbursement,
+  deleteReimbursement
 };
