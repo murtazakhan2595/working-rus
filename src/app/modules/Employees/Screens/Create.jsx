@@ -1,33 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { ToastContainer } from "react-toastify";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import EmployeeForm from "./Sections/EmployeeForm.jsx";
 import {
   Dialog,
-  DialogTrigger,
+  // DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+  // DialogDescription,
   DialogFooter,
-  DialogCancel,
-  DialogAction,
+  // DialogCancel,
+  // DialogAction,
 } from "../../../../src/@/components/ui/dialog.jsx";
 import { Button } from "../../../../components/ui/button.jsx";
 import {
   Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
+  // CardHeader,
+  // CardTitle,
+  // CardDescription,
   CardContent,
-  CardFooter,
+  // CardFooter,
 } from "../../../../components/ui/card.jsx";
 
 const CreateUpdateEmployee = () => {
+  const {id} = useParams()
   const navigate = useNavigate();
-  const location = useLocation();
-  const id = location?.state?.id;
+  // const id = location?.state?.id;
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFormSubmittedModal, setShowFormSubmittedModal] = useState(false);
   const [email, setEmail] = useState("");

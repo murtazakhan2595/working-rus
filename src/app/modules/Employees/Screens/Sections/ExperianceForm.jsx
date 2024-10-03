@@ -56,6 +56,7 @@ const Experience = ({ errors, touched, values, onChange }) => {
               touch={touched?.exp_start_date}
               value={values?.exp_start_date}
               label={"Start Date"}
+              required={true}
               onChange={(field, value) => {
                 onChange(field, value);
               }}
@@ -69,6 +70,7 @@ const Experience = ({ errors, touched, values, onChange }) => {
                 touch={touched?.exp_end_date}
                 value={values?.exp_end_date}
                 label={"End Date"}
+                required={true}
                 onChange={(field, value) => {
                   onChange(field, value);
                 }}

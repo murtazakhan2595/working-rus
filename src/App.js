@@ -225,7 +225,7 @@ function App() {
                   />
 
                   <Route
-                    path="/edit-employee"
+                    path="/edit-employee/:id"
                     element={<CreateUpdateEmployee />}
                   />
                   <Route
