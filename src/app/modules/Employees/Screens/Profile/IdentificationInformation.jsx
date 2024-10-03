@@ -159,6 +159,7 @@ const IdentificationInformation = ({
                           touch={props.touched.id_issuance_date}
                           value={props.values.id_issuance_date}
                           label={"ID Issuance Date"}
+                          required={true}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
@@ -171,6 +172,7 @@ const IdentificationInformation = ({
                           touch={props.touched.id_expiry_date}
                           value={props.values.id_expiry_date}
                           label={"ID Expiry Date"}
+                          required={true}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
