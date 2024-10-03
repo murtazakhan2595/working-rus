@@ -1,10 +1,7 @@
 import { Button } from "../../../../../components/ui/button";
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "../../../../../src/@/components/ui/label";
-import {
-  CardHeader,
-  CardTitle,
-} from "../../../../../components/ui/card";
+import { CardHeader, CardTitle } from "../../../../../components/ui/card";
 
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -72,12 +69,12 @@ const SheetOnBorading = ({
   departments,
   managers,
   isOpen,
-  setIsOpen
+  setIsOpen,
 }) => {
   const formRef = React.createRef();
   const [date, setDate] = useState();
 
-  console.log("RECEIVED ID:", id)
+  console.log("RECEIVED ID:", id);
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -165,9 +162,8 @@ const SheetOnBorading = ({
             position: toast.POSITION.TOP_RIGHT,
           });
           setShowFormSubmittedModal && setShowFormSubmittedModal(true);
-          setIsOpen(false)
+          setIsOpen(false);
         }
-
       }
     } catch (error) {
       setFormData(data);
@@ -190,8 +186,8 @@ const SheetOnBorading = ({
     }
   };
 
-  if(isLoading){
-    return <PageLoader/>
+  if (isLoading) {
+    return <PageLoader />;
   }
 
   return (
@@ -254,20 +250,21 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
-                        <div className="space-y-2">
-                          <TextInput
-                            name={"username"}
-                            error={props.errors?.username}
-                            touch={props.touched?.username}
-                            value={props.values?.username}
-                            label={"User Name"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                              validateUsername(value);
-                            }}
-                          />
-                        </div>
+                          <div className="space-y-2">
+                            <TextInput
+                              name={"username"}
+                              error={props.errors?.username}
+                              touch={props.touched?.username}
+                              value={props.values?.username}
+                              label={"User Name"}
+                              required={true}
+                              onChange={(field, value) => {
+                                props.handleChange(field)(value);
+                                validateUsername(value);
+                              }}
+                            />
+                          </div>
+                        
                         <div className="space-y-2">
                           <TextInput
                             name={"first_name"}
@@ -294,56 +291,56 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
-                        <div className="space-y-2">
-                          <EmailInput
-                            name={"work_email"}
-                            error={props.errors?.work_email}
-                            touch={props.touched?.work_email}
-                            value={props.values?.work_email}
-                            label={"Email"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                              setEmail && setEmail(value);
-                              validateEmail(value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <div>
-                            <Label htmlFor="password">
-                              <span className="text-red-600">* </span>Password
-                            </Label>
-                            <Input
-                              type="password"
-                              maxLength="20"
-                              id="password"
-                              name="password"
-                              autoComplete="Off"
-                              placeholder={"Enter User Name"}
-                              onChange={(option) => {
-                                props.handleChange("password")(option);
+                          <div className="space-y-2">
+                            <EmailInput
+                              name={"work_email"}
+                              error={props.errors?.work_email}
+                              touch={props.touched?.work_email}
+                              value={props.values?.work_email}
+                              label={"Email"}
+                              required={true}
+                              onChange={(field, value) => {
+                                props.handleChange(field)(value);
+                                setEmail && setEmail(value);
+                                validateEmail(value);
                               }}
-                              value={
-                                props.values?.password?.length <= 20
-                                  ? props.values?.password
-                                  : ""
-                              }
-                              className={
-                                props.errors?.password &&
-                                props.touched?.password
-                                  ? "is-invalid"
-                                  : ""
-                              }
                             />
-                            {props.errors?.password &&
-                              props.touched?.password && (
-                                <div className="text-red-600 invalid-feedback">
-                                  {props.errors?.password}
-                                </div>
-                              )}
                           </div>
-                        </div>
+                          <div className="space-y-2">
+                            <div>
+                              <Label htmlFor="password">
+                                <span className="text-red-600">* </span>Password
+                              </Label>
+                              <Input
+                                type="password"
+                                maxLength="20"
+                                id="password"
+                                name="password"
+                                autoComplete="Off"
+                                placeholder={"Enter User Name"}
+                                onChange={(option) => {
+                                  props.handleChange("password")(option);
+                                }}
+                                value={
+                                  props.values?.password?.length <= 20
+                                    ? props.values?.password
+                                    : ""
+                                }
+                                className={
+                                  props.errors?.password &&
+                                  props.touched?.password
+                                    ? "is-invalid"
+                                    : ""
+                                }
+                              />
+                              {props.errors?.password &&
+                                props.touched?.password && (
+                                  <div className="text-red-600 invalid-feedback">
+                                    {props.errors?.password}
+                                  </div>
+                                )}
+                            </div>
+                          </div>
                         <div className="space-y-2">
                           <PhoneNumberInput
                             name={"mobile_no"}
