@@ -581,7 +581,7 @@ export const TerminationStatusOptions = [
 export const salaryTypeOptions = [
   { value: "monthly", label: "Monthly" },
   { value: "weekly", label: "Weekly" },
-  { value: "per_hour", label: "Per Hour" },
+  { value: "hourly", label: "Per Hour" },
   { value: "project_based", label: "Project based" },
 ];
 export const revisionLetterOptions = [
