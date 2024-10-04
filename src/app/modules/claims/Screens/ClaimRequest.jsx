@@ -114,7 +114,7 @@ const ClaimRequest = ({userProfile}) => {
     } else {
       fetchClaimRequests();
     }
-  }, [filterData]);
+  }, [filterData, isMyClaims]);
 const handleDeleteClaims = async () => {
   if (selectedRows.length === 0) return; // Ensure there are selected rows
 
