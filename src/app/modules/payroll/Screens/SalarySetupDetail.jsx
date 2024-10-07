@@ -324,7 +324,11 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
                       <TableCell className="capitalize">
                         {item?.income_type}
                       </TableCell>
-                      <TableCell>{item?.amount}</TableCell>
+                      <TableCell>
+                        {item?.amount_type === "percentage"
+                          ? `Variable ${item?.amount}%`
+                          : `Fixed, Amt: AED ${item?.amount}`}
+                      </TableCell>
                       <TableCell>{item?.month}</TableCell>
                     </TableRow>
                   ))}
@@ -334,7 +338,12 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
                       <TableCell className="capitalize">
                         {item?.income_type}
                       </TableCell>
-                      <TableCell>{item?.amount}</TableCell>
+                      <TableCell>
+                        {" "}
+                        {item?.amount_type === "percentage"
+                          ? `Variable ${item?.amount}%`
+                          : `Fixed, Amt: AED ${item?.amount}`}
+                      </TableCell>
                       <TableCell>{item?.month}</TableCell>
                     </TableRow>
                   ))}
