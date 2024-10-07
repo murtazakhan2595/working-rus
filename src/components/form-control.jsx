@@ -84,7 +84,7 @@ const SelectComponent = ({
               options.find((option) => option.value === value)?.label
             ) : (
               <span className="text-neutral-400 text-sm font-normal">
-                {placeholder || `Select ${label}`}
+                {placeholder || `Select`}
               </span>
             )}
             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
@@ -184,7 +184,7 @@ const SelectMultiInputComponent = ({
                 ))
               ) : (
                 <span className="text-neutral-400 text-sm font-normal">
-                  {`Select ${label}`}
+                  {`Select`}
                 </span>
               )}
               <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
