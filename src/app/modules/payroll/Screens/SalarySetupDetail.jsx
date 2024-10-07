@@ -71,6 +71,7 @@ const SalarySetupDetail = () => {
   const [totalEarnings, setTotalEarnings] = React.useState(0);
   const [totalDeductions, setTotalDeductions] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
+  const [payrollType, setPayrollType] = React.useState("");
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -82,14 +83,11 @@ const SalarySetupDetail = () => {
         //
         if (response) {
           setPayrollId(response?.results[0]?.id);
-          console.log(
-            "response?.results[0]?.basic_salary",
-            response?.results[0]?.basic_salary
-          );
           setMonthlyGrossSalary(response?.results[0]?.basic_salary);
           const earnAndDeductions = await getEmployeeEarnAndDeduction({
             filterData: { employee_payroll: response?.results[0]?.id },
           });
+          setPayrollType(response?.results[0]?.salary_type);
           if (earnAndDeductions) {
             setEarnAndDeductions(earnAndDeductions);
           }
@@ -121,8 +119,6 @@ const SalarySetupDetail = () => {
 
 
 const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) => {
-  console.log("monthlyGrossSalary", monthlyGrossSalary);
-  console.log("earnAndDeductionType", initialEarnAndDeductionType);
   // Check if the necessary values are present
   if (
     !monthlyGrossSalary ||
@@ -222,7 +218,16 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
                   {" "}
                   Calculate
                 </Button>
-                <div class="text-[#8b8d98] text-sm">Hourly Rate : AED 0.00</div>
+                {console.log("PAYROLL TYPE", payrollType)}
+                {payrollType === "hourly" ? (
+                  <div class="text-[#8b8d98] text-sm">
+                    Hourly Rate : AED {monthlyGrossSalary * 80}
+                  </div>
+                ) : payrollType === "monthly" ? (
+                  <div class="text-[#8b8d98] text-sm">
+                    Hourly Rate : AED {monthlyGrossSalary / 160}
+                  </div>
+                ) : null}{" "}
                 <Button onClick={handleSalarySave}>Save</Button>
               </div>
             </CardContent>
@@ -244,19 +249,23 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {earnings?.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{item.name}</TableCell>
-                        <TableCell>{item.amounts}</TableCell>
-                        <TableCell className="text-right">
-                          {item.monthly_amount}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {payrollType !== "hourly" &&
+                      earnings?.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{item.name}</TableCell>
+                          <TableCell>{item.amounts}</TableCell>
+                          <TableCell className="text-right">
+                            {item.monthly_amount}
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     <TableRow className="font-bold">
                       <TableCell>Total in AED</TableCell>
                       <TableCell className="text-right">
-                        AED {Number(totalEarnings).toFixed(2)}
+                        AED{" "}
+                        {payrollType !== "hourly"
+                          ? Number(totalEarnings).toFixed(2)
+                          : monthlyGrossSalary * 80}
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -279,7 +288,7 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {deductions?.map((item, index) => (
+                    {payrollType !== "hourly" && deductions?.map((item, index) => (
                       <TableRow key={index}>
                         <TableCell>{item.name}</TableCell>
                         <TableCell>{item.amounts}</TableCell>
@@ -291,7 +300,7 @@ const handleSalaryCalculate = (initialEarnAndDeductionType,monthlyGrossSalary) =
                     <TableRow className="font-bold">
                       <TableCell>Total in AED</TableCell>
                       <TableCell className="text-right">
-                        AED {Number(totalDeductions).toFixed(2)}
+                        AED {payrollType !== "hourly" ? Number(totalDeductions).toFixed(2): 0}
                       </TableCell>
                     </TableRow>
                   </TableBody>

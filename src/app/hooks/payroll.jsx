@@ -510,6 +510,44 @@ const deleteReimbursement = async (id) => {
     return false;
   }
 }
+
+const getPayrollSummary = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/payroll/organization/${1}/payroll-summary/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching payroll summary data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+}
+
+const savePayrun = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/payroll/payroll-run/`,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 201 || response.status === 200) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error saving payrun data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+}
 export {
   getEmployeePayroll,
   saveEmployeePayroll,
@@ -528,5 +566,7 @@ export {
   saveEmployeeEarnDeduction,
   saveReimbursement,
   getReimbursement,
-  deleteReimbursement
+  deleteReimbursement,
+  getPayrollSummary,
+  savePayrun
 };

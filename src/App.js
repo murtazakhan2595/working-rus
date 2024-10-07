@@ -57,6 +57,7 @@ import {
   SalarySetupDetail,
   PayRun,
   CreatePayRun,
+  PayRunDetails,
 } from "app/modules/payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 
@@ -241,6 +242,10 @@ function App() {
                   <Route
                     path="/payroll/create-payrun"
                     element={<CreatePayRun />}
+                  />
+                  <Route
+                    path="/payroll/pay-slip-details"
+                    element={<PayRunDetails />}
                   />
 
                   <Route path="/salary-setup" element={<SalarySetup />} />
