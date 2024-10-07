@@ -248,7 +248,7 @@ const approvalSteps = [
               type="submit"
               size="lg"
               variant="default"
-              className=" bg-[#1c2024] text-white"
+              // className=" bg-[#1c2024] text-white"
               onClick={() => {
                 handleStatusChange("approved");
               }}
