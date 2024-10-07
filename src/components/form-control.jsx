@@ -80,15 +80,11 @@ const SelectComponent = ({
             className="justify-between w-full"
             disabled={disabled}
           >
-            {value || label ? (
-              value ? (
-                options.find((option) => option.value === value)?.label
-              ) : (
-                label
-              )
+            {value ? (
+              options.find((option) => option.value === value)?.label
             ) : (
               <span className="text-neutral-400 text-sm font-normal">
-                {placeholder}
+                {placeholder || `Select`}
               </span>
             )}
             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
@@ -96,7 +92,7 @@ const SelectComponent = ({
         </PopoverTrigger>
         <PopoverContent className="w-[300px] p-0">
           <Command>
-            <CommandInput placeholder={"Enter " + label} />
+            <CommandInput placeholder={`Enter ${label}`} />
             <CommandList>
               <CommandEmpty>No {label} found.</CommandEmpty>
               <CommandGroup>
@@ -126,6 +122,7 @@ const SelectComponent = ({
   );
 };
 
+
 const SelectMultiInputComponent = ({
   name,
   options,
@@ -137,9 +134,12 @@ const SelectMultiInputComponent = ({
   required,
 }) => {
   const [open, setOpen] = React.useState(false);
+
+  // Ensure value is an array
   if (value === null || typeof value === "string") {
     value = [];
   }
+
   const handleSelect = (option) => {
     const newValue = value.includes(option)
       ? value.filter((item) => item !== option)
@@ -183,7 +183,9 @@ const SelectMultiInputComponent = ({
                   </span>
                 ))
               ) : (
-                <span>{label}</span>
+                <span className="text-neutral-400 text-sm font-normal">
+                  {`Select`}
+                </span>
               )}
               <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
             </div>
@@ -219,6 +221,8 @@ const SelectMultiInputComponent = ({
     </div>
   );
 };
+
+
 
 const DateInput = ({
   name,
