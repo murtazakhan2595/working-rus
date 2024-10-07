@@ -124,14 +124,15 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                   <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                     <div className="text-zinc-950">Details</div>
                   </div>
-                  <div className="pt-4">
+                  {/* <div className="pt-4">
                     <div>Expense Type</div>
-                  </div>
+                  </div> */}
                   <SelectComponent
                     name={"expense_type"}
                     error={props.errors?.expense_type}
                     touch={props.touched?.expense_type}
                     value={props.values?.expense_type}
+                    label={"Expense Type"}
                     options={ClaimExpenseTypeOptions}
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
@@ -140,14 +141,15 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                   />
                   <div className="gap-4 flex items-center ">
                     <div className="flex-1 space-y-2">
-                      <div>
+                      {/* <div>
                         <div>Amount</div>
-                      </div>
+                      </div> */}
                       <TextInput
                         name={"amount"}
                         error={props.errors?.amount}
                         touch={props.touched?.amount}
                         value={props.values?.amount}
+                        label={"Amount"}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
@@ -155,14 +157,15 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                       />
                     </div>
                     <div className="flex-1 space-y-2">
-                      <div>
+                      {/* <div>
                         <div>Date of Expense</div>
-                      </div>
+                      </div> */}
                       <DateInput
                         name={"payment_date"}
                         error={props.errors?.payment_date}
                         touch={props.touched?.payment_date}
                         value={props.values?.payment_date}
+                        label={"Date of Expense"}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
@@ -170,15 +173,16 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                       />
                     </div>
                   </div>
-                  <div className="pt-4">
+                  {/* <div className="pt-4">
                     <div>Description</div>
-                  </div>
+                  </div> */}
                   <TextAreaInput
                     name={"description"}
                     error={props.errors?.description}
                     touch={props.touched?.description}
                     value={props.values?.description}
                     options={ClaimExpenseTypeOptions}
+                    label={"Description"}
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
                     }}
@@ -187,7 +191,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                   />
 
                   <div className="h-[118px] flex-col justify-start  gap-2 inline-flex">
-                    <div className=" justify-center  gap-12 inline-flex">
+                    <div className=" justify-center  gap-12">
                       <div className=" flex-col justify-start  inline-flex text-neutral-800 text-sm font-medium ">
                         Attachments
                       </div>
@@ -258,7 +262,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                   type="submit"
                   size="lg"
                   variant="default"
-                  className=" bg-[#1c2024] text-white"
+                  // className=" bg-[#1c2024] text-white"
                 >
                   Submit
                 </Button>
