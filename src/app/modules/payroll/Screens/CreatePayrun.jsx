@@ -13,7 +13,23 @@ import { createPayrunColumns } from "app/utils/Types/TableColumns";
 import { getEmployeePayroll } from "app/hooks/payroll";
 import { getEarnAndDeduction } from "app/hooks/payroll";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { getPayrollSummary } from "app/hooks/payroll";
+import { CircleCheckBig } from "lucide-react";
 
+import {
+  Dialog,
+  // DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  // DialogDescription,
+  DialogFooter,
+  // DialogCancel,
+  // DialogAction,
+} from "../../../../src/@/components/ui/dialog.jsx";
+import { savePayrun } from "app/hooks/payroll";
 
 const CreatePayRun = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -22,25 +38,24 @@ const CreatePayRun = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [component, setComponent] = useState([]);
   const [withheldRows, setWithheldRows] = useState([]);
+  const [payrollData, setPayrollData] = useState([]);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
+  const navigate = useNavigate();
+  const userProfile = useSelector((state) => state.user.userProfile);
+  const [payrunSubmitDialog, setPayrunSubmitDialog] = useState(false);
+
 
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      console.log("Row clicked:", row);
       // setSelectedComponent(row);
     },
   };
   const [selectedRows, setSelectedRows] = useState([]);
-  const payrollData = [
-    { title: "Payroll Cost", value: "56,60,936.69 AED" },
-    { title: "Employees' Net Pay", value: "36,58,484.00 AED" },
-    { title: "Total Employees'", value: "200" },
-  ];
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -55,25 +70,43 @@ const CreatePayRun = () => {
       if (earnAndDeductions) {
         setComponent(earnAndDeductions.results);
       }
+      
+      const payrollSummary = await getPayrollSummary();
+      if (payrollSummary) {
+       setPayrollData([
+         { title: "Payroll Cost", value: payrollSummary?.total_gross_salary },
+         {
+           title: "Employees' Net Pay",
+           value: payrollSummary?.total_net_salary,
+         },
+         { title: "Total Employees'", value: payrollSummary?.total_employees },
+       ]);
+      }
       setIsLoading(false);
     };
+
     fetchData();
   }, [options, filterData]);
 
-
-
   // Function to handle withholding salary
   const handleWithholdSalary = () => {
-    setWithheldRows((prev) => [...selectedRows, ...prev]);
+    const updatedWithheldEmployees = [...selectedRows, ...withheldRows];
+    setWithheldRows(updatedWithheldEmployees);
     setSelectedRows([]); // Reset selected rows after withholding
+
+    saveDraft(updatedWithheldEmployees);
   };
 
   // Function to handle providing salary back for selected withheld rows
   const handleProvideSalary = () => {
     // Remove selected withheld rows from withheldRows state
-    setWithheldRows((prev) => prev.filter((id) => !selectedRows.includes(id)));
+    const updatedWithheldEmployees = withheldRows.filter((id) => !selectedRows.includes(id));
+
+    setWithheldRows(updatedWithheldEmployees);
     setSelectedRows([]); // Reset selected rows after providing salary back
+    saveDraft(updatedWithheldEmployees);
   };
+
   // Determine the selected row types
   const normalSelectedRows = selectedRows.filter(
     (row) => !withheldRows.includes(row)
@@ -84,21 +117,49 @@ const CreatePayRun = () => {
 
   const showWithholdButton = normalSelectedRows.length > 0;
   const showProvideButton = withheldSelectedRows.length > 0;
-  console.log("SHOWWITHHOLDBUTTON", showWithholdButton);
-  console.log("SHOWPROVIDEBUTTON", showProvideButton);
 
-    useEffect(() => {
-      if(showWithholdButton && showProvideButton)
-      {
-        toast.error("You can't select both Withhold and Provide Salary Back at the same time");
-      }
-    }, [showWithholdButton, showProvideButton]);
+  useEffect(() => {
+    if (showWithholdButton && showProvideButton) {
+      toast.error(
+        "You can't select both Withhold and Provide Salary Back at the same time"
+      );
+    }
+  }, [showWithholdButton, showProvideButton]);
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handleSubmit = async()=>{
+    const reponse = true;
+    if(reponse){
+      setPayrunSubmitDialog(true)
+    }
+  }
+  const saveDraft = async (updatedWithheldEmployees) => {
+    const payRunDraftData = {
+      total_amount: payrollData.find((item) => item.title === "Payroll Cost")
+        ?.value,
+      start_date: "2024-09-01", // Hardcoded for now; replace with actual date
+      end_date: "2024-09-30", // Hardcoded for now; replace with actual date
+      is_payroll_run: false, 
+      excluded_employees: updatedWithheldEmployees, 
+    };
+    const response =  await savePayrun(payRunDraftData);
+    if(!response){
+      toast.error("Something went wrong!");
+    }
+  };
   return (
     <div className="flex flex-col gap-4">
+      <SuccessNotification isOpen={payrunSubmitDialog} onClose={setPayrunSubmitDialog} />
       <div className="flex flex-wrap gap-10 justify-between items-center h-11">
         <div className="flex items-center gap-4">
-          <button className="w-[27px] h-[27px] bg-white rounded-3xl border border-[#e8e8ec] justify-center items-center gap-1 inline-flex">
-            <ArrowLeft size={14} />
+          <button
+            className="w-[27px] h-[27px] bg-white rounded-3xl border border-[#e8e8ec] justify-center items-center gap-1 inline-flex"
+            onClick={handleBack}
+          >
+            <ArrowLeft size={14} color="#000" />
           </button>
           <div>
             <span className="text-[#1c2024] text-xl font-semibold  leading-tight">
@@ -109,7 +170,10 @@ const CreatePayRun = () => {
             </span>
           </div>
         </div>
-        <Button className="bg-[#1c2024] text-white min-w-[120px]">
+        <Button
+          className="bg-[#1c2024] text-white min-w-[120px]"
+          onClick={handleSubmit}
+        >
           Submit
         </Button>
       </div>
@@ -202,4 +266,24 @@ const CreatePayRun = () => {
   );
 };
 
+
+const SuccessNotification = ({ isOpen, onClose }) => {
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <div className="flex gap-3 items-start text-sm leading-tight text-teal-600 bg-white rounded-xl">
+          <CircleCheckBig size={16} color="#0d9488" />
+          <div className="flex flex-col min-w-[240px]">
+            <div className="font-bold">Success!</div>
+            <div className="mt-1">
+              Your pay run for{" "}
+              <span className="font-semibold">September 2024</span> was
+              successfully added
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 export default CreatePayRun;
