@@ -162,7 +162,7 @@ const approvalSteps = [
                   <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
                     <div>Attachment</div>
                   </div>
-                  <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
+                  {claimRequest?.attachment?.file ?<div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Paperclip size={16} />
                       <div className="text-[#1c2024] text-sm font-medium ">
@@ -180,7 +180,7 @@ const approvalSteps = [
                     >
                       Download
                     </button>
-                  </div>
+                  </div>: "No attachment found"}
                 </div>
               </div>
             </div>

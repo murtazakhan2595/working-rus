@@ -35,7 +35,6 @@ import { DepartmentName } from "utils/getValuesFromTables";
 import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Download } from "lucide-react";
-import { downloadAttachment } from "utils/fileUtils";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 import { calculateTotalMonthlyEarningsAndDeductions } from "app/modules/payroll/Sections/CalculationsHelperFunctions";
 
@@ -703,15 +702,25 @@ export const ClaimRequestColumns = [
     dataField: "attachment",
     text: "Receipt",
     formatter: (cell, row) => (
-      <div
-        className="items-center gap-2 inline-flex cursor-pointer"
-        onClick={() => downloadAttachment(cell.file, cell.name)}
-      >
-        <Download size={16} color="#ab4aba" />
-        <div className="text-[#ab4aba] text-sm font-medium ">Recipt</div>
-      </div>
+      console.log("cell", cell),
+      cell?.file ? (
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            filebase64Download(cell);
+          }}
+        >
+          <div className="items-center gap-2 inline-flex cursor-pointer">
+            <Download size={16} color="#ab4aba" />
+            <div className="text-[#ab4aba] text-sm font-medium">Receipt</div>
+          </div>
+        </div>
+      ) : (
+        "No Attachment"
+      )
     ),
   },
+
   {
     dataField: "status",
     text: "Status",
@@ -795,13 +804,22 @@ export const MyClaimsRequestColumns = [
     dataField: "attachment",
     text: "Receipt",
     formatter: (cell, row) => (
-      <div
-        className="items-center gap-2 inline-flex cursor-pointer"
-        onClick={() => downloadAttachment(cell.file, cell.name)}
-      >
-        <Download size={16} color="#ab4aba" />
-        <div className="text-[#ab4aba] text-sm font-medium ">Recipt</div>
-      </div>
+      console.log("cell", cell),
+      cell?.file ? (
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            filebase64Download(cell);
+          }}
+        >
+          <div className="items-center gap-2 inline-flex cursor-pointer">
+            <Download size={16} color="#ab4aba" />
+            <div className="text-[#ab4aba] text-sm font-medium">Receipt</div>
+          </div>
+        </div>
+      ) : (
+        "No Attachment"
+      )
     ),
   },
   {
