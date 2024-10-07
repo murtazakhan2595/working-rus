@@ -80,15 +80,11 @@ const SelectComponent = ({
             className="justify-between w-full"
             disabled={disabled}
           >
-            {value || label ? (
-              value ? (
-                options.find((option) => option.value === value)?.label
-              ) : (
-                label
-              )
+            {value ? (
+              options.find((option) => option.value === value)?.label
             ) : (
               <span className="text-neutral-400 text-sm font-normal">
-                {placeholder}
+                {placeholder || `Select ${label}`}
               </span>
             )}
             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
@@ -96,7 +92,7 @@ const SelectComponent = ({
         </PopoverTrigger>
         <PopoverContent className="w-[300px] p-0">
           <Command>
-            <CommandInput placeholder={"Enter " + label} />
+            <CommandInput placeholder={`Enter ${label}`} />
             <CommandList>
               <CommandEmpty>No {label} found.</CommandEmpty>
               <CommandGroup>
@@ -125,6 +121,7 @@ const SelectComponent = ({
     </div>
   );
 };
+
 
 const SelectMultiInputComponent = ({
   name,
