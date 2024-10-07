@@ -828,3 +828,56 @@ export const MyClaimsRequestColumns = [
     formatter: (cell) => <ClaimRequestStatus status={cell} />,
   },
 ];
+
+
+
+export const downloadPayslipColumns = (components) => [
+  {
+    dataField: "employee",
+    text: "ID",
+  },
+  {
+    dataField: "employee",
+    text: "Employee",
+    formatter: (cell, row) => (
+      <>
+        <EmployeeDataInfo
+          name={row.name}
+          email={row.work_email}
+          src={row?.profile_picture?.file}
+        />
+      </>
+    ),
+  },
+  {
+    dataField: "department_name",
+    text: "Department",
+  },
+  {
+    dataField: "basic_salary",
+    text: "Salary",
+    formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
+  },
+  {
+    dataField: "",
+    text: "Total Deductions",
+    formatter: (cell, row) => {
+      const { totalEarnings } = calculateTotalMonthlyEarningsAndDeductions(
+        row.basic_salary,
+        components
+      );
+      return <>{"AED " + totalEarnings}</>;
+    },
+  },
+  {
+    dataField: "",
+    text: "Total Earnings",
+    formatter: (cell, row) => {
+      const { totalDeductions } = calculateTotalMonthlyEarningsAndDeductions(
+        row.basic_salary,
+        components
+      );
+      return <>{totalDeductions > 0 ? "AED " + totalDeductions : "0.00"} </>;
+    },
+  },
+];

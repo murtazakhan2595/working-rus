@@ -7,6 +7,7 @@ import SalarySetup from "./Screens/SalarySetup"
 import SalarySetupDetail from "./Screens/SalarySetupDetail"
 import PayRun from "./Screens/PayRun"
 import CreatePayRun from "./Screens/CreatePayrun"
+import PayRunDetails from "./Screens/PayRunDetails"
 
 export {
   MyPayroll,
@@ -16,5 +17,6 @@ export {
   SalarySetup,
   SalarySetupDetail,
   PayRun,
-  CreatePayRun
+  CreatePayRun,
+  PayRunDetails,
 };

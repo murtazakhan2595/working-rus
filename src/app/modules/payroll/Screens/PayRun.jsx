@@ -59,8 +59,8 @@ const PayRun = () => {
       employeesNetPay: "200000",
       paymentDate: "10 September, 2024",
       numberofEmployees: "200",
-      buttonLabel: "Genarate",
-      onBtnClick: () => {},
+      buttonLabel: "View Details",
+      onBtnClick: () => navigate("/payroll/pay-slip-details"),
     },
     {
       title: "Payslips for August 2024",
