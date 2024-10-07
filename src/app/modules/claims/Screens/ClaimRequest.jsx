@@ -34,6 +34,7 @@ const ClaimRequest = ({userProfile}) => {
   const [myClaims, setMyClaims] = useState(null);
   const [employeeData, setEmployeeData] = useState(null);
   const [claimRequests, setClaimRequests] = useState({});
+  const [filterDate, setFilterDate] = useState(null);
   const pathname = location.pathname;
 
   const onPageChange = (name, value) => {
@@ -78,6 +79,7 @@ const ClaimRequest = ({userProfile}) => {
     if (empData) {
       setEmployeeData(empData);
     }
+    console.log("FILTERDATA", { employee_payroll: payroll?.results[0]?.id, ...filterData })
     const response = await getReimbursement({
       filterData: { employee_payroll: payroll?.results[0]?.id, ...filterData },
     });
@@ -114,7 +116,11 @@ const ClaimRequest = ({userProfile}) => {
     } else {
       fetchClaimRequests();
     }
-  }, [filterData, isMyClaims]);
+  }, [filterData]);
+  useEffect(() => {
+    setFilterData({})
+    setFilterDate(null)
+  },[isMyClaims])
 const handleDeleteClaims = async () => {
   if (selectedRows.length === 0) return; // Ensure there are selected rows
 
@@ -245,8 +251,10 @@ const handleDeleteClaims = async () => {
               />
               <DateInput
                 placeholder="Date"
+                value={filterDate}
                 name="payment_date"
                 onChange={(field, value) => {
+                  setFilterDate(value);
                   handleFilterChange(field, value);
                 }}
               />

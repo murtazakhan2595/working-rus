@@ -204,6 +204,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
                   <Button
                     variant="outline"
                     size="lg"
+                    type="button"
                     onClick={() => {
                       setIsOpen(false);
                     }}
