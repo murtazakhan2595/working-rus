@@ -1,58 +1,3 @@
-// Helper function to calculate percentage-based values
-const calculateAmount = (parsedValue, type, base) => {
-  if (type === "flat_amount") {
-    return parsedValue;
-  } else if (
-    typeof parsedValue === "number" &&
-    parsedValue <= 100 &&
-    type === "percentage"
-  ) {
-    return (base * parsedValue) / 100;
-  }
-  return parsedValue;
-};
-
-const parseFormattedValue = (formattedValue) => {
-  // Check for "Flat Amount" format
-  if (formattedValue.includes("Flat Amount")) {
-    // Example: "AED 1200.00 Flat Amount" -> { type: "flat_amount", value: 1200.00 }
-    return {
-      type: "flat_amount",
-      value: parseFloat(
-        formattedValue.replace(/AED\s|Flat Amount/g, "").trim()
-      ),
-    };
-  }
-
-  // Check for "% of Gross" format
-  if (formattedValue.includes("% of Gross")) {
-    // Example: "40% of Gross" -> { type: "percentage", value: 40 }
-    return {
-      type: "percentage",
-      value: parseFloat(formattedValue.replace("% of Gross", "").trim()),
-    };
-  }
-
-  // Check for "% of Basic" format
-  if (formattedValue.includes("% of Basic")) {
-    // Example: "40% of Basic" -> { type: "percentage", value: 40 }
-    return {
-      type: "percentage",
-      value: parseFloat(formattedValue.replace("% of Basic", "").trim()),
-    };
-  }
-
-  // Check for "Variable Amount" format
-  if (formattedValue.includes("Variable Amount")) {
-    // Example: "AED 111.00 Variable Amount" -> { type: "variable_amount", value: 111.00 }
-    return {
-      type: "variable_amount",
-      value: parseFloat(
-        formattedValue.replace(/AED\s|Variable Amount/g, "").trim()
-      ),
-    };
-  }
-};
 
 export const calculateEarningsAndDeductions = (
   monthlyGrossSalary,
@@ -62,45 +7,44 @@ export const calculateEarningsAndDeductions = (
   const deductions = [];
   let totalEarnings = 0;
   let totalDeductions = 0;
-  console.log("calculate",earnAndDeductionType);
-
-  // Helper function to calculate percentage-based values
-  const calculateAmount = (parsedValue, type , base) => {
-    if (type === "flat_amount") {
-      return parsedValue;
-    }
-    else if(type === "variable_amount"){
-      return parsedValue
-    }
-    else if (typeof parsedValue === "number" && parsedValue <= 100 && type === "percentage") {
-      return (base * parsedValue) / 100;
-    }
-    return parsedValue;
-  };
-
   earnAndDeductionType.forEach((item) => {
     if (!item.is_active) return;
-    console.log("item", item.amounts);
-    const { type, value } = parseFormattedValue(item.amounts);
-    console.log("type, value", type, value);
 
     if (item.income_type === "earning") {
-      const monthlyAmount = calculateAmount(value, type, monthlyGrossSalary);
-      console.log("monthlyAmount", monthlyAmount);
-      earnings.push({
-        name: item.name,
-        amounts: item.amounts,
-        monthly_amount: monthlyAmount,
-      });
-      totalEarnings += monthlyAmount;
+      let monthlyAmount;
+      console.log("item", item, monthlyGrossSalary);
+        if (item.amounts_types === "percentage") {
+          monthlyAmount = (monthlyGrossSalary * item.amounts) / 100;
+        } else if (item.amounts_types === "fixed") {
+          monthlyAmount = item.amounts;
+        }
+     earnings.push({
+       name: item.name,
+       amounts:
+         item.amounts_types === "percentage"
+           ? `Variable ${item.amounts}%`
+           : `Fixed, Amt: AED ${item.amounts}`,
+       monthly_amount: monthlyAmount,
+     });
+     totalEarnings += Number(monthlyAmount);
+     console.log("MONTHLYAMOUNT ", totalEarnings);
     } else {
-      const monthlyAmount = calculateAmount(value, type, monthlyGrossSalary);
+      let monthlyAmount;
+      if (item.amounts_types === "percentage") {
+        monthlyAmount = (monthlyGrossSalary * item.amounts) / 100;
+      }
+      else if(item.amounts_types === "fixed"){
+        monthlyAmount = item.amounts;
+      }
       deductions.push({
         name: item.name,
-        amounts: item.amounts,
+        amounts:
+          item.amounts_types === "percentage"
+            ? `Variable ${item.amounts}%`
+            : `Fixed, Amt: AED ${item.amounts}`,
         monthly_amount: monthlyAmount,
       });
-      totalDeductions += monthlyAmount;
+      totalDeductions += Number(monthlyAmount);
     }
   });
 
@@ -128,19 +72,19 @@ export const calculateTotalMonthlyEarningsAndDeductions = (
 ) => {
   let totalEarnings = 0;
   let totalDeductions = 0;
-  components.forEach((item) => {
-    const { type, value } = parseFormattedValue(item.amounts);
+  // components.forEach((item) => {
+  //   const { type, value } = parseFormattedValue(item.amounts);
 
-    if (item.income_type === "earning") {
-      const monthlyAmount = calculateAmount(value, type, salary);
-      totalEarnings += monthlyAmount;
-    } else {
-      const monthlyAmount = calculateAmount(value, type, salary);
-      totalDeductions += monthlyAmount;
-    }
-  });
-  const otherAllowance = salary - totalEarnings;
-  totalEarnings += otherAllowance;
+  //   if (item.income_type === "earning") {
+  //     const monthlyAmount = calculateAmount(value, type, salary);
+  //     totalEarnings += monthlyAmount;
+  //   } else {
+  //     const monthlyAmount = calculateAmount(value, type, salary);
+  //     totalDeductions += monthlyAmount;
+  //   }
+  // });
+  // const otherAllowance = salary - totalEarnings;
+  // totalEarnings += otherAllowance;
   return {
     totalEarnings,
     totalDeductions,

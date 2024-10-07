@@ -71,32 +71,6 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
     }
   };
 
-
-
-    const formatValueForBackend = (option, value, amountType) => {
-      if (option === "option1") {
-        return `AED ${parseFloat(value).toFixed(2)} ${amountType === "fixed"? "Fixed":"Variable"} Amount`; // Flat Amount
-      } else if (option === "option2") {
-        return `${value}% of Gross`; // Percentage of Gross
-      } else if (option === "option3") {
-        return `${value}% of Basic`; // Percentage of Basic
-      }
-      return value;
-    };
-    const handleFormSubmit = (values) => {
-      const formattedAmount = formatValueForBackend(
-        selectedRadio,
-        amountInputs[selectedRadio],
-        values.amount_type,
-      );
-
-      const finalValues = {
-        ...values,
-        amount: formattedAmount, // Add the formatted value
-      };
-      handleSubmit(finalValues);
-    };
-
   const getSelectedEarning = (selectedId) => {
     const earning = earnings.find(
       (earning) => Number(earning.id) === Number(selectedId)
@@ -109,7 +83,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
       <div>
         <SheetComponent
           {...formSheetData}
-          onSubmit={handleFormSubmit}
+          onSubmit={handleSubmit}
           width="500px"
           isOpen={isOpen}
           setIsOpen={setIsOpen}
@@ -118,7 +92,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
           <Formik
             initialValues={initialValues}
             // validationSchema={validationSchema}
-            onSubmit={handleFormSubmit}
+            onSubmit={handleSubmit}
           >
             {(props) => (
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
@@ -179,63 +153,25 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
                         <div className="pt-4">
                           <div>Amount </div>
                         </div>
-                        <div className="flex flex-col space-y-4">
-                          <RadioGroup
-                            defaultValue=""
-                            onValueChange={handleRadioChange}
-                          >
-                            {[
-                              { value: "option1", label: "Flat Amount" },
-                              {
-                                value: "option2",
-                                label: "Percentage of Gross",
-                              },
-                              {
-                                value: "option3",
-                                label: "Percentage of Basic",
-                              },
-                            ].map((option) => (
-                              <div
-                                className="flex items-center space-x-4"
-                                key={option.value}
-                              >
-                                {/* Label before radio button */}
-                                <div className="text-zinc-900">
-                                  {option.label}
-                                </div>
-
-                                {/* Radio Button */}
-                                <RadioGroupItem
-                                  value={option.value}
-                                  id={`r${option.value.slice(-1)}`}
-                                />
-
-                                {/* Text Input */}
-                                <TextInput
-                                  value={
-                                    selectedRadio === option.value
-                                      ? amountInputs[option.value]
-                                      : ""
-                                  }
-                                  onChange={(field, value) => {
-                                    setAmountInputs((prev) => ({
-                                      ...prev,
-                                      [option.value]: value,
-                                    }));
-                                    if (selectedRadio === option.value) {
-                                      props.setFieldValue("amount", value); // Store raw value in form state
-                                    }
-                                  }}
-                                  placeholder={
-                                    option.value === "option1"
-                                      ? "Enter amount"
-                                      : "Enter percentage"
-                                  }
-                                  disabled={selectedRadio !== option.value}
-                                />
-                              </div>
-                            ))}
-                          </RadioGroup>
+                        <div className="flex space-x-4 items-center">
+                          <div className="text-zinc-900">
+                            {console.log("AMOUNTS", props.values)}
+                            {props.values.amount_type === "fixed"
+                              ? "Flat Amount"
+                              : "% of Gross"}
+                          </div>
+                          <TextInput
+                            value={props.values.amount}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                            name={"amount"}
+                            placeholder={
+                              props.values.amount_type === "fixed"
+                                ? "Enter amount"
+                                : "Enter percentage"
+                            }
+                          />
                         </div>
                       </div>
                     </div>
