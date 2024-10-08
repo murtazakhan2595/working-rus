@@ -20,16 +20,18 @@ import { CircleCheckBig } from "lucide-react";
 
 import {
   Dialog,
-  // DialogTrigger,
+  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  // DialogDescription,
+  DialogDescription,
   DialogFooter,
-  // DialogCancel,
-  // DialogAction,
+  DialogCancel,
+  DialogAction,
 } from "../../../../src/@/components/ui/dialog.jsx";
 import { savePayrun } from "app/hooks/payroll";
+import moment from "moment";
+import { getPayun } from "app/hooks/payroll";
 
 const CreatePayRun = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -45,7 +47,10 @@ const CreatePayRun = () => {
   const navigate = useNavigate();
   const userProfile = useSelector((state) => state.user.userProfile);
   const [payrunSubmitDialog, setPayrunSubmitDialog] = useState(false);
-
+  const [payrunConfirmationDialog, setPayrunConfirmationDialog] = useState(false);
+  const currentMonthStart = moment().startOf("month").format("YYYY-MM-DD");
+  const currentMonthEnd = moment().endOf("month").format("YYYY-MM-DD");
+  const [payrunDraft, setPayrunDraft] = useState(null);
 
   const tableOptions = {
     page: options.page,
@@ -70,17 +75,26 @@ const CreatePayRun = () => {
       if (earnAndDeductions) {
         setComponent(earnAndDeductions.results);
       }
-      
+
       const payrollSummary = await getPayrollSummary();
       if (payrollSummary) {
-       setPayrollData([
-         { title: "Payroll Cost", value: payrollSummary?.total_gross_salary },
-         {
-           title: "Employees' Net Pay",
-           value: payrollSummary?.total_net_salary,
-         },
-         { title: "Total Employees'", value: payrollSummary?.total_employees },
-       ]);
+        setPayrollData([
+          { title: "Payroll Cost", value: payrollSummary?.total_gross_salary },
+          {
+            title: "Employees' Net Pay",
+            value: payrollSummary?.total_net_salary,
+          },
+          { title: "Total Employees'", value: payrollSummary?.total_employees },
+        ]);
+      }
+
+      const payRunData = await getPayun({
+        filterData: { date_range: `${currentMonthStart},${currentMonthEnd}` },
+      });
+      if (payRunData) {
+        console.log("PAYRUN DATA", payRunData?.results);
+        setPayrunDraft(payRunData?.results[0]);
+        setWithheldRows(payRunData?.results[0]?.excluded_employees || []);
       }
       setIsLoading(false);
     };
@@ -100,7 +114,9 @@ const CreatePayRun = () => {
   // Function to handle providing salary back for selected withheld rows
   const handleProvideSalary = () => {
     // Remove selected withheld rows from withheldRows state
-    const updatedWithheldEmployees = withheldRows.filter((id) => !selectedRows.includes(id));
+    const updatedWithheldEmployees = withheldRows.filter(
+      (id) => !selectedRows.includes(id)
+    );
 
     setWithheldRows(updatedWithheldEmployees);
     setSelectedRows([]); // Reset selected rows after providing salary back
@@ -130,29 +146,67 @@ const CreatePayRun = () => {
     navigate(-1);
   };
 
-  const handleSubmit = async()=>{
-    const reponse = true;
-    if(reponse){
-      setPayrunSubmitDialog(true)
+  const handleSubmit = async () => {
+    setPayrunConfirmationDialog(true);
+
+  };
+  const handleConfirmSubmit = async () => {
+    const reponse = await savePayrun({
+      ...payrunDraft,
+      is_payroll_run: true,
+    });
+    if (reponse) {
+      setPayrunConfirmationDialog(false);
+      setPayrunSubmitDialog(true);
+      setTimeout(() => {
+        navigate("/pay-run");
+      }, 2000);
     }
   }
   const saveDraft = async (updatedWithheldEmployees) => {
-    const payRunDraftData = {
-      total_amount: payrollData.find((item) => item.title === "Payroll Cost")
-        ?.value,
-      start_date: "2024-09-01", // Hardcoded for now; replace with actual date
-      end_date: "2024-09-30", // Hardcoded for now; replace with actual date
-      is_payroll_run: false, 
-      excluded_employees: updatedWithheldEmployees, 
-    };
-    const response =  await savePayrun(payRunDraftData);
-    if(!response){
-      toast.error("Something went wrong!");
+    if (payrunDraft) {
+      const response = await savePayrun({
+        ...payrunDraft,
+        excluded_employees: updatedWithheldEmployees,
+      });
+      if (!response) {
+        toast.error("Something went wrong!");
+      } else {
+        setPayrunDraft({
+          ...payrunDraft,
+          excluded_employees: updatedWithheldEmployees,
+        });
+      }
+    } else {
+      const payRunDraftData = {
+        total_amount: payrollData.find((item) => item.title === "Payroll Cost")
+          ?.value,
+        start_date: currentMonthStart,
+        end_date: currentMonthEnd,
+        is_payroll_run: false,
+        excluded_employees: updatedWithheldEmployees,
+      };
+      const response = await savePayrun(payRunDraftData);
+      if (!response) {
+        toast.error("Something went wrong!");
+      }
     }
+  };
+  const handleCloseConfirmationDialog = () => {
+    setPayrunConfirmationDialog(false);
   };
   return (
     <div className="flex flex-col gap-4">
-      <SuccessNotification isOpen={payrunSubmitDialog} onClose={setPayrunSubmitDialog} />
+      <SuccessNotification
+        isOpen={payrunSubmitDialog}
+        onClose={setPayrunSubmitDialog}
+      />
+      <PayRunSubmitDialog
+        isOpen={payrunConfirmationDialog}
+        onClose={handleCloseConfirmationDialog}
+        onConfirm={handleConfirmSubmit}
+        payrunDraft={payrunDraft}
+      />
       <div className="flex flex-wrap gap-10 justify-between items-center h-11">
         <div className="flex items-center gap-4">
           <button
@@ -266,7 +320,6 @@ const CreatePayRun = () => {
   );
 };
 
-
 const SuccessNotification = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -286,4 +339,42 @@ const SuccessNotification = ({ isOpen, onClose }) => {
     </Dialog>
   );
 };
+
+function PayRunSubmitDialog({ isOpen, onClose, onConfirm, payrunDraft }) {
+   const date = moment(payrunDraft?.start_date); 
+  const monthName = date.format("MMMM");
+  const year = date.format("YYYY");
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="flex overflow-hidden flex-col gap-2 justify-center p-6 text-sm bg-white rounded-xl border border-gray-100 border-solid shadow-lg max-w-[594px] max-md:px-5">
+        <DialogHeader>
+          <DialogTitle className="font-semibold text-neutral-800">
+            {`Submit Pay Run for ${monthName} ${year}?`}
+          </DialogTitle>
+          <p className="mt-2 leading-4 opacity-90 text-neutral-400">
+            {`Are you sure you want to submit the pay run for ${monthName} ${year}.`}
+          </p>
+        </DialogHeader>
+        <div className="flex gap-2 items-center justify-end font-medium  text-center whitespace-nowrap min-w-[240px]">
+          <Button
+            variant="outline"
+            className="gap-2 self-stretch px-3 py-2.5 my-auto bg-white rounded-3xl border border-gray-200 border-solid min-h-[36px] min-w-[120px] text-neutral-800"
+            onClick={onClose}
+          >
+            No
+          </Button>
+          <Button
+            className="gap-2 self-stretch px-3 py-2.5 my-auto text-white rounded-3xl bg-neutral-800 min-h-[36px] min-w-[120px]"
+            onClick={onConfirm}
+          >
+            Yes
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 export default CreatePayRun;
+
+

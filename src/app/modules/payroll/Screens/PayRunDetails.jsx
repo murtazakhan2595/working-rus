@@ -13,28 +13,27 @@ import { downloadPayslipColumns } from "app/utils/Types/TableColumns";
 import { getEmployeePayroll } from "app/hooks/payroll";
 import { getEarnAndDeduction } from "app/hooks/payroll";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { getPayrollSummary } from "app/hooks/payroll";
 import { CircleCheckBig } from "lucide-react";
 import { Download } from 'lucide-react';
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { getPayslip } from "app/hooks/payroll";
 
 
 const PayRunDetails = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [filterData, setFilterData] = useState({});
-  const [employeeData, setEmployeeData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [component, setComponent] = useState([]);
+  const [paySlipsData, setPaySlipsData] = useState();
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
   const navigate = useNavigate();
-  const userProfile = useSelector((state) => state.user.userProfile);
-  const [payrunSubmitDialog, setPayrunSubmitDialog] = useState(false);
-
+   const { id } = useParams();
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -43,26 +42,24 @@ const PayRunDetails = () => {
       // setSelectedComponent(row);
     },
   };
+
+
   const [selectedRows, setSelectedRows] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const response = await getEmployeePayroll({ options, filterData });
-      if (response) {
-        setEmployeeData(response);
-      }
-
-      const earnAndDeductions = await getEarnAndDeduction({
-        filterData: { is_active: true },
-      });
-      if (earnAndDeductions) {
-        setComponent(earnAndDeductions.results);
+      const payslipsData = await getPayslip({
+        filterData: {...filterData,payroll_run:id },
+        options
+      })
+      if(payslipsData){
+        setPaySlipsData(payslipsData)
       }
       setIsLoading(false);
     };
 
     fetchData();
-  }, [options, filterData]);
+  }, [options, filterData, id]);
 
 
 
@@ -146,10 +143,10 @@ const PayRunDetails = () => {
         </CardHeader>
         <CardContent>
           <CustomTable
-            data={employeeData?.results || []}
+            data={paySlipsData?.results || []}
             columns={downloadPayslipColumns(component)}
             pagination={true}
-            dataTotalSize={employeeData.count || 0}
+            dataTotalSize={paySlipsData?.count || 0}
             tableOptions={tableOptions}
             selectable={true}
             setSelectedRows={setSelectedRows}
