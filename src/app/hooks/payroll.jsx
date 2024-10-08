@@ -530,16 +530,31 @@ const getPayrollSummary = async () => {
 
 const savePayrun = async (payload) => {
   try {
-    const response = await axios.post(
-      `${baseUrl}/payroll/payroll-run/`,
-      payload,
-      {
-        headers: headers(),
+    if(payload?.id){
+      const response = await axios.patch(
+        `${baseUrl}/payroll/payroll-run/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
       }
-    );
-    if (response.status === 201 || response.status === 200) {
-      return true;
     }
+    else{
+      const response = await axios.post(
+        `${baseUrl}/payroll/payroll-run/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    }
+
   } catch (error) {
     console.error("Error saving payrun data:", error);
     if (error?.response?.status === 401) {
@@ -548,6 +563,31 @@ const savePayrun = async (payload) => {
     return false;
   }
 }
+const getPayun = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/payroll/payroll-run/?ordering=-id&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching payrun data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+};
+
 export {
   getEmployeePayroll,
   saveEmployeePayroll,
@@ -568,5 +608,6 @@ export {
   getReimbursement,
   deleteReimbursement,
   getPayrollSummary,
-  savePayrun
+  savePayrun,
+  getPayun,
 };

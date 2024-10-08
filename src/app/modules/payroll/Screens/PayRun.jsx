@@ -8,21 +8,25 @@ import {
   TabsTrigger,
   TabsContent,
 } from "../../../../src/@/components/ui/tabs.jsx";
-import PayRunAndPaySlipCard from "../Sections/PayRunAndPaySlipCard.jsx";
+import PayRunCard from "../Sections/PayRunCard.jsx";
+import PaySlipCard from "../Sections/PaySlipCard.jsx";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
 import { useNavigate } from "react-router-dom";
+import { getPayun } from "app/hooks/payroll.jsx";
 
 const PayRun = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("runPayroll");
+  const [payRunData, setPayRunData] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const data = await getSalarySetupData();
+      const data = await getPayun();
       if (data) {
         console.log(data);
+        setPayRunData(data)
       }
       setIsLoading(false);
     };
@@ -35,41 +39,6 @@ const PayRun = () => {
     { value: "paySlip", label: "Pay Slip" },
   ];
 
-  const payRollData = [
-    {
-      title: "Process Pay Run for October 2024",
-      employeesNetPay: "",
-      paymentDate: "",
-      numberofEmployees: "",
-      buttonLabel: "Create Pay Run",
-      onBtnClick: () => navigate("/payroll/create-payrun"),
-    },
-    {
-      title: "Process Pay Run for September 2024",
-      employeesNetPay: "200000",
-      paymentDate: "10 September, 2024",
-      numberofEmployees: "200",
-      buttonLabel: "",
-    },
-  ];
-
-  const paySlipData = [
-    {
-      title: "Payslips for September 2024",
-      employeesNetPay: "200000",
-      paymentDate: "10 September, 2024",
-      numberofEmployees: "200",
-      buttonLabel: "View Details",
-      onBtnClick: () => navigate("/payroll/pay-slip-details"),
-    },
-    {
-      title: "Payslips for August 2024",
-      employeesNetPay: "190000",
-      paymentDate: "10 August, 2024",
-      numberofEmployees: "199",
-      buttonLabel: "",
-    },
-  ];
   return (
     <div className="flex flex-col gap-4 salary-startup">
       <Header />
@@ -93,14 +62,10 @@ const PayRun = () => {
           </TabsList>
         </div>
         <TabsContent value="runPayroll">
-          {isLoading ? (
-            <PageLoader />
-          ) : (
-            <PayRunAndPaySlipCard cardData={payRollData} />
-          )}
+          {isLoading ? <PageLoader /> : <PayRunCard cardData={payRunData} />}
         </TabsContent>
         <TabsContent value="paySlip">
-          <PayRunAndPaySlipCard cardData={paySlipData} />
+          {isLoading ? <PageLoader /> : <PaySlipCard cardData={payRunData} />}
         </TabsContent>
       </Tabs>
     </div>

@@ -250,7 +250,7 @@ function App() {
                     element={<CreatePayRun />}
                   />
                   <Route
-                    path="/payroll/pay-slip-details"
+                    path="/payroll/pay-slip-details/:id"
                     element={<PayRunDetails />}
                   />
 
