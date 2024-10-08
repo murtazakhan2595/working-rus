@@ -19,23 +19,14 @@ const MembersList = ({ members }) => {
                 src="/placeholder-user.jpg"
                 alt="Avatar"
                 fallbackText={name}
-                className={`${getRandomColor(name?.charAt(0))} h-14 w-14`}
+                className={`${getRandomColor(name?.charAt(0))} h-8 w-8`}
                 key={member}
-              />
-              {/* <Avatar
-                className={`${getRandomColor(name?.charAt(0))} h-14 w-14`}
-                key={member}
-              >
-                <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
-                <AvatarFallback className="flex items-center justify-center rounded-full border-plum-500 bg-plum-300">
-                  {name}
-                </AvatarFallback>
-              </Avatar> */}
+              /> 
             </>
           );
         })}
         {remainingCount > 0 && (
-          <span className="bg-plum-300 border-plum-500" key="remaining-count">
+          <span className="bg-plum-300 border-plum-500 h-6 w-6" key="remaining-count">
             +{remainingCount}
           </span>
         )}

@@ -25,11 +25,9 @@ export default function LeaveTrackerOverview() {
   const [pending_leaves, setPendingLeaves] = useState(0);
   const [filterOption, setFilterOption] = useState("All Requests");
 
+
   const applyFilters = (applications, filterApplications) => {
     let filteredData = applications;
-    console.log(filterApplications);
-    console.log(designations);
-    console.log("data filter", filteredData);
     if (filterApplications.id_and_first_name) {
       const searchTerm = filterApplications.id_and_first_name.toLowerCase();
       filteredData = filteredData.filter((item) => {
@@ -40,7 +38,6 @@ export default function LeaveTrackerOverview() {
     }
     if (filterApplications.department_position) {
       const position = parseInt(filterApplications.department_position, 10);
-      console.log("position", position);
       filteredData = filteredData.filter((item) => {
         return Number(item.position) === position;
       });
