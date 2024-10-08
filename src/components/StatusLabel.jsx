@@ -59,10 +59,12 @@ export const StatusLabel = ({ status, value }) => {
   return (
     <>
       <span
-        className={`p-2 ${className} badge`}
-        style={{ color: "#323333", minWidth: "100px", fontWeight: "normal" }}
+        className={`${className} h-[22px] px-3 py-[3px] rounded-[999px] justify-center items-center gap-1.5 inline-flex`}
+        // style={{ color: "#323333", minWidth: "100px", fontWeight: "normal" }}
       >
+          <div className={`${className} font-semibold text-xs font-['Inter'] leading-3`}>
         {value ?? status}
+          </div>
       </span>
     </>
   );

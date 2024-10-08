@@ -94,8 +94,9 @@ const RenderProject = ({ project }) => {
                         {project.name}
                       </div>
                       <div   className="hidden text-sm text-muted-foreground md:inline">
-                        Created By <EmployeeName value={project?.created_by} /> |{" "}
-                        {moment(project?.start_date).format("DD-MM-YY")}
+                        Created By <EmployeeName value={project?.created_by} /> 
+                        {/* |{" "}
+                        {moment(project?.start_date).format("DD-MM-YY")} */}
                       </div>
                     </div>
                   </div>
