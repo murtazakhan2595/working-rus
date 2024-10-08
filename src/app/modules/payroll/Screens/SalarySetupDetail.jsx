@@ -150,9 +150,7 @@ const SalarySetupDetail = () => {
     }
   };
 
-// const isEos = pathname.startsWith("/payroll/salary-setup-eos");
-const isEos = true;
-  console.log("IS EOS", isEos);
+const isEos = pathname.startsWith("/payroll/salary-setup-eos");
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
