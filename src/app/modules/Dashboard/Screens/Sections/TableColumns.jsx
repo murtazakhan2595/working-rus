@@ -54,33 +54,31 @@ export const DashboardJobApplicationColumns = (navigate) => [
 ];
 export const DashboardOnGoingColumns = (navigate) => [
   {
-    dataField: "id",
-    text: "Open Jobs",
-    formatter: (cell, row) => <RenderJobTitle row={row} />,
-  },
-  {
     dataField: "full_name",
     text: "Name",
-    formatter: (cell, row) => <EmployeeNameInfo row={row} />,
+    formatter: (cell, row) =>(
+      <div>
+        <p>{row.id}</p>
+        <p className="text-[#111827] font-semibold">{cell}</p>
+      </div>
+    )
+    // formatter: (cell, row) => <EmployeeNameInfo row={row} />,
   },
-  {
-    dataField: "job_title",
-    text: "Job Title",
-    formatter: (cell, row) => <RenderJobTitle row={row} />,
-  },
+  // {
+  //   dataField: "job_title",
+  //   text: "Job Title",
+  //   formatter: (cell, row) => <RenderJobTitle row={row} />,
+  // },
   {
     dataField: "application_status",
     text: "Application Status",
-    formatter: ({ value }) => (
-      <Badge variant="outline" className="text-xs">
-        {value}
-      </Badge>
-    ),
+    formatter: (cell)=> <Badge variant="outline" className="text-xs flex items-center">{cell}</Badge>
+    // formatter: ({ value }) => (
+    //   <Badge variant="outline" className="text-xs">
+    //     {value}
+    //   </Badge>
+    // ),
   },
-  // { Header: 'ID', accessor: 'id' },
-  // { Header: 'Full Name', accessor: 'full_name' },
-  // { Header: 'Job Title', accessor: 'job_title' },
-  // { Header: 'Application Status', accessor: 'application_status', Cell: ({ value }) => <Badge variant="outline" className="text-xs">{value}</Badge> },
 ];
 
 export const DashboardLeaveTrackerColumns = [
