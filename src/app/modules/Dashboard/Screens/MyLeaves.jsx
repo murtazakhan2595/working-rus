@@ -88,15 +88,15 @@ const RenderMyLeaves = ({ leave }) => {
                   </span>
                   <span className="text-base">days</span>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <div className="text-base font-medium">
-                    {leave.leave_component_name}
-                  </div>
-                  <div className="text-base text-mauve-900">{`${moment(
+                <div className="flex flex-col justify-center gap-1">
+                  <div className="text-[#111827] font-semibold">{`${moment(
                     leave.start_date
                   ).format("MMM DD")} - ${moment(leave.end_date).format(
                     "MMM DD"
                   )}`}</div>
+                  <div className="text-base font-medium">
+                    {leave.leave_component_name}
+                  </div>
                 </div>
               </div>
             </TableCell>

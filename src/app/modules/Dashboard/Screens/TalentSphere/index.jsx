@@ -84,7 +84,6 @@ const TalentSphere = () => {
     { icon: UserCheck, label: "Shortlisted", value: shortlisted },
     { icon: Users, label: "Interviewed", value: interviewed },
   ];
-
   return (
     <>
       <Card className="col-span-2">
@@ -103,7 +102,7 @@ const TalentSphere = () => {
         </CardHeader>
         <CardContent>
           {/* <StatsTalent jobOpenings={jobOpenings} applications={applications} shortlisted={shortlisted} /> */}
-          <Stats stats= {statsData}  />
+          {/* <Stats stats= {statsData}  /> */}
           {isLoading ? (
             <PageLoader />
           ) : (

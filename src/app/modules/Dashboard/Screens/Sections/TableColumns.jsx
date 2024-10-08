@@ -21,9 +21,10 @@ import moment from "moment";
 import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
 
 import { Link } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
+import { Link as ExLink } from "lucide-react";
 import { Badge } from "../../../../../components/ui/badge";
 import { DesignationName } from "utils/getValuesFromTables";
+import { Button } from "components/ui/button";
 export const DashboardJobApplicationColumns = (navigate) => [
   {
     dataField: "id",
@@ -32,22 +33,22 @@ export const DashboardJobApplicationColumns = (navigate) => [
   },
 
   {
-    dataField: "total_applications",
+    dataField: "Job_Title",
     text: "Applications",
     formatter: (cell, row) => <div className="">{cell}</div>,
   },
   {
     dataField: "Deadline",
-    text: "Expiry Date",
-    formatter: (cell) => <>{moment(cell).format("DD MMM YYYY")}</>,
+    text: "Timeline",
+    formatter: (cell, row) => <>{moment(row?.created_at).format("DD MMM")}- {moment(row?.Deadline).format("DD MMM")}</>,
   },
   {
     dataField: "id",
     text: "Links",
     formatter: (cell, row, list) => (
-      <Link className="" to={`/job-description/${cell}`}>
-        <ExternalLink />
-      </Link>
+      <Button variant="outline" className="rounded-sm base-text-color" size="sm" onClick={()=> navigate(`/job-description/${cell}`)}>
+         <ExLink size={16} className="mr-1"/>View
+      </Button>
     ),
   },
 ];
