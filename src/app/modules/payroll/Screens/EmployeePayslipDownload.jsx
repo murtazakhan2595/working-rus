@@ -30,17 +30,6 @@ import { PageLoader } from "components";
 import { ArrowLeft } from "lucide-react";
 import moment from "moment";
 
-// const employeeData = {
-//   id: "TXB-245",
-//   name: "Farhan Hyder",
-//   designation: "Hr Manager",
-//   dateOfJoining: "10/12/2024",
-//   payPeriod: "December 2024",
-//   payDate: "10/12/2024",
-//   costToCompany: "548.60",
-//   daysOfWork: 20,
-//   absentDays: 11,
-// };
 
 // Dummy Earnings Data
 const dummyEarningsData = [
@@ -56,6 +45,12 @@ const dummyDeductionsData = [
   { description: "Tax", amount: 200 },
   { description: "Insurance", amount: 100 },
 ];
+  const dummyEosData = [
+    { description: "Leave Pay", amount: 200 },
+    { description: "Gratuity", amount: 100 },
+    { description: "Notice Pay", amount: 100 },
+  ]
+
 export default function Payslip() {
   const [employeeData, setEmployeeData] = React.useState({});
   const [filterData, setFilterData] = React.useState({});
@@ -115,8 +110,9 @@ export default function Payslip() {
   );
   const netPay = totalEarnings - totalDeductions;
 
-  console.log("payslip", payslip);
 
+  const isEos = location.pathname.startsWith("/payslip-eos");
+  console.log("isEos", isEos);
   return (
     <>
       <div className="mb-4">
@@ -294,6 +290,37 @@ export default function Payslip() {
                   </CardContent>
                 </Card>
               </div>
+              {isEos &&<Card>
+                <CardHeader>
+                  <CardTitle>End Of Service</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Earning types</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {dummyEosData?.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{item.description}</TableCell>
+                          <TableCell className="text-right">
+                            AED {Number(item.amount).toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      <TableRow className="font-bold">
+                        <TableCell>Total in AED</TableCell>
+                        <TableCell className="text-right">
+                          AED {Number(payslip?.gross_salary).toFixed(2)}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>}
 
               <Card>
                 <CardHeader>

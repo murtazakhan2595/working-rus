@@ -184,6 +184,7 @@ function App() {
               <Route path="/my-payroll" element={<MyPayroll />} />
               <Route path="/payroll/:id" element={<EmployeeSalaryDetails />} />
               <Route path="/payslip/:id" element={<Payslip />} />
+              <Route path="/payslip-eos/:id" element={<Payslip />} />
               <Route exact path="/exit-employee" element={<EmployeesExit />} />
               <Route path="/my-claims" element={<MyClaims />} />
 
@@ -240,6 +241,11 @@ function App() {
                     element={<SalarySetupDetail />}
                   />
                   <Route
+                    exact
+                    path="/payroll/salary-setup-eos/:id"
+                    element={<SalarySetupDetail />}
+                  />
+                  <Route
                     path="/payroll/create-payrun"
                     element={<CreatePayRun />}
                   />
@@ -253,6 +259,7 @@ function App() {
 
                   <Route path="/pay-run" element={<PayRun />} />
                   <Route path="/payslips" element={<ComingSoon />} />
+
                   <Route path="/attendance" element={<ComingSoon />} />
                   <Route path="/development-plan" element={<ComingSoon />} />
                   <Route path="/user/:id" element={<ViewEmployee />} />

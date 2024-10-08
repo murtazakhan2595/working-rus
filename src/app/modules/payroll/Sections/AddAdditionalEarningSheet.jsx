@@ -6,6 +6,8 @@ import {
   SelectItem,
   SelectTrigger,
 } from "../../../../src/@/components/ui/select";
+import { Plus } from "lucide-react";
+
 import {
   RadioGroup,
   RadioGroupItem,
@@ -21,7 +23,7 @@ import { monthsOptions } from "data/Data";
 import { toast } from "react-toastify";
 import { saveEmployeeEarnDeduction } from "app/hooks/payroll";
 
-const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
+const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [earnings, setEarnings] = useState([]);
   const [amountInputs, setAmountInputs] = useState({
@@ -36,8 +38,8 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
     setAmountInputs((prev) => ({ ...prev, [value]: "" }));
   };
   const formSheetData = {
-    triggerText: "Add Additional Earnings",
-    title: "Add Additional Earnings",
+    triggerText: !isEos?("Add Additional Earnings"):("Add EOS Earnings"),
+    title: !isEos?("Add Additional Earnings"):("Add EOS Earnings"),
 
     description: null,
     footer: null,
@@ -75,7 +77,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId }) => {
     const earning = earnings.find(
       (earning) => Number(earning.id) === Number(selectedId)
     );
-    return `${earning?.name} ${earning.income_type}`
+    return `${earning?.name} ${earning.income_type}`;
   };
 
   return (
