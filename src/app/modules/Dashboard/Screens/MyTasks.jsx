@@ -342,6 +342,7 @@ function RenderTask({ tasks }) {
   return (
     <CustomTable
     showHeader={false}
+    pagination={false}
     columns={[
       {
         text: "Title",
@@ -349,8 +350,8 @@ function RenderTask({ tasks }) {
         formatter: (cell, render) => (
           <div className="flex flex-col w-full gap-2">
             <div className="flex flex-row w-full gap-4">
-              <div className=" font-base">{render.project_name}</div>
-              <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full border border-mauve-500 flex items-center justify-center h-10">
+              <div className="font-semibold text-[#111827]">{render.project_name}</div>
+              <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center">
                 {getStatusLabel(render.status)}
               </div>
             </div>
@@ -364,7 +365,7 @@ function RenderTask({ tasks }) {
       {
         text: "View Project",
         formatter: (cell) => (
-          <Button variant="outline">
+          <Button variant="outline" size="sm" className="rounded-sm text-[#000] font-semidbold">
             <Link to="#">View Project</Link>
           </Button>
         ),

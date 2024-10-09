@@ -838,7 +838,7 @@ export const downloadPayslipColumns = (components) => [
   },
   {
     dataField: "employee",
-    text: "Employee",
+    text: "Name",
     formatter: (cell, row) => (
       <>
         <EmployeeDataInfo

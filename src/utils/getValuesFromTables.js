@@ -84,7 +84,7 @@ function DesignationName({ value }) {
 function EmployeeName({ value, length }) {
   const employees = useSelector((state) => state.emp.employees);
   const employee = employees.find((option) => option.value === parseInt(value));
-  const employeeName = employee ? employee.name?.toUpperCase() : "N/A";
+  const employeeName = employee ? employee.name : "N/A";
   const displayedName = length ? employeeName.slice(0, length) : employeeName;
 
   return <>{displayedName}</>;
