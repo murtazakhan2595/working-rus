@@ -18,7 +18,7 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "../../../../src/@/components/ui/tabs";
+} from "src/@/components/ui/tabs";
 import SalaryComponent from "../Sections/SalaryComponent";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
 import AddComponentSheet from "../Sections/AddComponentSheet.jsx";

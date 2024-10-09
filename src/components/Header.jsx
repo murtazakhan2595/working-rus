@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { connect } from "react-redux";
 
 
-
-const Header = ({ content }) => {
+const Header = ({ content, userProfile }) => {
   const location = useLocation();
   const [pathName, setPathName] = useState("");
 
@@ -31,6 +31,7 @@ const Header = ({ content }) => {
       "exit-employee": "Employee Offboarding",
       "claim-request": "Claim Request",
       "my-claims": "My Claims",
+      "projects":`${userProfile.role === 4 ? "My Projects" : "All Projects"}`,
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);
@@ -56,5 +57,9 @@ const Header = ({ content }) => {
     </div>
   );
 };
-
-export default Header;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+export default connect(mapStateToProps)( Header);

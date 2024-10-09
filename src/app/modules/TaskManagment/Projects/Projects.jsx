@@ -5,7 +5,7 @@ import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
 import { Header, PageLoader, ConfirmationModal } from "components";
 import { Card, CardBody, Row, Col } from "reactstrap";
 import { CiCirclePlus } from "react-icons/ci";
-import ProjectModel from "./CreateProjectModel";
+import ProjectModel from "./ProjectForm";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import ViewBoardDetails from "./ViewBoardDetails";
@@ -14,6 +14,7 @@ import { LuFolderX } from "react-icons/lu";
 import { EmployeeName } from "utils/getValuesFromTables";
 import { fetchProjects } from "state/slices/CommonSlice";
 import { useDispatch } from "react-redux";
+import CreateEditProject from "./CreateEditProject";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -71,10 +72,8 @@ const Projects = ({ userProfile }) => {
   };
 
   return (
-    <div className="screen bg-[#F0F1F2] ">
-      <Header
-        title={`${userProfile.role === 4 ? "My Projects" : "All Projects"}`}
-      />
+    <div>
+      <Header content={<CreateEditProject />}  />
       <Row>
         <Col lg={12} className="mx-auto">
           <Card className="p-0">

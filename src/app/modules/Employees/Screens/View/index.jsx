@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import {
   getEmployeeCVDetailData,
@@ -7,6 +6,40 @@ import {
   getEmployeeProfessionalExperianceData,
   getEmployeeAcademicRecordData,
 } from "app/hooks/employee";
+import Avatar from "components/ui/Avatar";
+import { Button } from "components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import {
+  DollarSign,
+  TrendingUp,
+  Calendar,
+  ArrowLeft,
+  CalendarIcon,
+  Filter,
+} from "lucide-react";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "src/@/components/ui/tabs";
+
+import { format } from "date-fns";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  getEmployeePayrollById,
+  getSalaryRevisionByPayrollId,
+  getSalaryRevision,
+  getEmployeeEarnAndDeduction,
+} from "app/hooks/payroll";
+import {
+  DesignationName,
+  EmployeeID,
+  getExperience,
+} from "utils/getValuesFromTables";
+import { numberToWords } from "utils/renderValues.js";
+import { PageLoader } from "components";
+import { revisionLetterOptions, revisionStatusOptions } from "data/Data";
 import { connect } from "react-redux";
 import { FiDownload } from "react-icons/fi";
 import PersonalDetials from "./PersonalDetials";
@@ -19,18 +52,19 @@ import Certifications from "./Certifications";
 import IdentificationDetails from "./IdentificationDetails";
 import Loader from "components/PageLoader";
 import { getCountryFullName } from "utils/getValuesFromTables";
+
 import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 import DownloadData from "./DownloadButton";
-
+import { DepartmentName } from "utils/getValuesFromTables";
 const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
-  const [userData, setUserData] = useState({});
+  const [employeeData, setEmployeeData] = React.useState({});
   const [educations, setEducations] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);
   const [cv, setCV] = useState({});
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("personal");
   const { id } = useParams();
-  console.log(id)
   const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
   const getDataByHooks = async () => {
@@ -41,7 +75,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
       let cvData = await getEmployeeCVDetailData(userId);
       let educationData = await getEmployeeAcademicRecordData(userId);
 
-      setUserData(empData);
+      setEmployeeData(empData);
       setExperiences(expData);
       setCV(cvData);
       setEducations(educationData);
@@ -56,132 +90,112 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  const personalInfo = [
-    [
-      { title: "First Name", data: userData.first_name },
-      { title: "ID Card No", data: userData?.nic },
-      { title: "Contact No", data: userData?.mobile_no },
-      { title: "Nationality", data: getCountryFullName(userData?.nationality) },
-      { title: "Father Name", data: userData?.father_name },
-    ],
-    [
-      { title: "Last Name", data: userData?.last_name },
-      {
-        title: "Date of Birth",
-        data: moment(userData.date_of_birth, "YYYY-MM-DD").format("DD-MM-YYYY"),
-      },
-      { title: "Email Address", data: userData?.other_email },
-      { title: "Marital Status", data: userData?.marital_status },
-      { title: "Mother Name", data: userData?.mother_name },
-    ],
+  const tabsData = [
+    { value: "personal", label: "Personal" },
+    { value: "job", label: "Job" },
+    { value: "security", label: "Security" },
+    { value: "qualification", label: "Qualification" },
   ];
-
-  const contactInformation = [
-    { title: "Emergency Contact", data: userData?.emergency_phone_no },
-    {
-      title: "Full Name",
-      sub: true,
-      data:
-        // userData?.emergency_first_name + " " + userData?.emergency_last_name,
-        userData?.emergency_first_name,
-    },
-    { title: "Relation", sub: true, data: userData?.emergency_relation },
-    { title: "Permanent Address", data: userData?.residential_address },
-    { title: "Present Address", data: userData?.current_address },
-  ];
-
-  const bankInformation = [
-    { title: "Bank Name", data: userData?.bank_name },
-    { title: "Account Title", data: userData?.account_title },
-    { title: "Account Number", data: userData?.account_number },
-    { title: "IBAN", data: userData?.account_iban },
-    { title: "Branch Address", data: userData?.branch_address },
-    { title: "Branch Code", data: userData?.branch_code },
-    { title: "Swift Code", data: userData?.swift_code },
-  ];
+  console.log(employeeData);
 
   return (
-    <div className="w-full bg-[#f0f1f2] scroll-auto overflow-auto max-h-[100vh] md:px-4 xl:px-8">
-      {/******************** HEADER **************************/}
-      <div className="flex justify-between px-10 pt-10 pb-7">
-        <h1 className="text-[24px]">
-          {profileView ? "My Profile" : "Profile Management"}
-        </h1>
-        <div
-          onClick={() => navigate(profileView ? "/" : "/profile-management")}
-          className="flex cursor-pointer items-center gap-3 text-[20px]"
-        >
-          Go Back <FaChevronCircleLeft />
+    <>
+      <div className="container p-4 mx-auto">
+        <div className="mb-4">
+          <Button
+            variant="ghost"
+            onClick={() => {}}
+            className="p-4 text-xl text-balance"
+          >
+            <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
+            Detail
+          </Button>
         </div>
-      </div>
-      {/* ************************** BODY *************************** */}
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="py-2 bg-white rounded-md">
-          {/* ******************** BODY HEAD ************************** */}
-          {!profileView && (
-            <>
-              <div className="px-10">
-                <div className="opacity-60 mb-4">
-                  View Employee Data{" "}
-                  {`> ${userData?.first_name} ${userData?.last_name}`}
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-[25px]">
-                      {userData?.first_name} {userData?.last_name}
-                    </h2>
-                    <div className="opacity-60">
-                      ID: TXB-{id.toString().padStart(4, "0")}
-                    </div>
-                  </div>
-                  {/* <DownloadData
-                    userData={userData}
-                    experiences={experiences}
-                    visa={[]}
-                    certifications={certifications}
-                  /> */}
-                </div>
-              </div>
-              <hr className="mt-2" />
-            </>
-          )}
-          {/* ******************** BODY CONTENT *********************** */}
-          <>
-            <div className="px-10 pt-10">
-              <PersonalDetials
-                isEditable={profileView}
-                personalInfo={personalInfo}
-                userData={userData}
-                getDataByHooks={getDataByHooks}
+        <div className="my-5">
+          <Card>
+            <CardContent className="flex items-center pt-6 space-x-4">
+              <Avatar
+                src={
+                  employeeData?.profile_picture?.file ||
+                  employeeData?.profile_picture
+                }
+                alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
+                fallbackText={`${employeeData?.first_name} ${employeeData?.last_name}`
+                  ?.split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+                classNam={`w-30 h-30`}
               />
-              <div className="flex gap-5 justify-between 800:flex-row flex-col">
-                <ContactInformation
+              <div>
+                <p className="text-base text-black">
+                  <EmployeeID value={userId} />
+                </p>
+                <h2 className="text-2xl font-bold text-plum-900">
+                  {employeeData?.first_name} {employeeData?.last_name}
+                </h2>
+                <p className="text-base text-muted-foreground">
+                  <DesignationName value={employeeData?.department_position} />{" "}
+                  | <DepartmentName value={employeeData.department_name} />
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div>
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            defaultValue="salary"
+          >
+            <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+              <TabsList className="flex justify-center mb-4">
+                {tabsData?.map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+            <TabsContent value="personal">
+              <div className="my-2 grid grid-cols-1 gap-4 mb-4">
+                <PersonalDetials
                   isEditable={profileView}
-                  contactInformation={contactInformation}
-                  employeeId={userData.id}
+                  userData={employeeData}
                   getDataByHooks={getDataByHooks}
                 />
-                <BankInformation
+                <ContactInformation
+                  userData={employeeData}
                   isEditable={profileView}
-                  bankInformation={bankInformation}
-                  employeeId={userData.id}
+                  employeeId={employeeData.id}
                   getDataByHooks={getDataByHooks}
                 />
               </div>
+            </TabsContent>
+            <TabsContent value="job">
               <WorkInformation
                 isEditable={!profileView}
-                userData={userData}
-                employeeId={userData.id}
+                userData={employeeData}
+                employeeId={employeeData.id}
                 getDataByHooks={getDataByHooks}
               />
+            </TabsContent>
+            <TabsContent vlaue="security">
+              <IdentificationDetails
+                isEditable={profileView}
+                employeeId={employeeData.id}
+              />
+            </TabsContent>
+            <TabsContent vlaue="qualification">
               {Array.isArray(experiences) && experiences?.length > 0 && (
                 <Experience
                   isEditable={profileView}
                   cv={cv}
                   experience={experiences}
-                  employeeId={userData.id}
+                  employeeId={employeeData.id}
                   getDataByHooks={getDataByHooks}
                 />
               )}
@@ -189,23 +203,19 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
                 <AcademicInfo
                   isEditable={profileView}
                   educations={educations}
-                  employeeId={userData.id}
+                  employeeId={employeeData.id}
                   getDataByHooks={getDataByHooks}
                 />
               )}
               <Certifications
                 isEditable={profileView}
-                employeeId={userData.id}
+                employeeId={employeeData.id}
               />
-              <IdentificationDetails
-                isEditable={profileView}
-                employeeId={userData.id}
-              />
-            </div>
-          </>
+            </TabsContent>
+          </Tabs>
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 

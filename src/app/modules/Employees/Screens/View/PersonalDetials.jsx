@@ -1,20 +1,37 @@
 import React, { useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
-
-const PersonalInformation = ({
-  personalInfo,
-  userData,
-  isEditable,
-  getDataByHooks,
-}) => {
-  console.log("personal info",personalInfo);
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import { getCountryFullName } from "utils/getValuesFromTables";
+import moment from "moment";
+const PersonalInformation = ({ userData, isEditable, getDataByHooks }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
+  const personalInfo = [
+    [
+      { title: "First Name", data: userData.first_name },
+      { title: "ID Card No", data: userData?.nic },
+      { title: "Nationality", data: getCountryFullName(userData?.nationality) },
+      { title: "Father Name", data: userData?.father_name },
+    ],
+    [
+      { title: "Last Name", data: userData?.last_name },
+      { title: "Email Address", data: userData?.other_email },
+      { title: "Marital Status", data: userData?.marital_status },
+      { title: "Mother Name", data: userData?.mother_name },
+    ],
+    [
+      {
+        title: "Date of Birth",
+        data: moment(userData.date_of_birth).format("MMM DD, YYYY"),
+      },
+      { title: "Contact No", data: userData?.mobile_no },
+    ],
+  ];
   return (
     <>
-      <div className="w-full p-6 mb-6 bg-white border rounded-lg shadow">
-        <div className="flex justify-between">
-          <h2 className="text-lg">Personal Details</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>Personal Information</CardTitle>
           {isEditable && (
             <div
               className="flex items-center gap-4"
@@ -25,50 +42,29 @@ const PersonalInformation = ({
               <CiEdit className="text-2xl cursor-pointer opacity-80" />
             </div>
           )}
-        </div>
-        <hr />
-        <div className="flex flex-col py-4 lg:flex-row">
-          {/* Image Section */}
-          <div className="md:w-[25%] w-full flex flex-col items-start mb-6 lg:mb-0">
-            {userData?.profile_picture?.file || userData?.profile_picture ? (
-              <img
-                src={
-                  userData?.profile_picture?.file || userData?.profile_picture
-                }
-                alt="Profile"
-                className="w-24 h-24 mb-4 rounded-full"
-              />
-            ) : (
-              <div className="opacity-70">Profile</div>
-            )}
-
-            <div className="text-lg font-semibold">
-              {userData.personalInformation?.first_name}{" "}
-              {userData.personalInformation?.last_name}
-            </div>
-            <div className="opacity-70">
-              ID: TXB-{userData.id?.toString().padStart(4, "0")}
-            </div>
-          </div>
-          {/* Personal Info Sections */}
-          <div className="flex flex-col w-full gap-8 overflow-visible lg:flex-row no-scrollbar whitespace-break-spaces">
+        </CardHeader>
+        <CardContent className="flex items-center pt-6 space-x-4">
+          <div className="grid grid-cols-3 gap-4 mb-4 md:grid-cols-3">
             {personalInfo.map((infoGroup, index) => (
               <div key={index} className="flex flex-col w-full gap-4">
                 {infoGroup.map((info) => (
                   <div className="flex w-full gap-3" key={info.title}>
-                    <div className="opacity-60 w-[150px] lg:w-[40%]">
+                    <div className="w-[150px] lg:w-[40%] text-base text-muted-foreground">
                       {info.title}
                     </div>
-                    <div className="w-[calc(100%-150px)] lg:w-[60%]">
-                      {info.data || "-----"}
+                    <div
+                      className="w-[calc(100%-150px)] lg:w-[60%] text-base text-black"
+                      style={{ overflowWrap: "break-word" }}
+                    >
+                      {info.data || "N/A"}
                     </div>
                   </div>
                 ))}
               </div>
             ))}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
       {showPersonalDetailCard && (
         <EmployeeDetailModal
           openModal={showPersonalDetailCard}
