@@ -12,7 +12,7 @@ import {
   getEmployeeCustomList,
 } from "app/hooks/general";
 import { PageLoader } from "components";
-import SheetOnBoarding from "../../../components/ui/OnBoardingSheet";
+import SheetOnBoarding from "components/ui/OnBoardingSheet";
 import Stats from "../../../components/ui/Stats";
 
 export default function EmployeeManagement() {
