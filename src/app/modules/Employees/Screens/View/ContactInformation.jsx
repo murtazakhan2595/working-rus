@@ -55,6 +55,7 @@ const ContactInformation = ({
     <>
       <Card>
         <CardHeader>
+          <div className="flex justify-between">
           <CardTitle>Contact Information</CardTitle>
           {isEditable && (
             <div
@@ -66,6 +67,7 @@ const ContactInformation = ({
               <CiEdit className="text-2xl cursor-pointer opacity-80" />
             </div>
           )}
+          </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
           <div className="grid grid-cols-3 gap-4 mb-4 md:grid-cols-3">
