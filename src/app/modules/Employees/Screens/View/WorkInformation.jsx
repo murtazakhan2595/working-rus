@@ -8,6 +8,8 @@ import {
   ManagerName,
   getCountryFullName,
 } from "utils/getValuesFromTables";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+
 import moment from "moment";
 
 const WorkInformation = ({
@@ -53,44 +55,44 @@ const WorkInformation = ({
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
-      <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
-        <div className="flex justify-between">
-          <h2 className="text-xl">Work Information</h2>
-          {isEditable && (
-            <div className="flex gap-4 items-center">
-              <FiPlus className="text-2xl cursor-pointer opacity-80" />
-              <div
-                onClick={() => {
-                  setShowPersonalDetailCard(true);
-                }}
-              >
-                {" "}
-                <CiEdit className="text-2xl cursor-pointer opacity-80" />
-              </div>
-            </div>
-          )}
-        </div>
-        <hr />
-        <div className="flex flex-col 1100:flex-row py-4 overflow-auto no-scrollbar">
-          {workInformation.map((infoGroup, groupIndex) => (
-            <div
-              key={groupIndex}
-              className="flex flex-col gap-4 w-full 1100:w-1/3 pt-5"
-            >
-              {infoGroup.map((info) => (
-                <div className="flex w-full gap-3" key={info.title}>
-                  <div className="opacity-60 w-1/2 1100:w-[35%]">
-                    {info.title}
-                  </div>
-                  <div className="w-1/2 1100:w-[65%]">
-                    {info.data || "-----"}
-                  </div>
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between">
+            <CardTitle>Job Details</CardTitle>
+            {isEditable && (
+              <div className="flex gap-4 items-center">
+                <FiPlus className="text-2xl cursor-pointer opacity-80" />
+                <div
+                  onClick={() => {
+                    setShowPersonalDetailCard(true);
+                  }}
+                >
+                  {" "}
+                  <CiEdit className="text-2xl cursor-pointer opacity-80" />
                 </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="flex items-center pt-6 space-x-4">
+          <div className="grid grid-cols-3 gap-4 mb-4 md:grid-cols-3">
+            {workInformation.map((infoGroup, index) => (
+              <div key={index} className="flex flex-col w-full gap-4">
+                {infoGroup.map((info) => (
+                  <div className="flex w-full gap-3" key={info.title}>
+                    <div className="opacity-60 w-1/2 1100:w-[35%]">
+                      {info.title}
+                    </div>
+                    <div className="w-1/2 1100:w-[65%]">
+                      {info.data || "-----"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
       {showPersonalDetailCard && (
         <EmployeeDetailModal
           openModal={showPersonalDetailCard}
@@ -98,8 +100,8 @@ const WorkInformation = ({
             setShowPersonalDetailCard(false);
             getDataByHooks();
           }}
-          employeeId={employeeId}
-          currentClick={8}
+          employeeId={userData.id}
+          currentClick={1}
         />
       )}
     </>

@@ -183,13 +183,13 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
                 getDataByHooks={getDataByHooks}
               />
             </TabsContent>
-            <TabsContent vlaue="security">
+            <TabsContent value="security">
               <IdentificationDetails
                 isEditable={profileView}
                 employeeId={employeeData.id}
               />
             </TabsContent>
-            <TabsContent vlaue="qualification">
+            <TabsContent value="qualification">
               {Array.isArray(experiences) && experiences?.length > 0 && (
                 <Experience
                   isEditable={profileView}
