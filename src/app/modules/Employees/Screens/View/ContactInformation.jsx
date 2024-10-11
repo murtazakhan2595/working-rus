@@ -39,53 +39,66 @@ const ContactInformation = ({
 }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   const contactInformation = [
-    { title: "Emergency Contact", data: userData?.emergency_phone_no },
     {
-      title: "Full Name",
-      sub: true,
-      data:
-        // userData?.emergency_first_name + " " + userData?.emergency_last_name,
-        userData?.emergency_first_name,
+      titile: "Emergency Contact",
+      fields: [
+        {
+          title: "Full Name",
+          data: userData?.emergency_first_name,
+        },
+        { title: "Relation", sub: true, data: userData?.emergency_relation },
+        { title: "Emergency Contact", data: userData?.emergency_phone_no },
+      ],
     },
-    { title: "Relation", sub: true, data: userData?.emergency_relation },
-    { title: "Permanent Address", data: userData?.residential_address },
-    { title: "Present Address", data: userData?.current_address },
+    {
+      titile: "Permanent Address",
+      fields: [
+        { title: "Address", data: userData?.residential_address },
+      ],
+    },
+    {
+      titile: "Present Address",
+      fields: [{ title: "Address", data: userData?.current_address }],
+    },
   ];
   return (
     <>
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-          <CardTitle>Contact Information</CardTitle>
-          {isEditable && (
-            <div
-              className="flex items-center gap-4"
-              onClick={() => {
-                setShowPersonalDetailCard(true);
-              }}
-            >
-              <CiEdit className="text-2xl cursor-pointer opacity-80" />
-            </div>
-          )}
+            <CardTitle>Contact Information</CardTitle>
+            {isEditable && (
+              <div
+                className="flex items-center gap-4"
+                onClick={() => {
+                  setShowPersonalDetailCard(true);
+                }}
+              >
+                <CiEdit className="text-2xl cursor-pointer opacity-80" />
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-3 gap-4 mb-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
             {contactInformation.map((contactInfo, index) => (
-              <div className="flex w-full gap-3" key={index}>
-                <div
-                  className={`opacity-60 w-[50%] 500:w-[35%] ${
-                    contactInfo?.sub && "pl-2 flex"
-                  }`}
-                >
-                  {contactInfo?.sub && (
-                    <FiCornerDownRight className="mr-2 mt-[0.23rem" />
-                  )}{" "}
-                  {contactInfo.title}
+              <div key={index}>
+                <div className="text-[#111827] text-sm font-semibold whitespace-nowrap py-3">
+                  {contactInfo.titile}
                 </div>
-                <div className="500:w-[65%] w-[50%]">
-                  {" "}
-                  {contactInfo.data || "N/A"}
+                <div className="grid grid-cols-1 gap-4">
+                  {contactInfo &&
+                    contactInfo.fields &&
+                    contactInfo.fields.map((info, infoIndex) => (
+                      <div className="flex w-full gap-3" key={infoIndex}>
+                        <div className="w-1/2 text-base text-muted-foreground">
+                          {info.title}
+                        </div>
+                        <div className="w-1/2 text-base text-black">
+                          {info.data || "N/A"}
+                        </div>
+                      </div>
+                    ))}
                 </div>
               </div>
             ))}

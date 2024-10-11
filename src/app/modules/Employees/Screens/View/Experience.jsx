@@ -3,38 +3,39 @@ import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { FiDownload } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
 import { FiPlus } from "react-icons/fi";
-import { formatDate } from "../../../../hooks/employee";
 import moment from "moment";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
 const Experience = ({ experience, isEditable, employeeId, getDataByHooks }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
-      <div className="bg-white shadow border w-full rounded-lg p-4 mb-6">
-        <div className="flex justify-between">
-          <h2 className="text-xl">Experience</h2>
-          {isEditable && (
-            <div
-              className="flex gap-4 items-center"
-              onClick={() => {
-                setShowPersonalDetailCard(true);
-              }}
-            >
-              <FiPlus className="text-lg cursor-pointer opacity-80" />
-              <CiEdit className="text-2xl cursor-pointer opacity-80" />
-            </div>
-          )}
-        </div>
-        <hr />
-        <div className="py-4 overflow-auto no-scrollbar">
+     <Card>
+        <CardHeader>
+          <div className="flex justify-between">
+            <CardTitle>Experience</CardTitle>
+            {isEditable && (
+              <div
+                className="flex items-center gap-4"
+                onClick={() => {
+                  setShowPersonalDetailCard(true);
+                }}
+              >
+                <CiEdit className="text-2xl cursor-pointer opacity-80" />
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="flex items-center pt-6 space-x-4">
+          <div className="grid grid-cols-1 gap-4 mb-4 w-full">
           {experience?.map((exp, index) => (
             <div key={index} className="w-full mb-7">
               <div className="flex flex-col md:flex-row justify-between mb-2">
-                <h3 className="text-lg">{exp.exp_organization || "------"}</h3>
+                <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">{exp.exp_organization || "N/A"}</div>
                 {exp.exp_letter?.file && (
                   <a
                     download={exp.exp_letter?.name}
-                    className="text-sm opacity-60 flex gap-2 items-center no-underline text-black"
+                    className="text-sm flex gap-2 items-center no-underline"
                     href={exp.exp_letter.file}
                   >
                     Experience Letter <FiDownload />
@@ -43,10 +44,10 @@ const Experience = ({ experience, isEditable, employeeId, getDataByHooks }) => {
               </div>
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-[250px] mb-3 md:mb-0">
-                  <div className="text-lg opacity-80">
+                  <div className="text-base text-muted-foreground">
                     {exp.exp_designation || "------"}
                   </div>
-                  <div className="opacity-80">
+                  <div className="text-base text-muted-foreground">
                     {moment(exp.exp_start_date, "YYYY-MM-DD").format(
                       "DD MMMM, YYYY"
                     ) || "00/00/0000"}{" "}
@@ -58,14 +59,16 @@ const Experience = ({ experience, isEditable, employeeId, getDataByHooks }) => {
                       : "Till date"}{" "}
                   </div>
                 </div>
-                <div className="md:w-[calc(100%-250px)] opacity-70">
+                <div className="md:w-[calc(100%-250px)] text-base text-muted-foreground">
                   {exp.exp_discription || "--------"}
                 </div>
               </div>
             </div>
           ))}
-        </div>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
+     
       {showPersonalDetailCard && (
         <EmployeeDetailModal
           openModal={showPersonalDetailCard}

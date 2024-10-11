@@ -7,25 +7,19 @@ import moment from "moment";
 const PersonalInformation = ({ userData, isEditable, getDataByHooks }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   const personalInfo = [
-    [
-      { title: "First Name", data: userData.first_name },
-      { title: "ID Card No", data: userData?.nic },
-      { title: "Nationality", data: getCountryFullName(userData?.nationality) },
-      { title: "Father Name", data: userData?.father_name },
-    ],
-    [
-      { title: "Last Name", data: userData?.last_name },
-      { title: "Email Address", data: userData?.other_email },
-      { title: "Marital Status", data: userData?.marital_status },
-      { title: "Mother Name", data: userData?.mother_name },
-    ],
-    [
-      {
-        title: "Date of Birth",
-        data: moment(userData.date_of_birth).format("MMM DD, YYYY"),
-      },
-      { title: "Contact No", data: userData?.mobile_no },
-    ],
+    { title: "First Name", data: userData.first_name },
+    { title: "ID Card No", data: userData?.nic },
+    { title: "Nationality", data: getCountryFullName(userData?.nationality) },
+    { title: "Father Name", data: userData?.father_name },
+    { title: "Last Name", data: userData?.last_name },
+    { title: "Email Address", data: userData?.other_email },
+    { title: "Marital Status", data: userData?.marital_status },
+    { title: "Mother Name", data: userData?.mother_name },
+    {
+      title: "Date of Birth",
+      data: moment(userData.date_of_birth).format("MMM DD, YYYY"),
+    },
+    { title: "Contact No", data: userData?.mobile_no },
   ];
   return (
     <>
@@ -47,21 +41,17 @@ const PersonalInformation = ({ userData, isEditable, getDataByHooks }) => {
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
           <div className="grid grid-cols-3 gap-4 mb-4 md:grid-cols-3">
-            {personalInfo.map((infoGroup, index) => (
-              <div key={index} className="flex flex-col w-full gap-4">
-                {infoGroup.map((info) => (
-                  <div className="flex w-full gap-3" key={info.title}>
-                    <div className="w-[150px] lg:w-[40%] text-base text-muted-foreground">
-                      {info.title}
-                    </div>
-                    <div
-                      className="w-[calc(100%-150px)] lg:w-[60%] text-base text-black"
-                      style={{ overflowWrap: "break-word" }}
-                    >
-                      {info.data || "N/A"}
-                    </div>
-                  </div>
-                ))}
+            {personalInfo.map((info, index) => (
+              <div className="flex w-full gap-3" key={index}>
+                <div className="w-[150px] lg:w-[40%] text-base text-muted-foreground">
+                  {info.title}
+                </div>
+                <div
+                  className="w-[calc(100%-150px)] lg:w-[60%] text-base text-black"
+                  style={{ overflowWrap: "break-word" }}
+                >
+                  {info.data || "N/A"}
+                </div>
               </div>
             ))}
           </div>

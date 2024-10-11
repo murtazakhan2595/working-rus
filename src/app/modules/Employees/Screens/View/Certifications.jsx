@@ -6,6 +6,7 @@ import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import moment from "moment";
 import { PageLoader } from "components";
 import { getEmployeeCerficationData } from "app/hooks/employee";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
 const Certifications = ({ isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -33,39 +34,37 @@ const Certifications = ({ isEditable, employeeId }) => {
 
   return (
     <>
-      {loading ? (
-        <PageLoader />
-      ) : (
-        <div className="bg-white shadow border w-full rounded-lg p-4 mb-6">
+      <Card>
+        <CardHeader>
           <div className="flex justify-between">
-            <h2 className="text-xl">Certification and License</h2>
+            <CardTitle>Certification and License</CardTitle>
             {isEditable && (
               <div
-                className="flex gap-4 items-center"
+                className="flex items-center gap-4"
                 onClick={() => {
                   setShowPersonalDetailCard(true);
                 }}
               >
-                <FiPlus className="text-lg cursor-pointer opacity-80" />
                 <CiEdit className="text-2xl cursor-pointer opacity-80" />
               </div>
             )}
           </div>
-          <hr />
-          <div className="py-4 overflow-auto no-scrollbar">
+        </CardHeader>
+        <CardContent className="flex items-center pt-6 space-x-4">
+          <div className="grid grid-cols-1 gap-4 mb-4 w-full">
             {certifications?.map((cer, index) => (
               <div
                 key={index}
                 className="w-full flex flex-wrap justify-between mb-7"
               >
                 <div>
-                  <div className="text-lg mb-2">
-                    {cer.certification_name || "------"}
+                  <div className="text-[#111827] font-semibold whitespace-nowrap">
+                    {cer.certification_institute || "N/A"}
                   </div>
-                  <div className="text-lg opacity-80">
-                    {cer.certification_institute || "------"}
+                  <div className="text-base text-black">
+                    {cer.certification_name || "N/A"}
                   </div>
-                  <div className="opacity-70">
+                  <div className="text-base text-black">
                     {moment(cer.completion_date, "YYYY-MM-DD").format(
                       "DD MMMM, YYYY"
                     ) || "00-00-0000"}
@@ -79,10 +78,9 @@ const Certifications = ({ isEditable, employeeId }) => {
                   {cer.certification_body?.file && (
                     <a
                       download={cer.certification_body?.name}
-                      className="flex items-center gap-x-2 mb-3 text-sm opacity-50 py-2 mt-2 font-semibold border border-black rounded-lg font-opensans px-4 no-underline text-black"
+                      className="text-sm flex gap-2 items-center no-underline"
                       href={cer?.certification_body?.file}
                     >
-                      {" "}
                       Certification <FiDownload />
                     </a>
                   )}
@@ -90,8 +88,8 @@ const Certifications = ({ isEditable, employeeId }) => {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        </CardContent>
+      </Card>
       {showPersonalDetailCard && (
         <EmployeeDetailModal
           openModal={showPersonalDetailCard}
