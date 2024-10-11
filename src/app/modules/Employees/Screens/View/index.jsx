@@ -190,27 +190,29 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
               />
             </TabsContent>
             <TabsContent value="qualification">
-              {Array.isArray(experiences) && experiences?.length > 0 && (
-                <Experience
+              <div className="my-2 grid grid-cols-1 gap-4 mb-4">
+                {Array.isArray(educations) && educations?.length > 0 && (
+                  <AcademicInfo
+                    isEditable={profileView}
+                    educations={educations}
+                    employeeId={employeeData.id}
+                    getDataByHooks={getDataByHooks}
+                  />
+                )}
+                {Array.isArray(experiences) && experiences?.length > 0 && (
+                  <Experience
+                    isEditable={profileView}
+                    cv={cv}
+                    experience={experiences}
+                    employeeId={employeeData.id}
+                    getDataByHooks={getDataByHooks}
+                  />
+                )}
+                <Certifications
                   isEditable={profileView}
-                  cv={cv}
-                  experience={experiences}
                   employeeId={employeeData.id}
-                  getDataByHooks={getDataByHooks}
                 />
-              )}
-              {Array.isArray(educations) && educations?.length > 0 && (
-                <AcademicInfo
-                  isEditable={profileView}
-                  educations={educations}
-                  employeeId={employeeData.id}
-                  getDataByHooks={getDataByHooks}
-                />
-              )}
-              <Certifications
-                isEditable={profileView}
-                employeeId={employeeData.id}
-              />
+              </div>
             </TabsContent>
           </Tabs>
         </div>

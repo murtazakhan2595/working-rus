@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { EmployeeDetailModal } from "app/modules/Employees/Screens/Modals";
 import { CiEdit } from "react-icons/ci";
-import { PageLoader } from "components";
 import { getEmployeeVisaDetailData } from "app/hooks/employee";
 import moment from "moment";
 import { FiDownload } from "react-icons/fi";
 import { getVisaLabel } from "utils/getVisaLabel";
 import { getCountryFullName } from "utils/getValuesFromTables";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
 const IdentificationDetails = ({ isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -17,10 +17,11 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
     setLoading(true);
     try {
       const visaData = await getEmployeeVisaDetailData(employeeId);
+
       const identificationDetailsData = [
         ...[
           {
-            title: "ID Details",
+            title: "Identification Details",
             fields: [
               {
                 title: "Current Country ID",
@@ -47,7 +48,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                     download={visaData.id_front.document.name}
                     className="flex items-center no-underline text-black"
                   >
-                    <FiDownload />
+                    Download <FiDownload />
                   </a>
                 ),
               },
@@ -59,7 +60,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                     download={visaData.id_back.document.name}
                     className="flex items-center no-underline text-black"
                   >
-                    <FiDownload />
+                    Download <FiDownload />
                   </a>
                 ),
               },
@@ -103,7 +104,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                         download={visaData.passport_copy.document.name}
                         className="flex items-center no-underline text-black"
                       >
-                        <FiDownload />
+                        Download <FiDownload />
                       </a>
                     ),
                   },
@@ -149,6 +150,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                         download={visaData.insurance_card.document.name}
                         className="flex items-center no-underline text-black"
                       >
+                        Download
                         <FiDownload />
                       </a>
                     ),
@@ -209,7 +211,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                         download={visaData.enter_permit.document.name}
                         className="flex items-center no-underline text-black"
                       >
-                        <FiDownload />
+                        Download <FiDownload />
                       </a>
                     ),
                   },
@@ -221,7 +223,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                         download={visaData.visa_page.document.name}
                         className="flex items-center no-underline text-black"
                       >
-                        <FiDownload />
+                        Download <FiDownload />
                       </a>
                     ),
                   },
@@ -233,7 +235,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                         download={visaData.medical.document.name}
                         className="flex items-center no-underline text-black"
                       >
-                        <FiDownload />
+                        Download <FiDownload />
                       </a>
                     ),
                   },
@@ -245,7 +247,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                         download={visaData.id_application.document.name}
                         className="flex items-center no-underline text-black"
                       >
-                        <FiDownload />
+                        Download <FiDownload />
                       </a>
                     ),
                   },
@@ -265,34 +267,42 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
   }, [employeeId]);
   return (
     <>
-      <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
-        <div className="flex justify-between">
-          <h2 className="text-xl">Identification Details</h2>
-          {isEditable && (
-            <div
-              className="flex gap-4 items-center"
-              onClick={() => {
-                setShowPersonalDetailCard(true);
-              }}
-            >
-              <CiEdit className="text-2xl cursor-pointer opacity-80" />
-            </div>
-          )}
-        </div>
-        <hr />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 py-4">
-          {identificationDetails.map((section, sectionIndex) => (
-            <div key={sectionIndex}>
-              <h3 className="text-lg font-semibold mb-2">{section.title}</h3>
-              {section.fields.map((field, fieldIndex) => (
-                <div className="flex justify-between mb-2" key={fieldIndex}>
-                  <div className="opacity-60 w-1/2">{field.title}</div>
-                  <div className="w-1/2">{field.data || "-----"}</div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+      <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
+        {identificationDetails.map((section, sectionIndex) => (
+          <Card key={sectionIndex}>
+            <CardHeader>
+              <div className="flex justify-between">
+                <CardTitle>{section.title}</CardTitle>
+                {isEditable && (
+                  <div
+                    className="flex items-center gap-4"
+                    onClick={() => {
+                      setShowPersonalDetailCard(true);
+                    }}
+                  >
+                    <CiEdit className="text-2xl cursor-pointer" />
+                  </div>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="flex items-center pt-6 space-x-4">
+              <div className="grid grid-cols-1 gap-4 mb-4 max-w-[400px] w-full">
+                {section &&
+                  section.fields &&
+                  section.fields.map((object, index) => (
+                    <div className="flex justify-between mb-2 " key={index}>
+                      <div className="w-1/2 text-base text-muted-foreground">
+                        {object.title}
+                      </div>
+                      <div className="w-1/2 text-base text-black">
+                        {object.data || "N/A"}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
       {showPersonalDetailCard && (
         <EmployeeDetailModal
