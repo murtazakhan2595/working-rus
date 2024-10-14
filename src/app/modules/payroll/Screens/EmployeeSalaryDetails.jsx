@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   AvatarFallback,
@@ -71,24 +71,27 @@ import { getEarnAndDeduction, getPayslip, saveEmployeePayroll, updateSalaryRevis
 import {calculateEarningsAndDeductions} from "../Sections/CalculationsHelperFunctions"
 
 export default function EmployeeSalaryDetails() {
-  const [date, setDate] = React.useState();
-  const [payrollDetails, setPayrollDetails] = React.useState({});
-  const [salaryRevisions, setSalaryRevisions] = React.useState([]);
-  const [employeeData, setEmployeeData] = React.useState({});
-  const [selectedRevision, setSelectedRevision] = React.useState(null);
-  const [filterData, setFilterData] = React.useState({});
-  const [approvedRevisions, setApprovedRevisions] = React.useState(0);
-  const [pendingRevisions, setPendingRevisions] = React.useState(0);
-  const [rejectedRevisions, setRejectedRevisions] = React.useState(0);
-  const [lastIncrementDate, setLastIncrementDate] = React.useState(null);
-  const [payslips, setPayslips] = React.useState({});
-  const [earnings, setEarnings] = React.useState([]);
-  const [totalEarnings, setTotalEarnings] = React.useState(0);
+  const [date, setDate] = useState();
+  const [payrollDetails, setPayrollDetails] = useState({});
+  const [salaryRevisions, setSalaryRevisions] = useState([]);
+  const [employeeData, setEmployeeData] = useState({});
+  const [selectedRevision, setSelectedRevision] = useState(null);
+  const [filterData, setFilterData] = useState({});
+  const [approvedRevisions, setApprovedRevisions] = useState(0);
+  const [pendingRevisions, setPendingRevisions] = useState(0);
+  const [rejectedRevisions, setRejectedRevisions] = useState(0);
+  const [lastIncrementDate, setLastIncrementDate] = useState(null);
+  const [payslips, setPayslips] = useState([]);
+  const [earnings, setEarnings] = useState([]);
+  const [totalEarnings, setTotalEarnings] = useState(0);
+  const [months, setMonths] = useState([]);
+  const [selectedPayslipId, setSelectedPayslipId] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
 
   const [latestApprovedSalaryRevision, setLatestApprovedSalaryRevision] =
-    React.useState({});
-  const [loading, setLoading] = React.useState(true);
-  const [revisionLoading, setRevisionLoading] = React.useState(false);
+    useState({});
+  const [loading, setLoading] = useState(true);
+  const [revisionLoading, setRevisionLoading] = useState(false);
 
   const { id } = useParams();
   const location = useLocation();
@@ -149,7 +152,7 @@ export default function EmployeeSalaryDetails() {
 
     setLatestApprovedSalaryRevision(latestApprovedSalaryRevision);
 
-    const payslips = await getPayslip({ employee_payroll: id });
+    const payslips = await getPayslip({filterData:{ employee_payroll: id }});
     if (payslips) {
       setPayslips(payslips);
     }
@@ -164,6 +167,56 @@ export default function EmployeeSalaryDetails() {
       setFilterData({ employee_payroll: id });
     }
   }, [id]);
+    
+  useEffect(() => {
+    console.log("payslips", payslips);
+    if (payslips && payslips.results?.length > 0) {
+      const currentYear = new Date().getFullYear(); // Get current year
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      // Set to collect unique months for the current year
+      const uniqueMonths = new Set();
+       const monthToPayslipIdMap = {};
+
+      // Update payslip data to include month name
+      payslips.results.forEach((payslip) => {
+        const generatedAt = new Date(payslip.generated_at);
+        const year = generatedAt.getFullYear();
+        const month = generatedAt.getMonth(); // 0-based index (0 = January)
+
+        // Check if the year is the current year
+        if (year === currentYear) {
+          uniqueMonths.add(month); 
+          payslip.month = monthNames[month]; 
+          monthToPayslipIdMap[month] = payslip.id;
+        }
+      });
+      console.log("uniqueMonths", uniqueMonths);
+
+      // Convert the Set to an array of month objects for the dropdown
+      const currentYearMonths = Array.from(uniqueMonths).map((monthIndex) => ({
+        value: `${currentYear}-${String(monthIndex + 1).padStart(2, "0")}`, // e.g. "2024-01"
+        label: monthNames[monthIndex],
+        payslipId: monthToPayslipIdMap[monthIndex],
+      }));
+      console.log("currentYearMonths", currentYearMonths);
+
+      setMonths(currentYearMonths);
+    }
+  }, [payslips]);
 
   const handleBack = () => {
     navigate(fromMyPayroll ? -2 : -1);
@@ -342,20 +395,32 @@ const handleStatusChange = async (name, value, revision) => {
               <CardTitle className="text-plum-900">PaySlips</CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
-              <Select>
+              <Select
+                onValueChange={(value) => {
+                  const selectedMonth = months.find(
+                    (month) => month.value === value
+                  );
+                  setSelectedMonth(selectedMonth.label);
+                  setSelectedPayslipId(selectedMonth.payslipId);
+                }}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Pick a month" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="jan">January</SelectItem>
-                  <SelectItem value="feb">February</SelectItem>
-                  <SelectItem value="mar">March</SelectItem>
+                <SelectContent className="">
+                  {months?.map((month) => (
+                    <SelectItem key={month.value} value={month.value}>
+                      {month.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Button
                 variant="secondary"
                 onClick={() =>
-                  navigate(`/payslip/${id}?employeeID=${employeeID}`)
+                  navigate(
+                    `/payslip/${selectedPayslipId}?employeeID=${employeeID}`
+                  )
                 }
               >
                 Download Slip
@@ -464,15 +529,15 @@ const handleStatusChange = async (name, value, revision) => {
                       <div className="capitalize">
                         {revision.revision_status.toLowerCase()}
                       </div>
-                      {!fromMyPayroll &&
+                      {!fromMyPayroll && (
                         <StatusDropdown
-                        name="revision_status"
-                        value={revision?.revision_status}
-                        revision={revision}
-                        handleChange={handleStatusChange}
-                        statuses={revisionStatusOptions}
+                          name="revision_status"
+                          value={revision?.revision_status}
+                          revision={revision}
+                          handleChange={handleStatusChange}
+                          statuses={revisionStatusOptions}
                         />
-                      }
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -499,15 +564,15 @@ const handleStatusChange = async (name, value, revision) => {
                           {revision.revision_letter.toLowerCase()}
                         </div>
                       </span>
-                      {!fromMyPayroll &&
-                      <StatusDropdown
-                        name="revision_letter"
-                        value={revision?.revision_letter}
-                        revision={revision}
-                        handleChange={handleStatusChange}
-                        statuses={revisionLetterOptions}
-                      />
-                      }
+                      {!fromMyPayroll && (
+                        <StatusDropdown
+                          name="revision_letter"
+                          value={revision?.revision_letter}
+                          revision={revision}
+                          handleChange={handleStatusChange}
+                          statuses={revisionLetterOptions}
+                        />
+                      )}
                     </div>
                   </TableCell>
                   <TableCell

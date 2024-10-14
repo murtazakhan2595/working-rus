@@ -589,6 +589,25 @@ const getPayun = async (payload) => {
     return [];
   }
 };
+const getPayslipByID = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/payroll/payslip/${id}`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching payslip data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+}
 
 export {
   getEmployeePayroll,
@@ -612,4 +631,5 @@ export {
   getPayrollSummary,
   savePayrun,
   getPayun,
+  getPayslipByID,
 };

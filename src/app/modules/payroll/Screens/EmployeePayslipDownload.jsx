@@ -29,6 +29,8 @@ import { numberToWords } from "utils/renderValues.js";
 import { PageLoader } from "components";
 import { ArrowLeft } from "lucide-react";
 import moment from "moment";
+import { getPayslip } from "app/hooks/payroll";
+import { getPayslipByID } from "app/hooks/payroll";
 
 
 // Dummy Earnings Data
@@ -54,18 +56,8 @@ const dummyDeductionsData = [
 export default function Payslip() {
   const [employeeData, setEmployeeData] = React.useState({});
   const [filterData, setFilterData] = React.useState({});
-  const [payslip, setPayslip] = useState({
-    generated_at: new Date(),
-    total_earnings: dummyEarningsData,
-    total_deductions: dummyDeductionsData,
-    gross_salary: dummyEarningsData.reduce((acc, item) => acc + item.amount, 0),
-    net_salary:
-      dummyEarningsData.reduce((acc, item) => acc + item.amount, 0) -
-      dummyDeductionsData.reduce((acc, item) => acc + item.amount, 0),
-  });
+  const [payslip, setPayslip] = useState();
   const [loading, setLoading] = React.useState(true);
-
-  React.useState({});
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -78,41 +70,25 @@ export default function Payslip() {
       setEmployeeData(empData);
     }
 
-    //   const payslip = await getPayslip({ filterData });
-    //   if (payslip) {
-    //     console.log("payslip", payslip);
-    //     setPaySlip(payslip?.results[0]);
-    //   }
+      const payslip = await getPayslipByID(id);
+      if (payslip) {
+        console.log("payslip", payslip);
+        setPayslip(payslip);
+      }
     setLoading(false);
   };
   useEffect(() => {
-    filterData?.employee_payroll && fetchData();
-  }, [filterData]);
-
-  useEffect(() => {
-    if (employeeID) {
-      setFilterData({ employee_payroll: id });
-    }
+    fetchData();
   }, [id]);
+
 
   const { toPDF, targetRef } = usePDF({
     filename: "payslip.pdf",
     page: { margin: 5 },
   });
 
-  const totalEarnings = payslip.total_earnings.reduce(
-    (sum, item) => sum + item.amount,
-    0
-  );
-  const totalDeductions = payslip.total_deductions.reduce(
-    (sum, item) => sum + item.amount,
-    0
-  );
-  const netPay = totalEarnings - totalDeductions;
-
 
   const isEos = location.pathname.startsWith("/payslip-eos");
-  console.log("isEos", isEos);
   return (
     <>
       <div className="mb-4">
@@ -200,10 +176,10 @@ export default function Payslip() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-4xl font-bold text-plum-900">
-                      {payslip?.basic_salary} AED
+                      {payslip?.net_salary} AED
                     </div>
                     <p className="mt-2 text-sm text-gray-600">
-                      {numberToWords(Number(payslip?.basic_salary))}
+                      {numberToWords(Number(payslip?.net_salary))}
                     </p>
                     <div className="flex justify-between mt-4">
                       <div>
@@ -237,9 +213,13 @@ export default function Payslip() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {payslip?.total_earnings?.map((item, index) => (
+                        {payslip?.total_earning_types?.map((item, index) => (
                           <TableRow key={index}>
-                            <TableCell>{item.description}</TableCell>
+                            <TableCell>
+                              <div className="capitalize">
+                                {item.description}
+                              </div>
+                            </TableCell>
                             <TableCell className="text-right">
                               AED {Number(item.amount).toFixed(2)}
                             </TableCell>
@@ -268,9 +248,13 @@ export default function Payslip() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {payslip?.total_deductions?.map((item, index) => (
+                        {payslip?.total_deduction_types?.map((item, index) => (
                           <TableRow key={index}>
-                            <TableCell>{item.description}</TableCell>
+                            <TableCell>
+                              <div className="capitalize">
+                                {item.description}
+                              </div>
+                            </TableCell>
                             <TableCell className="text-right">
                               AED {Number(item.amount).toFixed(2)}
                             </TableCell>
@@ -290,37 +274,39 @@ export default function Payslip() {
                   </CardContent>
                 </Card>
               </div>
-              {isEos &&<Card>
-                <CardHeader>
-                  <CardTitle>End Of Service</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Earning types</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {dummyEosData?.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{item.description}</TableCell>
+              {isEos && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>End Of Service</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Earning types</TableHead>
+                          <TableHead className="text-right">Amount</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {dummyEosData?.map((item, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{item.description}</TableCell>
+                            <TableCell className="text-right">
+                              AED {Number(item.amount).toFixed(2)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow className="font-bold">
+                          <TableCell>Total in AED</TableCell>
                           <TableCell className="text-right">
-                            AED {Number(item.amount).toFixed(2)}
+                            AED {Number(payslip?.gross_salary).toFixed(2)}
                           </TableCell>
                         </TableRow>
-                      ))}
-                      <TableRow className="font-bold">
-                        <TableCell>Total in AED</TableCell>
-                        <TableCell className="text-right">
-                          AED {Number(payslip?.gross_salary).toFixed(2)}
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              )}
 
               <Card>
                 <CardHeader>
