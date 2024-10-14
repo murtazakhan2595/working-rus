@@ -44,6 +44,7 @@ const CreatePayRun = () => {
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
+
   const navigate = useNavigate();
   const userProfile = useSelector((state) => state.user.userProfile);
   const [payrunSubmitDialog, setPayrunSubmitDialog] = useState(false);
@@ -75,27 +76,48 @@ const CreatePayRun = () => {
       if (earnAndDeductions) {
         setComponent(earnAndDeductions.results);
       }
-
-      const payrollSummary = await getPayrollSummary();
-      if (payrollSummary) {
-        setPayrollData([
-          { title: "Payroll Cost", value: payrollSummary?.total_gross_salary },
-          {
-            title: "Employees' Net Pay",
-            value: payrollSummary?.total_net_salary,
-          },
-          { title: "Total Employees'", value: payrollSummary?.total_employees },
-        ]);
-      }
-
       const payRunData = await getPayun({
         filterData: { date_range: `${currentMonthStart},${currentMonthEnd}` },
       });
       if (payRunData) {
-        console.log("PAYRUN DATA", payRunData?.results);
-        setPayrunDraft(payRunData?.results[0]);
-        setWithheldRows(payRunData?.results[0]?.excluded_employees || []);
+        const payRun = payRunData?.results[0];
+        setPayrunDraft(payRun);
+        setWithheldRows(payRun?.excluded_employees || []);
+        setPayrollData([
+          {
+            title: "Payroll Cost",
+            value: payRun?.gross_amount,
+          },
+          {
+            title: "Employees' Net Pay",
+            value: payRun?.net_amount,
+          },
+          {
+            title: "Total Employees'",
+            value: payRun?.total_employees,
+          },
+        ]);
       }
+      if(payRunData?.count===0){
+        console.log("PROBLEM", payRunData)
+        const payrollSummary = await getPayrollSummary();
+      if (payrollSummary) {
+        setPayrollData([
+          {
+            title: "Payroll Cost",
+            value: payrollSummary?.total_gross_salary,
+          },
+          {
+            title: "Employees' Net Pay",
+            value: payrollSummary?.total_net_salary,
+          },
+          {
+            title: "Total Employees'",
+            value: payrollSummary?.total_employees,
+          },
+        ]);
+      }
+    }
       setIsLoading(false);
     };
 
@@ -104,23 +126,84 @@ const CreatePayRun = () => {
 
   // Function to handle withholding salary
   const handleWithholdSalary = () => {
-    const updatedWithheldEmployees = [...selectedRows, ...withheldRows];
-    setWithheldRows(updatedWithheldEmployees);
-    setSelectedRows([]); // Reset selected rows after withholding
 
-    saveDraft(updatedWithheldEmployees);
+    const updatedWithheldEmployees = [...selectedRows, ...withheldRows];
+    // Find employees in employeedata.results whose IDs are in updatedWithheldEmployees
+    const withheldEmployeeData = updatedWithheldEmployees
+      .map((withheldEmployeeId) => {
+        return employeeData.results.find(
+          (employee) => employee.id === withheldEmployeeId
+        );
+      })
+      .filter((employee) => employee);
+    // Calculate the total withheld salary
+    const totalWithheldSalary = withheldEmployeeData.reduce(
+      (total, employee) => {
+        return total + parseFloat(employee.basic_salary || 0); // Ensure basic_salary is a number
+      },
+      0
+    );
+    const updatedPayrollData = payrollData.map((item) => {
+      if (item.title === "Payroll Cost") {
+        return { ...item, value: (item.value - totalWithheldSalary).toFixed(2) };
+      }
+      if(item.title === "Employees' Net Pay"){
+        return { ...item, value: (item.value - totalWithheldSalary).toFixed(2) };
+      }
+      if(item.title === "Total Employees'"){
+        return { ...item, value: (item.value *1) - selectedRows.length }; // Add the number of employees withheld
+      }
+    });
+    setPayrollData(updatedPayrollData);
+        console.log("UPDATED PAYROLL DATA", updatedPayrollData);
+
+    setWithheldRows(updatedWithheldEmployees);
+    setSelectedRows([]); 
+
+    saveDraft(updatedWithheldEmployees, updatedPayrollData);
   };
 
   // Function to handle providing salary back for selected withheld rows
   const handleProvideSalary = () => {
+    // Find employees in employeeData.results whose IDs are in selectedRows
+    const providedEmployeeData = selectedRows
+      .map((providedEmployeeId) => {
+        return employeeData.results.find(
+          (employee) => employee.id === providedEmployeeId
+        );
+      })
+      .filter((employee) => employee);
+
+    // Calculate the total salary to be provided back
+    const totalProvidedSalary = providedEmployeeData.reduce(
+      (total, employee) => {
+        return total + parseFloat(employee.basic_salary || 0); // Ensure basic_salary is a number
+      },
+      0
+    );
+    // Update payroll data by adding back the provided salary
+    const updatedPayrollData = payrollData.map((item) => {
+      if (item.title === "Payroll Cost") {
+        return { ...item, value: (((item.value *1) + totalProvidedSalary).toFixed(2)) }; // Add back to Payroll Cost
+      }
+      if (item.title === "Employees' Net Pay") {
+        return { ...item, value: (((item.value *1) + totalProvidedSalary).toFixed(2)) }; // Add back to Net Pay
+      }
+      if(item.title === "Total Employees'"){
+        return { ...item, value: (item.value *1) + selectedRows.length }; // Subtract the number of employees provided salary back
+      }
+    });
+    console.log("UPDATED PAYROLL DATA", updatedPayrollData);
+    setPayrollData(updatedPayrollData);
+
     // Remove selected withheld rows from withheldRows state
     const updatedWithheldEmployees = withheldRows.filter(
       (id) => !selectedRows.includes(id)
     );
 
     setWithheldRows(updatedWithheldEmployees);
-    setSelectedRows([]); // Reset selected rows after providing salary back
-    saveDraft(updatedWithheldEmployees);
+    setSelectedRows([]); 
+    saveDraft(updatedWithheldEmployees, updatedPayrollData);
   };
 
   // Determine the selected row types
@@ -163,38 +246,59 @@ const CreatePayRun = () => {
       }, 2000);
     }
   }
-  const saveDraft = async (updatedWithheldEmployees) => {
+
+  const saveDraft = async (updatedWithheldEmployees, updatedPayrollData) => {
+    console.log("IN SAVE DRAFT", payrollData);
     if (payrunDraft) {
       const response = await savePayrun({
         ...payrunDraft,
         excluded_employees: updatedWithheldEmployees,
+        gross_amount: updatedPayrollData.find((item) => item.title === "Payroll Cost")
+          .value,
+        net_amount: updatedPayrollData.find(
+          (item) => item.title === "Employees' Net Pay"
+        ).value,
+        total_employees: updatedPayrollData.find(
+          (item) => item.title === "Total Employees'"
+        ).value,
       });
+      console.log("SAVE DRAFT", response);
       if (!response) {
         toast.error("Something went wrong!");
       } else {
-        setPayrunDraft({
-          ...payrunDraft,
-          excluded_employees: updatedWithheldEmployees,
-        });
+        setPayrunDraft(response);
       }
     } else {
+      console.log("IN ELSE");
       const payRunDraftData = {
-        total_amount: payrollData.find((item) => item.title === "Payroll Cost")
+        total_amount: updatedPayrollData.find((item) => item.title === "Payroll Cost")
           ?.value,
         start_date: currentMonthStart,
         end_date: currentMonthEnd,
         is_payroll_run: false,
         excluded_employees: updatedWithheldEmployees,
+        gross_amount: updatedPayrollData.find((item) => item.title === "Payroll Cost")
+          .value,
+        net_amount: updatedPayrollData.find(
+          (item) => item.title === "Employees' Net Pay"
+        ).value,
+        total_employees: updatedPayrollData.find(
+          (item) => item.title === "Total Employees'"
+        ).value,
       };
       const response = await savePayrun(payRunDraftData);
       if (!response) {
         toast.error("Something went wrong!");
+      } else {
+        setPayrunDraft(response);
       }
     }
   };
   const handleCloseConfirmationDialog = () => {
     setPayrunConfirmationDialog(false);
   };
+
+
   return (
     <div className="flex flex-col gap-4">
       <SuccessNotification

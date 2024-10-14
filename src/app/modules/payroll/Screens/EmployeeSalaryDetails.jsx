@@ -67,7 +67,7 @@ import {numberToWords} from "utils/renderValues.js";
 import { PageLoader } from "components";
 import { revisionLetterOptions, revisionStatusOptions } from "../../../../data/Data";
 import {FilterInput, SelectComponent} from "../../../../components/form-control";
-import { getEarnAndDeduction, saveEmployeePayroll, updateSalaryRevisionStatus } from "../../../hooks/payroll";
+import { getEarnAndDeduction, getPayslip, saveEmployeePayroll, updateSalaryRevisionStatus } from "../../../hooks/payroll";
 import {calculateEarningsAndDeductions} from "../Sections/CalculationsHelperFunctions"
 
 export default function EmployeeSalaryDetails() {
@@ -81,9 +81,9 @@ export default function EmployeeSalaryDetails() {
   const [pendingRevisions, setPendingRevisions] = React.useState(0);
   const [rejectedRevisions, setRejectedRevisions] = React.useState(0);
   const [lastIncrementDate, setLastIncrementDate] = React.useState(null);
+  const [payslips, setPayslips] = React.useState({});
   const [earnings, setEarnings] = React.useState([]);
   const [totalEarnings, setTotalEarnings] = React.useState(0);
-  console.log("EMPLOYEE DATA", employeeData);
 
   const [latestApprovedSalaryRevision, setLatestApprovedSalaryRevision] =
     React.useState({});
@@ -148,6 +148,11 @@ export default function EmployeeSalaryDetails() {
         : {};
 
     setLatestApprovedSalaryRevision(latestApprovedSalaryRevision);
+
+    const payslips = await getPayslip({ employee_payroll: id });
+    if (payslips) {
+      setPayslips(payslips);
+    }
     setLoading(false)
   };
   useEffect(() => {

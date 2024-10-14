@@ -529,6 +529,7 @@ const getPayrollSummary = async () => {
 }
 
 const savePayrun = async (payload) => {
+  console.log("payload", payload);
   try {
     if(payload?.id){
       const response = await axios.patch(
@@ -539,7 +540,7 @@ const savePayrun = async (payload) => {
         }
       );
       if (response.status === 201 || response.status === 200) {
-        return true;
+        return response.data;
       }
     }
     else{
@@ -551,7 +552,8 @@ const savePayrun = async (payload) => {
         }
       );
       if (response.status === 201 || response.status === 200) {
-        return true;
+        console.log("response", response.data);
+        return response.data;
       }
     }
 
