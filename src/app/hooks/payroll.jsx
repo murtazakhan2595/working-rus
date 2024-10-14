@@ -609,6 +609,40 @@ const getPayslipByID = async (id) => {
   }
 }
 
+const saveFinalSettlement = async (payload) => {
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/payroll/finalsettlement/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    } else {
+      const response = await axios.post(
+        `${baseUrl}/payroll/finalsettlement/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving final settlement data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+}
+
 export {
   getEmployeePayroll,
   saveEmployeePayroll,
@@ -632,4 +666,5 @@ export {
   savePayrun,
   getPayun,
   getPayslipByID,
+  saveFinalSettlement,
 };

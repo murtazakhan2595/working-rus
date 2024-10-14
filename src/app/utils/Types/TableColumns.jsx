@@ -268,7 +268,7 @@ export const ExitRequestColumns = (
       dataField: "",
       text: "Action",
       formatter: (cell, row) => (
-        <RenderTerminationAction row={row} reload={reload} />
+        <RenderTerminationAction row={row} reload={reload} viewMode={false}/>
       ),
     });
   }

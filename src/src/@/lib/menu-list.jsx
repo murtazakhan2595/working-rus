@@ -41,7 +41,7 @@ import {
  */
 export function getMenuList(pathname, userRole) {
   const userRolesMap = {
-    isPeopleTeam: userRole === 1 || userRole === 3,
+    isPeopleTeam: userRole === 1 || userRole === 3 || userRole ===2,
     isSelfServiceHub:  userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
     isPayroll: userRole === 1 || userRole === 2 || userRole === 3,    
     isTaskManagement:

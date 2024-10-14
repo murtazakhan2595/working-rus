@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import {
-  ButtonDropdown,
-  DropdownToggle,
   DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "../../../../src/@/components/ui/dropdown-menu"; // Replace with correct path
+import { Button } from "../../../../src/@/components/ui/button"; // Replace with correct path
 import { useSelector } from "react-redux";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
@@ -13,17 +14,19 @@ import { Status, ExitStatusCurrentStep } from "./index";
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { toast } from "react-toastify";
 import { StatusCircleLabel } from "components/StatusLabel";
+import ClearanceSheet from "../Sections/ClearanceSheet"
 
 const RenderTerminationAction = ({ row, reload, viewMode }) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const status = row.status_termination;
-  const toggleDropdown = (index) => {
-    setOpenDropdownRow(index === openDropdownRow ? null : index);
-  };
   const employeeApproval = Status(status, 0);
   const terminationCurrentStep = ExitStatusCurrentStep(status);
+  const [open, setIsOpen] = useState(null);
+
+
   const handleOptionSelect = async (status) => {
+
     try {
       if (row) {
         const payload = {
@@ -39,12 +42,26 @@ const RenderTerminationAction = ({ row, reload, viewMode }) => {
       console.error("Error updating application status:", error);
     }
   };
-  console.log(terminationCurrentStep);
+
   if (loggedInUser.role === 2 || loggedInUser.role === 4) {
-    return "";
+    return null;
   }
+
+  const shouldRender =
+    loggedInUser.role === 3 ||
+    (loggedInUser.role === 1 && terminationCurrentStep !== 3);
+  const isApproved = employeeApproval === "Approved";
+
   return (
     <div>
+      {open && (
+        <ClearanceSheet
+          isOpen={open}
+          setIsOpen={setIsOpen}
+          handleOptionSelect={handleOptionSelect}
+          employeeId={row.employee_id}
+        />
+      )}
       {employeeApproval !== "Approved" ? (
         !viewMode && (
           <div style={{ padding: "0px 12px" }}>
@@ -55,28 +72,20 @@ const RenderTerminationAction = ({ row, reload, viewMode }) => {
           </div>
         )
       ) : (
-        <ButtonDropdown
-          isOpen={openDropdownRow === row.id}
-          toggle={() => toggleDropdown(row.id)}
-        >
-          <DropdownToggle className="border-0 shadow-none bg-transparent">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             {viewMode ? (
-              <button
-                className="btn btn-outline-dark bg-white text-dark shadow-none"
-                style={{
-                  padding: ".35em .65em",
-                  fontSize: ".75em",
-                  minWidth: "100px",
-                  height: "32.25px",
-                }}
-              >
+              <Button variant="outline" className="">
                 <span className="flex justify-center">
                   Action
                   <IoMdArrowDropdown className="text-[20px]" />
                 </span>
-              </button>
+              </Button>
             ) : (
-              <button className="text-zinc-600 text-sm font-normal">
+              <Button
+                className="text-zinc-600 text-sm font-normal"
+                variant="outline"
+              >
                 <div className="flex items-center">
                   <StatusCircleLabel
                     label={TerminationStatus(status || "pending")}
@@ -84,47 +93,45 @@ const RenderTerminationAction = ({ row, reload, viewMode }) => {
                   />
                   <RiArrowDropDownLine className="text-xl text-zinc-600" />
                 </div>
-              </button>
+              </Button>
             )}
-          </DropdownToggle>
-          <DropdownMenu start className="p-6">
-            {loggedInUser.role === 3 ||
-              (loggedInUser.role === 1 && terminationCurrentStep !== 3 && (
-                <>
-                  {employeeApproval === "Approved" && (
-                    <DropdownItem
-                      onClick={() => handleOptionSelect("initiated clearance")}
-                    >
-                      <StatusCircleLabel
-                        label={"Clearance"}
-                        status={"Clearance"}
-                      />
-                    </DropdownItem>
-                  )}
-                  {terminationCurrentStep !== 4 && (
-                    <DropdownItem
-                      onClick={() => {
-                        if (!row.clearance_report)
-                          toast.error(
-                            "Please upload the clearance report to proceed",
-                            {
-                              position: toast.POSITION.TOP_RIGHT,
-                              autoClose: 5000,
-                            }
-                          );
-                        else handleOptionSelect("exit interview");
-                      }}
-                    >
-                      <StatusCircleLabel
-                        label={"Exit Interview"}
-                        status={"exit"}
-                      />
-                    </DropdownItem>
-                  )}
-                </>
-              ))}
-          </DropdownMenu>
-        </ButtonDropdown>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="p-6">
+            {shouldRender && (
+              <>
+                {isApproved && (
+                  <DropdownMenuItem onClick={() => setIsOpen(true)}>
+                    <StatusCircleLabel
+                      label={"Clearance"}
+                      status={"Clearance"}
+                    />
+                  </DropdownMenuItem>
+                )}
+                {terminationCurrentStep !== 4 && (
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (!row.clearance_report) {
+                        toast.error(
+                          "Please upload the clearance report to proceed",
+                          {
+                            position: toast.POSITION.TOP_RIGHT,
+                            autoClose: 5000,
+                          }
+                        );
+                      } else handleOptionSelect("exit interview");
+                    }}
+                  >
+                    <StatusCircleLabel
+                      label={"Exit Interview"}
+                      status={"exit"}
+                    />
+                  </DropdownMenuItem>
+                )}
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   );
