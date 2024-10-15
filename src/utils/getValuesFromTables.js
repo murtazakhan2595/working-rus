@@ -124,13 +124,29 @@ function TerminationReason({ value }) {
 }
 
 function getExperience(joiningDate) {
-  const startDate = moment(joiningDate, "DD-MM-YYYY");
+  let startDate;
+
+  // Try parsing the date using both formats
+  if (moment(joiningDate, "MM-DD-YYYY", true).isValid()) {
+    startDate = moment(joiningDate, "MM-DD-YYYY");
+  } else if (moment(joiningDate, "YYYY-MM-DD", true).isValid()) {
+    startDate = moment(joiningDate, "YYYY-MM-DD");
+  } else {
+    return "Invalid joining date format.";
+  }
+
   const endDate = moment(); // Current date
+
+  // Check if the joining date is in the future
+  if (startDate.isAfter(endDate)) {
+    return "Joining date is in the future.";
+  }
+
   const duration = moment.duration(endDate.diff(startDate));
 
   const years = Math.floor(duration.asYears());
   const months = Math.floor(duration.asMonths()) % 12;
-  console.log("returning `${years} years, ${months} months`",`${years} years, ${months} months`);
+  console.log(`returning ${years} years, ${months} months`);
   return `${years} years, ${months} months`;
 }
 function getExpenseType(value) {
