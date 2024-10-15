@@ -7,6 +7,7 @@ import { getEmployeePayroll } from "app/hooks/payroll";
 import { saveFinalSettlement } from "app/hooks/payroll";
 import { toast } from "react-toastify";
 import { saveEmployeePayroll } from "app/hooks/payroll";
+import { validateClearanceForm } from "app/utils/FormSchema/exitAndClearanceFormSchema";
 
 const ClearanceSheet = ({
   isOpen,
@@ -36,6 +37,7 @@ const ClearanceSheet = ({
   };
   const handleFormSubmit = async(values) => {
     values = { ...values, employee_payroll: payroll.id };
+    console.log("values", values);
     const response = await saveFinalSettlement(values)
     const empPayroll = await saveEmployeePayroll({
       ...payroll,
@@ -66,12 +68,13 @@ const ClearanceSheet = ({
           final_amount: "",
           notes: "",
         }}
-        // validationSchema={validationSchema}
+        validate={validateClearanceForm}
         enableReinitialize={true}
         onSubmit={handleFormSubmit}
       >
         {(props) => (
           <form onSubmit={props.handleSubmit} className="my-6 space-y-6">
+          {console.log("props", props)}
             <div className={`flex w-full flex-col rounded-lg`}>
               <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium  tracking-[0px] text-zinc-900">
                 <div className="flex h-[7px] flex-shrink-0 items-end px-px">
@@ -86,6 +89,7 @@ const ClearanceSheet = ({
                   onChange={(field, value) => {
                     props.setFieldValue(field, value);
                   }}
+                  required={true}
                   placeholder="Pick a date"
                 />
                 <div className="gap-4 flex items-center ">

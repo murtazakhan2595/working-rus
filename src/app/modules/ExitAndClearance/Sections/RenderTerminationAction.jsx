@@ -21,9 +21,11 @@ const RenderTerminationAction = ({ row, reload, viewMode }) => {
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const status = row.status_termination;
   const employeeApproval = Status(status, 0);
+  console.log("status", status);
   const terminationCurrentStep = ExitStatusCurrentStep(status);
   const [open, setIsOpen] = useState(null);
 
+console.log("termination step", terminationCurrentStep);
 
   const handleOptionSelect = async (status) => {
 
@@ -46,7 +48,6 @@ const RenderTerminationAction = ({ row, reload, viewMode }) => {
   if (loggedInUser.role === 2 || loggedInUser.role === 4) {
     return null;
   }
-
   const shouldRender =
     loggedInUser.role === 3 ||
     (loggedInUser.role === 1 && terminationCurrentStep !== 3);
@@ -100,7 +101,7 @@ const RenderTerminationAction = ({ row, reload, viewMode }) => {
           <DropdownMenuContent className="p-6">
             {shouldRender && (
               <>
-                {isApproved && (
+                {isApproved && terminationCurrentStep !==3 && (
                   <DropdownMenuItem onClick={() => setIsOpen(true)}>
                     <StatusCircleLabel
                       label={"Clearance"}
