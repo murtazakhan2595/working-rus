@@ -22,7 +22,7 @@ function CardValues({ values }) {
     { label: "Payment Date", value: values?.run_date || "Yet to process" },
     {
       label: "No. of Employees",
-      value: values?.total_employees || "Yet to process",
+      value: Math.round(values?.total_employees) || "Yet to process",
     },
   ];
   return (

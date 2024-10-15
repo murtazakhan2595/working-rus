@@ -12,17 +12,22 @@ import { useNavigate } from "react-router-dom";
 
 
 function CardValues({ values }) {
+  console.log("IN CARD VALUES", values);
   const items = [
     {
       label: "Employee's Net Pay",
-      value: values?.employeesNetPay
-        ? `AED ${values?.employeesNetPay}`
-        : "Yet to process",
+      value: values?.employeesNetPay || values?.net_amount ? `AED ${values?.net_amount || values?.employeesNetPay}` : "Yet to process",
     },
-    { label: "Payment Date", value: values?.paymentDate || "Yet to process" },
+    {
+      label: "Payment Date",
+      value: values?.paymentDate || values?.run_date || "Yet to process",
+    },
     {
       label: "No. of Employees",
-      value: values?.numberofEmployees || "Yet to process",
+      value:
+        values?.numberofEmployees ||
+        Math.round(values.total_employees) ||
+        "Yet to process",
     },
   ];
   return (
@@ -52,7 +57,9 @@ function PaySlipCard({ cardData }) {
     if (data?.is_payroll_run) {
       return {
         ...data,
-        title,
+
+        title: `Payslips for ${monthName} ${year}`,
+
         buttonLabel: "View Details",
         onBtnClick: () => navigate(`/payroll/pay-slip-details/${data.id}`),
       };
@@ -66,6 +73,7 @@ function PaySlipCard({ cardData }) {
     <>
       {cardData?.results?.map((data, index) => {
         const processedData = processCardData(data);
+        console.log("PROCESSED DATA", processedData);
         return (
           <Card className="mb-4" key={index}>
             <CardHeader>
