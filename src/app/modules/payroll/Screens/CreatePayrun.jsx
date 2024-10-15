@@ -32,6 +32,7 @@ import {
 import { savePayrun } from "app/hooks/payroll";
 import moment from "moment";
 import { getPayun } from "app/hooks/payroll";
+import { getEmpPayrolDetails } from "app/hooks/payroll";
 
 const CreatePayRun = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -65,7 +66,8 @@ const CreatePayRun = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const response = await getEmployeePayroll({ options, filterData });
+      const response = await getEmpPayrolDetails({ options, filterData });
+      // const response = await getEmployeePayroll({ options, filterData });
       if (response) {
         setEmployeeData(response);
       }

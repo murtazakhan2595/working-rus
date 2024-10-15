@@ -642,6 +642,31 @@ const saveFinalSettlement = async (payload) => {
     return false;
   }
 }
+const getEmpPayrolDetails = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/payroll/emppayroldetails/?ordering=-id&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching payroll data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+}
+
 
 export {
   getEmployeePayroll,
@@ -667,4 +692,5 @@ export {
   getPayun,
   getPayslipByID,
   saveFinalSettlement,
+  getEmpPayrolDetails,
 };

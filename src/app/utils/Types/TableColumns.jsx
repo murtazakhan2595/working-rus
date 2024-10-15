@@ -752,35 +752,53 @@ export const createPayrunColumns = (components) => [
     text: "Department",
   },
   {
-    dataField: "basic_salary",
+    dataField: "total_earnings_types",
     text: "Gross Pay",
-    formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
+    formatter: (cell, row) => (
+      <>
+        {"AED " +
+          Math.round(
+            cell +
+              row.total_earnings * 1 +
+              row.basic_salary * 1 +
+              row.total_reimbursements * 1
+          )}
+      </>
+    ),
   },
   {
     dataField: "",
     text: "Earnings",
     formatter: (cell, row) => {
-      const { totalEarnings } = calculateTotalMonthlyEarningsAndDeductions(
-        row.basic_salary,
-        components
+      const total =  (Number(row.basic_salary) +
+          Number(row.total_earnings) +
+          Number(row.total_earnings_types) +
+          Number(row.total_reimbursements)).toFixed(2);
+      return (
+        <>
+          {"AED " + total}
+        </>
       );
-      return <>{"AED "+totalEarnings}</>;
     },
   },
   {
     dataField: "",
     text: "Deductions",
     formatter: (cell, row) => {
-      const { totalDeductions } = calculateTotalMonthlyEarningsAndDeductions(
-        row.basic_salary,
-        components
-      );
-      return <>{ totalDeductions>0?("AED "+totalDeductions):"0.00"} </>;
+      const total = (Number(row.total_deductions) + Number(row.total_deductions_types)).toFixed(2);
+      return <>{total > 0 ? "AED " + total : "0.00"} </>;
     },
   },
   {
-    dataField: "claims",
+    dataField: "total_reimbursements",
     text: "Claims",
+    formatter: (cell, ) => {
+      return (
+        <>
+          { "AED " + cell}
+        </>
+      );
+    },
   },
 ];
 
