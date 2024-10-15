@@ -31,6 +31,7 @@ import { ArrowLeft } from "lucide-react";
 import moment from "moment";
 import { getPayslip } from "app/hooks/payroll";
 import { getPayslipByID } from "app/hooks/payroll";
+import { getFinalSettlement } from "app/hooks/payroll";
 
 
 // Dummy Earnings Data
@@ -47,21 +48,20 @@ const dummyDeductionsData = [
   { description: "Tax", amount: 200 },
   { description: "Insurance", amount: 100 },
 ];
-  const dummyEosData = [
-    { description: "Leave Pay", amount: 200 },
-    { description: "Gratuity", amount: 100 },
-    { description: "Notice Pay", amount: 100 },
-  ]
 
 export default function Payslip() {
   const [employeeData, setEmployeeData] = React.useState({});
   const [filterData, setFilterData] = React.useState({});
-  const [payslip, setPayslip] = useState();
+  const [payslip, setPayslip] = useState(null);
   const [loading, setLoading] = React.useState(true);
+  const [eosData, setEosData] = React.useState([]);
+  const [finalSettlement, setFinalSettlement] = React.useState(null);
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const employeeID = new URLSearchParams(location.search).get("employeeID");
+  const isEos = location.pathname.startsWith("/payslip-eos");
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -76,6 +76,34 @@ export default function Payslip() {
         setPayslip(payslip);
       }
     setLoading(false);
+
+    if(isEos && payslip){
+      const finalSettlement = await getFinalSettlement({
+        filterData: { employee_payroll: payslip.employee_payroll },
+      });
+      console.log("Final Settlement", finalSettlement);
+      const finalSettlementData = finalSettlement.results[0];
+        const eosData = [
+          {
+            description: "Earned Leave Encashment",
+            amount: finalSettlementData.earned_leave_encashment,
+          },
+          {
+            description: "Gratuity",
+            amount: finalSettlementData.gratuity_amount,
+          },
+          {
+            description: "Total Deductions",
+            amount: finalSettlementData.total_deductions,
+          },
+          {
+            description: "Remaining Salary",
+            amount: finalSettlementData.remaining_salary,
+          },
+        ];
+      setEosData(eosData);
+      setFinalSettlement(finalSettlement.results[0]);
+    }
   };
   useEffect(() => {
     fetchData();
@@ -87,8 +115,8 @@ export default function Payslip() {
     page: { margin: 5 },
   });
 
+  console.log("payslip", eosData);
 
-  const isEos = location.pathname.startsWith("/payslip-eos");
   return (
     <>
       <div className="mb-4">
@@ -116,6 +144,10 @@ export default function Payslip() {
           </CardHeader>
           {loading ? (
             <PageLoader />
+          ) : !payslip || payslip?.length === 0 ? (
+            <div className="bg-plum-400 text-plum-900 text-center rounded-lg p-4 mt-4">
+              No Payslip Data Found
+            </div>
           ) : (
             <CardContent className="space-y-6">
               <h2 className="mt-4 text-xl font-semibold text-plum-900">
@@ -288,7 +320,7 @@ export default function Payslip() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {dummyEosData?.map((item, index) => (
+                        {eosData?.map((item, index) => (
                           <TableRow key={index}>
                             <TableCell>{item.description}</TableCell>
                             <TableCell className="text-right">
@@ -299,7 +331,8 @@ export default function Payslip() {
                         <TableRow className="font-bold">
                           <TableCell>Total in AED</TableCell>
                           <TableCell className="text-right">
-                            AED {Number(payslip?.gross_salary).toFixed(2)}
+                            AED{" "}
+                            {Number(finalSettlement?.final_amount).toFixed(2)}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -363,11 +396,13 @@ export default function Payslip() {
           )}
         </Card>
 
-        <div className="w-full max-w-4xl mx-auto mt-4">
-          <CardFooter className="flex justify-end">
-            <Button onClick={() => toPDF()}>Download PDF</Button>
-          </CardFooter>
-        </div>
+        {payslip && payslip.length > 0 && (
+          <div className="w-full max-w-4xl mx-auto mt-4">
+            <CardFooter className="flex justify-end">
+              <Button onClick={() => toPDF()}>Download PDF</Button>
+            </CardFooter>
+          </div>
+        )}
       </div>
     </>
   );

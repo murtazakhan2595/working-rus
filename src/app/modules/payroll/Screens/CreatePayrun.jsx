@@ -99,12 +99,11 @@ const CreatePayRun = () => {
             value: payRun?.total_employees,
           },
         ]);
-      }
+      } 
       if(payRunData?.count===0){
-        console.log("PROBLEM", payRunData)
         const payrollSummary = await getPayrollSummary();
       if (payrollSummary) {
-        setPayrollData([
+        const updatedPayrollData = [
           {
             title: "Payroll Cost",
             value: payrollSummary?.total_gross_salary,
@@ -117,7 +116,26 @@ const CreatePayRun = () => {
             title: "Total Employees'",
             value: payrollSummary?.total_employees,
           },
-        ]);
+        ];
+        setPayrollData(updatedPayrollData);
+         setPayrunDraft({
+           total_amount: updatedPayrollData.find(
+             (item) => item.title === "Payroll Cost"
+           )?.value,
+           start_date: currentMonthStart,
+           end_date: currentMonthEnd,
+           is_payroll_run: false,
+           excluded_employees: withheldRows,
+           gross_amount: updatedPayrollData.find(
+             (item) => item.title === "Payroll Cost"
+           ).value,
+           net_amount: updatedPayrollData.find(
+             (item) => item.title === "Employees' Net Pay"
+           ).value,
+           total_employees: updatedPayrollData.find(
+             (item) => item.title === "Total Employees'"
+           ).value,
+         });
       }
     }
       setIsLoading(false);
@@ -236,6 +254,7 @@ const CreatePayRun = () => {
 
   };
   const handleConfirmSubmit = async () => {
+    console.log("IN HANDLE CONFIRM SUBMIT", payrunDraft);
     const reponse = await savePayrun({
       ...payrunDraft,
       is_payroll_run: true,

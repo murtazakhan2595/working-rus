@@ -43,7 +43,9 @@ const SalarySetup = ({ departments }) => {
     onPageChange: onPageChange,
     onRowClick: (row) => {
       console.log("Row clicked:", row);
-      navigate(`/payroll/salary-setup/${row.id}`);
+      if (row.is_eos_applicable){
+        navigate(`/payroll/salary-setup-eos/${row.id}`);
+      }else navigate(`/payroll/salary-setup/${row.id}`);
     },
   };
 

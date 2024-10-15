@@ -50,6 +50,7 @@ import {
 import {
   getEarnAndDeduction,
   getEmployeePayroll,
+  getPayslip,
   saveEmployeePayroll,
   updateSalaryRevisionStatus,
 } from "../../../hooks/payroll";
@@ -69,10 +70,12 @@ const SalarySetupDetail = () => {
   const [totalDeductions, setTotalDeductions] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
   const [payrollType, setPayrollType] = React.useState("");
+  const [payslips, setPayslips] = React.useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
   const pathname = location.pathname;
+  const isEos = pathname.startsWith("/payroll/salary-setup-eos");
 
   const fetchData = async () => {
     setLoading(true);
@@ -104,6 +107,17 @@ const SalarySetupDetail = () => {
         earnAndDeductionType.results,
         response?.results[0]?.basic_salary
       );
+    }
+
+    
+    if(isEos){
+      const payslips = await getPayslip({
+        filterData: { employee_payroll: response?.results[0]?.id },
+      });
+      console.log("Payslips", payslips);
+      if (payslips) {
+        setPayslips(payslips.results[0]);
+      }
     }
     setLoading(false);
   };
@@ -150,7 +164,7 @@ const SalarySetupDetail = () => {
     }
   };
 
-const isEos = pathname.startsWith("/payroll/salary-setup-eos");
+
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
@@ -205,11 +219,17 @@ const isEos = pathname.startsWith("/payroll/salary-setup-eos");
                   </p>
                 </div>
               </div>
-              {isEos && (
-                <Button className="bg-[#1c2024] text-white align-bottom self-end	">
-                  Download EOS
-                </Button>
-              )}
+              {isEos &&
+                payslips &&(
+                  <Button
+                    className="bg-[#1c2024] text-white align-bottom self-end	"
+                    onClick={() => {
+                      navigate(`/payslip-eos/${payslips.id}?employeeID=${id}`);
+                    }}
+                  >
+                    Download EOS
+                  </Button>
+                )}
             </CardContent>
           </Card>
           <Card className="mb-4">
@@ -337,7 +357,9 @@ const isEos = pathname.startsWith("/payroll/salary-setup-eos");
           <Card className="">
             <CardHeader className="flex flex-row items-center justify-between w-full">
               <CardTitle>
-                {isEos ? "EOS Earnings and Deductions" : "Additional Earnings and Deductions"}
+                {isEos
+                  ? "EOS Earnings and Deductions"
+                  : "Additional Earnings and Deductions"}
               </CardTitle>
               <AddAdditionalEarningSheet
                 isEos={isEos}

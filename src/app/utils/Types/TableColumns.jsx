@@ -659,10 +659,21 @@ export const SalarySetupColumns = [
     dataField: "is_new",
     text: "",
     formatter: (cell, row) => {
+       const showNewBadge = cell === null || cell === true;
+       const showEosBadge = row.is_eos_applicable === true;
       if (cell === null || cell === true) {
         return (
-          <div class="h-[22px] px-3 py-[3px] rounded-[999px] border border-[#f1d1f3] justify-end items-center gap-1.5 inline-flex">
-            <div class="text-[#ab4aba] text-xs font-semibold">New</div>
+          <div class="flex gap-2">
+            {showNewBadge && (
+              <div class="h-[22px] px-3 py-[3px] rounded-full border border-[#f1d1f3] justify-end items-center gap-1.5 inline-flex">
+                <div class="text-[#ab4aba] text-xs font-semibold">New</div>
+              </div>
+            )}
+            {showEosBadge && (
+              <div class="h-[22px] px-3 py-[3px] rounded-full border border-[#f49fb4] justify-end items-center gap-1.5 inline-flex">
+                <div class="text-[#ce1644] text-xs font-semibold">EOS</div>
+              </div>
+            )}
           </div>
         );
       }

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   Avatar,
@@ -63,12 +62,23 @@ import {
   getExperience,
 } from "utils/getValuesFromTables";
 import { getEmployeeData } from "app/hooks/employee";
-import {numberToWords} from "utils/renderValues.js";
+import { numberToWords } from "utils/renderValues.js";
 import { PageLoader } from "components";
-import { revisionLetterOptions, revisionStatusOptions } from "../../../../data/Data";
-import {FilterInput, SelectComponent} from "../../../../components/form-control";
-import { getEarnAndDeduction, getPayslip, saveEmployeePayroll, updateSalaryRevisionStatus } from "../../../hooks/payroll";
-import {calculateEarningsAndDeductions} from "../Sections/CalculationsHelperFunctions"
+import {
+  revisionLetterOptions,
+  revisionStatusOptions,
+} from "../../../../data/Data";
+import {
+  FilterInput,
+  SelectComponent,
+} from "../../../../components/form-control";
+import {
+  getEarnAndDeduction,
+  getPayslip,
+  saveEmployeePayroll,
+  updateSalaryRevisionStatus,
+} from "../../../hooks/payroll";
+import { calculateEarningsAndDeductions } from "../Sections/CalculationsHelperFunctions";
 
 export default function EmployeeSalaryDetails() {
   const [date, setDate] = useState();
@@ -96,7 +106,8 @@ export default function EmployeeSalaryDetails() {
   const { id } = useParams();
   const location = useLocation();
   const employeeID = new URLSearchParams(location.search).get("employeeID");
-   const fromMyPayroll =new URLSearchParams(location.search).get("fromMyPayroll") === "true";
+  const fromMyPayroll =
+    new URLSearchParams(location.search).get("fromMyPayroll") === "true";
 
   const navigate = useNavigate();
 
@@ -114,8 +125,11 @@ export default function EmployeeSalaryDetails() {
     const earnAndDeduction = await getEarnAndDeduction();
     if (earnAndDeduction && response) {
       const { earnings, deductions, totalEarnings, totalDeductions } =
-        calculateEarningsAndDeductions(response.basic_salary, earnAndDeduction.results);
-     
+        calculateEarningsAndDeductions(
+          response.basic_salary,
+          earnAndDeduction.results
+        );
+
       setEarnings(earnings);
       setTotalEarnings(totalEarnings);
     }
@@ -125,10 +139,16 @@ export default function EmployeeSalaryDetails() {
     if (salaryRevisionData) {
       const revisions = salaryRevisionData?.revision || [];
       // Calculate the lengths based on the revision array
-      const approvedRevisions = revisions.filter(revision => revision.revision_status === "APPROVED").length;
-      const pendingRevisions = revisions.filter(revision => revision.revision_status === "PENDING").length;
-      const rejectedRevisions = revisions.filter(revision => revision.revision_status === "REJECTED").length;
-  
+      const approvedRevisions = revisions.filter(
+        (revision) => revision.revision_status === "APPROVED"
+      ).length;
+      const pendingRevisions = revisions.filter(
+        (revision) => revision.revision_status === "PENDING"
+      ).length;
+      const rejectedRevisions = revisions.filter(
+        (revision) => revision.revision_status === "REJECTED"
+      ).length;
+
       setSalaryRevisions(revisions);
       setApprovedRevisions(approvedRevisions);
       setPendingRevisions(pendingRevisions);
@@ -152,11 +172,11 @@ export default function EmployeeSalaryDetails() {
 
     setLatestApprovedSalaryRevision(latestApprovedSalaryRevision);
 
-    const payslips = await getPayslip({filterData:{ employee_payroll: id }});
+    const payslips = await getPayslip({ filterData: { employee_payroll: id } });
     if (payslips) {
       setPayslips(payslips);
     }
-    setLoading(false)
+    setLoading(false);
   };
   useEffect(() => {
     filterData?.employee_payroll && fetchData();
@@ -167,7 +187,7 @@ export default function EmployeeSalaryDetails() {
       setFilterData({ employee_payroll: id });
     }
   }, [id]);
-    
+
   useEffect(() => {
     console.log("payslips", payslips);
     if (payslips && payslips.results?.length > 0) {
@@ -189,7 +209,7 @@ export default function EmployeeSalaryDetails() {
 
       // Set to collect unique months for the current year
       const uniqueMonths = new Set();
-       const monthToPayslipIdMap = {};
+      const monthToPayslipIdMap = {};
 
       // Update payslip data to include month name
       payslips.results.forEach((payslip) => {
@@ -199,8 +219,8 @@ export default function EmployeeSalaryDetails() {
 
         // Check if the year is the current year
         if (year === currentYear) {
-          uniqueMonths.add(month); 
-          payslip.month = monthNames[month]; 
+          uniqueMonths.add(month);
+          payslip.month = monthNames[month];
           monthToPayslipIdMap[month] = payslip.id;
         }
       });
@@ -229,45 +249,42 @@ export default function EmployeeSalaryDetails() {
     fetchData();
   };
 
-  if(loading){
+  if (loading) {
     return <PageLoader />;
   }
 
-    const handleFilterChange = (filterName, filterValue) => {
-      setFilterData((prevFilters) => {
-        const updatedFilters = { ...prevFilters };
-        if (filterValue === "") {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterValue;
-        }
-        return updatedFilters;
-      });
-    };
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
 
-const handleStatusChange = async (name, value, revision) => {
-  setRevisionLoading(true)
-  if(name === "revision_status"){
-    revision.revision_status = value;
-  }
-  else if(name === "revision_letter"){
-    revision.revision_letter = value;
-  }
-  const response = await updateSalaryRevisionStatus(revision);
-  if(response){
-    fetchData()
-    if(revision.revision_status === "APPROVED"){
-      await saveEmployeePayroll({
-        id,
-        basic_salary:revision.new_salary
-      });
+  const handleStatusChange = async (name, value, revision) => {
+    setRevisionLoading(true);
+    if (name === "revision_status") {
+      revision.revision_status = value;
+    } else if (name === "revision_letter") {
+      revision.revision_letter = value;
     }
-  }
+    const response = await updateSalaryRevisionStatus(revision);
+    if (response) {
+      fetchData();
+      if (revision.revision_status === "APPROVED") {
+        await saveEmployeePayroll({
+          id,
+          basic_salary: revision.new_salary,
+        });
+      }
+    }
 
-
-  setRevisionLoading(false)
-
-}
+    setRevisionLoading(false);
+  };
   return (
     <div className="container p-4 mx-auto">
       {selectedRevision && !fromMyPayroll && (
@@ -617,7 +634,9 @@ function SalarySummary({
             </div>
             <div className="flex flex-row gap-6">
               <p className="">Experience</p>
-              <p className="font-medium text-black">{getExperience(joiningDate)} </p>
+              <p className="font-medium text-black">
+                {getExperience(joiningDate)}{" "}
+              </p>
             </div>
             <div className="flex flex-row gap-6">
               <p className="">Salary Type</p>
@@ -648,17 +667,19 @@ function SalarySummary({
   );
 }
 
-
-
-export const StatusDropdown = ({name, value, handleChange, revision, statuses}) => {
-
+export const StatusDropdown = ({
+  name,
+  value,
+  handleChange,
+  revision,
+  statuses,
+}) => {
   return (
     <>
-      
       <Select
         defaultValue={value}
         onValueChange={(value) => {
-          handleChange(name,value, revision);
+          handleChange(name, value, revision);
         }}
         className=""
       >
