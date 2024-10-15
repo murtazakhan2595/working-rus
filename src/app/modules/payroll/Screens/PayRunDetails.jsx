@@ -38,9 +38,6 @@ const PayRunDetails = () => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
-    onRowClick: (row) => {
-      // setSelectedComponent(row);
-    },
   };
 
 
@@ -68,26 +65,36 @@ const PayRunDetails = () => {
   };
 
    const handleDownloadSlip = async () => {
-     const data = [
-       { name: "John", age: 30, city: "New York" },
-       { name: "Jane", age: 28, city: "Los Angeles" },
-     ];
-
-     // Convert data to worksheet
-     const ws = XLSX.utils.json_to_sheet(
-       data
+     const filteredPayslips = paySlipsData?.results?.filter((payslip) =>
+       selectedRows.includes(payslip.id)
      );
+     console.log("filteredPayslips", filteredPayslips);
+     // Create the data structure with the required fields
+     const formattedData = filteredPayslips.map((payslip) => ({
+       employeeid: payslip.employeeid,
+       department_name: payslip.department_name,
+       full_name: payslip.full_name,
+       work_email: payslip.work_email,
+       gross_salary: payslip.gross_salary,
+       net_salary: payslip.net_salary,
+     }));
 
-     // Create a new workbook and append the worksheet
-     const wb = XLSX.utils.book_new();
-     XLSX.utils.book_append_sheet(wb, ws, "Payslips Data");
+     console.log("formattedData", formattedData);
 
-     // Generate Excel file
-     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+     //  // Convert data to worksheet
+      const ws = XLSX.utils.json_to_sheet(formattedData);
 
-     // Save the file
-     const file = new Blob([excelBuffer], { type: "application/octet-stream" });
-     saveAs(file, `Payslips_Data.xlsx`);
+     //  // Create a new workbook and append the worksheet
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Payslips Data");
+
+     //  // Generate Excel file
+      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+
+     //  // Save the file
+      const file = new Blob([excelBuffer], { type: "application/octet-stream" });
+      saveAs(file, `Payslips_Data.xlsx`);
+      setSelectedRows([]);
    };
 
 

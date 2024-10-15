@@ -833,7 +833,7 @@ export const MyClaimsRequestColumns = [
 
 export const downloadPayslipColumns = (components) => [
   {
-    dataField: "employee",
+    dataField: "employeeid",
     text: "ID",
   },
   {
@@ -842,7 +842,7 @@ export const downloadPayslipColumns = (components) => [
     formatter: (cell, row) => (
       <>
         <EmployeeDataInfo
-          name={row.name}
+          name={row.full_name}
           email={row.work_email}
           src={row?.profile_picture?.file}
         />
@@ -854,30 +854,22 @@ export const downloadPayslipColumns = (components) => [
     text: "Department",
   },
   {
-    dataField: "basic_salary",
+    dataField: "gross_salary",
     text: "Salary",
     formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
   },
   {
-    dataField: "",
+    dataField: "gross_salary",
     text: "Total Deductions",
     formatter: (cell, row) => {
-      const { totalEarnings } = calculateTotalMonthlyEarningsAndDeductions(
-        row.basic_salary,
-        components
-      );
-      return <>{"AED " + totalEarnings}</>;
+      return <>{"AED " + (cell - row.net_salary)}</>;
     },
   },
   {
     dataField: "",
     text: "Total Earnings",
     formatter: (cell, row) => {
-      const { totalDeductions } = calculateTotalMonthlyEarningsAndDeductions(
-        row.basic_salary,
-        components
-      );
-      return <>{totalDeductions > 0 ? "AED " + totalDeductions : "0.00"} </>;
+      return <>{row.net_salary > 0 ? "AED " + row.net_salary : "0.00"} </>;
     },
   },
 ];
