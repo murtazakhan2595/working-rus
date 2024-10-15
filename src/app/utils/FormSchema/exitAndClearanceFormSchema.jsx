@@ -19,5 +19,12 @@ const validateTerminationForm = (values) => {
   return errors;
 };
 
+const validateClearanceForm = (values) => {
+  const errors = {};
+  if (!values.last_working_date) {
+    errors.last_working_date = "Last working date is required";
+  }
+  return errors;
+}
 
-export { validateTerminationForm };
+export { validateTerminationForm, validateClearanceForm };

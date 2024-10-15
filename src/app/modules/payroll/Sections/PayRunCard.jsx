@@ -15,14 +15,14 @@ function CardValues({ values }) {
   const items = [
     {
       label: "Employee's Net Pay",
-      value: values?.employeesNetPay
-        ? `AED ${values?.employeesNetPay}`
+      value: values?.net_amount
+        ? `AED ${values?.net_amount}`
         : "Yet to process",
     },
-    { label: "Payment Date", value: values?.paymentDate || "Yet to process" },
+    { label: "Payment Date", value: values?.run_date || "Yet to process" },
     {
       label: "No. of Employees",
-      value: values?.numberofEmployees || "Yet to process",
+      value: values?.total_employees || "Yet to process",
     },
   ];
   return (
@@ -73,6 +73,7 @@ function PayRunCard({ cardData }) {
       );
     });
     console.log("CURRENTMONTHLYPAYRUN", currentMonthPayRun);
+
     if (!currentMonthPayRun) {
       setCardDataList((prevList) => [
         {
@@ -87,10 +88,12 @@ function PayRunCard({ cardData }) {
       ]);
     }
   }, [cardData]);
+  console.log("CARD-DATA-LIST", cardDataList);
   return (
     <>
       {cardDataList?.map((data, index) => {
         const processedData = processCardData(data);
+        console.log("PROCESSED-DATA", processedData);
         return (
           <Card className="mb-4" key={index}>
             <CardHeader>

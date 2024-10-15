@@ -80,7 +80,7 @@ const Terminations = ({ userProfile, filterData }) => {
         <Card>
           <CardContent>
             <TableCustom
-              data={Terminations?.results || []}
+              data={Terminations?.results.slice(0, 1) || []}
               columns={ExitRequestColumns(
                 handleRowClicked,
                 () => {

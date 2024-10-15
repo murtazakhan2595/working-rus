@@ -29,6 +29,9 @@ import { numberToWords } from "utils/renderValues.js";
 import { PageLoader } from "components";
 import { ArrowLeft } from "lucide-react";
 import moment from "moment";
+import { getPayslip } from "app/hooks/payroll";
+import { getPayslipByID } from "app/hooks/payroll";
+import { getFinalSettlement } from "app/hooks/payroll";
 
 
 // Dummy Earnings Data
@@ -45,31 +48,20 @@ const dummyDeductionsData = [
   { description: "Tax", amount: 200 },
   { description: "Insurance", amount: 100 },
 ];
-  const dummyEosData = [
-    { description: "Leave Pay", amount: 200 },
-    { description: "Gratuity", amount: 100 },
-    { description: "Notice Pay", amount: 100 },
-  ]
 
 export default function Payslip() {
   const [employeeData, setEmployeeData] = React.useState({});
   const [filterData, setFilterData] = React.useState({});
-  const [payslip, setPayslip] = useState({
-    generated_at: new Date(),
-    total_earnings: dummyEarningsData,
-    total_deductions: dummyDeductionsData,
-    gross_salary: dummyEarningsData.reduce((acc, item) => acc + item.amount, 0),
-    net_salary:
-      dummyEarningsData.reduce((acc, item) => acc + item.amount, 0) -
-      dummyDeductionsData.reduce((acc, item) => acc + item.amount, 0),
-  });
+  const [payslip, setPayslip] = useState(null);
   const [loading, setLoading] = React.useState(true);
-
-  React.useState({});
+  const [eosData, setEosData] = React.useState([]);
+  const [finalSettlement, setFinalSettlement] = React.useState(null);
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const employeeID = new URLSearchParams(location.search).get("employeeID");
+  const isEos = location.pathname.startsWith("/payslip-eos");
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -78,41 +70,53 @@ export default function Payslip() {
       setEmployeeData(empData);
     }
 
-    //   const payslip = await getPayslip({ filterData });
-    //   if (payslip) {
-    //     console.log("payslip", payslip);
-    //     setPaySlip(payslip?.results[0]);
-    //   }
+      const payslip = await getPayslipByID(id);
+      if (payslip) {
+        console.log("payslip", payslip);
+        setPayslip(payslip);
+      }
     setLoading(false);
+
+    if(isEos && payslip){
+      const finalSettlement = await getFinalSettlement({
+        filterData: { employee_payroll: payslip.employee_payroll },
+      });
+      console.log("Final Settlement", finalSettlement);
+      const finalSettlementData = finalSettlement.results[0];
+        const eosData = [
+          {
+            description: "Earned Leave Encashment",
+            amount: finalSettlementData.earned_leave_encashment,
+          },
+          {
+            description: "Gratuity",
+            amount: finalSettlementData.gratuity_amount,
+          },
+          {
+            description: "Total Deductions",
+            amount: finalSettlementData.total_deductions,
+          },
+          {
+            description: "Remaining Salary",
+            amount: finalSettlementData.remaining_salary,
+          },
+        ];
+      setEosData(eosData);
+      setFinalSettlement(finalSettlement.results[0]);
+    }
   };
   useEffect(() => {
-    filterData?.employee_payroll && fetchData();
-  }, [filterData]);
-
-  useEffect(() => {
-    if (employeeID) {
-      setFilterData({ employee_payroll: id });
-    }
+    fetchData();
   }, [id]);
+
 
   const { toPDF, targetRef } = usePDF({
     filename: "payslip.pdf",
     page: { margin: 5 },
   });
 
-  const totalEarnings = payslip.total_earnings.reduce(
-    (sum, item) => sum + item.amount,
-    0
-  );
-  const totalDeductions = payslip.total_deductions.reduce(
-    (sum, item) => sum + item.amount,
-    0
-  );
-  const netPay = totalEarnings - totalDeductions;
+  console.log("payslip", eosData);
 
-
-  const isEos = location.pathname.startsWith("/payslip-eos");
-  console.log("isEos", isEos);
   return (
     <>
       <div className="mb-4">
@@ -140,6 +144,10 @@ export default function Payslip() {
           </CardHeader>
           {loading ? (
             <PageLoader />
+          ) : !payslip || payslip?.length === 0 ? (
+            <div className="bg-plum-400 text-plum-900 text-center rounded-lg p-4 mt-4">
+              No Payslip Data Found
+            </div>
           ) : (
             <CardContent className="space-y-6">
               <h2 className="mt-4 text-xl font-semibold text-plum-900">
@@ -200,10 +208,10 @@ export default function Payslip() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-4xl font-bold text-plum-900">
-                      {payslip?.basic_salary} AED
+                      {payslip?.net_salary} AED
                     </div>
                     <p className="mt-2 text-sm text-gray-600">
-                      {numberToWords(Number(payslip?.basic_salary))}
+                      {numberToWords(Number(payslip?.net_salary))}
                     </p>
                     <div className="flex justify-between mt-4">
                       <div>
@@ -237,9 +245,13 @@ export default function Payslip() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {payslip?.total_earnings?.map((item, index) => (
+                        {payslip?.total_earning_types?.map((item, index) => (
                           <TableRow key={index}>
-                            <TableCell>{item.description}</TableCell>
+                            <TableCell>
+                              <div className="capitalize">
+                                {item.description}
+                              </div>
+                            </TableCell>
                             <TableCell className="text-right">
                               AED {Number(item.amount).toFixed(2)}
                             </TableCell>
@@ -268,9 +280,13 @@ export default function Payslip() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {payslip?.total_deductions?.map((item, index) => (
+                        {payslip?.total_deduction_types?.map((item, index) => (
                           <TableRow key={index}>
-                            <TableCell>{item.description}</TableCell>
+                            <TableCell>
+                              <div className="capitalize">
+                                {item.description}
+                              </div>
+                            </TableCell>
                             <TableCell className="text-right">
                               AED {Number(item.amount).toFixed(2)}
                             </TableCell>
@@ -290,37 +306,40 @@ export default function Payslip() {
                   </CardContent>
                 </Card>
               </div>
-              {isEos &&<Card>
-                <CardHeader>
-                  <CardTitle>End Of Service</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Earning types</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {dummyEosData?.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{item.description}</TableCell>
+              {isEos && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>End Of Service</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Earning types</TableHead>
+                          <TableHead className="text-right">Amount</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {eosData?.map((item, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{item.description}</TableCell>
+                            <TableCell className="text-right">
+                              AED {Number(item.amount).toFixed(2)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow className="font-bold">
+                          <TableCell>Total in AED</TableCell>
                           <TableCell className="text-right">
-                            AED {Number(item.amount).toFixed(2)}
+                            AED{" "}
+                            {Number(finalSettlement?.final_amount).toFixed(2)}
                           </TableCell>
                         </TableRow>
-                      ))}
-                      <TableRow className="font-bold">
-                        <TableCell>Total in AED</TableCell>
-                        <TableCell className="text-right">
-                          AED {Number(payslip?.gross_salary).toFixed(2)}
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              )}
 
               <Card>
                 <CardHeader>
@@ -377,11 +396,13 @@ export default function Payslip() {
           )}
         </Card>
 
-        <div className="w-full max-w-4xl mx-auto mt-4">
-          <CardFooter className="flex justify-end">
-            <Button onClick={() => toPDF()}>Download PDF</Button>
-          </CardFooter>
-        </div>
+        {payslip && payslip.length > 0 && (
+          <div className="w-full max-w-4xl mx-auto mt-4">
+            <CardFooter className="flex justify-end">
+              <Button onClick={() => toPDF()}>Download PDF</Button>
+            </CardFooter>
+          </div>
+        )}
       </div>
     </>
   );

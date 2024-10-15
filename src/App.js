@@ -209,10 +209,7 @@ function App() {
                     path="/travel-details"
                     element={<ComingSoon />}
                   />
-                  <Route
-                    path="/exit-clearance"
-                    element={<ExitAndClearance />}
-                  />
+
                   <Route path="/customise-employees" element={<ComingSoon />} />
                   <Route path="/relocation" element={<ComingSoon />} />
                   <Route
@@ -283,6 +280,10 @@ function App() {
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
                   <Route path="/leave-requests" element={<LeaveRequest />} />
                   <Route path="/claim-request" element={<ClaimRequest />} />
+                  <Route
+                    path="/exit-clearance"
+                    element={<ExitAndClearance />}
+                  />
                 </>
               )}
             </Route>

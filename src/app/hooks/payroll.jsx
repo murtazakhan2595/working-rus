@@ -529,6 +529,7 @@ const getPayrollSummary = async () => {
 }
 
 const savePayrun = async (payload) => {
+  console.log("payload", payload);
   try {
     if(payload?.id){
       const response = await axios.patch(
@@ -539,7 +540,7 @@ const savePayrun = async (payload) => {
         }
       );
       if (response.status === 201 || response.status === 200) {
-        return true;
+        return response.data;
       }
     }
     else{
@@ -551,7 +552,8 @@ const savePayrun = async (payload) => {
         }
       );
       if (response.status === 201 || response.status === 200) {
-        return true;
+        console.log("response", response.data);
+        return response.data;
       }
     }
 
@@ -587,6 +589,109 @@ const getPayun = async (payload) => {
     return [];
   }
 };
+const getPayslipByID = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/payroll/payslip/${id}`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching payslip data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+}
+
+const saveFinalSettlement = async (payload) => {
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/payroll/finalsettlement/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    } else {
+      const response = await axios.post(
+        `${baseUrl}/payroll/finalsettlement/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving final settlement data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+}
+const getEmpPayrolDetails = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/payroll/emppayroldetails/?ordering=-id&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching payroll data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+}
+
+const getFinalSettlement = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/payroll/finalsettlement/?ordering=-id&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching final settlement data:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+}
+
 
 export {
   getEmployeePayroll,
@@ -610,4 +715,8 @@ export {
   getPayrollSummary,
   savePayrun,
   getPayun,
+  getPayslipByID,
+  saveFinalSettlement,
+  getEmpPayrolDetails,
+  getFinalSettlement,
 };

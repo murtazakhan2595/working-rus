@@ -36,7 +36,6 @@ export default function TableCustom({
   disabledRows,
 }) {
   const [expandedRow, setExpandedRow] = useState(null);
-  console.log("disabledrows", disabledRows);
   const options = {
     page: tableOptions?.page ?? 1,
     sizePerPage: tableOptions?.sizePerPage ?? 10,
