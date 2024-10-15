@@ -18,6 +18,7 @@ import { getEmployeePayroll } from "app/hooks/payroll";
 import { connect } from "react-redux";
 import { saveReimbursement } from "app/hooks/payroll";
 import { toast } from "react-toastify";
+import { validateClaimRequestForm } from "app/utils/FormSchema/payrollFormSchema";
 
 
 
@@ -58,6 +59,10 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   }, []);
 
   const handleFormSubmit = async (values) => {
+    if(!newAttachment){
+      toast.error("Please upload an attachment");
+      return
+    }
     values.attachment = newAttachment ? newAttachment : "";
 
     values.status_hr = {
@@ -76,7 +81,9 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
     const response = await saveReimbursement(values);
     if (response) {
       toast.success("Reimbursement request sent successfully");
+      setNewAttachment(null);
       reload();
+
       setIsOpen(false);
     }
   };
@@ -103,7 +110,6 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
       reader.readAsDataURL(file); // Read file as data URL
     }
   };
-  console.log("newAttachment", newAttachment);
 
   return (
     <div>
@@ -116,7 +122,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
       >
         <Formik
           initialValues={claimRequest}
-          // validationSchema={validationSchema}
+          validate={validateClaimRequestForm}
           enableReinitialize={true}
           onSubmit={handleFormSubmit}
         >
@@ -137,6 +143,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                     touch={props.touched?.expense_type}
                     value={props.values?.expense_type}
                     label={"Expense Type"}
+                    required={true}
                     options={ClaimExpenseTypeOptions}
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
@@ -154,6 +161,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                         touch={props.touched?.amount}
                         value={props.values?.amount}
                         label={"Amount"}
+                        required={true}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
@@ -170,6 +178,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                         touch={props.touched?.payment_date}
                         value={props.values?.payment_date}
                         label={"Date of Expense"}
+                        required={true}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
@@ -187,6 +196,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                     value={props.values?.description}
                     options={ClaimExpenseTypeOptions}
                     label={"Description"}
+                    required={true}
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
                     }}
@@ -228,6 +238,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                             </div>
                             <Button
                               className="bg-white border border-[#e8e8ec] text-[#1c2024]"
+                              type="button"
                               onClick={() =>
                                 document.getElementById("fileInput").click()
                               }
@@ -255,8 +266,10 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
               <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
                 <Button
                   variant="outline"
+                  type="button"
                   size="lg"
                   onClick={() => {
+                    setNewAttachment(null);
                     setIsOpen(false);
                   }}
                 >
@@ -266,7 +279,6 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                   type="submit"
                   size="lg"
                   variant="default"
-                  // className=" bg-[#1c2024] text-white"
                 >
                   Submit
                 </Button>

@@ -10,4 +10,21 @@ const validateRevisedSalaryForm = (values, isEditMode) => {
   return errors;
 };
 
-export { validateRevisedSalaryForm };
+const validateClaimRequestForm = (values) =>{
+  const errors = {};
+  if(!values.expense_type){
+    errors.expense_type = "Expense Type is required";
+  }
+  if(!values.amount){
+    errors.amount = "Amount is required";
+  }
+  if(!values.payment_date){
+    errors.payment_date = "Date of Expense is required";
+  }
+  if(!values.description){
+    errors.description = "Description is required";
+  }
+  return errors;
+}
+
+export { validateRevisedSalaryForm, validateClaimRequestForm };
