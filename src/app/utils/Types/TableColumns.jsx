@@ -730,7 +730,6 @@ export const ClaimRequestColumns = [
     dataField: "attachment",
     text: "Receipt",
     formatter: (cell, row) => (
-      console.log("cell", cell),
       cell?.file ? (
         <div
           onClick={(e) => {
@@ -850,7 +849,6 @@ export const MyClaimsRequestColumns = [
     dataField: "attachment",
     text: "Receipt",
     formatter: (cell, row) => (
-      console.log("cell", cell),
       cell?.file ? (
         <div
           onClick={(e) => {
