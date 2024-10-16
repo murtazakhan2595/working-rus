@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "../../../../components/ui/card.jsx";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "../../../../components/ui/card.jsx";
 import { EmployeePayrollColumns } from "app/utils/Types/TableColumns";
 import CustomTable from "components/CustomTable";
 import Header from "../../../../components/Header.jsx";
@@ -68,29 +72,47 @@ const EmployeesPayroll = ({ departments }) => {
   return (
     <div className="flex flex-col gap-4 profile-management">
       <Header></Header>
-      <div className="flex flex-col justify-end lg:flex-row md:flex-row xl:flex-row">
-        <FilterInput
-          filters={[
-            {
-              type: "select-one",
-              option: departments,
-              name: "department_name",
-              placeholder: "Department",
-            },
-            {
-              type: "select-two",
-              option: salaryTypeOptions,
-              name: "salary_type",
-              placeholder: "Salary Type",
-            },
-          ]}
-          onChange={handleFilterChange}
-        />
-      </div>
       {isLoading ? (
         <PageLoader />
       ) : (
         <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="h-[47px] flex-col justify-center items-start inline-flex">
+                <div className="flex-col justify-start items-start flex">
+                  <div className="self-stretch text-[#ab4aba] text-2xl font-medium  ">
+                    Employee Payroll
+                  </div>
+                </div>
+                <div className="pt-1.5 flex-col justify-start items-start flex">
+                  <div className="flex-col justify-start items-start flex">
+                    <div className="self-stretch text-[#8b8d98] text-sm font-normal ">
+                      Payrolls of all employees are listed below
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col justify-end lg:flex-row md:flex-row xl:flex-row">
+                <FilterInput
+                  filters={[
+                    {
+                      type: "select-one",
+                      option: departments,
+                      name: "department_name",
+                      placeholder: "Department",
+                    },
+                    {
+                      type: "select-two",
+                      option: salaryTypeOptions,
+                      name: "salary_type",
+                      placeholder: "Salary Type",
+                    },
+                  ]}
+                  onChange={handleFilterChange}
+                />
+              </div>
+            </div>
+          </CardHeader>
           <CardContent>
             <CustomTable
               data={employeeData?.results || 0}
