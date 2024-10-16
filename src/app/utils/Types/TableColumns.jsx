@@ -570,7 +570,11 @@ export const EmployeePayrollColumns = [
     text: "Last Revised Date",
     formatter: (cell, row) => {
       // Check if the cell has a value
-      if (!cell) return null;
+      if (!cell) return (
+        <div class="h-[22px] px-3 py-[3px] rounded-full border border-[#f1d1f3] justify-end items-center gap-1.5 inline-flex">
+          <div class="text-[#ab4aba] text-xs font-semibold">New</div>
+        </div>
+      );
 
       // Try parsing the date using both formats
       let formattedDate;
@@ -608,16 +612,37 @@ export const SalaryComponentColumns = (onCheckedChange) => [
   {
     dataField: "income_type",
     text: "Component Type",
-    formatter: (cell) => <div className="capitalize">{cell}</div>,
+    formatter: (cell) => (
+      <div className="">
+        <div className="h-6 px-3 py-[3px] rounded-full border border-[#f0f0f3] justify-center items-center gap-1.5 inline-flex">
+          <div className={`w-1.5 h-1.5 ${cell === "deduction"?"bg-[#29a385]": "bg-[#EA3E69]"} rounded-full`} />
+          <div className="text-[#1c2024] text-xs font-semibold  leading-3 capitalize">
+            {cell}
+          </div>
+        </div>
+      </div>
+    ),
   },
   {
     dataField: "amounts_types",
     text: "Amount Type",
-    formatter: (cell) => <div className="capitalize">{cell}</div>,
+    formatter: (cell) => (
+      <div className="capitalize">
+        {cell === "percentage" ? "Variable" : cell}
+      </div>
+    ),
   },
   {
     dataField: "amounts",
     text: "Amount",
+    formatter: (cell, row) => {
+      console.log("INFO", cell, row);
+      const amount =
+        row.amounts_types === "percentage"
+          ? `${Math.fround(cell)}% of gross`
+          : `AED ${cell} Flat Amount`;
+      return <>{amount}</>;
+    },
   },
   {
     dataField: "is_active",

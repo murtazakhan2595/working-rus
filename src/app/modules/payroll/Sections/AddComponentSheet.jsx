@@ -276,12 +276,12 @@ const ViewComponent = ({ component, handleComponentDelete, setIsEdit }) => {
     <>
       <div className="flex items-center justify-between">
         <div class="w-[217px] h-9 py-1.5 justify-start items-start gap-3 inline-flex">
-          <div class="text-black text-sm font-semibold font-['Inter'] leading-[21px]">
+          <div class="text-black text-sm font-semibold  ">
             {component.name}
           </div>
           <div class="px-3 py-[3px] rounded-[999px] border border-[#f0f0f3] justify-center items-center gap-1.5 flex">
             <div class="w-1.5 h-1.5 bg-[#29a385] rounded-full"></div>
-            <div class="text-[#1c2024] text-xs font-semibold font-['Inter'] leading-3">
+            <div class="text-[#1c2024] text-xs font-semibold capitalize leading-3">
               {component.income_type}
             </div>
           </div>
