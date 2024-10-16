@@ -65,13 +65,6 @@ const SalarySetup = ({ departments }) => {
 
   // Separate handler for Salary filters
   const handleSalaryFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
-    if (filterName === "department_name") {
-      const department = departments.find(
-        (option) => option.value === parseInt(filterValue)
-      );
-      filterValue = department?.label;
-    }
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {

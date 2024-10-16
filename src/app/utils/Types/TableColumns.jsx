@@ -568,6 +568,23 @@ export const EmployeePayrollColumns = [
   {
     dataField: "latest_effective_date",
     text: "Last Revised Date",
+    formatter: (cell, row) => {
+      // Check if the cell has a value
+      if (!cell) return null;
+
+      // Try parsing the date using both formats
+      let formattedDate;
+      if (moment(cell, "MM-DD-YYYY", true).isValid()) {
+        formattedDate = moment(cell, "MM-DD-YYYY").format("MMM D, YYYY");
+      } else if (moment(cell, "YYYY-MM-DD", true).isValid()) {
+        formattedDate = moment(cell, "YYYY-MM-DD").format("MMM D, YYYY");
+      } else {
+        // Handle invalid date format
+        formattedDate = "Invalid Date";
+      }
+
+      return <>{formattedDate}</>;
+    },
   },
 
   {
@@ -713,7 +730,6 @@ export const ClaimRequestColumns = [
     dataField: "attachment",
     text: "Receipt",
     formatter: (cell, row) => (
-      console.log("cell", cell),
       cell?.file ? (
         <div
           onClick={(e) => {
@@ -833,7 +849,6 @@ export const MyClaimsRequestColumns = [
     dataField: "attachment",
     text: "Receipt",
     formatter: (cell, row) => (
-      console.log("cell", cell),
       cell?.file ? (
         <div
           onClick={(e) => {

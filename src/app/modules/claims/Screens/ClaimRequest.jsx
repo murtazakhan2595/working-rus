@@ -134,12 +134,18 @@ const handleDeleteClaims = async () => {
 
     // Filter rejected claims (only those that can be deleted)
     const rejectedClaims = selectedClaimRequests?.filter(
-      (claim) => claim.status_superadmin?.status === "rejected"
+      (claim) =>
+        claim.status_superadmin?.status === "rejected" ||
+        claim.status_hr?.status === "rejected" ||
+        claim.status_manager?.status === "rejected"
     );
 
     // Filter out non-rejected claims (pending or approved)
     const nonRejectedClaims = selectedClaimRequests?.filter(
-      (claim) => claim.status_superadmin?.status !== "rejected"
+      (claim) =>
+        claim.status_superadmin?.status !== "rejected" &&
+        claim.status_hr?.status !== "rejected" &&
+        claim.status_manager?.status !== "rejected"
     );
 
     // Show error if any non-rejected claims are selected

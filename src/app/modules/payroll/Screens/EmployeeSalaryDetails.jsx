@@ -79,6 +79,7 @@ import {
   updateSalaryRevisionStatus,
 } from "../../../hooks/payroll";
 import { calculateEarningsAndDeductions } from "../Sections/CalculationsHelperFunctions";
+import moment from "moment";
 
 export default function EmployeeSalaryDetails() {
   const [date, setDate] = useState();
@@ -630,7 +631,17 @@ function SalarySummary({
           <div className="space-y-4">
             <div className="flex flex-row gap-6">
               <p className="">Joining Date</p>
-              <p className="font-medium text-black">{joiningDate}</p>
+              <p className="font-medium text-black">
+                {moment(
+                  joiningDate,
+                  ["MM-DD-YYYY", "YYYY-MM-DD"],
+                  true
+                ).isValid()
+                  ? moment(joiningDate, ["MM-DD-YYYY", "YYYY-MM-DD"]).format(
+                      "MMM D, YYYY"
+                    )
+                  : "Invalid date"}
+              </p>
             </div>
             <div className="flex flex-row gap-6">
               <p className="">Experience</p>
