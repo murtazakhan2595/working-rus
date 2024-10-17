@@ -174,7 +174,7 @@ export default function LeaveTrackerOverview() {
           <CustomTable className=""
               showHeader={true}
               columns={DashboardLeaveTrackerColumns}
-              data={applications.slice(0, 5)}
+              data={applications?.slice(0, 5)}
               pagination={false}
               
             />
