@@ -46,54 +46,54 @@ import { calculateTotalMonthlyEarningsAndDeductions } from "app/modules/payroll/
  * @param {function} updateLeaveType - A function to update the leave type.
  * @returns {array} An array of column definitions.
  */
-export const LeaveHistoryColumns = (updateLeaveType) => [
-  {
-    dataField: "name",
-    text: "Employees",
-    formatter: (cell, row) => (
-      <EmployeeNameInfo
-        name={`${row.first_name} ${row.last_name}`}
-        department={row.department_name}
-        position={row.department_position}
-      />
-    ),
-  },
-  {
-    dataField: "id",
-    text: "ID",
-    formatter: (cell, row) => <EmployeeID value={cell} />,
-  },
-  {
-    dataField: "direct_report",
-    text: "Report To",
-    formatter: (cell, row) => <ManagerName value={cell} />,
-  },
-  {
-    dataField: "leaveTypes",
-    text: "Leaves Type",
-    formatter: (cell, row) => (
-      <RenderLeaveType row={row} updateLeaveType={updateLeaveType} />
-    ),
-  },
-  {
-    dataField: "allotedLeaves",
-    text: "Leaves Alloted",
-  },
-  {
-    dataField: "usedLeaves",
-    text: "Leaves Used",
-  },
-  {
-    dataField: "remainingLeaves",
-    text: "Remaining Leaves",
-  },
-  {
-    dataField: "",
-    text: "",
-    formatter: (cell) => <IoIosArrowDown className="cursor-pointer" />,
-    roWExpandOnClick: true,
-  },
-];
+// export const LeaveHistoryColumns = (updateLeaveType) => [
+//   {
+//     dataField: "name",
+//     text: "Employees",
+//     formatter: (cell, row) => (
+//       <EmployeeNameInfo
+//         name={`${row.first_name} ${row.last_name}`}
+//         department={row.department_name}
+//         position={row.department_position}
+//       />
+//     ),
+//   },
+//   {
+//     dataField: "id",
+//     text: "ID",
+//     formatter: (cell, row) => <EmployeeID value={cell} />,
+//   },
+//   {
+//     dataField: "direct_report",
+//     text: "Report To",
+//     formatter: (cell, row) => <ManagerName value={cell} />,
+//   },
+//   {
+//     dataField: "leaveTypes",
+//     text: "Leaves Type",
+//     formatter: (cell, row) => (
+//       <RenderLeaveType row={row} updateLeaveType={updateLeaveType} />
+//     ),
+//   },
+//   {
+//     dataField: "allotedLeaves",
+//     text: "Leaves Alloted",
+//   },
+//   {
+//     dataField: "usedLeaves",
+//     text: "Leaves Used",
+//   },
+//   {
+//     dataField: "remainingLeaves",
+//     text: "Remaining Leaves",
+//   },
+//   {
+//     dataField: "",
+//     text: "",
+//     formatter: (cell) => <IoIosArrowDown className="cursor-pointer" />,
+//     roWExpandOnClick: true,
+//   },
+// ];
 /**
  * EmployeeColumns
  * 
@@ -156,37 +156,37 @@ export const EmployeeColumns = [
  * 
  * @returns {array} An array of column definitions.
  */
-export const MyLeavesColumns = [
-  {
-    dataField: "start_date",
-    text: "Start Date",
-    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-  },
-  {
-    dataField: "end_date",
-    text: "End Date",
-    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-  },
-  {
-    dataField: "leave_component_name",
-    text: "Leave Type",
-  },
+// export const MyLeavesColumns = [
+//   {
+//     dataField: "start_date",
+//     text: "Start Date",
+//     formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+//   },
+//   {
+//     dataField: "end_date",
+//     text: "End Date",
+//     formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+//   },
+//   {
+//     dataField: "leave_component_name",
+//     text: "Leave Type",
+//   },
 
-  {
-    dataField: "total_leave",
-    text: "Total Days",
-  },
-  {
-    dataField: "status_hr",
-    text: "Status",
-    formatter: (cell) => <StatusLabel status={Status(cell)} />,
-  },
-  {
-    dataField: "",
-    text: "",
-    formatter: (cell, row) => <RenderStatus row={row} />,
-  },
-];
+//   {
+//     dataField: "total_leave",
+//     text: "Total Days",
+//   },
+//   {
+//     dataField: "status_hr",
+//     text: "Status",
+//     formatter: (cell) => <StatusLabel status={Status(cell)} />,
+//   },
+//   {
+//     dataField: "",
+//     text: "",
+//     formatter: (cell, row) => <RenderStatus row={row} />,
+//   },
+// ];
 /**
  * ExitRequestColumns
  * 
@@ -443,82 +443,82 @@ export const AllJobApplicationColumns = (
   },
 ];
 
-export const AllLeavesApplicationColumns = (reload, userRole) => {
-  const columns = [
-    {
-      dataField: "employee_id",
-      text: "Employees",
-      // formatter: (cell, row) => (
-      //   <EmployeeNameInfo
-      //     name={`${row.name}`}
-      //     department={row.department_name}
-      //     position={row.position}
-      //   />
-      // ),
-    },
-    {
-      dataField: "employee_id",
-      text: "ID",
-      formatter: (cell, row) => <EmployeeID value={cell} />,
-    },
-    {
-      dataField: "report_to",
-      text: "Report To",
-      formatter: (cell, row) => <ManagerName value={cell} />,
-    },
-    {
-      dataField: "leave_component_name",
-      text: "Leave Type",
-    },
-    {
-      dataField: "total_leave",
-      text: "No. of Leaves",
-    },
-    {
-      dataField: "start_date",
-      text: "Start Date",
-      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-    },
-    {
-      dataField: "end_date",
-      text: "End Date",
-      formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-    },
-    {
-      dataField: "status_hr",
-      text: "Status",
-      formatter: (cell) => <StatusLabel status={Status(cell)} />,
-    },
-    {
-      dataField: "",
-      text: "",
-      formatter: (cell, row) => <RenderStatus row={row} />,
-    },
-  ];
-  if (userRole === 1 || userRole === 3) {
-    columns.push({
-      dataField: "action",
-      text: "Action",
-      formatter: (cell, row) => <RenderLeaveAction row={row} reload={reload} />,
-    });
-  }
+// export const AllLeavesApplicationColumns = (reload, userRole) => {
+//   const columns = [
+//     {
+//       dataField: "employee_id",
+//       text: "Employees",
+//       // formatter: (cell, row) => (
+//       //   <EmployeeNameInfo
+//       //     name={`${row.name}`}
+//       //     department={row.department_name}
+//       //     position={row.position}
+//       //   />
+//       // ),
+//     },
+//     {
+//       dataField: "employee_id",
+//       text: "ID",
+//       formatter: (cell, row) => <EmployeeID value={cell} />,
+//     },
+//     {
+//       dataField: "report_to",
+//       text: "Report To",
+//       formatter: (cell, row) => <ManagerName value={cell} />,
+//     },
+//     {
+//       dataField: "leave_component_name",
+//       text: "Leave Type",
+//     },
+//     {
+//       dataField: "total_leave",
+//       text: "No. of Leaves",
+//     },
+//     {
+//       dataField: "start_date",
+//       text: "Start Date",
+//       formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+//     },
+//     {
+//       dataField: "end_date",
+//       text: "End Date",
+//       formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+//     },
+//     {
+//       dataField: "status_hr",
+//       text: "Status",
+//       formatter: (cell) => <StatusLabel status={Status(cell)} />,
+//     },
+//     {
+//       dataField: "",
+//       text: "",
+//       formatter: (cell, row) => <RenderStatus row={row} />,
+//     },
+//   ];
+//   if (userRole === 1 || userRole === 3) {
+//     columns.push({
+//       dataField: "action",
+//       text: "Action",
+//       formatter: (cell, row) => <RenderLeaveAction row={row} reload={reload} />,
+//     });
+//   }
 
-  return columns;
-};
+//   return columns;
+// };
 
-export const LeaveAllotmentColumns = (reload) => [
-  {
-    dataField: "employee_id",
-    text: "",
-    formatter: (cell, row, list) => (
-      <RenderEmployeesLeaveAllotement
-        employee={row}
-        employeeList={list}
-        reload={reload}
-      />
-    ),
-  },
-];
+// export const LeaveAllotmentColumns = (reload) => [
+//   {
+//     dataField: "employee_id",
+//     text: "",
+//     formatter: (cell, row, list) => (
+//       <RenderEmployeesLeaveAllotement
+//         employee={row}
+//         employeeList={list}
+//         reload={reload}
+//       />
+//     ),
+//   },
+// ];
 
 export const ExitTerminatedColumns = [
   {
@@ -939,6 +939,76 @@ export const downloadPayslipColumns = (components) => [
     text: "Total Earnings",
     formatter: (cell, row) => {
       return <>{row.net_salary > 0 ? "AED " + row.net_salary : "0.00"} </>;
+    },
+  },
+];
+
+export const LeaveRecordColumns = [
+  {
+    dataField: "id",
+    text: "ID",
+  },
+  {
+    dataField: "employee",
+    text: "Employee",
+    formatter: (cell, row) => (
+      <>
+        <EmployeeDataInfo
+          name={row.full_name}
+          email={row.work_email}
+          src={row?.profile_picture?.file}
+        />
+      </>
+    ),
+  },
+  {
+    dataField: "department",
+    text: "Department",
+  },
+  {
+    dataField: "total_alloted",
+    text: "Total Alloted",
+  },
+  {
+    dataField: "total_used",
+    text: "Total Used",
+  },
+  {
+    dataField: "total_remaining",
+    text: "Total Remaining",
+  },
+]
+
+export const LeaveTypesColumns = (onCheckedChange)=>[
+  {
+    dataField: "name",
+    text: "Leave Type",
+  },
+  {
+    dataField: "max_days",
+    text: "Number of Days",
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell, row) => {
+      return (
+        <div
+          onClick={(event) => {
+            // Stop the event propagation to prevent onRowClick from being triggered
+            event.stopPropagation();
+          }}
+        >
+          <Switch
+            id="Status"
+            checked={cell}
+            onCheckedChange={(value) => {
+              // The event is handled by the div, so no need to stop it here
+              onCheckedChange(value, row);
+            }}
+          />
+        </div>
+      );
     },
   },
 ];

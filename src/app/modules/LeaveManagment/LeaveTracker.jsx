@@ -147,7 +147,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
 
   return (
     <div className="screen bg-[#F0F1F2]">
-      <Header
+      {/* <Header
         title="My Leave Request"
         content={
           <FilterInput
@@ -217,7 +217,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </div> */}
     </div>
    );
   };

@@ -436,6 +436,60 @@ const TextInput = ({
     </>
   );
 };
+const NumberInput = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  disabled,
+  required,
+  regEx,
+  min,
+  max,
+  step,
+  placeholder,
+}) => {
+  return (
+    <>
+      <div className="flex flex-col gap-4">
+        {label && (
+          <Label htmlFor={name}>
+            {label}
+            {required && <span className="text-red-600">* </span>}
+          </Label>
+        )}
+        <Input
+          type="number"
+          id={name}
+          name={name}
+          autoComplete="Off"
+          placeholder={label ? "Enter " + label : placeholder}
+          value={value ?? ""}
+          disabled={disabled}
+          className={error && touch ? "is-invalid" : ""}
+          min={min}
+          max={max}
+          step={step ?? "any"}
+          onChange={(option) => {
+            const value = option.target.value;
+            if (regEx) {
+              if (!value || regEx.test(value)) {
+                onChange(name, value);
+              }
+            } else {
+              onChange(name, value);
+            }
+          }}
+        />
+
+        {error && touch && <div className="text-red-600">{error}</div>}
+      </div>
+    </>
+  );
+};
+
 const PasswordInput = ({
   name,
   value,
@@ -1108,4 +1162,5 @@ export {
   TextAreaEditorInput,
   PasswordInput,
   RadioGroupInput,
+  NumberInput,
 };
