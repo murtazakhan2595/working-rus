@@ -47,6 +47,7 @@ const CreatePayRun = () => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
+
   const navigate = useNavigate();
   const userProfile = useSelector((state) => state.user.userProfile);
   const [payrunSubmitDialog, setPayrunSubmitDialog] = useState(false);
@@ -54,7 +55,7 @@ const CreatePayRun = () => {
   const currentMonthStart = moment().startOf("month").format("YYYY-MM-DD");
   const currentMonthEnd = moment().endOf("month").format("YYYY-MM-DD");
   const [payrunDraft, setPayrunDraft] = useState(null);
-
+  console.log("payrun draft", payrunDraft);
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -330,6 +331,7 @@ const CreatePayRun = () => {
           <SuccessNotification
             isOpen={payrunSubmitDialog}
             onClose={setPayrunSubmitDialog}
+            date={moment(payrunDraft?.start_date).format("MMMM YYYY")}
           />
           <PayRunSubmitDialog
             isOpen={payrunConfirmationDialog}
@@ -350,7 +352,7 @@ const CreatePayRun = () => {
                   Pay Run for{" "}
                 </span>
                 <span className="text-[#1c2024] text-xl font-bold  leading-tight">
-                  September 2024
+                  {moment(payrunDraft?.start_date).format("MMMM YYYY")}
                 </span>
               </div>
             </div>
@@ -452,7 +454,7 @@ const CreatePayRun = () => {
   );
 };
 
-const SuccessNotification = ({ isOpen, onClose }) => {
+const SuccessNotification = ({ isOpen, onClose, date }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -461,8 +463,7 @@ const SuccessNotification = ({ isOpen, onClose }) => {
           <div className="flex flex-col min-w-[240px]">
             <div className="font-bold">Success!</div>
             <div className="mt-1">
-              Your pay run for{" "}
-              <span className="font-semibold">September 2024</span> was
+              Your pay run for <span className="font-semibold">{date}</span> was
               successfully added
             </div>
           </div>

@@ -21,6 +21,8 @@ import { Download } from 'lucide-react';
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { getPayslip } from "app/hooks/payroll";
+import { getPayRunById } from "app/hooks/payroll";
+import moment from "moment";
 
 
 const PayRunDetails = () => {
@@ -29,6 +31,7 @@ const PayRunDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [component, setComponent] = useState([]);
   const [paySlipsData, setPaySlipsData] = useState();
+  const [payrun, setPayrun] = useState({});
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -52,12 +55,17 @@ const PayRunDetails = () => {
       if(payslipsData){
         setPaySlipsData(payslipsData)
       }
+      const payrun = await getPayRunById(id)
+      if(payrun){
+        setPayrun(payrun)
+      }
       setIsLoading(false);
     };
 
     fetchData();
   }, [options, filterData, id]);
 
+  console.log("paySlipsData", paySlipsData);
 
 
   const handleBack = () => {
@@ -113,7 +121,7 @@ const PayRunDetails = () => {
               Pay Run for{" "}
             </span>
             <span className="text-[#1c2024] text-xl font-bold  leading-tight">
-              September 2024
+              {moment(payrun?.start_date).format("MMMM YYYY")}
             </span>
           </div>
         </div>
