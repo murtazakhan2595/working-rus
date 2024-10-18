@@ -151,7 +151,7 @@ const CreatePayRun = () => {
     // Find employees in employeedata.results whose IDs are in updatedWithheldEmployees
     const withheldEmployeeData = updatedWithheldEmployees
       .map((withheldEmployeeId) => {
-        return employeeData.results.find(
+        return employeeData.find(
           (employee) => employee.id === withheldEmployeeId
         );
       })
@@ -188,7 +188,7 @@ const CreatePayRun = () => {
     // Find employees in employeeData.results whose IDs are in selectedRows
     const providedEmployeeData = selectedRows
       .map((providedEmployeeId) => {
-        return employeeData.results.find(
+        return employeeData.find(
           (employee) => employee.id === providedEmployeeId
         );
       })
@@ -429,10 +429,10 @@ const CreatePayRun = () => {
         </CardHeader>
         <CardContent>
           <CustomTable
-            data={employeeData?.results || []}
+            data={employeeData || []}
             columns={createPayrunColumns(component)}
             pagination={true}
-            dataTotalSize={employeeData.count || 0}
+            dataTotalSize={employeeData?.length || 0}
             tableOptions={tableOptions}
             selectable={true}
             setSelectedRows={setSelectedRows}
