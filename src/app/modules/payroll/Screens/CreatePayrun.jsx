@@ -322,127 +322,133 @@ const CreatePayRun = () => {
 
 
   return (
-    <div className="flex flex-col gap-4">
-      <SuccessNotification
-        isOpen={payrunSubmitDialog}
-        onClose={setPayrunSubmitDialog}
-      />
-      <PayRunSubmitDialog
-        isOpen={payrunConfirmationDialog}
-        onClose={handleCloseConfirmationDialog}
-        onConfirm={handleConfirmSubmit}
-        payrunDraft={payrunDraft}
-      />
-      <div className="flex flex-wrap gap-10 justify-between items-center h-11">
-        <div className="flex items-center gap-4">
-          <button
-            className="w-[27px] h-[27px] bg-white rounded-3xl border border-[#e8e8ec] justify-center items-center gap-1 inline-flex"
-            onClick={handleBack}
-          >
-            <ArrowLeft size={14} color="#000" />
-          </button>
-          <div>
-            <span className="text-[#1c2024] text-xl font-semibold  leading-tight">
-              Pay Run for{" "}
-            </span>
-            <span className="text-[#1c2024] text-xl font-bold  leading-tight">
-              September 2024
-            </span>
-          </div>
-        </div>
-        <Button
-          className="bg-[#1c2024] text-white min-w-[120px]"
-          onClick={handleSubmit}
-        >
-          Submit
-        </Button>
-      </div>
-      <div className="p-6">
-        <section className="flex flex-wrap gap-4 items-center">
-          {payrollData.map((item, index) => (
-            <React.Fragment key={item.title}>
-              <div className="flex-1 shrink min-w-[240px]">
-                <div className="pb-2">
-                  <h2 className="text-sm font-medium tracking-tight leading-none text-neutral-800">
-                    {item.title}
-                  </h2>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold leading-tight text-fuchsia-700">
-                    {item.value}
-                  </p>
-                </div>
-              </div>
-              {index < payrollData.length - 1 && (
-                <div className="relative">
-                  <div className="w-[70px] h-[1px]  rotate-90 border border-[#deade2] absolute top-0 right-[55px]"></div>
-                </div>
-              )}
-            </React.Fragment>
-          ))}
-        </section>
-      </div>
-      <Card>
-        <CardContent className="p-6 flex items-center justify-between">
-          <div className="text-[#ab4aba] text-2xl font-medium ">
-            Payment Date
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="h-[47px] flex-col justify-center items-start inline-flex">
-              <div className="flex-col justify-start items-start flex">
-                <div className="self-stretch text-[#ab4aba] text-2xl font-medium  ">
-                  Employees Summary
-                </div>
-              </div>
-              <div className="pt-1.5 flex-col justify-start items-start flex">
-                <div className="flex-col justify-start items-start flex">
-                  <div className="self-stretch text-[#8b8d98] text-sm  ">
-                    Employee payroll runs generated are here
-                  </div>
-                </div>
+    <>
+      {isLoading ? (
+        <PageLoader />
+      ) : (
+        <div className="flex flex-col gap-4">
+          <SuccessNotification
+            isOpen={payrunSubmitDialog}
+            onClose={setPayrunSubmitDialog}
+          />
+          <PayRunSubmitDialog
+            isOpen={payrunConfirmationDialog}
+            onClose={handleCloseConfirmationDialog}
+            onConfirm={handleConfirmSubmit}
+            payrunDraft={payrunDraft}
+          />
+          <div className="flex flex-wrap gap-10 justify-between items-center h-11">
+            <div className="flex items-center gap-4">
+              <button
+                className="w-[27px] h-[27px] bg-white rounded-3xl border border-[#e8e8ec] justify-center items-center gap-1 inline-flex"
+                onClick={handleBack}
+              >
+                <ArrowLeft size={14} color="#000" />
+              </button>
+              <div>
+                <span className="text-[#1c2024] text-xl font-semibold  leading-tight">
+                  Pay Run for{" "}
+                </span>
+                <span className="text-[#1c2024] text-xl font-bold  leading-tight">
+                  September 2024
+                </span>
               </div>
             </div>
-            {showWithholdButton && !showProvideButton && (
-              <Button
-                className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
-                onClick={handleWithholdSalary}
-              >
-                <div className="text-center text-[#1c2024] text-sm font-medium">
-                  Withhold Salary
-                </div>
-              </Button>
-            )}
-            {showProvideButton && !showWithholdButton && (
-              <Button
-                className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
-                onClick={handleProvideSalary}
-              >
-                <div className="text-center text-[#1c2024] text-sm font-medium">
-                  Provide Salary Back
-                </div>
-              </Button>
-            )}
+            <Button
+              className="bg-[#1c2024] text-white min-w-[120px]"
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
           </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? <PageLoader/> :<CustomTable
-            data={employeeData || []}
-            columns={createPayrunColumns(component)}
-            pagination={true}
-            dataTotalSize={employeeData?.length || 0}
-            tableOptions={tableOptions}
-            selectable={true}
-            setSelectedRows={setSelectedRows}
-            selectedRows={selectedRows}
-            disabledRows={withheldRows}
-          />}
-        </CardContent>
-      </Card>
-    </div>
+          <div className="p-6">
+            <section className="flex flex-wrap gap-4 items-center">
+              {payrollData.map((item, index) => (
+                <React.Fragment key={item.title}>
+                  <div className="flex-1 shrink min-w-[240px]">
+                    <div className="pb-2">
+                      <h2 className="text-sm font-medium tracking-tight leading-none text-neutral-800">
+                        {item.title}
+                      </h2>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold leading-tight text-fuchsia-700">
+                        {item.value}
+                      </p>
+                    </div>
+                  </div>
+                  {index < payrollData.length - 1 && (
+                    <div className="relative">
+                      <div className="w-[70px] h-[1px]  rotate-90 border border-[#deade2] absolute top-0 right-[55px]"></div>
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
+            </section>
+          </div>
+          <Card>
+            <CardContent className="p-6 flex items-center justify-between">
+              <div className="text-[#ab4aba] text-2xl font-medium ">
+                Payment Date
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="h-[47px] flex-col justify-center items-start inline-flex">
+                  <div className="flex-col justify-start items-start flex">
+                    <div className="self-stretch text-[#ab4aba] text-2xl font-medium  ">
+                      Employees Summary
+                    </div>
+                  </div>
+                  <div className="pt-1.5 flex-col justify-start items-start flex">
+                    <div className="flex-col justify-start items-start flex">
+                      <div className="self-stretch text-[#8b8d98] text-sm  ">
+                        Employee payroll runs generated are here
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {showWithholdButton && !showProvideButton && (
+                  <Button
+                    className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
+                    onClick={handleWithholdSalary}
+                  >
+                    <div className="text-center text-[#1c2024] text-sm font-medium">
+                      Withhold Salary
+                    </div>
+                  </Button>
+                )}
+                {showProvideButton && !showWithholdButton && (
+                  <Button
+                    className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
+                    onClick={handleProvideSalary}
+                  >
+                    <div className="text-center text-[#1c2024] text-sm font-medium">
+                      Provide Salary Back
+                    </div>
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <CustomTable
+                data={employeeData || []}
+                columns={createPayrunColumns(component)}
+                pagination={true}
+                dataTotalSize={employeeData?.length || 0}
+                tableOptions={tableOptions}
+                selectable={true}
+                setSelectedRows={setSelectedRows}
+                selectedRows={selectedRows}
+                disabledRows={withheldRows}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </>
   );
 };
 
