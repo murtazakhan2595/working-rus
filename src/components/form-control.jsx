@@ -990,6 +990,8 @@ const FilterInput = ({
   isClearable = true,
   type,
 }) => {
+
+  console.log("filersldkfjslkfslf", filters);
   const classNamesStyle = "";
   const width = "w-56";
   const height = "h-[38px]";
@@ -1003,6 +1005,7 @@ const FilterInput = ({
   };
 
   const renderInputField = (filter, index) => {
+   
     return (
       <div className="relative">
         <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
@@ -1022,6 +1025,7 @@ const FilterInput = ({
   };
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
+     console.log("filter", filter);
     return (
       <Popover key={index} open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -1029,7 +1033,9 @@ const FilterInput = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[200px] justify-between"
+            className={`${
+              filter.width ? filter.width : "w-[200px]"
+            } justify-between`}
           >
             {filter.option.value
               ? filter.option.find((option) => option.value === value)?.label
@@ -1096,7 +1102,6 @@ const FilterInput = ({
       </div>
     );
   };
-
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
       {filters &&

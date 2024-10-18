@@ -21,7 +21,11 @@ import {
 //   LeaveAllotement,
 //   LeaveHistory,
 // } from "app/modules/LeaveManagment";
-import {LeaveTracker,MyLeaveTracker} from "app/modules/LeaveTracker";
+import {
+  LeaveTracker,
+  MyLeaveTracker,
+  LeaveRequests,
+} from "app/modules/LeaveTracker";
 import { Projects, Board } from "app/modules/TaskManagment";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
@@ -168,7 +172,7 @@ function App() {
               <Route exact path="/test" element={<Test />} />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               {/* <Route path="/leave-request" element={<CreateLeaveRequest />} /> */}
-              <Route path="/leave-request" element={<ComingSoon />} />
+
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/my-team" element={<ComingSoon />} />
               <Route path="/my-task" element={<ComingSoon />} />
@@ -281,7 +285,7 @@ function App() {
                   <Route path="/career-planning" element={<ComingSoon />} />
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
-                  {/* <Route path="/leave-requests" element={<LeaveRequest />} /> */}
+                  <Route path="/leave-request" element={<LeaveRequests />} />
                   <Route path="/leave-records" element={<LeaveTracker />} />
                   <Route path="/claim-request" element={<ClaimRequest />} />
                   <Route

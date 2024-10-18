@@ -1,6 +1,6 @@
 
 import { Button } from "components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -17,24 +17,45 @@ import {
   TableRow,
 } from "../../../../src/@/components/ui/table";
 import ApplyLeaveSheet from "../Sections/ApplyLeaveSheet";
+import { getLeaves } from "app/hooks/leaveTracker";
+import { connect } from "react-redux";
+import moment from "moment";
+import ViewLeaveSheet from "../Sections/ViewLeaveSheet";
+import { FilterInput } from "components/form-control";
 
-const leaveData = [
-  { type: "Annual Leave", days: 8, date: "Aug 2 - Jul 23", status: "Pending" },
-  { type: "Casual Leave", days: 4, date: "Aug 2 - Jul 23", status: "Approved" },
-  { type: "Annual Leave", days: 8, date: "Aug 2 - Jul 23", status: "Pending" },
-  { type: "Casual Leave", days: 4, date: "Aug 2 - Jul 23", status: "Approved" },
-  { type: "Annual Leave", days: 8, date: "Aug 2 - Jul 23", status: "Pending" },
-  { type: "Casual Leave", days: 4, date: "Aug 2 - Jul 23", status: "Approved" },
-  { type: "Annual Leave", days: 8, date: "Aug 2 - Jul 23", status: "Pending" },
-  { type: "Sick", days: 8, date: "Aug 2 - Jul 23", status: "Pending" },
-  { type: "Casual Leave", days: 4, date: "Aug 2 - Jul 23", status: "Approved" },
-];
-const MyLeaveTracker = () => {
+const MyLeaveTracker = ({userProfile}) => {
+  const [leaveData, setLeaveData] = useState({});
+  const [selectedLeaveApplication, setSelectedLeaveApplication] = useState(null);
+  const [isOpen, setIsOpen] = useState(true);
+  const [filterData, setFilterData] = useState({});
   const [LeaveTrackerStats, setLeaveTrackerStats] = useState([
     {title: "Total Applications", value: 5},
     {title: "Pending Requests", value: 2},
     {title: "Accepted Requests", value: 3},
   ]);
+console.log("setSelectedLeaveApplication", selectedLeaveApplication);
+  useEffect(() => {
+    const fetchData = async () => {
+      const leaves = await getLeaves({filterData: {employee: userProfile.id}})
+      if(leaves){
+        setLeaveData(leaves)
+      }
+    }
+    fetchData()
+  },[])
+
+
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -44,9 +65,7 @@ const MyLeaveTracker = () => {
             My Leave Tracker
           </div>
         </div>
-        {
-          <ApplyLeaveSheet/>
-        }
+        {<ApplyLeaveSheet />}
       </div>
       <div className="p-6">
         <section className="flex flex-wrap gap-4 items-center">
@@ -73,73 +92,72 @@ const MyLeaveTracker = () => {
           ))}
         </section>
       </div>
-      <div className="flex items-start justify-center gap-4"><AppliedLeaves/> <ConsumedLeaves/></div>
+      <div className="flex items-start justify-center gap-4">
+        <AppliedLeaves
+          leaveData={leaveData}
+          setSelectedLeaveApplication={setSelectedLeaveApplication}
+          setIsOpen={setIsOpen}
+          handleFilterChange={handleFilterChange}
+        />{" "}
+        <ConsumedLeaves />
+      </div>
+      {selectedLeaveApplication && (
+        <ViewLeaveSheet
+          leaveApplication={selectedLeaveApplication}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          isMyLeave={true}
+        />
+      )}
     </div>
   );
 }
 
-export default MyLeaveTracker;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+
+export default connect(mapStateToProps)(MyLeaveTracker);
 
 
 
-
-function AppliedLeaves() {
-  const leaveData = [
-    {
-      type: "Annual Leave",
-      days: 8,
-      date: "Aug 2 - Jul 23",
-      status: "Pending",
-    },
-    {
-      type: "Casual Leave",
-      days: 4,
-      date: "Aug 2 - Jul 23",
-      status: "Approved",
-    },
-    {
-      type: "Annual Leave",
-      days: 8,
-      date: "Aug 2 - Jul 23",
-      status: "Pending",
-    },
-    {
-      type: "Casual Leave",
-      days: 4,
-      date: "Aug 2 - Jul 23",
-      status: "Approved",
-    },
-    {
-      type: "Annual Leave",
-      days: 8,
-      date: "Aug 2 - Jul 23",
-      status: "Pending",
-    },
-    {
-      type: "Annual Leave",
-      days: 8,
-      date: "Aug 2 - Jul 23",
-      status: "Pending",
-    },
-    { type: "Sick", days: 8, date: "Aug 2 - Jul 23", status: "Pending" },
-    {
-      type: "Casual Leave",
-      days: 4,
-      date: "Aug 2 - Jul 23",
-      status: "Approved",
-    },
-  ];
+function AppliedLeaves({
+  leaveData,
+  setSelectedLeaveApplication,
+  setIsOpen,
+  handleFilterChange,
+}) {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-2xl text-fuchsia-700">
           Applied Leaves
         </CardTitle>
-        <div className="flex gap-2">
-        filter
-          {/* <FilterButton text="Status" />
-          <FilterButton text="Leave Type" /> */}
-        </div>
+        <FilterInput
+          filters={[
+            {
+              type: "select-one",
+              option: [],
+              name: "expense_type",
+              placeholder: "Expense Type",
+              width:"max-w-[130px]"
+            },
+            {
+              type: "select-two",
+               width:"max-w-[130px]",
+              option: [
+                { value: "pending", label: "Pending" },
+                { value: "approved", label: "Approved" },
+                { value: "rejected", label: "Rejected" },
+              ],
+              name: "status",
+              placeholder: "Status",
+            },
+          ]}
+          onChange={handleFilterChange}
+        />
       </CardHeader>
       <CardContent>
         <Table>
@@ -152,11 +170,32 @@ function AppliedLeaves() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {leaveData.map((leave, index) => (
-              <TableRow key={index}>
-                <TableCell>{leave.type}</TableCell>
-                <TableCell>{leave.days}</TableCell>
-                <TableCell>{leave.date}</TableCell>
+            {leaveData?.results?.map((leave, index) => (
+              <TableRow
+                key={index}
+                className="cursor-pointer"
+                onClick={() => {
+                  setSelectedLeaveApplication({
+                    component_name: "Annual Leave",
+                    start_date: leave.start_date,
+                    end_date: leave.end_date,
+                    no_of_days: leave.no_of_days,
+                    reason: leave.reason,
+                    action_manager: leave.action_manager,
+                    action_hr: leave.action_hr,
+                    action_superadmin: "Pending",
+                    created_at: leave.created_at,
+                  });
+                  setIsOpen(true);
+                }}
+              >
+                <TableCell>{"-"}</TableCell>
+                <TableCell>{leave.no_of_days}</TableCell>
+                <TableCell>
+                  {`${moment(leave.start_date).format("MMM D")} - ${moment(
+                    leave.end_date
+                  ).format("MMM D")}`}
+                </TableCell>
                 <TableCell>
                   <span
                     className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
