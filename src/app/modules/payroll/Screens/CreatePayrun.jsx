@@ -33,6 +33,7 @@ import { savePayrun } from "app/hooks/payroll";
 import moment from "moment";
 import { getPayun } from "app/hooks/payroll";
 import { getEmpPayrolDetails } from "app/hooks/payroll";
+import { PageLoader } from "components";
 
 const CreatePayRun = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -428,7 +429,7 @@ const CreatePayRun = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <CustomTable
+          {isLoading ? <PageLoader/> :<CustomTable
             data={employeeData || []}
             columns={createPayrunColumns(component)}
             pagination={true}
@@ -438,7 +439,7 @@ const CreatePayRun = () => {
             setSelectedRows={setSelectedRows}
             selectedRows={selectedRows}
             disabledRows={withheldRows}
-          />
+          />}
         </CardContent>
       </Card>
     </div>
