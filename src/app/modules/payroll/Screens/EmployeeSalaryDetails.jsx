@@ -410,7 +410,7 @@ export default function EmployeeSalaryDetails() {
           />
           <Card className="mb-4 h-fit">
             <CardHeader>
-              <CardTitle className="text-plum-900">PaySlips</CardTitle>
+              <CardTitle className="text-plum-900">Salary Slips</CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <Select
