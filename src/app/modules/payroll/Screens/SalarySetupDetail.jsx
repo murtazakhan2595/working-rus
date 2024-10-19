@@ -201,7 +201,7 @@ const SalarySetupDetail = () => {
                     <EmployeeID value={id} />
                   </p>
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-2xl font-bold text-plum-900">
+                    <h2 className="text-2xl font-bold text-black">
                       {employeeData?.first_name} {employeeData?.last_name}
                     </h2>
                     {isEos && (
