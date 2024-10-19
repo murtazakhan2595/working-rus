@@ -130,7 +130,7 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
                 <p className="text-base text-black">
                   <EmployeeID value={userId} />
                 </p>
-                <h2 className="text-2xl font-bold text-plum-900">
+                <h2 className="text-2xl font-bold text-black">
                   {employeeData?.first_name} {employeeData?.last_name}
                 </h2>
                 <p className="text-base text-muted-foreground">
