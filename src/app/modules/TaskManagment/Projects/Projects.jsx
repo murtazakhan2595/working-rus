@@ -145,6 +145,10 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
     setIsDeleteModalOpen(true);
   };
 
+  const navigateToBoard = () => {
+    navigate(`/project-board/${project.id}`);
+  };
+
 
 
   return (
@@ -169,13 +173,14 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
             </div>
           </CardHeader>
           <CardContent>
+            <div onClick={navigateToBoard}>
             <h3 className="text-lg font-semibold mb-2 text-[#11182c]">{project.name}</h3>
             <div className="flex text-gray-500 text-sm mb-4">
                <ListTodo size={18}/> <span className="ml-2 font-semibold">16</span> Tasks
             </div>
-
+            </div>
           </CardContent>
-          <div className="border border-gray-400"/>
+          <div className="border border-gray-400 m-2"/>
           <CardFooter className="flex justify-between">
             <div className="text-gray-400 text-sm flex justify-center gap-2"> <Clock/> {moment(project.start_date).format("MMM D, YYYY")}</div>
              <MembersList members={project?.project_members || []} />
