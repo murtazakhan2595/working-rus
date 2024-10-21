@@ -3,20 +3,14 @@ import { toast, ToastContainer } from "react-toastify";
 import { connect } from "react-redux";
 import { RxCross2, RxPlus } from "react-icons/rx";
 import { Members } from "../Sections";
-import { Card, Row, Col,Form } from "reactstrap";
 import { Formik } from "formik";
 import { addProject, getProjectById } from "app/hooks/taskManagment";
-import {
-  TextInput,
-  SelectComponent,
-  TextAreaEditorInput,
-} from "components/form-control.jsx";
+import { TextInput, SelectComponent } from "components/form-control.jsx";
 import { Project } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 import { DateInput } from "components/form-control";
 import { useDispatch } from "react-redux";
 import { fetchProjects } from "state/slices/CommonSlice";
-import { CardHeader, CardTitle } from "components/ui/card";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
 
@@ -138,9 +132,10 @@ const ProjectForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                          <p>Give important details regarding the new project</p>
+                          <p>
+                            Give important details regarding the new project
+                          </p>
                         </div>
-
                       </div>
                     </div>
 
@@ -208,46 +203,52 @@ const ProjectForm = ({
                           </div>
                         </div>
                         {membersOpen && (
-                            <SelectComponent
-                              name="project_members"
-                              options={employees}
-                              error={props.errors.project_members}
-                              touch={props.touched.project_members}
-                              // value={props.values.project_members}
-                              label="Project Members"
-                              required
-                              onChange={(field, value) => {
-                                setMembersOpen(false);
-                                const members =
-                                  props.values.project_members || [];
-                                members.push(value);
-                                props.setFieldValue(field, members);
-                              }}
-                            />
+                          <SelectComponent
+                            name="project_members"
+                            options={employees}
+                            error={props.errors.project_members}
+                            touch={props.touched.project_members}
+                            // value={props.values.project_members}
+                            label="Project Members"
+                            required
+                            onChange={(field, value) => {
+                              setMembersOpen(false);
+                              const members =
+                                props.values.project_members || [];
+                              members.push(value);
+                              props.setFieldValue(field, members);
+                            }}
+                          />
                         )}
+
+                        <div className="flex items-center gap-10">
+                          <div className="space-y-2">
+                            <span className="label text-[14px]">Status</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
                     <div className="p-6 border-t border-gray-200 ">
-                    <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={() => {
-                          setIsOpen(false);
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        size="lg"
-                        // disabled={!props.values.condition}
-                      >
-                       {isEditMode ? "Update" : "Add"}
-                      </Button>
+                      <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={() => {
+                            setIsOpen(false);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="submit"
+                          size="lg"
+                          // disabled={!props.values.condition}
+                        >
+                          {isEditMode ? "Update" : "Add"}
+                        </Button>
+                      </div>
                     </div>
-                  </div>
                   </form>
                 )}
               </Formik>

@@ -34,7 +34,7 @@ const CreateEditProject = () => {
   const formSheetData = {
     triggerText: 'Add New Project',
     title: 'Add New Project',
-    description: 'Please fill out the form below to add a new project.',
+    description: null,
     footer: null,
   };
 

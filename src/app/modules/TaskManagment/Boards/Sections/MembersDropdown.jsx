@@ -1,48 +1,46 @@
 import React, { useState } from "react";
-import {
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+import { useSelector } from "react-redux";
 import { EmployeeNameInfo } from "components";
 import { MembersList } from "../../Sections";
-import { useSelector } from "react-redux";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../../../../src/@/components/ui/dropdown-menu";
 
 const MembersDropdown = ({ members }) => {
-  const employees =  useSelector((state) => state.emp.employees);
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
+  const employees = useSelector((state) => state.emp.employees);
+  const [openDropdownRow, setOpenDropdownRow] = useState(false);
   const itemClassName = "px-0 py-2";
   const toggleDropdown = () => {
     setOpenDropdownRow(!openDropdownRow);
   };
+
   return (
     <>
       {members && members.length > 1 ? (
-        <ButtonDropdown
-          isOpen={!!openDropdownRow}
-          toggle={() => toggleDropdown()}
-        >
-          <DropdownToggle className="border-0 shadow-none bg-transparent">
-            <MembersList members={members} />
-          </DropdownToggle>
-          <DropdownMenu start className="p-3 ml-2 w-[250px]" >
-            {employees && members.map((member) => {
-                const employee = employees.find((emp) => emp.value === parseInt(member));
-              return (
-                <DropdownItem className={`${itemClassName}`} >
-                  <span>
-                    <EmployeeNameInfo
-                      name={`${employee?.name}`}
-                      department={employee?.department_name}
-                      position={employee?.department_position}
-                    />
-                  </span>
-                </DropdownItem>
-              );
-            })}
-          </DropdownMenu>
-        </ButtonDropdown>
+        <DropdownMenu open={openDropdownRow} onOpenChange={toggleDropdown}>
+          <DropdownMenuTrigger asChild>
+            <button className="border-0 shadow-none bg-transparent">
+              <MembersList members={members} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="p-3 ml-2 w-[250px]">
+            {employees &&
+              members.map((member) => {
+                const employee = employees.find(
+                  (emp) => emp.value === parseInt(member)
+                );
+                return (
+                  <DropdownMenuItem key={member} className={itemClassName}>
+                    <span>
+                      <EmployeeNameInfo
+                        name={employee?.name}
+                        department={employee?.department_name}
+                        position={employee?.department_position}
+                      />
+                    </span>
+                  </DropdownMenuItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       ) : (
         <MembersList members={members} />
       )}
