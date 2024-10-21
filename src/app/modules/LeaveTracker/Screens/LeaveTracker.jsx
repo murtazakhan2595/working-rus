@@ -31,6 +31,7 @@ import { LeaveTypesColumns } from "app/utils/Types/TableColumns.jsx";
 import  AddTypeSheet  from "../Sections/AddTypeSheet";
 import { getLeaveComponents } from "app/hooks/leaveTracker.jsx";
 import { saveLeaveComponents } from "app/hooks/leaveTracker.jsx";
+import EmployeeLeavesDetailSheet from "../Sections/EmployeeLeavesDetailSheet.jsx";
 
 const dummyData =[
   {
@@ -52,6 +53,8 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [typesFilterData, setTypesFilterData] = useState({});
   const [leaveTpesData, setLeaveTypesData] = useState([]);
   const [selectedType, setSelectedType] = useState(null);
+  const [selectedLeave, setSelectedLeave] = useState(null);
+  const [isSelectedLeaveSheet, setIsSelectedLeaveSheet] = useState(false);
 
   const [options, setOptions] = useState({
     page: 1, // Current page number
@@ -72,7 +75,6 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
       setLeaveTypesData(leaveTypesData)
     }
   }
-  console.log("typesFilterData", typesFilterData);
 
   useEffect(() => {
     fetchLeaveTypesData();
@@ -107,6 +109,11 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onRowClick: (row) => {
+      console.log("Row clicked", row);
+      setIsSelectedLeaveSheet(true);
+      setSelectedLeave(row);
+    }
   };
   const leaveTypesTableOptions ={
     onRowClick: (row) => {
@@ -249,6 +256,13 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
           type={selectedType}
           openSheet={true}
           reload={fetchLeaveTypesData}
+        />
+      )}
+      {selectedLeave && (
+        <EmployeeLeavesDetailSheet
+          employeeLeaves={selectedLeave}
+          isOpen={isSelectedLeaveSheet}
+          setIsOpen={setIsSelectedLeaveSheet}
         />
       )}
     </div>
