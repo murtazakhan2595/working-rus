@@ -23,6 +23,7 @@ export default function EmployeeManagement() {
   const [filterData, setFilterData] = useState({});
   const [totalEmployee, setTotalEmployee] = useState(0);
   const [activeEmployee, setActiveEmployee] = useState(0);
+  const [totalOffboard, setTotalOffboard] = useState(0)
   const [totalManagers, setTotalManagers] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -46,6 +47,7 @@ export default function EmployeeManagement() {
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
         setTotalManagers(data.TotalManager || 0);
+        setTotalOffboard(data?.count - data?.ActiveEmployee || 0)
       } catch (error) {
         console.error("Error fetching employees:", error);
       } finally {
@@ -88,7 +90,7 @@ export default function EmployeeManagement() {
     { label: "Total Employees", value: totalEmployee, icon: UsersRound },
     { label: "Managers", value: totalManagers, icon: Contact },
     { label: "Active Employees", value: activeEmployee, icon: UserRoundCheck },
-    { label: "Offboarded Employees", value: activeEmployee, icon: UserRoundCheck },
+    { label: "Offboarded Employees", value: totalOffboard, icon: UserRoundCheck },
   ];
 
   const onEmpStatusChange = (newStatus) => {
