@@ -31,6 +31,8 @@ import { ClaimExpenseTypeOptions } from "data/Data";
 import { Button } from "components/ui/button";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
+import SheetComponent from "components/ui/SheetComponent";
+import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
 
 const Board = ({ employees }) => {
   const navigate = useNavigate();
@@ -333,7 +335,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
             />
           ))}
       </div>
-      {openCreateCard && (
+      {/* {openCreateCard && (
         <CreateCard
           onClose={() => {
             setOpenCreateCard(false);
@@ -342,7 +344,21 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
           boardId={board.id}
           projectId={projectId}
         />
-      )}
+      )} */}
+      <SheetComponent
+      isOpen={openCreateCard}
+      setIsOpen={setOpenCreateCard}
+      width="860px"
+      >
+          <CreateCard
+          onClose={() => {
+            setOpenCreateCard(false);
+            reloadData();
+          }}
+          boardId={board.id}
+          projectId={projectId}
+          />
+      </SheetComponent>
       {showAddNewListModel && (
         <AddNewListModel
           boardId={board.id}
