@@ -31,22 +31,22 @@ export function SidebarNew({ userRole }) {
           variant="link"
           asChild
         >
-          <Link href="/" className="flex justify-start gap-2 justify-items-start justify-self-start logo">
+          <Link href="/" className="flex [&&]:justify-start gap-2 [&&]:pl-0 logo">
             {/* <PanelsTopLeft className="w-6 h-6 mr-1" /> */}
-            <div className={cn(sidebar?.isOpen === false ? "-translate-x-0 opacity-100" : "translate-x-96 opacity-0 hidden") || " justify-start transition-[transform,opacity,display]"}>
+            <div className={cn(sidebar?.isOpen === false ? "-translate-x-0 opacity-100 " : "translate-x-96 opacity-0 hidden") || " justify-start  transition-[transform,opacity,display]"}>
               <MobileLogo />
             </div>
 
-            <h1
+            <div
               className={cn(
-                "font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
+                "transition-[transform,opacity,display] [&&]:pl-0 ease-in-out duration-300",
                 sidebar?.isOpen === false
                   ? "-translate-x-96 opacity-0 hidden"
                   : "translate-x-0 opacity-100"
               )}
             >
               <NewLogo />
-            </h1>
+            </div>
           </Link>
         </Button>
         <Menu isOpen={sidebar?.isOpen} userRole={userRole} />
