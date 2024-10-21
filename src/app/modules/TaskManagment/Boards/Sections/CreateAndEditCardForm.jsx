@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Formik, Form } from "formik";
-import { Row, Col, Button } from "reactstrap";
 import {
   TextInput,
   SelectComponent,
-  TextAreaEditorInput,
   DateInput,
 } from "components/form-control.jsx";
 import { RiAttachment2 } from "react-icons/ri";
@@ -24,6 +22,9 @@ import { MdClose } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { getAllLabels } from "app/hooks/taskManagment";
+import { Textarea } from "components/ui/textarea";
+import { TextAreaInput } from "components/form-control";
+import { Button } from "components/ui/button";
 
 const CreateAndEditCardForm = ({
   initialValues,
@@ -116,9 +117,13 @@ const CreateAndEditCardForm = ({
     >
       {(props) => (
         <form onSubmit={props.handleSubmit} className="mt-5">
-          <Row className="m-0">
-            <Col md="12" className="mb-0">
-              <TextInput
+          <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
+            <div className="font-inter flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+              <div className="flex h-[7px] flex-shrink-0 items-end px-px">
+                <div className="text-zinc-950">Card Details</div>
+              </div>
+              <div className="space-y-2">
+              <TextAreaInput
                 name="name"
                 error={props.errors.name}
                 touch={props.touched.name}
@@ -129,115 +134,43 @@ const CreateAndEditCardForm = ({
                   props.handleChange(field)(value);
                 }}
               />
-            </Col>
-            <Col md="12" className="mb-0 non-sticky">
-              <TextAreaEditorInput
+            </div>
+            <div className="space-y-2">
+              <TextAreaInput
                 name="description"
                 error={props.errors.description}
                 touch={props.touched.description}
                 value={props.values.description}
                 required
+                maxRows={3}
                 label="Description"
                 onChange={(field, value) => {
                   props.handleChange(field)(value);
                 }}
               />
-            </Col>
-            <Col md="12" className="mb-0">
-              <Row>
-                <Col md="6" className="mb-0">
-                  <DateInput
-                    name="start_date"
-                    error={props.errors.start_date}
-                    touch={props.touched.start_date}
-                    value={props.values.start_date}
-                    label="Start Date"
-                    required
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </Col>
-                <Col md="6" className="mb-0">
-                  <SelectComponent
-                    name="assigned_by"
-                    options={employees}
-                    error={props.errors.assigned_by}
-                    touch={props.touched.assigned_by}
-                    value={props.values.assigned_by}
-                    required
-                    label="Assign By"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </Col>
-              </Row>
-            </Col>
-            <Col md="12" className="mb-0">
-              <Row>
-                <Col md="6" className="mb-0">
-                  <DateInput
-                    name="end_date"
-                    error={props.errors.end_date}
-                    touch={props.touched.end_date}
-                    value={props.values.end_date}
-                    required
-                    label="End Date"
-                    {...(props.values.start_date && {
-                      minDate: new Date(props.values.start_date),
-                    })}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </Col>
-                <Col md="6" className="mb-0">
-                  <SelectComponent
-                    name="priority"
-                    options={PriorityList}
-                    error={props.errors.priority}
-                    touch={props.touched.priority}
-                    value={props.values.priority}
-                    required
-                    label="Priority"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </Col>
-              </Row>
-            </Col>
-            <Col md="12" className="mb-3">
-              <Row className="items-center">
-                <Col md="11" className="label text-[17px]">
-                  <div className="flex gap-5">
-                    <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
-                      <RiAttachment2 />
-                      <div>Attachments ({newfiles?.length + files.length})</div>
-                    </div>
-                  </div>
-                </Col>
-                <Col md="1">
-                  <img
-                    src={plus}
-                    alt=""
-                    className="cursor-pointer"
-                    onClick={() => {
-                      fileInputRef.current.click();
-                    }}
-                  />
-                  <input
-                    type="file"
-                    multiple
-                    style={{ display: "none" }}
-                    onChange={(event) => handleAttachmentsChange(event, props)}
-                    ref={fileInputRef}
-                  />
-                </Col>
-              </Row>
-            </Col>
-            <Col md="12" className="mb-3">
+            </div>
+            <div className="space-y-2">
+              <div className="flex gap-5">
+                <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
+                  <RiAttachment2 />
+                  <div>Attachments ({newfiles?.length + files.length})</div>
+                </div>
+              </div>
+              <img
+                src={plus}
+                alt=""
+                className="cursor-pointer"
+                onClick={() => {
+                  fileInputRef.current.click();
+                }}
+              />
+              <input
+                type="file"
+                multiple
+                style={{ display: "none" }}
+                onChange={(event) => handleAttachmentsChange(event, props)}
+                ref={fileInputRef}
+              />
               {(files.length > 0 || newfiles?.length > 0) && (
                 <div className="">
                   {[...files, ...newfiles].map((file, index) => (
@@ -267,92 +200,119 @@ const CreateAndEditCardForm = ({
                   ))}
                 </div>
               )}
-            </Col>
-            <Col md="12" className="mb-0">
-              <Row className="items-center">
-                <Col md="4" className="label text-[17px] mb-3">
-                  <div className="flex gap-5">
-                    <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
-                      <img
-                        loading="lazy"
-                        src={members}
-                        className="shrink-0 aspect-[1.06] w-[17px]"
-                        alt=""
-                      />
-                      <div>Assignee</div>
-                    </div>
-                  </div>
-                  {props.errors.assigned_to &&
-                    props.values.assigned_to.length === 0 && (
-                      <div className="pt-1 text-xs text-red-500">
-                        {props.errors.assigned_to}
-                      </div>
-                    )}
-                </Col>
-                <Col md="6" className="mb-3">
-                  <div className="flex items-center justify-start gap-2 h-100">
-                    {props.values.assigned_to &&
-                      props.values.assigned_to.length > 0 &&
-                      props.values.assigned_to.map((member, index) => (
-                        <div key={index}>
-                          <Members
-                            member={member}
-                            isEditMode={true}
-                            removeMember={removeMember}
-                          />
+            </div>
+            </div>
+
+            <div className={`flex w-full flex-col rounded-lg pt-2.5 mt-5`}>
+            <div className="font-inter flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                        <div className="flex h-[7px] flex-shrink-0 items-end px-px">
+                          <div className="text-zinc-950">Add To Project</div>
                         </div>
-                      ))}
-                    <div
-                      onClick={() => {
-                        setMembersOpen(!membersOpen);
-                      }}
-                      className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
-                    >
-                      <span className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
-                        <RxPlus />
-                      </span>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-              {membersOpen && (
-                <Col md="12" className="w-full mb-3 b">
-                  <SelectComponent
-                    name="assigned_to"
-                    options={employees}
-                    error={props.errors.assigned_to}
-                    touch={props.touched.assigned_to}
-                    label="Assign to"
-                    required
-                    onChange={(field, value) => {
-                      setMembersOpen(false);
-                      const members = props.values.assigned_to || [];
-                      members.push(value);
-                      props.setFieldValue(field, members);
-                    }}
-                  />
-                </Col>
-              )}
-            </Col>
-          </Row>
-          <Row className="my-4">
-            <Col md="3">
-              <div
-                type="button"
-                className="btn btn-outline-dark w-100"
-                onClick={() => {
-                  onClose();
+                        <div className="space-y-2">
+              <DateInput
+                name="end_date"
+                error={props.errors.start_date}
+                touch={props.touched.start_date}
+                value={props.values.start_date}
+                label="Due Date"
+                required
+                onChange={(field, value) => {
+                  props.setFieldValue(field, value);
                 }}
-              >
-                Cancel
+              />
+            </div>
+
+            <div className="space-y-2">
+              <SelectComponent
+                name="priority"
+                options={PriorityList}
+                error={props.errors.priority}
+                touch={props.touched.priority}
+                value={props.values.priority}
+                required
+                label="Priority"
+                onChange={(field, value) => {
+                  props.setFieldValue(field, value);
+                }}
+              />
+            </div>
+
+            <div className="flex gap-5">
+              <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
+                <img
+                  loading="lazy"
+                  src={members}
+                  className="shrink-0 aspect-[1.06] w-[17px]"
+                  alt=""
+                />
+                <div>Assignee</div>
               </div>
-            </Col>
-            <Col md="5">
-              <Button type="submit" className="btn btn-dark w-100">
-                {initialValues.id ? "Save" : "Add"}
-              </Button>
-            </Col>
-          </Row>
+            </div>
+            {props.errors.assigned_to &&
+              props.values.assigned_to.length === 0 && (
+                <div className="pt-1 text-xs text-red-500">
+                  {props.errors.assigned_to}
+                </div>
+              )}
+            <div className="flex items-center justify-start gap-2 h-100">
+              {props.values.assigned_to &&
+                props.values.assigned_to.length > 0 &&
+                props.values.assigned_to.map((member, index) => (
+                  <div key={index}>
+                    <Members
+                      member={member}
+                      isEditMode={true}
+                      removeMember={removeMember}
+                    />
+                  </div>
+                ))}
+              <div
+                onClick={() => {
+                  setMembersOpen(!membersOpen);
+                }}
+                className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
+              >
+                <span className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
+                  <RxPlus />
+                </span>
+              </div>
+            </div>
+            {membersOpen && (
+              <SelectComponent
+                name="assigned_to"
+                options={employees}
+                error={props.errors.assigned_to}
+                touch={props.touched.assigned_to}
+                label="Assign to"
+                required
+                onChange={(field, value) => {
+                  setMembersOpen(false);
+                  const members = props.values.assigned_to || [];
+                  members.push(value);
+                  props.setFieldValue(field, members);
+                }}
+              />
+            )}
+
+            </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 ">
+            <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+            <Button
+              type=""outline
+              variant="outline"
+              size="lg"
+              // onClick={onClose()}
+            >
+              Cancel
+            </Button>
+            <Button type="submit">
+              {initialValues.id ? "Save" : "Add Card"}
+            </Button>
+            </div>
+            </div>
+          </div>
         </form>
       )}
     </Formik>
