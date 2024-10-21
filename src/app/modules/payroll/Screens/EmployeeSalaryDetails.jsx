@@ -234,7 +234,6 @@ export default function EmployeeSalaryDetails() {
         payslipId: monthToPayslipIdMap[monthIndex],
       }));
       console.log("currentYearMonths", currentYearMonths);
-
       setMonths(currentYearMonths);
     }
   }, [payslips]);
@@ -434,6 +433,7 @@ export default function EmployeeSalaryDetails() {
                 </SelectContent>
               </Select>
               <Button
+                disabled={!selectedMonth} 
                 variant="secondary"
                 onClick={() =>
                   navigate(
