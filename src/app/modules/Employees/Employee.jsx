@@ -88,6 +88,7 @@ export default function EmployeeManagement() {
     { label: "Total Employees", value: totalEmployee, icon: UsersRound },
     { label: "Managers", value: totalManagers, icon: Contact },
     { label: "Active Employees", value: activeEmployee, icon: UserRoundCheck },
+    { label: "Offboarded Employees", value: activeEmployee, icon: UserRoundCheck },
   ];
 
   const onEmpStatusChange = (newStatus) => {
