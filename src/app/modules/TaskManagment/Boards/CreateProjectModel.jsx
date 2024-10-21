@@ -77,7 +77,7 @@ const ProjectModal = ({ employees, onClose, isEditMode }) => {
                   <form onSubmit={props.handleSubmit}>
                     <Row className="m-0">
                       <Col md="12">
-                        <h5 className="mt-4 mb-3 fw-700">Add New Project</h5>
+                        {/* <h5 className="mt-4 mb-3 fw-700">Add New Project</h5> */}
                       </Col>
                       <Col md="12">
                         <TextInput
