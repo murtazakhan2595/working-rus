@@ -125,15 +125,16 @@ const Board = ({ employees }) => {
   return (
     <>
       <div className="flex justify-between items-center">
+        <div className="flex items-center">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
           className="p-4 text-xl text-balance"
         >
           <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
-          Detail
         </Button>
-
+          <RenderProject projectId={projectId} />
+          </div>
         <div className="flex justify-center items-center gap-3">
           <FilterInput
             filters={[
@@ -172,7 +173,6 @@ const Board = ({ employees }) => {
             />
           )}
           <div className="flex flex-row justify-between items-center mb-5">
-            {/* <RenderProject projectId={projectId} /> */}
             <div className="flex flex-wrap justify-end gap-2 items-center">
               {/* <Button
                 onClick={toggleAddBoardModal}
