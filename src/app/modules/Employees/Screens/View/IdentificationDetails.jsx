@@ -78,7 +78,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Issuance Country",
-                    data: getCountryFullName(
+                    data: visaData?.Passport_Issuance_Country || getCountryFullName(
                       visaData.Passport_Issuance_Country
                     ),
                   },
