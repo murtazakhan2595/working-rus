@@ -7,13 +7,12 @@ import { getExpenseType } from "utils/getValuesFromTables";
 import { getFileSizeInKB } from "utils/fileUtils";
 import { Paperclip } from "lucide-react";
 import { filebase64Download } from "utils/fileUtils";
-import statusApprovedIcon from "assets/images/status-approved.png";  
+import statusApprovedIcon from "assets/images/status-approved.png";
 import statusPendingIcon from "assets/images/status-pending.svg";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { saveReimbursement } from "app/hooks/payroll";
 import statusRejectedIcon from "assets/images/status-rejected.svg";
-
 
 // Function to calculate "X days ago"
 const calculateTimeAgo = (date) => {
@@ -138,7 +137,7 @@ const ViewLeaveSheet = ({
         setIsOpen={setIsOpen}
         width="500px"
       >
-        <div className="font-inter mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+        <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
           <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
             <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
               Details
@@ -198,7 +197,7 @@ const ViewLeaveSheet = ({
           </div>
         </div>
 
-        <div className="font-inter mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+        <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
           <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
             <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
               Approval Status
@@ -258,6 +257,5 @@ const ViewLeaveSheet = ({
     </div>
   );
 };
-
 
 export default ViewLeaveSheet;

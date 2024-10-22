@@ -7,13 +7,12 @@ import { getExpenseType } from "utils/getValuesFromTables";
 import { getFileSizeInKB } from "utils/fileUtils";
 import { Paperclip } from "lucide-react";
 import { filebase64Download } from "utils/fileUtils";
-import statusApprovedIcon from "assets/images/status-approved.png";  
+import statusApprovedIcon from "assets/images/status-approved.png";
 import statusPendingIcon from "assets/images/status-pending.svg";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { saveReimbursement } from "app/hooks/payroll";
 import statusRejectedIcon from "assets/images/status-rejected.svg";
-
 
 // Function to calculate "X days ago"
 const calculateTimeAgo = (date) => {
@@ -37,7 +36,7 @@ const ReimbursmentDetailsSheet = ({
   setIsOpen,
   isMyClaims,
   employeeData,
-  reload
+  reload,
 }) => {
   const detailItems = [
     {
@@ -48,38 +47,38 @@ const ReimbursmentDetailsSheet = ({
     { label: "Date of Expense", value: claimRequest.payment_date },
     { label: "Description", value: claimRequest.description },
   ];
-const approvalSteps = [
-  {
-    icon:
-      claimRequest?.status_manager?.status === "approved"
-        ? statusApprovedIcon
-        : claimRequest?.status_manager?.status === "rejected"
-        ? statusRejectedIcon
-        : statusPendingIcon, // Check for rejected, else pending
-    text: "Manager Approval",
-    time: calculateTimeAgo(claimRequest?.status_manager?.date),
-  },
-  {
-    icon:
-      claimRequest?.status_hr?.status === "approved"
-        ? statusApprovedIcon
-        : claimRequest?.status_hr?.status === "rejected"
-        ? statusRejectedIcon
-        : statusPendingIcon, // Check for rejected, else pending
-    text: "HR Approval",
-    time: calculateTimeAgo(claimRequest?.status_hr?.date),
-  },
-  {
-    icon:
-      claimRequest?.status_superadmin?.status === "approved"
-        ? statusApprovedIcon
-        : claimRequest?.status_superadmin?.status === "rejected"
-        ? statusRejectedIcon
-        : statusPendingIcon, // Check for rejected, else pending
-    text: "Final Approval",
-    time: calculateTimeAgo(claimRequest?.status_superadmin?.date),
-  },
-];
+  const approvalSteps = [
+    {
+      icon:
+        claimRequest?.status_manager?.status === "approved"
+          ? statusApprovedIcon
+          : claimRequest?.status_manager?.status === "rejected"
+          ? statusRejectedIcon
+          : statusPendingIcon, // Check for rejected, else pending
+      text: "Manager Approval",
+      time: calculateTimeAgo(claimRequest?.status_manager?.date),
+    },
+    {
+      icon:
+        claimRequest?.status_hr?.status === "approved"
+          ? statusApprovedIcon
+          : claimRequest?.status_hr?.status === "rejected"
+          ? statusRejectedIcon
+          : statusPendingIcon, // Check for rejected, else pending
+      text: "HR Approval",
+      time: calculateTimeAgo(claimRequest?.status_hr?.date),
+    },
+    {
+      icon:
+        claimRequest?.status_superadmin?.status === "approved"
+          ? statusApprovedIcon
+          : claimRequest?.status_superadmin?.status === "rejected"
+          ? statusRejectedIcon
+          : statusPendingIcon, // Check for rejected, else pending
+      text: "Final Approval",
+      time: calculateTimeAgo(claimRequest?.status_superadmin?.date),
+    },
+  ];
 
   const formSheetData = {
     triggerText: null,
@@ -92,13 +91,13 @@ const approvalSteps = [
 
   const handleStatusChange = async (status) => {
     console.log(userProfile);
-    if(userProfile.role === 3){
+    if (userProfile.role === 3) {
       claimRequest.status_hr = {
         status: status,
         date: moment().format("YYYY-MM-DD"),
       };
     }
-    if(userProfile.role === 2){
+    if (userProfile.role === 2) {
       claimRequest.status_manager = {
         status: status,
         date: moment().format("YYYY-MM-DD"),
@@ -110,22 +109,25 @@ const approvalSteps = [
         date: moment().format("YYYY-MM-DD"),
       };
     }
-    if(claimRequest?.status_manager?.status === "approved" && claimRequest?.status_hr?.status === "approved" && claimRequest?.status_superadmin?.status === "approved"){
+    if (
+      claimRequest?.status_manager?.status === "approved" &&
+      claimRequest?.status_hr?.status === "approved" &&
+      claimRequest?.status_superadmin?.status === "approved"
+    ) {
       claimRequest.status = "approved";
       claimRequest.approval_date = moment().format("YYYY-MM-DD");
-    }
-    else if(status === "rejected"){
+    } else if (status === "rejected") {
       claimRequest.status = "rejected";
       claimRequest.approval_date = null;
-      claimRequest.rejection_date= moment().format("YYYY-MM-DD");
+      claimRequest.rejection_date = moment().format("YYYY-MM-DD");
     }
-     const response = await saveReimbursement(claimRequest);
-     if (response) {
-       toast.success("Claim request updated successfully");
-       setIsOpen(false);
-       reload()
-     }
-  }
+    const response = await saveReimbursement(claimRequest);
+    if (response) {
+      toast.success("Claim request updated successfully");
+      setIsOpen(false);
+      reload();
+    }
+  };
 
   return (
     <div>
@@ -141,7 +143,7 @@ const approvalSteps = [
           email={claimRequest.work_email}
           id={claimRequest.employeeid}
         />
-        <div className="font-inter mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+        <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
           <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
             <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
               Details
@@ -162,25 +164,29 @@ const approvalSteps = [
                   <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
                     <div>Attachment</div>
                   </div>
-                  {claimRequest?.attachment?.file ?<div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Paperclip size={16} />
-                      <div className="text-[#1c2024] text-sm font-medium ">
-                        Receipt
+                  {claimRequest?.attachment?.file ? (
+                    <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <Paperclip size={16} />
+                        <div className="text-[#1c2024] text-sm font-medium ">
+                          Receipt
+                        </div>
+                        <div className="text-[#8b8d98] text-sm font-normal">
+                          {getFileSizeInKB(claimRequest?.attachment?.file)}KB
+                        </div>
                       </div>
-                      <div className="text-[#8b8d98] text-sm font-normal">
-                        {getFileSizeInKB(claimRequest?.attachment?.file)}KB
-                      </div>
+                      <button
+                        className="text-[#ab4aba] text-xs font-semibold "
+                        onClick={() => {
+                          filebase64Download(claimRequest?.attachment);
+                        }}
+                      >
+                        Download
+                      </button>
                     </div>
-                    <button
-                      className="text-[#ab4aba] text-xs font-semibold "
-                      onClick={() => {
-                        filebase64Download(claimRequest?.attachment);
-                      }}
-                    >
-                      Download
-                    </button>
-                  </div>: "No attachment found"}
+                  ) : (
+                    "No attachment found"
+                  )}
                 </div>
               </div>
             </div>
@@ -201,7 +207,7 @@ const approvalSteps = [
           </div>
         </div>
 
-        <div className="font-inter mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+        <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
           <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
             <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
               Approval Status
@@ -261,6 +267,5 @@ const approvalSteps = [
     </div>
   );
 };
-
 
 export default ReimbursmentDetailsSheet;

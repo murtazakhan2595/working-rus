@@ -44,10 +44,10 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
     footer: null,
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchData = async () => {
-      const response = await getLeaveComponents({})
-      if(response){
+      const response = await getLeaveComponents({});
+      if (response) {
         const LeaveTypeOptions = response.map((item) => ({
           value: item.id,
           label: item.name,
@@ -56,16 +56,17 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
         console.log("response", LeaveTypeOptions);
         setLeaveTypeOptions(LeaveTypeOptions);
       }
-    }
-    fetchData()
-  },[userProfile])
-
+    };
+    fetchData();
+  }, [userProfile]);
 
   const handleFormSubmit = async (values) => {
     console.log("values", values);
     const response = await saveLeave(values);
-    if(response){
-      const type = LeaveTypeOptions.filter((item) => item?.id === values?.component_type);
+    if (response) {
+      const type = LeaveTypeOptions.filter(
+        (item) => item?.id === values?.component_type
+      );
       const employeeLeaveTransaction = {
         leave_days: values?.no_of_days,
         balance_after: type[0]?.max_days - values?.no_of_days,
@@ -76,7 +77,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
         leave_component_id: values?.component_type,
       };
       const tran = saveLeaveTransaction(employeeLeaveTransaction);
-      if(tran){
+      if (tran) {
         toast.success("Leave request sent successfully");
         setIsOpen(false);
         reload();
@@ -152,7 +153,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               <div className={`flex w-full flex-col rounded-lg`}>
-                <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium  tracking-[0px] text-zinc-900">
+                <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium  tracking-[0px] text-zinc-900">
                   <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                     <div className="text-zinc-950">Details</div>
                   </div>

@@ -6,7 +6,6 @@ import { Button } from "components/ui/button";
 import { Formik } from "formik";
 import { Paperclip } from "lucide-react";
 
-
 import {
   TextInput,
   SelectComponent,
@@ -20,14 +19,10 @@ import { saveReimbursement } from "app/hooks/payroll";
 import { toast } from "react-toastify";
 import { validateClaimRequestForm } from "app/utils/FormSchema/payrollFormSchema";
 
-
-
 const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newAttachment, setNewAttachment] = useState(null);
   const [payroll, setPayroll] = useState({});
-
-
 
   const claimRequest = {
     expense_type: "",
@@ -59,9 +54,9 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   }, []);
 
   const handleFormSubmit = async (values) => {
-    if(!newAttachment){
+    if (!newAttachment) {
       toast.error("Please upload an attachment");
-      return
+      return;
     }
     values.attachment = newAttachment ? newAttachment : "";
 
@@ -130,7 +125,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               {console.log("props", props)}
               <div className={`flex w-full flex-col rounded-lg`}>
-                <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium  tracking-[0px] text-zinc-900">
+                <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium  tracking-[0px] text-zinc-900">
                   <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                     <div className="text-zinc-950">Details</div>
                   </div>
@@ -275,11 +270,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  size="lg"
-                  variant="default"
-                >
+                <Button type="submit" size="lg" variant="default">
                   Submit
                 </Button>
               </div>

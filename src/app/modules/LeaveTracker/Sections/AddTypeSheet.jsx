@@ -32,10 +32,9 @@ const initialType = {
   name: "",
   max_days: "",
   Is_org_based: true,
-  paid_leave:true,
+  paid_leave: true,
   status: false,
 };
-
 
 const AddTypeSheet = ({ type, openSheet, reload }) => {
   const [isOpen, setIsOpen] = useState(openSheet || false);
@@ -74,16 +73,16 @@ const AddTypeSheet = ({ type, openSheet, reload }) => {
     }
   };
 
-    const handleTypeDelete = async (type) => {
-      console.log("Delete component:", type);
-      // const response = await deleteEarnAndDeduction(component.id);
-      const response = await deleteLeaveComponent(type.id);
-      if (response) {
-        toast.success("Leave Type deleted successfully");
-        setIsOpen(false);
-        reload();
-      }
-    };
+  const handleTypeDelete = async (type) => {
+    console.log("Delete component:", type);
+    // const response = await deleteEarnAndDeduction(component.id);
+    const response = await deleteLeaveComponent(type.id);
+    if (response) {
+      toast.success("Leave Type deleted successfully");
+      setIsOpen(false);
+      reload();
+    }
+  };
 
   return (
     <>
@@ -117,7 +116,6 @@ const AddTypeSheet = ({ type, openSheet, reload }) => {
 
 export default AddTypeSheet;
 
-
 const ComponentForm = ({
   leaveComponentType,
   handleSubmit,
@@ -134,7 +132,7 @@ const ComponentForm = ({
       {(props) => (
         <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
           <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-            <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+            <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
               <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                 <div className="text-zinc-950">Details</div>
               </div>
@@ -194,9 +192,6 @@ const ComponentForm = ({
   );
 };
 
-
-
-
 const ViewComponent = ({ type, handleTypeDelete, setIsEdit }) => {
   const details = [
     { label: "Leave name", value: type.name },
@@ -237,7 +232,11 @@ const ViewComponent = ({ type, handleTypeDelete, setIsEdit }) => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={()=>{handleTypeDelete(type);}}>
+                <AlertDialogAction
+                  onClick={() => {
+                    handleTypeDelete(type);
+                  }}
+                >
                   Delete
                 </AlertDialogAction>
               </AlertDialogFooter>

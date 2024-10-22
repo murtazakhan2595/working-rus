@@ -1,4 +1,3 @@
-
 import { Button } from "components/ui/button";
 import React, { useEffect, useState } from "react";
 import {
@@ -23,27 +22,29 @@ import moment from "moment";
 import ViewLeaveSheet from "../Sections/ViewLeaveSheet";
 import { FilterInput } from "components/form-control";
 
-const MyLeaveTracker = ({userProfile}) => {
+const MyLeaveTracker = ({ userProfile }) => {
   const [leaveData, setLeaveData] = useState({});
-  const [selectedLeaveApplication, setSelectedLeaveApplication] = useState(null);
+  const [selectedLeaveApplication, setSelectedLeaveApplication] =
+    useState(null);
   const [isOpen, setIsOpen] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [LeaveTrackerStats, setLeaveTrackerStats] = useState([
-    {title: "Total Applications", value: 5},
-    {title: "Pending Requests", value: 2},
-    {title: "Accepted Requests", value: 3},
+    { title: "Total Applications", value: 5 },
+    { title: "Pending Requests", value: 2 },
+    { title: "Accepted Requests", value: 3 },
   ]);
-console.log("setSelectedLeaveApplication", selectedLeaveApplication);
+  console.log("setSelectedLeaveApplication", selectedLeaveApplication);
   useEffect(() => {
     const fetchData = async () => {
-      const leaves = await getLeaves({filterData: {employee: userProfile.id}})
-      if(leaves){
-        setLeaveData(leaves)
+      const leaves = await getLeaves({
+        filterData: { employee: userProfile.id },
+      });
+      if (leaves) {
+        setLeaveData(leaves);
       }
-    }
-    fetchData()
-  },[])
-
+    };
+    fetchData();
+  }, []);
 
   const handleFilterChange = (filterName, filterValue) => {
     setFilterData((prevFilters) => {
@@ -111,7 +112,7 @@ console.log("setSelectedLeaveApplication", selectedLeaveApplication);
       )}
     </div>
   );
-}
+};
 
 const mapStateToProps = (state) => {
   return {
@@ -120,8 +121,6 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(MyLeaveTracker);
-
-
 
 function AppliedLeaves({
   leaveData,
@@ -142,11 +141,11 @@ function AppliedLeaves({
               option: [],
               name: "expense_type",
               placeholder: "Expense Type",
-              width:"max-w-[130px]"
+              width: "max-w-[130px]",
             },
             {
               type: "select-two",
-               width:"max-w-[130px]",
+              width: "max-w-[130px]",
               option: [
                 { value: "pending", label: "Pending" },
                 { value: "approved", label: "Approved" },
@@ -216,7 +215,6 @@ function AppliedLeaves({
   );
 }
 
-
 function ConsumedLeaves() {
   const leaveTypes = [
     { name: "Annual", used: 6, total: 10 },
@@ -256,8 +254,8 @@ function ConsumedLeaves() {
   return (
     <Card className="w-full overflow-hidden">
       <CardHeader>
-        <CardTitle className="text-2xl font-medium text-fuchsia-700">
-          Consumed Leaves
+        <CardTitle className="text-2xl font-medium text-fuchsia-700 font-[inter]">
+          <div className=" font-[inter]">Consumed Leaves</div>
         </CardTitle>
       </CardHeader>
       <CardContent>
