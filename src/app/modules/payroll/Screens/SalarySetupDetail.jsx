@@ -201,7 +201,7 @@ const SalarySetupDetail = () => {
                     <EmployeeID value={id} />
                   </p>
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-2xl font-bold text-plum-900">
+                    <h2 className="text-2xl font-bold text-black">
                       {employeeData?.first_name} {employeeData?.last_name}
                     </h2>
                     {isEos && (
@@ -285,7 +285,7 @@ const SalarySetupDetail = () => {
                     <TableRow>
                       <TableHead>Components</TableHead>
                       <TableHead>Amount</TableHead>
-                      <TableHead className="text-right">
+                      <TableHead className="text-left">
                         Monthly Amount
                       </TableHead>
                     </TableRow>
@@ -296,8 +296,8 @@ const SalarySetupDetail = () => {
                         <TableRow key={index}>
                           <TableCell>{item.name}</TableCell>
                           <TableCell>{item.amounts}</TableCell>
-                          <TableCell className="text-right">
-                            {item.monthly_amount}
+                          <TableCell className="text-left">
+                            AED {item.monthly_amount}
                           </TableCell>
                         </TableRow>
                       ))}

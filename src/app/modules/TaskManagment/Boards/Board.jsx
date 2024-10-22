@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Project } from "app/utils/Types/TaskManagment";
 import { Header, PageLoader, ConfirmationModal } from "components";
 import { FilterInput } from "components/form-control";
-import { Card, CardBody, Row, Col, Button } from "reactstrap";
+// import { Card, CardBody, Row, Col, Button } from "reactstrap";
 import {
   getAllBoards,
   getProjectById,
@@ -13,9 +13,8 @@ import {
   moveTask,
 } from "app/hooks/taskManagment";
 import { FaPlus } from "react-icons/fa";
-import { FiFilter } from "react-icons/fi";
 import { RxPlus } from "react-icons/rx";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { CustomDropdown } from "../Sections";
 import {
   AddNewListModel,
@@ -26,15 +25,28 @@ import {
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
 import { getRandomColor } from "utils/renderValues";
+import { ArrowLeft, LayoutList } from "lucide-react";
+import { DateInput } from "components/form-control";
+import { ClaimExpenseTypeOptions } from "data/Data";
+import { Button } from "components/ui/button";
+import { Card } from "components/ui/card";
+import { CardContent } from "components/ui/card";
+import SheetComponent from "components/ui/SheetComponent";
+import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
 
 const Board = ({ employees }) => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [filterDate, setFilterDate] = useState(null);
   const projectId = useParams()?.projectId || null;
   const [projectData, setProjectData] = useState(Project);
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
   const [filterList, setFilterList] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
+
+  const handleFilterChange = () => {};
+
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
@@ -63,45 +75,45 @@ const Board = ({ employees }) => {
     };
   }, [projectId]);
 
-  useEffect(() => {
-    if (employees && employees.length > 0) {
-      setFilterList(TaskSortingFilters(employees));
-    }
-  }, [employees]);
+  // useEffect(() => {
+  //   if (employees && employees.length > 0) {
+  //     setFilterList(TaskSortingFilters(employees));
+  //   }
+  // }, [employees]);
 
-  const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
-    setFilterData((prevFilters) => {
-      debugger;
-      const updatedFilters = { ...prevFilters };
-      if (!filterValue || filterCheckStatus === false) {
-        delete updatedFilters[filterName];
-      } else {
-        if (
-          filterName !== "assigned_to" &&
-          filterName !== "label" &&
-          filterName !== "end_datefilterValue" &&
-          filterName !== "priority"
-        ) {
-          if (updatedFilters.optionsValues) {
-            if (updatedFilters.optionsValues.includes(filterValue)) {
-              updatedFilters.optionsValues =
-                updatedFilters.optionsValues.filter(
-                  (item) => item !== filterValue
-                );
-            } else updatedFilters.optionsValues.push(filterValue);
-          } else updatedFilters.optionsValues = [filterValue];
-        }
-        else if (filterName === "assigned_to" && filterValue === "noMemberSelected") {
-          updatedFilters[filterName] =
-            filterCheckStatus === false ? "" : filterValue;
-          updatedFilters.optionsValues = null;
-        } else
-          updatedFilters[filterName] =
-            filterCheckStatus === false ? "" : filterValue;
-      }
-      return updatedFilters;
-    });
-  };
+  // const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
+  //   setFilterData((prevFilters) => {
+  //     debugger;
+  //     const updatedFilters = { ...prevFilters };
+  //     if (!filterValue || filterCheckStatus === false) {
+  //       delete updatedFilters[filterName];
+  //     } else {
+  //       if (
+  //         filterName !== "assigned_to" &&
+  //         filterName !== "label" &&
+  //         filterName !== "end_datefilterValue" &&
+  //         filterName !== "priority"
+  //       ) {
+  //         if (updatedFilters.optionsValues) {
+  //           if (updatedFilters.optionsValues.includes(filterValue)) {
+  //             updatedFilters.optionsValues =
+  //               updatedFilters.optionsValues.filter(
+  //                 (item) => item !== filterValue
+  //               );
+  //           } else updatedFilters.optionsValues.push(filterValue);
+  //         } else updatedFilters.optionsValues = [filterValue];
+  //       }
+  //       else if (filterName === "assigned_to" && filterValue === "noMemberSelected") {
+  //         updatedFilters[filterName] =
+  //           filterCheckStatus === false ? "" : filterValue;
+  //         updatedFilters.optionsValues = null;
+  //       } else
+  //         updatedFilters[filterName] =
+  //           filterCheckStatus === false ? "" : filterValue;
+  //     }
+  //     return updatedFilters;
+  //   });
+  // };
 
   const toggleAddBoardModal = () => {
     if (showAddNewListModel) {
@@ -111,89 +123,95 @@ const Board = ({ employees }) => {
   };
 
   return (
-    <div className="screen bg-[#F0F1F2] ">
-      <Header title="My Boards" />
-      <Row>
-        <Col lg={12} className="mx-auto">
-          <Card className="p-0" style={{ background: "#FAFBFC" }}>
-            <CardBody className="py-3">
-              {showAddNewListModel && (
-                <AddNewListModel
-                  projectId={projectId}
-                  onClose={toggleAddBoardModal}
-                />
-              )}
-              <div className="flex flex-row justify-between items-center mb-5">
-                <RenderProject projectId={projectId} />
-                <div className="flex flex-wrap justify-end gap-2 items-center">
-                  <MembersDropdown
-                    members={projectData?.project_members || []}
+    <>
+      <div className="flex justify-between items-center">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="p-4 text-xl text-balance"
+        >
+          <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
+          Detail
+        </Button>
+
+        <div className="flex justify-center items-center gap-3">
+          <FilterInput
+            filters={[
+              {
+                type: "select-one",
+                option: ClaimExpenseTypeOptions,
+                name: "expense_type",
+                placeholder: "Filters",
+              },
+            ]}
+            onChange={handleFilterChange}
+          />
+          <DateInput
+            placeholder="Date"
+            value={filterDate}
+            className="flex align-middle items-center"
+            name="payment_date"
+            onChange={(field, value) => {
+              setFilterDate(value);
+              handleFilterChange(field, value);
+            }}
+          />
+          <MembersDropdown members={projectData?.project_members || []} />
+
+          <LayoutList size={18} />
+          <LayoutList size={18} />
+        </div>
+      </div>
+
+      <Card className="p-0 bg-white" style={{ background: "#FAFBFC" }}>
+        <CardContent className="py-3">
+          {showAddNewListModel && (
+            <AddNewListModel
+              projectId={projectId}
+              onClose={toggleAddBoardModal}
+            />
+          )}
+          <div className="flex flex-row justify-between items-center mb-5">
+            {/* <RenderProject projectId={projectId} /> */}
+            <div className="flex flex-wrap justify-end gap-2 items-center">
+              {/* <Button
+                onClick={toggleAddBoardModal}
+                className="rounded-md btn-dark d-flex gap-1 items-center justify-center h-[37.6px]"
+              >
+                <FaPlus className="text-white" style={{ fontSize: "12px" }} />
+                Add List
+              </Button> */}
+            </div>
+          </div>
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <div className="flex gap-5 overflow-x-auto">
+              {AllBoards.count > 0 ? (
+                AllBoards.results.map((board, index) => (
+                  <TaskColumn
+                    key={index}
+                    board={board}
+                    projectId={projectId}
+                    reloadData={() => {
+                      fetchData(true);
+                    }}
+                    filterData={{
+                      ...filterData,
+                      board_id: [board.id],
+                    }}
                   />
-                  <Button
-                    onClick={toggleAddBoardModal}
-                    className="rounded-md btn-dark d-flex gap-1 items-center justify-center h-[37.6px]"
-                  >
-                    <FaPlus
-                      className="text-white"
-                      style={{ fontSize: "12px" }}
-                    />
-                    Add List
-                  </Button>
-                  <FilterInput
-                    filters={[
-                      {
-                        type: "sorting",
-                        option: filterList,
-                        name: "sorting",
-                        placeholder: (
-                          <span className="d-flex justify-center items-center gap-1">
-                            <FiFilter /> Filter
-                          </span>
-                        ),
-                        values: filterData,
-                        className: "custom-dropdown-toggle-filter",
-                        mainHeading: "Manage Filters",
-                      },
-                    ]}
-                    onChange={handleFilterChange}
-                  />
-                </div>
-              </div>
-              {isLoading ? (
-                <Row>
-                  <Col lg={12}>
-                    <PageLoader />
-                  </Col>
-                </Row>
+                ))
               ) : (
-                <div className="flex gap-5 overflow-x-auto">
-                  {AllBoards.count > 0 ? (
-                    AllBoards.results.map((board, index) => (
-                      <TaskColumn
-                        key={index}
-                        board={board}
-                        projectId={projectId}
-                        reloadData={() => {
-                          fetchData(true);
-                        }}
-                        filterData={{
-                          ...filterData,
-                          board_id: [board.id],
-                        }}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center w-100 mt-3 mb-5">
-                      Project Board is empty
-                    </div>
-                  )}
+                <div className="text-center w-100 mt-3 mb-5">
+                  Project Board is empty
                 </div>
               )}
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 };
 
@@ -317,7 +335,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
             />
           ))}
       </div>
-      {openCreateCard && (
+      {/* {openCreateCard && (
         <CreateCard
           onClose={() => {
             setOpenCreateCard(false);
@@ -326,7 +344,21 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
           boardId={board.id}
           projectId={projectId}
         />
-      )}
+      )} */}
+      <SheetComponent
+      isOpen={openCreateCard}
+      setIsOpen={setOpenCreateCard}
+      width="860px"
+      >
+          <CreateCard
+          onClose={() => {
+            setOpenCreateCard(false);
+            reloadData();
+          }}
+          boardId={board.id}
+          projectId={projectId}
+          />
+      </SheetComponent>
       {showAddNewListModel && (
         <AddNewListModel
           boardId={board.id}

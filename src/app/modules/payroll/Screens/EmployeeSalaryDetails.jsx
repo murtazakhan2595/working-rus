@@ -234,7 +234,6 @@ export default function EmployeeSalaryDetails() {
         payslipId: monthToPayslipIdMap[monthIndex],
       }));
       console.log("currentYearMonths", currentYearMonths);
-
       setMonths(currentYearMonths);
     }
   }, [payslips]);
@@ -326,7 +325,7 @@ export default function EmployeeSalaryDetails() {
               <p className="text-base text-black">
                 <EmployeeID value={employeeID} />
               </p>
-              <h2 className="text-2xl font-bold text-plum-900">
+              <h2 className="text-2xl font-bold text-black">
                 {employeeData?.first_name} {employeeData?.last_name}
               </h2>
               <p className="text-base text-muted-foreground">
@@ -410,7 +409,7 @@ export default function EmployeeSalaryDetails() {
           />
           <Card className="mb-4 h-fit">
             <CardHeader>
-              <CardTitle className="text-plum-900">PaySlips</CardTitle>
+              <CardTitle className="text-plum-900">Salary Slips</CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <Select
@@ -434,6 +433,7 @@ export default function EmployeeSalaryDetails() {
                 </SelectContent>
               </Select>
               <Button
+                disabled={!selectedMonth} 
                 variant="secondary"
                 onClick={() =>
                   navigate(

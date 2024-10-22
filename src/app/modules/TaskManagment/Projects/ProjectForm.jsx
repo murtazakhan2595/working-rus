@@ -3,20 +3,16 @@ import { toast, ToastContainer } from "react-toastify";
 import { connect } from "react-redux";
 import { RxCross2, RxPlus } from "react-icons/rx";
 import { Members } from "../Sections";
-import { Card, Row, Col, Button, Form } from "reactstrap";
 import { Formik } from "formik";
 import { addProject, getProjectById } from "app/hooks/taskManagment";
-import {
-  TextInput,
-  SelectComponent,
-  TextAreaEditorInput,
-} from "components/form-control.jsx";
+import { TextInput, SelectComponent } from "components/form-control.jsx";
 import { Project } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 import { DateInput } from "components/form-control";
 import { useDispatch } from "react-redux";
 import { fetchProjects } from "state/slices/CommonSlice";
-import { CardHeader, CardTitle } from "components/ui/card";
+import { TextAreaInput } from "components/form-control";
+import { Button } from "components/ui/button";
 
 const ProjectForm = ({
   employees,
@@ -90,9 +86,6 @@ const ProjectForm = ({
         <div className="flex flex-col ">
           <div className="flex-grow ">
             <div className="p-0">
-              <CardHeader className="prose">
-                <CardTitle> {projectId ? "Update" : "Add"} New Project</CardTitle>
-              </CardHeader>
               <Formik
                 initialValues={initialValues}
                 innerRef={formRef}
@@ -108,96 +101,108 @@ const ProjectForm = ({
               >
                 {(props) => (
                   <form onSubmit={props.handleSubmit}>
-                    <Row className="m-0">
-                      <Col md="12">
-                        <TextInput
-                          name="name"
-                          error={props.errors.name}
-                          touch={props.touched.name}
-                          value={props.values.name}
-                          label="Title"
-                          required
-                          onChange={(field, value) => {
-                            props.handleChange(field)(value);
-                          }}
-                        />
-                      </Col>
-                      <Col md="12">
-                        <TextAreaEditorInput
-                          name="description"
-                          error={props.errors.description}
-                          touch={props.touched.description}
-                          value={props.values.description}
-                          label="Description"
-                          required
-                          onChange={(field, value) => {
-                            props.handleChange(field)(value);
-                          }}
-                        />
-                      </Col>
-                      <Col md="12" className="mb-0">
-                        <Row>
-                          <Col md="6" className="mb-0">
-                            <DateInput
-                              name="start_date"
-                              error={props.errors.start_date}
-                              touch={props.touched.start_date}
-                              value={props.values.start_date}
-                              label="Start Date"
-                              required
-                              onChange={(field, value) => {
-                                props.setFieldValue(field, value);
-                              }}
-                            />
-                          </Col>
-                          {/* <Col md="6" className="mb-0">
-                  <SelectComponent
-                    name="created_by"
-                    options={employees}
-                    error={props.errors.created_by}
-                    touch={props.touched.created_by}
-                    value={props.values.created_by}
-                    required
-                    label="Created by"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </Col> */}
-                        </Row>
-                      </Col>
-                      <Col md="12" className="mb-3">
-                        <span className="label text-[17px]">Team Members</span>
-                      </Col>
-                      <Col md="12" className="mb-3">
-                        <div className="flex items-center justify-start gap-2 h-100">
-                          {props.values.project_members &&
-                            props.values.project_members.length > 0 &&
-                            props.values.project_members.map(
-                              (member, index) => (
-                                <div key={index}>
-                                  <Members
-                                    member={member}
-                                    isEditMode={true}
-                                    removeMember={removeMember}
-                                  />
-                                </div>
-                              )
-                            )}
-                          <div
-                            onClick={() => {
-                              setMembersOpen(!membersOpen);
+                    <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
+                      <div className="font-inter flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                        <div className="flex h-[7px] flex-shrink-0 items-end px-px">
+                          <div className="text-zinc-950">Project Details</div>
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name="name"
+                            error={props.errors.name}
+                            touch={props.touched.name}
+                            value={props.values.name}
+                            label="Title"
+                            required
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
                             }}
-                            className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
-                          >
-                            <span className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
-                              <RxPlus />
-                            </span>
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextAreaInput
+                            name="description"
+                            error={props.errors.description}
+                            touch={props.touched.description}
+                            value={props.values.description}
+                            maxRows={3}
+                            label="Project Description"
+                            required
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                          <p>
+                            Give important details regarding the new project
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`flex w-full flex-col rounded-lg pt-2.5 mt-4`}
+                    >
+                      <div className="font-inter flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                        <div className="flex h-[7px] flex-shrink-0 items-end px-px">
+                          <div className="text-zinc-950">Add To Project</div>
+                        </div>
+
+                        <div className="flex items-center gap-10">
+                          <div className="space-y-2">
+                            <span className="label text-[14px]">Colors</span>
+                          </div>
+                          <div className="flex space-x-2">
+                            {[
+                              "#f7f7f7",
+                              "#f9e8f7",
+                              "#e7f9f7",
+                              "#fdf7e7",
+                              "#f9f7f9",
+                            ].map((color, index) => (
+                              <span
+                                key={index}
+                                className="w-6 h-6 rounded-full border border-gray-300 cursor-pointer"
+                                style={{ backgroundColor: color }}
+                              ></span>
+                            ))}
                           </div>
                         </div>
-                      </Col>
-                      {membersOpen && (
-                        <Col md="10" className="mb-3">
+
+                        <div className="flex items-center gap-4">
+                          <div className="space-y-2">
+                            <span className="label text-[14px]">
+                              Team Members
+                            </span>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-start gap-2 h-100">
+                              {props.values.project_members &&
+                                props.values.project_members.length > 0 &&
+                                props.values.project_members.map(
+                                  (member, index) => (
+                                    <div key={index}>
+                                      <Members
+                                        member={member}
+                                        isEditMode={true}
+                                        removeMember={removeMember}
+                                      />
+                                    </div>
+                                  )
+                                )}
+                              <div
+                                onClick={() => {
+                                  setMembersOpen(!membersOpen);
+                                }}
+                                className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
+                              >
+                                <span className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
+                                  <RxPlus />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {membersOpen && (
                           <SelectComponent
                             name="project_members"
                             options={employees}
@@ -214,28 +219,36 @@ const ProjectForm = ({
                               props.setFieldValue(field, members);
                             }}
                           />
-                        </Col>
-                      )}
-                    </Row>
-                    <Row className="my-4">
-                      <Col md="3">
-                        <div
-                          type="button"
-                          className="btn btn-outline-dark w-100"
-                          to="/jobs"
+                        )}
+
+                        <div className="flex items-center gap-10">
+                          <div className="space-y-2">
+                            <span className="label text-[14px]">Status</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-6 border-t border-gray-200 ">
+                      <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+                        <Button
+                          variant="outline"
+                          size="lg"
                           onClick={() => {
-                            onClose();
+                            setIsOpen(false);
                           }}
                         >
                           Cancel
-                        </div>
-                      </Col>
-                      <Col md="5">
-                        <Button type="submit" className="btn btn-dark w-100">
+                        </Button>
+                        <Button
+                          type="submit"
+                          size="lg"
+                          // disabled={!props.values.condition}
+                        >
                           {isEditMode ? "Update" : "Add"}
                         </Button>
-                      </Col>
-                    </Row>
+                      </div>
+                    </div>
                   </form>
                 )}
               </Formik>

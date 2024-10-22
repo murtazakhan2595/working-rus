@@ -15,7 +15,7 @@ import { fetchProjects } from "state/slices/CommonSlice";
 import { useDispatch } from "react-redux";
 import CreateEditProject from "./CreateEditProject";
 import { Badge } from "components/ui/badge";
-import logo from '../../../../assets/images/tecbrix-logo.png'
+import Avatar from "components/ui/Avatar";
 import {
   CardContent,
   Card,
@@ -24,7 +24,6 @@ import {
   CardTitle,
   CardDescription,
 } from "components/ui/card";
-import { Clock, ListTodo } from "lucide-react";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -133,7 +132,13 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const closeModal = () => {
+    setIsViewBoardDetails(false);
+    setIsEditMode(false);
+  };
 
   const viewDetails = () => {
     setIsDropdownOpen(false);
@@ -145,17 +150,31 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
     setIsDeleteModalOpen(true);
   };
 
+  const confirmDelete = async () => {
+    const response = await deleteProject(project.id);
+    onDeleteSuccess();
+    setIsDeleteModalOpen(false);
+  };
+  const dropdownOptions = [
+    {
+      label: "Edit Details",
+      onClick: () => {
+        toggleAddProject(parseInt(project.id));
+      },
+    },
+    { label: "View Details", onClick: viewDetails },
+    { label: "Delete", onClick: handleDelete },
+  ];
+
   const navigateToBoard = () => {
     navigate(`/project-board/${project.id}`);
   };
-
-
 
   return (
     <Card>
       {project && (
         <>
-          <CardHeader className="bg-gray-500 m-2">
+          <CardHeader>
             <CardTitle>
               <Badge
                 variant="dot"
@@ -164,25 +183,44 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
                 Ongoing
               </Badge>
             </CardTitle>
-            <div className="flex justify-center">
             <img
-              src={logo}
+              src={project.logo}
               alt={project.name}
-              className="w-[100px] mb-3"
+              className="h-12 w-12 object-cover mb-3"
             />
-            </div>
           </CardHeader>
           <CardContent>
-            <div onClick={navigateToBoard}>
-            <h3 className="text-lg font-semibold mb-2 text-[#11182c]">{project.name}</h3>
-            <div className="flex text-gray-500 text-sm mb-4">
-               <ListTodo size={18}/> <span className="ml-2 font-semibold">16</span> Tasks
+            <h3 className="text-lg font-semibold mb-2">{project.name}</h3>
+
+            <div className="text-gray-500 text-sm mb-4">
+              {project.tasks} Tasks
             </div>
-            </div>
+
+            {isViewBoardDetails && project && (
+              <ViewBoardDetails
+                project={project}
+                onClose={closeModal}
+                onEdit={() => setIsEditMode(true)}
+                setIsEditMode={setIsEditMode}
+              />
+            )}
+            {isEditMode && project && (
+              <ProjectModel
+                projectId={project.id}
+                isEditMode={true}
+                onClose={closeModal}
+              />
+            )}
+            {isDeleteModalOpen && (
+              <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onDelete={confirmDelete}
+              />
+            )}
           </CardContent>
-          <div className="border border-gray-400 m-2"/>
-          <CardFooter className="flex justify-between">
-            <div className="text-gray-400 text-sm flex justify-center gap-2"> <Clock/> {moment(project.start_date).format("MMM D, YYYY")}</div>
+          <CardFooter>
+            <div className="text-gray-400 text-sm mb-4">{project.start_date}</div>
              <MembersList members={project?.project_members || []} />
           </CardFooter>
         </>
