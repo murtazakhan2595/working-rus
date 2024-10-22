@@ -13,7 +13,6 @@ import {
 } from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import { getEmployeeLeavesTypesList } from "utils/Lists";
-// import LeaveTrackerStats from "./LeaveTrackerStats";
 import CustomTable from "components/CustomTable";
 import {
   Tabs,
@@ -28,12 +27,13 @@ import {
 } from "../../../../components/ui/card.jsx";
 import { LeaveRecordColumns } from "app/utils/Types/TableColumns";
 import { LeaveTypesColumns } from "app/utils/Types/TableColumns.jsx";
-import  AddTypeSheet  from "../Sections/AddTypeSheet";
+import AddTypeSheet from "../Sections/AddTypeSheet";
 import { getLeaveComponents } from "app/hooks/leaveTracker.jsx";
 import { saveLeaveComponents } from "app/hooks/leaveTracker.jsx";
 import EmployeeLeavesDetailSheet from "../Sections/EmployeeLeavesDetailSheet.jsx";
+import { getLeaveStatsEmployee } from "app/hooks/leaveTracker.jsx";
 
-const dummyData =[
+const dummyData = [
   {
     id: 1,
     work_email: "khan@gmail.com",
@@ -42,8 +42,8 @@ const dummyData =[
     total_Alloted: 10,
     total_used: 5,
     total_remaining: 5,
-  }
-]
+  },
+];
 const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [Leave, setLeave] = useState([]); // Leave applications data
   const [isLoading, setIsLoading] = useState(false); // Loading indicator
@@ -55,6 +55,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [selectedType, setSelectedType] = useState(null);
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [isSelectedLeaveSheet, setIsSelectedLeaveSheet] = useState(false);
+  const [empLeaveStats, setEmpLeaveStats] = useState([]);
 
   const [options, setOptions] = useState({
     page: 1, // Current page number
@@ -70,14 +71,23 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
   };
 
   const fetchLeaveTypesData = async () => {
-    const leaveTypesData = await getLeaveComponents({filterData:{...typesFilterData}});
-    if(leaveTypesData){
-      setLeaveTypesData(leaveTypesData)
+    const leaveTypesData = await getLeaveComponents({
+      filterData: { ...typesFilterData },
+    });
+    if (leaveTypesData) {
+      setLeaveTypesData(leaveTypesData);
     }
-  }
+  };
 
+  const fetchData = async () => {
+    const empLeaveStats = await getLeaveStatsEmployee();
+    if (empLeaveStats) {
+      setEmpLeaveStats(empLeaveStats);
+    }
+  };
   useEffect(() => {
     fetchLeaveTypesData();
+    fetchData();
   }, [typesFilterData]);
 
   // Separate handler for records filters
@@ -113,13 +123,13 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
       console.log("Row clicked", row);
       setIsSelectedLeaveSheet(true);
       setSelectedLeave(row);
-    }
+    },
   };
-  const leaveTypesTableOptions ={
+  const leaveTypesTableOptions = {
     onRowClick: (row) => {
       setSelectedType(row);
-    }
-  }
+    },
+  };
 
   const tabsData = [
     { value: "records", label: "Records" },
@@ -157,18 +167,20 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
             placeholder: "Active",
           },
         ];
-          const onCheckedChange = async (value, type) => {
-            console.log("INFO", value, type);
-            const updatedComponent = { ...type, status: value };
-            const response = await saveLeaveComponents(updatedComponent);
-            if (response) {
-              setLeaveTypesData((prevState) =>
-                prevState.map((item) =>
-                  item.id === updatedComponent.id ? updatedComponent : item
-                )
-              );
-            }
-          };
+  const onCheckedChange = async (value, type) => {
+    console.log("INFO", value, type);
+    const updatedComponent = { ...type, status: value };
+    const response = await saveLeaveComponents(updatedComponent);
+    if (response) {
+      setLeaveTypesData((prevState) =>
+        prevState.map((item) =>
+          item.id === updatedComponent.id ? updatedComponent : item
+        )
+      );
+    }
+  };
+
+  console.log("empLeaveStats", empLeaveStats);
   return (
     <div className="flex flex-col gap-4 profile-management">
       <Header content={activeTab === "types" && <AddTypeSheet />} />
@@ -178,28 +190,28 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
         onValueChange={setActiveTab}
         defaultValue="salary"
       >
-        <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="flex justify-center mb-4">
-            {tabsData?.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
+        {userProfile.role !== 2 && (
+          <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+            <TabsList className="flex justify-center mb-4">
+              {tabsData?.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+        )}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="h-[47px] flex-col justify-center items-start inline-flex">
                 <div className="flex-col justify-start items-start flex">
                   <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
-                    {activeTab === "records"
-                      ? "Leave Types"
-                      : "Employee Salaries"}
+                    {userProfile.role === 2 ? "My Team Leaves" : "Leave Types"}
                   </div>
                 </div>
                 <div className="pt-1.5 flex-col justify-start items-start flex">
@@ -228,10 +240,9 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
                 <PageLoader />
               ) : (
                 <CustomTable
-                  data={dummyData || []}
+                  data={empLeaveStats || []}
                   columns={LeaveRecordColumns}
-                  pagination={true}
-                  dataTotalSize={dummyData?.count || 0}
+                  pagination={false}
                   tableOptions={tableOptions}
                 />
               )}

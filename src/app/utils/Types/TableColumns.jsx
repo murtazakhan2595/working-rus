@@ -40,9 +40,9 @@ import { calculateTotalMonthlyEarningsAndDeductions } from "app/modules/payroll/
 
 /**
  * LeaveHistoryColumns
- * 
+ *
  * Returns an array of column definitions for the Leave History table.
- * 
+ *
  * @param {function} updateLeaveType - A function to update the leave type.
  * @returns {array} An array of column definitions.
  */
@@ -96,9 +96,9 @@ import { calculateTotalMonthlyEarningsAndDeductions } from "app/modules/payroll/
 // ];
 /**
  * EmployeeColumns
- * 
+ *
  * Returns an array of column definitions for the Employee table.
- * 
+ *
  * @returns {array} An array of column definitions.
  */
 export const EmployeeColumns = [
@@ -151,9 +151,9 @@ export const EmployeeColumns = [
 ];
 /**
  * MyLeavesColumns
- * 
+ *
  * Returns an array of column definitions for the My Leaves table.
- * 
+ *
  * @returns {array} An array of column definitions.
  */
 // export const MyLeavesColumns = [
@@ -189,9 +189,9 @@ export const EmployeeColumns = [
 // ];
 /**
  * ExitRequestColumns
- * 
+ *
  * Returns an array of column definitions for the Exit Request table.
- * 
+ *
  * @param {function} handleRowClicked - A function to handle row clicks.
  * @param {function} reload - A function to reload the table.
  * @param {boolean} hideActions - A boolean to hide actions.
@@ -268,7 +268,7 @@ export const ExitRequestColumns = (
       dataField: "",
       text: "Action",
       formatter: (cell, row) => (
-        <RenderTerminationAction row={row} reload={reload} viewMode={false}/>
+        <RenderTerminationAction row={row} reload={reload} viewMode={false} />
       ),
     });
   }
@@ -276,9 +276,9 @@ export const ExitRequestColumns = (
 };
 /**
  * EmployeeResignationsColumns
- * 
+ *
  * Returns an array of column definitions for the Employee Resignations table.
- * 
+ *
  * @param {function} handleRowClicked - A function to handle row clicks.
  * @param {function} reload - A function to reload the table.
  * @returns {array} An array of column definitions.
@@ -552,7 +552,11 @@ export const EmployeePayrollColumns = [
     dataField: "name",
     text: "Employee",
     formatter: (cell, row) => (
-      <EmployeeDataInfo name={cell} email={row.work_email} src={row?.profile_picture?.file}/>
+      <EmployeeDataInfo
+        name={cell}
+        email={row.work_email}
+        src={row?.profile_picture?.file}
+      />
     ),
   },
   {
@@ -570,11 +574,12 @@ export const EmployeePayrollColumns = [
     text: "Last Revised Date",
     formatter: (cell, row) => {
       // Check if the cell has a value
-      if (!cell) return (
-        <div class="h-[22px] px-3 py-[3px] rounded-full border border-[#f1d1f3] justify-end items-center gap-1.5 inline-flex">
-          <div class="text-[#ab4aba] text-xs font-semibold">New</div>
-        </div>
-      );
+      if (!cell)
+        return (
+          <div class="h-[22px] px-3 py-[3px] rounded-full border border-[#f1d1f3] justify-end items-center gap-1.5 inline-flex">
+            <div class="text-[#ab4aba] text-xs font-semibold">New</div>
+          </div>
+        );
 
       // Try parsing the date using both formats
       let formattedDate;
@@ -615,7 +620,11 @@ export const SalaryComponentColumns = (onCheckedChange) => [
     formatter: (cell) => (
       <div className="">
         <div className="h-6 px-3 py-[3px] rounded-full border border-[#f0f0f3] justify-center items-center gap-1.5 inline-flex">
-          <div className={`w-1.5 h-1.5 ${cell === "deduction"?"bg-[#29a385]": "bg-[#EA3E69]"} rounded-full`} />
+          <div
+            className={`w-1.5 h-1.5 ${
+              cell === "deduction" ? "bg-[#29a385]" : "bg-[#EA3E69]"
+            } rounded-full`}
+          />
           <div className="text-[#1c2024] text-xs font-semibold  leading-3 capitalize">
             {cell}
           </div>
@@ -701,8 +710,8 @@ export const SalarySetupColumns = [
     dataField: "is_new",
     text: "",
     formatter: (cell, row) => {
-       const showNewBadge = cell === null || cell === true;
-       const showEosBadge = row.is_eos_applicable === true;
+      const showNewBadge = cell === null || cell === true;
+      const showEosBadge = row.is_eos_applicable === true;
       if (cell === null || cell === true) {
         return (
           <div class="flex gap-2">
@@ -722,7 +731,6 @@ export const SalarySetupColumns = [
     },
   },
 ];
-
 
 export const ClaimRequestColumns = [
   {
@@ -754,7 +762,7 @@ export const ClaimRequestColumns = [
   {
     dataField: "attachment",
     text: "Receipt",
-    formatter: (cell, row) => (
+    formatter: (cell, row) =>
       cell?.file ? (
         <div
           onClick={(e) => {
@@ -769,8 +777,7 @@ export const ClaimRequestColumns = [
         </div>
       ) : (
         "No Attachment"
-      )
-    ),
+      ),
   },
 
   {
@@ -779,7 +786,6 @@ export const ClaimRequestColumns = [
     formatter: (cell) => <ClaimRequestStatus status={cell} />,
   },
 ];
-
 
 export const createPayrunColumns = (components) => [
   {
@@ -822,38 +828,33 @@ export const createPayrunColumns = (components) => [
     dataField: "",
     text: "Earnings",
     formatter: (cell, row) => {
-      const total =  (Number(row.basic_salary) +
-          Number(row.total_earnings) +
-          Number(row.total_earnings_types) +
-          Number(row.total_reimbursements)).toFixed(2);
-      return (
-        <>
-          {"AED " + total}
-        </>
-      );
+      const total = (
+        Number(row.basic_salary) +
+        Number(row.total_earnings) +
+        Number(row.total_earnings_types) +
+        Number(row.total_reimbursements)
+      ).toFixed(2);
+      return <>{"AED " + total}</>;
     },
   },
   {
     dataField: "",
     text: "Deductions",
     formatter: (cell, row) => {
-      const total = (Number(row.total_deductions) + Number(row.total_deductions_types)).toFixed(2);
+      const total = (
+        Number(row.total_deductions) + Number(row.total_deductions_types)
+      ).toFixed(2);
       return <>{total > 0 ? "AED " + total : "0.00"} </>;
     },
   },
   {
     dataField: "total_reimbursements",
     text: "Claims",
-    formatter: (cell, ) => {
-      return (
-        <>
-          { "AED " + cell}
-        </>
-      );
+    formatter: (cell) => {
+      return <>{"AED " + cell}</>;
     },
   },
 ];
-
 
 export const MyClaimsRequestColumns = [
   {
@@ -873,7 +874,7 @@ export const MyClaimsRequestColumns = [
   {
     dataField: "attachment",
     text: "Receipt",
-    formatter: (cell, row) => (
+    formatter: (cell, row) =>
       cell?.file ? (
         <div
           onClick={(e) => {
@@ -888,8 +889,7 @@ export const MyClaimsRequestColumns = [
         </div>
       ) : (
         "No Attachment"
-      )
-    ),
+      ),
   },
   {
     dataField: "status",
@@ -897,8 +897,6 @@ export const MyClaimsRequestColumns = [
     formatter: (cell) => <ClaimRequestStatus status={cell} />,
   },
 ];
-
-
 
 export const downloadPayslipColumns = (components) => [
   {
@@ -945,8 +943,9 @@ export const downloadPayslipColumns = (components) => [
 
 export const LeaveRecordColumns = [
   {
-    dataField: "id",
+    dataField: "employee_id",
     text: "ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
   },
   {
     dataField: "employee",
@@ -954,7 +953,7 @@ export const LeaveRecordColumns = [
     formatter: (cell, row) => (
       <>
         <EmployeeDataInfo
-          name={row.full_name}
+          name={row.employee_name}
           email={row.work_email}
           src={row?.profile_picture?.file}
         />
@@ -977,9 +976,9 @@ export const LeaveRecordColumns = [
     dataField: "total_remaining",
     text: "Total Remaining",
   },
-]
+];
 
-export const LeaveTypesColumns = (onCheckedChange)=>[
+export const LeaveTypesColumns = (onCheckedChange) => [
   {
     dataField: "name",
     text: "Leave Type",
@@ -1010,5 +1009,68 @@ export const LeaveTypesColumns = (onCheckedChange)=>[
         </div>
       );
     },
+  },
+];
+
+export const LeaveAplicationColumns = [
+  {
+    dataField: "employee_id",
+    text: "ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
+  },
+  {
+    dataField: "employee",
+    text: "Employees",
+    formatter: (cell, row) => (
+      <>
+        <EmployeeDataInfo
+          name={row?.leave_request?.employee_info?.last_name}
+          email={row?.leave_request?.employee_info?.work_email}
+          src={row?.leave_request?.employee_info?.profile_picture?.file}
+        />
+      </>
+    ),
+  },
+  {
+    dataField: "",
+    text: "Leave Dates",
+    formatter: (cell, row) => (
+      <>
+        {`${moment(row?.leave_request?.start_date).format("MMM D")} - ${moment(
+          row?.leave_request?.end_date
+        ).format("MMM D")}`}
+      </>
+    ),
+  },
+  {
+    dataField: "",
+    text: "Days",
+    formatter: (cell, row) => <>{row?.leave_request?.no_of_days}</>,
+  },
+  {
+    dataField: "component_name",
+    text: "Leave Type",
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell, row) => (
+      <span
+        className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+          row?.action_hr === "Approved" && row?.action_manager === "Approved"
+            ? "bg-emerald-50 text-teal-700"
+            : row?.action_hr === "Declined" ||
+              row?.action_manager === "Declined"
+            ? "bg-red-50 text-red-700"
+            : "bg-[#f0f0f3] text-[#7f838d]"
+        }`}
+      >
+        {row?.action_hr === "Approved" && row?.action_manager === "Approved"
+          ? "Approved"
+          : row?.action_hr === "Declined" || row?.action_manager === "Declined"
+          ? "Declined"
+          : "Pending"}
+      </span>
+    ),
   },
 ];

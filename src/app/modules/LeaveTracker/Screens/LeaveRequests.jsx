@@ -9,7 +9,6 @@ import {
 import { FilterInput } from "components/form-control.jsx";
 import CustomTable from "components/CustomTable";
 
-
 import {
   Table,
   TableBody,
@@ -24,14 +23,18 @@ import { connect } from "react-redux";
 import moment from "moment";
 import ViewLeaveSheet from "../Sections/ViewLeaveSheet";
 import { PageLoader } from "components";
+import { getLeavestats } from "app/hooks/leaveTracker";
+import { getLeaveTransaction } from "app/hooks/leaveTracker";
+import { LeaveAplicationColumns } from "app/utils/Types/TableColumns";
 
 const LeaveRequests = ({ userProfile }) => {
-  const [leaveData, setLeaveData] = useState({});
   const [selectedLeaveApplication, setSelectedLeaveApplication] =
     useState(null);
   const [filterData, setFilterData] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
+  const [leaveTransaction, setLeaveTransaction] = useState();
+  console.log("leaveTransaction", leaveTransaction);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
 
   const onPageChange = (name, value) => {
@@ -41,40 +44,62 @@ const LeaveRequests = ({ userProfile }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onRowClick: (row) => {
+      setSelectedLeaveApplication(row);
+      setIsOpen(true);
+    },
   };
 
   const [LeaveTrackerStats, setLeaveTrackerStats] = useState([
-    { title: "Total Applications", value: 5 },
-    { title: "Pending Requests", value: 2 },
-    { title: "Accepted Requests", value: 3 },
+    { title: "Total Applications", value: 0 },
+    { title: "Pending Requests", value: 0 },
+    { title: "Accepted Requests", value: 0 },
   ]);
-  console.log("setSelectedLeaveApplication", selectedLeaveApplication);
+
+  const fetchData = async () => {
+    setLoading(true);
+    const statsData = await getLeavestats({});
+    if (statsData) {
+      setLeaveTrackerStats([
+        {
+          title: "Total Applications",
+          value: statsData?.total_applications,
+        },
+        {
+          title: "Pending Requests",
+          value: statsData?.pending_applications,
+        },
+        {
+          title: "Accepted Requests",
+          value: statsData?.accepted_applications,
+        },
+      ]);
+    }
+    const leaveTransaction = await getLeaveTransaction({});
+    if (leaveTransaction) {
+      console.log("leaveTransaction", leaveTransaction);
+      setLeaveTransaction(leaveTransaction);
+    }
+    setLoading(false);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const leaves = await getLeaves({
-        filterData: { employee: userProfile.id },
-      });
-      if (leaves) {
-        setLeaveData(leaves);
-      }
-    };
     fetchData();
   }, []);
 
-    const handleFilterChange = (filterName, filterValue) => {
-      onPageChange("page", 1);
-      console.log("filterName", filterName);
-      console.log("filterValue", filterValue);
-      setFilterData((prevFilters) => {
-        const updatedFilters = { ...prevFilters };
-        if (filterValue === "") {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterValue;
-        }
-        return updatedFilters;
-      });
-    };
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    console.log("filterName", filterName);
+    console.log("filterValue", filterValue);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-10 justify-between items-center h-9">
@@ -83,7 +108,6 @@ const LeaveRequests = ({ userProfile }) => {
             Leave Requests
           </div>
         </div>
-        {<ApplyLeaveSheet />}
       </div>
       <div className="p-6">
         <section className="flex flex-wrap gap-4 items-center">
@@ -157,15 +181,28 @@ const LeaveRequests = ({ userProfile }) => {
             <PageLoader />
           ) : (
             <CustomTable
-              data={[]}
-              columns={[]}
+              data={leaveTransaction?.results || []}
+              columns={LeaveAplicationColumns}
               pagination={true}
-              dataTotalSize={0}
+              dataTotalSize={leaveTransaction?.count || 0}
               tableOptions={tableOptions}
             />
           )}
         </CardContent>
       </Card>
+      {selectedLeaveApplication && (
+        <ViewLeaveSheet
+          leaveApplication={selectedLeaveApplication}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          isMyLeave={false}
+          reload={fetchData}
+          onClose={() => {
+            setIsOpen(false);
+            setSelectedLeaveApplication(null); // Reset the selected application
+          }}
+        />
+      )}
     </div>
   );
 };

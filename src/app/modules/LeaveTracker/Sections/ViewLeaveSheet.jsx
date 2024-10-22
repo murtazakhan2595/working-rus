@@ -11,24 +11,9 @@ import statusApprovedIcon from "assets/images/status-approved.png";
 import statusPendingIcon from "assets/images/status-pending.svg";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { saveReimbursement } from "app/hooks/payroll";
 import statusRejectedIcon from "assets/images/status-rejected.svg";
-
-// Function to calculate "X days ago"
-const calculateTimeAgo = (date) => {
-  if (!date) return null; // Handle null dates
-  const now = moment(); // Current date
-  const approvalDate = moment(date); // Approval date
-  const diffInDays = now.diff(approvalDate, "days"); // Difference in days
-
-  if (diffInDays === 0) {
-    return "Today"; // If it's the same day
-  } else if (diffInDays === 1) {
-    return "1d ago"; // If it was 1 day ago
-  } else {
-    return `${diffInDays}d ago`; // Otherwise, show X days ago
-  }
-};
+import { getAttachmentById } from "app/hooks/leaveTracker";
+import { saveLeaveTransaction } from "app/hooks/leaveTracker";
 
 const ViewLeaveSheet = ({
   leaveApplication,
@@ -36,28 +21,48 @@ const ViewLeaveSheet = ({
   setIsOpen,
   isMyLeave,
   onClose,
+  reload,
 }) => {
-  console.log("leaveApplication", leaveApplication);
+  const [attachment, setAttachment] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("leaveApplication", leaveApplication);
+      if (leaveApplication?.leave_request?.attachments) {
+        const response = await getAttachmentById(
+          leaveApplication?.leave_request?.attachment
+        );
+        if (response) {
+          setAttachment(response);
+        }
+      }
+    };
+    fetchData();
+  }, []);
   const detailItems = [
     {
       label: "Leave Type",
-      value: leaveApplication.component_name,
+      value: leaveApplication?.component_name,
     },
     {
       label: "Leave Dates",
-      value: `${moment(leaveApplication.start_date).format("MMM D")} - ${moment(
-        leaveApplication.end_date
-      ).format("MMM D")}`,
+      value: `${moment(leaveApplication?.leave_request?.start_date).format(
+        "MMM D"
+      )} - ${moment(leaveApplication?.leave_request?.end_date).format(
+        "MMM D"
+      )}`,
     },
-    { label: "Number of Days", value: leaveApplication.no_of_days },
-    { label: "Note", value: leaveApplication.reason },
+    {
+      label: "Number of Days",
+      value: leaveApplication?.leave_request?.no_of_days,
+    },
+    { label: "Note", value: leaveApplication?.leave_request?.reason },
   ];
   const approvalSteps = [
     {
       icon:
         leaveApplication?.action_manager === "Approved"
           ? statusApprovedIcon
-          : leaveApplication?.action_manager === "Rejected"
+          : leaveApplication?.action_manager === "Declined"
           ? statusRejectedIcon
           : statusPendingIcon, // Check for rejected, else pending
       text: "Manager Approval",
@@ -66,19 +71,10 @@ const ViewLeaveSheet = ({
       icon:
         leaveApplication?.action_hr === "Approved"
           ? statusApprovedIcon
-          : leaveApplication?.status_hr === "Rejected"
+          : leaveApplication?.status_hr === "Declined"
           ? statusRejectedIcon
           : statusPendingIcon, // Check for rejected, else pending
       text: "HR Approval",
-    },
-    {
-      icon:
-        leaveApplication?.action_superadmin?.status === "Approved"
-          ? statusApprovedIcon
-          : leaveApplication?.action_superadmin?.status === "Rejected"
-          ? statusRejectedIcon
-          : statusPendingIcon, // Check for rejected, else pending
-      text: "Final Approval",
     },
   ];
 
@@ -93,39 +89,20 @@ const ViewLeaveSheet = ({
 
   const handleStatusChange = async (status) => {
     console.log(userProfile);
-    // if(userProfile.role === 3){
-    //   claimRequest.status_hr = {
-    //     status: status,
-    //     date: moment().format("YYYY-MM-DD"),
-    //   };
-    // }
-    // if(userProfile.role === 2){
-    //   claimRequest.status_manager = {
-    //     status: status,
-    //     date: moment().format("YYYY-MM-DD"),
-    //   };
-    // }
-    // if (userProfile.role === 1) {
-    //   claimRequest.status_superadmin = {
-    //     status: status,
-    //     date: moment().format("YYYY-MM-DD"),
-    //   };
-    // }
-    // if(claimRequest?.status_manager?.status === "approved" && claimRequest?.status_hr?.status === "approved" && claimRequest?.status_superadmin?.status === "approved"){
-    //   claimRequest.status = "approved";
-    //   claimRequest.approval_date = moment().format("YYYY-MM-DD");
-    // }
-    // else if(status === "rejected"){
-    //   claimRequest.status = "rejected";
-    //   claimRequest.approval_date = null;
-    //   claimRequest.rejection_date= moment().format("YYYY-MM-DD");
-    // }
-    //  const response = await saveReimbursement(claimRequest);
-    //  if (response) {
-    //    toast.success("Claim request updated successfully");
-    //    setIsOpen(false);
-    //    reload()
-    //  }
+    if (userProfile.role === 3 || userProfile.role === 1) {
+      leaveApplication.action_hr = status;
+    }
+    if (userProfile.role === 2) {
+      leaveApplication.action_manager = status;
+    }
+    const response = await saveLeaveTransaction(leaveApplication);
+    if (response) {
+      toast.success("Leave request updated successfully");
+      setIsOpen(false);
+      reload();
+    } else {
+      toast.error("Error updating leave request");
+    }
   };
 
   return (
@@ -134,7 +111,7 @@ const ViewLeaveSheet = ({
         {...formSheetData}
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        setIsOpen={onClose}
         width="500px"
       >
         <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
@@ -154,30 +131,34 @@ const ViewLeaveSheet = ({
                     </div>
                   </div>
                 ))}
-                {/* <div className="flex gap-4 items-center mt-4 max-w-full">
-                  <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
-                    <div>Attachment</div>
-                  </div>
-                  {claimRequest?.attachment?.file ?<div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Paperclip size={16} />
-                      <div className="text-[#1c2024] text-sm font-medium ">
-                        Receipt
-                      </div>
-                      <div className="text-[#8b8d98] text-sm font-normal">
-                        {getFileSizeInKB(claimRequest?.attachment?.file)}KB
-                      </div>
+                {attachment && (
+                  <div className="flex gap-4 items-center mt-4 max-w-full">
+                    <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
+                      <div>Attachment</div>
                     </div>
-                    <button
-                      className="text-[#ab4aba] text-xs font-semibold "
-                      onClick={() => {
-                        filebase64Download(claimRequest?.attachment);
-                      }}
-                    >
-                      Download
-                    </button>
-                  </div>: "No attachment found"}
-                </div> */}
+                    {attachment?.file && (
+                      <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <Paperclip size={16} />
+                          <div className="text-[#1c2024] text-sm font-medium ">
+                            Receipt
+                          </div>
+                          <div className="text-[#8b8d98] text-sm font-normal">
+                            {getFileSizeInKB(attachment?.file)}KB
+                          </div>
+                        </div>
+                        <button
+                          className="text-[#ab4aba] text-xs font-semibold "
+                          onClick={() => {
+                            filebase64Download(attachment);
+                          }}
+                        >
+                          Download
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </section>
@@ -233,20 +214,21 @@ const ViewLeaveSheet = ({
           <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
             <Button
               variant="outline"
+              type="button"
               size="lg"
               onClick={() => {
-                handleStatusChange("rejected");
+                handleStatusChange("Declined");
               }}
             >
               Reject
             </Button>
             <Button
-              type="submit"
+              type="button"
               size="lg"
               variant="default"
               // className=" bg-[#1c2024] text-white"
               onClick={() => {
-                handleStatusChange("approved");
+                handleStatusChange("Approved");
               }}
             >
               Accept

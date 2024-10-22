@@ -11,7 +11,7 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getAllProjects = async (payload,userProfile) => {
+const getAllProjects = async (payload, userProfile) => {
   console.log(userProfile);
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -27,25 +27,25 @@ const getAllProjects = async (payload,userProfile) => {
     if (response.status === 200) {
       const data = response.data;
       if (userProfile.role === 4 || userProfile.role === 2) {
-        console.log(data)
+        console.log(data);
         const filteredResults = data.filter(
           (project) =>
             project.project_members.includes(userProfile.id) ||
             project.created_by === userProfile.id
         );
-        
+
         const ProjectsData = {
           count: filteredResults.length,
           results: filteredResults,
         };
-        console.log("returning in if", ProjectsData)
+        console.log("returning in if", ProjectsData);
         return ProjectsData;
       } else {
         const ProjectsData = {
           count: data.length,
           results: data,
         };
-        console.log("returning in else", ProjectsData)
+        console.log("returning in else", ProjectsData);
         return ProjectsData;
       }
     } else {
@@ -63,7 +63,7 @@ const getTaskByBoardId = async (payload) => {
   const filterData = payload?.filterData ?? {};
   delete filterData.end_date;
   delete filterData.priority;
-  filterData.assigned_to=filterData.optionsValues;
+  filterData.assigned_to = filterData.optionsValues;
   delete filterData.optionsValues;
   const URL = `/task/?search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -458,7 +458,7 @@ const getAttachmentById = async (attachmentId) => {
   try {
     if (attachmentId) {
       const response = await axios.get(
-        `${baseUrl}/TaskmanagementAttachment/${attachmentId}`,
+        `${baseUrl}/attachment/${attachmentId}`,
         {
           headers: headers(),
         }
@@ -498,13 +498,9 @@ const fetchComments = async (filter) => {
 
 const postComment = async (payload) => {
   try {
-    const response = await axios.post(
-      `${baseUrl}/comments/`,
-     payload,
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.post(`${baseUrl}/comments/`, payload, {
+      headers: headers(),
+    });
     return response.data;
   } catch (error) {
     console.error("Error posting comment:", error);
@@ -539,7 +535,7 @@ const getCommentsWithAttachments = async (filter) => {
   try {
     const comments = await fetchComments(filter);
     const attachmentIds = comments.flatMap((comment) => comment.commentattach);
-    console.log(attachmentIds)
+    console.log(attachmentIds);
     const attachments =
       attachmentIds.length > 0
         ? await Promise.all(
@@ -552,17 +548,15 @@ const getCommentsWithAttachments = async (filter) => {
             )
           )
         : [];
-         const attachmentsMap = new Map(
-           attachments.map((att) => [att.id, att])
-         );
+    const attachmentsMap = new Map(attachments.map((att) => [att.id, att]));
 
-         // Merge attachments with comments
-         const commentsWithAttachments = comments.map((comment) => ({
-           ...comment,
-           attachments: comment.commentattach.map(
-             (id) => attachmentsMap.get(id) || null
-           ),
-         }));
+    // Merge attachments with comments
+    const commentsWithAttachments = comments.map((comment) => ({
+      ...comment,
+      attachments: comment.commentattach.map(
+        (id) => attachmentsMap.get(id) || null
+      ),
+    }));
     return commentsWithAttachments;
   } catch (error) {
     console.error("Error fetching comments:", error);
@@ -590,5 +584,5 @@ export {
   fetchComments,
   postComment,
   getAllLabels,
-  getCommentsWithAttachments
+  getCommentsWithAttachments,
 };

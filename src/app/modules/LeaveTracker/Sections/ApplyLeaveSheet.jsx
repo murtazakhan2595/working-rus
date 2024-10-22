@@ -21,6 +21,8 @@ import { validateClaimRequestForm } from "app/utils/FormSchema/payrollFormSchema
 import { getLeaveComponents } from "app/hooks/leaveTracker";
 import { saveLeave } from "app/hooks/leaveTracker";
 import { saveLeaveTransaction } from "app/hooks/leaveTracker";
+import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
+import { saveAttachment } from "app/hooks/leaveTracker";
 
 const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +48,9 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getLeaveComponents({});
+      const response = await getLeaveComponents({
+        filterData: { employee_id_and_org: `${userProfile.id},${true}` },
+      });
       if (response) {
         const LeaveTypeOptions = response.map((item) => ({
           value: item.id,
@@ -62,60 +66,64 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
 
   const handleFormSubmit = async (values) => {
     console.log("values", values);
-    const response = await saveLeave(values);
+    let attachmentId = null;
+    // Step 1: Check if there is an attachment and save it
+    if (newAttachment && newAttachment.file) {
+      const attachment = await saveAttachment({
+        document: newAttachment.file,
+        name: newAttachment.name,
+        employee_id: userProfile.id,
+        description: "Leave Attachment",
+      });
+
+      if (attachment) {
+        attachmentId = attachment.id; // Save the attachment ID to use in the leave request
+      } else {
+        toast.error("Error in uploading attachment");
+        return; // Exit if attachment failed to upload
+      }
+    }
+    // Step 2: Save leave request with the attachment (if exists)
+    const leaveRequestPayload = {
+      ...values,
+      ...(attachmentId && { attachments: attachmentId }), // Only add attachments if present
+    };
+    const response = await saveLeave(leaveRequestPayload);
     if (response) {
-      const type = LeaveTypeOptions.filter(
-        (item) => item?.id === values?.component_type
-      );
+      // Step 3: Prepare the leave transaction
       const employeeLeaveTransaction = {
         leave_days: values?.no_of_days,
-        balance_after: type[0]?.max_days - values?.no_of_days,
         action_manager: "Pending",
         action_hr: "Pending",
         employee_id: userProfile.id,
-        leave_request_id: response.id,
+        leave_request_id: response.id, // Link to the saved leave request
         leave_component_id: values?.component_type,
       };
-      const tran = saveLeaveTransaction(employeeLeaveTransaction);
+
+      // Step 4: Save the leave transaction
+      const tran = await saveLeaveTransaction(employeeLeaveTransaction);
       if (tran) {
         toast.success("Leave request sent successfully");
         setIsOpen(false);
-        reload();
+        setNewAttachment(null); // Clear the attachment
+        reload(); // Reload the page or data
+      } else {
+        toast.error("Error in saving leave transaction");
       }
+    } else {
+      toast.error("Error in submitting leave request");
     }
-    // if (!newAttachment) {
-    //   toast.error("Please upload an attachment");
-    //   return;
-    // }
-    // values.attachment = newAttachment ? newAttachment : "";
-
-    // values.status_hr = {
-    //   status: "pending",
-    // };
-    // values.status_manager = {
-    //   status: "pending",
-    // };
-    // values.status_superadmin = {
-    //   status: "pending",
-    // };
-    // values.status = "pending";
-    // values.is_paid = false;
-    // values.employee_payroll = payroll.id;
-    // console.log(values);
-    // const response = await saveReimbursement(values);
-    // if (response) {
-    //   toast.success("Reimbursement request sent successfully");
-    //   setNewAttachment(null);
-    //   reload();
-
-    //   setIsOpen(false);
-    // }
   };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0]; // Get the selected file
 
     if (file) {
+      const maxFileSize = 10 * 1024 * 1024; // Max file size in bytes (10MB)
+      if (file.size > maxFileSize) {
+        toast.error("File is too large, must be less than 10MB"); // Handle file size too large
+        return;
+      }
       const reader = new FileReader();
 
       reader.onload = (event) => {
@@ -146,7 +154,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
       >
         <Formik
           initialValues={leaveRequest}
-          // validate={validateClaimRequestForm}
+          validate={validateLeaveRequestFormSchema}
           enableReinitialize={true}
           onSubmit={handleFormSubmit}
         >
@@ -255,7 +263,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                               {!(newAttachment && newAttachment.name) && (
                                 <div className="w-[263px] h-3 pl-8 pr-[26.62px] flex-col justify-start items-start inline-flex">
                                   <div className="text-[#8b8d98] text-xs  ">
-                                    PNG, JPG, GIF up to 10MB
+                                    PDF, PNG, JPG, GIF up to 10MB
                                   </div>
                                 </div>
                               )}
@@ -275,7 +283,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                         <input
                           id="fileInput"
                           type="file"
-                          accept="image/png, image/jpeg, image/gif"
+                          accept="image/png, image/jpeg, image/gif, application/pdf"
                           style={{ display: "none" }} // Hide the file input
                           onChange={handleFileChange} // Call the file change handler
                         />

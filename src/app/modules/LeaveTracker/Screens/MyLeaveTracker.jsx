@@ -21,6 +21,10 @@ import { connect } from "react-redux";
 import moment from "moment";
 import ViewLeaveSheet from "../Sections/ViewLeaveSheet";
 import { FilterInput } from "components/form-control";
+import { getLeavestats } from "app/hooks/leaveTracker";
+import { getLeaveTransaction } from "app/hooks/leaveTracker";
+import { getLeaveComponents } from "app/hooks/leaveTracker";
+import { getLeaveComponentsWithUsed } from "app/hooks/leaveTracker";
 
 const MyLeaveTracker = ({ userProfile }) => {
   const [leaveData, setLeaveData] = useState({});
@@ -28,21 +32,58 @@ const MyLeaveTracker = ({ userProfile }) => {
     useState(null);
   const [isOpen, setIsOpen] = useState(true);
   const [filterData, setFilterData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const [LeaveTrackerStats, setLeaveTrackerStats] = useState([
-    { title: "Total Applications", value: 5 },
-    { title: "Pending Requests", value: 2 },
-    { title: "Accepted Requests", value: 3 },
+    { title: "Total Applications", value: 0 },
+    { title: "Pending Requests", value: 0 },
+    {
+      title: "Accepted Requests",
+      value: 0,
+    },
   ]);
-  console.log("setSelectedLeaveApplication", selectedLeaveApplication);
+  const [leaveTransaction, setLeaveTransaction] = useState();
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    const leaves = await getLeaves({
+      filterData: { employee: userProfile.id },
+    });
+    if (leaves) {
+      setLeaveData(leaves);
+    }
+    const leaveTransaction = await getLeaveTransaction({
+      filterData: { employee_id: userProfile.id },
+    });
+    if (leaveTransaction) {
+      console.log("leaveTransaction", leaveTransaction);
+      setLeaveTransaction(leaveTransaction);
+    }
+
+    const statsData = await getLeavestats({
+      filterData: { employee_id: userProfile.id },
+    });
+    if (statsData) {
+      setLeaveTrackerStats([
+        {
+          title: "Total Applications",
+          value: statsData?.total_applications,
+        },
+        {
+          title: "Pending Requests",
+          value: statsData?.pending_applications,
+        },
+        {
+          title: "Accepted Requests",
+          value: statsData?.accepted_applications,
+        },
+      ]);
+    }
+
+    const componentsWithUsed = await getLeaveComponentsWithUsed(userProfile.id);
+    console.log("componentsWithUsed", componentsWithUsed);
+    setIsLoading(false);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const leaves = await getLeaves({
-        filterData: { employee: userProfile.id },
-      });
-      if (leaves) {
-        setLeaveData(leaves);
-      }
-    };
     fetchData();
   }, []);
 
@@ -66,7 +107,7 @@ const MyLeaveTracker = ({ userProfile }) => {
             My Leave Tracker
           </div>
         </div>
-        {<ApplyLeaveSheet />}
+        {<ApplyLeaveSheet reload={fetchData} />}
       </div>
       <div className="p-6">
         <section className="flex flex-wrap gap-4 items-center">
@@ -95,7 +136,7 @@ const MyLeaveTracker = ({ userProfile }) => {
       </div>
       <div className="flex items-start justify-center gap-4">
         <AppliedLeaves
-          leaveData={leaveData}
+          leaveTransaction={leaveTransaction}
           setSelectedLeaveApplication={setSelectedLeaveApplication}
           setIsOpen={setIsOpen}
           handleFilterChange={handleFilterChange}
@@ -123,11 +164,12 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(MyLeaveTracker);
 
 function AppliedLeaves({
-  leaveData,
+  leaveTransaction,
   setSelectedLeaveApplication,
   setIsOpen,
   handleFilterChange,
 }) {
+  console.log("HERE I GET THIS", leaveTransaction);
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -169,41 +211,43 @@ function AppliedLeaves({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {leaveData?.results?.map((leave, index) => (
+            {leaveTransaction?.results?.map((leave, index) => (
               <TableRow
                 key={index}
                 className="cursor-pointer"
                 onClick={() => {
-                  setSelectedLeaveApplication({
-                    component_name: "Annual Leave",
-                    start_date: leave.start_date,
-                    end_date: leave.end_date,
-                    no_of_days: leave.no_of_days,
-                    reason: leave.reason,
-                    action_manager: leave.action_manager,
-                    action_hr: leave.action_hr,
-                    action_superadmin: "Pending",
-                    created_at: leave.created_at,
-                  });
+                  setSelectedLeaveApplication(leave);
                   setIsOpen(true);
                 }}
               >
-                <TableCell>{"-"}</TableCell>
-                <TableCell>{leave.no_of_days}</TableCell>
+                <TableCell>{leave?.component_name}</TableCell>
+                <TableCell>{leave?.leave_request?.no_of_days}</TableCell>
                 <TableCell>
-                  {`${moment(leave.start_date).format("MMM D")} - ${moment(
-                    leave.end_date
-                  ).format("MMM D")}`}
+                  {`${moment(leave?.leave_request?.start_date).format(
+                    "MMM D"
+                  )} - ${moment(leave?.leave_request?.end_date).format(
+                    "MMM D"
+                  )}`}
                 </TableCell>
                 <TableCell>
                   <span
                     className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-                      leave.status === "Approved"
+                      leave?.leave_request?.action_hr === "Approved" &&
+                      leave?.leave_request?.action_manager === "Approved"
                         ? "bg-emerald-50 text-teal-700"
-                        : "bg-gray-100 text-gray-500"
+                        : leave?.leave_request?.action_hr === "Rejected" ||
+                          leave?.leave_request?.action_manager === "Rejected"
+                        ? "bg-red-50 text-red-700"
+                        : "bg-[#f0f0f3] text-[#7f838d]"
                     }`}
                   >
-                    {leave.status}
+                    {leave?.leave_request?.action_hr === "Approved" &&
+                    leave?.leave_request?.action_manager === "Approved"
+                      ? "Approved"
+                      : leave?.leave_request?.action_hr === "Rejected" ||
+                        leave?.leave_request?.action_manager === "Rejected"
+                      ? "Rejected"
+                      : "Pending"}
                   </span>
                 </TableCell>
               </TableRow>
