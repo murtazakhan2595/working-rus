@@ -8,6 +8,7 @@ import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
 import { addTask, addAttachments } from "app/hooks/taskManagment";
 import { Card } from "components/ui/card";
+import moment from "moment";
 
 const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,41 +25,49 @@ const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {
     Low: 3,
   };
 
-const handleSubmit = async (formData, files, resetForm) => {
-  // console.log("Files", files);
-  setIsLoading(true);
-  try {
-    // Map over files to get an array of promises
-    const attachmentPromises = files.map(async (file) => {
-      const response = await addAttachments(file);
-      return response.id; // Return the attachment ID
-    });
-
-    // Wait for all promises to resolve
-    const attachmentIds = await Promise.all(attachmentPromises);
-
-    // Update formData with attachment IDs
-    formData.attachment = attachmentIds;
-    console.log("formData", formData)
-
-    // Now call addTask
-    const response = await addTask({
+  const handleSubmit = async (formData, files, resetForm) => {
+    // Add start_date to the formData object
+    const updatedData = {
       ...formData,
-      priority: priorityMapping[formData.priority],
-    });
-
-    if (response) {
-      onClose();
+      start_date: moment(new Date()).format("YYYY-MM-DD"),
+    };
+  
+    setIsLoading(true);
+    
+    try {
+      // Map over files to get an array of promises
+      const attachmentPromises = files.map(async (file) => {
+        const response = await addAttachments(file);
+        return response.id; // Return the attachment ID
+      });
+  
+      // Wait for all attachment upload promises to resolve
+      const attachmentIds = await Promise.all(attachmentPromises);
+  
+      // Update formData with attachment IDs
+      const finalData = {
+        ...updatedData,
+        attachment: attachmentIds,
+        priority: priorityMapping[formData.priority], // Map priority to the expected value
+      };
+  
+      // Now call addTask with the final data
+      const response = await addTask(finalData);
+  
+      if (response) {
+        onClose(); // Close the modal or perform any other action upon success
+        resetForm(); // Optionally reset the form after successful submission
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(error.response?.data?.detail || "An error occurred", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } finally {
+      setIsLoading(false); // Stop loading indicator
     }
-  } catch (error) {
-    console.error("Error:", error);
-    toast.error(error.response.data.detail, {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
+  
 
   return (
     <>

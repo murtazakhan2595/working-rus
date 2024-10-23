@@ -1,24 +1,94 @@
-import React from "react";
+import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { CiEdit } from "react-icons/ci";
 import dots from "assets/images/dots.svg";
 import { getRandomColor } from "utils/renderValues";
+import Avatar from "components/ui/Avatar";
+import SheetComponent from "components/ui/SheetComponent";
+import { Button } from "components/ui/button";
+import { Card } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
+import moment from "moment";
+import { Members, MembersList } from "../Sections";
+import { Badge } from "components/ui/badge";
 
+const ViewBoardDetails = ({
+  isOpen,
+  setIsOpen,
+  onClose,
+  project,
+  setIsEditMode,
+}) => {
+  console.log(project, "HELLO KASHIF");
+  const formSheetData = {
+    triggerText: "View Details",
+    title: "View Details",
+    description: null,
+    footer: null,
+  };
 
-const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
-  const openEditProjectModal= () => {
+  const closeViewDetails = () => {
+    onClose();
+    setIsOpen(!isOpen);
+  };
+  const openEditProjectModal = () => {
     setIsEditMode(true);
   };
   return (
-    <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll">
+    <SheetComponent
+      {...formSheetData}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      width="500px"
+    >
+      <div className="flex justify-between items-center gap-4">
+        <div className="flex items-center gap-4">
+          <img
+            src={project?.profile?.file}
+            alt="Testing"
+            className="h-[50px] w-[50px] object-cover border-2 border-gray-400 rounded-full"
+          />
+          <p>{project?.name}</p>
+        </div>
+        <div className="flex gap-4">
+          <Button variant="outline" onClick={openEditProjectModal}>Edit</Button>
+          <Button variant="outline">Delete</Button>
+        </div>
+      </div>
+
+      <div className="mt-4 border border-gray-400 rounded-md">
+        <div className="p-4">
+        <p>Project Description </p>
+        <div className="flex gap-4 mt-4">
+          <p className="text-[14px]">Description</p>
+          <p className="text-[14px]">{project?.description}</p>
+        </div>
+        </div>
+
+        <div className="bg-gray-400 p-2">
+          <p className="text-[14px]">
+            Created On: {moment(project?.created_at)?.format("MMM D, YYYY")}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 border border-gray-400 rounded-md p-4">
+          <p>Project Members</p>
+          <p className="text-[14px]">Colors: <span className={`bg-[${project?.color}] w-6 h-6 rounded-full border border-gray-300 cursor-pointer`}/></p>
+          <div className="flex items-center gap-2"><p className="text-[14px]">Members: </p><MembersList members={project?.project_members}/></div>
+          <div className="flex items-center gap-2"> <p className="text-[14px]">Status: </p>
+
+          <Badge
+                variant="dot"
+                className="text-sm bg-green-100 text-green-700"
+              >
+                {project?.status || "Ongoing"}
+              </Badge>
+          </div>
+      </div>
+      {/* <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll">
       <div className="bg-white h-full fixed  max-w-[35%] w-[35%] top-0 right-0  shadow px-[50px] py-10 flex flex-col gap-7">
         <div className="flex-col justify-start items-start gap-2.5 flex">
-          <RxCross2
-            className="self-end cursor-pointer"
-            onClick={() => {
-              onClose();
-            }}
-          />
           <div className="inline-flex items-end self-stretch justify-between">
             <div className="flex-col justify-start items-start gap-2.5 inline-flex">
               <div className="text-zinc-800 text-[25px] font-bold ">
@@ -79,9 +149,9 @@ const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div> */}
+    </SheetComponent>
   );
 };
 
 export default ViewBoardDetails;
-

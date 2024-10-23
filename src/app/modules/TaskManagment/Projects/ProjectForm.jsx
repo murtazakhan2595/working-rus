@@ -26,17 +26,25 @@ const ProjectForm = ({
 }) => {
   const formRef = useRef();
   let dispatch = useDispatch();
-  const [initialValues, setInitialValues] = useState(Project);
+  const [initialValues, setInitialValues] = useState({
+    ...Project,
+    color: "", // Add color field
+  });
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(null);
+  const [selectedColor, setSelectedColor] = useState("#f7f7f7"); // Default color
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
       const projectDetails = await getProjectById(projectId);
       if (isMounted) {
-        setInitialValues(projectDetails);
+        setInitialValues({
+          ...projectDetails,
+          color: projectDetails.color || "", // Fetch color if available
+        });
+        setSelectedColor(projectDetails.color || "#f7f7f7");
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
@@ -58,14 +66,17 @@ const ProjectForm = ({
   const handleSubmit = async (formData) => {
     setIsLoading(true);
     try {
-      const response = await addProject(formData);
+      const response = await addProject({
+        ...formData,
+        color: selectedColor, // Send the selected color
+      });
       if (response) {
         dispatch(fetchProjects());
         onClose();
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error(error.response.data.detail, {
+      toast.error(error?.response?.data?.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
@@ -77,7 +88,6 @@ const ProjectForm = ({
     const updatedMembers = members.filter((m) => m !== member);
     formRef.current.setFieldValue("project_members", updatedMembers);
   };
-
   return (
     <>
       <div
@@ -98,7 +108,6 @@ const ProjectForm = ({
                 }}
                 validate={(values) => {
                   const errors = {};
-
                   return errors;
                 }}
               >
@@ -110,20 +119,20 @@ const ProjectForm = ({
                           <div className="text-zinc-950">Project Details</div>
                         </div>
                         <div className="space-y-2">
-                      <ImageInput
-                        name={"profile"}
-                        error={props.errors.profile}
-                        touch={props.touched.profile}
-                        value={props.values.profile}
-                        label={"Cover Photo"}
-                        required={true}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                          setImageError(null);
-                        }}
-                        setImageError={setImageError}
-                      />
-                    </div>
+                          <ImageInput
+                            name={"profile"}
+                            error={props.errors.profile}
+                            touch={props.touched.profile}
+                            value={props.values.profile}
+                            label={"Cover Photo"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                              setImageError(null);
+                            }}
+                            setImageError={setImageError}
+                          />
+                        </div>
                         <div className="space-y-2">
                           <TextInput
                             name="name"
@@ -150,13 +159,12 @@ const ProjectForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                          <p>
-                            Give important details regarding the new project
-                          </p>
+                          <p>Give important details regarding the new project</p>
                         </div>
                       </div>
                     </div>
 
+                    {/* Color Selection */}
                     <div
                       className={`flex w-full flex-col rounded-lg pt-2.5 mt-4`}
                     >
@@ -179,8 +187,16 @@ const ProjectForm = ({
                             ].map((color, index) => (
                               <span
                                 key={index}
-                                className="w-6 h-6 rounded-full border border-gray-300 cursor-pointer"
+                                className={`w-6 h-6 rounded-full border border-gray-300 cursor-pointer ${
+                                  selectedColor === color
+                                    ? "ring-2 ring-blue-500"
+                                    : ""
+                                }`}
                                 style={{ backgroundColor: color }}
+                                onClick={() => {
+                                  setSelectedColor(color);
+                                  props.setFieldValue("color", color); // Update Formik field
+                                }}
                               ></span>
                             ))}
                           </div>
@@ -255,6 +271,7 @@ const ProjectForm = ({
                             }}
                           />
                         </div>
+
                       </div>
                     </div>
 
@@ -269,11 +286,7 @@ const ProjectForm = ({
                         >
                           Cancel
                         </Button>
-                        <Button
-                          type="submit"
-                          size="lg"
-                          // disabled={!props.values.condition}
-                        >
+                        <Button type="submit" size="lg">
                           {isEditMode ? "Update" : "Add"}
                         </Button>
                       </div>
