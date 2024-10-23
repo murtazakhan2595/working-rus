@@ -215,7 +215,7 @@ function AppliedLeaves({
           onChange={handleFilterChange}
         />
       </CardHeader>
-      <CardContent>
+      <CardContent className="scrollable table-container">
         <Table>
           <TableHeader>
             <TableRow>

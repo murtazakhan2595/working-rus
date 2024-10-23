@@ -328,3 +328,23 @@ HTML CSSResult Skip Results Iframe EDIT ON .file-input input[type="file"] {
   background-color: #fff !important;
   border: 1px solid #323333 !important;
 }
+
+.scrollable table {
+  border-collapse: collapse;
+  /* Optional: for cleaner table borders */
+}
+
+.scrollable thead {
+  position: sticky;
+  /* Make the header sticky */
+  top: 0;
+  /* Stick to the top of the container */
+  z-index: 1;
+  /* Ensure it stays above the other content */
+}
+.table-container {
+  height: 50vh;
+  /* Adjust the height as needed */
+  overflow-y: auto;
+  /* Allow vertical scrolling */
+}

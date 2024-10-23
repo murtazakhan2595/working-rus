@@ -440,6 +440,34 @@ const getLeaveStatsEmployee = async () => {
   }
 };
 
+const getRemainingLeaves = async (leaveTypeId, employeeId) => {
+  try {
+    const transactionResponse = await axios.get(
+      `${baseUrl}/employeeleavetransaction/?search=${encodeURIComponent(
+        JSON.stringify({
+          leave_component_id: leaveTypeId,
+          employee_id: employeeId,
+        })
+      )}&ordering=-created_at&page=1&page_size=1`,
+      {
+        headers: headers(),
+      }
+    );
+    const latestTransaction = transactionResponse.data?.results[0];
+    if (latestTransaction) {
+      return latestTransaction.balance_after;
+    } else {
+      return 0;
+    }
+  } catch (error) {
+    console.error("Error fetching remaining leaves:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+};
+
 export {
   saveLeaveComponents,
   getLeaveComponents,
@@ -453,4 +481,5 @@ export {
   getAttachmentById,
   getLeaveComponentsWithUsed,
   getLeaveStatsEmployee,
+  getRemainingLeaves,
 };

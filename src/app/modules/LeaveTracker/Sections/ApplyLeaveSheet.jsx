@@ -23,11 +23,15 @@ import { saveLeave } from "app/hooks/leaveTracker";
 import { saveLeaveTransaction } from "app/hooks/leaveTracker";
 import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
 import { saveAttachment } from "app/hooks/leaveTracker";
+import { getRemainingLeaves } from "app/hooks/leaveTracker";
 
 const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newAttachment, setNewAttachment] = useState(null);
   const [LeaveTypeOptions, setLeaveTypeOptions] = useState([]);
+  const [selectedLeaveType, setSelectedLeaveType] = useState("");
+  const [selectedNoOfDays, setSelectedNoOfDays] = useState(0);
+  const [leaveAfter, setLeaveAfter] = useState(null);
 
   const leaveRequest = {
     component_type: "",
@@ -62,7 +66,43 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
     fetchData();
   }, [userProfile]);
 
+  const getAvailableLeaves = async (leaveTypeId) => {
+    const leavesAfter = await getRemainingLeaves(leaveTypeId, userProfile.id);
+    setLeaveAfter(leavesAfter);
+    const leaveType = LeaveTypeOptions.find(
+      (item) => item.value === leaveTypeId
+    );
+    if (leavesAfter !== null && selectedNoOfDays > 0) {
+      console.log(
+        "this is the thing",
+        leaveType.max_days,
+        leavesAfter,
+        selectedNoOfDays,
+        leavesAfter - selectedNoOfDays
+      );
+      if (leavesAfter - selectedNoOfDays < 0) {
+        toast.error("You don't have enough leaves to apply for this request");
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (selectedLeaveType) {
+      console.log("selectedLeaveType", selectedLeaveType);
+      selectedLeaveType &&
+        selectedNoOfDays &&
+        getAvailableLeaves(selectedLeaveType);
+    }
+  }, [selectedLeaveType, selectedNoOfDays]);
+
   const handleFormSubmit = async (values) => {
+    if (leaveAfter !== null && selectedNoOfDays > 0) {
+      if (leaveAfter - selectedNoOfDays < 0) {
+        toast.error("You don't have enough leaves to apply for this request");
+        return;
+      }
+    }
+
     let attachmentId = null;
     // Step 1: Check if there is an attachment and save it
     if (newAttachment && newAttachment.file) {
@@ -168,6 +208,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                     options={LeaveTypeOptions}
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
+                      setSelectedLeaveType(value);
                     }}
                     placeholder="Select option"
                   />
@@ -178,6 +219,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                     value={props.values?.no_of_days}
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
+                      setSelectedNoOfDays(value);
                     }}
                     regEx={/^\d+$/}
                     placeholder="Add count"
