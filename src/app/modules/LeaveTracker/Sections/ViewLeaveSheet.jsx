@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SheetComponent from "../../../../components/ui/SheetComponent";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import moment from "moment";
@@ -11,123 +11,112 @@ import statusApprovedIcon from "assets/images/status-approved.png";
 import statusPendingIcon from "assets/images/status-pending.svg";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { saveReimbursement } from "app/hooks/payroll";
 import statusRejectedIcon from "assets/images/status-rejected.svg";
+import { getAttachmentById } from "app/hooks/leaveTracker";
+import { saveLeaveTransaction } from "app/hooks/leaveTracker";
 
-// Function to calculate "X days ago"
-const calculateTimeAgo = (date) => {
-  if (!date) return null; // Handle null dates
-  const now = moment(); // Current date
-  const approvalDate = moment(date); // Approval date
-  const diffInDays = now.diff(approvalDate, "days"); // Difference in days
-
-  if (diffInDays === 0) {
-    return "Today"; // If it's the same day
-  } else if (diffInDays === 1) {
-    return "1d ago"; // If it was 1 day ago
-  } else {
-    return `${diffInDays}d ago`; // Otherwise, show X days ago
-  }
-};
-
-const ReimbursmentDetailsSheet = ({
-  claimRequest,
+const ViewLeaveSheet = ({
+  leaveApplication,
   isOpen,
   setIsOpen,
-  isMyClaims,
-  employeeData,
+  isMyLeave,
+  onClose,
   reload,
 }) => {
+  const [attachment, setAttachment] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("leaveApplication", leaveApplication);
+      if (leaveApplication?.leave_request?.attachments) {
+        const response = await getAttachmentById(
+          leaveApplication?.leave_request?.attachments
+        );
+        if (response) {
+          setAttachment(response);
+        }
+      }
+    };
+    fetchData();
+  }, []);
+  const userProfile = useSelector((state) => state.user.userProfile);
+  const showButtons =
+    (userProfile.role === 2 && leaveApplication.action_manager === "Pending") ||
+    (userProfile.role === 3 && leaveApplication.action_hr === "Pending");
+
   const detailItems = [
     {
-      label: "Expense type",
-      value: getExpenseType(claimRequest.expense_type),
+      label: "Leave Type",
+      value: leaveApplication?.component_name,
     },
-    { label: "Amount", value: claimRequest.amount },
-    { label: "Date of Expense", value: claimRequest.payment_date },
-    { label: "Description", value: claimRequest.description },
+    {
+      label: "Leave Dates",
+      value: `${moment(leaveApplication?.leave_request?.start_date).format(
+        "MMM D"
+      )} - ${moment(leaveApplication?.leave_request?.end_date).format(
+        "MMM D"
+      )}`,
+    },
+    {
+      label: "Number of Days",
+      value: leaveApplication?.leave_request?.no_of_days,
+    },
+    { label: "Note", value: leaveApplication?.leave_request?.reason },
   ];
   const approvalSteps = [
     {
       icon:
-        claimRequest?.status_manager?.status === "approved"
+        leaveApplication?.action_manager === "Approved"
           ? statusApprovedIcon
-          : claimRequest?.status_manager?.status === "rejected"
+          : leaveApplication?.action_manager === "Declined"
           ? statusRejectedIcon
           : statusPendingIcon, // Check for rejected, else pending
       text: "Manager Approval",
-      time: calculateTimeAgo(claimRequest?.status_manager?.date),
     },
     {
       icon:
-        claimRequest?.status_hr?.status === "approved"
+        leaveApplication?.action_hr === "Approved"
           ? statusApprovedIcon
-          : claimRequest?.status_hr?.status === "rejected"
+          : leaveApplication?.status_hr === "Declined"
           ? statusRejectedIcon
           : statusPendingIcon, // Check for rejected, else pending
       text: "HR Approval",
-      time: calculateTimeAgo(claimRequest?.status_hr?.date),
-    },
-    {
-      icon:
-        claimRequest?.status_superadmin?.status === "approved"
-          ? statusApprovedIcon
-          : claimRequest?.status_superadmin?.status === "rejected"
-          ? statusRejectedIcon
-          : statusPendingIcon, // Check for rejected, else pending
-      text: "Final Approval",
-      time: calculateTimeAgo(claimRequest?.status_superadmin?.date),
     },
   ];
 
   const formSheetData = {
     triggerText: null,
-    title: "Reimbursment requests",
+    title: "Leave Requests",
 
     description: null,
     footer: null,
   };
-  const userProfile = useSelector((state) => state.user.userProfile);
 
   const handleStatusChange = async (status) => {
-    console.log(userProfile);
-    if (userProfile.role === 3) {
-      claimRequest.status_hr = {
-        status: status,
-        date: moment().format("YYYY-MM-DD"),
-      };
+    console.log("handle status change", status, leaveApplication);
+    if (
+      (userProfile.role === 2 &&
+        leaveApplication.action_manager !== "Pending") ||
+      (userProfile.role === 3 && leaveApplication.action_hr !== "Pending")
+    ) {
+      return;
+    }
+    if (userProfile.role === 3 || userProfile.role === 1) {
+      leaveApplication.action_hr = status;
     }
     if (userProfile.role === 2) {
-      claimRequest.status_manager = {
-        status: status,
-        date: moment().format("YYYY-MM-DD"),
-      };
+      leaveApplication.action_manager = status;
     }
-    if (userProfile.role === 1) {
-      claimRequest.status_superadmin = {
-        status: status,
-        date: moment().format("YYYY-MM-DD"),
-      };
-    }
-    if (
-      claimRequest?.status_manager?.status === "approved" &&
-      claimRequest?.status_hr?.status === "approved" &&
-      claimRequest?.status_superadmin?.status === "approved"
-    ) {
-      claimRequest.status = "approved";
-      claimRequest.approval_date = moment().format("YYYY-MM-DD");
-    } else if (status === "rejected") {
-      claimRequest.status = "rejected";
-      claimRequest.approval_date = null;
-      claimRequest.rejection_date = moment().format("YYYY-MM-DD");
-    }
-    const response = await saveReimbursement(claimRequest);
+    const response = await saveLeaveTransaction(leaveApplication);
     if (response) {
-      toast.success("Claim request updated successfully");
+      toast.success("Leave request updated successfully");
       setIsOpen(false);
       reload();
+    } else {
+      toast.error("Error updating leave request");
     }
   };
+
+  console.log("attachment", attachment);
 
   return (
     <div>
@@ -135,14 +124,9 @@ const ReimbursmentDetailsSheet = ({
         {...formSheetData}
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        setIsOpen={onClose}
         width="500px"
       >
-        <EmployeeDataInfo
-          name={claimRequest.full_name}
-          email={claimRequest.work_email}
-          id={claimRequest.employeeid}
-        />
         <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
           <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
             <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
@@ -160,34 +144,34 @@ const ReimbursmentDetailsSheet = ({
                     </div>
                   </div>
                 ))}
-                <div className="flex gap-4 items-center mt-4 max-w-full">
-                  <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
-                    <div>Attachment</div>
-                  </div>
-                  {claimRequest?.attachment?.file ? (
-                    <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <Paperclip size={16} />
-                        <div className="text-[#1c2024] text-sm font-medium ">
-                          Receipt
-                        </div>
-                        <div className="text-[#8b8d98] text-sm font-normal">
-                          {getFileSizeInKB(claimRequest?.attachment?.file)}KB
-                        </div>
-                      </div>
-                      <button
-                        className="text-[#ab4aba] text-xs font-semibold "
-                        onClick={() => {
-                          filebase64Download(claimRequest?.attachment);
-                        }}
-                      >
-                        Download
-                      </button>
+                {attachment && (
+                  <div className="flex gap-4 items-center mt-4 max-w-full">
+                    <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
+                      <div>Attachment</div>
                     </div>
-                  ) : (
-                    "No attachment found"
-                  )}
-                </div>
+                    {attachment?.file && (
+                      <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <Paperclip size={16} />
+                          <div className="text-[#1c2024] text-sm font-medium ">
+                            Receipt
+                          </div>
+                          <div className="text-[#8b8d98] text-sm font-normal">
+                            {getFileSizeInKB(attachment?.file)}KB
+                          </div>
+                        </div>
+                        <button
+                          className="text-[#ab4aba] text-xs font-semibold "
+                          onClick={() => {
+                            filebase64Download(attachment);
+                          }}
+                        >
+                          Download
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </section>
@@ -198,7 +182,7 @@ const ReimbursmentDetailsSheet = ({
                   Created on:
                 </span>
                 <span className="text-[#8b8d98] text-xs font-normal  leading-3">
-                  {` ${moment(claimRequest?.date_of_expense).format(
+                  {` ${moment(leaveApplication?.created_at).format(
                     "MMMM DD, YYYY"
                   )}`}
                 </span>
@@ -239,24 +223,25 @@ const ReimbursmentDetailsSheet = ({
             </section>
           </section>
         </div>
-        {!isMyClaims && (
+        {!isMyLeave && showButtons && (
           <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
             <Button
               variant="outline"
+              type="button"
               size="lg"
               onClick={() => {
-                handleStatusChange("rejected");
+                handleStatusChange("Declined");
               }}
             >
               Reject
             </Button>
             <Button
-              type="submit"
+              type="button"
               size="lg"
               variant="default"
               // className=" bg-[#1c2024] text-white"
               onClick={() => {
-                handleStatusChange("approved");
+                handleStatusChange("Approved");
               }}
             >
               Accept
@@ -268,4 +253,4 @@ const ReimbursmentDetailsSheet = ({
   );
 };
 
-export default ReimbursmentDetailsSheet;
+export default ViewLeaveSheet;

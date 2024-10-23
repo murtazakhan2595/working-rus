@@ -10,7 +10,12 @@ import {
 import { DateInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import { Link } from "react-router-dom";
-import { saveSalaryRevision,deleteSalaryRevision, updateSalaryRevisionStatus, saveEmployeePayroll } from "../../../hooks/payroll";
+import {
+  saveSalaryRevision,
+  deleteSalaryRevision,
+  updateSalaryRevisionStatus,
+  saveEmployeePayroll,
+} from "../../../hooks/payroll";
 import { toast } from "react-toastify";
 import { validateRevisedSalaryForm } from "../../../utils/FormSchema/payrollFormSchema";
 import EmployeeDataInfo from "../Sections/EmployeeDataInfo";
@@ -25,7 +30,7 @@ export default function RevisedSalarySheet({
   state,
   onClose,
   previousCTC,
-  employeeData 
+  employeeData,
 }) {
   const formRef = useRef();
   const [isOpen, setIsOpen] = useState(state === "edit" || state === "view");
@@ -126,7 +131,7 @@ const RevisedSalaryView = ({
   onEdit,
   onDelete,
   employeeData,
-  payrollID
+  payrollID,
 }) => {
   const [revision, setRevision] = useState(selectedRevision);
   const handleStatusChange = async (name, value, revision) => {
@@ -143,23 +148,21 @@ const RevisedSalaryView = ({
           basic_salary: revision.new_salary,
         });
       }
-      console.log("THIS IS WHAT I GET ", response)
-      setRevision(response)
+      console.log("THIS IS WHAT I GET ", response);
+      setRevision(response);
     }
-
   };
-    console.log("SELECTED REVISION", revision);
-    const detailItems = [
-      { label: "Revised CTC", value: revision?.new_salary },
-      { label: "Previous CTC", value: revision?.previous_salary },
-      { label: "Percentage", value: `${revision?.percentage}%` },
-      { label: "Last revised date", value: revision?.last_revised_date },
-      {
-        label: "Reason for revision",
-        value:
-          revision?.notes || "No reason provided",
-      },
-    ];
+  console.log("SELECTED REVISION", revision);
+  const detailItems = [
+    { label: "Revised CTC", value: revision?.new_salary },
+    { label: "Previous CTC", value: revision?.previous_salary },
+    { label: "Percentage", value: `${revision?.percentage}%` },
+    { label: "Last revised date", value: revision?.last_revised_date },
+    {
+      label: "Reason for revision",
+      value: revision?.notes || "No reason provided",
+    },
+  ];
   return (
     <div
       side="right"
@@ -180,21 +183,21 @@ const RevisedSalaryView = ({
               <div className="flex items-center gap-3">
                 <Button
                   onClick={onEdit}
-                  className="border bg-white border-[#e8e8ec] text-[#1c2024] text-xs font-semibold font-inter"
+                  className="border bg-white border-[#e8e8ec] text-[#1c2024] text-xs font-semibold font-[inter]"
                 >
                   {" "}
                   Edit
                 </Button>
                 <Button
                   onClick={onDelete}
-                  className="border bg-white border-[#e8e8ec] text-[#1c2024] text-xs font-semibold font-inter"
+                  className="border bg-white border-[#e8e8ec] text-[#1c2024] text-xs font-semibold font-[inter]"
                 >
                   {" "}
                   Delete
                 </Button>
               </div>
             </div>
-            <div className="font-inter mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+            <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
               <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
                 <div className="text-gray-900 text-sm font-semibold whitespace-nowrap">
                   Details
@@ -229,7 +232,7 @@ const RevisedSalaryView = ({
                 </div>
               </div>
             </div>
-            <div className="font-inter mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+            <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
               <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
                 <div className="text-gray-900 text-sm font-semibold whitespace-nowrap">
                   Status
@@ -378,7 +381,7 @@ const RevisedSalaryForm = ({
               {(props) => (
                 <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                   <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-                    <div className="font-inter flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                    <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
                       <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                         <div className="text-zinc-950">Details</div>
                       </div>

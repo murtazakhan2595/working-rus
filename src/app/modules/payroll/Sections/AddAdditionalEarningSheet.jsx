@@ -17,8 +17,7 @@ import { getEarnAndDeduction } from "app/hooks/payroll";
 import { Formik } from "formik";
 import { RadioGroupInput } from "components/form-control";
 import { TextInput } from "components/form-control";
-import { SelectComponent
- } from "components/form-control";
+import { SelectComponent } from "components/form-control";
 import { monthsOptions } from "data/Data";
 import { toast } from "react-toastify";
 import { saveEmployeeEarnDeduction } from "app/hooks/payroll";
@@ -38,8 +37,8 @@ const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
     setAmountInputs((prev) => ({ ...prev, [value]: "" }));
   };
   const formSheetData = {
-    triggerText: !isEos?("Add Additional Earnings"):("Add EOS Earnings"),
-    title: !isEos?("Add Additional Earnings"):("Add EOS Earnings"),
+    triggerText: !isEos ? "Add Additional Earnings" : "Add EOS Earnings",
+    title: !isEos ? "Add Additional Earnings" : "Add EOS Earnings",
 
     description: null,
     footer: null,
@@ -99,7 +98,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
             {(props) => (
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                 <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-                  <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                  <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
                     <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                       <div className="text-zinc-950">Details</div>
                     </div>
@@ -130,7 +129,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
                 {props.values.income_type && (
                   <>
                     <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-                      <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                      <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
                         <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                           <div className="text-zinc-950">Amount</div>
                         </div>
@@ -179,7 +178,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
                     </div>
 
                     <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-                      <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                      <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
                         <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                           <div className="text-zinc-950">Payable Month</div>
                         </div>
@@ -227,4 +226,3 @@ const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
 };
 
 export default AddAdditionalEarningSheet;
-
