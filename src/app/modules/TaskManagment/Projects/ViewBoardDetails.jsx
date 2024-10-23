@@ -19,7 +19,7 @@ const ViewBoardDetails = ({
   project,
   setIsEditMode,
   isDeleteModalOpen,
-  setIsDeleteModalOpen
+  setIsDeleteModalOpen,
 }) => {
   console.log(project, "HELLO KASHIF");
   const formSheetData = {
@@ -53,18 +53,22 @@ const ViewBoardDetails = ({
           <p>{project?.name}</p>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" onClick={openEditProjectModal}>Edit</Button>
-          <Button variant="outline" onClick={()=> setIsDeleteModalOpen(true)}>Delete</Button>
+          <Button variant="outline" onClick={openEditProjectModal}>
+            Edit
+          </Button>
+          <Button variant="outline" onClick={() => setIsDeleteModalOpen(true)}>
+            Delete
+          </Button>
         </div>
       </div>
 
       <div className="mt-4 border border-gray-400 rounded-md">
         <div className="p-4">
-        <p>Project Description </p>
-        <div className="flex gap-4 mt-4">
-          <p className="text-[14px]">Description</p>
-          <p className="text-[14px]">{project?.description}</p>
-        </div>
+          <p>Project Description </p>
+          <div className="flex gap-4 mt-4">
+            <p className="text-[14px]">Description</p>
+            <p className="text-[14px]">{project?.description}</p>
+          </div>
         </div>
 
         <div className="bg-gray-400 p-2">
@@ -75,18 +79,24 @@ const ViewBoardDetails = ({
       </div>
 
       <div className="mt-4 border border-gray-400 rounded-md p-4">
-          <p>Project Members</p>
-          <p className="text-[14px]">Colors: <span className={`bg-[${project?.color}] w-6 h-6 rounded-full border border-gray-300 cursor-pointer`}/></p>
-          <div className="flex items-center gap-2"><p className="text-[14px]">Members: </p><MembersList members={project?.project_members}/></div>
-          <div className="flex items-center gap-2"> <p className="text-[14px]">Status: </p>
-
-          <Badge
-                variant="dot"
-                className="text-sm bg-green-100 text-green-700"
-              >
-                {project?.status || "Ongoing"}
-              </Badge>
-          </div>
+        <p>Project Members</p>
+        <p className="text-[14px]">
+          Colors:{" "}
+          <span
+            className={`bg-[${project?.color}] w-6 h-6 rounded-full border border-gray-300 cursor-pointer block`}
+          />
+        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-[14px]">Members: </p>
+          <MembersList members={project?.project_members} />
+        </div>
+        <div className="flex items-center gap-2">
+          {" "}
+          <p className="text-[14px]">Status: </p>
+        <Badge variant="secondary" className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full">
+        {project?.status || "Ongoing"}
+        </Badge>
+        </div>
       </div>
       {/* <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll">
       <div className="bg-white h-full fixed  max-w-[35%] w-[35%] top-0 right-0  shadow px-[50px] py-10 flex flex-col gap-7">
