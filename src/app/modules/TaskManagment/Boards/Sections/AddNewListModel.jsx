@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
-import { RxCross2 } from "react-icons/rx";
-import { Card, Row, Col, Button } from "reactstrap";
 import { Formik } from "formik";
 import { TextInput } from "components/form-control.jsx";
 import { addBoard, getBoardById } from "app/hooks/taskManagment";
 import { AddList } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
+import SheetComponent from "components/ui/SheetComponent";
+import { Button } from "components/ui/button";
 
 const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
   const formRef = useRef();
@@ -55,24 +55,23 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
     }
   };
 
+  const formSheetData = {
+    triggerText: "Update Card Name",
+    title: "Update Card Name",
+    description: null,
+    footer: null,
+  };
+
   return (
     <>
-      <div className="fixed inset-0 z-50 w-screen overflow-y-auto scroll flex justify-center items-center py-5 h-[100vh] bg-neutral-600 bg-opacity-40 ">
-        <Card
-          className="overflow-y-auto  py-10 px-[50px] w-[90%] "
-          style={{ maxWidth: "650px" }}
-        >
-          <div
-            className="absolute top-6 right-5 text-white bg-[#ECECEC] rounded-full p-1 cursor-pointer"
-            onClick={onClose}
-          >
-            <RxCross2 />
-          </div>
-          <Row>
+      <SheetComponent
+      {...formSheetData}
+      width="500px"
+       isOpen={true}
+      >
             {isLoading ? (
               <PageLoader />
             ) : (
-              <Col lg={12}>
                 <Formik
                   initialValues={initialValues}
                   innerRef={formRef}
@@ -86,11 +85,6 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
                 >
                   {(props) => (
                     <form onSubmit={props.handleSubmit}>
-                      <Row className="m-0">
-                        <Col md="12">
-                          <h5 className="mt-4 mb-3 fw-700">List Titile</h5>
-                        </Col>
-                        <Col md="12">
                           <TextInput
                             name="name"
                             error={props.errors.name}
@@ -102,33 +96,24 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
                               props.handleChange(field)(value);
                             }}
                           />
-                        </Col>
-                      </Row>
-                      <Row className="my-4">
-                        <Col md="3">
-                          <div
+                          <div className="flex justify-end gap-2 mt-4">
+                          <Button
                             type="button"
-                            className="btn btn-outline-dark w-100"
+                            variant="outline"
                             onClick={onClose}
                           >
                             Cancel
-                          </div>
-                        </Col>
-                        <Col md="3">
-                          <Button type="submit" className="btn btn-dark w-100">
+                          </Button>
+                          <Button type="submit">
                             {boardId ? "Update" : "Add"}
                           </Button>
-                        </Col>
-                      </Row>
+                          </div>
                     </form>
                   )}
                 </Formik>
-              </Col>
             )}
-          </Row>
-        </Card>
         <ToastContainer />
-      </div>
+        </SheetComponent>
     </>
   );
 };

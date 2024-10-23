@@ -18,6 +18,8 @@ const ViewBoardDetails = ({
   onClose,
   project,
   setIsEditMode,
+  isDeleteModalOpen,
+  setIsDeleteModalOpen
 }) => {
   console.log(project, "HELLO KASHIF");
   const formSheetData = {
@@ -52,7 +54,7 @@ const ViewBoardDetails = ({
         </div>
         <div className="flex gap-4">
           <Button variant="outline" onClick={openEditProjectModal}>Edit</Button>
-          <Button variant="outline">Delete</Button>
+          <Button variant="outline" onClick={()=> setIsDeleteModalOpen(true)}>Delete</Button>
         </div>
       </div>
 
