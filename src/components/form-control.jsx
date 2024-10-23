@@ -56,12 +56,10 @@ const SelectComponent = ({
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (currentValue) => {
-    console.log("currentValue", currentValue);
     const newValue =
       currentValue === value || (currentValue === null && value === null)
         ? ""
         : currentValue;
-    console.log("newValue", newValue);
     setOpen(false);
     onChange(name, newValue);
   };
@@ -121,7 +119,6 @@ const SelectComponent = ({
     </div>
   );
 };
-
 
 const SelectMultiInputComponent = ({
   name,
@@ -222,8 +219,6 @@ const SelectMultiInputComponent = ({
   );
 };
 
-
-
 const DateInput = ({
   name,
   value,
@@ -235,7 +230,7 @@ const DateInput = ({
   required,
   minDate,
   className,
-  placeholder
+  placeholder,
 }) => {
   const [date, setDate] = useState(
     value ? parse(value, "yyyy-MM-dd", new Date()) : null
@@ -261,12 +256,12 @@ const DateInput = ({
     }
   }, [value]);
 
-   const resetFields = () => {
-     setDate(null);
-     setInputValue("");
-     setCalendarDate(new Date());
-     onChange(name, ""); // Reset the form value
-   };
+  const resetFields = () => {
+    setDate(null);
+    setInputValue("");
+    setCalendarDate(new Date());
+    onChange(name, ""); // Reset the form value
+  };
 
   // Handle manual input changes and sync with calendar
   const handleInputChange = (values) => {
@@ -849,18 +844,20 @@ const TextAreaInput = ({
   regEx,
   maxLength,
   maxRows,
-  placeholder
+  placeholder,
 }) => {
   return (
     <>
       <div className="flex flex-col gap-4">
-       {label && <Label
-          className={`text-baseGray ${value ? "active" : ""}`}
-          htmlFor={name}
-        >
-          {required && <span className="text-red-600">* </span>}
-          {label}
-        </Label>}
+        {label && (
+          <Label
+            className={`text-baseGray ${value ? "active" : ""}`}
+            htmlFor={name}
+          >
+            {required && <span className="text-red-600">* </span>}
+            {label}
+          </Label>
+        )}
 
         <Input
           type="textarea"
@@ -868,7 +865,7 @@ const TextAreaInput = ({
           id={name}
           name={name}
           autoComplete="Off"
-          placeholder={label? "Enter " + label : placeholder}
+          placeholder={label ? "Enter " + label : placeholder}
           value={value}
           rows={maxRows ?? 1}
           disabled={disabled}
@@ -990,8 +987,6 @@ const FilterInput = ({
   isClearable = true,
   type,
 }) => {
-
-  console.log("filersldkfjslkfslf", filters);
   const classNamesStyle = "";
   const width = "w-56";
   const height = "h-[38px]";
@@ -1005,7 +1000,6 @@ const FilterInput = ({
   };
 
   const renderInputField = (filter, index) => {
-   
     return (
       <div className="relative">
         <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
@@ -1025,7 +1019,6 @@ const FilterInput = ({
   };
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
-     console.log("filter", filter);
     return (
       <Popover key={index} open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>

@@ -28,7 +28,6 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newAttachment, setNewAttachment] = useState(null);
   const [LeaveTypeOptions, setLeaveTypeOptions] = useState([]);
-  console.log("userProfile", userProfile);
 
   const leaveRequest = {
     component_type: "",
@@ -57,7 +56,6 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
           label: item.name,
           ...item,
         }));
-        console.log("response", LeaveTypeOptions);
         setLeaveTypeOptions(LeaveTypeOptions);
       }
     };
@@ -65,15 +63,11 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   }, [userProfile]);
 
   const handleFormSubmit = async (values) => {
-    console.log("values", values);
     let attachmentId = null;
     // Step 1: Check if there is an attachment and save it
     if (newAttachment && newAttachment.file) {
       const attachment = await saveAttachment({
-        document: newAttachment.file,
-        name: newAttachment.name,
-        employee_id: userProfile.id,
-        description: "Leave Attachment",
+        attachment: newAttachment.file,
       });
 
       if (attachment) {
@@ -132,7 +126,6 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
           file: event.target.result, // Base64 data URL
         };
         setNewAttachment(fileData); // Update state with file data
-        console.log("File uploaded:", fileData);
       };
 
       reader.onerror = (error) => {

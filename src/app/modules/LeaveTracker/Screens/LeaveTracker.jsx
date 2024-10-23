@@ -46,7 +46,7 @@ const dummyData = [
 ];
 const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [Leave, setLeave] = useState([]); // Leave applications data
-  const [isLoading, setIsLoading] = useState(false); // Loading indicator
+  const [isLoading, setIsLoading] = useState(true); // Loading indicator
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]); // Leave types available to employee
   const [activeTab, setActiveTab] = useState("records");
   const [recordsFilterData, setRecordsFilterData] = useState({});
@@ -86,8 +86,12 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     }
   };
   useEffect(() => {
-    fetchLeaveTypesData();
-    fetchData();
+    const getData = async () => {
+      setIsLoading(true);
+      await Promise.all([fetchLeaveTypesData(), fetchData()]);
+      setIsLoading(false);
+    };
+    getData();
   }, [typesFilterData]);
 
   // Separate handler for records filters
@@ -180,15 +184,16 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     }
   };
 
-  console.log("empLeaveStats", empLeaveStats);
   return (
     <div className="flex flex-col gap-4 profile-management">
-      <Header content={activeTab === "types" && <AddTypeSheet />} />
+      <Header
+        content={activeTab === "types" && <AddTypeSheet triggerText="" />}
+      />
 
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
-        defaultValue="salary"
+        defaultValue="records"
       >
         {userProfile.role !== 2 && (
           <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
@@ -267,6 +272,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
           type={selectedType}
           openSheet={true}
           reload={fetchLeaveTypesData}
+          troggerText="Add Component"
         />
       )}
       {selectedLeave && (

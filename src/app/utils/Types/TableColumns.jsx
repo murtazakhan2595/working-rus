@@ -965,15 +965,15 @@ export const LeaveRecordColumns = [
     text: "Department",
   },
   {
-    dataField: "total_alloted",
+    dataField: "total_leaves_alloted",
     text: "Total Alloted",
   },
   {
-    dataField: "total_used",
+    dataField: "used_leaves",
     text: "Total Used",
   },
   {
-    dataField: "total_remaining",
+    dataField: "remaining_leaves",
     text: "Total Remaining",
   },
 ];

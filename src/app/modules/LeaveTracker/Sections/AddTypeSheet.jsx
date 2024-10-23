@@ -28,24 +28,39 @@ import {
 import moment from "moment";
 import { deleteLeaveComponent } from "app/hooks/leaveTracker";
 
-const initialType = {
-  name: "",
-  max_days: "",
-  Is_org_based: true,
-  paid_leave: true,
-  status: false,
-};
+const AddTypeSheet = ({
+  type,
+  openSheet,
+  reload,
+  triggerText,
+  isEmployeeBased,
+  employeeId,
+}) => {
+  const initialType = {
+    name: "",
+    max_days: "",
+    Is_org_based: true,
+    paid_leave: true,
+    status: true,
+  };
+  const initialTypeEmployee = {
+    name: "",
+    max_days: "",
+    Is_org_based: false,
+    paid_leave: true,
+    status: true,
+    employee_id: employeeId,
+  };
 
-const AddTypeSheet = ({ type, openSheet, reload }) => {
   const [isOpen, setIsOpen] = useState(openSheet || false);
   const [isEdit, setIsEdit] = useState(false);
   console.log("Type:", type);
 
   const [leaveComponentType, setLeaveComponentType] = useState(
-    type || initialType
+    type || (isEmployeeBased ? initialTypeEmployee : initialType)
   );
   const formSheetData = {
-    triggerText: type ? "" : "Add Component",
+    triggerText: triggerText,
     title: "Leave Type",
 
     description: null,
@@ -59,6 +74,7 @@ const AddTypeSheet = ({ type, openSheet, reload }) => {
       setIsOpen(false); // Close the sheet otherwise
     }
   }, [openSheet, type]);
+
   const handleSubmit = async (values) => {
     console.log("Form Values:", values);
     const response = await saveLeaveComponents(values);

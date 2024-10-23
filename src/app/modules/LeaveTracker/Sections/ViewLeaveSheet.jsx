@@ -29,7 +29,7 @@ const ViewLeaveSheet = ({
       console.log("leaveApplication", leaveApplication);
       if (leaveApplication?.leave_request?.attachments) {
         const response = await getAttachmentById(
-          leaveApplication?.leave_request?.attachment
+          leaveApplication?.leave_request?.attachments
         );
         if (response) {
           setAttachment(response);
@@ -38,6 +38,11 @@ const ViewLeaveSheet = ({
     };
     fetchData();
   }, []);
+  const userProfile = useSelector((state) => state.user.userProfile);
+  const showButtons =
+    (userProfile.role === 2 && leaveApplication.action_manager === "Pending") ||
+    (userProfile.role === 3 && leaveApplication.action_hr === "Pending");
+
   const detailItems = [
     {
       label: "Leave Type",
@@ -85,10 +90,16 @@ const ViewLeaveSheet = ({
     description: null,
     footer: null,
   };
-  const userProfile = useSelector((state) => state.user.userProfile);
 
   const handleStatusChange = async (status) => {
-    console.log(userProfile);
+    console.log("handle status change", status, leaveApplication);
+    if (
+      (userProfile.role === 2 &&
+        leaveApplication.action_manager !== "Pending") ||
+      (userProfile.role === 3 && leaveApplication.action_hr !== "Pending")
+    ) {
+      return;
+    }
     if (userProfile.role === 3 || userProfile.role === 1) {
       leaveApplication.action_hr = status;
     }
@@ -104,6 +115,8 @@ const ViewLeaveSheet = ({
       toast.error("Error updating leave request");
     }
   };
+
+  console.log("attachment", attachment);
 
   return (
     <div>
@@ -210,7 +223,7 @@ const ViewLeaveSheet = ({
             </section>
           </section>
         </div>
-        {!isMyLeave && (
+        {!isMyLeave && showButtons && (
           <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
             <Button
               variant="outline"

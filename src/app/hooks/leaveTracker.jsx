@@ -208,6 +208,8 @@ const getLeavestats = async (payload) => {
             }
           );
         };
+
+        console.log("INFO-", sumLeaveStats(response.data));
         return sumLeaveStats(response.data);
       }
     }
@@ -245,7 +247,7 @@ const getLeaveTransaction = async (payload) => {
 };
 const saveAttachment = async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/attachment/`, payload, {
+    const response = await axios.post(`${baseUrl}/leaveattachments`, payload, {
       headers: headers(),
     });
     if (response.status === 201 || response.status === 200) {
@@ -264,7 +266,7 @@ const getAttachmentById = async (attachmentId) => {
   try {
     if (attachmentId) {
       const response = await axios.get(
-        `${baseUrl}/attachment/${attachmentId}`,
+        `${baseUrl}/leaveattachments/${attachmentId}`,
         {
           headers: headers(),
         }
@@ -289,11 +291,10 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
   try {
     // Fetch the leave components (leave types)
     const leaveComponentsResponse = await axios.get(
-      `${baseUrl}/leavecomponents`,
+      `${baseUrl}/leavecomponents/?search=${encodeURIComponent(
+        JSON.stringify({ employee_id_and_org: `${employeeId},true` })
+      )}&ordering=-id`,
       {
-        params: {
-          employee_id_and_org: `${employeeId},${true}`,
-        },
         headers: headers(),
       }
     );
@@ -306,26 +307,29 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
 
         // Fetch the latest transaction for the current leave type
         const transactionResponse = await axios.get(
-          `${baseUrl}/employeeleavetransaction`,
-          {
-            params: {
+          `${baseUrl}/employeeleavetransaction/?search=${encodeURIComponent(
+            JSON.stringify({
               leave_component_id: leaveComponentId,
               employee_id: employeeId,
-              sort: "created_at",
-              ordering: "created_at",
-              limit: 1,
-            },
+            })
+          )}&ordering=-created_at&page=1&page_size=1`,
+          {
             headers: headers(),
           }
         );
 
-        const transactions = transactionResponse.data;
-        const latestTransaction = transactions[0]; // Get the latest transaction
-
+        const latestTransaction = transactionResponse.data?.results[0];
+        console.log("latestTransaction", latestTransaction, max_days);
         // Calculate the used leaves (max_days - balance_after)
-        const used = latestTransaction
-          ? max_days - latestTransaction.balance_after
-          : 0;
+        const used =
+          latestTransaction && latestTransaction?.balance_after !== null
+            ? max_days - latestTransaction.balance_after
+            : 0;
+        console.log("this is returning ", {
+          name,
+          used,
+          total: max_days,
+        });
 
         return {
           name,
@@ -334,7 +338,6 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
         };
       })
     );
-
     return leaveDataWithUsed;
   } catch (error) {
     console.error("Error fetching leave components with used leaves:", error);
@@ -351,17 +354,81 @@ const getLeaveStatsEmployee = async () => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
-    if (response.status === 200) {
-      // Convert and flatten the object
-      const flattenedData = Object.values(response.data).map((employee) => ({
-        ...employee,
-        ...employee.leave_stats, // Spread leave_stats properties
-      }));
+    console.log("response", response);
 
-      // Optionally delete leave_stats if you don't want to keep it
-      flattenedData.forEach((employee) => {
-        delete employee.leave_stats;
-      });
+    if (response.status === 200) {
+      const flattenedData = await Promise.all(
+        Object.values(response.data).map(async (employee) => {
+          const leaveComponentsResponse = await axios.get(
+            `${baseUrl}/leavecomponents/?search=${encodeURIComponent(
+              JSON.stringify({
+                employee_id_and_org: `${employee.employee_id},true`,
+              })
+            )}&ordering=-id`,
+            {
+              headers: headers(),
+            }
+          );
+
+          const leaveComponents = leaveComponentsResponse.data;
+          console.log("leaveComponents", leaveComponents);
+
+          // Process the leave components to calculate used leaves
+          const leaveDataWithUsed = await Promise.all(
+            leaveComponents.map(async (leaveType) => {
+              const { id: leaveComponentId, max_days } = leaveType;
+
+              // Fetch the latest transaction for the current leave type
+              const transactionResponse = await axios.get(
+                `${baseUrl}/employeeleavetransaction/?search=${encodeURIComponent(
+                  JSON.stringify({
+                    leave_component_id: leaveComponentId,
+                    employee_id: employee.employee_id,
+                  })
+                )}&ordering=-created_at&page=1&page_size=1`,
+                {
+                  headers: headers(),
+                }
+              );
+
+              const latestTransaction = transactionResponse.data?.results[0];
+              if (!latestTransaction) {
+                return 0;
+              }
+
+              // Calculate the used leaves based on whether the latestTransaction exists and balance_after is not null
+              const used =
+                latestTransaction && latestTransaction?.balance_after !== null
+                  ? max_days - latestTransaction.balance_after || 0 // If balance_after is undefined, used will be 0
+                  : 0; // If latestTransaction is undefined, used will be 0
+
+              return used;
+            })
+          );
+
+          // Sum the used leaves
+          const total_used_leaves = leaveDataWithUsed.reduce(
+            (sum, used) => sum + used,
+            0
+          );
+
+          // Total leaves allotted based on leave components
+          const total_leaves_alloted = leaveComponents.reduce(
+            (sum, component) => sum + component.max_days,
+            0
+          );
+
+          // Calculate remaining leaves
+          const remaining_leaves = total_leaves_alloted - total_used_leaves;
+          return {
+            ...employee,
+            total_leaves_alloted,
+            used_leaves: total_used_leaves,
+            remaining_leaves,
+          };
+        })
+      );
+      console.log("PROBLEM RETURN", flattenedData);
       return flattenedData;
     }
   } catch (error) {
@@ -372,6 +439,7 @@ const getLeaveStatsEmployee = async () => {
     return false;
   }
 };
+
 export {
   saveLeaveComponents,
   getLeaveComponents,

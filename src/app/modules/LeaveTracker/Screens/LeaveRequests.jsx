@@ -75,7 +75,11 @@ const LeaveRequests = ({ userProfile }) => {
         },
       ]);
     }
-    const leaveTransaction = await getLeaveTransaction({});
+    let filterData = {};
+    if (userProfile.role === 2) {
+      filterData = { managers: userProfile.id };
+    }
+    const leaveTransaction = await getLeaveTransaction({ filterData });
     if (leaveTransaction) {
       console.log("leaveTransaction", leaveTransaction);
       setLeaveTransaction(leaveTransaction);
@@ -101,109 +105,111 @@ const LeaveRequests = ({ userProfile }) => {
     });
   };
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-10 justify-between items-center h-9">
-        <div className="flex-col justify-start items-start inline-flex">
-          <div className="text-black text-3xl font-semibold">
-            Leave Requests
-          </div>
-        </div>
-      </div>
-      <div className="p-6">
-        <section className="flex flex-wrap gap-4 items-center">
-          {LeaveTrackerStats.map((item, index) => (
-            <React.Fragment key={item.title}>
-              <div className="flex-1 shrink min-w-[240px]">
-                <div className="pb-2">
-                  <h2 className="text-sm font-medium tracking-tight leading-none text-neutral-800">
-                    {item.title}
-                  </h2>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold leading-tight text-fuchsia-700">
-                    {item.value}
-                  </p>
-                </div>
-              </div>
-              {index < LeaveTrackerStats.length - 1 && (
-                <div className="relative">
-                  <div className="w-[70px] h-[1px]  rotate-90 border border-[#deade2] absolute top-0 right-[55px]"></div>
-                </div>
-              )}
-            </React.Fragment>
-          ))}
-        </section>
-      </div>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="h-[47px] flex-col justify-center items-start inline-flex">
-              <div className="flex-col justify-start items-start flex">
-                <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
-                  {userProfile.role === 2
-                    ? "My Team Requests"
-                    : "Employee Leaves Requests"}
-                </div>
-              </div>
-              <div className="pt-1.5 flex-col justify-start items-start flex">
-                <div className="flex-col justify-start items-start flex">
-                  <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
-                    Leaves Requests of all the employees are listed below
-                  </div>
-                </div>
+    <>
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap gap-10 justify-between items-center h-9">
+            <div className="flex-col justify-start items-start inline-flex">
+              <div className="text-black text-3xl font-semibold">
+                Leave Requests
               </div>
             </div>
-            <FilterInput
-              filters={[
-                {
-                  type: "select-one",
-                  option: [],
-                  name: "expense_type",
-                  placeholder: "Expense Type",
-                },
-                {
-                  type: "select-two",
-                  option: [
-                    { value: "pending", label: "Pending" },
-                    { value: "approved", label: "Approved" },
-                    { value: "rejected", label: "Rejected" },
-                  ],
-                  name: "status",
-                  placeholder: "Status",
-                },
-              ]}
-              onChange={handleFilterChange}
-            />
           </div>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <PageLoader />
-          ) : (
-            <CustomTable
-              data={leaveTransaction?.results || []}
-              columns={LeaveAplicationColumns}
-              pagination={true}
-              dataTotalSize={leaveTransaction?.count || 0}
-              tableOptions={tableOptions}
+          <div className="p-6">
+            <section className="flex flex-wrap gap-4 items-center">
+              {LeaveTrackerStats.map((item, index) => (
+                <React.Fragment key={item.title}>
+                  <div className="flex-1 shrink min-w-[240px]">
+                    <div className="pb-2">
+                      <h2 className="text-sm font-medium tracking-tight leading-none text-neutral-800">
+                        {item.title}
+                      </h2>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold leading-tight text-fuchsia-700">
+                        {item.value}
+                      </p>
+                    </div>
+                  </div>
+                  {index < LeaveTrackerStats.length - 1 && (
+                    <div className="relative">
+                      <div className="w-[70px] h-[1px]  rotate-90 border border-[#deade2] absolute top-0 right-[55px]"></div>
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
+            </section>
+          </div>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="h-[47px] flex-col justify-center items-start inline-flex">
+                  <div className="flex-col justify-start items-start flex">
+                    <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
+                      {userProfile.role === 2
+                        ? "My Team Requests"
+                        : "Employee Leaves Requests"}
+                    </div>
+                  </div>
+                  <div className="pt-1.5 flex-col justify-start items-start flex">
+                    <div className="flex-col justify-start items-start flex">
+                      <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
+                        Leaves Requests of all the employees are listed below
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <FilterInput
+                  filters={[
+                    {
+                      type: "select-one",
+                      option: [],
+                      name: "expense_type",
+                      placeholder: "Expense Type",
+                    },
+                    {
+                      type: "select-two",
+                      option: [
+                        { value: "pending", label: "Pending" },
+                        { value: "approved", label: "Approved" },
+                        { value: "rejected", label: "Rejected" },
+                      ],
+                      name: "status",
+                      placeholder: "Status",
+                    },
+                  ]}
+                  onChange={handleFilterChange}
+                />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <CustomTable
+                data={leaveTransaction?.results || []}
+                columns={LeaveAplicationColumns}
+                pagination={true}
+                dataTotalSize={leaveTransaction?.count || 0}
+                tableOptions={tableOptions}
+              />
+            </CardContent>
+          </Card>
+          {selectedLeaveApplication && (
+            <ViewLeaveSheet
+              leaveApplication={selectedLeaveApplication}
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+              isMyLeave={false}
+              reload={fetchData}
+              onClose={() => {
+                setIsOpen(false);
+                setSelectedLeaveApplication(null); // Reset the selected application
+              }}
             />
           )}
-        </CardContent>
-      </Card>
-      {selectedLeaveApplication && (
-        <ViewLeaveSheet
-          leaveApplication={selectedLeaveApplication}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          isMyLeave={false}
-          reload={fetchData}
-          onClose={() => {
-            setIsOpen(false);
-            setSelectedLeaveApplication(null); // Reset the selected application
-          }}
-        />
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
