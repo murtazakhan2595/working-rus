@@ -26,13 +26,34 @@ import {
 } from "../../../../components/ui/card";
 import { Clock, ListTodo } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
+import TableCustom from "components/CustomTable";
+import { projectBoard } from "app/utils/Types/TableColumns";
 
 const Projects = ({ userProfile }) => {
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
   const [AllProjects, setAllProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
-  const dispatch = useDispatch();
+  const [viewMode, setViewMode] = useState("table");
+  const [options, setOptions] = useState({
+    page: 1,
+    sizePerPage: 10,
+  });
+
+  const onPageChange = (name, value) => {
+    const pageOptions = options;
+    if (pageOptions[name] !== value) {
+      pageOptions[name] = value;
+      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
+    }
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+  };
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -82,45 +103,61 @@ const Projects = ({ userProfile }) => {
     fetchData(true);
   };
 
-  console.log(AllProjects, "ALL PROJECTS");
+  const toggleViewMode = () => {
+    setViewMode((prevMode) => (prevMode === "table" ? "grid" : "table"));
+  };
+
+  console.log(AllProjects?.results, "TEST KASHIF")
 
   return (
     <div>
       <Header content={<CreateEditProject />} />
+      <div className="flex justify-end">
+      <button
+        onClick={toggleViewMode}
+        className="mb-4 p-2 bg-blue-500 text-white rounded"
+      >
+        Toggle to {viewMode === "table" ? "Grid View" : "Table View"}
+      </button>
+      </div>
+
       {isLoading ? (
         <PageLoader />
       ) : (
-        <div className="grid grid-cols-3 gap-4">
-          {showProjectModal && (
-            <ProjectModel
-              projectId={showProjectModal || null}
-              isEditMode={typeof showProjectModal === "number"}
-              onClose={() => {
-                toggleAddProject();
-              }}
-            />
-          )}
-          {userProfile.role !== 4 && (
+        <>
+                  {viewMode === "table"  && userProfile.role !== 4 && (
             <RenderProject
               toggleAddProject={toggleAddProject}
               onDeleteSuccess={handleDeleteSuccess}
             />
           )}
-          {AllProjects.count > 0 ? (
-            AllProjects.results.map((project, index) => (
-              <RenderProject
-                project={project}
-                toggleAddProject={toggleAddProject}
-                onDeleteSuccess={handleDeleteSuccess}
-              />
-            ))
-          ) : (
+          {viewMode === "table" ? (
+            <TableCustom
+              columns={projectBoard}
+              data={AllProjects?.results || []}
+              pagination={true}
+              dataTotalSize={AllProjects?.length || 0}
+              tableOptions={tableOptions}
+              dataStyle={{ backgroundColor: "white" }}
+            />
+          ) : AllProjects?.count > 0 ? (
+            <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 gap-4">
+              {AllProjects.results.map((project, index) => (
+                <RenderProject
+              
+                  project={project}
+                  toggleAddProject={toggleAddProject}
+                  onDeleteSuccess={handleDeleteSuccess}
+                />
+              ))}
+            </div>
+          ) :  (
             <main className="flex flex-col flex-wrap justify-center content-center items-center self-stretch p-8 text-2xl tracking-tight leading-4 bg-white rounded-xl text-zinc-600 max-md:px-5 h-[75dvh]">
               <LuFolderX className="w-20 h-20 text-zinc-600" />
               <p className="mt-6">Looks like you don't have any projects</p>
             </main>
           )}
-        </div>
+        </>
       )}
     </div>
   );
@@ -133,6 +170,9 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
   const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  console.log(project, "PROJECT")
+
 
   const viewDetails = () => {
     setIsDropdownOpen(false);
@@ -158,6 +198,8 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
     setIsViewBoardDetails(false);
     setIsEditMode(false);
   };
+
+
 
   return (
     <Card>
@@ -185,11 +227,11 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
               <h3 className="text-lg font-semibold mb-2 text-[#11182c]">
                 {project.name}
               </h3>
-              <div className="flex text-gray-500 text-sm mb-4">
-                <ListTodo size={18} />{" "}
+              <div className="flex text-gray-500 text-sm mb-4 gap-1">
+                <ListTodo size={18} />
                 <span className="ml-2 font-semibold">
                   {project?.task_count}
-                </span>{" "}
+                </span>
                 Tasks
               </div>
             </div>
@@ -236,6 +278,7 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
         // />
       )}
     </Card>
+    
   );
 };
 

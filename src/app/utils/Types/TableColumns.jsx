@@ -34,9 +34,12 @@ import { DesignationName } from "utils/getValuesFromTables";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { Download } from "lucide-react";
+import { Clock, Download } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 import { calculateTotalMonthlyEarningsAndDeductions } from "app/modules/payroll/Sections/CalculationsHelperFunctions";
+import { MembersList } from "app/modules/TaskManagment/Sections";
+import { formatters } from "date-fns";
+import { StatusCircleLabel } from "components/StatusLabel";
 
 /**
  * LeaveHistoryColumns
@@ -940,6 +943,72 @@ export const downloadPayslipColumns = (components) => [
     },
   },
 ];
+
+
+export const tasksColumns = ()=>[
+  {
+    text:"Tasks",
+    dataField:"description"
+  },
+  {
+    text:"List",
+    dataField:""
+  },
+  {
+    text:"Priority"
+  },
+  {
+    text:"Labels"
+  },
+  {
+    text:"Members"
+  },
+  {
+    text:"Due Date"
+  }
+]
+
+export const projectBoard = [
+  {
+    text:"Project",
+     dataField:"name"
+  },
+  {
+    text:"Status",
+    dataField:"status",
+  },
+  {
+    text:"Tasks",
+    dataField:"task_count"
+  },
+  {
+    text:"Members",
+    dataField: "project_members",
+    formatter:(cell)=>(
+      <MembersList members={cell}/>
+    )
+  },
+  {
+    text:"Due Date",
+    dataField:"end_date",
+    formatter: (cell, row) => {
+      // Check if the cell has a value
+
+      // Try parsing the date using both formats
+      let formattedDate;
+      if (moment(cell, "MM-DD-YYYY", true).isValid()) {
+        formattedDate = moment(cell, "MM-DD-YYYY").format("MMM D");
+      } else if (moment(cell, "YYYY-MM-DD", true).isValid()) {
+        formattedDate = moment(cell, "YYYY-MM-DD").format("MMM D");
+      } else {
+        // Handle invalid date format
+        formattedDate = "Invalid Date";
+      }
+
+      return <div className="flex items-center gap-2"><Clock size={18}/> {formattedDate}</div>;
+    },
+  }
+]
 
 export const LeaveRecordColumns = [
   {
