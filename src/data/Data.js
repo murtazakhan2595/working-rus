@@ -701,11 +701,13 @@ export const salarySummary = {
   "Salary Package": "Mid-level",
 };
 export const handleUpdateProfile = (dispatch, data) => {
+  console.log("data", data);
   const userprofile = {
     id: data.id,
     username: data.username,
     is_filled: data.is_filled,
     role: data.user_role,
+    organization: data.organization,
   };
   dispatch(setUserProfile(userprofile));
   dispatch(fetchEmployees());

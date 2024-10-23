@@ -138,7 +138,6 @@ const ComponentForm = ({
   setIsOpen,
   editMode,
 }) => {
-
   return (
     <Formik
       initialValues={earnAndDeduction}
@@ -149,7 +148,7 @@ const ComponentForm = ({
       {(props) => (
         <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
           <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-            <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+            <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
               <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                 <div className="text-zinc-950">Component</div>
               </div>
@@ -187,7 +186,7 @@ const ComponentForm = ({
 
           <>
             <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-              <div className="font-inter flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+              <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
                 <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                   <div className="text-zinc-950">Amount</div>
                 </div>
@@ -276,9 +275,7 @@ const ViewComponent = ({ component, handleComponentDelete, setIsEdit }) => {
     <>
       <div className="flex items-center justify-between">
         <div class="w-[217px] h-9 py-1.5 justify-start items-start gap-3 inline-flex">
-          <div class="text-black text-sm font-semibold  ">
-            {component.name}
-          </div>
+          <div class="text-black text-sm font-semibold  ">{component.name}</div>
           <div class="px-3 py-[3px] rounded-[999px] border border-[#f0f0f3] justify-center items-center gap-1.5 flex">
             <div class="w-1.5 h-1.5 bg-[#29a385] rounded-full"></div>
             <div class="text-[#1c2024] text-xs font-semibold capitalize leading-3">

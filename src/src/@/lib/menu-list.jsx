@@ -47,6 +47,7 @@ export function getMenuList(pathname, userRole) {
     isTaskManagement:
       userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
     isTalentSphere: userRole === 1 || userRole === 2 || userRole === 3,
+    isLeaveTracker: userRole === 1 || userRole === 2 || userRole === 3,
     isPayrollAttendance: userRole === 1 || userRole === 2 || userRole === 3,
     isReportsMenu: userRole === 1 || userRole === 2,
     performanceManagementMenus:
@@ -102,7 +103,7 @@ export function getMenuList(pathname, userRole) {
       // createMenu("/my-team", "My Team"),
       // createMenu("/calendar", "Calendar"),
       // createMenu("/attendance", "Attendance"),
-      createMenu("/leave-tracker", "Leave Tracker"),
+      createMenu("/my-leave-tracker", " My Leave Tracker"),
       // createMenu("/files-data", "Files & Data"),
       // createMenu("/my-travel-details", "My Travel Details"),
       createMenu("/my-payroll", "My Payroll"),
@@ -112,6 +113,8 @@ export function getMenuList(pathname, userRole) {
       // createMenu("/letter2", "Type of Letter 2"),
     ]),
   ];
+
+
   const payrollMenus = [
     createMenu(
       "",
@@ -146,20 +149,15 @@ export function getMenuList(pathname, userRole) {
       ],
       pathname === "/my-task"
     ),
+  ];
+  const leaveTrackerMenus = [
     createMenu(
       "",
-      "Leave Management",
+      "Leave Tracker",
       CalendarRange,
       [
-        // ...(userRole === 4
-        //   ? [createMenu("/leave-tracker", "Leave Tracker")]
-        //   : []),
-        createMenu("/request-leave", "Leave Request"),
-        // createMenu("/leave-calender", "Calendar"),
-        createMenu("/leave-history", "Leave History"),
-        createMenu("/leave-allotement", "Leave Allotment"),
-        // createMenu("/leave-balance", "Holidays"),
-        // createMenu("/leave-type", "Leave Type"),
+        createMenu("/leave-records", "Leave Records"),
+        createMenu("/leave-request", "Leave Request"),
       ],
       pathname === "/leave-tracker"
     ),
@@ -260,6 +258,10 @@ export function getMenuList(pathname, userRole) {
     userRolesMap.isSelfServiceHub && {
       groupLabel: "",
       menus: selfServiceHubMenus,
+    },
+    userRolesMap.isLeaveTracker && {
+      groupLabel: "",
+      menus: leaveTrackerMenus,
     },
     userRolesMap.isPayroll && {
       groupLabel: "",

@@ -32,6 +32,7 @@ const Header = ({ content, userProfile }) => {
       "claim-request": "Claim Request",
       "my-claims": "My Claims",
       "projects":`${userProfile.role === 4 ? "My Projects" : "All Projects"}`,
+      "leave-records": "Leave Records",
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);
