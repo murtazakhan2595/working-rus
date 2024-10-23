@@ -671,7 +671,7 @@ const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
   );
 };
 
-const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
+const ImageInput = ({ label,value, error, setImageError, onChange, touch, name }) => {
   return (
     <>
       <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
@@ -694,7 +694,7 @@ const ImageInput = ({ value, error, setImageError, onChange, touch, name }) => {
         </div>
         <div className="">
           <div>
-            <Label htmlFor="picture"> Add Profile Picture</Label>
+            <Label htmlFor="picture"> {label}</Label>
             <Input
               id="picture"
               type="file"
