@@ -327,6 +327,49 @@ export const PriorityListIcons = [
   },
 ];
 
+
+export const ProjectStatusList = [
+  {
+    value: "upcoming",
+    label: (
+      <div className="flex justify-center gap-x-2 text-mauve-900 ">
+        Upcoming
+      </div>
+    ),
+  },
+  {
+    value: "ongoing",
+    label: (
+      <div className="flex justify-center text-yellow-500 gap-x-2">
+        Ongoing
+      </div>
+    ),
+  },
+  {
+    value: "onhold",
+    label: (
+      <div className="flex justify-center text-red-500 gap-x-2">
+        On Hold
+      </div>
+    ),
+  },
+  {
+    value: "completed",
+    label: (
+      <div className="flex justify-center text-red-500 gap-x-2">
+        Completed
+      </div>
+    ),
+  },
+  {
+    value: "closed",
+    label: (
+      <div className="flex justify-center text-red-500 gap-x-2">
+        Closed
+      </div>
+    ),
+  },
+];
 export const status2Options = [
   {
     value: "Pending",

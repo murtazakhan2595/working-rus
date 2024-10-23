@@ -23,7 +23,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from "components/ui/card";
+} from "../../../../components/ui/card";
 import { Clock, ListTodo } from "lucide-react";
 
 const Projects = ({ userProfile }) => {
@@ -89,7 +89,7 @@ const Projects = ({ userProfile }) => {
       {isLoading ? (
         <PageLoader />
       ) : (
-        <div>
+        <div className="grid grid-cols-3 gap-4">
           {showProjectModal && (
             <ProjectModel
               projectId={showProjectModal || null}

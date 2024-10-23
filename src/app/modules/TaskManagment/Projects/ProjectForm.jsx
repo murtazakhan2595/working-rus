@@ -13,6 +13,8 @@ import { useDispatch } from "react-redux";
 import { fetchProjects } from "state/slices/CommonSlice";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
+import { ProjectStatusList } from "data/Data";
+import { ImageInput } from "components/form-control";
 
 const ProjectForm = ({
   employees,
@@ -27,6 +29,7 @@ const ProjectForm = ({
   const [initialValues, setInitialValues] = useState(Project);
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [imageError, setImageError] = useState(null);
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -106,6 +109,21 @@ const ProjectForm = ({
                         <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                           <div className="text-zinc-950">Project Details</div>
                         </div>
+                        <div className="space-y-2">
+                      <ImageInput
+                        name={"profile"}
+                        error={props.errors.profile}
+                        touch={props.touched.profile}
+                        value={props.values.profile}
+                        label={"Cover Photo"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                          setImageError(null);
+                        }}
+                        setImageError={setImageError}
+                      />
+                    </div>
                         <div className="space-y-2">
                           <TextInput
                             name="name"
@@ -221,10 +239,21 @@ const ProjectForm = ({
                           />
                         )}
 
-                        <div className="flex items-center gap-10">
-                          <div className="space-y-2">
+                        <div className="flex items-center gap-4">
+                          <div>
                             <span className="label text-[14px]">Status</span>
                           </div>
+                          <SelectComponent
+                            name="status"
+                            options={ProjectStatusList}
+                            error={props.errors.status}
+                            touch={props.touched.status}
+                            value={props.values.status}
+                            // required
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
