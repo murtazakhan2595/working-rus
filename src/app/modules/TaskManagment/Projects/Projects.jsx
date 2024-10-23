@@ -25,6 +25,7 @@ import {
   CardDescription,
 } from "../../../../components/ui/card";
 import { Clock, ListTodo } from "lucide-react";
+import AlertDialogue from "components/ui/AlertDialogue";
 
 const Projects = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -138,6 +139,12 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
     setIsViewBoardDetails(true);
   };
 
+  const confirmDelete = async () => {
+    const response = await deleteProject(project.id);
+    onDeleteSuccess();
+    setIsDeleteModalOpen(false);
+  };
+
   const handleDelete = () => {
     setIsDropdownOpen(false);
     setIsDeleteModalOpen(true);
@@ -205,6 +212,8 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
           setIsEditMode={setIsEditMode}
           isOpen={isViewBoardDetails}
           setIsOpen={setIsViewBoardDetails}
+          setIsDeleteModalOpen={setIsDeleteModalOpen}
+          isDeleteModalOpen={isDeleteModalOpen}
 
         />
       )}
@@ -214,6 +223,17 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
           isEditMode={true}
           onClose={closeModal}
         />
+      )}
+        {isDeleteModalOpen && (
+          <AlertDialogue
+           isOpen={isDeleteModalOpen}
+           setIsOpen={setIsDeleteModalOpen}
+          />
+        // <ConfirmationModal
+        //   isOpen={isDeleteModalOpen}
+        //   onClose={() => setIsDeleteModalOpen(false)}
+        //   onDelete={confirmDelete}
+        // />
       )}
     </Card>
   );

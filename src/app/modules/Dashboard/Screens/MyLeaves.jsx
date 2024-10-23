@@ -66,8 +66,8 @@ export default function MyLeaves() {
         <CardContent>
           {leave.count > 0 &&
             leave.results
-              .slice(0, 5)
-              .map((leave) => <RenderMyLeaves leave={leave} key={leave.id} />)}
+              ?.slice(0, 5)
+              ?.map((leave) => <RenderMyLeaves leave={leave} key={leave.id} />)}
         </CardContent>
       </Card>
     </>
