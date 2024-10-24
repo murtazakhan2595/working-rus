@@ -327,7 +327,6 @@ export const PriorityListIcons = [
   },
 ];
 
-
 export const ProjectStatusList = [
   {
     value: "upcoming",
@@ -340,33 +339,25 @@ export const ProjectStatusList = [
   {
     value: "ongoing",
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2">
-        Ongoing
-      </div>
+      <div className="flex justify-center text-yellow-500 gap-x-2">Ongoing</div>
     ),
   },
   {
     value: "onhold",
     label: (
-      <div className="flex justify-center text-red-500 gap-x-2">
-        On Hold
-      </div>
+      <div className="flex justify-center text-red-500 gap-x-2">On Hold</div>
     ),
   },
   {
     value: "completed",
     label: (
-      <div className="flex justify-center text-red-500 gap-x-2">
-        Completed
-      </div>
+      <div className="flex justify-center text-red-500 gap-x-2">Completed</div>
     ),
   },
   {
     value: "closed",
     label: (
-      <div className="flex justify-center text-red-500 gap-x-2">
-        Closed
-      </div>
+      <div className="flex justify-center text-red-500 gap-x-2">Closed</div>
     ),
   },
 ];
@@ -669,6 +660,11 @@ export const ClaimExpenseTypeOptions = [
   { value: 8, label: "Miscellaneous" },
 ];
 
+export const LeaveTrackerOptions = [
+  { value: "Pending", label: "Pending" },
+  { value: "Approved", label: "Approved" },
+  { value: "Declined", label: "Declined" },
+];
 
 // Dummy data
 export const employeeData = {
@@ -700,6 +696,7 @@ export const salarySummary = {
   "Current CTC": "AED 7,901.51",
   "Salary Package": "Mid-level",
 };
+
 export const handleUpdateProfile = (dispatch, data) => {
   console.log("data", data);
   const userprofile = {

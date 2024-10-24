@@ -44,10 +44,9 @@ const dummyData = [
     total_remaining: 5,
   },
 ];
-const LeaveTracker = ({ userProfile, leaveTypes }) => {
-  const [Leave, setLeave] = useState([]); // Leave applications data
-  const [isLoading, setIsLoading] = useState(true); // Loading indicator
-  const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]); // Leave types available to employee
+const LeaveTracker = ({ userProfile, departments }) => {
+  const [Leave, setLeave] = useState([]);
+  const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
   const [activeTab, setActiveTab] = useState("records");
   const [recordsFilterData, setRecordsFilterData] = useState({});
   const [typesFilterData, setTypesFilterData] = useState({});
@@ -56,6 +55,8 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [isSelectedLeaveSheet, setIsSelectedLeaveSheet] = useState(false);
   const [empLeaveStats, setEmpLeaveStats] = useState([]);
+  const [isTypesLoading, setIsTypesLoading] = useState(true);
+  const [isRecordsLoading, setIsRecordsLoading] = useState(true);
 
   const [options, setOptions] = useState({
     page: 1, // Current page number
@@ -71,31 +72,41 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
   };
 
   const fetchLeaveTypesData = async () => {
+    setIsTypesLoading(true);
     const leaveTypesData = await getLeaveComponents({
       filterData: { ...typesFilterData },
     });
     if (leaveTypesData) {
       setLeaveTypesData(leaveTypesData);
     }
+    setIsTypesLoading(false);
   };
 
   const fetchData = async () => {
-    const empLeaveStats = await getLeaveStatsEmployee();
+    setIsRecordsLoading(true);
+    const empLeaveStats = await getLeaveStatsEmployee(recordsFilterData);
     if (empLeaveStats) {
       setEmpLeaveStats(empLeaveStats);
     }
+    setIsRecordsLoading(false);
   };
+
   useEffect(() => {
-    const getData = async () => {
-      setIsLoading(true);
-      await Promise.all([fetchLeaveTypesData(), fetchData()]);
-      setIsLoading(false);
-    };
-    getData();
-  }, [typesFilterData]);
+    fetchData();
+  }, [recordsFilterData, options]);
+
+  useEffect(() => {
+    fetchLeaveTypesData();
+  }, [typesFilterData, options]);
 
   // Separate handler for records filters
   const handleRecordsFilterChange = (filterName, filterValue) => {
+    if (filterName === "department") {
+      const department = departments.find(
+        (option) => option.value === parseInt(filterValue)
+      );
+      filterValue = department?.label;
+    }
     onPageChange("page", 1);
     setRecordsFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -140,19 +151,13 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
     { value: "types", label: "Types" },
   ];
   const filters =
-    activeTab === "recordss"
+    activeTab === "records"
       ? [
           {
             type: "select-one",
-            option: [],
-            name: "department_name",
+            option: departments,
+            name: "department",
             placeholder: "Department",
-          },
-          {
-            type: "select-two",
-            option: [],
-            name: "salary_type",
-            placeholder: "Salary Type",
           },
         ]
       : [
@@ -241,19 +246,20 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
           </CardHeader>
           <CardContent>
             <TabsContent value="records">
-              {isLoading ? (
+              {isRecordsLoading ? (
                 <PageLoader />
               ) : (
                 <CustomTable
                   data={empLeaveStats || []}
                   columns={LeaveRecordColumns}
-                  pagination={false}
+                  dataTotalSize={empLeaveStats.length || 0}
+                  pagination={true}
                   tableOptions={tableOptions}
                 />
               )}
             </TabsContent>
             <TabsContent value="types">
-              {isLoading ? (
+              {isTypesLoading ? (
                 <PageLoader />
               ) : (
                 <CustomTable
@@ -289,7 +295,7 @@ const LeaveTracker = ({ userProfile, leaveTypes }) => {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
-    leaveTypes: state.common.leaveTypes,
+    departments: state.common.departments,
   };
 };
 

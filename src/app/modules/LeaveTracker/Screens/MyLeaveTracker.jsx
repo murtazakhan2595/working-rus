@@ -26,14 +26,17 @@ import { getLeaveTransaction } from "app/hooks/leaveTracker";
 import { getLeaveComponents } from "app/hooks/leaveTracker";
 import { getLeaveComponentsWithUsed } from "app/hooks/leaveTracker";
 import { PageLoader } from "components";
+import { LeaveTrackerOptions } from "data/Data";
 
 const MyLeaveTracker = ({ userProfile }) => {
   const [leaveData, setLeaveData] = useState({});
   const [selectedLeaveApplication, setSelectedLeaveApplication] =
     useState(null);
   const [isOpen, setIsOpen] = useState(true);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({ employee_id: userProfile.id });
   const [isLoading, setIsLoading] = useState(true);
+  const [isLeaveTransactionLoading, setIsLeaveTransactionLoading] =
+    useState(true);
   const [componentsWithUsed, setComponentsWithUsed] = useState([]);
   const [LeaveTrackerStats, setLeaveTrackerStats] = useState([
     { title: "Total Applications", value: 0 },
@@ -45,6 +48,18 @@ const MyLeaveTracker = ({ userProfile }) => {
   ]);
   const [leaveTransaction, setLeaveTransaction] = useState();
 
+  const fetchLeaveTransaction = async () => {
+    setIsLeaveTransactionLoading(true);
+    const leaveTransaction = await getLeaveTransaction({
+      filterData,
+    });
+    if (leaveTransaction) {
+      console.log("leaveTransaction", leaveTransaction);
+      setLeaveTransaction(leaveTransaction);
+    }
+    setIsLeaveTransactionLoading(false);
+  };
+
   const fetchData = async () => {
     setIsLoading(true);
     const leaves = await getLeaves({
@@ -53,14 +68,6 @@ const MyLeaveTracker = ({ userProfile }) => {
     if (leaves) {
       setLeaveData(leaves);
     }
-    const leaveTransaction = await getLeaveTransaction({
-      filterData: { employee_id: userProfile.id },
-    });
-    if (leaveTransaction) {
-      console.log("leaveTransaction", leaveTransaction);
-      setLeaveTransaction(leaveTransaction);
-    }
-
     const statsData = await getLeavestats({
       filterData: { employee_id: userProfile.id },
     });
@@ -91,19 +98,39 @@ const MyLeaveTracker = ({ userProfile }) => {
   useEffect(() => {
     fetchData();
   }, []);
+  useEffect(() => {
+    fetchLeaveTransaction();
+  }, [filterData]);
 
   const handleFilterChange = (filterName, filterValue) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
+
+      if (filterName === "status") {
+        // Add both action_hr and action_manager
+        if (filterValue === "") {
+          // If filterValue is empty, remove both keys
+          delete updatedFilters["action_hr"];
+          delete updatedFilters["action_manager"];
+        } else {
+          // Set both action_hr and action_manager to the filterValue
+          updatedFilters["action_hr"] = filterValue;
+          updatedFilters["action_manager"] = filterValue;
+        }
       } else {
-        updatedFilters[filterName] = filterValue;
+        // Handle other filters normally
+        if (filterValue === "") {
+          delete updatedFilters[filterName];
+        } else {
+          updatedFilters[filterName] = filterValue;
+        }
       }
+
       return updatedFilters;
     });
   };
 
+  console.log("filterData", filterData);
   return (
     <>
       {isLoading ? (
@@ -149,6 +176,8 @@ const MyLeaveTracker = ({ userProfile }) => {
               setSelectedLeaveApplication={setSelectedLeaveApplication}
               setIsOpen={setIsOpen}
               handleFilterChange={handleFilterChange}
+              componentsWithUsed={componentsWithUsed}
+              isLeaveTransactionLoading={isLeaveTransactionLoading}
             />{" "}
             <ConsumedLeaves componentsWithUsed={componentsWithUsed} />
           </div>
@@ -183,8 +212,9 @@ function AppliedLeaves({
   setSelectedLeaveApplication,
   setIsOpen,
   handleFilterChange,
+  componentsWithUsed,
+  isLeaveTransactionLoading,
 }) {
-  console.log("HERE I GET THIS", leaveTransaction);
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -195,21 +225,20 @@ function AppliedLeaves({
           filters={[
             {
               type: "select-one",
-              option: [],
-              name: "expense_type",
-              placeholder: "Expense Type",
+              option: LeaveTrackerOptions,
+              name: "status",
               width: "max-w-[130px]",
+              placeholder: "Status",
             },
             {
               type: "select-two",
               width: "max-w-[130px]",
-              option: [
-                { value: "pending", label: "Pending" },
-                { value: "approved", label: "Approved" },
-                { value: "rejected", label: "Rejected" },
-              ],
-              name: "status",
-              placeholder: "Status",
+              option: componentsWithUsed.map((leave) => ({
+                value: leave.leaveComponentId,
+                label: leave.name,
+              })),
+              name: "leave_component_id",
+              placeholder: "Leave Type",
             },
           ]}
           onChange={handleFilterChange}
@@ -225,49 +254,61 @@ function AppliedLeaves({
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {leaveTransaction?.results?.map((leave, index) => (
-              <TableRow
-                key={index}
-                className="cursor-pointer"
-                onClick={() => {
-                  setSelectedLeaveApplication(leave);
-                  setIsOpen(true);
-                }}
-              >
-                <TableCell>{leave?.component_name}</TableCell>
-                <TableCell>{leave?.leave_request?.no_of_days}</TableCell>
-                <TableCell>
-                  {`${moment(leave?.leave_request?.start_date).format(
-                    "MMM D"
-                  )} - ${moment(leave?.leave_request?.end_date).format(
-                    "MMM D"
-                  )}`}
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-                      leave?.action_hr === "Approved" &&
-                      leave?.action_manager === "Approved"
-                        ? "bg-emerald-50 text-teal-700"
-                        : leave?.action_hr === "Declined" ||
-                          leave?.action_manager === "Declined"
-                        ? "bg-red-50 text-red-700"
-                        : "bg-[#f0f0f3] text-[#7f838d]"
-                    }`}
-                  >
-                    {leave?.action_hr === "Approved" &&
-                    leave?.action_manager === "Approved"
-                      ? "Approved"
-                      : leave?.action_hr === "Declined" ||
-                        leave?.action_manager === "Declined"
-                      ? "Declined"
-                      : "Pending"}
-                  </span>
+          {isLeaveTransactionLoading ? (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={4}>
+                  <div className="w-full flex items-center justify-center">
+                    <PageLoader />
+                  </div>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
+            </TableBody>
+          ) : (
+            <TableBody>
+              {leaveTransaction?.results?.map((leave, index) => (
+                <TableRow
+                  key={index}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setSelectedLeaveApplication(leave);
+                    setIsOpen(true);
+                  }}
+                >
+                  <TableCell>{leave?.component_name}</TableCell>
+                  <TableCell>{leave?.leave_request?.no_of_days}</TableCell>
+                  <TableCell>
+                    {`${moment(leave?.leave_request?.start_date).format(
+                      "MMM D"
+                    )} - ${moment(leave?.leave_request?.end_date).format(
+                      "MMM D"
+                    )}`}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+                        leave?.action_hr === "Approved" &&
+                        leave?.action_manager === "Approved"
+                          ? "bg-emerald-50 text-teal-700"
+                          : leave?.action_hr === "Declined" ||
+                            leave?.action_manager === "Declined"
+                          ? "bg-red-50 text-red-700"
+                          : "bg-[#f0f0f3] text-[#7f838d]"
+                      }`}
+                    >
+                      {leave?.action_hr === "Approved" &&
+                      leave?.action_manager === "Approved"
+                        ? "Approved"
+                        : leave?.action_hr === "Declined" ||
+                          leave?.action_manager === "Declined"
+                        ? "Declined"
+                        : "Pending"}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
         </Table>
       </CardContent>
     </Card>
