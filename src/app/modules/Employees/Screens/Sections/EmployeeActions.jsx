@@ -35,7 +35,7 @@ const EmployeeAction = ({ row }) => {
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <DropdownMenuLabel>More Actions</DropdownMenuLabel>
+      {/* <DropdownMenuLabel>More Actions</DropdownMenuLabel> */}
       <DropdownMenuItem onClick={() => navigate(`/profile/${row.id}`)}>Edit Profile</DropdownMenuItem>
       <DropdownMenuItem onClick={() => navigate(`/edit-employee/${row.id}`)}>Edit Employee</DropdownMenuItem>
       <DropdownMenuItem onClick={() => navigate(`/user/${row.id}`)}>View Profile</DropdownMenuItem>
