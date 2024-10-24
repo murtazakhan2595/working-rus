@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
 import { Header, PageLoader, ConfirmationModal } from "components";
 import { CiCirclePlus } from "react-icons/ci";
-import ProjectModel from "./ProjectForm";
+import ProjectForm from "./ProjectForm";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import ViewBoardDetails from "./ViewBoardDetails";
@@ -35,6 +35,7 @@ const Projects = ({ userProfile }) => {
   const [filterData, setFilterData] = useState({});
   const [AllProjects, setAllProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [viewMode, setViewMode] = useState("table");
   const [options, setOptions] = useState({
     page: 1,
@@ -99,36 +100,40 @@ const Projects = ({ userProfile }) => {
     setShowProjectModal(projectId ?? !showProjectModal);
   };
 
-  const handleDeleteSuccess = () => {
-    fetchData(true);
-  };
-
   const toggleViewMode = () => {
     setViewMode((prevMode) => (prevMode === "table" ? "grid" : "table"));
   };
 
-  console.log(AllProjects?.results, "TEST KASHIF")
+  console.log(AllProjects?.results, "TEST KASHIF");
 
   return (
     <div>
-      <Header content={<CreateEditProject />} />
+      <Header
+        content={
+          <CreateEditProject
+            isEditMode={false}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+          />
+        }
+      />
       <div className="flex justify-end">
-      <button
-        onClick={toggleViewMode}
-        className="mb-4 p-2 bg-blue-500 text-white rounded"
-      >
-        Toggle to {viewMode === "table" ? "Grid View" : "Table View"}
-      </button>
+        <button
+          onClick={toggleViewMode}
+          className="mb-4 p-2 bg-blue-500 text-white rounded"
+        >
+          Toggle to {viewMode === "table" ? "Grid View" : "Table View"}
+        </button>
       </div>
 
       {isLoading ? (
         <PageLoader />
       ) : (
         <>
-                  {viewMode === "table"  && userProfile.role !== 4 && (
+          {viewMode === "table" && userProfile.role !== 4 && (
             <RenderProject
               toggleAddProject={toggleAddProject}
-              onDeleteSuccess={handleDeleteSuccess}
+              fetchData={fetchData}
             />
           )}
           {viewMode === "table" ? (
@@ -144,14 +149,13 @@ const Projects = ({ userProfile }) => {
             <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 gap-4">
               {AllProjects.results.map((project, index) => (
                 <RenderProject
-              
                   project={project}
                   toggleAddProject={toggleAddProject}
-                  onDeleteSuccess={handleDeleteSuccess}
+                  fetchData={fetchData}
                 />
               ))}
             </div>
-          ) :  (
+          ) : (
             <main className="flex flex-col flex-wrap justify-center content-center items-center self-stretch p-8 text-2xl tracking-tight leading-4 bg-white rounded-xl text-zinc-600 max-md:px-5 h-[75dvh]">
               <LuFolderX className="w-20 h-20 text-zinc-600" />
               <p className="mt-6">Looks like you don't have any projects</p>
@@ -163,31 +167,18 @@ const Projects = ({ userProfile }) => {
   );
 };
 
-const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
+const RenderProject = ({ project, toggleAddProject, fetchData }) => {
   const navigate = useNavigate();
   const projectMembers = project?.project_members || [];
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  console.log(project, "PROJECT")
-
+  console.log(project, "PROJECT");
 
   const viewDetails = () => {
     setIsDropdownOpen(false);
     setIsViewBoardDetails(true);
-  };
-
-  const confirmDelete = async () => {
-    const response = await deleteProject(project.id);
-    onDeleteSuccess();
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleDelete = () => {
-    setIsDropdownOpen(false);
-    setIsDeleteModalOpen(true);
   };
 
   const navigateToBoard = () => {
@@ -198,8 +189,6 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
     setIsViewBoardDetails(false);
     setIsEditMode(false);
   };
-
-
 
   return (
     <Card>
@@ -250,35 +239,13 @@ const RenderProject = ({ project, toggleAddProject, onDeleteSuccess }) => {
         <ViewBoardDetails
           project={project}
           onClose={closeModal}
-          onEdit={() => setIsEditMode(true)}
           setIsEditMode={setIsEditMode}
           isOpen={isViewBoardDetails}
           setIsOpen={setIsViewBoardDetails}
-          setIsDeleteModalOpen={setIsDeleteModalOpen}
-          isDeleteModalOpen={isDeleteModalOpen}
-
+          fetchData={fetchData}
         />
-      )}
-      {isEditMode && project && (
-        <ProjectModel
-          projectId={project.id}
-          isEditMode={true}
-          onClose={closeModal}
-        />
-      )}
-        {isDeleteModalOpen && (
-          <AlertDialogue
-           isOpen={isDeleteModalOpen}
-           setIsOpen={setIsDeleteModalOpen}
-          />
-        // <ConfirmationModal
-        //   isOpen={isDeleteModalOpen}
-        //   onClose={() => setIsDeleteModalOpen(false)}
-        //   onDelete={confirmDelete}
-        // />
       )}
     </Card>
-    
   );
 };
 
