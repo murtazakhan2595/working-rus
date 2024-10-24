@@ -18,18 +18,21 @@ import { ImageInput } from "components/form-control";
 
 const ProjectForm = ({
   employees,
-  onClose,
+  reload,
   isEditMode,
   projectId,
   isOpen,
   setIsOpen,
+  editProject,
 }) => {
   const formRef = useRef();
   let dispatch = useDispatch();
-  const [initialValues, setInitialValues] = useState({
-    ...Project,
-    color: "", // Add color field
-  });
+  const [initialValues, setInitialValues] = useState(
+    editProject || {
+      ...Project,
+      color: "", // Add color field
+    }
+  );
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(null);
@@ -72,7 +75,8 @@ const ProjectForm = ({
       });
       if (response) {
         dispatch(fetchProjects());
-        onClose();
+        reload();
+        setIsOpen(false);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -159,7 +163,9 @@ const ProjectForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                          <p>Give important details regarding the new project</p>
+                          <p>
+                            Give important details regarding the new project
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -271,7 +277,6 @@ const ProjectForm = ({
                             }}
                           />
                         </div>
-
                       </div>
                     </div>
 

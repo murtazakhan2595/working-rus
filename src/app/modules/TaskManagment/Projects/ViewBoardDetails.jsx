@@ -11,16 +11,20 @@ import { CardTitle } from "components/ui/card";
 import moment from "moment";
 import { Members, MembersList } from "../Sections";
 import { Badge } from "components/ui/badge";
+import CreateEditProject from "./CreateEditProject";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { deleteProject } from "app/hooks/taskManagment";
 
 const ViewBoardDetails = ({
   isOpen,
   setIsOpen,
   onClose,
   project,
-  setIsEditMode,
-  isDeleteModalOpen,
-  setIsDeleteModalOpen,
+  fetchData,
 }) => {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   console.log(project, "HELLO KASHIF");
   const formSheetData = {
     triggerText: "View Details",
@@ -29,13 +33,16 @@ const ViewBoardDetails = ({
     footer: null,
   };
 
-  const closeViewDetails = () => {
-    onClose();
-    setIsOpen(!isOpen);
-  };
-  const openEditProjectModal = () => {
+  const onEdit = () => {
     setIsEditMode(true);
   };
+  const confirmDelete = async () => {
+    const response = await deleteProject(project.id);
+    fetchData(true);
+    setIsDeleteModalOpen(false);
+    setIsOpen(false);
+  };
+
   return (
     <SheetComponent
       {...formSheetData}
@@ -43,6 +50,22 @@ const ViewBoardDetails = ({
       setIsOpen={setIsOpen}
       width="500px"
     >
+      {isEditMode && project && (
+        <CreateEditProject
+          project={project}
+          isEditMode={true}
+          isOpen={isEditMode}
+          setIsOpen={setIsEditMode}
+          reload={fetchData}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <AlertDialogue
+          isOpen={isDeleteModalOpen}
+          setIsOpen={setIsDeleteModalOpen}
+          handleContinue={confirmDelete}
+        />
+      )}
       <div className="flex justify-between items-center gap-4">
         <div className="flex items-center gap-4">
           <img
@@ -53,7 +76,7 @@ const ViewBoardDetails = ({
           <p>{project?.name}</p>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" onClick={openEditProjectModal}>
+          <Button variant="outline" onClick={onEdit}>
             Edit
           </Button>
           <Button variant="outline" onClick={() => setIsDeleteModalOpen(true)}>
@@ -93,9 +116,12 @@ const ViewBoardDetails = ({
         <div className="flex items-center gap-2">
           {" "}
           <p className="text-[14px]">Status: </p>
-        <Badge variant="secondary" className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full">
-        {project?.status || "Ongoing"}
-        </Badge>
+          <Badge
+            variant="secondary"
+            className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
+          >
+            {project?.status || "Ongoing"}
+          </Badge>
         </div>
       </div>
       {/* <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll">
