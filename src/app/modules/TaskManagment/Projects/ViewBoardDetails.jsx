@@ -56,6 +56,7 @@ const ViewBoardDetails = ({
           isEditMode={true}
           isOpen={isEditMode}
           setIsOpen={setIsEditMode}
+          reload={fetchData}
         />
       )}
       {isDeleteModalOpen && (
@@ -64,11 +65,6 @@ const ViewBoardDetails = ({
           setIsOpen={setIsDeleteModalOpen}
           handleContinue={confirmDelete}
         />
-        // <ConfirmationModal
-        //   isOpen={isDeleteModalOpen}
-        //   onClose={() => setIsDeleteModalOpen(false)}
-        //   onDelete={confirmDelete}
-        // />
       )}
       <div className="flex justify-between items-center gap-4">
         <div className="flex items-center gap-4">

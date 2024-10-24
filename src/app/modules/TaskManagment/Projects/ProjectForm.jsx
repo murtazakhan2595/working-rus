@@ -18,7 +18,7 @@ import { ImageInput } from "components/form-control";
 
 const ProjectForm = ({
   employees,
-  onClose,
+  reload,
   isEditMode,
   projectId,
   isOpen,
@@ -75,7 +75,8 @@ const ProjectForm = ({
       });
       if (response) {
         dispatch(fetchProjects());
-        onClose();
+        reload();
+        setIsOpen(false);
       }
     } catch (error) {
       console.error("Error:", error);

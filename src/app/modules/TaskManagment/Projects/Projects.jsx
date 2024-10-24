@@ -114,6 +114,7 @@ const Projects = ({ userProfile }) => {
             isEditMode={false}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
+            reload={fetchData}
           />
         }
       />

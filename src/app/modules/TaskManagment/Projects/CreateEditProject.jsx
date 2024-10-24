@@ -2,22 +2,16 @@ import React, { useRef, useState } from "react";
 import SheetComponent from "components/ui/SheetComponent";
 import ProjectForm from "app/modules/TaskManagment/Projects/ProjectForm";
 
-const CreateEditProject = ({ project, isEditMode, isOpen, setIsOpen }) => {
-  console.log("isEditMode", isEditMode);
-  console.log("isOpen", isOpen);
+const CreateEditProject = ({
+  project,
+  isEditMode,
+  isOpen,
+  setIsOpen,
+  reload,
+}) => {
   const formRef = useRef();
   const handleSubmit = (values, resetForm) => {
     resetForm();
-  };
-
-  const validationEmployeeInfoFormSchema = (values, isEditMode) => {
-    const errors = {};
-    // Add your validation logic here
-    return errors;
-  };
-
-  const validateUsername = (value) => {
-    // Add your username validation logic here
   };
 
   const formSheetData = {
@@ -42,6 +36,7 @@ const CreateEditProject = ({ project, isEditMode, isOpen, setIsOpen }) => {
           setIsOpen={setIsOpen}
           editProject={project}
           isEditMode={isEditMode}
+          reload={reload}
         />
       </SheetComponent>
     </div>
