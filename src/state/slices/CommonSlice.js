@@ -7,13 +7,10 @@ import {
   getOrganizationList,
 } from "app/hooks/general";
 
-import { getLeaveTypes } from "app/hooks/leaveManagment";
-
 // Define the initial state
 const initialState = {
   departments: [],
   projects: [],
-  leaveTypes: [],
   designations: [],
   apiStatus: "idle",
   error: null,
@@ -50,19 +47,6 @@ export const fetchProjects = createAsyncThunk(
   async (userProfile) => {
     try {
       const response = await getProjectsList(userProfile);
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  }
-);
-
-// Define the thunk to fetch leave types
-export const fetchLeaveTypes = createAsyncThunk(
-  "common/fetchLeaveTypes",
-  async () => {
-    try {
-      const response = await getLeaveTypes();
       return response;
     } catch (error) {
       throw error;
@@ -116,18 +100,7 @@ const commonSlice = createSlice({
         state.apiStatus = "failed";
         state.error = action.error.message;
       })
-      // Leave Types
-      .addCase(fetchLeaveTypes.pending, (state) => {
-        state.apiStatus = "loading";
-      })
-      .addCase(fetchLeaveTypes.fulfilled, (state, action) => {
-        state.apiStatus = "succeeded";
-        state.leaveTypes = action.payload;
-      })
-      .addCase(fetchLeaveTypes.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        state.error = action.error.message;
-      })
+
       .addCase(fetchDesignations.pending, (state) => {
         state.apiStatus = "loading";
       })

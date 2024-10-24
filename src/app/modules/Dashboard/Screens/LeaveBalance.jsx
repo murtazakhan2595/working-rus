@@ -1,10 +1,9 @@
-import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
+// import { getEmployeeLeaveTypes } from "app/hooks/leaveManagment";
 import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import { useSelector } from "react-redux";
 
 function LeaveBalanceCard() {
-
   const userProfile = useSelector((state) => state.user.userProfile);
   const [leaveData, setLeaveData] = useState({
     total: 0,
@@ -77,22 +76,23 @@ function LeaveBalanceCard() {
   const legendItems = [
     { color: "bg-sky-400", label: "Used", value: leaveData.used },
     { color: "bg-sky-300", label: "Remaining", value: leaveData.remaining },
-
   ];
 
-      const fetchData = async () => {
-    try {
-      const response = await getEmployeeLeaveTypes({employee_id:userProfile.id});
-      console.log(response)
-      setLeaveData({
-        total: response?.allotedLeaves,
-        used: response?.usedLeaves,
-        remaining: response?.remainingLeaves,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  const fetchData = async () => {
+    // try {
+    //   const response = await getEmployeeLeaveTypes({
+    //     employee_id: userProfile.id,
+    //   });
+    //   console.log(response);
+    //   setLeaveData({
+    //     total: response?.allotedLeaves,
+    //     used: response?.usedLeaves,
+    //     remaining: response?.remainingLeaves,
+    //   });
+    // } catch (err) {
+    //   console.error(err);
+    // }
+  };
 
   useEffect(() => {
     fetchData();

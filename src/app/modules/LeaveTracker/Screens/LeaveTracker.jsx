@@ -6,11 +6,11 @@ import { MyLeavesColumns } from "app/utils/Types/TableColumns";
 
 import { FaPlus } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
-import {
-  getLeaveApplications,
-  getEmployeeLeaveTypes,
-  deleteLeaveRequest,
-} from "app/hooks/leaveManagment";
+// import {
+//   getLeaveApplications,
+//   getEmployeeLeaveTypes,
+//   deleteLeaveRequest,
+// } from "app/hooks/leaveManagment";
 import { FilterInput } from "components/form-control";
 import { getEmployeeLeavesTypesList } from "utils/Lists";
 import CustomTable from "components/CustomTable";
