@@ -222,6 +222,7 @@ const getLeavestats = async (payload) => {
   }
 };
 const getLeaveTransaction = async (payload) => {
+  console.log("payload", payload);
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -325,16 +326,12 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
           latestTransaction && latestTransaction?.balance_after !== null
             ? max_days - latestTransaction.balance_after
             : 0;
-        console.log("this is returning ", {
-          name,
-          used,
-          total: max_days,
-        });
 
         return {
           name,
           used,
           total: max_days,
+          leaveComponentId,
         };
       })
     );
@@ -348,8 +345,14 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
   }
 };
 
-const getLeaveStatsEmployee = async () => {
-  let URL = `/api/leaves/stats/`;
+const getLeaveStatsEmployee = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+
+  let URL = `/api/leaves/stats?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),

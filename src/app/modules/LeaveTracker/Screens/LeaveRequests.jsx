@@ -24,8 +24,12 @@ import moment from "moment";
 import ViewLeaveSheet from "../Sections/ViewLeaveSheet";
 import { PageLoader } from "components";
 import { getLeavestats } from "app/hooks/leaveTracker";
-import { getLeaveTransaction } from "app/hooks/leaveTracker";
+import {
+  getLeaveTransaction,
+  getLeaveComponents,
+} from "app/hooks/leaveTracker";
 import { LeaveAplicationColumns } from "app/utils/Types/TableColumns";
+import { LeaveTrackerOptions } from "data/Data";
 
 const LeaveRequests = ({ userProfile }) => {
   const [selectedLeaveApplication, setSelectedLeaveApplication] =
@@ -33,8 +37,11 @@ const LeaveRequests = ({ userProfile }) => {
   const [filterData, setFilterData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
+  const [leaveTypesData, setLeaveTypesData] = useState([]);
   const [leaveTransaction, setLeaveTransaction] = useState();
-  console.log("leaveTransaction", leaveTransaction);
+  const [isLeaveTransactionLoading, setIsLeaveTransactionLoading] =
+    useState(true);
+
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
 
   const onPageChange = (name, value) => {
@@ -55,7 +62,7 @@ const LeaveRequests = ({ userProfile }) => {
     { title: "Pending Requests", value: 0 },
     { title: "Accepted Requests", value: 0 },
   ]);
-
+  console.log("leavesTypedata", leaveTypesData);
   const fetchData = async () => {
     setLoading(true);
     const statsData = await getLeavestats({});
@@ -75,32 +82,63 @@ const LeaveRequests = ({ userProfile }) => {
         },
       ]);
     }
-    let filterData = {};
-    if (userProfile.role === 2) {
-      filterData = { managers: userProfile.id };
+    setLoading(false);
+    const leaveTypesData = await getLeaveComponents({});
+    if (leaveTypesData) {
+      setLeaveTypesData(leaveTypesData);
     }
-    const leaveTransaction = await getLeaveTransaction({ filterData });
+  };
+
+  const fetchLeaveTransaction = async () => {
+    setIsLeaveTransactionLoading(true);
+    let filter = {};
+    if (userProfile.role === 2) {
+      filter = { managers: userProfile.id, ...filterData };
+    } else {
+      filter = { ...filterData };
+    }
+    const leaveTransaction = await getLeaveTransaction({
+      filterData: filter,
+      options,
+    });
     if (leaveTransaction) {
       console.log("leaveTransaction", leaveTransaction);
       setLeaveTransaction(leaveTransaction);
     }
-    setLoading(false);
+    setIsLeaveTransactionLoading(false);
   };
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    fetchLeaveTransaction();
+  }, [filterData, options]);
+
   const handleFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
-    console.log("filterName", filterName);
-    console.log("filterValue", filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
+
+      if (filterName === "status") {
+        // Add both action_hr and action_manager
+        if (filterValue === "") {
+          // If filterValue is empty, remove both keys
+          delete updatedFilters["action_hr"];
+          delete updatedFilters["action_manager"];
+        } else {
+          // Set both action_hr and action_manager to the filterValue
+          updatedFilters["action_hr"] = filterValue;
+          updatedFilters["action_manager"] = filterValue;
+        }
       } else {
-        updatedFilters[filterName] = filterValue;
+        // Handle other filters normally
+        if (filterValue === "") {
+          delete updatedFilters[filterName];
+        } else {
+          updatedFilters[filterName] = filterValue;
+        }
       }
+
       return updatedFilters;
     });
   };
@@ -165,19 +203,20 @@ const LeaveRequests = ({ userProfile }) => {
                   filters={[
                     {
                       type: "select-one",
-                      option: [],
-                      name: "expense_type",
-                      placeholder: "Expense Type",
+                      option: LeaveTrackerOptions,
+                      name: "status",
+                      width: "max-w-[130px]",
+                      placeholder: "Status",
                     },
                     {
                       type: "select-two",
-                      option: [
-                        { value: "pending", label: "Pending" },
-                        { value: "approved", label: "Approved" },
-                        { value: "rejected", label: "Rejected" },
-                      ],
-                      name: "status",
-                      placeholder: "Status",
+                      width: "max-w-[130px]",
+                      option: leaveTypesData.map((leave) => ({
+                        value: leave.id,
+                        label: leave.name,
+                      })),
+                      name: "leave_component_id",
+                      placeholder: "Leave Type",
                     },
                   ]}
                   onChange={handleFilterChange}
@@ -185,13 +224,17 @@ const LeaveRequests = ({ userProfile }) => {
               </div>
             </CardHeader>
             <CardContent>
-              <CustomTable
-                data={leaveTransaction?.results || []}
-                columns={LeaveAplicationColumns}
-                pagination={true}
-                dataTotalSize={leaveTransaction?.count || 0}
-                tableOptions={tableOptions}
-              />
+              {isLeaveTransactionLoading ? (
+                <PageLoader />
+              ) : (
+                <CustomTable
+                  data={leaveTransaction?.results || []}
+                  columns={LeaveAplicationColumns}
+                  pagination={true}
+                  dataTotalSize={leaveTransaction?.count || 0}
+                  tableOptions={tableOptions}
+                />
+              )}
             </CardContent>
           </Card>
           {selectedLeaveApplication && (
