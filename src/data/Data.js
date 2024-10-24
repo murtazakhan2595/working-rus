@@ -4,7 +4,6 @@ import { countries } from "country-data";
 import { getAllCountries } from "countries-and-timezones";
 import {
   fetchDepartments,
-  fetchLeaveTypes,
   fetchDesignations,
   fetchProjects,
   fetchOrganizations,
@@ -709,7 +708,6 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(setUserProfile(userprofile));
   dispatch(fetchEmployees());
   dispatch(fetchDepartments());
-  dispatch(fetchLeaveTypes());
   dispatch(fetchDesignations());
   dispatch(fetchOrganizations());
   dispatch(fetchReportingManagers());

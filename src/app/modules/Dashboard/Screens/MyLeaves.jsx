@@ -1,5 +1,5 @@
-import { getLeaveApplications } from "app/hooks/leaveManagment";
-import { Status } from "app/modules/LeaveManagment/Sections";
+// import { getLeaveApplications } from "app/hooks/leaveManagment";
+// import { Status } from "app/modules/LeaveManagment/Sections";
 import { StatusLabel } from "components";
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -34,18 +34,18 @@ export default function MyLeaves() {
   console.log(leave);
   useEffect(() => {
     const fetchdata = async () => {
-      try {
-        setIsLoading(true);
-        const applicationsData = await getLeaveApplications({
-          filterData: { employee_id: userProfile.id },
-        });
-        if (applicationsData) {
-          setLeave(applicationsData);
-        }
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-      }
+      // try {
+      //   setIsLoading(true);
+      //   const applicationsData = await getLeaveApplications({
+      //     filterData: { employee_id: userProfile.id },
+      //   });
+      //   if (applicationsData) {
+      //     setLeave(applicationsData);
+      //   }
+      //   setIsLoading(false);
+      // } catch (error) {
+      //   console.error("Error fetching applications:", error);
+      // }
     };
     fetchdata();
   }, [userProfile]);
@@ -101,7 +101,7 @@ const RenderMyLeaves = ({ leave }) => {
               </div>
             </TableCell>
             <TableCell className="py-4 text-right">
-              <StatusLabel status={Status(leave.status_hr)} />
+              {/* <StatusLabel status={Status(leave.status_hr)} /> */}
             </TableCell>
           </TableRow>
         </TableBody>

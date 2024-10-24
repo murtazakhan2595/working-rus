@@ -14,13 +14,6 @@ import {
   JobDescription,
   JobApplicationForm,
 } from "./app/modules/RecruitmentData";
-// import {
-//   LeaveRequest,
-//   LeaveTracker,
-//   CreateLeaveRequest,
-//   LeaveAllotement,
-//   LeaveHistory,
-// } from "app/modules/LeaveManagment";
 import {
   LeaveTracker,
   MyLeaveTracker,
@@ -49,7 +42,6 @@ import ComingSoon from "./app/modules/comingSoon/ComingSoon.jsx";
 import PageLoader from "./components/PageLoader.jsx";
 import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
-import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
 import { ExitAndClearance } from "app/modules/ExitAndClearance";
 import "./index.css";
@@ -173,7 +165,7 @@ function App() {
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               {/* <Route path="/leave-request" element={<CreateLeaveRequest />} /> */}
 
-              <Route path="/notifications" element={<Notifications />} />
+              {/* <Route path="/notifications" element={<Notifications />} /> */}
               <Route path="/my-team" element={<ComingSoon />} />
               <Route path="/my-task" element={<ComingSoon />} />
               <Route path="/calender" element={<ComingSoon />} />

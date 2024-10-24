@@ -9,14 +9,13 @@ import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applica
 import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
-import {
-  Status,
-  RenderStatus,
-  RenderLeaveType,
-  RenderLeaveAction,
-} from "app/modules/LeaveManagment/Sections";
+// import {
+//   Status,
+//   RenderStatus,
+//   RenderLeaveType,
+//   RenderLeaveAction,
+// } from "app/modules/LeaveManagment/Sections";
 import moment from "moment";
-import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
 import { IoIosArrowDown } from "react-icons/io";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
@@ -944,53 +943,50 @@ export const downloadPayslipColumns = (components) => [
   },
 ];
 
-
-export const tasksColumns = ()=>[
+export const tasksColumns = () => [
   {
-    text:"Tasks",
-    dataField:"description"
+    text: "Tasks",
+    dataField: "description",
   },
   {
-    text:"List",
-    dataField:""
+    text: "List",
+    dataField: "",
   },
   {
-    text:"Priority"
+    text: "Priority",
   },
   {
-    text:"Labels"
+    text: "Labels",
   },
   {
-    text:"Members"
+    text: "Members",
   },
   {
-    text:"Due Date"
-  }
-]
+    text: "Due Date",
+  },
+];
 
 export const projectBoard = [
   {
-    text:"Project",
-     dataField:"name"
+    text: "Project",
+    dataField: "name",
   },
   {
-    text:"Status",
-    dataField:"status",
+    text: "Status",
+    dataField: "status",
   },
   {
-    text:"Tasks",
-    dataField:"task_count"
+    text: "Tasks",
+    dataField: "task_count",
   },
   {
-    text:"Members",
+    text: "Members",
     dataField: "project_members",
-    formatter:(cell)=>(
-      <MembersList members={cell}/>
-    )
+    formatter: (cell) => <MembersList members={cell} />,
   },
   {
-    text:"Due Date",
-    dataField:"end_date",
+    text: "Due Date",
+    dataField: "end_date",
     formatter: (cell, row) => {
       // Check if the cell has a value
 
@@ -1005,10 +1001,14 @@ export const projectBoard = [
         formattedDate = "Invalid Date";
       }
 
-      return <div className="flex items-center gap-2"><Clock size={18}/> {formattedDate}</div>;
+      return (
+        <div className="flex items-center gap-2">
+          <Clock size={18} /> {formattedDate}
+        </div>
+      );
     },
-  }
-]
+  },
+];
 
 export const LeaveRecordColumns = [
   {

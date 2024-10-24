@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { StatusIcon } from "app/modules/LeaveManagment/Sections";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,6 +8,7 @@ import {
   DropdownMenuItem,
 } from "../../../../src/@/components/ui/dropdown-menu";
 import { Button } from "../../../../src/@/components/ui/button";
+import { StatusIcon } from "components/StatusLabel";
 
 const ApplicationStatus = ({ row, isTableViewButton = false }) => {
   const status =

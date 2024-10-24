@@ -3,7 +3,6 @@ import React from "react";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { getLeaveApplications } from "app/hooks/leaveManagment";
 import { Tabs, Header, PageLoader } from "components";
 import { Row, Col } from "reactstrap";
 import ExitRequestForm from "./ExitRequestForm";
