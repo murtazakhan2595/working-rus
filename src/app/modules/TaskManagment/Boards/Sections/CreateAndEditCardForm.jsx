@@ -116,7 +116,7 @@ const CreateAndEditCardForm = ({
       }}
     >
       {(props) => (
-        <form onSubmit={props.handleSubmit} className="mt-5">
+        <form onSubmit={props.handleSubmit} className="">
           <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
             <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
               <div className="flex h-[7px] flex-shrink-0 items-end px-px">
@@ -206,7 +206,7 @@ const CreateAndEditCardForm = ({
             <div className={`flex w-full flex-col rounded-lg pt-2.5 mt-5`}>
               <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
                 <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-                  <div className="text-zinc-950">Add To Project</div>
+                  <div className="text-zinc-950">Add To Card</div>
                 </div>
                 <div className="space-y-2">
                   <DateInput
@@ -296,11 +296,9 @@ const CreateAndEditCardForm = ({
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 ">
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+            <div className="mt-4 border-t border-gray-200 flex justify-end gap-2">
                 <Button
                   type=""
-                  outline
                   variant="outline"
                   size="lg"
                   // onClick={onClose()}
@@ -311,7 +309,6 @@ const CreateAndEditCardForm = ({
                   {initialValues.id ? "Save" : "Add Card"}
                 </Button>
               </div>
-            </div>
           </div>
         </form>
       )}

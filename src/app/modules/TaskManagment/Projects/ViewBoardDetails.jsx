@@ -25,7 +25,6 @@ const ViewBoardDetails = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  console.log(project, "HELLO KASHIF");
   const formSheetData = {
     triggerText: "View Details",
     title: "View Details",

@@ -14,7 +14,7 @@ const MembersList = ({ members }) => {
           const name = employeeName.props.children;
           return (
             <>
-              <span>{name}</span>
+              {/* <span>{name}</span> */}
               <Avatar
                 src="/placeholder-user.jpg"
                 alt="Avatar"

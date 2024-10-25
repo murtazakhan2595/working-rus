@@ -13,6 +13,8 @@ import EditCard from "./EditCard";
 import moment from "moment";
 import TaskDetail from "./TaskDetail";
 import { fetchComments } from "app/hooks/taskManagment";
+import { Card } from "components/ui/card";
+import SheetComponent from "components/ui/CustomSheet";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -84,10 +86,17 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     fetchData();
   }, [task?.board_id, task?.id]);
 
+  const formSheetData = {
+    triggerText: "",
+    title: "View Details",
+    description: null,
+    footer: null,
+  };
+
 
 
   return (
-    <div
+    <Card
       className="flex flex-col p-3 mt-6 w-full bg-white rounded-lg shadow cursor-pointer"
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
@@ -101,7 +110,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
             setIsEditCardOpen(false);
             reloadData();
           }}
-        />
+        /> 
       )}
       {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
       {isDeleteModalOpen && (
@@ -152,9 +161,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         <div className="flex gap-2 items-center text-zinc-600">
           {task?.end_date && (
             <div
-              className={`flex gap-1 justify-center items-center text-sm p-2 rounded ${getStatusClass(
-                task?.end_date
-              )}`}
+              className={`flex gap-1 justify-center items-center text-sm p-2 rounded`}
             >
               {/* Render TimeIcon component */}
               <TimeIcon color={getStatusIconColor(task?.end_date)} />
@@ -176,14 +183,21 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
       </footer>
       {/* Render TaskDetail component if isTaskDetailOpen is true */}
       {isTaskDetailOpen && (
+        <SheetComponent
+         {...formSheetData}
+         isOpen={isTaskDetailOpen}
+         setIsOpen={setIsTaskDetailOpen}
+         width="500px"
+        >
         <TaskDetail
           task={task} // Pass task data as props to TaskDetail
           comments={task.comments} // Pass comments data as props to TaskDetail (if needed)
           attachments={task.attachments} // Pass attachments data as props to TaskDetail (if needed)
           onClose={closeTaskDetail}
         />
+        </SheetComponent>
       )}
-    </div>
+    </Card>
   );
 };
 

@@ -12,7 +12,7 @@ const headers = () => ({
 });
 
 const getAllProjects = async (payload, userProfile) => {
-  console.log(userProfile);
+  console.log(userProfile, "PROFILE");
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -23,11 +23,9 @@ const getAllProjects = async (payload, userProfile) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
-    console.log("response in get all projects", response);
     if (response.status === 200) {
       const data = response.data;
       if (userProfile.role === 4 || userProfile.role === 2) {
-        console.log(data);
         const filteredResults = data.filter(
           (project) =>
             project.project_members.includes(userProfile.id) ||
@@ -38,14 +36,12 @@ const getAllProjects = async (payload, userProfile) => {
           count: filteredResults.length,
           results: filteredResults,
         };
-        console.log("returning in if", ProjectsData);
         return ProjectsData;
       } else {
         const ProjectsData = {
           count: data.length,
           results: data,
         };
-        console.log("returning in else", ProjectsData);
         return ProjectsData;
       }
     } else {
@@ -458,7 +454,7 @@ const getAttachmentById = async (attachmentId) => {
   try {
     if (attachmentId) {
       const response = await axios.get(
-        `${baseUrl}/attachment/${attachmentId}`,
+        `${baseUrl}/TaskmanagementAttachment/${attachmentId}`,
         {
           headers: headers(),
         }
