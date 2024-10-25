@@ -55,7 +55,7 @@ const WorkInformation = ({
         <CardHeader>
           <div className="flex justify-between">
             <CardTitle>Job Details</CardTitle>
-            {isEditable && (
+            {/* {isEditable && (
               <div className="flex gap-4 items-center">
                 <FiPlus className="text-2xl cursor-pointer opacity-80" />
                 <div
@@ -67,7 +67,7 @@ const WorkInformation = ({
                   <CiEdit className="text-2xl cursor-pointer opacity-80" />
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
