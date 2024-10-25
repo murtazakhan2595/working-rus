@@ -34,7 +34,6 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const [filterData, setFilterData] = useState({
     exit_category: "resignation",
     status_resignation: StatusList(),
-    status_termination: StatusList(false),
     ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
   const fetchData = async () => {
@@ -149,6 +148,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
         defaultValue="Resignations"
         className="w-full"
         onValueChange={handleTabChange}
+        value={activeTab}
       >
         <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="inline-flex items-center justify-center p-1 bg-white rounded-lg h-9 text-mauve-900">

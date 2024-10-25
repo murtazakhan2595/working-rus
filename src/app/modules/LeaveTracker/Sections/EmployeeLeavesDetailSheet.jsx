@@ -126,7 +126,7 @@ const ViewDetails = ({
             }}
           >
             <div className="text-center text-[#1c2024] text-xs font-semibold">
-              Edit Leaves dsfdsf
+              Edit Leaves
             </div>
           </Button>
         )}
