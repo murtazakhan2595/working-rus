@@ -23,8 +23,8 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from "../../../../components/ui/card";
-import { Clock, ListTodo } from "lucide-react";
+} from "components/ui/card";
+import { Clock, Layout, ListTodo } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import TableCustom from "components/CustomTable";
 import { projectBoard } from "app/utils/Types/TableColumns";
@@ -60,6 +60,7 @@ const Projects = ({ userProfile }) => {
     setIsLoading(true);
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
+      console.log(projectsData, "PROJECTS DATA IS HERE")
       if (isMounted) {
         setAllProjects(projectsData);
       }
@@ -110,22 +111,19 @@ const Projects = ({ userProfile }) => {
     <div>
       <Header
         content={
+          <>
+          <button onClick={toggleViewMode} className="mb-4 p-2">
+          <Layout />
+        </button>
           <CreateEditProject
             isEditMode={false}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             reload={fetchData}
           />
+          </>
         }
       />
-      <div className="flex justify-end">
-        <button
-          onClick={toggleViewMode}
-          className="mb-4 p-2 bg-blue-500 text-white rounded"
-        >
-          Toggle to {viewMode === "table" ? "Grid View" : "Table View"}
-        </button>
-      </div>
 
       {isLoading ? (
         <PageLoader />
@@ -138,14 +136,18 @@ const Projects = ({ userProfile }) => {
             />
           )}
           {viewMode === "table" ? (
-            <TableCustom
-              columns={projectBoard}
-              data={AllProjects?.results || []}
-              pagination={true}
-              dataTotalSize={AllProjects?.length || 0}
-              tableOptions={tableOptions}
-              dataStyle={{ backgroundColor: "white" }}
-            />
+            <Card>
+              <CardContent>
+                <TableCustom
+                  columns={projectBoard}
+                  data={AllProjects?.results || []}
+                  pagination={false}
+                  dataTotalSize={AllProjects?.length || 0}
+                  tableOptions={tableOptions}
+                  dataStyle={{ backgroundColor: "white" }}
+                />
+              </CardContent>
+            </Card>
           ) : AllProjects?.count > 0 ? (
             <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 gap-4">
               {AllProjects.results.map((project, index) => (

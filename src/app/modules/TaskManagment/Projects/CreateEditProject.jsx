@@ -15,8 +15,8 @@ const CreateEditProject = ({
   };
 
   const formSheetData = {
-    triggerText: `${isEditMode ? "" : "Add New Project"}`,
-    title: `${isEditMode ? "" : "Add New Project"}`,
+    triggerText: `${isEditMode ? "Update Project" : "Add New Project"}`,
+    title: `${isEditMode ? "Update Project" : "Add New Project"}`,
     description: null,
     footer: null,
   };
@@ -26,7 +26,7 @@ const CreateEditProject = ({
       <SheetComponent
         {...formSheetData}
         onSubmit={handleSubmit}
-        width="860px"
+       width="500px"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         contentClassName="custom-sheet-width"

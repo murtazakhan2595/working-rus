@@ -18,6 +18,13 @@ import { getRandomColor } from "utils/renderValues";
 import { addCommentAttachment } from "app/hooks/taskManagment";
 import { getCommentsWithAttachments } from "app/hooks/taskManagment";
 import { filebase64Download } from "utils/fileUtils";
+import SheetComponent from "components/ui/SheetComponent";
+import { Card } from "components/ui/card";
+import { Button } from "components/ui/button";
+import { Trash } from "lucide-react";
+import { CardTitle } from "components/ui/card";
+import { CardContent } from "components/ui/card";
+import { getLabelColor } from "./Sections/getTaskStatus";
 
 const TaskDetail = ({ task, onClose, employees }) => {
   const [comments, setComments] = useState([]);
@@ -211,10 +218,23 @@ const handleFileChange = (event) => {
     return new Blob(byteArrays, { type: mimeType });
   }
 
+  const formSheetData = {
+    triggerText: null,
+    title: "Edit Card",
+    description: null,
+    footer: null,
+  };
+
   
   return (
     <>
       {isEditCardOpen && (
+        <SheetComponent
+        {...formSheetData}
+          isOpen={isEditCardOpen}
+          setIsOpen={setIsEditCardOpen}
+          width="500px"
+        >
         <EditCard
           cardId={task?.id}
           projectId={task?.project_id}
@@ -223,24 +243,35 @@ const handleFileChange = (event) => {
             onClose();
           }}
         />
+        </SheetComponent>
       )}
       {isTaskDetailVisible && (
-        <div className="p-4 max-w-[700px] w-[95%] mx-auto bg-white rounded-lg shadow-lg fixed z-10 top-0 right-0 overflow-y-auto h-[100vh] hideScroll">
-          <div onClick={onClose} className="flex justify-end mb-3">
-            <RxCross2 className="text-baseGray" />
-          </div>
-          <header className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-[#323333] font-lato">
-              {task?.name}
-            </h1>
-            <button
-              className="flex items-center px-2 py-1 space-x-2 text-gray-500 border border-gray-500 rounded hover:text-gray-700"
-              onClick={editDetails}
-            >
-              <CiEdit />
-              <span className="text-base font-medium font-lato">Edit</span>
-            </button>
-          </header>
+        <>
+                  <header className="flex items-center justify-between">
+                  <h1 className="text-2xl font-bold text-[#323333] font-lato">
+                    {task?.name}
+                  </h1>
+                  <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={editDetails}
+                  >
+                    <CiEdit className="mr-2"/>
+                    Edit
+                  </Button>
+      
+                  <Button
+                    variant="outline"
+                    onClick={editDetails}
+                  >
+                    <Trash className="mr-2" size={16}/>
+                    Delete
+                  </Button>
+                  </div>
+                </header>
+
+        <div className="p-2">
+
 
           <div className="mb-4">
             <span className="text-[14px] font-lato text-baseGray">
@@ -251,53 +282,15 @@ const handleFileChange = (event) => {
             </span>
           </div>
 
-          <div className="px-3 py-3 mb-4 border border-gray-400 rounded-lg">
-            <div className="flex items-center mb-3 space-x-10">
+          <Card className="p-2">
+            <CardTitle className="text-black text-[18px]">
+              Card Details
+            </CardTitle>
+            <CardContent>
+              <p>Due Date: {moment(task?.end_date).format("DD MMM")}</p>
+              <div className="flex items-center space-x-10">
               <div className="flex items-center gap-x-2">
-                <IoCalendarOutline className="text-baseGray" />
-                <span className="ml-auto text-base font-bold font-lato text-baseGray">
-                  Start Date
-                </span>
-              </div>
-              <span className="ml-8 text-sm font-semibold">
-                {moment(task?.start_date).format("DD MMMM, YY")}
-              </span>
-            </div>
-            <div className="flex items-center mb-3 space-x-10">
-              <div className="flex items-center gap-x-2">
-                <RxPerson className="text-baseGray" />
-                <span className="ml-auto text-base font-bold font-lato text-baseGray">
-                  Created By
-                </span>
-              </div>
-              <span className="ml-8 text-sm font-semibold">
-                <EmployeeName value={task?.assigned_by} />
-              </span>
-            </div>
-            <div className="flex items-center mb-3 space-x-10">
-              <div className="flex items-center gap-x-2">
-                <IoCalendarOutline className="text-baseGray" />
-                <span className="ml-auto text-base font-bold font-lato text-baseGray">
-                  Due Date
-                </span>
-              </div>
-              <span className="ml-8 text-sm font-semibold">
-                {moment(task?.end_date).format("DD MMMM, YY")}
-              </span>
-            </div>
-            <div className="flex items-center mb-3 space-x-10">
-              <div className="flex items-center gap-x-2">
-                <PiUsersLight className="text-baseGray" />
-                <span className="ml-auto text-base font-bold font-lato text-baseGray">
-                  Assigne
-                </span>
-              </div>
-              <MembersList members={task?.assigned_to} />
-            </div>
-            <div className="flex items-center space-x-10">
-              <div className="flex items-center gap-x-2">
-                <PiHeadlightsBold className="text-baseGray" />
-                <span className="ml-auto text-base font-bold font-lato text-baseGray">
+                <span className="ml-auto">
                   Priority
                 </span>
               </div>
@@ -308,32 +301,44 @@ const handleFileChange = (event) => {
                 }
               </span>
             </div>
-          </div>
+            <p>Label: <span className={`inline-block p-2 rounded-lg bg-[${getLabelColor(task?.label)}]`}> {task?.label || "Design"}</span></p>
+            <p className="flex items-center gap-2">Assign: <MembersList members={task?.assigned_to}/></p>
+            <p>Relation: <span className={`inline-block p-2 rounded-lg bg-[${getLabelColor(task?.label)}]`}> {task?.label || "Wireframes"}</span></p>
+            <p>CheckList: </p>
+            </CardContent>
+          </Card>
 
-          <div className="mb-4">
-            <h2 className="text-base font-lato font-bold text-[#323333]">
-              Description
-            </h2>
-            <p
-              className="mt-2 text-sm text-gray-700"
+          <div className="flex items-center p-4 gap-4">
+            <p>Description: </p>
+          <span
+              className="text-sm text-gray-700"
               dangerouslySetInnerHTML={{ __html: task?.description }}
             />
+            
           </div>
+
+          <div className="flex items-center p-4 gap-4">
+            <p>SubTasks: </p>
+            <p className="text-gray-700">SubTasks 1 </p>
+          </div>
+
+
 
           <div className="mb-3">
             <h2 className="text-base font-lato font-bold text-[#323333] flex gap-x-2 items-center">
               <AiOutlinePaperClip className="text-xl" />
               Attachments
             </h2>
-            {attachments.map((attachment) => (
+            {attachments?.map((attachment) => (
               <div
                 key={attachment.id}
                 className="flex items-center justify-between w-auto p-2 my-1 bg-gray-100 rounded-lg shadow-md"
                 onClick={(e) => {
                   if (!e.target.closest(".download-icon")) {
-                    const dataURL = attachment?.attachments.file;
-                    const [metadata, base64Data] = dataURL.split(",");
-                    const mimeType = metadata.match(/:(.*?);/)[1];
+                    const dataURL = attachment?.attachments?.file;
+                    console.log(dataURL, "DATA URL")
+                    const [metadata, base64Data] = dataURL?.split(",");
+                    const mimeType = metadata?.match(/:(.*?);/)[1];
                     const blob = base64ToBlob(base64Data, mimeType);
                     const blobUrl = URL.createObjectURL(blob);
 
@@ -344,12 +349,12 @@ const handleFileChange = (event) => {
                 <div className="flex items-center">
                   <FaRegImage className="w-4 h-4 text-gray-500" />
                   <span className="ml-4 text-sm font-lato text-baseGray">
-                    {attachment?.attachments.name}
+                    {attachment?.attachments?.name}
                   </span>
                 </div>
                 <div className="flex items-center gap-x-2">
                   <a
-                    href={attachment?.attachments.file}
+                    href={attachment?.attachments?.file}
                     download
                     className="text-gray-500 hover:text-gray-700 download-icon"
                   >
@@ -466,7 +471,8 @@ const handleFileChange = (event) => {
               </div>
             ))}
           </div>
-        </div>
+          </div>
+          </>
       )}
     </>
   );

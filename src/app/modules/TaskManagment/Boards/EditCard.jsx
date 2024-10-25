@@ -142,18 +142,7 @@ const handleSubmit = async (
     }, [cardId]);
 
   return (
-    <div className="fixed top-0 right-0 max-w-[650px] w-[95%] h-full z-10 overflow-y-auto hideScroll ">
-      <div className="bg-white h-full fixed  max-w-[650px] w-[95%] top-0 right-0  shadow px-[50px] py-10 flex flex-col gap-7 overflow-y-auto hideScroll">
-        <div className="flex-col justify-start items-start gap-2.5 flex">
-          <RxCross2 className="cursor-pointer self-end" onClick={onClose} />
-          <div className="flex gap-4 items-center text-xl font-bold text-zinc-800">
-            <FaChevronLeft
-              onClick={onClose}
-              className="text-zinc-800 text-[0.65rem] text-xs cursor-pointer"
-            />
-            <div>Edit Card</div>
-          </div>
-        </div>
+
         <CreateAndEditCardForm
           initialValues={initialValues}
           employees={employees}
@@ -161,8 +150,6 @@ const handleSubmit = async (
           onClose={onClose}
           isEdit={true}
         />
-      </div>
-    </div>
   );
 };
 

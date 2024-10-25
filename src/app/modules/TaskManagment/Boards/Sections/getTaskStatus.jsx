@@ -32,4 +32,14 @@ const getStatusIconColor = (date) => {
   }
 };
 
-export { getStatusClass, getStatus ,getStatusIconColor};
+const getLabelColor = (label="Design")=>{
+  if(label="Design"){
+    return "#FF9A1F";
+  } else if(label ="QA"){
+    return "#5C5E64"
+  } else {
+    return "#fff"
+  }
+}
+
+export { getStatusClass, getStatus ,getStatusIconColor, getLabelColor};
