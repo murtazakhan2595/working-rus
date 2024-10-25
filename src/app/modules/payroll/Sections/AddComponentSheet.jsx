@@ -42,6 +42,7 @@ import {
   AlertDialogTrigger,
 } from "../../../../src/@/components/ui/alert-dialog";
 import { deleteEarnAndDeduction } from "app/hooks/payroll";
+import moment from "moment";
 
 const initialEarningAndDeduction = {
   name: "",
@@ -339,8 +340,13 @@ const ViewComponent = ({ component, handleComponentDelete, setIsEdit }) => {
             </div>
           </CardContent>
           <CardFooter className="flex items-center px-6 pt-3.5 pb-3 w-full text-xs font-medium  border-t  max-md:px-5 ">
-            <div className="flex-1 shrink self-stretch my-auto w-full min-w-[240px] ">
-              Created on: <time dateTime="2023-11-23">November 23, 2023</time>
+            <div>
+              <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
+                Created on:
+              </span>
+              <span className="text-[#8b8d98] text-xs font-normal  leading-3">
+                {` ${moment(component?.created_at).format("MMMM DD, YYYY")}`}
+              </span>
             </div>
           </CardFooter>
         </Card>
