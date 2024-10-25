@@ -34,8 +34,6 @@ const Terminations = ({ userProfile, filterData }) => {
     onPageChange: onPageChange,
   };
 
-  console.log("filterData", filterData);
-  console.log("options", options);
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -80,7 +78,7 @@ const Terminations = ({ userProfile, filterData }) => {
         <Card>
           <CardContent>
             <TableCustom
-              data={Terminations?.results.slice(0, 1) || []}
+              data={Terminations?.results || []}
               columns={ExitRequestColumns(
                 handleRowClicked,
                 () => {

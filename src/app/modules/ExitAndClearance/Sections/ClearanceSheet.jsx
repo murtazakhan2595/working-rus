@@ -20,6 +20,7 @@ const ClearanceSheet = ({
     const payroll = await getEmployeePayroll({
       filterData: { employee_id: employeeId },
     });
+    console.log("payroll", payroll);
     if (payroll) {
       setPayroll(payroll.results[0]);
     }
@@ -27,6 +28,7 @@ const ClearanceSheet = ({
   useEffect(() => {
     fetchEmployePayrollID();
   }, [employeeId]);
+  console.log("payroll", payroll);
 
   const formSheetData = {
     triggerText: null,
@@ -43,7 +45,7 @@ const ClearanceSheet = ({
       ...payroll,
       is_eos_applicable: true,
     });
-    if (response) {
+    if (response && empPayroll) {
       handleOptionSelect("initiated clearance");
       setIsOpen(false);
       toast.success("Final Settlement saved successfully");
@@ -74,7 +76,7 @@ const ClearanceSheet = ({
       >
         {(props) => (
           <form onSubmit={props.handleSubmit} className="my-6 space-y-6">
-            {console.log("props", props)}
+            {/* {console.log("props", props)} */}
             <div className={`flex w-full flex-col rounded-lg`}>
               <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium  tracking-[0px] text-zinc-900">
                 <div className="flex h-[7px] flex-shrink-0 items-end px-px">
@@ -176,6 +178,7 @@ const ClearanceSheet = ({
               <Button
                 variant="outline"
                 size="lg"
+                type="button"
                 onClick={() => {
                   setIsOpen(false);
                 }}
