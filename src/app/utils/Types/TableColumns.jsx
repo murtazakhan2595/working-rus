@@ -694,7 +694,7 @@ export const SalarySetupColumns = [
   },
   {
     dataField: "salary",
-    text: "Salary",
+    text: "Monthly Salary",
   },
   {
     dataField: "salary_type",
