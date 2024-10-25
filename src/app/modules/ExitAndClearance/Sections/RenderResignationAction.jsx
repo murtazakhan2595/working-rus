@@ -132,7 +132,6 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                     className="cursor-pointer"
                   >
                     <StatusCircleLabel label={"Accept"} status={"approved"} />{" "}
-                    1111
                   </DropdownMenuLabel>
                 )}
                 {HRApproval !== "Rejected" && resignationCurrentStep < 3 && (
@@ -141,7 +140,6 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                     className="cursor-pointer"
                   >
                     <StatusCircleLabel label={"Reject"} status={"rejected"} />{" "}
-                    2222
                   </DropdownMenuLabel>
                 )}
                 {resignationCurrentStep < 3 && (
@@ -154,7 +152,6 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                       label={"Clearance"}
                       status={"Clearance"}
                     />{" "}
-                    3333
                   </DropdownMenuLabel>
                 )}
                 {resignationCurrentStep !== 4 && (
