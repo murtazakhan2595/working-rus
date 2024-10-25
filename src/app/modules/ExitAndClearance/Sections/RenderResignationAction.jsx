@@ -17,17 +17,26 @@ import { Status, ExitStatusCurrentStep } from "./index";
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { toast } from "react-toastify";
 import { StatusCircleLabel } from "components/StatusLabel";
+import ClearanceSheet from "./ClearanceSheet";
 
 const RenderResignationAction = ({ row, reload, viewMode }) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
+  const [open, setIsOpen] = useState(null);
+
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const status = row.status_resignation;
   const toggleDropdown = (index) => {
     setOpenDropdownRow(index === openDropdownRow ? null : index);
   };
+
+  console.log("application:", row);
   const HRApproval = Status(row.status_resignation, 2);
   const managerApproval = Status(status, 1);
   const resignationCurrentStep = ExitStatusCurrentStep(status);
+  console.log("HRApproval", HRApproval);
+  console.log("managerApproval", managerApproval);
+  console.log("resignationCurrentStep", resignationCurrentStep);
+
   const handleOptionSelect = async (status) => {
     try {
       if (row) {
@@ -52,6 +61,14 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
   };
   return (
     <div>
+      {open && (
+        <ClearanceSheet
+          isOpen={open}
+          setIsOpen={setIsOpen}
+          handleOptionSelect={handleOptionSelect}
+          employeeId={row.employee_id}
+        />
+      )}
       {loggedInUser.role === 2 && resignationCurrentStep > 1 ? (
         !viewMode && (
           <div style={{ padding: "0px 12px" }}>
@@ -92,6 +109,7 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                 {managerApproval !== "Approved" && (
                   <DropdownMenuLabel
                     onClick={() => handleOptionSelect("accepted by manager")}
+                    className="cursor-pointer"
                   >
                     <StatusCircleLabel label={"Accept"} status={"approved"} />
                   </DropdownMenuLabel>
@@ -99,61 +117,70 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                 {managerApproval !== "Rejected" && (
                   <DropdownMenuLabel
                     onClick={() => handleOptionSelect("rejected by manager")}
+                    className="cursor-pointer"
                   >
                     <StatusCircleLabel label={"Reject"} status={"rejected"} />
                   </DropdownMenuLabel>
                 )}
               </>
             )}
-            {loggedInUser.role === 3 ||
-              (loggedInUser.role === 1 && (
-                <>
-                  {HRApproval !== "Approved" && (
-                    <DropdownMenuLabel
-                      onClick={() => handleOptionSelect("accepted by hr")}
-                    >
-                      <StatusCircleLabel label={"Accept"} status={"approved"} />
-                    </DropdownMenuLabel>
-                  )}
-                  {HRApproval !== "Rejected" && (
-                    <DropdownMenuLabel
-                      onClick={() => handleOptionSelect("rejected by hr")}
-                    >
-                      <StatusCircleLabel label={"Reject"} status={"rejected"} />
-                    </DropdownMenuLabel>
-                  )}
-                  {resignationCurrentStep < 3 && (
-                    <DropdownMenuLabel
-                      onClick={() => handleOptionSelect("initiated clearance")}
-                    >
-                      <StatusCircleLabel
-                        label={"Clearance"}
-                        status={"Clearance"}
-                      />
-                    </DropdownMenuLabel>
-                  )}
-                  {resignationCurrentStep !== 4 && (
-                    <DropdownMenuLabel
-                      onClick={() => {
-                        if (!row.clearance_report)
-                          toast.error(
-                            "Please upload the clearance report to proceed",
-                            {
-                              position: toast.POSITION.TOP_RIGHT,
-                              autoClose: 5000,
-                            }
-                          );
-                        else handleOptionSelect("exit interview");
-                      }}
-                    >
-                      <StatusCircleLabel
-                        label={"Exit Interview"}
-                        status={"exit"}
-                      />
-                    </DropdownMenuLabel>
-                  )}
-                </>
-              ))}
+            {(loggedInUser.role === 3 || loggedInUser.role === 1) && (
+              <>
+                {HRApproval !== "Approved" && resignationCurrentStep < 3 && (
+                  <DropdownMenuLabel
+                    onClick={() => handleOptionSelect("accepted by hr")}
+                    className="cursor-pointer"
+                  >
+                    <StatusCircleLabel label={"Accept"} status={"approved"} />{" "}
+                    1111
+                  </DropdownMenuLabel>
+                )}
+                {HRApproval !== "Rejected" && resignationCurrentStep < 3 && (
+                  <DropdownMenuLabel
+                    onClick={() => handleOptionSelect("rejected by hr")}
+                    className="cursor-pointer"
+                  >
+                    <StatusCircleLabel label={"Reject"} status={"rejected"} />{" "}
+                    2222
+                  </DropdownMenuLabel>
+                )}
+                {resignationCurrentStep < 3 && (
+                  <DropdownMenuLabel
+                    // onClick={() => handleOptionSelect("initiated clearance")}
+                    onClick={() => setIsOpen(true)}
+                    className="cursor-pointer"
+                  >
+                    <StatusCircleLabel
+                      label={"Clearance"}
+                      status={"Clearance"}
+                    />{" "}
+                    3333
+                  </DropdownMenuLabel>
+                )}
+                {resignationCurrentStep !== 4 && (
+                  <DropdownMenuLabel
+                    className="cursor-pointer"
+                    onClick={() => {
+                      if (!row.clearance_report)
+                        toast.error(
+                          "Please upload the clearance report to proceed",
+                          {
+                            position: toast.POSITION.TOP_RIGHT,
+                            autoClose: 5000,
+                          }
+                        );
+                      else handleOptionSelect("exit interview");
+                    }}
+                  >
+                    <StatusCircleLabel
+                      label={"Exit Interview"}
+                      status={"exit"}
+                    />{" "}
+                    4444
+                  </DropdownMenuLabel>
+                )}
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       )}
