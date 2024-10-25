@@ -201,9 +201,9 @@ const SheetOnBorading = ({
         <div className="flex flex-col ">
           <div className="flex-grow ">
             <div className="p-0">
-              <CardHeader className="prose">
+              {/* <CardHeader className="prose">
                 <CardTitle> {id ? "Update" : "Add"} Employee</CardTitle>
-              </CardHeader>
+              </CardHeader> */}
               <Formik
                 initialValues={formData}
                 innerRef={formRef}
@@ -297,7 +297,7 @@ const SheetOnBorading = ({
                               error={props.errors?.work_email}
                               touch={props.touched?.work_email}
                               value={props.values?.work_email}
-                              label={"Email"}
+                              label={"Work Email"}
                               required={true}
                               onChange={(field, value) => {
                                 props.handleChange(field)(value);
@@ -365,7 +365,7 @@ const SheetOnBorading = ({
                             value={props.values?.residential_address}
                             label={"Address"}
                             required={true}
-                            maxRows={1}
+                            minRows={3}
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
                             }}

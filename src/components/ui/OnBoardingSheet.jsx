@@ -34,7 +34,7 @@ const OnBoardingSheet = () => {
   const formSheetData = {
     triggerText: 'Add New Employee',
     title: 'Add New Employee',
-    description: 'Please fill out the form below to add a new employee.',
+    description: null,
     footer: null,
   };
 

@@ -36,7 +36,7 @@ const Projects = ({ userProfile }) => {
   const [AllProjects, setAllProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [viewMode, setViewMode] = useState("table");
+  const [viewMode, setViewMode] = useState("grid");
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,

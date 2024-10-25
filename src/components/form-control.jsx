@@ -867,7 +867,8 @@ const TextAreaInput = ({
           autoComplete="Off"
           placeholder={label ? "Enter " + label : placeholder}
           value={value}
-          rows={maxRows ?? 1}
+          rows={maxRows ?? 3}
+          
           disabled={disabled}
           className={`h-auto ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {
