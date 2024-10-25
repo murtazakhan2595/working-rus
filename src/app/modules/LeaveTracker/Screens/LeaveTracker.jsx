@@ -74,7 +74,7 @@ const LeaveTracker = ({ userProfile, departments }) => {
   const fetchLeaveTypesData = async () => {
     setIsTypesLoading(true);
     const leaveTypesData = await getLeaveComponents({
-      filterData: { ...typesFilterData },
+      filterData: { ...typesFilterData, employee_id_and_org: "null,true" },
     });
     if (leaveTypesData) {
       setLeaveTypesData(leaveTypesData);

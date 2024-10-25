@@ -116,8 +116,6 @@ const ViewLeaveSheet = ({
     }
   };
 
-  console.log("attachment", attachment);
-
   return (
     <div>
       <SheetComponent
@@ -127,6 +125,15 @@ const ViewLeaveSheet = ({
         setIsOpen={onClose}
         width="500px"
       >
+        <EmployeeDataInfo
+          name={leaveApplication?.leave_request?.employee_info?.first_name}
+          email={leaveApplication?.leave_request?.employee_info?.work_email}
+          src={
+            leaveApplication?.leave_request?.employee_info?.profile_picture
+              ?.file
+          }
+          id={leaveApplication?.leave_request?.employee_info?.id}
+        />
         <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
           <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
             <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
@@ -179,7 +186,7 @@ const ViewLeaveSheet = ({
             <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
               <div>
                 <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
-                  Created on:
+                  Sent on:
                 </span>
                 <span className="text-[#8b8d98] text-xs font-normal  leading-3">
                   {` ${moment(leaveApplication?.created_at).format(
