@@ -32,6 +32,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const [selectedLeaveType, setSelectedLeaveType] = useState("");
   const [selectedNoOfDays, setSelectedNoOfDays] = useState(0);
   const [leaveAfter, setLeaveAfter] = useState(null);
+  const [maxDays, setMaxDays] = useState(0);
 
   const leaveRequest = {
     component_type: "",
@@ -69,18 +70,20 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const getAvailableLeaves = async (leaveTypeId) => {
     const leavesAfter = await getRemainingLeaves(leaveTypeId, userProfile.id);
     setLeaveAfter(leavesAfter);
+
     const leaveType = LeaveTypeOptions.find(
       (item) => item.value === leaveTypeId
     );
+    setMaxDays(leaveType.max_days);
     if (leavesAfter !== null && selectedNoOfDays > 0) {
       console.log(
         "this is the thing",
         leaveType.max_days,
         leavesAfter,
         selectedNoOfDays,
-        leavesAfter - selectedNoOfDays
+        leavesAfter + selectedNoOfDays > leaveType.max_days
       );
-      if (leavesAfter - selectedNoOfDays < 0) {
+      if (selectedNoOfDays > leavesAfter) {
         toast.error("You don't have enough leaves to apply for this request");
       }
     }
@@ -97,7 +100,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
 
   const handleFormSubmit = async (values) => {
     if (leaveAfter !== null && selectedNoOfDays > 0) {
-      if (leaveAfter - selectedNoOfDays < 0) {
+      if (selectedNoOfDays > leaveAfter) {
         toast.error("You don't have enough leaves to apply for this request");
         return;
       }
@@ -107,7 +110,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
     // Step 1: Check if there is an attachment and save it
     if (newAttachment && newAttachment.file) {
       const attachment = await saveAttachment({
-        attachment: newAttachment.file,
+        attachment: newAttachment,
       });
 
       if (attachment) {

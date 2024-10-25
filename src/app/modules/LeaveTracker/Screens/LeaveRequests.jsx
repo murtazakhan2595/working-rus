@@ -102,7 +102,6 @@ const LeaveRequests = ({ userProfile }) => {
       options,
     });
     if (leaveTransaction) {
-      console.log("leaveTransaction", leaveTransaction);
       setLeaveTransaction(leaveTransaction);
     }
     setIsLeaveTransactionLoading(false);

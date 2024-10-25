@@ -46,7 +46,7 @@ const MyLeaveTracker = ({ userProfile }) => {
       value: 0,
     },
   ]);
-  const [leaveTransaction, setLeaveTransaction] = useState();
+  const [leaveTransaction, setLeaveTransaction] = useState([]);
 
   const fetchLeaveTransaction = async () => {
     setIsLeaveTransactionLoading(true);
@@ -130,7 +130,6 @@ const MyLeaveTracker = ({ userProfile }) => {
     });
   };
 
-  console.log("filterData", filterData);
   return (
     <>
       {isLoading ? (
