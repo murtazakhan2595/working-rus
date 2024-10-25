@@ -142,7 +142,11 @@ const MyLeaveTracker = ({ userProfile }) => {
                 My Leave Tracker
               </div>
             </div>
-            {<ApplyLeaveSheet reload={fetchData} />}
+            <ApplyLeaveSheet
+              reload={async () => {
+                await Promise.all([fetchData(), fetchLeaveTransaction()]);
+              }}
+            />
           </div>
           <div className="p-6">
             <section className="flex flex-wrap gap-4 items-center">

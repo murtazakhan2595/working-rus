@@ -68,12 +68,17 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   }, [userProfile]);
 
   const getAvailableLeaves = async (leaveTypeId) => {
-    const leavesAfter = await getRemainingLeaves(leaveTypeId, userProfile.id);
-    setLeaveAfter(leavesAfter);
+    let leavesAfter = await getRemainingLeaves(leaveTypeId, userProfile.id);
 
     const leaveType = LeaveTypeOptions.find(
       (item) => item.value === leaveTypeId
     );
+    if (leavesAfter === -1) {
+      setLeaveAfter(leaveType.max_days);
+      leavesAfter = leaveType.max_days;
+    } else {
+      setLeaveAfter(leavesAfter);
+    }
     setMaxDays(leaveType.max_days);
     if (leavesAfter !== null && selectedNoOfDays > 0) {
       console.log(
@@ -81,7 +86,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
         leaveType.max_days,
         leavesAfter,
         selectedNoOfDays,
-        leavesAfter + selectedNoOfDays > leaveType.max_days
+        selectedNoOfDays > leavesAfter
       );
       if (selectedNoOfDays > leavesAfter) {
         toast.error("You don't have enough leaves to apply for this request");

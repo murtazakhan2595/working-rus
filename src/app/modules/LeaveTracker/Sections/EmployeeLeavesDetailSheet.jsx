@@ -7,8 +7,14 @@ import { X } from "lucide-react";
 import AddTypeSheet from "./AddTypeSheet";
 import { getLeaveComponentsWithUsed } from "app/hooks/leaveTracker";
 import { getLeaveComponents } from "app/hooks/leaveTracker";
+import { connect, useSelector } from "react-redux";
 
-const EmployeeLeavesDetailSheet = ({ employeeLeaves, isOpen, setIsOpen }) => {
+const EmployeeLeavesDetailSheet = ({
+  employeeLeaves,
+  isOpen,
+  setIsOpen,
+  userProfile,
+}) => {
   const [isEdit, setIsEdit] = useState(false);
   const [componentsWithUsed, setComponentsWithUsed] = useState([]);
   const [leaveComponents, setLeaveComponents] = useState([]);
@@ -66,6 +72,7 @@ const EmployeeLeavesDetailSheet = ({ employeeLeaves, isOpen, setIsOpen }) => {
             employeeLeaves={employeeLeaves}
             setIsEdit={setIsEdit}
             componentsWithUsed={componentsWithUsed}
+            userProfile={userProfile}
           />
         )}
       </SheetComponent>
@@ -73,7 +80,12 @@ const EmployeeLeavesDetailSheet = ({ employeeLeaves, isOpen, setIsOpen }) => {
   );
 };
 
-const ViewDetails = ({ employeeLeaves, setIsEdit, componentsWithUsed }) => {
+const ViewDetails = ({
+  employeeLeaves,
+  setIsEdit,
+  componentsWithUsed,
+  userProfile,
+}) => {
   function LeaveBar({
     used,
     total,
@@ -106,16 +118,18 @@ const ViewDetails = ({ employeeLeaves, setIsEdit, componentsWithUsed }) => {
           id={employeeLeaves.employee_id}
           src={employeeLeaves.profile_picture?.file}
         />
-        <Button
-          className="bg-white border border-[#e8e8ec]"
-          onClick={() => {
-            setIsEdit(true);
-          }}
-        >
-          <div className="text-center text-[#1c2024] text-xs font-semibold">
-            Edit Leaves
-          </div>
-        </Button>
+        {userProfile.role !== 2 && (
+          <Button
+            className="bg-white border border-[#e8e8ec]"
+            onClick={() => {
+              setIsEdit(true);
+            }}
+          >
+            <div className="text-center text-[#1c2024] text-xs font-semibold">
+              Edit Leaves dsfdsf
+            </div>
+          </Button>
+        )}
       </div>
       <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-8">
         <h3 className="text-sm font-semibold text-neutral-800 mb-4">
@@ -229,4 +243,11 @@ const EditDetails = ({
   );
 };
 
-export default EmployeeLeavesDetailSheet;
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+    departments: state.common.departments,
+  };
+};
+
+export default connect(mapStateToProps)(EmployeeLeavesDetailSheet);

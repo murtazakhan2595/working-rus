@@ -320,7 +320,7 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
         );
 
         const latestTransaction = transactionResponse.data?.results[0];
-        console.log("latestTransaction", latestTransaction, max_days);
+        // console.log("latestTransaction", latestTransaction, max_days);
         // Calculate the used leaves (max_days - balance_after)
         const used =
           latestTransaction && latestTransaction?.balance_after !== null
@@ -457,10 +457,11 @@ const getRemainingLeaves = async (leaveTypeId, employeeId) => {
       }
     );
     const latestTransaction = transactionResponse.data?.results[0];
+    console.log("latestTransaction", latestTransaction);
     if (latestTransaction) {
       return latestTransaction.balance_after;
-    } else {
-      return 0;
+    } else if (latestTransaction === undefined) {
+      return -1;
     }
   } catch (error) {
     console.error("Error fetching remaining leaves:", error);
