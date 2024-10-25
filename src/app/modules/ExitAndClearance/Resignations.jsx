@@ -75,7 +75,6 @@ const Resignations = React.memo(({ filterData }) => {
     setSelectedResignationId(row.id);
     setIsOpen(true);
   };
-  console.log("Resignations", Resignations);
   return (
     <>
       {loading ? (

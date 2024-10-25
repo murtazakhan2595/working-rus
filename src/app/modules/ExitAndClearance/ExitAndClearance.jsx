@@ -34,6 +34,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const [filterData, setFilterData] = useState({
     exit_category: "resignation",
     status_resignation: StatusList(),
+    status_termination: StatusList(false),
     ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
   const fetchData = async () => {
@@ -87,6 +88,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
       });
     } else if (tab === "Terminations") {
       setFilterData({
+        status_termination: StatusList(false),
         ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
 
         exit_category: "termination",

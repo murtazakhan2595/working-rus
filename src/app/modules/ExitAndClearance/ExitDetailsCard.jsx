@@ -13,7 +13,8 @@ import {
 
 import { Formik } from "formik";
 import { FileInput } from "components/form-control";
-import { Col, Row, Form, Button } from "reactstrap";
+import { Col, Row, Form } from "reactstrap";
+
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { ExitStatusCurrentStep } from "./Sections";
 import { TerminationReason } from "utils/getValuesFromTables";
@@ -30,6 +31,7 @@ import {
   ViewDetailBox,
   ViewAttachmentDetail,
 } from "./Sections/DetailViewPanel";
+import { Button } from "../../../components/ui/button";
 const ExitDetailsCard = ({
   onClose,
   resignationId,
@@ -77,6 +79,7 @@ const ExitDetailsCard = ({
     }
   };
   const handleSubmit = async (data) => {
+    console.log("Data not showing up", data);
     try {
       if (data) {
         const payload = {
@@ -186,6 +189,10 @@ const ExitDetailsCard = ({
                       ? resignation?.resignation_letter
                       : resignation?.termination_letter,
                   },
+                  {
+                    name: `${resignation?.emp_name} - Clearance report`,
+                    file: resignation?.clearance_report,
+                  },
                 ]}
               />
             </section>
@@ -193,61 +200,48 @@ const ExitDetailsCard = ({
               isResignation
                 ? resignation?.status_resignation
                 : resignation?.status_termination
-            ) >= 3 && (
-              <section className="my-3">
-                <Row>
-                  <Col lg={12}>
-                    <Formik
-                      initialValues={resignation}
-                      innerRef={formRef}
-                      enableReinitialize={true}
-                      onSubmit={(values, { resetForm }) => {
-                        handleSubmit(values, resetForm);
-                      }}
-                      validate={(values) => {
-                        const errors = {};
-                        if (!values.clearance_report) {
-                          errors.clearance_report =
-                            "Please upload clearance report to proceed";
-                        }
-                        return errors;
-                      }}
-                    >
-                      {(props) => (
-                        <Form onSubmit={props.handleSubmit}>
-                          <Row>
-                            <Col md="12">
-                              <FileInput
-                                name="clearance_report"
-                                label=" Clearance Report or drag it here"
-                                acceptType=".pdf"
-                                error={props.errors?.clearance_report}
-                                touch={props.touched?.clearance_report}
-                                value={props.values?.clearance_report}
-                                required={true}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                              />
-                            </Col>
-                          </Row>
-                          <Row className="mt-5">
-                            <Col md="4">
-                              <Button
-                                type="submit"
-                                className="btn btn-dark w-100"
-                              >
-                                {isResignation ? "Resigned" : "Terminated"}
-                              </Button>
-                            </Col>
-                          </Row>
-                        </Form>
-                      )}
-                    </Formik>
-                  </Col>
-                </Row>
-              </section>
-            )}
+            ) >= 3 &&
+              !resignation?.clearance_report && (
+                <section className="my-6">
+                  <Formik
+                    initialValues={resignation}
+                    innerRef={formRef}
+                    enableReinitialize={true}
+                    onSubmit={(values, { resetForm }) => {
+                      handleSubmit(values, resetForm);
+                    }}
+                    validate={(values) => {
+                      const errors = {};
+                      if (!values.clearance_report) {
+                        errors.clearance_report =
+                          "Please upload clearance report to proceed";
+                      }
+                      return errors;
+                    }}
+                  >
+                    {(props) => (
+                      <form onSubmit={props.handleSubmit}>
+                        <FileInput
+                          name="clearance_report"
+                          label=" Clearance Report or drag it here"
+                          acceptType=".pdf"
+                          error={props.errors?.clearance_report}
+                          touch={props.touched?.clearance_report}
+                          value={props.values?.clearance_report}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+
+                        <Button type="submit" variant="default">
+                          Save
+                        </Button>
+                      </form>
+                    )}
+                  </Formik>
+                </section>
+              )}
           </div>
         </div>
       </SheetContent>

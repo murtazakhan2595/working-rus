@@ -276,15 +276,7 @@ export const ExitRequestColumns = (
   }
   return columns;
 };
-/**
- * EmployeeResignationsColumns
- *
- * Returns an array of column definitions for the Employee Resignations table.
- *
- * @param {function} handleRowClicked - A function to handle row clicks.
- * @param {function} reload - A function to reload the table.
- * @returns {array} An array of column definitions.
- */
+
 export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
   const columns = [
     {
@@ -712,9 +704,11 @@ export const SalarySetupColumns = [
     dataField: "is_new",
     text: "",
     formatter: (cell, row) => {
+      console.log("INFO", row);
       const showNewBadge = cell === null || cell === true;
       const showEosBadge = row.is_eos_applicable === true;
-      if (cell === null || cell === true) {
+      console.log("INFO", showNewBadge, showEosBadge);
+      if (showNewBadge || showEosBadge) {
         return (
           <div class="flex gap-2">
             {showNewBadge && (
