@@ -85,7 +85,11 @@ const SalarySetupDetail = () => {
     //
     if (response) {
       setPayrollId(response?.results[0]?.id);
-      setMonthlyGrossSalary(response?.results[0]?.basic_salary);
+      if (response?.results[0]?.salary_type === "hourly") {
+        setMonthlyGrossSalary(response?.results[0]?.hourly_rate);
+      } else {
+        setMonthlyGrossSalary(response?.results[0]?.basic_salary);
+      }
       const earnAndDeductions = await getEmployeeEarnAndDeduction({
         filterData: { employee_payroll: response?.results[0]?.id },
       });
@@ -109,8 +113,7 @@ const SalarySetupDetail = () => {
       );
     }
 
-    
-    if(isEos){
+    if (isEos) {
       const payslips = await getPayslip({
         filterData: { employee_payroll: response?.results[0]?.id },
       });
@@ -153,17 +156,26 @@ const SalarySetupDetail = () => {
     setTotalDeductions(totalDeductions);
   };
   const handleSalarySave = async () => {
-    const payload = {
-      id: payrollId,
-      basic_salary: monthlyGrossSalary,
-      is_new: false,
-    };
+    let payload = {};
+    if (payrollType === "hourly") {
+      payload = {
+        id: payrollId,
+        hourly_rate: monthlyGrossSalary,
+        is_new: false,
+      };
+    } else {
+      payload = {
+        id: payrollId,
+        basic_salary: monthlyGrossSalary,
+        is_new: false,
+      };
+    }
+
     const response = await saveEmployeePayroll(payload);
     if (response) {
       toast.success("Salary Saved Successfully");
     }
   };
-
 
   return (
     <div className="container p-4 mx-auto">
@@ -219,17 +231,16 @@ const SalarySetupDetail = () => {
                   </p>
                 </div>
               </div>
-              {isEos &&
-                payslips &&(
-                  <Button
-                    className="bg-[#1c2024] text-white align-bottom self-end	"
-                    onClick={() => {
-                      navigate(`/payslip-eos/${payslips.id}?employeeID=${id}`);
-                    }}
-                  >
-                    Download EOS
-                  </Button>
-                )}
+              {isEos && payslips && (
+                <Button
+                  className="bg-[#1c2024] text-white align-bottom self-end	"
+                  onClick={() => {
+                    navigate(`/payslip-eos/${payslips.id}?employeeID=${id}`);
+                  }}
+                >
+                  Download EOS
+                </Button>
+              )}
             </CardContent>
           </Card>
           <Card className="mb-4">
@@ -241,7 +252,11 @@ const SalarySetupDetail = () => {
             <CardContent className="flex flex-col items-start gap-4 pt-6 space-x-4">
               <div className="text-lg font-semibold text-black">
                 {" "}
-                {isEos ? "Gross Amount" : "Monthly Gross Salary"}
+                {isEos
+                  ? "Gross Amount"
+                  : payrollType === "hourly"
+                  ? "Hourly Rate"
+                  : "Monthly Gross Salary"}
               </div>
               <div className="flex items-center gap-6 w-full">
                 <TextInput
@@ -263,7 +278,7 @@ const SalarySetupDetail = () => {
                 {console.log("PAYROLL TYPE", payrollType)}
                 {payrollType === "hourly" ? (
                   <div class="text-[#8b8d98] text-sm">
-                    Hourly Rate : AED {monthlyGrossSalary * 80}
+                    Monthly Salary : AED {monthlyGrossSalary * 80}
                   </div>
                 ) : payrollType === "monthly" ? (
                   <div class="text-[#8b8d98] text-sm">
