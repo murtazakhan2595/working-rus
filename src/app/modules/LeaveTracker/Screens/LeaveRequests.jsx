@@ -31,7 +31,7 @@ import {
 import { LeaveAplicationColumns } from "app/utils/Types/TableColumns";
 import { LeaveTrackerOptions } from "data/Data";
 
-const LeaveRequests = ({ userProfile }) => {
+const LeaveRequests = ({ userProfile, departments }) => {
   const [selectedLeaveApplication, setSelectedLeaveApplication] =
     useState(null);
   const [filterData, setFilterData] = useState({});
@@ -115,6 +115,12 @@ const LeaveRequests = ({ userProfile }) => {
   }, [filterData, options]);
 
   const handleFilterChange = (filterName, filterValue) => {
+    if (filterName === "department") {
+      const department = departments.find(
+        (option) => option.value === parseInt(filterValue)
+      );
+      filterValue = department?.label;
+    }
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
@@ -184,13 +190,20 @@ const LeaveRequests = ({ userProfile }) => {
               filters={[
                 {
                   type: "select-one",
+                  option: departments,
+                  name: "department",
+                  width: "max-w-[130px]",
+                  placeholder: "Department",
+                },
+                {
+                  type: "select-two",
                   option: LeaveTrackerOptions,
                   name: "status",
                   width: "max-w-[130px]",
                   placeholder: "Status",
                 },
                 {
-                  type: "select-two",
+                  type: "select-three",
                   width: "max-w-[130px]",
                   option: leaveTypesData.map((leave) => ({
                     value: leave.id,
@@ -240,6 +253,7 @@ const LeaveRequests = ({ userProfile }) => {
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
+    departments: state.common.departments,
   };
 };
 

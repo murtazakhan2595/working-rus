@@ -1096,6 +1096,13 @@ export const LeaveAplicationColumns = [
   },
   {
     dataField: "",
+    text: "Department",
+    formatter: (cell, row) => (
+      <>{row?.leave_request?.employee_info?.department}</>
+    ),
+  },
+  {
+    dataField: "",
     text: "Leave Dates",
     formatter: (cell, row) => (
       <>
