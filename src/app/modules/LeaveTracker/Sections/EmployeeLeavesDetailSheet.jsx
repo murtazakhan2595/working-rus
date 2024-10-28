@@ -177,6 +177,7 @@ const EditDetails = ({
 }) => {
   const [openSheet, setOpenSheet] = useState(false);
   const [selectedLeaveComponent, setSelectedLeaveComponent] = useState(null);
+  console.log("opensheetvalue in leave details", openSheet);
 
   return (
     <>
@@ -228,14 +229,13 @@ const EditDetails = ({
           + Add Another Leave Type
         </Button>
       </div>
-      {openSheet && (
-        <AddTypeSheet
-          openSheet={openSheet}
-          isEmployeeBased={true}
-          employeeId={employeeLeaves.employee_id}
-          reload={fetchData}
-        />
-      )}
+      <AddTypeSheet
+        openSheet={openSheet}
+        isEmployeeBased={true}
+        employeeId={employeeLeaves.employee_id}
+        reload={fetchData}
+        setOpenSheet={setOpenSheet}
+      />
       {selectedLeaveComponent && (
         <AddTypeSheet type={selectedLeaveComponent} reload={fetchData} />
       )}
