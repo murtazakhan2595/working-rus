@@ -135,12 +135,22 @@ const SheetOnBorading = ({
     console.log(data);
     // return
     setIsLoading(true);
-    const employeePayroll = {
-      basic_salary: data.salary,
-      salary_type: data.salary_type,
-      employee: empId,
-      is_new: true,
-    };
+    let employeePayroll = {};
+    if (data.salary_type === "hourly") {
+      employeePayroll = {
+        hourly_rate: data.salary,
+        salary_type: data.salary_type,
+        employee: empId,
+        is_new: true,
+      };
+    } else {
+      employeePayroll = {
+        basic_salary: data.salary,
+        salary_type: data.salary_type,
+        employee: empId,
+        is_new: true,
+      };
+    }
     try {
       // Check if an API call is already in progress
       data.indirect_report = data?.indirect_report
@@ -201,9 +211,9 @@ const SheetOnBorading = ({
         <div className="flex flex-col ">
           <div className="flex-grow ">
             <div className="p-0">
-              <CardHeader className="prose">
+              {/* <CardHeader className="prose">
                 <CardTitle> {id ? "Update" : "Add"} Employee</CardTitle>
-              </CardHeader>
+              </CardHeader> */}
               <Formik
                 initialValues={formData}
                 innerRef={formRef}
@@ -250,21 +260,21 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
-                          <div className="space-y-2">
-                            <TextInput
-                              name={"username"}
-                              error={props.errors?.username}
-                              touch={props.touched?.username}
-                              value={props.values?.username}
-                              label={"User Name"}
-                              required={true}
-                              onChange={(field, value) => {
-                                props.handleChange(field)(value);
-                                validateUsername(value);
-                              }}
-                            />
-                          </div>
-                        
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"username"}
+                            error={props.errors?.username}
+                            touch={props.touched?.username}
+                            value={props.values?.username}
+                            label={"User Name"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                              validateUsername(value);
+                            }}
+                          />
+                        </div>
+
                         <div className="space-y-2">
                           <TextInput
                             name={"first_name"}
@@ -291,56 +301,56 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
-                          <div className="space-y-2">
-                            <EmailInput
-                              name={"work_email"}
-                              error={props.errors?.work_email}
-                              touch={props.touched?.work_email}
-                              value={props.values?.work_email}
-                              label={"Email"}
-                              required={true}
-                              onChange={(field, value) => {
-                                props.handleChange(field)(value);
-                                setEmail && setEmail(value);
-                                validateEmail(value);
+                        <div className="space-y-2">
+                          <EmailInput
+                            name={"work_email"}
+                            error={props.errors?.work_email}
+                            touch={props.touched?.work_email}
+                            value={props.values?.work_email}
+                            label={"Email"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                              setEmail && setEmail(value);
+                              validateEmail(value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <div>
+                            <Label htmlFor="password">
+                              <span className="text-red-600">* </span>Password
+                            </Label>
+                            <Input
+                              type="password"
+                              maxLength="20"
+                              id="password"
+                              name="password"
+                              autoComplete="Off"
+                              placeholder={"Enter User Name"}
+                              onChange={(option) => {
+                                props.handleChange("password")(option);
                               }}
+                              value={
+                                props.values?.password?.length <= 20
+                                  ? props.values?.password
+                                  : ""
+                              }
+                              className={
+                                props.errors?.password &&
+                                props.touched?.password
+                                  ? "is-invalid"
+                                  : ""
+                              }
                             />
+                            {props.errors?.password &&
+                              props.touched?.password && (
+                                <div className="text-red-600 invalid-feedback">
+                                  {props.errors?.password}
+                                </div>
+                              )}
                           </div>
-                          <div className="space-y-2">
-                            <div>
-                              <Label htmlFor="password">
-                                <span className="text-red-600">* </span>Password
-                              </Label>
-                              <Input
-                                type="password"
-                                maxLength="20"
-                                id="password"
-                                name="password"
-                                autoComplete="Off"
-                                placeholder={"Enter User Name"}
-                                onChange={(option) => {
-                                  props.handleChange("password")(option);
-                                }}
-                                value={
-                                  props.values?.password?.length <= 20
-                                    ? props.values?.password
-                                    : ""
-                                }
-                                className={
-                                  props.errors?.password &&
-                                  props.touched?.password
-                                    ? "is-invalid"
-                                    : ""
-                                }
-                              />
-                              {props.errors?.password &&
-                                props.touched?.password && (
-                                  <div className="text-red-600 invalid-feedback">
-                                    {props.errors?.password}
-                                  </div>
-                                )}
-                            </div>
-                          </div>
+                        </div>
                         <div className="space-y-2">
                           <PhoneNumberInput
                             name={"mobile_no"}
@@ -365,7 +375,7 @@ const SheetOnBorading = ({
                             value={props.values?.residential_address}
                             label={"Address"}
                             required={true}
-                            maxRows={1}
+                            minRows={3}
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
                             }}
@@ -535,19 +545,6 @@ const SheetOnBorading = ({
                       <h3 className="text-lg font-semibold">Salary Details</h3>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="space-y-2">
-                          <TextInput
-                            name={"salary"}
-                            error={props.errors?.salary}
-                            touch={props.touched?.salary}
-                            value={props.values?.salary}
-                            label={"Employee Salary"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
                           <SelectComponent
                             name={"salary_type"}
                             options={salaryTypeOptions}
@@ -558,6 +555,23 @@ const SheetOnBorading = ({
                             required={true}
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"salary"}
+                            error={props.errors?.salary}
+                            touch={props.touched?.salary}
+                            value={props.values?.salary}
+                            label={
+                              props.values.salary_type === "hourly"
+                                ? "Employee Hourly Salary"
+                                : "Employee Monthly Salary"
+                            }
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
                             }}
                           />
                         </div>

@@ -1,226 +1,176 @@
-
-import { DashboardLeaveTrackerColumns } from "app/modules/Dashboard/Screens/Sections";
-import { StatusLabel } from "components";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import FormateLeaveTrackerName from "../FormateLeaveTrackerName";
-import { getFilteredLeaveApplication } from "app/hooks/leaveManagment";
-import { FilterInput } from "components/form-control";
-import { getDesignationList } from "app/hooks/general";
-import { RenderLeaveStatusDropdown } from "./Sections";
-import CustomTable from "components/CustomTable";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
+
+import moment from "moment";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../../../components/ui/card";
 import { Button } from "components/ui/button";
+import { getLeaveTransaction } from "app/hooks/leaveTracker";
+import { PageLoader } from "components";
+import { connect } from "react-redux";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../../../../../src/@/components/ui/table";
+import { LeaveAplicationColumns } from "app/utils/Types/TableColumns";
+import CustomTable from "components/CustomTable";
+import { FilterInput } from "components/form-control";
+import { LeaveTrackerOptions } from "data/Data";
+import { getLeaveComponents } from "app/hooks/leaveTracker";
 
+const LeaveTrackerOverview = ({ userProfile }) => {
+  const [isLeaveTransactionLoading, setIsLeaveTransactionLoading] =
+    useState(true);
+  const [leaveTransaction, setLeaveTransaction] = useState([]);
+  const [filterData, setFilterData] = useState({});
+  const [leaveTypesData, setLeaveTypesData] = useState([]);
 
-export default function LeaveTrackerOverview() {
-  const [applications, setApplications] = useState([]);
-  const [ loading,setLoading] = useState(true);
-  const [filterData] = useState({});
-  const [filterApplications, setFilterApplications] = useState({});
-  const [designations, setDesignations] = useState([]);
-  const [onLeaveToday, setOnLeaveToday] = useState([]);
-  const [onLeaveNextWeek, setOnLeaveNextWeek] = useState([]);
-  const [allApplications, setAllApplications] = useState([]);
-  const [pending_leaves, setPendingLeaves] = useState(0);
-  const [filterOption, setFilterOption] = useState("All Requests");
-
-
-  const applyFilters = (applications, filterApplications) => {
-    let filteredData = applications;
-    if (filterApplications.id_and_first_name) {
-      const searchTerm = filterApplications.id_and_first_name.toLowerCase();
-      filteredData = filteredData.filter((item) => {
-        const id = item.employee_id.toString();
-        const name = item.name.toLowerCase();
-        return id.includes(searchTerm) || name.includes(searchTerm);
-      });
+  const fetchLeaveTransaction = async () => {
+    setIsLeaveTransactionLoading(true);
+    const leaveTransaction = await getLeaveTransaction({
+      filterData,
+      options: { page: 1, sizePerPage: 5 },
+    });
+    if (leaveTransaction) {
+      console.log("leaveTransaction", leaveTransaction);
+      setLeaveTransaction(leaveTransaction);
     }
-    if (filterApplications.department_position) {
-      const position = parseInt(filterApplications.department_position, 10);
-      filteredData = filteredData.filter((item) => {
-        return Number(item.position) === position;
-      });
-    }
-    if (filterOption !== "All Requests") {
-      filteredData = filteredData.filter((item) => {
-        console.log("filterOption", filterOption);
-        console.log("status_hr", item.status_hr);
-        if (filterOption === "Approved") {
-          return item.status_hr === "Approved by HR";
-        } else if (filterOption === "Pending") {
-          return item.status_hr === "Pending";
-        } else if (filterOption === "Rejected") {
-          return item.status_hr === "Declined by HR";
-        }
-        return true;
-      });
-    }
-    return filteredData;
+    setIsLeaveTransactionLoading(false);
   };
 
-  const getApplications = async () => {
-    setLoading(true);
-    try {
-      const result = await getFilteredLeaveApplication({
-        filterData,
-      });
-      setAllApplications(result.data);
-      setOnLeaveToday(result.onLeaveToday);
-      setOnLeaveNextWeek(result.onLeaveNextWeek);
-      setApplications(result.data);
-      setPendingLeaves(result.pending_leaves);
-    } catch (error) {
-      console.error("Error fetching applications:", error);
-    } finally {
-      setLoading(false);
+  const fetchData = async () => {
+    const leaveTypesData = await getLeaveComponents({});
+    if (leaveTypesData) {
+      setLeaveTypesData(leaveTypesData);
     }
   };
+
   useEffect(() => {
-    getApplications();
+    fetchLeaveTransaction();
   }, [filterData]);
 
   useEffect(() => {
-    const filteredApplications = applyFilters(
-      allApplications,
-      filterApplications
-    );
-    setApplications(filteredApplications);
-  }, [filterApplications, filterOption]);
-
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const designationResponse = await getDesignationList();
-        setDesignations(designationResponse);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchLists();
+    fetchData();
   }, []);
 
   const handleFilterChange = (filterName, filterValue) => {
-    setFilterApplications((prevFilters) => {
+    setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
+
+      if (filterName === "status") {
+        // Add both action_hr and action_manager
+        if (filterValue === "") {
+          // If filterValue is empty, remove both keys
+          delete updatedFilters["action_hr"];
+          delete updatedFilters["action_manager"];
+        } else {
+          // Set both action_hr and action_manager to the filterValue
+          updatedFilters["action_hr"] = filterValue;
+          updatedFilters["action_manager"] = filterValue;
+        }
       } else {
-        updatedFilters[filterName] = filterValue;
+        // Handle other filters normally
+        if (filterValue === "") {
+          delete updatedFilters[filterName];
+        } else {
+          updatedFilters[filterName] = filterValue;
+        }
       }
+
       return updatedFilters;
     });
   };
-
-  
- 
-  
   return (
     <>
-    <Card className="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-1 ">
-      <CardHeader className="items-start p-6">
-        <CardTitle className="flex flex-row justify-between w-full">
-        <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg ">
-            Leave Tracker 
-          </div>
-          <Button variant="outline">
-          <Link to="/leave-request-management">
-          
-          View Detail
-       
-          </Link>
-          </Button>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-col items-end gap-4 md:flex-row lg:flex-row lg:justify-end">
-        <FilterInput
+      <Card className="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-1 ">
+        <CardHeader className="items-start p-6">
+          <CardTitle className="flex flex-row justify-between w-full">
+            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg ">
+              Leave Tracker
+            </div>
+            <div className="flex items-center gap-3">
+              <FilterInput
                 filters={[
                   {
-                    type: "search",
-                    placeholder: "Name/ID",
-                    name: "id_and_first_name",
-                    width: "",
-                    height: "",
-                    className:
-                      "w-full md:w-[100%] lg:w-[100%]",
+                    type: "select-one",
+                    option: LeaveTrackerOptions,
+                    name: "status",
+                    width: "max-w-[130px]",
+                    placeholder: "Status",
                   },
                   {
-                    type: "select",
-                    option: designations,
-                    name: "department_position",
-                    placeholder: "Designation",
-                    width: "w-32",
-                    className: "w-full md:w-[100%] lg:w-[100%]l ",
+                    type: "select-two",
+                    width: "max-w-[130px]",
+                    option: leaveTypesData.map((leave) => ({
+                      value: leave.id,
+                      label: leave.name,
+                    })),
+                    name: "leave_component_id",
+                    placeholder: "Leave Type",
                   },
                 ]}
                 onChange={handleFilterChange}
               />
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-              <RenderLeaveStatusDropdown
-                status={filterOption}
-                setFilterOption={setFilterOption}
-              />
-              
-              <StatusLabel className=""
-                status={"warning"}
-                value={`${pending_leaves} Pending`}
-              />
-              </div>
-        
-               
-          </div>
-          <CustomTable className=""
-              showHeader={true}
-              columns={DashboardLeaveTrackerColumns}
-              data={applications?.slice(0, 5)}
+              <Button variant="outline">
+                <Link to="/leave-request">View Detail</Link>
+              </Button>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLeaveTransactionLoading ? (
+            <PageLoader />
+          ) : (
+            <CustomTable
+              data={leaveTransaction?.results || []}
+              columns={LeaveAplicationColumns}
               pagination={false}
-              
             />
-      </CardContent>     
+          )}
+        </CardContent>
       </Card>
-      
-    
 
       <Card className="w-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1">
         <CardHeader>
           <CardTitle>
-          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
-            Who's on Leave{""}
-          </div>
+            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
+              Who's on Leave{""}
+            </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          
-        <div className="p-4 border-b-1 bg-mauve-200">Today</div>
-    {onLeaveToday?.map((application) => (
-      <div className="flex flex-col gap-2 p-4">
-        <div className="">{application.start_date}</div>
-        <FormateLeaveTrackerName row={application} />
-      </div>
-    ))}
-    <div className="p-4 border-b-1 bg-mauve-200">Next Week</div>
-    {onLeaveNextWeek?.map((application) => (
-      <div className="flex flex-col gap-2 p-4">
-        <div className="">
-          {application.start_date}
-        </div>
-        <FormateLeaveTrackerName row={application} />
-      </div>
-    ))}
-          </CardContent>
-
-        
+        {/* <CardContent>
+          <div className="p-4 border-b-1 bg-mauve-200">Today</div>
+          {onLeaveToday?.map((application) => (
+            <div className="flex flex-col gap-2 p-4">
+              <div className="">{application.start_date}</div>
+              <FormateLeaveTrackerName row={application} />
+            </div>
+          ))}
+          <div className="p-4 border-b-1 bg-mauve-200">Next Week</div>
+          {onLeaveNextWeek?.map((application) => (
+            <div className="flex flex-col gap-2 p-4">
+              <div className="">{application.start_date}</div>
+              <FormateLeaveTrackerName row={application} />
+            </div>
+          ))}
+        </CardContent> */}
       </Card>
-    
-    
-  
-  </>
+    </>
   );
-}
+};
 
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
 
-
-
-
+export default connect(mapStateToProps)(LeaveTrackerOverview);

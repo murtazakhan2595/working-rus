@@ -6,6 +6,7 @@ import { RxCross2 } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { Badge } from "../components/ui/badge";
+import { CircleCheck, CircleDot, X } from "lucide-react";
 
 export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   if (!label) return "";
@@ -20,7 +21,6 @@ export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
         {iconDot && (
           <span className={`w-3 h-3 rounded-full mr-2 ${iconColor}`}></span>
         )}
-        
       </div>
       {/* <Badge variant="secondary" className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full">
 
@@ -62,9 +62,11 @@ export const StatusLabel = ({ status, value }) => {
         className={`${className} h-[22px] px-3 py-[3px] rounded-[999px] justify-center items-center gap-1.5 inline-flex`}
         // style={{ color: "#323333", minWidth: "100px", fontWeight: "normal" }}
       >
-          <div className={`${className} font-semibold text-xs font-['Inter'] leading-3`}>
-        {value ?? status}
-          </div>
+        <div
+          className={`${className} font-semibold text-xs font-['Inter'] leading-3`}
+        >
+          {value ?? status}
+        </div>
       </span>
     </>
   );
@@ -130,6 +132,49 @@ export const StatusViewIcon = ({ status }) => {
   else if (status === "Pending")
     return (
       <BsCircleFill
+        className={`${className} bg-[#E8E8E8]`}
+        style={{
+          ...{ style },
+          ...{ color: "#D9D9D9", border: "3px solid #E8E8E8" },
+        }}
+      />
+    );
+  else return <></>;
+};
+export const Status = (status) => {
+  if (!status) return "";
+  if (status.includes("Approved")) return "Approved";
+  else if (status.includes("Declined")) return "Rejected";
+  else if (status.includes("Pending")) return "Pending";
+  else return "Viewed";
+};
+
+export const getDecision = (status) => {
+  if (status === "Approved") return "Approved";
+  else if (status === "Denied") return "Denied";
+  else if (status === "Pending") return "Awaiting Decision";
+  else return status;
+};
+
+export const StatusIcon = ({ status }) => {
+  if (!status) return <></>;
+  const className = "text-[20px] d-inline rounded-full mr-5";
+  const style = { padding: "3px" };
+  status = Status(status);
+  if (status === "Approved")
+    return (
+      <CircleCheck
+        className={`${className} bg-[#00C483] text-white`}
+        style={style}
+      />
+    );
+  else if (status === "Rejected")
+    return (
+      <X className={`${className} bg-[#EA4335] text-white`} style={style} />
+    );
+  else if (status === "Pending")
+    return (
+      <CircleDot
         className={`${className} bg-[#E8E8E8]`}
         style={{
           ...{ style },

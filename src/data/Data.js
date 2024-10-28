@@ -4,7 +4,6 @@ import { countries } from "country-data";
 import { getAllCountries } from "countries-and-timezones";
 import {
   fetchDepartments,
-  fetchLeaveTypes,
   fetchDesignations,
   fetchProjects,
   fetchOrganizations,
@@ -327,6 +326,40 @@ export const PriorityListIcons = [
   },
 ];
 
+export const ProjectStatusList = [
+  {
+    value: "upcoming",
+    label: (
+      <div className="flex justify-center gap-x-2 text-mauve-900 ">
+        Upcoming
+      </div>
+    ),
+  },
+  {
+    value: "ongoing",
+    label: (
+      <div className="flex justify-center text-yellow-500 gap-x-2">Ongoing</div>
+    ),
+  },
+  {
+    value: "onhold",
+    label: (
+      <div className="flex justify-center text-red-500 gap-x-2">On Hold</div>
+    ),
+  },
+  {
+    value: "completed",
+    label: (
+      <div className="flex justify-center text-red-500 gap-x-2">Completed</div>
+    ),
+  },
+  {
+    value: "closed",
+    label: (
+      <div className="flex justify-center text-red-500 gap-x-2">Closed</div>
+    ),
+  },
+];
 export const status2Options = [
   {
     value: "Pending",
@@ -626,6 +659,11 @@ export const ClaimExpenseTypeOptions = [
   { value: 8, label: "Miscellaneous" },
 ];
 
+export const LeaveTrackerOptions = [
+  { value: "Pending", label: "Pending" },
+  { value: "Approved", label: "Approved" },
+  { value: "Declined", label: "Declined" },
+];
 
 // Dummy data
 export const employeeData = {
@@ -657,17 +695,19 @@ export const salarySummary = {
   "Current CTC": "AED 7,901.51",
   "Salary Package": "Mid-level",
 };
+
 export const handleUpdateProfile = (dispatch, data) => {
+  console.log("data", data);
   const userprofile = {
     id: data.id,
     username: data.username,
     is_filled: data.is_filled,
     role: data.user_role,
+    organization: data.organization,
   };
   dispatch(setUserProfile(userprofile));
   dispatch(fetchEmployees());
   dispatch(fetchDepartments());
-  dispatch(fetchLeaveTypes());
   dispatch(fetchDesignations());
   dispatch(fetchOrganizations());
   dispatch(fetchReportingManagers());

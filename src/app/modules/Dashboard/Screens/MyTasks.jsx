@@ -52,7 +52,7 @@ import {
 } from "../../../../src/@/components/ui/dropdown-menu";
 import CustomTable from "components/CustomTable";
 import { StatusLabel } from "components";
-import { Status } from "app/modules/LeaveManagment/Sections";
+// import { Status } from "app/modules/LeaveManagment/Sections";
 
 export default function MyTasks() {
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -70,7 +70,6 @@ export default function MyTasks() {
   const [openStatus, setOpenStatus] = React.useState(false);
   const [selectedProject, setSelectedProject] = React.useState(false);
   const [value, setValue] = React.useState("");
-
 
   function mergeTasksWithProjects(tasks, projects) {
     return tasks.map((task) => {
@@ -186,14 +185,15 @@ export default function MyTasks() {
       },
     },
   ];
- 
 
   return (
     <>
       <Card className="">
         <CardHeader className="items-start pb-0">
           <CardTitle className="flex flex-row justify-between w-full">
-            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">My Tasks</div>
+            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
+              My Tasks
+            </div>
             <Button variant="secondary">
               <Link
                 to="#"
@@ -306,14 +306,12 @@ export default function MyTasks() {
         </CardContent>
       </Card>
 
-     
-
       {/* Modal for creating tasks */}
       {openCreateCard && (
         <CreateCardModal
           open={openCreateCard}
           setOpen={setOpenCreateCard}
-          onSave = {() => {
+          onSave={() => {
             fetchTasks(true, AllProjects);
           }}
         />
@@ -330,65 +328,70 @@ const getStatusLabel = (status) => {
       return "In Progress";
     case "delay":
       return "Delay";
-      case "pending":
+    case "pending":
       return "Pending";
     default:
       return "In Progress";
-      
   }
 };
 function RenderTask({ tasks }) {
   // console.log(tasks, "HELLO TASKS")
   return (
     <CustomTable
-    showHeader={false}
-    pagination={false}
-    columns={[
-      {
-        text: "Title",
-        dataField: "name",
-        formatter: (cell, render) => (
-          <div className="flex flex-col w-full gap-2">
-            <div className="flex flex-row w-full gap-4">
-              <div className="font-semibold text-[#111827]">{render.project_name}</div>
-              <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center">
-                {getStatusLabel(render.status)}
+      showHeader={false}
+      pagination={false}
+      columns={[
+        {
+          text: "Title",
+          dataField: "name",
+          formatter: (cell, render) => (
+            <div className="flex flex-col w-full gap-2">
+              <div className="flex flex-row w-full gap-4">
+                <div className="font-semibold text-[#111827]">
+                  {render.project_name}
+                </div>
+                <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center">
+                  {getStatusLabel(render.status)}
+                </div>
+              </div>
+              <div className="text-mauve-900">
+                Due on {moment(render?.due_date).format("MMMM DD")} - Created by
+                Name of employee
               </div>
             </div>
-            <div className="text-mauve-900">
-              Due on {moment(render?.due_date).format("MMMM DD")} - Created by
-              Name of employee
-            </div>
-          </div>
-        ),
-      },
-      {
-        text: "View Project",
-        formatter: (cell) => (
-          <Button variant="outline" size="sm" className="rounded-sm text-[#000] font-semidbold">
-            <Link to="#">View Project</Link>
-          </Button>
-        ),
-      },
-      {
-        text: "Action",
-        formatter: () => (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button aria-haspopup="true" size="icon" variant="ghost">
-                <MoreHorizontal className="w-4 h-4" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Delete</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ),
-      },
-    ]}
+          ),
+        },
+        {
+          text: "View Project",
+          formatter: (cell) => (
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-sm text-[#000] font-semidbold"
+            >
+              <Link to="#">View Project</Link>
+            </Button>
+          ),
+        },
+        {
+          text: "Action",
+          formatter: () => (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button aria-haspopup="true" size="icon" variant="ghost">
+                  <MoreHorizontal className="w-4 h-4" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem>Edit</DropdownMenuItem>
+                <DropdownMenuItem>Delete</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ),
+        },
+      ]}
       data={tasks?.slice(0, 5).map((task) => ({
         ...task,
         due_date: moment(task.due_date).format("MMMM D, YYYY"),

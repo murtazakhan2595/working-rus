@@ -104,11 +104,11 @@ const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
         <div className="mb-4">
           <Button
             variant="ghost"
-            onClick={() => {}}
+            onClick={() => {navigate(-1)}}
             className="p-4 text-xl text-balance"
           >
             <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
-            Detail
+            Go Back
           </Button>
         </div>
         <div className="my-5">

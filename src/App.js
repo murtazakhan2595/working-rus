@@ -15,12 +15,10 @@ import {
   JobApplicationForm,
 } from "./app/modules/RecruitmentData";
 import {
-  LeaveRequest,
   LeaveTracker,
-  CreateLeaveRequest,
-  LeaveAllotement,
-  LeaveHistory,
-} from "app/modules/LeaveManagment";
+  MyLeaveTracker,
+  LeaveRequests,
+} from "app/modules/LeaveTracker";
 import { Projects, Board } from "app/modules/TaskManagment";
 import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
@@ -44,7 +42,6 @@ import ComingSoon from "./app/modules/comingSoon/ComingSoon.jsx";
 import PageLoader from "./components/PageLoader.jsx";
 import Services from "../src/app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
-import Notifications from "app/modules/LeaveManagment/Screens/Notifications";
 import EmployeesExit from "app/modules/EmployeesExit";
 import { ExitAndClearance } from "app/modules/ExitAndClearance";
 import "./index.css";
@@ -166,8 +163,9 @@ function App() {
               />
               <Route exact path="/test" element={<Test />} />
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-              <Route path="/request-leave" element={<CreateLeaveRequest />} />
-              <Route path="/notifications" element={<Notifications />} />
+              {/* <Route path="/leave-request" element={<CreateLeaveRequest />} /> */}
+
+              {/* <Route path="/notifications" element={<Notifications />} /> */}
               <Route path="/my-team" element={<ComingSoon />} />
               <Route path="/my-task" element={<ComingSoon />} />
               <Route path="/calender" element={<ComingSoon />} />
@@ -178,7 +176,7 @@ function App() {
               <Route path="/recognition" element={<ComingSoon />} />
               <Route path="/my-travel-details" element={<ComingSoon />} />
               <Route path="/letter-request" element={<ComingSoon />} />
-              <Route path="/leave-history" element={<LeaveHistory />} />
+              {/* <Route path="/leave-history" element={<LeaveHistory />} /> */}
               <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
               <Route path="/leave-calender" element={<ComingSoon />} />
               <Route path="/my-payroll" element={<MyPayroll />} />
@@ -187,6 +185,7 @@ function App() {
               <Route path="/payslip-eos/:id" element={<Payslip />} />
               <Route exact path="/exit-employee" element={<EmployeesExit />} />
               <Route path="/my-claims" element={<MyClaims />} />
+              <Route path="/my-leave-tracker" element={<MyLeaveTracker />} />
 
               {userRole === 1 && (
                 <>
@@ -218,10 +217,10 @@ function App() {
                     element={<CreateUpdateEmployee />}
                   />
 
-                  <Route
+                  {/* <Route
                     path="/leave-allotement"
                     element={<LeaveAllotement />}
-                  />
+                  /> */}
 
                   <Route
                     path="/edit-employee/:id"
@@ -278,7 +277,8 @@ function App() {
                   <Route path="/career-planning" element={<ComingSoon />} />
                   <Route path="/on-boarding" element={<ComingSoon />} />
                   <Route path="/employee-evaluation" element={<ComingSoon />} />
-                  <Route path="/leave-requests" element={<LeaveRequest />} />
+                  <Route path="/leave-request" element={<LeaveRequests />} />
+                  <Route path="/leave-records" element={<LeaveTracker />} />
                   <Route path="/claim-request" element={<ClaimRequest />} />
                   <Route
                     path="/exit-clearance"

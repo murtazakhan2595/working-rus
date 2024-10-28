@@ -281,6 +281,13 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
     setIsDeleteModalOpen(false);
   };
 
+  const formSheetData = {
+    triggerText: "",
+    title: "Add Card",
+    description: null,
+    footer: null,
+  };
+
   return (
     <div
       className="flex flex-col min-w-[290px] max-w-[320px] mb-5"
@@ -346,9 +353,10 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
         />
       )} */}
       <SheetComponent
+      {...formSheetData}
       isOpen={openCreateCard}
       setIsOpen={setOpenCreateCard}
-      width="860px"
+      width="500px"
       >
           <CreateCard
           onClose={() => {

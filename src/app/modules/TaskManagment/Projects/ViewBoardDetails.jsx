@@ -1,24 +1,131 @@
-import React from "react";
+import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { CiEdit } from "react-icons/ci";
 import dots from "assets/images/dots.svg";
 import { getRandomColor } from "utils/renderValues";
+import Avatar from "components/ui/Avatar";
+import SheetComponent from "components/ui/SheetComponent";
+import { Button } from "components/ui/button";
+import { Card } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
+import moment from "moment";
+import { Members, MembersList } from "../Sections";
+import { Badge } from "components/ui/badge";
+import CreateEditProject from "./CreateEditProject";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { deleteProject } from "app/hooks/taskManagment";
 
+const ViewBoardDetails = ({
+  isOpen,
+  setIsOpen,
+  onClose,
+  project,
+  fetchData,
+}) => {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
-  const openEditProjectModal= () => {
+  const formSheetData = {
+    triggerText: "View Details",
+    title: "View Details",
+    description: null,
+    footer: null,
+  };
+
+  const onEdit = () => {
     setIsEditMode(true);
   };
+  const confirmDelete = async () => {
+    const response = await deleteProject(project.id);
+    fetchData(true);
+    setIsDeleteModalOpen(false);
+    setIsOpen(false);
+  };
+
   return (
-    <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll">
+    <SheetComponent
+      {...formSheetData}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      width="500px"
+    >
+      {isEditMode && project && (
+        <CreateEditProject
+          project={project}
+          isEditMode={true}
+          isOpen={isEditMode}
+          setIsOpen={setIsEditMode}
+          reload={fetchData}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <AlertDialogue
+          isOpen={isDeleteModalOpen}
+          setIsOpen={setIsDeleteModalOpen}
+          handleContinue={confirmDelete}
+        />
+      )}
+      <div className="flex justify-between items-center gap-4">
+        <div className="flex items-center gap-4">
+          <img
+            src={project?.profile?.file}
+            alt="Testing"
+            className="h-[50px] w-[50px] object-cover border-2 border-gray-400 rounded-full"
+          />
+          <p>{project?.name}</p>
+        </div>
+        <div className="flex gap-4">
+          <Button variant="outline" onClick={onEdit}>
+            Edit
+          </Button>
+          <Button variant="outline" onClick={() => setIsDeleteModalOpen(true)}>
+            Delete
+          </Button>
+        </div>
+      </div>
+
+      <div className="mt-4 border border-gray-400 rounded-md">
+        <div className="p-4">
+          <p>Project Description </p>
+          <div className="flex gap-4 mt-4">
+            <p className="text-[14px]">Description</p>
+            <p className="text-[14px]">{project?.description}</p>
+          </div>
+        </div>
+
+        <div className="bg-gray-400 p-2">
+          <p className="text-[14px]">
+            Created On: {moment(project?.created_at)?.format("MMM D, YYYY")}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 border border-gray-400 rounded-md p-4">
+        <p>Project Members</p>
+        <p className="text-[14px]">
+          Colors:{" "}
+          <span
+            className={`bg-[${project?.color}] w-6 h-6 rounded-full border border-gray-300 cursor-pointer block`}
+          />
+        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-[14px]">Members: </p>
+          <MembersList members={project?.project_members} />
+        </div>
+        <div className="flex items-center gap-2">
+          {" "}
+          <p className="text-[14px]">Status: </p>
+          <Badge
+            variant="secondary"
+            className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
+          >
+            {project?.status || "Ongoing"}
+          </Badge>
+        </div>
+      </div>
+      {/* <div className="fixed top-0 right-0 max-w-[35%] w-[35%] h-full z-10 overflow-y-auto hideScroll">
       <div className="bg-white h-full fixed  max-w-[35%] w-[35%] top-0 right-0  shadow px-[50px] py-10 flex flex-col gap-7">
         <div className="flex-col justify-start items-start gap-2.5 flex">
-          <RxCross2
-            className="self-end cursor-pointer"
-            onClick={() => {
-              onClose();
-            }}
-          />
           <div className="inline-flex items-end self-stretch justify-between">
             <div className="flex-col justify-start items-start gap-2.5 inline-flex">
               <div className="text-zinc-800 text-[25px] font-bold ">
@@ -79,9 +186,9 @@ const ViewBoardDetails = ({ onClose, project, setIsEditMode }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div> */}
+    </SheetComponent>
   );
 };
 
 export default ViewBoardDetails;
-

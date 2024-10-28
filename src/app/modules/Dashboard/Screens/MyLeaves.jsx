@@ -1,10 +1,8 @@
-import { getLeaveApplications } from "app/hooks/leaveManagment";
-import { Status } from "app/modules/LeaveManagment/Sections";
+// import { getLeaveApplications } from "app/hooks/leaveManagment";
+// import { Status } from "app/modules/LeaveManagment/Sections";
 import { StatusLabel } from "components";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { FaPlus } from "react-icons/fa";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -25,30 +23,78 @@ import {
   TableCell,
   TableFooter,
 } from "../../../../src/@/components/ui/table";
-import { Badge } from "../../../../components/ui/badge";
-export default function MyLeaves() {
-  const [leave, setLeave] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const userProfile = useSelector((state) => state.user.userProfile);
+import { getLeaveTransaction } from "app/hooks/leaveTracker";
+import { connect } from "react-redux";
+import { PageLoader } from "components";
+import { FilterInput } from "components/form-control";
+import { LeaveTrackerOptions } from "data/Data";
+import { getLeaveComponents } from "app/hooks/leaveTracker";
+import ApplyLeaveSheet from "app/modules/LeaveTracker/Sections/ApplyLeaveSheet";
+const MyLeaves = ({ userProfile }) => {
+  const [isLeaveTransactionLoading, setIsLeaveTransactionLoading] =
+    useState(true);
+  const [leaveTransaction, setLeaveTransaction] = useState([]);
+  const [filterData, setFilterData] = useState({
+    employee_id: userProfile.id,
+  });
+  const [leaveTypesData, setLeaveTypesData] = useState([]);
 
-  console.log(leave);
+  const fetchLeaveTransaction = async () => {
+    setIsLeaveTransactionLoading(true);
+    const leaveTransaction = await getLeaveTransaction({
+      filterData,
+      options: { page: 1, sizePerPage: 7 },
+    });
+    if (leaveTransaction) {
+      console.log("leaveTransaction", leaveTransaction);
+      setLeaveTransaction(leaveTransaction);
+    }
+    setIsLeaveTransactionLoading(false);
+  };
+
+  const fetchData = async () => {
+    const leaveTypesData = await getLeaveComponents({
+      filterData: { employee_id_and_org: `${userProfile.id},${true}` },
+    });
+    if (leaveTypesData) {
+      setLeaveTypesData(leaveTypesData);
+    }
+  };
+
   useEffect(() => {
-    const fetchdata = async () => {
-      try {
-        setIsLoading(true);
-        const applicationsData = await getLeaveApplications({
-          filterData: { employee_id: userProfile.id },
-        });
-        if (applicationsData) {
-          setLeave(applicationsData);
+    fetchLeaveTransaction();
+  }, [filterData]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+
+      if (filterName === "status") {
+        // Add both action_hr and action_manager
+        if (filterValue === "") {
+          // If filterValue is empty, remove both keys
+          delete updatedFilters["action_hr"];
+          delete updatedFilters["action_manager"];
+        } else {
+          // Set both action_hr and action_manager to the filterValue
+          updatedFilters["action_hr"] = filterValue;
+          updatedFilters["action_manager"] = filterValue;
         }
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
+      } else {
+        // Handle other filters normally
+        if (filterValue === "") {
+          delete updatedFilters[filterName];
+        } else {
+          updatedFilters[filterName] = filterValue;
+        }
       }
-    };
-    fetchdata();
-  }, [userProfile]);
+
+      return updatedFilters;
+    });
+  };
 
   return (
     <>
@@ -58,54 +104,102 @@ export default function MyLeaves() {
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
               My Leaves
             </div>
-            <Button variant="secondary">
-              <Link to="/request-leave">Add Request</Link>
-            </Button>
+            <div className="flex items-center gap-3">
+              <FilterInput
+                filters={[
+                  {
+                    type: "select-one",
+                    option: LeaveTrackerOptions,
+                    name: "status",
+                    width: "max-w-[130px]",
+                    placeholder: "Status",
+                  },
+                  {
+                    type: "select-two",
+                    width: "max-w-[130px]",
+                    option: leaveTypesData.map((leave) => ({
+                      value: leave.id,
+                      label: leave.name,
+                    })),
+                    name: "leave_component_id",
+                    placeholder: "Leave Type",
+                  },
+                ]}
+                onChange={handleFilterChange}
+              />
+              <ApplyLeaveSheet reload={fetchLeaveTransaction} />
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {leave.count > 0 &&
-            leave.results
-              .slice(0, 5)
-              .map((leave) => <RenderMyLeaves leave={leave} key={leave.id} />)}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Leave Type</TableHead>
+                <TableHead>Days</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            {isLeaveTransactionLoading ? (
+              <TableBody>
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <div className="w-full flex items-center justify-center">
+                      <PageLoader />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            ) : (
+              <TableBody>
+                {leaveTransaction?.results?.map((leave, index) => (
+                  <TableRow key={index} className="cursor-pointer">
+                    <TableCell>{leave?.component_name}</TableCell>
+                    <TableCell>{leave?.leave_request?.no_of_days}</TableCell>
+                    <TableCell>
+                      {`${moment(leave?.leave_request?.start_date).format(
+                        "MMM D"
+                      )} - ${moment(leave?.leave_request?.end_date).format(
+                        "MMM D"
+                      )}`}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+                          leave?.action_hr === "Approved" &&
+                          leave?.action_manager === "Approved"
+                            ? "bg-emerald-50 text-teal-700"
+                            : leave?.action_hr === "Declined" ||
+                              leave?.action_manager === "Declined"
+                            ? "bg-red-50 text-red-700"
+                            : "bg-[#f0f0f3] text-[#7f838d]"
+                        }`}
+                      >
+                        {leave?.action_hr === "Approved" &&
+                        leave?.action_manager === "Approved"
+                          ? "Approved"
+                          : leave?.action_hr === "Declined" ||
+                            leave?.action_manager === "Declined"
+                          ? "Declined"
+                          : "Pending"}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            )}
+          </Table>
         </CardContent>
       </Card>
     </>
   );
-}
-
-const RenderMyLeaves = ({ leave }) => {
-  return (
-    <>
-      <Table>
-        <TableBody>
-          <TableRow className="border-b">
-            <TableCell className="">
-              <div className="flex flex-row gap-4">
-                <div className="border rounded-md flex flex-col items-center justify-center p-2 w-[60px] h-[60px]">
-                  <span className="text-base font-semibold">
-                    {leave.total_leave}
-                  </span>
-                  <span className="text-base">days</span>
-                </div>
-                <div className="flex flex-col justify-center gap-1">
-                  <div className="text-[#111827] font-semibold">{`${moment(
-                    leave.start_date
-                  ).format("MMM DD")} - ${moment(leave.end_date).format(
-                    "MMM DD"
-                  )}`}</div>
-                  <div className="text-base font-medium">
-                    {leave.leave_component_name}
-                  </div>
-                </div>
-              </div>
-            </TableCell>
-            <TableCell className="py-4 text-right">
-              <StatusLabel status={Status(leave.status_hr)} />
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </>
-  );
 };
+
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+
+export default connect(mapStateToProps)(MyLeaves);

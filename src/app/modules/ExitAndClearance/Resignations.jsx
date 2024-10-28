@@ -41,6 +41,8 @@ const Resignations = React.memo(({ filterData }) => {
       setLoading(true);
       const response = await getEmployeesResignations({ filterData, options });
       console.log("response", response);
+      console.log("filterData", filterData);
+      console.log("options", options);
       setResignations(response);
     } catch (e) {
       console.error(e);
@@ -75,7 +77,8 @@ const Resignations = React.memo(({ filterData }) => {
     setSelectedResignationId(row.id);
     setIsOpen(true);
   };
-  console.log("Resignations", Resignations);
+
+  console.log("Resignations INFO INFO", Resignations);
   return (
     <>
       {loading ? (

@@ -11,7 +11,7 @@ import {
   UserRoles,
 } from "data/Data";
 import { useSelector } from "react-redux";
-import  moment  from 'moment';
+import moment from "moment";
 import { ClaimExpenseTypeOptions } from "data/Data";
 
 function getCountryFullName(countryCode) {
@@ -43,23 +43,14 @@ function getWorkLocation(workLocation) {
   );
   return response ? response.label : "";
 }
-function LeaveType({ value }) {
-  const LeaveTypes = useSelector((state) => state.common.leaveTypes);
-  const response = LeaveTypes.find(
-    (option) => option.value === parseInt(value)
-  );
-  return <>{response ? response.label : "N/A"}</>;
-}
+
 function TerminationStatus(status) {
   const response = TerminationStatusOptions.find(
     (option) => option.value === status
   );
   return response ? response.label : status ?? "N/A";
 }
-function LeaveTypeOfEmployee({ value, list }) {
-  const response = list.find((option) => option.value === parseInt(value));
-  return <>{response ? response.label : "N/A"}</>;
-}
+
 // Function to get department name from department value
 function DepartmentName({ value }) {
   const departments = useSelector((state) => state.common.departments);
@@ -95,7 +86,7 @@ function EmployeeID({ value }) {
   return <>{employee}</>;
 }
 
-function getEmployeeid(value){
+function getEmployeeid(value) {
   const employee = value ? `TXB-${value.toString().padStart(4, "0")}` : "N/A";
   return employee;
 }
@@ -166,8 +157,6 @@ export {
   DepartmentName,
   DesignationName,
   ManagerName,
-  LeaveType,
-  LeaveTypeOfEmployee,
   EmployeeName,
   EmployeeID,
   getEmployeeid,

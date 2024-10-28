@@ -13,27 +13,41 @@ import { useDispatch } from "react-redux";
 import { fetchProjects } from "state/slices/CommonSlice";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
+import { ProjectStatusList } from "data/Data";
+import { ImageInput } from "components/form-control";
 
 const ProjectForm = ({
   employees,
-  onClose,
+  reload,
   isEditMode,
   projectId,
   isOpen,
   setIsOpen,
+  editProject,
 }) => {
   const formRef = useRef();
   let dispatch = useDispatch();
-  const [initialValues, setInitialValues] = useState(Project);
+  const [initialValues, setInitialValues] = useState(
+    editProject || {
+      ...Project,
+      color: "", // Add color field
+    }
+  );
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [imageError, setImageError] = useState(null);
+  const [selectedColor, setSelectedColor] = useState("#f7f7f7"); // Default color
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
       const projectDetails = await getProjectById(projectId);
       if (isMounted) {
-        setInitialValues(projectDetails);
+        setInitialValues({
+          ...projectDetails,
+          color: projectDetails.color || "", // Fetch color if available
+        });
+        setSelectedColor(projectDetails.color || "#f7f7f7");
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
@@ -55,14 +69,18 @@ const ProjectForm = ({
   const handleSubmit = async (formData) => {
     setIsLoading(true);
     try {
-      const response = await addProject(formData);
+      const response = await addProject({
+        ...formData,
+        color: selectedColor, // Send the selected color
+      });
       if (response) {
         dispatch(fetchProjects());
-        onClose();
+        reload();
+        setIsOpen(false);
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error(error.response.data.detail, {
+      toast.error(error?.response?.data?.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
@@ -74,7 +92,6 @@ const ProjectForm = ({
     const updatedMembers = members.filter((m) => m !== member);
     formRef.current.setFieldValue("project_members", updatedMembers);
   };
-
   return (
     <>
       <div
@@ -95,16 +112,30 @@ const ProjectForm = ({
                 }}
                 validate={(values) => {
                   const errors = {};
-
                   return errors;
                 }}
               >
                 {(props) => (
                   <form onSubmit={props.handleSubmit}>
                     <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-                      <div className="font-inter flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                      <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
                         <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                           <div className="text-zinc-950">Project Details</div>
+                        </div>
+                        <div className="space-y-2">
+                          <ImageInput
+                            name={"profile"}
+                            error={props.errors.profile}
+                            touch={props.touched.profile}
+                            value={props.values.profile}
+                            label={"Cover Photo"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                              setImageError(null);
+                            }}
+                            setImageError={setImageError}
+                          />
                         </div>
                         <div className="space-y-2">
                           <TextInput
@@ -139,10 +170,11 @@ const ProjectForm = ({
                       </div>
                     </div>
 
+                    {/* Color Selection */}
                     <div
                       className={`flex w-full flex-col rounded-lg pt-2.5 mt-4`}
                     >
-                      <div className="font-inter flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                      <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
                         <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                           <div className="text-zinc-950">Add To Project</div>
                         </div>
@@ -161,8 +193,16 @@ const ProjectForm = ({
                             ].map((color, index) => (
                               <span
                                 key={index}
-                                className="w-6 h-6 rounded-full border border-gray-300 cursor-pointer"
+                                className={`w-6 h-6 rounded-full border border-gray-300 cursor-pointer ${
+                                  selectedColor === color
+                                    ? "ring-2 ring-blue-500"
+                                    : ""
+                                }`}
                                 style={{ backgroundColor: color }}
+                                onClick={() => {
+                                  setSelectedColor(color);
+                                  props.setFieldValue("color", color); // Update Formik field
+                                }}
                               ></span>
                             ))}
                           </div>
@@ -221,10 +261,21 @@ const ProjectForm = ({
                           />
                         )}
 
-                        <div className="flex items-center gap-10">
-                          <div className="space-y-2">
+                        <div className="flex items-center gap-4">
+                          <div>
                             <span className="label text-[14px]">Status</span>
                           </div>
+                          <SelectComponent
+                            name="status"
+                            options={ProjectStatusList}
+                            error={props.errors.status}
+                            touch={props.touched.status}
+                            value={props.values.status}
+                            // required
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -240,11 +291,7 @@ const ProjectForm = ({
                         >
                           Cancel
                         </Button>
-                        <Button
-                          type="submit"
-                          size="lg"
-                          // disabled={!props.values.condition}
-                        >
+                        <Button type="submit" size="lg">
                           {isEditMode ? "Update" : "Add"}
                         </Button>
                       </div>
