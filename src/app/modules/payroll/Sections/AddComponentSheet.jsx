@@ -52,23 +52,18 @@ const initialEarningAndDeduction = {
   is_active: false,
 };
 
-const AddComponentSheet = ({ component, openSheet, reload }) => {
-  console.log("Component:", component);
-  console.log("Open Sheet:", openSheet);
-  const [isOpen, setIsOpen] = useState(openSheet || false);
+const AddComponentSheet = ({
+  component,
+  openSheet,
+  reload,
+  isOpen,
+  setIsOpen,
+}) => {
   const [isEdit, setIsEdit] = useState(false);
 
   const [earnAndDeduction, setEarnAndDeduction] = useState(
     component || initialEarningAndDeduction
   );
-  useEffect(() => {
-    if (openSheet || component) {
-      setIsOpen(true);
-      setIsEdit(false);
-    } else {
-      setIsOpen(false); // Close the sheet otherwise
-    }
-  }, [openSheet, component]);
   const formSheetData = {
     triggerText: component ? "" : "Add Component",
     title: component ? "Components" : "Add Component",
@@ -76,6 +71,10 @@ const AddComponentSheet = ({ component, openSheet, reload }) => {
     description: null,
     footer: null,
   };
+
+  console.log("Component:", component);
+  console.log("Open Sheet:", openSheet);
+  console.log("Is Open:", isOpen);
 
   const handleSubmit = async (values) => {
     console.log("Form Values:", values);
@@ -87,6 +86,7 @@ const AddComponentSheet = ({ component, openSheet, reload }) => {
         toast.success("Component added successfully");
       }
       setIsOpen(false);
+      setIsEdit(false)
       reload();
     }
   };
@@ -122,7 +122,7 @@ const AddComponentSheet = ({ component, openSheet, reload }) => {
               earnAndDeduction={earnAndDeduction}
               handleSubmit={handleSubmit}
               setIsOpen={setIsOpen}
-              editMode={isEdit}
+              setIsEdit={setIsEdit}
             />
           )}
         </SheetComponent>
@@ -137,7 +137,7 @@ const ComponentForm = ({
   earnAndDeduction,
   handleSubmit,
   setIsOpen,
-  editMode,
+  setIsEdit,
 }) => {
   return (
     <Formik
@@ -250,8 +250,10 @@ const ComponentForm = ({
             <Button
               variant="outline"
               size="lg"
+              type="button"
               onClick={() => {
                 setIsOpen(false);
+                setIsEdit(false)
               }}
             >
               Cancel{" "}

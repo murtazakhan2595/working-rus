@@ -27,7 +27,7 @@ const SalarySetup = ({ departments }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [componentFilterData, setComponentFilterData] = useState({});
-
+  const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [activeTab, setActiveTab] = useState("salary");
   const [salarySetupData, setSalarySetupData] = useState([]);
@@ -131,7 +131,9 @@ const SalarySetup = ({ departments }) => {
         console.log("ACTIVE TAB", activeTab);
   return (
     <div className="flex flex-col gap-4 salary-startup">
-      <Header content={activeTab === "components" && <AddComponentSheet />} />
+      <Header
+        content={activeTab === "components" && <AddComponentSheet isOpen ={isOpen} setIsOpen={setIsOpen}/>}
+      />
 
       <Tabs
         value={activeTab}
