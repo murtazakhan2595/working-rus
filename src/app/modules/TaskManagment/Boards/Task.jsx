@@ -108,7 +108,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
     >
-      {/* Render EditCard component when isEditCardOpen is true */}
       {isEditCardOpen && (
         <SheetComponent
         {...formSheetEditData}

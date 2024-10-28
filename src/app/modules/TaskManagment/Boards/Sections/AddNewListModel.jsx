@@ -56,64 +56,54 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
   };
 
   const formSheetData = {
-    triggerText: "Update Card Name",
-    title: "Update Card Name",
+    triggerText: null,
+    title: isEditMode ? "Update Card Name" : "Add Card Name",
     description: null,
     footer: null,
   };
 
   return (
     <>
-      <SheetComponent
-      {...formSheetData}
-      width="500px"
-       isOpen={true}
-      >
-            {isLoading ? (
-              <PageLoader />
-            ) : (
-                <Formik
-                  initialValues={initialValues}
-                  innerRef={formRef}
-                  onSubmit={(values, { resetForm }) => {
-                    handleSubmit(values, resetForm);
+      <SheetComponent {...formSheetData} width="500px" isOpen={true}>
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <Formik
+            initialValues={initialValues}
+            innerRef={formRef}
+            onSubmit={(values, { resetForm }) => {
+              handleSubmit(values, resetForm);
+            }}
+            validate={(values) => {
+              const errors = {};
+              return errors;
+            }}
+          >
+            {(props) => (
+              <form onSubmit={props.handleSubmit}>
+                <TextInput
+                  name="name"
+                  error={props.errors.name}
+                  touch={props.touched.name}
+                  value={props.values.name}
+                  label="Title"
+                  required
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
                   }}
-                  validate={(values) => {
-                    const errors = {};
-                    return errors;
-                  }}
-                >
-                  {(props) => (
-                    <form onSubmit={props.handleSubmit}>
-                          <TextInput
-                            name="name"
-                            error={props.errors.name}
-                            touch={props.touched.name}
-                            value={props.values.name}
-                            label="Title"
-                            required
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
-                          <div className="flex justify-end gap-2 mt-4">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onClose}
-                          >
-                            Cancel
-                          </Button>
-                          <Button type="submit">
-                            {boardId ? "Update" : "Add"}
-                          </Button>
-                          </div>
-                    </form>
-                  )}
-                </Formik>
+                />
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button type="button" variant="outline" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">{boardId ? "Update" : "Add"}</Button>
+                </div>
+              </form>
             )}
+          </Formik>
+        )}
         <ToastContainer />
-        </SheetComponent>
+      </SheetComponent>
     </>
   );
 };
