@@ -140,7 +140,7 @@ const Board = ({ employees }) => {
           </div>
         <div className="flex justify-center items-center gap-3">
           <Button onClick={toggleAddBoardModal}>
-            Add List
+            Add New List
           </Button>
           <FilterInput
             filters={[
@@ -202,8 +202,12 @@ const Board = ({ employees }) => {
                   Project Board is empty
                 </div>
               )}
+          {/* <Button variant="outline" onClick={toggleAddBoardModal}>Add New List</Button> */}
+
             </div>
+
           )}
+
         </CardContent>
       </Card>
 
