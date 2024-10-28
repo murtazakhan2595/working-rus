@@ -90,7 +90,6 @@ const ReimbursmentDetailsSheet = ({
   const userProfile = useSelector((state) => state.user.userProfile);
 
   const handleStatusChange = async (status) => {
-    console.log(userProfile);
     if (userProfile.role === 3) {
       claimRequest.status_hr = {
         status: status,
@@ -128,6 +127,20 @@ const ReimbursmentDetailsSheet = ({
       reload();
     }
   };
+const hasPendingApprovalForUser = () => {
+  if (userProfile.role === 3) {
+    // HR role
+    return claimRequest?.status_hr?.status === "pending";
+  } else if (userProfile.role === 2) {
+    // Manager role
+    return claimRequest?.status_manager?.status === "pending";
+  } else if (userProfile.role === 1) {
+    // Superadmin role
+    return claimRequest?.status_superadmin?.status === "pending";
+  }
+  return false;
+};
+
 
   return (
     <div>
@@ -239,7 +252,7 @@ const ReimbursmentDetailsSheet = ({
             </section>
           </section>
         </div>
-        {!isMyClaims && (
+        {!isMyClaims && hasPendingApprovalForUser() && (
           <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
             <Button
               variant="outline"
