@@ -179,49 +179,31 @@ const LeaveRequests = ({ userProfile }) => {
               ))}
             </section>
           </div>
+          <div className="self-end">
+            <FilterInput
+              filters={[
+                {
+                  type: "select-one",
+                  option: LeaveTrackerOptions,
+                  name: "status",
+                  width: "max-w-[130px]",
+                  placeholder: "Status",
+                },
+                {
+                  type: "select-two",
+                  width: "max-w-[130px]",
+                  option: leaveTypesData.map((leave) => ({
+                    value: leave.id,
+                    label: leave.name,
+                  })),
+                  name: "leave_component_id",
+                  placeholder: "Leave Type",
+                },
+              ]}
+              onChange={handleFilterChange}
+            />
+          </div>
           <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="h-[47px] flex-col justify-center items-start inline-flex">
-                  <div className="flex-col justify-start items-start flex">
-                    <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
-                      {userProfile.role === 2
-                        ? "My Team Requests"
-                        : "Employee Leaves Requests"}
-                    </div>
-                  </div>
-                  <div className="pt-1.5 flex-col justify-start items-start flex">
-                    <div className="flex-col justify-start items-start flex">
-                      <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
-                        Leaves Requests of all the employees are listed below
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <FilterInput
-                  filters={[
-                    {
-                      type: "select-one",
-                      option: LeaveTrackerOptions,
-                      name: "status",
-                      width: "max-w-[130px]",
-                      placeholder: "Status",
-                    },
-                    {
-                      type: "select-two",
-                      width: "max-w-[130px]",
-                      option: leaveTypesData.map((leave) => ({
-                        value: leave.id,
-                        label: leave.name,
-                      })),
-                      name: "leave_component_id",
-                      placeholder: "Leave Type",
-                    },
-                  ]}
-                  onChange={handleFilterChange}
-                />
-              </div>
-            </CardHeader>
             <CardContent>
               {isLeaveTransactionLoading ? (
                 <PageLoader />

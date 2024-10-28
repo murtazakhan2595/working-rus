@@ -31,6 +31,7 @@ import { deleteLeaveComponent } from "app/hooks/leaveTracker";
 const AddTypeSheet = ({
   type,
   openSheet,
+  setOpenSheet,
   reload,
   triggerText,
   isEmployeeBased,
@@ -54,7 +55,6 @@ const AddTypeSheet = ({
 
   const [isOpen, setIsOpen] = useState(openSheet || false);
   const [isEdit, setIsEdit] = useState(false);
-  console.log("Type:", type);
 
   const [leaveComponentType, setLeaveComponentType] = useState(
     type || (isEmployeeBased ? initialTypeEmployee : initialType)
@@ -73,6 +73,7 @@ const AddTypeSheet = ({
     } else {
       setIsOpen(false); // Close the sheet otherwise
     }
+    console.log("opensheet value in addtypesheet", openSheet);
   }, [openSheet, type]);
 
   const handleSubmit = async (values) => {
@@ -122,6 +123,7 @@ const AddTypeSheet = ({
               handleSubmit={handleSubmit}
               setIsOpen={setIsOpen}
               editMode={isEdit}
+              setOpenSheet={setOpenSheet}
             />
           )}
         </SheetComponent>
@@ -137,6 +139,7 @@ const ComponentForm = ({
   handleSubmit,
   setIsOpen,
   editMode,
+  setOpenSheet,
 }) => {
   return (
     <Formik
@@ -194,9 +197,10 @@ const ComponentForm = ({
               type="button"
               onClick={() => {
                 setIsOpen(false);
+                setOpenSheet(false)
               }}
             >
-              Cancel{" "}
+              Cancel 
             </Button>
             <Button type="submit" size="lg" variant="default">
               {"Save"}
