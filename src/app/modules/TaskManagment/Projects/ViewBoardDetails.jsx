@@ -100,14 +100,17 @@ const ViewBoardDetails = ({
         </div>
       </div>
 
-      <div className="mt-4 border border-gray-400 rounded-md p-4">
+      <div className="mt-4 border border-gray-400 rounded-md p-4 flex flex-col">
         <p>Project Members</p>
-        <p className="text-[14px]">
-          Colors:{" "}
-          <span
-            className={`bg-[${project?.color}] w-6 h-6 rounded-full border border-gray-300 cursor-pointer block`}
+        <div className="text-[14px] flex gap-10">
+          <div className="space-y-2">
+            <span className="label text-[14px]">Colors: </span>
+          </div>
+          <div
+            className={`w-6 h-6 rounded-full border border-gray-300 cursor-pointer`}
+            style={{ background: project?.color }}
           />
-        </p>
+        </div>
         <div className="flex items-center gap-2">
           <p className="text-[14px]">Members: </p>
           <MembersList members={project?.project_members} />
