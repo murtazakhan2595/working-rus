@@ -108,7 +108,10 @@ const AddComponentSheet = ({
           {...formSheetData}
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          setIsOpen={()=>{
+            setIsOpen(false);
+            setIsEdit(false)
+          }}
           width="500px"
         >
           {component && !isEdit ? (
