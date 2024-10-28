@@ -16,7 +16,7 @@ import { ClaimExpenseTypeOptions } from "data/Data";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
-  return country ? country.label : null;
+  return country ? country.label : countryCode;
 }
 
 function getEmployeeType(employeeType) {
