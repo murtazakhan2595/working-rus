@@ -32,6 +32,7 @@ import { getLeaveComponents } from "app/hooks/leaveTracker.jsx";
 import { saveLeaveComponents } from "app/hooks/leaveTracker.jsx";
 import EmployeeLeavesDetailSheet from "../Sections/EmployeeLeavesDetailSheet.jsx";
 import { getLeaveStatsEmployee } from "app/hooks/leaveTracker.jsx";
+import { getLeavestatesCustomApi } from "app/hooks/leaveTracker.jsx";
 
 const dummyData = [
   {
@@ -83,8 +84,15 @@ const LeaveTracker = ({ userProfile, departments }) => {
   };
 
   const fetchData = async () => {
-    setIsRecordsLoading(true);
-    const empLeaveStats = await getLeaveStatsEmployee(recordsFilterData);
+  setIsRecordsLoading(true);
+    const filterData = {
+      ...recordsFilterData,
+      ...(userProfile.role === 2 ? { direct_report: userProfile.id } : {}),
+    };
+    const empLeaveStats = await getLeavestatesCustomApi({
+      filterData,
+      options,
+    });
     if (empLeaveStats) {
       setEmpLeaveStats(empLeaveStats);
     }
@@ -101,12 +109,6 @@ const LeaveTracker = ({ userProfile, departments }) => {
 
   // Separate handler for records filters
   const handleRecordsFilterChange = (filterName, filterValue) => {
-    if (filterName === "department") {
-      const department = departments.find(
-        (option) => option.value === parseInt(filterValue)
-      );
-      filterValue = department?.label;
-    }
     onPageChange("page", 1);
     setRecordsFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -156,7 +158,7 @@ const LeaveTracker = ({ userProfile, departments }) => {
           {
             type: "select-one",
             option: departments,
-            name: "department",
+            name: "department_name",
             placeholder: "Department",
           },
         ]
@@ -231,9 +233,9 @@ const LeaveTracker = ({ userProfile, departments }) => {
                 <PageLoader />
               ) : (
                 <CustomTable
-                  data={empLeaveStats || []}
+                  data={empLeaveStats.results || []}
                   columns={LeaveRecordColumns}
-                  dataTotalSize={empLeaveStats.length || 0}
+                  dataTotalSize={empLeaveStats.count || 0}
                   pagination={true}
                   tableOptions={tableOptions}
                 />

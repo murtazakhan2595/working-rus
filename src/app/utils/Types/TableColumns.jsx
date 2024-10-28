@@ -1006,7 +1006,7 @@ export const projectBoard = [
 
 export const LeaveRecordColumns = [
   {
-    dataField: "employee_id",
+    dataField: "id",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },
@@ -1016,7 +1016,7 @@ export const LeaveRecordColumns = [
     formatter: (cell, row) => (
       <>
         <EmployeeDataInfo
-          name={row.employee_name}
+          name={`${row.first_name} ${row.last_name}`}
           email={row.work_email}
           src={row?.profile_picture?.file}
         />
@@ -1024,11 +1024,12 @@ export const LeaveRecordColumns = [
     ),
   },
   {
-    dataField: "department",
+    dataField: "department_name",
     text: "Department",
+    formatter: (cell) => <DepartmentName value={cell} />,
   },
   {
-    dataField: "total_leaves_alloted",
+    dataField: "total_allotted",
     text: "Total Alloted",
   },
   {
@@ -1036,7 +1037,7 @@ export const LeaveRecordColumns = [
     text: "Total Used",
   },
   {
-    dataField: "remaining_leaves",
+    dataField: "total_balance_after",
     text: "Total Remaining",
   },
 ];
@@ -1098,7 +1099,7 @@ export const LeaveAplicationColumns = [
     dataField: "",
     text: "Department",
     formatter: (cell, row) => (
-      <>{row?.leave_request?.employee_info?.department}</>
+      <><DepartmentName value={row?.leave_request?.employee_info?.department_name}/></>
     ),
   },
   {

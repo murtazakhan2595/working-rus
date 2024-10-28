@@ -115,12 +115,7 @@ const LeaveRequests = ({ userProfile, departments }) => {
   }, [filterData, options]);
 
   const handleFilterChange = (filterName, filterValue) => {
-    if (filterName === "department") {
-      const department = departments.find(
-        (option) => option.value === parseInt(filterValue)
-      );
-      filterValue = department?.label;
-    }
+    onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
@@ -191,7 +186,7 @@ const LeaveRequests = ({ userProfile, departments }) => {
                 {
                   type: "select-one",
                   option: departments,
-                  name: "department",
+                  name: "departmentt",
                   width: "max-w-[130px]",
                   placeholder: "Department",
                 },
