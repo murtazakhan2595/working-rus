@@ -9,7 +9,7 @@ import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
 import ApplicationStatus from "./sections/ApplicationStatus";
 
-const ExitRequestDetails = ({ userProfile, exitData }) => {
+const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
   const exitInfo = [
@@ -31,7 +31,7 @@ const ExitRequestDetails = ({ userProfile, exitData }) => {
         data: <ManagerName value={userData?.direct_report} />,
       },
       { title: "Work Type", data: userData?.employee_work_type },
-      { title: "Organization", data: exitData?.organization[0] },
+      // { title: "Organization", data: exitData?.organization[0] },
       { title: "Phone no.", data: userData?.mobile_no },
     ],
   ];

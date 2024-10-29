@@ -15,7 +15,6 @@ const validateTerminationForm = (values) => {
   if (!values.exit_interview_date) {
     errors.exit_interview_date = "Exit interview date is required";
   }
-  console.log("ERRORS", errors);
   return errors;
 };
 
