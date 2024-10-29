@@ -75,6 +75,7 @@ const SheetOnBorading = ({
   const [date, setDate] = useState();
 
   console.log("RECEIVED ID:", id);
+  console.log("EDIT MODE", isEditMode);
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -225,12 +226,12 @@ const SheetOnBorading = ({
                   console.log(values);
                   const errors = validationEmployeeInfoFormSchema(
                     values,
-                    isEditMode
+                    id ? true : false
                   );
-                  if (values.work_email && emailAlreadyExist) {
+                  if (values.work_email && emailAlreadyExist && !id) {
                     errors.work_email = "Email already exist";
                   }
-                  if (values.username && usernameAlreadyExist) {
+                  if (values.username && usernameAlreadyExist && !id) {
                     errors.username = "Username already exist";
                   }
                   return errors;
@@ -541,7 +542,7 @@ const SheetOnBorading = ({
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-4">
+                   {!id &&  <div className="space-y-4">
                       <h3 className="text-lg font-semibold">Salary Details</h3>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="space-y-2">
@@ -576,7 +577,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                       </div>
-                    </div>
+                    </div>}
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                         <Button

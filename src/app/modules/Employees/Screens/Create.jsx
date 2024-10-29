@@ -54,6 +54,7 @@ const CreateUpdateEmployee = () => {
             setEmail={setEmail}
             setShowFormSubmittedModal={setShowFormSubmittedModal}
             id={id}
+            setIsOpen={()=>{}}
           />
         </CardContent>
       </Card>
