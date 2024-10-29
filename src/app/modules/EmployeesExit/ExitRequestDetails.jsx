@@ -54,11 +54,11 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
   }, [userProfile]);
 
   return (
-    <div className="m-2 mt-0 bg-white p-10 rounded-b-md relative">
-      <div className="h-[35px] justify-between items-start inline-flex w-full mb-4">
-        <div className="text-[#323233] text-[22px] font-bold ">
+    <div>
+      <div className="justify-between items-start inline-flex w-full mb-4">
+        <h4 className="text-xl">
           Exit Request
-        </div>
+        </h4>
         <ApplicationStatus row={exitData} />
       </div>
       {!loading && (

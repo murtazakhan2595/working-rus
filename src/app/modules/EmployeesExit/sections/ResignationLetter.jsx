@@ -3,8 +3,6 @@ import { MdOutlineFileDownload } from 'react-icons/md';
 
 
 function ResignationLetter({ name, file }) {
-  console.log("file", file);
-  console.log("name", name);
   function getFileSizeInKB(base64String) {
     const base64Data = base64String.split(",")[1];
     const binaryString = atob(base64Data);

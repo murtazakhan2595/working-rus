@@ -24,12 +24,11 @@ const EmployeeExit = ({
     const [resignation, setResignation] = useState({});
     const [termination, setTermination] = useState({});
   const [loading, setLoading] = useState(false);
-
+console.log("termination", termination);
   const fetchData = async () => {
     try {
       setLoading(true);
       const response = await getEmployeeExitDataById(userProfile.id);
-      console.log("===========, response", response);
       if (response) {
         const data = response?.data.results.result;
         const resignations = data.filter(
@@ -104,7 +103,7 @@ const EmployeeExit = ({
                     isTermination={true}
                   />
                 ) : (
-                  <div className="w-full h-96 bg-white flex items-center justify-center text-3xl text-gray-600">
+                  <div className="w-full h-96 bg-white flex items-center justify-center text-3xl ">
                     <div>No Termination Letter</div>
                   </div>
                 )}
@@ -118,7 +117,6 @@ const EmployeeExit = ({
 };
 
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
     token: state.user.token,
     userProfile: state.user.userProfile,
