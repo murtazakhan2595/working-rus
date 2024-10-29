@@ -46,7 +46,21 @@ const Board = ({ employees }) => {
   const [filterList, setFilterList] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
 
-  const handleFilterChange = () => {};
+  const handleFilterChange = (filterName, filterValue) => {
+    // onPageChange("page", 1);
+    console.log("filterName", filterName);
+    console.log("filterValue", filterValue);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      console.log(updatedFilters, "UPDATED FILTERS")
+      return updatedFilters;
+    });
+  };
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -157,7 +171,7 @@ const Board = ({ employees }) => {
             placeholder="Date"
             value={filterDate}
             className="flex align-middle items-center"
-            name="payment_date"
+            name="start_date"
             onChange={(field, value) => {
               setFilterDate(value);
               handleFilterChange(field, value);
