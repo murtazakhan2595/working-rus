@@ -62,7 +62,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
   const [educations, setEducations] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);
   const [cv, setCV] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("personal");
   const { id } = useParams();
   const userId = profileView ? userProfile?.id : id;
@@ -100,7 +100,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
 
   return (
     <>
-      <div className="container p-4 mx-auto">
+      {loading? <PageLoader/> : <div className="container p-4 mx-auto">
         <div className="mb-4">
           <Button
             variant="ghost"
@@ -216,7 +216,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
             </TabsContent>
           </Tabs>
         </div>
-      </div>
+      </div>}
     </>
   );
 };
