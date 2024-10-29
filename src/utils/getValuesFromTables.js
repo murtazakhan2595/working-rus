@@ -147,6 +147,21 @@ function getExpenseType(value) {
   return response ? response.label : "N/A";
 }
 
+function getDepartmentName(value, departments) {
+  const department = departments.find((option) => option.value === value);
+  return department ? department.label : "N/A";
+}
+
+function getDesignationName(value, designations) {
+  const designation = designations.find((option) => option.value === value);
+  return designation ? designation.label : "N/A";
+}
+
+function getManagerName(value, managers) {
+  const manager = managers.find((option) => option.value === value);
+  return manager ? manager.label : "N/A";
+}
+
 export {
   getCountryFullName,
   ResignationReason,
@@ -167,4 +182,7 @@ export {
   TerminationReason,
   getExperience,
   getExpenseType,
+  getDepartmentName,
+  getDesignationName,
+  getManagerName,
 };

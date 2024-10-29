@@ -44,6 +44,7 @@ const ExitDetailsCard = ({
   const [resignation, setResignation] = useState(
     resignationsList?.find((item) => item.id === resignationId)
   );
+ 
   const [currentResignationId, setCurrentResignationId] =
     useState(resignationId);
 
@@ -79,7 +80,6 @@ const ExitDetailsCard = ({
     }
   };
   const handleSubmit = async (data) => {
-    console.log("Data not showing up", data);
     try {
       if (data) {
         const payload = {
@@ -97,6 +97,8 @@ const ExitDetailsCard = ({
       console.error("Error updating application status:", error);
     }
   };
+
+  console.log("==============================", resignation);
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent side="right" className="w-full p-6 sm:max-w-4xl ">

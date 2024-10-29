@@ -293,7 +293,7 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
     // Fetch the leave components (leave types)
     const leaveComponentsResponse = await axios.get(
       `${baseUrl}/leavecomponents/?search=${encodeURIComponent(
-        JSON.stringify({ employee_id_and_org: `${employeeId},true` })
+        JSON.stringify({ employee_id_and_org: `${employeeId},true`, "status": true })
       )}&ordering=-id`,
       {
         headers: headers(),

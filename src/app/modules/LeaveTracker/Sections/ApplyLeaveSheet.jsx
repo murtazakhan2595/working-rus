@@ -53,7 +53,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await getLeaveComponents({
-        filterData: { employee_id_and_org: `${userProfile.id},${true}` },
+        filterData: { employee_id_and_org: `${userProfile.id},${true}`, status:true },
       });
       if (response) {
         const LeaveTypeOptions = response.map((item) => ({
