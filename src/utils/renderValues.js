@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const getRandomColor = (letter) => {
     letter = letter?.toUpperCase();
     const colors = {
@@ -133,4 +135,8 @@ export function numberToWords(number) {
   }
 
   return result.trim();
+}
+
+export function renderDate(date){
+  return date? moment(date).format("DD-MM-YYYY"):'N/A';
 }

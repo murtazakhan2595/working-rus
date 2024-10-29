@@ -258,7 +258,7 @@ function App() {
 
                   <Route path="/attendance" element={<ComingSoon />} />
                   <Route path="/development-plan" element={<ComingSoon />} />
-                  <Route path="/user/:id" element={<ViewEmployee />} />
+                  <Route path="/user/:id" element={<ViewEmployee profileView={false} />} />
                 </>
               )}
               {(userRole === 1 || userRole === 2 || userRole === 3) && (

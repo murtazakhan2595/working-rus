@@ -9,6 +9,7 @@ import {
   locationTypeOptions,
   countryOptions,
   UserRoles,
+  workplaceTypes
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
@@ -16,14 +17,15 @@ import { ClaimExpenseTypeOptions } from "data/Data";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
-  return country ? country.label : null;
+  return country ? country.label : countryCode;
 }
 
 function getEmployeeType(employeeType) {
   const response = employeeTypeOptions.find(
     (option) => option.value === employeeType
   );
-  return response ? response.label : "";
+  console.log(employeeType,employeeTypeOptions,response)
+  return response ? response.label : employeeType;
 }
 function UserRole({ value }) {
   const response = UserRoles.find((option) => option.value === parseInt(value));
@@ -31,11 +33,15 @@ function UserRole({ value }) {
 }
 function getWorkType(workType) {
   const response = workTypeOptions.find((option) => option.value === workType);
-  return response ? response.label : "";
+  return response ? response.label : workType;
+}
+function getWorkPlaceType(workPlaceType) {
+  const response = workplaceTypes.find((option) => option.value === workPlaceType);
+  return response ? response.label : workPlaceType;
 }
 function getJobType(jobType) {
   const response = jobTypeOptions.find((option) => option.value === jobType);
-  return response ? response.label : "";
+  return response ? response.label : jobType;
 }
 function getWorkLocation(workLocation) {
   const response = locationTypeOptions.find(
@@ -171,6 +177,7 @@ export {
   getWorkLocation,
   DepartmentName,
   DesignationName,
+  getWorkPlaceType,
   ManagerName,
   EmployeeName,
   EmployeeID,

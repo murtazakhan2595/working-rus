@@ -80,7 +80,7 @@ const ContactInformation = ({
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3 w-full">
             {contactInformation.map((contactInfo, index) => (
               <div key={index}>
                 <div className="text-[#111827] text-sm font-semibold whitespace-nowrap py-3">

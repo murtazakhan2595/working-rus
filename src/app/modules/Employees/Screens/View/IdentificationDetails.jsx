@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { EmployeeDetailModal } from "app/modules/Employees/Screens/Modals";
 import { CiEdit } from "react-icons/ci";
 import { getEmployeeVisaDetailData } from "app/hooks/employee";
-import moment from "moment";
 import { FiDownload } from "react-icons/fi";
 import { getVisaLabel } from "utils/getVisaLabel";
+import { renderDate } from "utils/renderValues";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
@@ -30,15 +30,11 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
               { title: "Issuance Country", data: visaData.place_of_issuance },
               {
                 title: "ID Issuance Date",
-                data: moment(visaData.id_issuance_date, "YYYY-MM-DD").format(
-                  "DD-MM-YYYY"
-                ),
+                data: renderDate(visaData.id_issuance_date),
               },
               {
                 title: "ID Expiry Date",
-                data: moment(visaData?.id_expiry_date, "YYYY-MM-DD").format(
-                  "DD-MM-YYYY"
-                ),
+                data: renderDate(visaData?.id_expiry_date),
               },
               {
                 title: "ID Front Image",
@@ -78,23 +74,18 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Issuance Country",
-                    data: visaData?.Passport_Issuance_Country || getCountryFullName(
-                      visaData.Passport_Issuance_Country
-                    ),
+                    data:
+                      visaData?.Passport_Issuance_Country ||
+                      getCountryFullName(visaData.Passport_Issuance_Country),
                   },
                   {
                     title: "Issuance Date",
-                    data: moment(
-                      visaData?.Passport_Issuance_Date,
-                      "YYYY-MM-DD"
-                    ).format("DD-MM-YYYY"),
+                    data: renderDate(visaData?.Passport_Issuance_Date),
                   },
                   {
                     title: "Expiry Date",
-                    data: moment(
-                      visaData?.Passport_Expiry_Date,
-                      "YYYY-MM-DD"
-                    ).format("DD-MM-YYYY"),
+                    data: renderDate(
+                      visaData?.Passport_Expiry_Date)
                   },
                   {
                     title: "Passport Copy",
@@ -129,18 +120,14 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Active Date",
-                    data: moment(
-                      visaData?.insurance_active_date,
-                      "YYYY-MM-DD"
-                    ).format("DD-MM-YYYY"),
+                    data: renderDate(
+                      visaData?.insurance_active_date),
                   },
                   {
                     title: "Expiry Date",
 
-                    data: moment(
-                      visaData?.insurance_expiry_date,
-                      "YYYY-MM-DD"
-                    ).format("DD-MM-YYYY"),
+                    data: renderDate(
+                      visaData?.insurance_expiry_date),
                   },
                   {
                     title: "Insurance Card",
@@ -178,29 +165,21 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Issuance Date",
-                    data: moment(
-                      visaData.visa_issuance_date,
-                      "YYYY-MM-DD"
-                    ).format("DD-MM-YYYY"),
+                    data: renderDate(
+                      visaData.visa_issuance_date),
                   },
                   {
                     title: "Expiry Date",
-                    data: moment(visaData.visa_expiry_date).format(
-                      "DD-MM-YYYY"
-                    ),
+                    data: renderDate(visaData.visa_expiry_date)
                   },
                   { title: "Visa Duration", data: visaData.visa_duration },
                   {
                     title: "Visa Country Entry Date",
-                    data: moment(visaData.visa_country_entry_date).format(
-                      "DD-MM-YYYY"
-                    ),
+                    data: renderDate(visaData.visa_country_entry_date)
                   },
                   {
                     title: "Visa Country Exit Date",
-                    data: moment(visaData.visa_country_exit_date).format(
-                      "DD-MM-YYYY"
-                    ),
+                    data: renderDate(visaData.visa_country_exit_date)
                   },
                   { title: "UID Number", data: visaData.uid_number },
                   {

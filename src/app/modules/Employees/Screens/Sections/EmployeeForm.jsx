@@ -1,7 +1,6 @@
 import { Button } from "../../../../../components/ui/button";
 import { Input } from "../../../../../components/ui/input";
 import { Label } from "../../../../../src/@/components/ui/label";
-import { CardHeader, CardTitle } from "../../../../../components/ui/card";
 
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -72,7 +71,6 @@ const SheetOnBorading = ({
   setIsOpen,
 }) => {
   const formRef = React.createRef();
-  const [date, setDate] = useState();
 
   console.log("RECEIVED ID:", id);
   console.log("EDIT MODE", isEditMode);
@@ -228,10 +226,10 @@ const SheetOnBorading = ({
                     values,
                     id ? true : false
                   );
-                  if (values.work_email && emailAlreadyExist && !id) {
+                  if (!id && values.work_email && emailAlreadyExist) {
                     errors.work_email = "Email already exist";
                   }
-                  if (values.username && usernameAlreadyExist && !id) {
+                  if (!id && values.username && usernameAlreadyExist) {
                     errors.username = "Username already exist";
                   }
                   return errors;
