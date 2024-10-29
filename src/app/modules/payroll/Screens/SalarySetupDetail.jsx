@@ -194,15 +194,15 @@ const SalarySetupDetail = () => {
       ) : (
         <>
           <Card className="mb-4">
-            <CardContent className="pt-6 flex justify-between">
-              <div className="flex items-center  space-x-4">
+            <CardContent className="flex justify-between pt-6">
+              <div className="flex items-center space-x-4">
                 <Avatar className="w-20 h-20 ">
                   <AvatarImage
                     src={employeeData?.avatar}
                     alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
                   />
                   <AvatarFallback className="bg-plum-400">
-                    {`${employeeData?.first_name} ${employeeData?.last_name}`
+                    {`${employeeData?.first_name} `
                       ?.split(" ")
                       .map((n) => n[0])
                       .join("")}
@@ -258,7 +258,7 @@ const SalarySetupDetail = () => {
                   ? "Hourly Rate"
                   : "Monthly Gross Salary"}
               </div>
-              <div className="flex items-center gap-6 w-full">
+              <div className="flex items-center w-full gap-6">
                 <TextInput
                   name={"add_value"}
                   value={monthlyGrossSalary || ""}
