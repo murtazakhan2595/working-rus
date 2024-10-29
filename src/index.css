@@ -178,3 +178,20 @@ svg.active .svg-elem-7 {
 svg.active .svg-elem-9 {
     color: url("#paint2_linear_3214_94519");
 }
+
+@media print {
+  .page-break {
+    margin-top: 1rem;
+    break-before: page;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+}

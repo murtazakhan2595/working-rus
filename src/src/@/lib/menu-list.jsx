@@ -102,7 +102,7 @@ export function getMenuList(pathname, userRole) {
       createMenu("/my-profile", "My Profile"),
       // createMenu("/my-team", "My Team"),
       // createMenu("/calendar", "Calendar"),
-      // createMenu("/attendance", "Attendance"),
+      createMenu("/attendance", "Attendance"),
       createMenu("/my-leave-tracker", " My Leave Tracker"),
       // createMenu("/files-data", "Files & Data"),
       // createMenu("/my-travel-details", "My Travel Details"),
@@ -197,7 +197,7 @@ export function getMenuList(pathname, userRole) {
       "",
       "Personal Development",
       UsersRound,
-      [
+      [ 
         // createMenu("/learn", "Learn"),
         // createMenu("/career-planning", "Career Planning"),
         // createMenu("/succession-plan", "Succession Plan"),
@@ -206,18 +206,17 @@ export function getMenuList(pathname, userRole) {
     ),
   ];
 
-  // const AndAttendanceMenus = [
-  //   createMenu(
-  //     "",
-  //     "Attendance",
-  //     CalendarClockIcon,
-  //     [
-  //       createMenu("/payroll", "Payroll"),
-  //       createMenu("/attendance", "Attendance"),
-  //     ],
-  //     pathname === "/payroll"
-  //   ),
-  // ];
+  const AndAttendanceMenus = [
+    createMenu(
+      "",
+      "Attendance",
+      CalendarClockIcon,
+      [
+        createMenu("/attendance", "Attendance"),
+      ],
+     
+    ),
+  ];
 
   const peopleEngagementMenus = [
     createMenu(
@@ -276,10 +275,10 @@ export function getMenuList(pathname, userRole) {
       groupLabel: "",
       menus: performanceManagementMenus,
     },
-    // userRolesMap.isPayrollAttendance && {
-    //   groupLabel: "",
-    //   menus: AndAttendanceMenus,
-    // },
+    userRolesMap.isPayrollAttendance && {
+      groupLabel: "",
+      menus: AndAttendanceMenus,
+    },
     userRolesMap.dailyTaskReportMenus && {
       groupLabel: "",
       menus: dailyTaskReportMenus,

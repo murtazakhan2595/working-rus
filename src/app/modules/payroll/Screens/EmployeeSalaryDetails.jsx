@@ -315,7 +315,7 @@ export default function EmployeeSalaryDetails() {
                 alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
               />
               <AvatarFallback className="bg-plum-400">
-                {`${employeeData?.first_name} ${employeeData?.last_name}`
+                {`${employeeData?.first_name} `
                   ?.split(" ")
                   .map((n) => n[0])
                   .join("")}
@@ -707,7 +707,7 @@ export const StatusDropdown = ({
                     : "bg-white"
                 }`}
               >
-                <span className="flex-1 shrink self-stretch my-auto basis-0">
+                <span className="self-stretch flex-1 my-auto shrink basis-0">
                   {status.label}
                 </span>
               </div>

@@ -57,6 +57,7 @@ import {
   PayRunDetails,
 } from "app/modules/payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
+import Attendance from "app/modules/Attendance";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -256,7 +257,7 @@ function App() {
                   <Route path="/pay-run" element={<PayRun />} />
                   <Route path="/payslips" element={<ComingSoon />} />
 
-                  <Route path="/attendance" element={<ComingSoon />} />
+                  <Route path="/attendance" element={<Attendance/>} />
                   <Route path="/development-plan" element={<ComingSoon />} />
                   <Route path="/user/:id" element={<ViewEmployee />} />
                 </>
