@@ -56,22 +56,23 @@ console.log("termination", termination);
     <div className="flex flex-col gap-4 ">
       <Header />
       <div>
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="custom-tabs"
-        >
-          <TabsList className="custom-tabs-list">
-            <TabsTrigger value="exit-request" className="custom-tabs-trigger">
-              Exit Request
-            </TabsTrigger>
-            <TabsTrigger
-              value="termination-letter"
-              className="custom-tabs-trigger"
-            >
-              Termination Letter
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+            <TabsList className="flex justify-center mb-4">
+              <TabsTrigger
+                value="exit-request"
+                className="data-[state=active]:bg-plum-500 w-fit data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+              >
+                Exit Request
+              </TabsTrigger>
+              <TabsTrigger
+                value="termination-letter"
+                className="data-[state=active]:bg-plum-500 w-fit data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+              >
+                Termination Letter
+              </TabsTrigger>
+            </TabsList>
+          </div>
           <Card>
             <CardContent>
               <TabsContent value="exit-request">
