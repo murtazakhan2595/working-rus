@@ -87,8 +87,15 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   }, [task?.board_id, task?.id]);
 
   const formSheetData = {
-    triggerText: "",
+    triggerText: null,
     title: "View Details",
+    description: null,
+    footer: null,
+  };
+
+  const formSheetEditData = {
+    triggerText: null,
+    title: "Edit Card",
     description: null,
     footer: null,
   };
@@ -101,16 +108,24 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
     >
-      {/* Render EditCard component when isEditCardOpen is true */}
       {isEditCardOpen && (
+        <SheetComponent
+        {...formSheetEditData}
+        isOpen={isEditCardOpen}
+        setIsOpen={setIsEditCardOpen}
+        width="500px"
+        contentClassName="custom-sheet-width"
+        >
         <EditCard
           cardId={task.id}
           projectId={projectId}
           onClose={() => {
             setIsEditCardOpen(false);
+            setIsTaskDetailOpen(false)
             reloadData();
           }}
         /> 
+        </SheetComponent>
       )}
       {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
       {isDeleteModalOpen && (
@@ -124,9 +139,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         />
       )}
       <div className="flex gap-3 justify-between items-center py-0.5">
-        {/* Display task priority */}
         {PriorityList.find((option) => option.value === task?.priority)?.label}
-        {/* Render CustomDropdown component */}
         <CustomDropdown
           isOpen={isDropdownOpen}
           toggleDropdown={toggleDropdown}
@@ -134,14 +147,11 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         />
       </div>
       <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
-        {/* Display task name */}
         <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
-        {/* Display task description */}
         <p
           className="text-sm leading-5 truncate-text"
           style={{ maxHeight: "100px" }}
         >
-          {/* Render HTML from task description */}
           <div
             dangerouslySetInnerHTML={{
               __html: `${task?.description.slice(0, 170)}${
@@ -194,6 +204,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
           comments={task.comments} // Pass comments data as props to TaskDetail (if needed)
           attachments={task.attachments} // Pass attachments data as props to TaskDetail (if needed)
           onClose={closeTaskDetail}
+          deleteTask={confirmDelete}
         />
         </SheetComponent>
       )}

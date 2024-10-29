@@ -33,6 +33,7 @@ import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import SheetComponent from "components/ui/SheetComponent";
 import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
+import TableCustom from "components/CustomTable";
 
 const Board = ({ employees }) => {
   const navigate = useNavigate();
@@ -122,6 +123,8 @@ const Board = ({ employees }) => {
     setshowAddNewListModel(!showAddNewListModel);
   };
 
+  console.log("ALL BOARD RESULTS", AllBoards)
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -136,6 +139,9 @@ const Board = ({ employees }) => {
           <RenderProject projectId={projectId} />
           </div>
         <div className="flex justify-center items-center gap-3">
+          <Button onClick={toggleAddBoardModal}>
+            Add New List
+          </Button>
           <FilterInput
             filters={[
               {
@@ -160,7 +166,6 @@ const Board = ({ employees }) => {
           <MembersDropdown members={projectData?.project_members || []} />
 
           <LayoutList size={18} />
-          <LayoutList size={18} />
         </div>
       </div>
 
@@ -172,21 +177,11 @@ const Board = ({ employees }) => {
               onClose={toggleAddBoardModal}
             />
           )}
-          <div className="flex flex-row justify-between items-center mb-5">
-            <div className="flex flex-wrap justify-end gap-2 items-center">
-              {/* <Button
-                onClick={toggleAddBoardModal}
-                className="rounded-md btn-dark d-flex gap-1 items-center justify-center h-[37.6px]"
-              >
-                <FaPlus className="text-white" style={{ fontSize: "12px" }} />
-                Add List
-              </Button> */}
-            </div>
-          </div>
+
           {isLoading ? (
             <PageLoader />
           ) : (
-            <div className="flex gap-5 overflow-x-auto">
+            <div className="flex gap-5 overflow-x-auto mt-5">
               {AllBoards.count > 0 ? (
                 AllBoards.results.map((board, index) => (
                   <TaskColumn
@@ -207,10 +202,18 @@ const Board = ({ employees }) => {
                   Project Board is empty
                 </div>
               )}
+          {/* <Button variant="outline" onClick={toggleAddBoardModal}>Add New List</Button> */}
+
             </div>
+
           )}
+
         </CardContent>
       </Card>
+
+      {/* <TableCustom
+
+      /> */}
     </>
   );
 };
@@ -282,7 +285,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   };
 
   const formSheetData = {
-    triggerText: "",
+    triggerText: null,
     title: "Add Card",
     description: null,
     footer: null,
@@ -342,16 +345,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
             />
           ))}
       </div>
-      {/* {openCreateCard && (
-        <CreateCard
-          onClose={() => {
-            setOpenCreateCard(false);
-            reloadData();
-          }}
-          boardId={board.id}
-          projectId={projectId}
-        />
-      )} */}
+
       <SheetComponent
       {...formSheetData}
       isOpen={openCreateCard}
@@ -368,13 +362,15 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
           />
       </SheetComponent>
       {showAddNewListModel && (
+        
         <AddNewListModel
           boardId={board.id}
           onClose={() => {
             setshowAddNewListModel(false);
             reloadData();
           }}
-          isEditMode={true}
+          isEditMode={showAddNewListModel}
+          setIsOpen={setshowAddNewListModel}
         />
       )}
       {isDeleteModalOpen && (

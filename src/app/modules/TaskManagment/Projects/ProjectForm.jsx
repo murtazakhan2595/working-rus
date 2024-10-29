@@ -215,7 +215,7 @@ const ProjectForm = ({
                             </span>
                           </div>
                           <div className="space-y-2">
-                            <div className="flex items-center justify-start gap-2 h-100">
+                            <div className="flex flex-wrap items-center justify-start gap-2 h-100">
                               {props.values.project_members &&
                                 props.values.project_members.length > 0 &&
                                 props.values.project_members.map(

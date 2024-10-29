@@ -32,6 +32,7 @@ import { getLeaveComponents } from "app/hooks/leaveTracker.jsx";
 import { saveLeaveComponents } from "app/hooks/leaveTracker.jsx";
 import EmployeeLeavesDetailSheet from "../Sections/EmployeeLeavesDetailSheet.jsx";
 import { getLeaveStatsEmployee } from "app/hooks/leaveTracker.jsx";
+import { getLeavestatesCustomApi } from "app/hooks/leaveTracker.jsx";
 
 const dummyData = [
   {
@@ -83,8 +84,15 @@ const LeaveTracker = ({ userProfile, departments }) => {
   };
 
   const fetchData = async () => {
-    setIsRecordsLoading(true);
-    const empLeaveStats = await getLeaveStatsEmployee(recordsFilterData);
+  setIsRecordsLoading(true);
+    const filterData = {
+      ...recordsFilterData,
+      ...(userProfile.role === 2 ? { direct_report: userProfile.id } : {}),
+    };
+    const empLeaveStats = await getLeavestatesCustomApi({
+      filterData,
+      options,
+    });
     if (empLeaveStats) {
       setEmpLeaveStats(empLeaveStats);
     }
@@ -101,12 +109,6 @@ const LeaveTracker = ({ userProfile, departments }) => {
 
   // Separate handler for records filters
   const handleRecordsFilterChange = (filterName, filterValue) => {
-    if (filterName === "department") {
-      const department = departments.find(
-        (option) => option.value === parseInt(filterValue)
-      );
-      filterValue = department?.label;
-    }
     onPageChange("page", 1);
     setRecordsFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -156,7 +158,7 @@ const LeaveTracker = ({ userProfile, departments }) => {
           {
             type: "select-one",
             option: departments,
-            name: "department",
+            name: "department_name",
             placeholder: "Department",
           },
         ]
@@ -200,8 +202,8 @@ const LeaveTracker = ({ userProfile, departments }) => {
         onValueChange={setActiveTab}
         defaultValue="records"
       >
-        {userProfile.role !== 2 && (
-          <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+          <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+        {userProfile.role !== 2 ? (
             <TabsList className="flex justify-center mb-4">
               {tabsData?.map((tab) => (
                 <TabsTrigger
@@ -213,46 +215,27 @@ const LeaveTracker = ({ userProfile, departments }) => {
                 </TabsTrigger>
               ))}
             </TabsList>
+        ) : <div></div>}
+            <FilterInput
+              filters={filters}
+              onChange={
+                activeTab === "records"
+                  ? handleRecordsFilterChange
+                  : handleTypestFilterChange
+              }
+            />
           </div>
-        )}
+
         <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="h-[47px] flex-col justify-center items-start inline-flex">
-                <div className="flex-col justify-start items-start flex">
-                  <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
-                    {userProfile.role === 2 ? "My Team Leaves" : "Leave Types"}
-                  </div>
-                </div>
-                <div className="pt-1.5 flex-col justify-start items-start flex">
-                  <div className="flex-col justify-start items-start flex">
-                    <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
-                      {activeTab === "records"
-                        ? "Leaves of all employees are listed below"
-                        : "Types details are listed here"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <FilterInput
-                filters={filters}
-                onChange={
-                  activeTab === "records"
-                    ? handleRecordsFilterChange
-                    : handleTypestFilterChange
-                }
-              />
-            </div>
-          </CardHeader>
           <CardContent>
             <TabsContent value="records">
               {isRecordsLoading ? (
                 <PageLoader />
               ) : (
                 <CustomTable
-                  data={empLeaveStats || []}
+                  data={empLeaveStats.results || []}
                   columns={LeaveRecordColumns}
-                  dataTotalSize={empLeaveStats.length || 0}
+                  dataTotalSize={empLeaveStats.count || 0}
                   pagination={true}
                   tableOptions={tableOptions}
                 />

@@ -18,7 +18,6 @@ const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {
     project_id: projectId,
   });
 
-
   const priorityMapping = {
     High: 1,
     Medium: 2,
@@ -31,32 +30,32 @@ const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {
       ...formData,
       start_date: moment(new Date()).format("YYYY-MM-DD"),
     };
-  
+
     setIsLoading(true);
-    
+
     try {
       // Map over files to get an array of promises
       const attachmentPromises = files.map(async (file) => {
         const response = await addAttachments(file);
         return response.id; // Return the attachment ID
       });
-  
+
       // Wait for all attachment upload promises to resolve
       const attachmentIds = await Promise.all(attachmentPromises);
-  
+
       // Update formData with attachment IDs
       const finalData = {
         ...updatedData,
         attachment: attachmentIds,
         priority: priorityMapping[formData.priority], // Map priority to the expected value
       };
-  
+
       // Now call addTask with the final data
       const response = await addTask(finalData);
-  
+
       if (response) {
         onClose(); // Close the modal or perform any other action upon success
-        resetForm(); // Optionally reset the form after successful submission
+        // resetForm(); // Optionally reset the form after successful submission
       }
     } catch (error) {
       console.error("Error:", error);
@@ -67,17 +66,16 @@ const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {
       setIsLoading(false); // Stop loading indicator
     }
   };
-  
 
   return (
     <>
-          <CreateAndEditCardForm
-            initialValues={initialValues}
-            employees={employees}
-            handleSubmit={handleSubmit}
-            onClose={onClose}
-          />
-        <ToastContainer />
+      <CreateAndEditCardForm
+        initialValues={initialValues}
+        employees={employees}
+        handleSubmit={handleSubmit}
+        onClose={onClose}
+      />
+      <ToastContainer />
     </>
   );
 };

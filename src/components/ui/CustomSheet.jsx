@@ -27,11 +27,12 @@ const SheetComponent = ({
   formData,
   onSubmit,
   triggerText,
-  width = '100%',
+  width = "100%",
   isOpen,
   setIsOpen,
   children,
   contentClassName,
+  footer,
 }) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
@@ -52,9 +53,11 @@ const SheetComponent = ({
   return (
     <>
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          <Button variant="default">{triggerText}</Button>
-        </SheetTrigger>
+        {triggerText && (
+          <SheetTrigger asChild>
+            <Button variant="default">{triggerText}</Button>
+          </SheetTrigger>
+        )}
         <SheetContent
           style={{ width }}
           className={`${contentClassName} overflow-y-auto sm:max-w-4xl`}
@@ -66,14 +69,18 @@ const SheetComponent = ({
               {description}
             </SheetDescription>
           </SheetHeader>
-         
+
           {children}
-          <SheetFooter>
-            <SheetClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </SheetClose>
-            <Button type="submit" onClick={onSubmit}>Submit</Button>
-          </SheetFooter>
+          {footer && (
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </SheetClose>
+              <Button type="submit" onClick={onSubmit}>
+                Submit
+              </Button>
+            </SheetFooter>
+          )}
         </SheetContent>
       </Sheet>
       {/* Confirmation Dialog */}

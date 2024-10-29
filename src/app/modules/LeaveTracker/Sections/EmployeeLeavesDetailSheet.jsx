@@ -18,17 +18,18 @@ const EmployeeLeavesDetailSheet = ({
   const [isEdit, setIsEdit] = useState(false);
   const [componentsWithUsed, setComponentsWithUsed] = useState([]);
   const [leaveComponents, setLeaveComponents] = useState([]);
+  console.log("employeeLeaves", employeeLeaves);
 
   const fetchData = async () => {
     const componentsWithUsed = await getLeaveComponentsWithUsed(
-      employeeLeaves.employee_id
+      employeeLeaves.id
     );
     if (componentsWithUsed) {
       setComponentsWithUsed(componentsWithUsed);
     }
     const leaveComponents = await getLeaveComponents({
       filterData: {
-        employee_id_and_org: `${employeeLeaves.employee_id},${true}`,
+        employee_id_and_org: `${employeeLeaves.id},${true}`,
       },
     });
     if (leaveComponents) {
@@ -37,7 +38,7 @@ const EmployeeLeavesDetailSheet = ({
   };
   useEffect(() => {
     fetchData();
-  }, [employeeLeaves.employee_id]);
+  }, [employeeLeaves.id]);
 
   const formSheetData = {
     triggerText: null,
@@ -113,9 +114,9 @@ const ViewDetails = ({
     <>
       <div className="flex items-center justify-between">
         <EmployeeDataInfo
-          name={employeeLeaves.employee_name}
+          name={employeeLeaves.first_name + " " + employeeLeaves.last_name}
           email={employeeLeaves.work_email}
-          id={employeeLeaves.employee_id}
+          id={employeeLeaves.id}
           src={employeeLeaves.profile_picture?.file}
         />
         {userProfile.role !== 2 && (
@@ -177,13 +178,14 @@ const EditDetails = ({
 }) => {
   const [openSheet, setOpenSheet] = useState(false);
   const [selectedLeaveComponent, setSelectedLeaveComponent] = useState(null);
+  console.log("opensheetvalue in leave details", openSheet);
 
   return (
     <>
       <EmployeeDataInfo
-        name={employeeLeaves.employee_name}
+        name={employeeLeaves.first_name + " " + employeeLeaves.last_name}
         email={employeeLeaves.work_email}
-        id={employeeLeaves.employee_id}
+        id={employeeLeaves.id}
         src={employeeLeaves.profile_picture?.file}
       />
       <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-8">
@@ -228,14 +230,13 @@ const EditDetails = ({
           + Add Another Leave Type
         </Button>
       </div>
-      {openSheet && (
-        <AddTypeSheet
-          openSheet={openSheet}
-          isEmployeeBased={true}
-          employeeId={employeeLeaves.employee_id}
-          reload={fetchData}
-        />
-      )}
+      <AddTypeSheet
+        openSheet={openSheet}
+        isEmployeeBased={true}
+        employeeId={employeeLeaves.id}
+        reload={fetchData}
+        setOpenSheet={setOpenSheet}
+      />
       {selectedLeaveComponent && (
         <AddTypeSheet type={selectedLeaveComponent} reload={fetchData} />
       )}

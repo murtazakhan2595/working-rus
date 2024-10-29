@@ -34,7 +34,7 @@ import { CardTitle } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { getLabelColor } from "./Sections/getTaskStatus";
 
-const TaskDetail = ({ task, onClose, employees }) => {
+const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [boardName, setBoardName] = useState("Loading...");
@@ -131,7 +131,6 @@ const TaskDetail = ({ task, onClose, employees }) => {
     fileInputRef.current.click();
   };
 
-  console.log();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0]; // Get the single file
@@ -191,7 +190,6 @@ const TaskDetail = ({ task, onClose, employees }) => {
 
   const UserInitials = ({ user }) => {
     const employeeName = EmployeeName({ value: user.value, length: 2 });
-    console.log("emp name - ", employeeName);
     const name = employeeName.props.children;
     return (
       <span
@@ -221,12 +219,9 @@ const TaskDetail = ({ task, onClose, employees }) => {
     return new Blob(byteArrays, { type: mimeType });
   }
 
-  const formSheetData = {
-    triggerText: null,
-    title: "Edit Card",
-    description: null,
-    footer: null,
-  };
+  const deleteCard = ()=>{
+    deleteTask()
+  }
 
   function CardValues({ values }) {
     console.log("IN CARD VALUES", values);
@@ -273,7 +268,7 @@ const TaskDetail = ({ task, onClose, employees }) => {
 
   return (
     <>
-      {isEditCardOpen && (
+      {/* {isEditCardOpen && (
         <SheetComponent
           {...formSheetData}
           isOpen={isEditCardOpen}
@@ -290,7 +285,19 @@ const TaskDetail = ({ task, onClose, employees }) => {
             }}
           />
         </SheetComponent>
-      )}
+      )} */}
+      {
+        isEditCardOpen && (
+          <EditCard
+          cardId={task?.id}
+          projectId={task?.project_id}
+          onClose={() => {
+            setIsEditCardOpen(false);
+            onClose();
+          }}
+        />
+        )
+      }
       {isTaskDetailVisible && (
         <>
           <header className="flex items-center justify-between">
@@ -303,7 +310,7 @@ const TaskDetail = ({ task, onClose, employees }) => {
                 Edit
               </Button>
 
-              <Button variant="outline" onClick={editDetails}>
+              <Button variant="outline" onClick={deleteCard}>
                 <Trash className="mr-2" size={16} />
                 Delete
               </Button>

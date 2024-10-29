@@ -14,6 +14,7 @@ import AddComponentSheet from "./AddComponentSheet.jsx";
 const SalaryComponent = ({ componentFilterData }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [component, setComponent] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const onPageChange = (name, value) => {
@@ -26,6 +27,7 @@ const SalaryComponent = ({ componentFilterData }) => {
     onPageChange: onPageChange,
     onRowClick: (row) => {
       console.log("Row clicked:", row);
+      setIsOpen(true)
       setSelectedComponent(row);
     },
   };
@@ -65,7 +67,8 @@ const SalaryComponent = ({ componentFilterData }) => {
       {selectedComponent && (
         <AddComponentSheet
           component={selectedComponent}
-          openSheet={true}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
           reload={fetchData}
         />
       )}
