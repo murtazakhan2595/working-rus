@@ -7,6 +7,7 @@ import {
   DesignationName,
   ManagerName,
   getCountryFullName,
+  getWorkPlaceType,
 } from "utils/getValuesFromTables";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
@@ -32,7 +33,7 @@ const WorkInformation = ({
     { title: "Employee Type", data: userData?.employee_type },
 
     { title: "Employee Status", data: userData?.employee_status },
-    { title: "Work Type", data: userData?.employee_work_type },
+    { title: "Work Type", data: getWorkPlaceType(userData?.employee_work_type) },
     {
       title: "Work Location",
       data: getCountryFullName(userData?.employee_location),
@@ -55,19 +56,17 @@ const WorkInformation = ({
         <CardHeader>
           <div className="flex justify-between">
             <CardTitle>Job Details</CardTitle>
-            {/* {isEditable && (
+            {isEditable && (
               <div className="flex gap-4 items-center">
-                <FiPlus className="text-2xl cursor-pointer opacity-80" />
                 <div
                   onClick={() => {
                     setShowPersonalDetailCard(true);
                   }}
                 >
-                  {" "}
-                  <CiEdit className="text-2xl cursor-pointer opacity-80" />
+                  <CiEdit className="text-2xl cursor-pointer" />
                 </div>
               </div>
-            )} */}
+            )}
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
@@ -92,7 +91,7 @@ const WorkInformation = ({
             getDataByHooks();
           }}
           employeeId={userData.id}
-          currentClick={1}
+          currentClick={8}
         />
       )}
     </>

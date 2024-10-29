@@ -1,10 +1,8 @@
 import { FiDownload } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
-import { FiPlus } from "react-icons/fi";
 import React, { useState, useEffect } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
-import moment from "moment";
-import { PageLoader } from "components";
+import { renderDate } from "utils/renderValues";
 import { getEmployeeCerficationData } from "app/hooks/employee";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
@@ -28,7 +26,10 @@ const Certifications = ({ isEditable, employeeId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employeeId]);
   console.log(certifications);
+
   if (certifications?.length <= 0) {
+    return <></>;
+  } else if (certifications[0] && !certifications[0].id) {
     return <></>;
   }
 
@@ -65,13 +66,9 @@ const Certifications = ({ isEditable, employeeId }) => {
                     {cer.certification_name || "N/A"}
                   </div>
                   <div className="text-base text-black">
-                    {moment(cer.completion_date, "YYYY-MM-DD").format(
-                      "DD MMMM, YYYY"
-                    ) || "00-00-0000"}
+                    {renderDate(cer.completion_date)}
                     {cer.expiry_date && " - "}
-                    {moment(cer.expiry_date, "YYYY-MM-DD").format(
-                      "DD MMMM, YYYY"
-                    ) || ""}
+                    {renderDate(cer.expiry_date)}
                   </div>
                 </div>
                 <div>

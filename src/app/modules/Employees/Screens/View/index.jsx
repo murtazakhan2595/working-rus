@@ -57,7 +57,7 @@ import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 import DownloadData from "./DownloadButton";
 import { DepartmentName } from "utils/getValuesFromTables";
-const ViewEmployee = ({ token, baseUrl, userProfile, profileView }) => {
+const ViewEmployee = ({ userProfile, profileView }) => {
   const [employeeData, setEmployeeData] = React.useState({});
   const [educations, setEducations] = useState([{}]);
   const [experiences, setExperiences] = useState([{}]);

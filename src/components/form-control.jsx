@@ -720,7 +720,15 @@ const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
   );
 };
 
-const ImageInput = ({ label,value, error, setImageError, onChange, touch, name }) => {
+const ImageInput = ({
+  label,
+  value,
+  error,
+  setImageError,
+  onChange,
+  touch,
+  name,
+}) => {
   return (
     <>
       <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
@@ -790,7 +798,7 @@ const FileInput = ({
 }) => {
   return (
     <>
-      <div className="w-full justify-start gap-1.5 mb-4">
+      <div className="w-full justify-start gap-1.5 mb-4 relative">
         <Label htmlFor={name} className="flex flex-row gap-4">
           <FileUp className="" />
           {`Upload Your ${label || "file"}`}
@@ -825,8 +833,10 @@ const FileInput = ({
             }
           }}
         />
+        <div style={{ position: "absolute", bottom: ".61rem", left: "6.5rem" }}>
+          <div style={{minWidth:'7rem'}} className="bg-white px-1 text-sm w-full">{value?.document?.name || value?.name}</div>
+        </div>
       </div>
-
       {error && touch && <div className="text-red-500 ">{error}</div>}
     </>
   );
@@ -868,7 +878,6 @@ const TextAreaInput = ({
           placeholder={label ? "Enter " + label : placeholder}
           value={value}
           rows={maxRows ?? 3}
-          
           disabled={disabled}
           className={`h-auto ${error && touch ? "is-invalid" : ""}`}
           onChange={(option) => {
