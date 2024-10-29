@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { FiDownload } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
-import { FiPlus } from "react-icons/fi";
-import moment from "moment";
+import { renderDate } from "utils/renderValues";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
 const AcademicInfo = ({
@@ -47,20 +46,15 @@ const AcademicInfo = ({
                     {edu.program || "------"}
                   </div>
                   <div className="text-base text-muted-foreground">
-                    {moment(edu?.edu_start_date, "YYYY-MM-DD").format(
-                      "DD MMMM, YYYY"
-                    ) || "00-00-0000"}{" "}
-                    -{" "}
-                    {moment(edu?.edu_end_date, "YYYY-MM-DD").format(
-                      "DD MMMM, YYYY"
-                    ) || "00-00-0000"}
+                    {renderDate(edu?.edu_start_date)} -{" "}
+                    {renderDate(edu?.edu_end_date)}
                   </div>
                 </div>
                 <div>
                   {edu.education_body?.file && (
                     <a
                       download={edu.education_body?.name}
-                      className="flex items-center gap-x-2 mb-3 text-sm opacity-50 py-2 mt-2 font-semibold border border-black rounded-lg font-opensans px-4 no-underline text-black"
+                      className="text-sm flex gap-2 items-center no-underline"
                       href={edu?.education_body?.file}
                     >
                       Certification <FiDownload />

@@ -9,8 +9,8 @@ import {
   SelectComponent,
   TextInput,
   CheckBoxInput,
-} from "../../../../../components/form-control";
-import PageLoader from "../../../../../components/PageLoader.jsx";
+} from "components/form-control";
+import PageLoader from "components/PageLoader.jsx";
 import {
   getEmployeeVisaDetailData,
   saveEmployeeVisaDetailData,
@@ -179,6 +179,7 @@ const IdentificationInformation = ({
                         />
                       </div>
                       <div className="space-y-2">
+                        {console.log(props.values?.id_front)}
                         <FileInput
                           name={"id_front"}
                           error={props.errors?.id_front}
