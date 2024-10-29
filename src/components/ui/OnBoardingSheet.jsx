@@ -56,7 +56,6 @@ const OnBoardingSheet = () => {
           isEditMode={false}
           emailAlreadyExist={false}
           usernameAlreadyExist={false}
-          empId="12345"
           validateUsername={validateUsername}
           isOpen={isOpen}
           setIsOpen={setIsOpen}

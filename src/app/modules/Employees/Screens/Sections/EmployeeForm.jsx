@@ -73,6 +73,7 @@ const SheetOnBorading = ({
   const formRef = React.createRef();
 
   console.log("RECEIVED ID:", id);
+  console.log("EDIT MODE", isEditMode);
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -223,7 +224,7 @@ const SheetOnBorading = ({
                   console.log(values);
                   const errors = validationEmployeeInfoFormSchema(
                     values,
-                    isEditMode
+                    id ? true : false
                   );
                   if (!id && values.work_email && emailAlreadyExist) {
                     errors.work_email = "Email already exist";
@@ -539,7 +540,7 @@ const SheetOnBorading = ({
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-4">
+                   {!id &&  <div className="space-y-4">
                       <h3 className="text-lg font-semibold">Salary Details</h3>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="space-y-2">
@@ -574,7 +575,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                       </div>
-                    </div>
+                    </div>}
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                         <Button
