@@ -194,7 +194,14 @@ const LeaveTracker = ({ userProfile, departments }) => {
   return (
     <div className="flex flex-col gap-4 profile-management">
       <Header
-        content={activeTab === "types" && <AddTypeSheet triggerText="" />}
+        content={
+          activeTab === "types" && (
+            <AddTypeSheet
+              triggerText="+ Add Component"
+              reload={fetchLeaveTypesData}
+            />
+          )
+        }
       />
 
       <Tabs
@@ -202,8 +209,8 @@ const LeaveTracker = ({ userProfile, departments }) => {
         onValueChange={setActiveTab}
         defaultValue="records"
       >
-          <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-        {userProfile.role !== 2 ? (
+        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+          {userProfile.role !== 2 ? (
             <TabsList className="flex justify-center mb-4">
               {tabsData?.map((tab) => (
                 <TabsTrigger
@@ -215,16 +222,18 @@ const LeaveTracker = ({ userProfile, departments }) => {
                 </TabsTrigger>
               ))}
             </TabsList>
-        ) : <div></div>}
-            <FilterInput
-              filters={filters}
-              onChange={
-                activeTab === "records"
-                  ? handleRecordsFilterChange
-                  : handleTypestFilterChange
-              }
-            />
-          </div>
+          ) : (
+            <div></div>
+          )}
+          <FilterInput
+            filters={filters}
+            onChange={
+              activeTab === "records"
+                ? handleRecordsFilterChange
+                : handleTypestFilterChange
+            }
+          />
+        </div>
 
         <Card>
           <CardContent>
