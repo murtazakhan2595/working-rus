@@ -158,10 +158,10 @@ const RequestTerminationForm = ({
       >
         <div className="flex flex-col h-full">
           <div className="flex-grow overflow-y-auto">
-            <div className="p-6">
-              <CardHeader className="prose">
+            <div className="p-2">
+              {/* <CardHeader className="prose">
                 <CardTitle>Termination</CardTitle>
-              </CardHeader>
+              </CardHeader> */}
               <Formik
                 initialValues={formData}
                 ref={formRef}
