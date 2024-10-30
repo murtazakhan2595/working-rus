@@ -25,6 +25,7 @@ import { getAllLabels } from "app/hooks/taskManagment";
 import { Textarea } from "components/ui/textarea";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
+import Labels from "../../Sections/Labels";
 
 const CreateAndEditCardForm = ({
   initialValues,
@@ -40,10 +41,27 @@ const CreateAndEditCardForm = ({
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [labels, setLabels] = useState([]);
-  // useEffect(async () => {
-  //   const labelList = await getAllLabels();
-  //   setLabels(labelList);
-  // }, []);
+  const [labelsList, setLabelsList] = useState([])
+  const [labelsAdded, setLabelsAdded] = useState([])
+
+  useEffect(() => {
+    const fetchLabels = async () => {
+      const labelList = await getAllLabels();
+      setLabelsList(labelList); // Update this to `labelList`
+    };
+  
+    fetchLabels();
+  }, []);
+  
+
+  const handleSelectedLabelsChange = (selectedLabels) => {
+    setLabelsAdded(selectedLabels)
+    const selectedLabelObjects = selectedLabels?.map((selectedId) => 
+      labelsList?.results?.find((label) => label.id === selectedId)
+    );
+    console.log(selectedLabelObjects, "OBJECT LABEL")
+    setLabels(selectedLabelObjects);
+  };
 
   useEffect(() => {
     setFiles(initialValues.attachment);
@@ -84,7 +102,6 @@ const CreateAndEditCardForm = ({
       });
   };
   const removeFile = (file) => {
-    console.log("file", file);
     if (file.id) {
       setDeleteFiles([...deleteFiles, file.id]);
       const filteredFiles = files.filter((f) => f.id !== file.id);
@@ -96,7 +113,6 @@ const CreateAndEditCardForm = ({
   };
 
   const removeMember = (member) => {
-    console.log("member", member);
     const members = formRef.current.values.assigned_to || [];
     const updatedMembers = members.filter((m) => m !== member);
     formRef.current.setFieldValue("assigned_to", updatedMembers);
@@ -108,7 +124,11 @@ const CreateAndEditCardForm = ({
       enableReinitialize={true}
       innerRef={formRef}
       onSubmit={(values, { resetForm }) => {
-        handleSubmit(values, newfiles, files, deleteFiles, resetForm);
+        const formValues= {
+          ...values,
+          label: labelsAdded
+        }
+        handleSubmit(formValues, newfiles, files, deleteFiles, resetForm);
       }}
       validate={(values) => {
         // const errors = validationTaskFormSchema(values);
@@ -237,6 +257,25 @@ const CreateAndEditCardForm = ({
                   />
                 </div>
 
+                <div className="space-y-2 flex items-center gap-2">
+                  <div>Label</div>
+
+                  <Labels onSelectedLabelsChange={handleSelectedLabelsChange} labelsList={labelsList?.results}/>
+                </div>
+                <div>
+                <ul className="flex gap-2 flex-wrap">
+                {labels?.map((label) => (
+                  <li
+                    key={label.id}
+                    className="flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                    style={{ backgroundColor: label.color || "#ddd" }}
+                  >
+                    {label.name}
+                  </li>
+                ))}
+              </ul>
+                </div>
+
                 <div className="flex gap-5">
                   <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
                     <img
@@ -297,18 +336,18 @@ const CreateAndEditCardForm = ({
             </div>
 
             <div className="mt-4 border-t border-gray-200 flex justify-end gap-2">
-                <Button
-                  type=""
-                  variant="outline"
-                  size="lg"
-                  // onClick={onClose()}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">
-                  {initialValues.id ? "Save" : "Add Card"}
-                </Button>
-              </div>
+              <Button
+                type=""
+                variant="outline"
+                size="lg"
+                // onClick={onClose()}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">
+                {initialValues.id ? "Save" : "Add Card"}
+              </Button>
+            </div>
           </div>
         </form>
       )}
