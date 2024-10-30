@@ -26,6 +26,15 @@ import { Textarea } from "components/ui/textarea";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import Labels from "../../Sections/Labels";
+import CheckList from "../../Sections/CheckList";
+import { getDarkerTextColor } from "./getTaskStatus";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../../../src/@/components/ui/popover";
+import { Input } from "components/ui/input";
+import { relationList } from "data/Data";
 
 const CreateAndEditCardForm = ({
   initialValues,
@@ -35,31 +44,55 @@ const CreateAndEditCardForm = ({
   isEdit,
 }) => {
   const formRef = useRef();
+
   const fileInputRef = useRef(null);
   const [membersOpen, setMembersOpen] = useState(false);
   const [newfiles, setNewFiles] = useState([]);
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [labels, setLabels] = useState([]);
-  const [labelsList, setLabelsList] = useState([])
-  const [labelsAdded, setLabelsAdded] = useState([])
+  const [labelsList, setLabelsList] = useState([]);
+  const [labelsAdded, setLabelsAdded] = useState([]);
+  const [foreignKeys, setForeignKeys] = useState([]);
+  const [items, setItems] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  const handleAddItem = () => {
+    const newItem = {
+      id: Date.now(), // use unique ID
+      label: inputValue,
+      checked: false,
+    };
+    setItems((prevItems) => [...prevItems, newItem]);
+    setInputValue("");
+    setIsPopoverOpen(false); // Close the popover after adding the item
+  };
+
+  const handleCheckListChange = (itemIds) => {
+    setForeignKeys(itemIds);
+    console.log(itemIds, "ITEM IDS");
+  };
+
+  const handleRelationSelect = (task) => {
+    console.log("Selected task:", task);
+  };
 
   useEffect(() => {
     const fetchLabels = async () => {
       const labelList = await getAllLabels();
       setLabelsList(labelList); // Update this to `labelList`
     };
-  
+
     fetchLabels();
   }, []);
-  
 
   const handleSelectedLabelsChange = (selectedLabels) => {
-    setLabelsAdded(selectedLabels)
-    const selectedLabelObjects = selectedLabels?.map((selectedId) => 
+    setLabelsAdded(selectedLabels);
+    const selectedLabelObjects = selectedLabels?.map((selectedId) =>
       labelsList?.results?.find((label) => label.id === selectedId)
     );
-    console.log(selectedLabelObjects, "OBJECT LABEL")
+    console.log(selectedLabelObjects, "OBJECT LABEL");
     setLabels(selectedLabelObjects);
   };
 
@@ -124,10 +157,11 @@ const CreateAndEditCardForm = ({
       enableReinitialize={true}
       innerRef={formRef}
       onSubmit={(values, { resetForm }) => {
-        const formValues= {
+        console.log(values, "VALUES");
+        const formValues = {
           ...values,
-          label: labelsAdded
-        }
+          label: labelsAdded,
+        };
         handleSubmit(formValues, newfiles, files, deleteFiles, resetForm);
       }}
       validate={(values) => {
@@ -184,7 +218,7 @@ const CreateAndEditCardForm = ({
                     fileInputRef.current.click();
                   }}
                 />
-                <input
+                <Input
                   type="file"
                   multiple
                   style={{ display: "none" }}
@@ -260,20 +294,24 @@ const CreateAndEditCardForm = ({
                 <div className="space-y-2 flex items-center gap-2">
                   <div>Label</div>
 
-                  <Labels onSelectedLabelsChange={handleSelectedLabelsChange} labelsList={labelsList?.results}/>
+                  <Labels
+                    onSelectedLabelsChange={handleSelectedLabelsChange}
+                    labelsList={labelsList?.results}
+                  />
                 </div>
                 <div>
-                <ul className="flex gap-2 flex-wrap">
-                {labels?.map((label) => (
-                  <li
-                    key={label.id}
-                    className="flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                    style={{ backgroundColor: label.color || "#ddd" }}
-                  >
-                    {label.name}
-                  </li>
-                ))}
-              </ul>
+                  <ul className="flex gap-2 flex-wrap">
+                    {labels?.map((label) => (
+                      <li
+                        key={label.id}
+                        className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                          label?.color
+                        } ${getDarkerTextColor(label?.color)}`}
+                      >
+                        {label.name}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
                 <div className="flex gap-5">
@@ -332,6 +370,46 @@ const CreateAndEditCardForm = ({
                     }}
                   />
                 )}
+
+                <div className="space-y-2 flex items-center gap-2">
+                  <div>CheckList</div>
+                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsPopoverOpen(true)}
+                      >
+                        +
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Item name"
+                          value={inputValue}
+                          onChange={(e) => setInputValue(e.target.value)}
+                        />
+                        <Button onClick={handleAddItem}>Add</Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  <div>{/* Pass the items and setItems to CheckList */}</div>
+                </div>
+                <CheckList items={items} setItems={setItems} />
+
+                <div className="space-y-2">
+                  <SelectComponent
+                    name="relation"
+                    options={relationList}
+                    error={props.errors.relation}
+                    touch={props.touched.relation}
+                    value={props.values.relation}
+                    label="Relation"
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                    }}
+                  />
+                </div>
               </div>
             </div>
 

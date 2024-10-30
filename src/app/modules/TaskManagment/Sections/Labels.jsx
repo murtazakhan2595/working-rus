@@ -21,7 +21,6 @@ const headers = () => ({
 });
 
 export default function Labels({ onSelectedLabelsChange, labelsList }) {
-  console.log("MY LABELS LIST", labelsList);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedLabels, setSelectedLabels] = React.useState([]);
   const [showNewLabel, setShowNewLabel] = React.useState(false);
@@ -68,7 +67,7 @@ export default function Labels({ onSelectedLabelsChange, labelsList }) {
         ? prev.filter((id) => id !== labelId)
         : [...prev, labelId];
 
-      onSelectedLabelsChange(updatedLabels); // Call the parent callback with updated selected labels
+      onSelectedLabelsChange(updatedLabels); 
       return updatedLabels;
     });
   };
@@ -122,7 +121,7 @@ export default function Labels({ onSelectedLabelsChange, labelsList }) {
                 />
               </div>
 
-              <div className="space-y-3 max-h-[200px] overflow-y-auto">
+              <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
                 {filteredLabels?.map((label) => (
                   <div key={label?.id} className="flex items-center space-x-2">
                     <Checkbox
