@@ -326,6 +326,17 @@ export const PriorityListIcons = [
   },
 ];
 
+export const relationList = [
+  {
+    value: "WireFrame",
+    label: "WireFrame"
+  },
+  {
+    value:"Design",
+    label:"Design"
+  }
+]
+
 export const ProjectStatusList = [
   {
     value: "upcoming",
