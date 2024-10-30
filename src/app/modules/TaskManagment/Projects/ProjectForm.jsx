@@ -38,29 +38,30 @@ const ProjectForm = ({
   const [imageError, setImageError] = useState(null);
   const [selectedColor, setSelectedColor] = useState("#f7f7f7"); // Default color
 
-  const fetchData = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const projectDetails = await getProjectById(projectId);
-      if (isMounted) {
-        setInitialValues({
-          ...projectDetails,
-          color: projectDetails.color || "", // Fetch color if available
-        });
-        setSelectedColor(projectDetails.color || "#f7f7f7");
-      }
-    } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
-    } finally {
-      if (isMounted) {
-        setIsLoading(false);
-      }
-    }
-  };
+  // const fetchData = async (isMounted) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const projectDetails = await getProjectById(projectId);
+  //     if (isMounted) {
+  //       setInitialValues({
+  //         ...projectDetails,
+  //         color: projectDetails.color || "", // Fetch color if available
+  //       });
+  //       setSelectedColor(projectDetails.color || "#f7f7f7");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching employeeLeaveTypes:", error);
+  //   } finally {
+  //     if (isMounted) {
+  //       setIsLoading(false);
+  //     }
+  //   }
+  // };
+
 
   useEffect(() => {
     let isMounted = true;
-    if (projectId && isEditMode) fetchData(isMounted);
+    if (projectId && isEditMode) reload(isMounted);
     return () => {
       isMounted = false;
     };
@@ -75,7 +76,7 @@ const ProjectForm = ({
       });
       if (response) {
         dispatch(fetchProjects());
-        reload();
+        reload(true);
         setIsOpen(false);
       }
     } catch (error) {
