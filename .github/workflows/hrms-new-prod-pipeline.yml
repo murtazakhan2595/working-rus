@@ -1,0 +1,46 @@
+name: Production Environment - Github Actions
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ Production ]
+    paths:
+    - '**'
+    - '.github/workflows/hrms-new-prod-pipeline.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.HRMSPRODUCTIONFRONTEND_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.HRMSPRODUCTIONFRONTEND_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.HRMSPRODUCTIONFRONTEND_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: hrmsacr.azurecr.io
+          registryUsername: ${{ secrets.HRMSPRODUCTIONFRONTEND_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.HRMSPRODUCTIONFRONTEND_REGISTRY_PASSWORD }}
+          containerAppName: hrms-production-frontend
+          resourceGroup: HRMS-AZURE
+          imageToBuild: hrmsacr.azurecr.io/hrms-production-frontend:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
