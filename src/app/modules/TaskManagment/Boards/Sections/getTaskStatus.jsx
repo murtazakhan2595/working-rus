@@ -42,4 +42,44 @@ const getLabelColor = (label="Design")=>{
   }
 }
 
-export { getStatusClass, getStatus ,getStatusIconColor, getLabelColor};
+const getDarkerTextColor = (bgColor) => {
+  switch (bgColor) {
+    case "bg-purple-300":
+      return "text-purple-700";
+    case "bg-purple-500":
+      return "text-purple-900";
+    case "bg-purple-700":
+      return "text-purple-900";
+    case "bg-emerald-300":
+      return "text-emerald-700";
+    case "bg-emerald-500":
+      return "text-emerald-900";
+    case "bg-teal-700":
+      return "text-teal-900";
+    case "bg-gray-400":
+      return "text-gray-700";
+    case "bg-gray-500":
+      return "text-gray-800";
+    case "bg-gray-900":
+      return "text-gray-100"; // Light text for dark bg
+    case "bg-pink-500":
+      return "text-pink-900";
+    case "bg-red-500":
+      return "text-red-700";
+    case "bg-red-700":
+      return "text-red-900";
+    case "bg-amber-500":
+      return "text-amber-700";
+    case "bg-amber-700":
+      return "text-amber-900";
+    case "bg-brown-700":
+      return "text-brown-900"; // Assuming custom brown color
+    default:
+      return "text-black"; // Fallback color
+  }
+};
+
+
+export { getStatusClass, getStatus ,getStatusIconColor, getLabelColor, getDarkerTextColor};
+
+
