@@ -142,7 +142,7 @@ export default function TableCustom({
                 <TableHeader>
                   <TableRow>
                     {selectable && (
-                      <TableHead className="p-0 w-[0px] text-right m-0 text-[#8b8d98]">
+                      <TableHead className="p-0 w-[0px] text-right m-0">
                         <input
                           type="checkbox"
                           onChange={handleSelectAllRows}
@@ -157,7 +157,7 @@ export default function TableCustom({
                     {columns.map((column, index) => (
                       <TableHead
                         key={index}
-                        className="cursor-pointer text-[#8b8d98]"
+                        className="cursor-pointer"
                         style={column.width ? { width: column.width } : {}}
                         onClick={() => handleSort(column.dataField)}
                       >

@@ -194,10 +194,10 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
   };
 
   return (
-    <Card>
+    <Card className="rounded-lg">
       {project && (
         <>
-          <CardHeader className={`m-2 bg-gray-500`} onClick={viewDetails}>
+          <CardHeader className={`m-2 bg-gray-500 cursor-pointer rounded-t-lg `} onClick={viewDetails} >
             <CardTitle>
               <Badge
                 variant="dot"
@@ -216,10 +216,10 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
           </CardHeader>
           <CardContent>
             <div onClick={navigateToBoard}>
-              <h3 className="text-lg font-semibold mb-2 text-[#11182c]">
+              <h3 className="text-lg font-semibold mb-2 text-neutral-1200">
                 {project.name}
               </h3>
-              <div className="flex text-gray-500 text-sm mb-4 gap-1">
+              <div className="flex text-neutral-1100 text-sm mb-4 gap-1">
                 <ListTodo size={18} />
                 <span className="ml-2 font-semibold">
                   {project?.task_count}

@@ -91,6 +91,21 @@ module.exports = {
           1200: "hsl(var(--plum-12))",
         },
 
+        "neutral": {
+          100: "hsl(var(--neutral-1))",
+          200: "hsl(var(--neutral-2))",
+          300: "hsl(var(--neutral-3))",
+          400: "hsl(var(--neutral-4))",
+          500: "hsl(var(--neutral-5))",
+          600: "hsl(var(--neutral-6))",
+          700: "hsl(var(--neutral-7))",
+          800: "hsl(var(--neutral-8))",
+          900: "hsl(var(--neutral-9))",
+          1000: "hsl(var(--neutral-10))",
+          1100: "hsl(var(--neutral-11))",
+          1200: "hsl(var(--neutral-12))",
+        },
+
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
