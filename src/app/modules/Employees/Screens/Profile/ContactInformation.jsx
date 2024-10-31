@@ -17,6 +17,7 @@ import { validationEmployeeContactInfoFormSchema } from "../../../../../app/util
 import { Button } from "../../../../../components/ui/button";
 import countries from "country-data";
 import { countriesCallingCodes } from "data/Data";
+import { Card, CardContent } from "components/ui/card";
 
 const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
   const formRef = React.createRef();
@@ -74,8 +75,10 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
           >
             {(props) => (
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-                <h6 className="text-2xl text-secondary-foreground">
-                  Emergency Contact
+                <Card className="p-6">
+                  <CardContent>
+                    <h6 className="text-2xl text-secondary-foreground">
+                      Emergency Contact
                 </h6>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -175,6 +178,8 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                     </div>
                   </div>
                 </div>
+                          </CardContent>
+                </Card>
               </form>
             )}
           </Formik>

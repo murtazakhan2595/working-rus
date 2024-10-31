@@ -30,6 +30,8 @@ import { Button } from "../../../../../components/ui/button";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../../../../../src/@/components/ui/calendar";
+import { Card, CardContent, CardFooter } from "components/ui/card";
+
 
 // Get country options for Select component but do not showing country calling code
 
@@ -96,8 +98,10 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
               {(props) => (
                 <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <ImageInput
+                    <Card className="p-6">
+                      <CardContent>
+                        <div className="space-y-2">
+                          <ImageInput
                         name={"profile_picture"}
                         error={props.errors.profile_picture}
                         touch={props.touched.profile_picture}
@@ -111,6 +115,10 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         setImageError={setImageError}
                       />
                     </div>
+                      </CardContent>
+                    </Card>
+                    <Card className="p-6">
+                      <CardContent>
                     {employeeId && (
                       <div className="space-y-2">
                         <h6 className="text-base">
@@ -121,8 +129,9 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         </span>
                       </div>
                     )}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
+                    
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="space-y-2">
                         <TextInput
                           name={"first_name"}
                           error={props.errors.first_name}
@@ -256,9 +265,11 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                           }}
                         />
                       </div>
-                    </div>
-                  </div>
-                  <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
+                        </div>
+                        
+                      </CardContent>
+                      <CardFooter>
+                      <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50 w-full">
                     <div className="flex justify-end space-x-4">
                       <Button
                         type="submit"
@@ -272,6 +283,10 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                       </Button>
                     </div>
                   </div>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                 
                   <div></div>
                 </form>
               )}

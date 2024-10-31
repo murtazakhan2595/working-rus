@@ -147,7 +147,7 @@ export const EmployeeColumns = [
   },
   {
     dataField: "",
-    text: "",
+    text: "Actions",
     formatter: (cell, row) => <EmployeeAction row={row} />,
   },
 ];
