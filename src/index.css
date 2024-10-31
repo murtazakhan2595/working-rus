@@ -94,8 +94,36 @@
         --gray-10: 0 0% 51.4%;
         --gray-11: 0 0% 39.2%;
         --gray-12: 0 0% 12.5%;
+
+        --neutral-1: 240 20% 99%;
+        --neutral-2: 240 20% 98%;
+        --neutral-3: 240 11.1% 94.7%;   
+        --neutral-4: 240 9.5% 91.8%;
+        --neutral-5: 230 10.7% 89%; 
+        --neutral-6: 240 10.1% 86.5%;
+        --neutral-7: 233 9.9% 82.2%;
+        --neutral-8: 231 10.2% 75.1%;
+        --neutral-9: 231 5.9% 57.1%;
+        --neutral-10: 226 5.4% 52.7%;
+        --neutral-11: 220 6% 40%;
+        --neutral-12: 210 13% 13%;
+        
+
+        --secondary-1: 300 20% 99%;
+        --secondary-2: 270 20% 98%;
+        --secondary-3: 270 14% 95%;
+        --secondary-4: 264 12% 92%;
+        --secondary-5: 274 12% 89%;
+        --secondary-6: 274 12% 86%;
+        --secondary-7: 274 12% 82%;
+        --secondary-8: 274 12% 75%;
+        --secondary-9: 274 12% 57%;
+        --secondary-10: 274 12% 53%;
+        --secondary-11: 274 12% 40%;
+        --secondary-12: 274 12% 13%;
     }
 }
+        
 
 @layer base {
     * {
