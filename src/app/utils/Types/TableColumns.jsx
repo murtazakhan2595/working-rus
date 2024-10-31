@@ -619,7 +619,7 @@ export const SalaryComponentColumns = (onCheckedChange) => [
               cell === "deduction" ? "bg-[#29a385]" : "bg-[#EA3E69]"
             } rounded-full`}
           />
-          <div className="text-[#1c2024] text-xs font-semibold  leading-3 capitalize">
+          <div className="text-neutral-1200 text-xs font-semibold  leading-3 capitalize">
             {cell}
           </div>
         </div>

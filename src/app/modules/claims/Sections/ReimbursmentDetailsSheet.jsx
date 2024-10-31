@@ -181,7 +181,7 @@ const hasPendingApprovalForUser = () => {
                     <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
                       <div className="flex items-center gap-2">
                         <Paperclip size={16} />
-                        <div className="text-[#1c2024] text-sm font-medium ">
+                        <div className="text-neutral-1200 text-sm font-medium ">
                           Receipt
                         </div>
                         <div className="text-[#8b8d98] text-sm font-normal">

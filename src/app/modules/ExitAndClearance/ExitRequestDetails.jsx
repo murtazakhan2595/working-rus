@@ -48,7 +48,7 @@ const ExitRequestDetails = ({ userDetails, exitData, isTermination }) => {
   return (
     <div className="m-2 mt-0 bg-white p-10 rounded-b-md relative">
       <div className="h-[35px] justify-between items-start inline-flex w-full mb-4">
-        <div className="text-[#323233] text-[22px] font-bold ">
+        <div className="text-neutral-1200 text-[22px] font-bold ">
           {isTermination ? "Termination Request" : "Exit Request"}
         </div>
         {isTermination ? (

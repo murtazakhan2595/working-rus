@@ -8,7 +8,7 @@ const EmployeeDataInfo = ({ name, email, src, id }) => {
   return (
     <div className="flex items-center">
       <Avatar
-        className="h-14 w-14"
+        className="h-12 w-12"
         src={src}
         fallbackText={name?.charAt(0).toUpperCase()}
         alt={name?.charAt(0).toUpperCase()}
@@ -16,7 +16,7 @@ const EmployeeDataInfo = ({ name, email, src, id }) => {
 
       <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces">
         {id && (
-          <div className="text-[#1c2024] text-xs font-normal">
+          <div className="text-neutral-1200 text-xs font-normal">
             <EmployeeID value={id} />
           </div>
         )}

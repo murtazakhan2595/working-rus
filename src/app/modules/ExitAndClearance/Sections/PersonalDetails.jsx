@@ -10,7 +10,7 @@ const PersonalInformation = ({
     <>
       <div className="bg-white  border w-full rounded-lg p-6 mb-6">
         <div className="flex justify-between">
-          <h2 className="text-[#323233] text-xl font-bold">
+          <h2 className="text-neutral-1200 text-xl font-bold">
             Employee Information
           </h2>
         </div>

@@ -24,7 +24,7 @@ import {
   CardTitle,
   CardDescription,
 } from "components/ui/card";
-import { Clock, Layout, ListTodo } from "lucide-react";
+import { Clock, Layout, ListTodo, Timer } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import TableCustom from "components/CustomTable";
 import { projectBoard } from "app/utils/Types/TableColumns";
@@ -230,9 +230,9 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
           </CardContent>
           <div className="border border-gray-400 m-2" />
           <CardFooter className="flex justify-between">
-            <div className="text-gray-400 text-sm flex justify-center gap-2">
+            <div className="text-neutral-1100 text-sm flex justify-center gap-2">
               {" "}
-              <Clock /> {moment(project.start_date).format("MMM D, YYYY")}
+              <Timer />{moment(project.start_date).format("MMM D, YYYY")}
             </div>
             <MembersList members={project?.project_members || []} />
           </CardFooter>
