@@ -177,11 +177,11 @@ export const HeadOfDepartment = [
 
 export const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
   label: (
-    <div>
-      <div style={{ fontWeight: "bold", color: "#000", marginTop: "25px" }}>
+    <div className="flex flex-row gap-2">
+      <div className="font-bold text-neutral-1200">
         {manager?.label?.split(" - ")[0]}
       </div>
-      <div style={{ fontSize: "13px", color: "#777", fontWeight: "normal" }}>
+      <div className="text-sm text-neutral-1100">
         {manager?.label?.split(" - ")[1]}
       </div>
     </div>

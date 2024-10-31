@@ -348,10 +348,10 @@ const CreatePayRun = () => {
                 <ArrowLeft size={14} color="#000" />
               </button>
               <div>
-                <span className="text-[#1c2024] text-xl font-semibold  leading-tight">
+                <span className="text-neutral-1200 text-xl font-semibold  leading-tight">
                   Pay Run for{" "}
                 </span>
-                <span className="text-[#1c2024] text-xl font-bold  leading-tight">
+                <span className="text-neutral-1200 text-xl font-bold  leading-tight">
                   {moment(payrunDraft?.start_date).format("MMMM YYYY")}
                 </span>
               </div>
@@ -417,7 +417,7 @@ const CreatePayRun = () => {
                     className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
                     onClick={handleWithholdSalary}
                   >
-                    <div className="text-center text-[#1c2024] text-sm font-medium">
+                    <div className="text-center text-neutral-1200 text-sm font-medium">
                       Withhold Salary
                     </div>
                   </Button>
@@ -427,7 +427,7 @@ const CreatePayRun = () => {
                     className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
                     onClick={handleProvideSalary}
                   >
-                    <div className="text-center text-[#1c2024] text-sm font-medium">
+                    <div className="text-center text-neutral-1200 text-sm font-medium">
                       Provide Salary Back
                     </div>
                   </Button>

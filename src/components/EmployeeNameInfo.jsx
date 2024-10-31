@@ -18,7 +18,7 @@ const EmployeeNameInfo = ({
        src={'/placeholder-user.jpg'}
        alt="Avatar"
        fallbackText={name?.charAt(0)}
-       className={`${getRandomColor(name?.charAt(0))} h-14 w-14`}
+       className={`${getRandomColor(name?.charAt(0))} h-12 w-12`}
       />
       
       <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces">

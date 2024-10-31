@@ -31,8 +31,8 @@ const ProfileManagement = () => {
 
   return (
     <section className="flex flex-col p-[18px] text-sm bg-white rounded-md">
-      <header className="flex gap-5 justify-between text-lg text-zinc-800">
-        <div className="text-[#323233] text-lg font-normal ">
+      <header className="flex gap-5 justify-between text-lg text-neutral-1200">
+        <div className="text-neutral-1200 text-lg font-normal ">
           Profile Management
         </div>
 

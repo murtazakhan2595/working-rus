@@ -132,13 +132,13 @@ const CreateCardModal = ({ employees, onClose, projects }) => {
             <RxCross2 />
           </div>
           <div className="h-[58px] flex-col justify-start items-start gap-2.5 inline-flex">
-            <div className="text-[#323233] text-[25px] font-bold ">
+            <div className="text-neutral-1200 text-[25px] font-bold ">
               Add Card to
             </div>
             <div className="justify-start items-center gap-2.5 inline-flex">
               <div>
                 <span
-                  className="text-[#323233] text-sm font-bold  underline cursor-pointer"
+                  className="text-neutral-1200 text-sm font-bold  underline cursor-pointer"
                   onClick={toggleDropdown}
                 >
                   {selectedProject.name}
@@ -157,7 +157,7 @@ const CreateCardModal = ({ employees, onClose, projects }) => {
               </div>
               <div className="border-b border-[#323233] justify-start items-center gap-1 flex">
                 <div className="w-1.5 h-1.5 bg-[#5640df] rounded-full" />
-                <div className="text-[#323233] text-sm font-bold  leading-[17.50px]">
+                <div className="text-neutral-1200 text-sm font-bold  leading-[17.50px]">
                   <span className="cursor-pointer"
                   onClick={toggleboardDropdown}>{selectedBoard?.name}</span>
                   <CustomDropdown

@@ -117,10 +117,10 @@ const PayRunDetails = () => {
             <ArrowLeft size={14} color="#000" />
           </button>
           <div>
-            <span className="text-[#1c2024] text-xl font-semibold  leading-tight">
+            <span className="text-neutral-1200 text-xl font-semibold  leading-tight">
               Pay Run for{" "}
             </span>
-            <span className="text-[#1c2024] text-xl font-bold  leading-tight">
+            <span className="text-neutral-1200 text-xl font-bold  leading-tight">
               {moment(payrun?.start_date).format("MMMM YYYY")}
             </span>
           </div>
@@ -149,7 +149,7 @@ const PayRunDetails = () => {
                 onClick={handleDownloadSlip}
               >
                 <Download color="#1c2024" size={16} />
-                <div className="text-center text-[#1c2024] text-sm font-medium">
+                <div className="text-center text-neutral-1200 text-sm font-medium">
                   Download
                 </div>
               </Button>

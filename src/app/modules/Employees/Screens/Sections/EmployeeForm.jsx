@@ -374,7 +374,7 @@ const SheetOnBorading = ({
                             value={props.values?.residential_address}
                             label={"Address"}
                             required={true}
-                            minRows={3}
+                            maxRows={1}
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
                             }}
