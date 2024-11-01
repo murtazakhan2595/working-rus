@@ -13,7 +13,7 @@ export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   return (
     <>
       <div
-        className={`flex text-capitalize items-center text-baseGray font-lato text-base font-normal rounded-2xl px-3 py-1 ${
+        className={`flex text-capitalize items-center text-baseGray  text-base font-normal rounded-2xl px-3 py-1 ${
           backgroungColor ?? "bg-plum-500"
         }`}
       >
@@ -63,7 +63,7 @@ export const StatusLabel = ({ status, value }) => {
         // style={{ color: "#323333", minWidth: "100px", fontWeight: "normal" }}
       >
         <div
-          className={`${className} font-semibold text-xs font-['Inter'] leading-3`}
+          className={`${className} font-semibold text-xs  leading-3`}
         >
           {value ?? status}
         </div>

@@ -57,12 +57,12 @@ function ExitDetails({ exitData, isTermination }) {
 
   return (
     <>
-      <div className="bg-white border w-full rounded-lg p-6 mb-6">
+      <div className="w-full p-6 mb-6 bg-white border rounded-lg">
         <div className="flex justify-between">
           <h2 className="text-xl">Exit Details</h2>
         </div>
         <hr />
-        <div className="flex flex-col justify-center self-start mt-5 text-base">
+        <div className="flex flex-col self-start justify-center mt-5 text-base">
           {isTermination
             ? exitDetailsTermination.map((detail, index) => (
                 <ExitInfoItem
@@ -98,7 +98,7 @@ function ExitDetails({ exitData, isTermination }) {
                 className="w-[175px] h-10 px-5 py-1 rounded-lg border-2 border-[#bf6760] justify-center items-center gap-[15px] flex"
                 onClick={() => handleStatuschange("rejected by employee")}
               >
-                <div className="text-[#5c5e64] text-sm font-medium font-['Lato'] leading-normal">
+                <div className="text-[#5c5e64] text-sm font-medium  leading-normal">
                   Reject
                 </div>
               </button>
@@ -106,7 +106,7 @@ function ExitDetails({ exitData, isTermination }) {
                 className="w-[175px] h-10 px-5 py-1 rounded-lg  border-2 border-[#a3bfb6] justify-center items-center gap-[15px] flex"
                 onClick={() => handleStatuschange("accepted by employee")}
               >
-                <div className="text-[#5c5e64] text-sm font-medium font-['Lato'] leading-normal">
+                <div className="text-[#5c5e64] text-sm font-medium  leading-normal">
                   Accept
                 </div>
               </button>

@@ -19,7 +19,7 @@ module.exports = {
     extend: {
        
       fontFamily: {
-        body: ['Inter', 'sans-serif'], // Define your custom font family
+        body: ['Inter', 'ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji'], // Define your custom font family
       },
       colors: {
         border: "hsl(var(--border))",

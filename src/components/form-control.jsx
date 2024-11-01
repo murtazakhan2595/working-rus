@@ -81,7 +81,7 @@ const SelectComponent = ({
             {value ? (
               options.find((option) => option.value === value)?.label
             ) : (
-              <span className="text-neutral-400 text-sm font-normal">
+              <span className="text-sm font-normal text-neutral-400">
                 {placeholder || `Select`}
               </span>
             )}
@@ -180,7 +180,7 @@ const SelectMultiInputComponent = ({
                   </span>
                 ))
               ) : (
-                <span className="text-neutral-400 text-sm font-normal">
+                <span className="text-sm font-normal text-neutral-400">
                   {`Select`}
                 </span>
               )}
@@ -378,7 +378,7 @@ const RadioGroupInput = ({
           ))}
         </div>
       </RadioGroup>
-      {touch && error && <div className="text-red-500 text-sm">{error}</div>}
+      {touch && error && <div className="text-sm text-red-500">{error}</div>}
     </div>
   );
 };
@@ -523,7 +523,7 @@ const PasswordInput = ({
 const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
   return (
     <>
-      <div className="flex flex-row gap-4 items-center">
+      <div className="flex flex-row items-center gap-4">
         <Input
           id={name}
           type="checkbox"
@@ -624,7 +624,7 @@ const PhoneNumberInput = ({
             </PopoverContent>
           </Popover>
         </div>
-        <div className="col-span-4 col-start-3 w-full">
+        <div className="w-full col-span-4 col-start-3">
           <Input
             id={name}
             name={name}
@@ -683,7 +683,7 @@ const CustomButton = ({ label, onClick, disabled }) => {
   return (
     <div className="flex flex-col gap-4">
       <Button
-        className="bg-[#323333] text-[#F7F8FA] w-40 h-12 font-lato text-base font-semibold"
+        className="bg-[#323333] text-[#F7F8FA] w-40 h-12  text-base font-semibold"
         onClick={onClick}
         disabled={disabled}
       >
@@ -834,7 +834,7 @@ const FileInput = ({
           }}
         />
         <div style={{ position: "absolute", bottom: ".61rem", left: "6.5rem" }}>
-          <div style={{minWidth:'7rem'}} className="bg-white px-1 text-sm w-full">{value?.document?.name || value?.name}</div>
+          <div style={{minWidth:'7rem'}} className="w-full px-1 text-sm bg-white">{value?.document?.name || value?.name}</div>
         </div>
       </div>
       {error && touch && <div className="text-red-500 ">{error}</div>}
@@ -1004,16 +1004,22 @@ const FilterInput = ({
   const [openDesignation, setOpenDesignation] = useState(false);
   const [openDepartment, setOpenDepartment] = useState(false);
   const [selectedValue, setValue] = useState("");
+  const [inputValues, setInputValues] = useState({});
 
   const handleInputChange = (filter, event) => {
-    
+    setInputValues(prev => ({
+      ...prev,
+      [filter.name]: event.target.value
+    }));
     onChange(filter.name, event.target.value);
   };
 
   const renderInputField = (filter, index) => {
     return (
       <div className="relative">
-        <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
+        {!inputValues[filter.name] && (
+          <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
+        )}
         <Input
           key={index}
           type={filter.type}
@@ -1023,6 +1029,7 @@ const FilterInput = ({
           } ${filter.height ?? height}`}
           name={filter.name}
           id={filter.name}
+          value={inputValues[filter.name] || ''}
           onChange={(event) => handleInputChange(filter, event)}
         />
       </div>

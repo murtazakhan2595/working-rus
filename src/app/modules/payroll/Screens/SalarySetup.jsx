@@ -168,7 +168,7 @@ const SalarySetup = ({ departments }) => {
             <div className="flex items-center justify-between">
               <div className="h-[47px] flex-col justify-center items-start inline-flex">
                 <div className="flex-col justify-start items-start flex">
-                  <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
+                  <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
                     {activeTab === "components"
                       ? "Components"
                       : "Employee Salaries"}
@@ -176,7 +176,7 @@ const SalarySetup = ({ departments }) => {
                 </div>
                 <div className="pt-1.5 flex-col justify-start items-start flex">
                   <div className="flex-col justify-start items-start flex">
-                    <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
+                    <div className="self-stretch text-[#8b8d98] text-sm font-normal  leading-[16.80px]">
                       {activeTab === "components"
                         ? "Types details are listed here"
                         : "Payrolls of all employees are listed below"}

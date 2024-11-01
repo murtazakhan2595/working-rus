@@ -17,10 +17,10 @@ const SubBlock = ({ label, value, image }) => {
             <div className="bg-[#FAFBFC] rounded-[20px] px-3 py-4 flex gap-x-[20px]">
                 <img src={image} alt="icon" />
                 <div>
-                    <h4 className="font-lato text-sm font-normal leading-normal text-baseGray">
+                    <h4 className=" text-sm font-normal leading-normal text-baseGray">
                         {label}
                     </h4>
-                    <h2 className="font-lato text-2xl text-[#323333] font-normal leading-normal">
+                    <h2 className=" text-2xl text-[#323333] font-normal leading-normal">
                         {value}
                     </h2>
                 </div>

@@ -231,7 +231,7 @@ const CreateAndEditCardForm = ({
                       <div className="flex items-center justify-between p-2 mb-2 bg-gray-100 rounded-lg shadow-md w-fit">
                         <div className="flex items-center">
                           <FaRegImage className="w-4 h-4 text-gray-500" />
-                          <span className="ml-4 text-sm font-lato text-baseGray">
+                          <span className="ml-4 text-sm  text-baseGray">
                             {file.name}
                           </span>
                         </div>
