@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../../../../../components/ui/button";
 import { CircleX } from "lucide-react";
 import { validateEmployeeEducationForm } from "app/utils/FormSchema/employeeFormSchema";
+import { Card, CardContent } from "components/ui/card";
 const EducationInformation = ({
   nextstep,
   baseUrl,
@@ -84,8 +85,10 @@ const EducationInformation = ({
         </div>
       ) : (
         <>
-          <div className="space-y-4">
-            <Formik
+          <Card className="p-6">
+            <CardContent>
+              <div className="space-y-4">
+                <Formik
               initialValues={{ educations: educations }}
               ref={formRef}
               onSubmit={(values, { resetForm }) => {
@@ -286,7 +289,9 @@ const EducationInformation = ({
                 </form>
               )}
             </Formik>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </>
       )}
     </div>

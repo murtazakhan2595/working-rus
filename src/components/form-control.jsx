@@ -1006,6 +1006,7 @@ const FilterInput = ({
   const [selectedValue, setValue] = useState("");
 
   const handleInputChange = (filter, event) => {
+    
     onChange(filter.name, event.target.value);
   };
 
