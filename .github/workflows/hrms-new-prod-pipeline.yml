@@ -1,4 +1,4 @@
-name: Production Environment - Github Actions
+name: Production New Environment - Github Actions
 
 # When this action will be executed
 on:
