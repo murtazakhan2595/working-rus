@@ -58,6 +58,7 @@ import {
 } from "app/modules/payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import Attendance from "app/modules/Attendance";
+import StyleGuide from "./app/modules/StyleGuide";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -137,6 +138,7 @@ function App() {
   return (
     <>
       <Routes>
+
         {isLogin && (
           <>
             <Route
@@ -154,6 +156,7 @@ function App() {
               }
             >
               <Route path="/coming-soon" element={<ComingSoon />} />
+              
               <Route path="/services" element={<Services />} />
               <Route exact path="/" element={<Dashboard />} />
               <Route path="/projects" element={<Projects />} />
@@ -307,6 +310,7 @@ function App() {
           </>
         )}
         <Route path="/login" element={<Login />} />
+        <Route path="/style-guide" element={<StyleGuide />} />
         <Route path="/apply/:id" element={<JobApplicationForm />} />
         <Route path="/job-description/:id" element={<JobDescription />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

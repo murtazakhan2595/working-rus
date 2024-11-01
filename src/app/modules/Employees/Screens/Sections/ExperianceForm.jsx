@@ -14,12 +14,14 @@ import { Button } from "../../../../../components/ui/button";
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from '../../../../../src/@/components/ui/calendar';
+import { Card, CardContent } from "components/ui/card";
 
 const Experience = ({ errors, touched, values, onChange }) => {
   const [date, setDate] = useState(new Date());
   const [selectedValue, setSelectedValue] = useState('');
   return (
     <>
+    
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -121,7 +123,8 @@ const Experience = ({ errors, touched, values, onChange }) => {
             />
           </div>
         </div>
-      </div>
+        </div>
+       
     </>
   );
 };

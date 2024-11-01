@@ -366,7 +366,7 @@ const SheetOnBorading = ({
                             countryOptions={countriesCallingCodes} // Pass the country options here
                           />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 col-span-3">
                           <TextAreaInput
                             name={"residential_address"}
                             error={props.errors?.residential_address}
@@ -382,6 +382,9 @@ const SheetOnBorading = ({
                         </div>
                       </div>
                     </div>
+
+
+                    
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">
                         Official Information
