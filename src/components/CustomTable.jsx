@@ -263,7 +263,7 @@ export default function TableCustom({
             </Table>
           </div>
         </div>
-        {pagination && (
+        {pagination && dataTotalSize > 10 && (
           <div className="flex justify-between ">
             <CustomPageSizePagination
               sizePerPage={options.sizePerPage}
