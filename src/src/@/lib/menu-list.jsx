@@ -84,11 +84,11 @@ export function getMenuList(pathname, userRole) {
       "Team Management",
       Users,
       [
-        createMenu("/profile-management", "Profile Management"),
+        ...(userRole !== 2 ? [createMenu("/profile-management", "Profile Management")] : []),
         // createMenu("/settings", "Profile Settings"),
         // createMenu("/travel-details", "Travel Details"),
+        ...(userRole !== 2 ? [createMenu("/create-employee", "Employee Creation")] : []),
         createMenu("/exit-clearance", "Exit & Clearance"),
-        createMenu("/create-employee", "Employee Creation"),
         // createMenu("/edit-employee", "Customize Employee"),
         // createMenu("/relocation", "Relocation"),
         // createMenu("/internal", "Internal"),
