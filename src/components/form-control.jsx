@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // import Select from "react-select";
 import { Label } from "../src/@/components/ui/label";
 import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import upload from "../assets/images/upload.png";
 import ReactQuill from "react-quill";
