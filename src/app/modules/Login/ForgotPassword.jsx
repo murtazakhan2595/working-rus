@@ -91,7 +91,7 @@ const ForgotPassword = () => {
                                 </Button>
                                 {response && (
                                     <div className={`mx-auto p-2 flex gap-x-2 rounded-xl ${response.status === "success" ? "bg-[#E6FFEA] border border-[#B6F2C2]" : "bg-[#FFF8F7] border border-[#F2DCDA]"}`}>
-                                        <p className={`font-lato text-[14px] ${response.status === "success" ? "text-[#27A745]" : "text-[#F08278]"}`}>
+                                        <p className={` text-[14px] ${response.status === "success" ? "text-[#27A745]" : "text-[#F08278]"}`}>
                                             {response.message}
                                         </p>
                                     </div>

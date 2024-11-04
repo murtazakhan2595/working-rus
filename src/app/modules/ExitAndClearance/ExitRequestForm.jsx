@@ -297,14 +297,14 @@ function ExitRequestForm({
                             <div className="flex flex-row gap-9 ">
                               <button
                                 type="submit"
-                                className="flex items-center justify-center w-48 h-12 mt-4 text-base text-black bg-white border-2 border-black rounded-lg gap-x-2 font-lato"
+                                className="flex items-center justify-center w-48 h-12 mt-4 text-base text-black bg-white border-2 border-black rounded-lg gap-x-2 "
                               >
                                 Reset
                               </button>
 
                               <button
                                 type="submit"
-                                className="flex items-center justify-center w-48 h-12 mt-4 text-base text-white bg-black rounded-lg gap-x-2 font-lato"
+                                className="flex items-center justify-center w-48 h-12 mt-4 text-base text-white bg-black rounded-lg gap-x-2 "
                               >
                                 Submit
                               </button>

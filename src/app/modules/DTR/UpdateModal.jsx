@@ -111,34 +111,34 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50
              z-50 w-screen overflow-y-auto scroll h-screen">
                 <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[100vh] relative">
-                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-3 lg:mb-3">Update Task</h2>
+                    <h2 className="text-xl  text-[#323333] font-bold lg:pt-3 lg:mb-3">Update Task</h2>
                     <button onClick={() => onClose()} className="absolute top-6 right-8"><RxCross2 /></button>
                     <form onSubmit={handleUpdateTask}>
-                        <label htmlFor="task" className="text-[18px] font-lato font-semibold text-baseGray">Title</label>
-                        <input id="task" placeholder="Add here" type="text" required name="task" value={formData.task} onChange={(e) => handleUpdate(e.target.name, e.target.value)} className="block pl-2 lg:w-full outline-none border rounded-lg h-9 border-baseGray placeholder:font-lato lg:mb-4" />
-                        <label htmlFor="task_details" className="text-[18px] font-lato font-semibold text-baseGray">Task Details</label>
-                        <textarea name="task_details" required value={formData.task_details} onChange={(e) => handleUpdate(e.target.name, e.target.value)} id="task_details" className="block pl-2 lg:w-full outline-none border rounded-lg border-baseGray lg:mb-4 placeholder:font-lato" cols="30" rows="4" placeholder="Add here"></textarea>
+                        <label htmlFor="task" className="text-[18px]  font-semibold text-baseGray">Title</label>
+                        <input id="task" placeholder="Add here" type="text" required name="task" value={formData.task} onChange={(e) => handleUpdate(e.target.name, e.target.value)} className="block pl-2 lg:w-full outline-none border rounded-lg h-9 border-baseGray placeholder: lg:mb-4" />
+                        <label htmlFor="task_details" className="text-[18px]  font-semibold text-baseGray">Task Details</label>
+                        <textarea name="task_details" required value={formData.task_details} onChange={(e) => handleUpdate(e.target.name, e.target.value)} id="task_details" className="block pl-2 lg:w-full outline-none border rounded-lg border-baseGray lg:mb-4 placeholder:" cols="30" rows="4" placeholder="Add here"></textarea>
 
 
                         <div className="flex items-center gap-x-6">
                             <div className="flex lg:flex-col lg:gap-y-3">
                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><PiUsersLight className="text-xl" />
-                                    <h3 className="font-medium text-[18px] font-lato">Assignee</h3>
+                                    <h3 className="font-medium text-[18px] ">Assignee</h3>
                                 </div>
                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><IoCalendarOutline className="text-xl" />
-                                    <h3 className="font-medium text-[18px] font-lato">Start Date</h3>
+                                    <h3 className="font-medium text-[18px] ">Start Date</h3>
                                 </div>
                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><IoCalendarOutline className="text-xl" />
-                                    <h3 className="font-medium text-[18px] font-lato">Due Date</h3>
+                                    <h3 className="font-medium text-[18px] ">Due Date</h3>
                                 </div>
                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><AiOutlineUnorderedList className="text-xl" />
-                                    <h3 className="font-medium text-[18px] font-lato">Type</h3>
+                                    <h3 className="font-medium text-[18px] ">Type</h3>
                                 </div>
                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><PiHeadlightsBold className="text-xl" />
-                                    <h3 className="font-medium text-[18px] font-lato">Priority</h3>
+                                    <h3 className="font-medium text-[18px] ">Priority</h3>
                                 </div>
                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><TbCircleDashed className="text-xl" />
-                                    <h3 className="font-medium text-[18px] font-lato">Status</h3>
+                                    <h3 className="font-medium text-[18px] ">Status</h3>
                                 </div>
                             </div>
                             <div className="flex lg:flex-col lg:gap-y-2.5 lg:w-[60%]">
@@ -375,7 +375,7 @@ const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filter
                             </div>
                         </div>
 
-                        <button type="submit" className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Update</button>
+                        <button type="submit" className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white  text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Update</button>
                     </form>
                 </div>
             </div>

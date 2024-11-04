@@ -30,7 +30,7 @@ const Tabs = ({ tabs, onTabChange, buttonLabel }) => {
 
       {buttonLabel &&
         <div className="flex items-center gap-x-3">
-          <div className="font-lato text-[#47484C] text-[17px]">{buttonLabel}</div>
+          <div className=" text-[#47484C] text-[17px]">{buttonLabel}</div>
           <Link to="/job-post" className="p-2 rounded-md bg-black" style={{ fontSize: '12px' }}><FaPlus className="text-white" /></Link>
         </div>
       }

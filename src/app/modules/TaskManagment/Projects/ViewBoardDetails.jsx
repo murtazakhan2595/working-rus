@@ -182,7 +182,7 @@ const ViewBoardDetails = ({
                   key={index}
                   className={`w-[35px] h-[35px] p-3 ${getRandomColor()} rounded-[100px] justify-center items-center gap-2.5 inline-flex`}
                 >
-                  <div className="text-zinc-100 text-sm font-normal font-['Lato']">
+                  <div className="text-zinc-100 text-sm font-normal ">
                     HP
                   </div>
                 </div>

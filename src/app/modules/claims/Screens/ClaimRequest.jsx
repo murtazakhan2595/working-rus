@@ -215,14 +215,14 @@ const handleDeleteClaims = async () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="h-[47px] flex-col justify-center items-start inline-flex">
-              <div className="flex-col justify-start items-start flex">
-                <div className="self-stretch text-[#ab4aba] text-2xl font-medium font-['Inter'] leading-normal">
+              <div className="flex flex-col items-start justify-start">
+                <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
                   {isMyClaims ? "Reimbursment Requests" : "Requests"}
                 </div>
               </div>
               <div className="pt-1.5 flex-col justify-start items-start flex">
-                <div className="flex-col justify-start items-start flex">
-                  <div className="self-stretch text-[#8b8d98] text-sm font-normal font-['Inter'] leading-[16.80px]">
+                <div className="flex flex-col items-start justify-start">
+                  <div className="self-stretch text-[#8b8d98] text-sm font-normal  leading-[16.80px]">
                     {isMyClaims
                       ? "Your reimburment request status is displyed"
                       : " All employee reimbursements are displayed"}
@@ -230,7 +230,7 @@ const handleDeleteClaims = async () => {
                 </div>
               </div>
             </div>
-            <div className=" flex items-center gap-3">
+            <div className="flex items-center gap-3 ">
               {selectedRows.length > 0 && (
                 <Button onClick={handleDeleteClaims}>Delete</Button>
               )}

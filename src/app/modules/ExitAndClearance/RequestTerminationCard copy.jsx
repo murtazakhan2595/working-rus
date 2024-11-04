@@ -300,14 +300,14 @@ const RequestTerminationCard = ({
                       <div className="flex flex-row gap-9 ">
                         <button
                           type="submit"
-                          className="mt-4 bg-white border-2 border-black rounded-lg flex items-center justify-center gap-x-2 text-black font-lato text-base  w-48 h-12"
+                          className="mt-4 bg-white border-2 border-black rounded-lg flex items-center justify-center gap-x-2 text-black  text-base  w-48 h-12"
                         >
                           Reset
                         </button>
 
                         <button
                           type="submit"
-                          className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base  w-48 h-12"
+                          className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white  text-base  w-48 h-12"
                         >
                           Submit
                         </button>

@@ -24,7 +24,8 @@ import ViewEmployee from "./app/modules/Employees/Screens/View";
 import Err404 from "./app/modules/Error/Err404.jsx";
 import Err401 from "./app/modules/Error/Err401.jsx";
 import "react-toastify/dist/ReactToastify.css";
-import "./assets/css/globle.css";
+// removed globle css as it is not used in the project
+// import "./assets/css/globle.css";
 import axios from "axios";
 import { setUserLogout, setToken } from "./state/slices/UserSlice.js";
 import { handleUpdateProfile } from "data/Data";

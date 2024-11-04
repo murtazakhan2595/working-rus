@@ -60,15 +60,15 @@ const JobDescription = ({ baseUrl }) => {
           </Link>
           <div className="max-w-4xl">
             <div className="mb-4">
-              <span className="text-base font-lato font-normal text-baseGray">
+              <span className="text-base  font-normal text-baseGray">
                 Job ID: {jobDetails?.id}
               </span>
-              <h3 className="text-2xl font-lato font-bold text-baseGray mt-1">
+              <h3 className="text-2xl  font-bold text-baseGray mt-1">
                 {jobDetails?.Job_Title}
               </h3>
               <div className="flex justify-between border-b border-[#DADADA] pb-4">
                 <div>
-                  <div className="flex items-center text-baseGray mt-1 font-lato">
+                  <div className="flex items-center text-baseGray mt-1 ">
                     <span>{getCountryFullName(jobDetails?.location)}</span>
                     <span className="mx-2">•</span>
                     <span>{getJobType(jobDetails?.Job_Type)}</span>
@@ -109,18 +109,18 @@ const JobDescription = ({ baseUrl }) => {
               />
             </div>
             <div className="mb-4">
-              <h4 className="text-lg font-semibold font-lato text-baseGray">
+              <h4 className="text-lg font-semibold  text-baseGray">
                 Job Description:
               </h4>
-              <p className="text-baseGray font-lato text-base mt-2">
+              <p className="text-baseGray  text-base mt-2">
                 {jobDetails?.Job_Description}
               </p>
             </div>
             <div>
-              <h4 className="text-lg font-semibold font-lato text-baseGray">
+              <h4 className="text-lg font-semibold  text-baseGray">
                 Job Requirements:
               </h4>
-              <p className="text-baseGray font-lato text-base mt-2">
+              <p className="text-baseGray  text-base mt-2">
                 {jobDetails?.Job_Requirement}
               </p>
             </div>
