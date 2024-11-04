@@ -1,163 +1,222 @@
-import React from 'react';
+import { Card } from "../../../components/ui/card"
+import { 
+  CircleHelp, 
+  CircleX, 
+  Timer, 
+  CircleCheck, 
+  Circle, 
+  MoveUp, 
+  MoveRight, 
+  MoveDown 
+} from "lucide-react"
 
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "../../../src/@/components/ui/breadcrumb";
+export default function StyleGuide() {
+  const colors = {
+    primary: [
+      { name: "Primary 50", value: "bg-plum-50" },
+      { name: "Primary 100", value: "bg-plum-100" },
+      { name: "Primary 200", value: "bg-plum-200" },
+      { name: "Primary 300", value: "bg-plum-300" },
+      { name: "Primary 400", value: "bg-plum-400" },
+      { name: "Primary 500", value: "bg-plum-500" },
+      { name: "Primary 600", value: "bg-plum-600" },
+      { name: "Primary 700", value: "bg-plum-700" },
+      { name: "Primary 800", value: "bg-plum-800" },
+      { name: "Primary 900", value: "bg-plum-900" },
+      { name: "Primary 1000", value: "bg-plum-1000" },
+      { name: "Primary 1100", value: "bg-plum-1100" },
+      { name: "Primary 1200", value: "bg-plum-1200" },
+    ],
+   
+    success: [
+      { name: "Success 50", value: "bg-emerald-50" },
+      { name: "Success 100", value: "bg-emerald-100" },
+      { name: "Success 200", value: "bg-emerald-200" },
+      { name: "Success 300", value: "bg-emerald-300" },
+      { name: "Success 400", value: "bg-emerald-400" },
+      { name: "Success 500", value: "bg-emerald-500" },
 
-const StyleGuide = () => {
+    ],
+    warning: [
+      { name: "Warning 50", value: "bg-amber-50" },
+      { name: "Warning 100", value: "bg-amber-100" },
+      { name: "Warning 200", value: "bg-amber-200" },
+      { name: "Warning 300", value: "bg-amber-300" },
+      { name: "Warning 400", value: "bg-amber-400" },
+      { name: "Warning 500", value: "bg-amber-500" },
+
+    ],
+    error: [
+      { name: "Error 50", value: "bg-red-50" },
+      { name: "Error 100", value: "bg-red-100" },
+      { name: "Error 200", value: "bg-red-200" },
+      { name: "Error 300", value: "bg-red-300" },
+      { name: "Error 400", value: "bg-red-400" },
+      { name: "Error 500", value: "bg-red-500" },
+    
+    ],
+    neutral: [
+      { name: "Neutral 50", value: "bg-neutral-50" },
+      { name: "Neutral 100", value: "bg-neutral-100" },
+      { name: "Neutral 200", value: "bg-neutral-200" },
+      { name: "Neutral 300", value: "bg-neutral-300" },
+      { name: "Neutral 400", value: "bg-neutral-400" },
+      { name: "Neutral 500", value: "bg-neutral-500" },
+      { name: "Neutral 600", value: "bg-neutral-600" },
+      { name: "Neutral 700", value: "bg-neutral-700" },
+      { name: "Neutral 800", value: "bg-neutral-800" },
+      { name: "Neutral 900", value: "bg-neutral-900" },
+      { name: "Neutral 1000", value: "bg-neutral-1000" },
+      { name: "Neutral 1100", value: "bg-neutral-1100" },
+      { name: "Neutral 1200", value: "bg-neutral-1200" },
+    ],
+  }
+
+// Define typography data
+const typographyData = [
+  {
+    title: "Headings",
+    styles: [
+      { tag: "h1", className: "text-3xl font-semibold", text: "H1 - The quick brown fox jumps over the lazy dog" },
+      { tag: "h2", className: "text-2xl font-semibold", text: "H2 - The quick brown fox jumps over the lazy dog" },
+      { tag: "h3", className: "text-xl font-semibold", text: "H3 - The quick brown fox jumps over the lazy dog" },
+      { tag: "h4", className: "text-lg font-semibold", text: "H4 - The quick brown fox jumps over the lazy dog" },
+      { tag: "h5", className: "text-base font-semibold", text: "H5 - The quick brown fox jumps over the lazy dog" },
+      { tag: "h6", className: "text-sm font-semibold", text: "H6 - The quick brown fox jumps over the lazy dog" },
+    ],
+  },
+  {
+    title: "Body Text",
+    styles: [
+      { tag: "p", className: "text-base font-normal", text: "Body - The quick brown fox jumps over the lazy dog" },
+      { tag: "p", className: "text-sm font-light", text: "Small Body - The quick brown fox jumps over the lazy dog" },
+    ],
+  },
+  {
+    title: "Captions",
+    styles: [
+      { tag: "p", className: "text-xs font-thin", text: "Caption - The quick brown fox jumps over the lazy dog" },
+    ],
+  },
+];
+
+
+
+
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="screen p-6 space-y-8 bg-white rounded-lg shadow">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-4">Style Guide</h1>
-            <Breadcrumb>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>Style Guide</BreadcrumbItem>
-            </Breadcrumb>
+    <div className="p-6 space-y-8">
+    <h1 className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">Colors</h1>
+      {Object.entries(colors).map(([category, shades]) => (
+        <div key={category} className="space-y-4">
+          <h2 className="text-lg font-semibold capitalize">{category}</h2>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+            {shades.map((color) => (
+              <Card key={color.name} className="p-4 space-y-3 rounded-md">
+                <div
+                  className={`w-full h-24 rounded-md ${color.value}`}
+                  role="img"
+                  aria-label={`Color ${color.name}`}
+                />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">{color.name}</p>
+                    <p className="font-mono text-xs text-muted-foreground">
+                    {color.value}
+                  </p>
+                </div>
+              </Card>
+            ))}
           </div>
-
-          {/* Colors */}
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Color System</h2>
-            <div className="space-y-8">
-              {/* Base Colors */}
-              <div>
-                <h3 className="text-lg font-medium mb-3">Base Colors</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-base-black text-base-white rounded-t">Base Black</div>
-                    <div className="px-2 py-1 text-sm">Hex: #0A0A0B</div>
-                    <div className="px-2 py-1 text-sm">HSL: 240 4% 5%</div>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-base-white border-t border-x rounded-t">Base White</div>
-                    <div className="px-2 py-1 text-sm">Hex: #FAFAFA</div>
-                    <div className="px-2 py-1 text-sm">HSL: 0 0% 98%</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Input Colors */}
-              <div>
-                <h3 className="text-lg font-medium mb-3">Input Colors</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-[#FBEBFB] rounded-t">Hover</div>
-                    <div className="px-2 py-1 text-sm">Hex: #FBEBFB</div>
-                    <div className="px-2 py-1 text-sm">HSL: 300 67 95</div>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-[#D9D9E0] rounded-t">Active/Muted</div>
-                    <div className="px-2 py-1 text-sm">Hex: #D9D9E0</div>
-                    <div className="px-2 py-1 text-sm">HSL: 240 10 86</div>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-[#FBEBFB] rounded-t">Active/Primary</div>
-                    <div className="px-2 py-1 text-sm">Hex: #FBEBFB</div>
-                    <div className="px-2 py-1 text-sm">HSL: 300 67 95</div>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-[#FACFD9] rounded-t">Active/Error</div>
-                    <div className="px-2 py-1 text-sm">Hex: #FACFD9</div>
-                    <div className="px-2 py-1 text-sm">HSL: 346 81 90</div>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-[#F8E5CB] rounded-t">Active/Warning</div>
-                    <div className="px-2 py-1 text-sm">Hex: #F8E5CB</div>
-                    <div className="px-2 py-1 text-sm">HSL: 35 76 88</div>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-[#CEF3EA] rounded-t">Active/Success</div>
-                    <div className="px-2 py-1 text-sm">Hex: #CEF3EA</div>
-                    <div className="px-2 py-1 text-sm">HSL: 165 61 88</div>
-                  </div>
-                </div>
-              </div>
+        </div>
+      ))}
+      <h1 className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">Typography</h1>
+      {/* Dynamic Typography Styles Component */}
+      <div className="typography-section">
+        {typographyData.map(group => (
+          <div key={group.title} className="mb-4">
+            <h3 className="text-2xl font-bold">{group.title}</h3>
+            {group.styles.map(style => {
+              const Tag = style.tag; // Dynamic tag based on data
+              return <Tag key={style.text} className={style.className}>{style.text}</Tag>;
+            })}
+          </div>
+        ))}
+      </div>
+      <h1 className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">Badges</h1>
+      <div className="flex flex-row gap-4 space-y-2">
+        <div className="flex-1 space-y-2">
+        <h2 className="text-lg font-semibold">Solid Color Badges</h2>
+        {/* Solid Color Badges */}
+        {[
+          { bg: "bg-plum-300", text: "Badge", color: "text-plum-1100"  },
+          { bg: "bg-red-100", text: "Badge", color: "text-red-500" },
+          { bg: "bg-amber-100", text: "Badge", color: "text-amber-500" },
+          { bg: "bg-emerald-100", text: "Badge", color: "text-emerald-500" },
+          { bg: "bg-neutral-300", text: "Badge", color: "text-neutral-1100" },
+        ].map((badge, index) => (
+          <div key={index} className={`px-4 py-2 rounded-full w-40 flex items-center justify-center ${badge.bg} ${badge.color}`}>
+            {badge.text}
+          </div>
+        ))}
+        </div>  
+        <div className="flex-1 space-y-2">
+        <h2 className="text-lg font-semibold">Badges with Dots</h2>
+        {/* Badges with Dots */}
+        {[
+          { bg: "bg-white", dot: "bg-plum-1100", text: "Badge" },
+          { bg: "bg-white", dot: "bg-red-100", text: "Badge" },
+          { bg: "bg-white", dot: "bg-amber-500", text: "Badge" },
+          { bg: "bg-white", dot: "bg-emerald-500", text: "Badge" },
+          { bg: "bg-white", dot: "bg-neutral-500", text: "Badge" },
+        ].map((badge, index) => (
+          <div key={index} className={`px-4 py-2 rounded-full w-40 border border-neutral-300 flex gap-2 items-center justify-center ${badge.bg}`}>
+            <span className={`w-3 h-3 rounded-full ${badge.dot}`}></span>
+            <span>{badge.text}</span>
+          </div>
+        ))}
+        </div>
+      </div>
+      {/* Status Indicators Section */}
+      <h1 className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">Status Indicators</h1>
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {[
+            { label: "Backlog", color: "text-plum-1100", Icon: CircleHelp },
+            { label: "Canceled", color: "text-red-500", Icon: CircleX },
+            { label: "In Progress", color: "text-amber-500", Icon: Timer },
+            { label: "Done", color: "text-emerald-500", Icon: CircleCheck },
+            { label: "Todo", color: "text-neutral-1000", Icon: Circle },
+            { label: "High", color: "text-red-500", Icon: MoveUp },
+            { label: "Medium", color: "text-amber-500", Icon: MoveRight },
+            { label: "Low", color: "text-neutral-1000", Icon: MoveDown },
+          ].map((status) => (
+            <div key={status.label} className="flex items-center gap-2">
+              <status.Icon className={`w-6 h-6 ${status.color}`} />
+              <span className={status.color}>{status.label}</span>
             </div>
-          </section>
+          ))}
+        </div>
+      </div>
 
-          {/* Row/Nav Colors */}
-          
-
-          {/* Text Interaction */}
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Text Interaction</h2>
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-lg font-medium mb-3">Row / Menu</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {/* Hover */}
-                  <div className="flex flex-col gap-2">
-                    <div className="p-4 bg-white  ">
-                    <div className="text-neutral-1100 font-bold text-sm">Hover</div>
-                      <div className="text-neutral-1100">Neutrals 1100</div>
-                    
-                      <div className="text-neutral-1100">Hex: #FBEBFB</div>
-                      <div className="text-neutral-1100">HSL: 300 67 95</div>
-                    </div>
-                  </div>
-
-                  {/* Active/Muted */}
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-white  ">
-                      <div className="text-neutral-1200 font-bold text-sm">Active/Muted</div>
-                      <div className="text-neutral-1100">Neutrals 1100</div>
-                 
-                      <div className="text-neutral-1100">Hex: #D9D9E0</div>
-                      <div className="text-neutral-1100">HSL: 240 10 86</div>
-                    </div>
-                  </div>
-
-                  {/* Active/Primary */}
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-white  ">
-                    
-                      <div className="text-primary-1100 font-bold text-sm">Primary 1100</div>
-                    
-                      <div className="text-primary-1100">Hex: #FBEBFB</div>
-                      <div className="text-primary-1100">HSL: 300 67 95</div>
-                    </div>
-                  </div>
-
-                  {/* Active/Error */}
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-white  ">
-                      <div className="text-error-500 font-bold text-sm">Error 500</div>
-                  
-                      <div className="text-error-500">Hex: #FACFD9</div>
-                      <div className="text-error-500">HSL: 346 81 90</div>
-                    </div>
-                  </div>
-
-                  {/* Active/Warning */}
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-white  ">
-                      <div className="text-warning-500 font-bold text-sm">Warning500</div>
-                    
-                      <div className="text-warning-500">Hex: #F8E5CB</div>
-                      <div className="text-warning-500">HSL: 35 76 88</div>
-                    </div>
-                  </div>
-
-                  {/* Active/Success */}
-                  <div className="flex flex-col">
-                    <div className="p-4 bg-white  ">
-                      <div className="text-success-500 font-bold text-sm">Success 500</div>
-                   
-                      <div className="text-success-500">Hex: #CEF3EA</div>
-                      <div className="text-success-500">HSL: 165 61 88</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      {/* Avatars Section */}
+      <h1 className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">Avatars</h1>
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-4">
+          {[
+            { bg: "bg-neutral-200", text: "CN" },
+            { bg: "bg-emerald-100", text: "CN", textColor: "text-emerald-500" },
+            { bg: "bg-amber-100", text: "CN", textColor: "text-amber-500" },
+            { bg: "bg-red-100", text: "CN", textColor: "text-red-500" },
+          ].map((avatar, index) => (
+            <div
+              key={index}
+              className={`${avatar.bg} ${avatar.textColor || 'text-neutral-600'} w-12 h-12 rounded-full flex items-center justify-center text-lg font-medium`}
+            >
+              {avatar.text}
             </div>
-          </section>
+          ))}
         </div>
       </div>
     </div>
-  );
-};
-
-export default StyleGuide;
+  )
+}

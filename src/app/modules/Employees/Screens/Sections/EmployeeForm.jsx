@@ -366,7 +366,7 @@ const SheetOnBorading = ({
                             countryOptions={countriesCallingCodes} // Pass the country options here
                           />
                         </div>
-                        <div className="space-y-2 col-span-3">
+                        <div className="col-span-3 space-y-2">
                           <TextAreaInput
                             name={"residential_address"}
                             error={props.errors?.residential_address}
@@ -374,7 +374,7 @@ const SheetOnBorading = ({
                             value={props.values?.residential_address}
                             label={"Address"}
                             required={true}
-                            maxRows={1}
+                            maxRows={3}
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
                             }}
