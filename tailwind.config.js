@@ -132,13 +132,7 @@ module.exports = {
           300: "hsl(var(--red-3))",
           400: "hsl(var(--red-4))",
           500: "hsl(var(--red-5))",
-          600: "hsl(var(--red-6))",
-          700: "hsl(var(--red-7))",
-          800: "hsl(var(--red-8))",
-          900: "hsl(var(--red-9))",
-          1000: "hsl(var(--red-10))",
-          1100: "hsl(var(--red-11))",
-          1200: "hsl(var(--red-12))",
+        
         },
         destructive: {
           DEFAULT: "hsl(var(--red-9))",
@@ -148,13 +142,7 @@ module.exports = {
           300: "hsl(var(--red-3))",
           400: "hsl(var(--red-4))",
           500: "hsl(var(--red-5))",
-          600: "hsl(var(--red-6))",
-          700: "hsl(var(--red-7))",
-          800: "hsl(var(--red-8))",
-          900: "hsl(var(--red-9))",
-          1000: "hsl(var(--red-10))",
-          1100: "hsl(var(--red-11))",
-          1200: "hsl(var(--red-12))",
+        
         },
         muted: {
           DEFAULT: "hsl(var(--neutral-11))",
@@ -208,13 +196,7 @@ module.exports = {
           300: "hsl(var(--warning-3))",
           400: "hsl(var(--warning-4))",
           500: "hsl(var(--warning-5))",
-          600: "hsl(var(--warning-6))",
-          700: "hsl(var(--warning-7))",
-          800: "hsl(var(--warning-8))",
-          900: "hsl(var(--warning-9))",
-          1000: "hsl(var(--warning-10))",
-          1100: "hsl(var(--warning-11))",
-          1200: "hsl(var(--warning-12))",
+        
         },
         success: {
           DEFAULT: "hsl(var(--success-9))",
@@ -224,13 +206,7 @@ module.exports = {
           300: "hsl(var(--success-3))",
           400: "hsl(var(--success-4))",
           500: "hsl(var(--success-5))",
-          600: "hsl(var(--success-6))",
-          700: "hsl(var(--success-7))",
-          800: "hsl(var(--success-8))",
-          900: "hsl(var(--success-9))",
-          1000: "hsl(var(--success-10))",
-          1100: "hsl(var(--success-11))",
-          1200: "hsl(var(--success-12))",
+      
         },
         "base": {
           black: "hsl(var(--base-black))",

@@ -90,7 +90,7 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
               </Button>
             ) : (
               <Button
-                className="text-zinc-600 text-sm font-normal"
+                className="text-sm font-normal text-zinc-600"
                 variant="outline"
               >
                 <div className="flex items-center">
@@ -173,7 +173,7 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                       label={"Exit Interview"}
                       status={"exit"}
                     />{" "}
-                    4444
+                  
                   </DropdownMenuLabel>
                 )}
               </>
