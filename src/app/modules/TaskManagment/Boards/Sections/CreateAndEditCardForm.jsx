@@ -277,6 +277,32 @@ const CreateAndEditCardForm = ({
                 </div>
 
                 <div className="space-y-2">
+                  <TextInput
+                    name="estimated_time"
+                    error={props.errors.estimated_time}
+                    touch={props.touched.estimated_time}
+                    value={props.values.estimated_time}
+                    label="Estimated Time (in hours)"
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <TextInput
+                    name="consumed_time"
+                    error={props.errors.consumed_time}
+                    touch={props.touched.consumed_time}
+                    value={props.values.consumed_time}
+                    label="Time Spent (in hours)"
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <SelectComponent
                     name="priority"
                     options={PriorityList}
