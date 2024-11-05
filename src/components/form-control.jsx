@@ -35,7 +35,6 @@ import {
 } from "../src/@/components/ui/command";
 import { cn } from "./../src/@/lib/utils";
 import { format, parse, isValid } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../src/@/components/ui/calendar";
 
 import { PatternFormat } from "react-number-format";
@@ -75,13 +74,13 @@ const SelectComponent = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="justify-between w-full"
+            className="justify-between w-full rounded-md "
             disabled={disabled}
           >
             {value ? (
               options.find((option) => option.value === value)?.label
             ) : (
-              <span className="text-sm font-normal text-neutral-400">
+              <span className="text-sm font-normal text-neutral-600">
                 {placeholder || `Select`}
               </span>
             )}
@@ -191,7 +190,7 @@ const SelectMultiInputComponent = ({
         </PopoverTrigger>
         <PopoverContent className="w-[300px] p-0">
           <Command>
-            <CommandInput placeholder="Search options..." />
+            <CommandInput placeholder="Search options..." className="text-sm font-normal text-neutral-600"/>
             <CommandList>
               <CommandEmpty>No options found.</CommandEmpty>
               <CommandGroup>
@@ -310,7 +309,7 @@ const DateInput = ({
             ) : (
               <div className="flex items-center gap-2">
                 <LucideCalendar size={16} />
-                <div>{placeholder ? placeholder : "Pick a date"}</div>
+                <div className="text-sm font-normal text-neutral-600">{placeholder ? placeholder : "Pick a date"}</div>
               </div>
             )}
           </Button>
@@ -323,7 +322,7 @@ const DateInput = ({
               value={inputValue}
               onValueChange={handleInputChange}
               customInput={Input}
-              className="w-[240px] text-center mx-auto"
+              className="w-[240px] text-center mx-auto text-sm font-normal text-neutral-600"
             />
             <Calendar
               mode="single"
@@ -414,7 +413,7 @@ const TextInput = ({
           placeholder={label ? "Enter " + label : placeholder}
           value={value ?? ""}
           disabled={disabled}
-          className={error && touch ? "is-invalid" : ""}
+          className={error && touch ? "is-invalid" : "text-neutral-600"}
           onChange={(option) => {
             const value = option.target.value;
             if (regEx) {
@@ -464,7 +463,7 @@ const NumberInput = ({
           placeholder={label ? "Enter " + label : placeholder}
           value={value ?? ""}
           disabled={disabled}
-          className={error && touch ? "is-invalid" : ""}
+          className={error && touch ? "is-invalid" : "text-neutral-600"}
           min={min}
           max={max}
           step={step ?? "any"}

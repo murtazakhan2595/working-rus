@@ -201,6 +201,7 @@ const SheetOnBorading = ({
 
   return (
     <>
+
       <div
         side="right"
         className="w-full p-0 "
@@ -316,8 +317,8 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <div>
-                            <Label htmlFor="password">
+                          <div className="flex flex-col gap-4">
+                            <Label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-baseGray">
                               <span className="text-red-600">* </span>Password
                             </Label>
                             <Input

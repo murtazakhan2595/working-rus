@@ -78,7 +78,7 @@ const Header = ({ content, userProfile }) => {
 
   return (
     <div className="flex flex-row items-center justify-between px-4 py-4">
-      <h4 className="capitalize h4 ">{pathName}</h4>
+      <h3 className="capitalize h4 ">{pathName}</h3>
       <div className="flex flex-wrap justify-end gap-3">
         {/* <FilterInput
           filters={[
