@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // import Select from "react-select";
 import { Label } from "../src/@/components/ui/label";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+// import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import upload from "../assets/images/upload.png";
 import ReactQuill from "react-quill";
@@ -129,6 +129,7 @@ const SelectMultiInputComponent = ({
   label,
   onChange,
   required,
+  classes
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -150,10 +151,10 @@ const SelectMultiInputComponent = ({
   };
 
   return (
-    <div>
-      <label className={`${value ? "" : ""}`} htmlFor={name}>
+    <div className={`${classes || "flex flex-col gap-4"}`}>
+      <Label className={` ${value ? "" : ""}`} htmlFor={name}>
         {required && <span className="text-red-600">* </span>} {label}
-      </label>
+      </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
