@@ -102,6 +102,10 @@ const Applications = () => {
   };
 
   return (
+
+    
+
+    
     <div className="">
       {viewApplicationDetails && (
         <ViewApplicantDetails
