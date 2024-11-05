@@ -102,7 +102,7 @@ const Applications = () => {
   };
 
   return (
-    <div className="screen bg-[#F0F1F2]">
+    <div className="">
       {viewApplicationDetails && (
         <ViewApplicantDetails
           applicantIndex={viewApplicationDetails?.index}
@@ -172,7 +172,7 @@ const Applications = () => {
             <CardHeader>
               <Row>
                 <Col lg={12}>
-                  <div className="py-3 px-3">
+                  <div className="px-3 py-3">
                     <FilterInput
                       filters={[
                         {
