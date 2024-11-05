@@ -371,6 +371,7 @@ const CreateAndEditCardForm = ({
                   />
                 )}
 
+              {isEdit &&  <div>
                 <div className="space-y-2 flex items-center gap-2">
                   <div>CheckList</div>
                   <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -396,6 +397,7 @@ const CreateAndEditCardForm = ({
                   <div>{/* Pass the items and setItems to CheckList */}</div>
                 </div>
                 <CheckList items={items} setItems={setItems} />
+                </div>}
 
                 <div className="space-y-2">
                   <SelectComponent
