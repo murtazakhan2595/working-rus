@@ -413,7 +413,7 @@ const TextInput = ({
           placeholder={label ? "Enter " + label : placeholder}
           value={value ?? ""}
           disabled={disabled}
-          className={error && touch ? "is-invalid" : "text-neutral-600"}
+          className={error && touch ? "is-invalid" : "text-neutral-1000"}
           onChange={(option) => {
             const value = option.target.value;
             if (regEx) {
@@ -469,12 +469,15 @@ const NumberInput = ({
           step={step ?? "any"}
           onChange={(option) => {
             const value = option.target.value;
-            if (regEx) {
-              if (!value || regEx.test(value)) {
-                onChange(name, value);
-              }
-            } else {
+            // Only allow numeric input
+            if (/^\d*\.?\d*$/.test(value) || value === '') {
               onChange(name, value);
+            }
+          }}
+          // Prevent non-numeric input including 'e' and special characters
+          onKeyDown={(e) => {
+            if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+              e.preventDefault();
             }
           }}
         />
@@ -593,7 +596,7 @@ const PhoneNumberInput = ({
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="justify-start w-full rounded-r-lg"
+                className="justify-start w-full rounded-r-md"
               >
                 {selectedCountryCode
                   ? `+${selectedCountryCode}`
@@ -633,7 +636,7 @@ const PhoneNumberInput = ({
             placeholder={"Enter  " + label}
             value={inputValue}
             className={
-              error && touch ? "is-invalid rounded-l-lg" : "rounded-l-lg"
+              error && touch ? "is-invalid rounded-l-md" : "rounded-l-md"
             }
             onChange={handleInputChange}
           />
