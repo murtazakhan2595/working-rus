@@ -100,7 +100,7 @@ const JobForm = forwardRef(
               >
                 {(props) => (
                   <form onSubmit={props.handleSubmit}>
-                        <h5 className="mt-4 mb-3 fw-700">Details</h5>
+                        <h5 className="mb-3 fw-700">Details</h5>
                         <TextInput
                           name="id"
                           error={props.errors.id}

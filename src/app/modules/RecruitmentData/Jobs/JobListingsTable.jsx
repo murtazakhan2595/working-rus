@@ -13,48 +13,48 @@ import { fetchJobPosts } from "app/hooks/recruitment"
 import { PageLoader } from "../../../../components"
 
 
-export default function JobListingsTable() {
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
+export default function JobListingsTable({posts, loading}) {
+  // const [posts, setPosts] = useState([])
+  // const [loading, setLoading] = useState(true)
   const [selectedJob, setSelectedJob] = useState(null)
   const [filterData, setFilterData] = useState({})
   const [sortData, setSortData] = useState("dsc")
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 })
 
-  const getPosts = async () => {
-    setLoading(true)
-    try {
-      const data = await fetchJobPosts(filterData, sortData)
-      setPosts(data)
-    } catch (error) {
-      console.error("Error fetching posts:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  // const getPosts = async () => {
+  //   setLoading(true)
+  //   try {
+  //     const data = await fetchJobPosts(filterData, sortData)
+  //     setPosts(data)
+  //   } catch (error) {
+  //     console.error("Error fetching posts:", error)
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
-  useEffect(() => {
-    getPosts()
-  }, [filterData, sortData])
+  // useEffect(() => {
+  //   getPosts()
+  // }, [filterData, sortData])
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }))
   }
 
-  const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
-    if (filterName === "sort_by_date") {
-      setSortData(filterCheckStatus ? filterValue : "dsc")
-    }
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters }
-      if (!filterValue || filterCheckStatus === false) {
-        delete updatedFilters[filterName]
-      } else {
-        updatedFilters[filterName] = filterCheckStatus === false ? "" : filterValue
-      }
-      return updatedFilters
-    })
-  }
+  // const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
+  //   if (filterName === "sort_by_date") {
+  //     setSortData(filterCheckStatus ? filterValue : "dsc")
+  //   }
+  //   setFilterData((prevFilters) => {
+  //     const updatedFilters = { ...prevFilters }
+  //     if (!filterValue || filterCheckStatus === false) {
+  //       delete updatedFilters[filterName]
+  //     } else {
+  //       updatedFilters[filterName] = filterCheckStatus === false ? "" : filterValue
+  //     }
+  //     return updatedFilters
+  //   })
+  // }
 
   const tableOptions = {
     page: options.page,
