@@ -22,6 +22,7 @@ import {
 import JobListingsTable from './JobListingsTable';
 
 import { buttonVariants } from "components/ui/button";
+import { CreateUpdateJob } from "..";
 
 
 
@@ -87,67 +88,12 @@ export default function JobsDataTable() {
 
 
 
-
- 
-
-  
-
   return (
 <>
-    {/* <Header
-        title="Jobs"
-        content={
-          <FilterInput
-            filters={[
-              {
-                type: "sorting",
-                option: JobSortingFilters,
-                name: "sorting",
-                placeholder: "Sort By",
-                values: filterData,
-                mainHeading: "Sort",
-              },
-            ]}
-            onChange={handleFilterChange}
-          />
-        }
-      />
-      <div className="p-2 m-2 bg-white rounded-top">
-        <Tabs
-          tabs={["All", "Open", "Closed"]}
-          onTabChange={(value) => {
-            handleFilterChange(
-              "status",
-              value === "Open"
-                ? "live"
-                : value === "Closed"
-                ? "expired"
-                : ""
-            )
-
-            filters={[
-              {
-                type: "sorting",
-                option: JobSortingFilters,
-                name: "sorting",
-                placeholder: "Sort By",
-                values: filterData,
-                mainHeading: "Sort",
-              },
-            ]}
-            onChange={handleFilterChange}
-          }}
-          buttonLabel={"Add New Job"}
-        />
-      </div> */}
     
-    <div className="flex flex-col gap-4 job-management">
-      <Header
-        content={
-          <Link to="/job-post" className={buttonVariants({ variant: "default" })}>Add New Job</Link>
+<section className="flex flex-col p-[18px] text-sm">
+<Header content={<CreateUpdateJob />} />
 
-        }
-      />
       <Stats stats={statsData} />
       <Tabs
         defaultValue=""
@@ -190,7 +136,7 @@ export default function JobsDataTable() {
           </TabsContent>
         ))}
       </Tabs>
-    </div>
+    </section>
     </>
   );
 

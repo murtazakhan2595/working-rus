@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef } from "react";
-import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
-import { FaChevronCircleLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import {
   TextInput,
@@ -24,14 +23,16 @@ import PageLoader from "components/PageLoader.jsx";
 import { connect } from "react-redux";
 import { addJob, updateJob ,getNewJobCode} from "app/hooks/recruitment.jsx";
 import { getCurrenciesList } from "app/hooks/general";
-import { Header } from "../Sections/index.js";
 import { JobDetail } from "app/utils/Types/Recruitment.jsx";
 import { validationJobFormSchema } from "app/utils/FormSchema/jobFormSchema.jsx";
+import SheetComponent from "components/ui/SheetComponent.jsx";
+import { Button } from "components/ui/button";
 
 const JobForm = forwardRef(
   ({ isLoading, formData, handleSubmit, isEditMode, id, onClose }, formRef) => {
     const initialValues = isEditMode ? formData : JobDetail;
     const navigate = useNavigate();
+    const [isOpen, setIsOpen] = useState(false);
     const [job_Id, setJob_Id] = useState(null);
     const [currencies, setCurrencies] = useState([]);
     useEffect(() => {
@@ -46,6 +47,14 @@ const JobForm = forwardRef(
 
       fetchData();
     }, []);
+
+    const formSheetData = {
+      triggerText: "Add New Job",
+      title: "Add New Job",
+  
+      description: null,
+      footer: null,
+    };
 
     
   useEffect(() => {
@@ -68,14 +77,15 @@ const JobForm = forwardRef(
     return (
       <>
         {isLoading ? (
-          <Row>
-            <Col lg={12}>
               <PageLoader />
-            </Col>
-          </Row>
         ) : (
-          <Row>
-            <Col lg={12}>
+          <SheetComponent
+          {...formSheetData}
+          contentClassName="custom-sheet-width"
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          width="600px"
+        >
               <Formik
                 initialValues={initialValues}
                 innerRef={formRef}
@@ -90,11 +100,7 @@ const JobForm = forwardRef(
               >
                 {(props) => (
                   <form onSubmit={props.handleSubmit}>
-                    <Row>
-                      <Col md="12">
                         <h5 className="mt-4 mb-3 fw-700">Details</h5>
-                      </Col>
-                      <Col md="6">
                         <TextInput
                           name="id"
                           error={props.errors.id}
@@ -107,9 +113,6 @@ const JobForm = forwardRef(
                           }}
                           disabled
                         />
-                      </Col>
-                      <Col md="6"></Col>
-                      <Col md="6">
                         <TextInput
                           name="Job_Title"
                           error={props.errors.Job_Title}
@@ -121,8 +124,6 @@ const JobForm = forwardRef(
                             props.handleChange(field)(value);
                           }}
                         />
-                      </Col>
-                      <Col md="6">
                         <SelectComponent
                           name="Job_Type"
                           options={jobTypeOptions}
@@ -135,8 +136,6 @@ const JobForm = forwardRef(
                             props.handleChange(field)(value);
                           }}
                         />
-                      </Col>
-                      <Col md="6">
                         <SelectComponent
                           name="Work_type"
                           options={workTypeOptions}
@@ -149,8 +148,7 @@ const JobForm = forwardRef(
                             props.handleChange(field)(value);
                           }}
                         />
-                      </Col>
-                      <Col md="6">
+
                         <SelectComponent
                           name="Employee_Type"
                           options={employeeTypeOptions}
@@ -163,8 +161,7 @@ const JobForm = forwardRef(
                             props.handleChange(field)(value);
                           }}
                         />
-                      </Col>
-                      <Col md={6}>
+
                         <SelectComponent
                           name="Education"
                           options={educationTypeOptions}
@@ -177,8 +174,7 @@ const JobForm = forwardRef(
                             props.handleChange(field)(value);
                           }}
                         />
-                      </Col>
-                      <Col md="6">
+
                         <SelectComponent
                           name="location"
                           options={countriesList}
@@ -199,8 +195,7 @@ const JobForm = forwardRef(
                               );
                           }}
                         />
-                      </Col>
-                      <Col md="6">
+
                         <SelectComponent
                           name="currency"
                           options={currencies}
@@ -213,8 +208,7 @@ const JobForm = forwardRef(
                             props.handleChange(field)(value);
                           }}
                         />
-                      </Col>
-                      <Col md="6">
+
                         <TextInput
                           name="min_salary"
                           error={props.errors.min_salary}
@@ -228,8 +222,7 @@ const JobForm = forwardRef(
                           maxLength="14,2"
                           regEx={AmountPattern}
                         />
-                      </Col>
-                      <Col md="6">
+   
                         <TextInput
                           name="max_salary"
                           error={props.errors.max_salary}
@@ -243,8 +236,6 @@ const JobForm = forwardRef(
                           maxLength="14,2"
                           regEx={AmountPattern}
                         />
-                      </Col>
-                      <Col md="6">
                         <DateInput
                           name="start_date"
                           error={props.errors.start_date}
@@ -256,8 +247,6 @@ const JobForm = forwardRef(
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
-                      <Col md="6">
                         <DateInput
                           name="Deadline"
                           error={props.errors.Deadline}
@@ -269,11 +258,7 @@ const JobForm = forwardRef(
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
-                      <Col md="12">
                         <h5 className="mt-4 mb-3 fw-700">Description</h5>
-                      </Col>
-                      <Col md="12">
                         <TextAreaInput
                           name="Job_Requirement"
                           error={props.errors.Job_Requirement}
@@ -286,8 +271,6 @@ const JobForm = forwardRef(
                             props.setFieldValue(field, value);
                           }}
                         />
-                      </Col>
-                      <Col md="12">
                         <TextAreaInput
                           name="Job_Description"
                           error={props.errors.Job_Description}
@@ -300,32 +283,24 @@ const JobForm = forwardRef(
                             props.handleChange(field)(value);
                           }}
                         />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md="2">
-                        <div
-                          type="button"
-                          className="btn btn-outline-dark w-100"
-                          to="/jobs"
+                        <div className="flex justify-end gap-4 mt-2">
+                        <Button
+                          variant="outline"
+                          // to="/jobs"
                           onClick={() => {
                             isEditMode ? onClose() : navigate("/jobs");
                           }}
                         >
                           Cancel
-                        </div>
-                      </Col>
-                      <Col md="4">
-                        <Button type="submit" className="btn btn-dark w-100">
+                        </Button>
+                        <Button type="submit" >
                           {id ? "Update" : "Add"}
                         </Button>
-                      </Col>
-                    </Row>
+                        </div>
                   </form>
                 )}
               </Formik>
-            </Col>
-          </Row>
+        </SheetComponent>
         )}
       </>
     );
@@ -386,39 +361,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
         />
       ) : (
         <div className="screen bg-[#F0F1F2]">
-          <Header title="Jobs" />
-          <Row>
-            <Col lg={12} className="mx-auto">
               <Card>
-                <CardHeader>
-                  <Row>
-                    <Col lg={10}>
-                      <div className="mb-0 h4 d-flex align-items-center">
-                        <i className="nav-icon fas fa-id-card-alt" />
-                        <span className="ml-2 fw-700">
-                          {id ? "Update" : "Add New"} Job
-                        </span>
-                      </div>
-                    </Col>
-                    <Col lg={2}>
-                      <Link
-                        type="button"
-                        className="bg-transparent btn btn-light fw-700"
-                        to="/jobs"
-                      >
-                        <span style={{ display: "inline-block" }}>Go Back</span>
-                        <FaChevronCircleLeft
-                          style={{
-                            display: "inline-block",
-                            marginLeft: "10px",
-                            marginBottom: "2px",
-                          }}
-                        />
-                      </Link>
-                    </Col>
-                  </Row>
-                </CardHeader>
-
                 <CardBody style={{ maxWidth: "800px" }}>
                   <JobForm
                     isLoading={isLoading}
@@ -430,8 +373,6 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData }) => {
                   />
                 </CardBody>
               </Card>
-            </Col>
-          </Row>
         </div>
       )}
     </>
