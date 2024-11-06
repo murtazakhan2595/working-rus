@@ -233,10 +233,14 @@ const DateInput = ({
   placeholder,
 }) => {
   const [date, setDate] = useState(
-    value ? parse(value, "yyyy-MM-dd", new Date()) : null
+    value && isValid(parse(value, "yyyy-MM-dd", new Date())) 
+      ? parse(value, "yyyy-MM-dd", new Date()) 
+      : null
   );
   const [inputValue, setInputValue] = useState(
-    value ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") : ""
+    value && isValid(parse(value, "yyyy-MM-dd", new Date())) 
+      ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") 
+      : ""
   );
   const [calendarDate, setCalendarDate] = useState(date || new Date());
 

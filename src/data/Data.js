@@ -347,13 +347,13 @@ export const ProjectStatusList = [
     ),
   },
   {
-    value: "ongoing",
+    value: "on_going",
     label: (
       <div className="flex justify-center text-yellow-500 gap-x-2">Ongoing</div>
     ),
   },
   {
-    value: "onhold",
+    value: "On_hold",
     label: (
       <div className="flex justify-center text-red-500 gap-x-2">On Hold</div>
     ),
