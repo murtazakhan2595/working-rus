@@ -14,6 +14,7 @@ import {
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { ClaimExpenseTypeOptions } from "data/Data";
+import { getJobTypeOptions } from "data/Data";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -39,7 +40,8 @@ function getWorkPlaceType(workPlaceType) {
   const response = workplaceTypes.find((option) => option.value === workPlaceType);
   return response ? response.label : workPlaceType;
 }
-function getJobType(jobType) {
+function getJobType(jobType, includeAllOption = false) {
+  const jobTypeOptions = getJobTypeOptions(includeAllOption); // Call the function to get the current options
   const response = jobTypeOptions.find((option) => option.value === jobType);
   return response ? response.label : jobType;
 }

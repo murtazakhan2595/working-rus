@@ -14,8 +14,10 @@ import {
 } from "../../../../src/@/components/ui/tabs";
 import Stats from "../../../../components/ui/Stats";
 import {
+  getJobTypeOptions,
   JobSortingFilters,
-  jobsStatusOptions
+  jobsStatusOptions,
+  jobTypeOptions
 } from '../../../../data/Data';
 
 import JobListingsTable from './JobListingsTable';
@@ -108,6 +110,12 @@ export default function JobsDataTable() {
                     type: "search",
                     placeholder: "Search by Job Title",
                     name: "id_and_Job_Title",
+                  },
+                  {
+                    type: "select-one",
+                    option: getJobTypeOptions(true),
+                    name: "Job_Type",
+                    placeholder: "Job Type",
                   },
                 ]}
                 onChange={handleFilterChange}
