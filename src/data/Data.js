@@ -85,11 +85,28 @@ export const academicOptions = [
   },
 ];
 
-export const jobTypeOptions = [
-  { value: "Remote", label: "Remote" },
-  { value: "Onsite", label: "Onsite" },
-  { value: "Hybrid", label: "Hybrid" },
-];
+// export const jobTypeOptions = [
+//   { value: "Remote", label: "Remote" },
+//   { value: "Onsite", label: "Onsite" },
+//   { value: "Hybrid", label: "Hybrid" },
+// ];
+
+// data.js
+export const getJobTypeOptions = (includeAllOption = false) => {
+  const options = [
+    { value: "Remote", label: "Remote" },
+    { value: "Onsite", label: "Onsite" },
+    { value: "Hybrid", label: "Hybrid" },
+  ];
+
+  if (includeAllOption) {
+    options.unshift({ value: "", label: "All" }); // Adds the "All" option
+  }
+
+  return options;
+};
+
+
 
 export const workTypeOptions = [
   { value: "Internees", label: "Internees" },

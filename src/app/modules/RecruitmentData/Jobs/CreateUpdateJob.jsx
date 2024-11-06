@@ -27,6 +27,7 @@ import { JobDetail } from "app/utils/Types/Recruitment.jsx";
 import { validationJobFormSchema } from "app/utils/FormSchema/jobFormSchema.jsx";
 import SheetComponent from "components/ui/SheetComponent.jsx";
 import { Button } from "components/ui/button";
+import { getJobTypeOptions } from "data/Data";
 
 const JobForm = forwardRef(
   ({ isLoading, formData, handleSubmit, isEditMode, id, onClose }, formRef) => {
@@ -126,7 +127,7 @@ const JobForm = forwardRef(
                         />
                         <SelectComponent
                           name="Job_Type"
-                          options={jobTypeOptions}
+                          options={getJobTypeOptions()}
                           error={props.errors.Job_Type}
                           touch={props.touched.Job_Type}
                           value={props.values.Job_Type}
