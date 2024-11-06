@@ -39,7 +39,7 @@ export default function Component() {
 };
 
 const statusCounts = data?.reduce((acc, project) => {
-  const statusKey = project.status.toLowerCase();
+  const statusKey = project.status ? project.status.toLowerCase() : 'on_going'; 
   if (!acc[statusKey]) {
       acc[statusKey] = 1;
   } else {
