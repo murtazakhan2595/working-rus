@@ -107,7 +107,7 @@ export default function JobsDataTable() {
                   {
                     type: "search",
                     placeholder: "Search by Job Title",
-                    name: "Job_Title",
+                    name: "id_and_Job_Title",
                   },
                 ]}
                 onChange={handleFilterChange}
