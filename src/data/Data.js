@@ -156,9 +156,9 @@ export const filterDropdownOptions = [
 ];
 
 export const jobsStatusOptions = [
-  { label: "Show All", value: "" },
-  { label: "Live", value: "live" },
-  { label: "Expired", value: "expired" },
+  { label: "All", value: "" },
+  { label: "Open", value: "live" },
+  { label: "Closed", value: "expired" },
 ];
 
 export const HeadOfDepartment = [
