@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { dropdownOptions } from "data/Data";
-import { PageLoader, Table } from "components";
-import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
-import { cut, file, list } from "assets/images";
-import { Blocks, Header } from "../Sections";
+import { PageLoader} from "components";
+import {  Row, Col } from "reactstrap";
 import { Tabs } from "./Sections";
 import { ViewApplicantDetails } from ".";
 import {
-  fetchJobPosts,
   getJobApplications,
   updateApplicationStatus,
 } from "../../../hooks/recruitment";
 import { FilterInput } from "components/form-control";
 import { AllJobApplicationColumns } from "app/utils/Types/TableColumns";
+import TableCustom from "components/CustomTable";
+import { Card, CardContent, CardHeader, CardDescription } from "components/ui/card";
+import { Header } from "components";
+import Stats from "components/ui/Stats";
+import {  File, List, Scissors } from "lucide-react";
 
 const Applications = () => {
   const location = useLocation();
@@ -67,6 +69,13 @@ const Applications = () => {
     fetchLists();
   }, [options, filterData]);
 
+  const statsData = [
+    { label: "Total applications", value: totalApplications, icon: File },
+    { label: "Shortlisted applications", value: shortlistedApplications, icon: List },
+    { label: "Selected applications", value: selectedApplications, icon: File},
+    { label: "Rejected applications", value: rejectedApplications, icon: Scissors },
+  ];
+
   const handleOptionSelect = async (applicant, option) => {
     try {
       if (applicant) {
@@ -102,11 +111,7 @@ const Applications = () => {
   };
 
   return (
-
-    
-
-    
-    <div className="">
+    <>
       {viewApplicationDetails && (
         <ViewApplicantDetails
           applicantIndex={viewApplicationDetails?.index}
@@ -132,8 +137,6 @@ const Applications = () => {
           />
         }
       />
-      <Row className="mb-5">
-        <Col lg={6}>
           <Tabs
             onTabChange={setActiveTab}
             activeTab={activeTab}
@@ -142,36 +145,7 @@ const Applications = () => {
               handleFilterChange("job_id", jobId);
             }}
           />
-        </Col>
-        <Col lg={6}>
-          <Blocks
-            blocks={[
-              {
-                label: "Total applications",
-                value: totalApplications,
-                image: file,
-              },
-              {
-                label: "Shortlisted applications",
-                value: shortlistedApplications,
-                image: list,
-              },
-              {
-                label: "Selected applications",
-                value: selectedApplications,
-                image: file,
-              },
-              {
-                label: "Rejected applications",
-                value: rejectedApplications,
-                image: cut,
-              },
-            ]}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col lg={12} className="mx-auto">
+        <Stats stats={statsData} />
           <Card className="p-0">
             <CardHeader>
               <Row>
@@ -203,36 +177,28 @@ const Applications = () => {
                 </Col>
               </Row>
             </CardHeader>
-            <CardBody>
+            <CardDescription>
               {isLoading ? (
-                <Row>
-                  <Col lg={12}>
-                    <PageLoader />
-                  </Col>
-                </Row>
+                <PageLoader />
               ) : (
-                <Row>
-                  <Col lg={12}>
-                    <div>
-                      <Table
-                        data={Applications?.results || []}
-                        columns={AllJobApplicationColumns(
-                          handleOptionSelect,
-                          setViewApplicationDetails
-                        )}
-                        pagination={true}
-                        dataTotalSize={Applications?.count || 0}
-                        tableOptions={tableOptions}
-                      />
-                    </div>
-                  </Col>
-                </Row>
+                <Card>
+                  <CardContent>
+                    <TableCustom
+                      data={Applications?.results || []}
+                      columns={AllJobApplicationColumns(
+                        handleOptionSelect,
+                        setViewApplicationDetails
+                      )}
+                      pagination={true}
+                      dataTotalSize={Applications?.count || 0}
+                      tableOptions={tableOptions}
+                    />
+                  </CardContent>
+                </Card>
               )}
-            </CardBody>
+            </CardDescription>
           </Card>
-        </Col>
-      </Row>
-    </div>
+    </>
   );
 };
 
