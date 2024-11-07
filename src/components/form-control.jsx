@@ -74,13 +74,13 @@ const SelectComponent = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="justify-between w-full rounded-md "
+            className="justify-between w-full rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
             disabled={disabled}
           >
             {value ? (
               options.find((option) => option.value === value)?.label
             ) : (
-              <span className="text-sm font-normal text-neutral-600">
+              <span className="text-sm font-normal text-neutral-1000">
                 {placeholder || `Select`}
               </span>
             )}
@@ -160,9 +160,9 @@ const SelectMultiInputComponent = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="flex-wrap justify-between w-full h-fit"
+            className="flex-wrap justify-between w-full rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
           >
-            <div className="flex flex-wrap justify-between w-full gap-2">
+            <div className="flex flex-wrap justify-start w-full gap-2">
               {value.length > 0 ? (
                 value?.map((val) => (
                   <span
@@ -180,11 +180,11 @@ const SelectMultiInputComponent = ({
                   </span>
                 ))
               ) : (
-                <span className="text-sm font-normal text-neutral-400">
+                <span className="text-sm font-normal text-neutral-1000">
                   {`Select`}
                 </span>
               )}
-              <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+              <ChevronsUpDown className="w-4 h-4 ml-2 ml-auto opacity-50 shrink-0" />
             </div>
           </Button>
         </PopoverTrigger>
@@ -304,7 +304,7 @@ const DateInput = ({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className={`w-full justify-start text-left font-normal ${
+            className={`w-full justify-start text-left font-normal rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200 ${
               !date ? "text-muted-foreground" : ""
             }`}
           >
@@ -326,7 +326,7 @@ const DateInput = ({
               value={inputValue}
               onValueChange={handleInputChange}
               customInput={Input}
-              className="w-[240px] text-center mx-auto text-sm font-normal text-neutral-600"
+              className="w-[240px] text-center mx-auto text-sm font-normal text-neutral-1000"
             />
             <Calendar
               mode="single"
@@ -467,7 +467,7 @@ const NumberInput = ({
           placeholder={label ? "Enter " + label : placeholder}
           value={value ?? ""}
           disabled={disabled}
-          className={error && touch ? "is-invalid" : "text-neutral-600"}
+          className={error && touch ? "is-invalid" : "text-neutral-1000"}
           min={min}
           max={max}
           step={step ?? "any"}
@@ -600,7 +600,7 @@ const PhoneNumberInput = ({
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="justify-start w-full rounded-r-md"
+                className="justify-start w-full rounded-l-sm rounded-r-none h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
               >
                 {selectedCountryCode
                   ? `+${selectedCountryCode}`
@@ -635,13 +635,15 @@ const PhoneNumberInput = ({
           <Input
             id={name}
             name={name}
-            disabled={disabled}
+            disabled={!selectedCountryCode || disabled} // Input is disabled if no country code is selected or if disabled prop is true
             autoComplete="Off"
-            placeholder={"Enter  " + label}
+            placeholder={!selectedCountryCode ? "Select country code first" : "Enter " + label}
             value={inputValue}
-            className={
-              error && touch ? "is-invalid rounded-l-md" : "rounded-l-md"
-            }
+            className={`
+              ${error && touch ? "is-invalid" : ""} 
+              rounded-l-none rounded-r-sm
+              ${!selectedCountryCode ? "bg-gray-100 cursor-not-allowed" : ""}
+            `}
             onChange={handleInputChange}
           />
         </div>
