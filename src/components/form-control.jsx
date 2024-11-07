@@ -843,7 +843,7 @@ const FileInput = ({
           }}
         />
         <div style={{ position: "absolute", bottom: ".61rem", left: "6.5rem" }}>
-          <div style={{minWidth:'7rem'}} className="w-full px-1 text-sm bg-white">{value?.document?.name || value?.name}</div>
+          <div style={{minWidth:'7rem',whiteSpace:'pre'}} className="w-full px-1 text-sm bg-white">{value?.document?.name || value?.name}</div>
         </div>
       </div>
       {error && touch && <div className="text-red-500 ">{error}</div>}
