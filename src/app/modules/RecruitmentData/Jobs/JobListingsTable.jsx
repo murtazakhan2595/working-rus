@@ -21,16 +21,10 @@ import {
 } from "../../../../utils/getValuesFromTables";
 import moment from "moment";
 import EmployeeNameInfo from "../../../../components/EmployeeNameInfo";
-import { StatusLabel } from "../../../../components/StatusLabel";
-import { fetchJobPosts } from "app/hooks/recruitment";
 import { PageLoader } from "../../../../components";
+import JobsActions from "./JobsActions";
 
 export default function JobListingsTable({ posts, loading }) {
-  // const [posts, setPosts] = useState([])
-  // const [loading, setLoading] = useState(true)
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [filterData, setFilterData] = useState({});
-  const [sortData, setSortData] = useState("dsc");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
 
   // const getPosts = async () => {
@@ -144,6 +138,12 @@ export default function JobListingsTable({ posts, loading }) {
         <Badge variant="outline">{getWorkLocation(row.location)}</Badge>
       ),
     },
+    {
+      text:"Action",
+      formatter: (cell, row)=>(
+        <JobsActions row={row}/>
+      )
+    }
     // {
     //   dataField: "viewApplicants",
     //   text: "View Applicants",

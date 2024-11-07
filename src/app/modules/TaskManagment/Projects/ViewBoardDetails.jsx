@@ -63,6 +63,9 @@ const ViewBoardDetails = ({
           isOpen={isDeleteModalOpen}
           setIsOpen={setIsDeleteModalOpen}
           handleContinue={confirmDelete}
+          continueText="Delete"
+          title="Are you Sure?"
+          description="Are you sure you want to delete this Project? This action is irreversible and will delete all tasks within."
         />
       )}
       <div className="flex justify-between items-center gap-4">
