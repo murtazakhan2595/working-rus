@@ -10,6 +10,62 @@ import {
   MoveDown 
 } from "lucide-react"
 
+// Add this button data structure before the StyleGuide component
+const buttonData = {
+  text: [
+    {
+      label: "Post Job",
+      variants: {
+        default: "px-8 py-3 font-medium text-white rounded-full bg-neutral-1200 shadow-custom",
+        hover: "px-8 py-3 font-medium text-white transition-colors rounded-full bg-neutral-900 hover:bg-neutral-800 shadow-custom",
+        disabled: "px-8 py-3 font-medium text-white rounded-full opacity-50 bg-neutral-1200 shadow-custom",
+      },
+    },
+    {
+      label: "Continue",
+      variants: {
+        default: "px-8 py-3 font-medium border rounded-full text-plum-1100 border-plum-300 shadow-custom",
+        hover: "px-8 py-3 font-medium transition-colors border rounded-full text-plum-1100 border-plum-300 hover:bg-plum-100 shadow-custom",
+        disabled: "px-8 py-3 font-medium border rounded-full opacity-50 text-plum-1100 border-plum-300 shadow-custom",
+      },
+    },
+    {
+      label: "Cancel",
+      variants: {
+        default: "px-8 py-3 font-medium border rounded-full text-neutral-1100 border-neutral-300 shadow-custom",
+        hover: "px-8 py-3 font-medium transition-colors border rounded-full text-neutral-1100 border-neutral-300 hover:bg-neutral-100 shadow-custom",
+        disabled: "px-8 py-3 font-medium border rounded-full opacity-50 text-neutral-1100 border-neutral-300 shadow-custom",
+      },
+    },
+  ],
+  icon: [
+    {
+      icon: CircleX,
+      variants: {
+        default: "p-3 border rounded-full text-red-500 border-red-100 shadow-custom",
+        hover: "p-3 transition-colors border rounded-full text-red-500 border-red-100 hover:bg-red-50 shadow-custom",
+        disabled: "p-3 border rounded-full opacity-50 text-red-500 border-red-100 shadow-custom",
+      },
+    },
+    {
+      icon: CircleHelp,
+      variants: {
+        default: "p-3 border rounded-full text-amber-500 border-amber-100 shadow-custom",
+        hover: "p-3 transition-colors border rounded-full text-amber-500 border-amber-100 hover:bg-amber-50 shadow-custom",
+        disabled: "p-3 border rounded-full opacity-50 text-amber-500 border-amber-100 shadow-custom",
+      },
+    },
+    {
+      icon: CircleCheck,
+      variants: {
+        default: "p-3 border rounded-full text-emerald-500 border-emerald-100 shadow-custom",
+        hover: "p-3 transition-colors border rounded-full text-emerald-500 border-emerald-100 hover:bg-emerald-50 shadow-custom",
+        disabled: "p-3 border rounded-full opacity-50 text-emerald-500 border-emerald-100 shadow-custom",
+      },
+    },
+  ],
+};
+
 export default function StyleGuide() {
   const colors = {
     primary: [
@@ -215,6 +271,65 @@ const typographyData = [
               {avatar.text}
             </div>
           ))}
+        </div>
+      </div>
+      {/* Buttons Section */}
+      <h1 className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">Buttons</h1>
+      <div className="space-y-4">
+        {/* Default State */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Default State</h2>
+          {/* Default State Buttons */}
+          <div className="flex flex-row gap-4">
+          {buttonData.text.map((button, index) => (
+            <button key={index} className={button.variants.default}>{button.label}</button>
+          ))}
+          </div>
+          {/* Default State Icons */}
+          <div className="flex flex-row gap-4">
+          {buttonData.icon.map((button, index) => (
+            <button key={index} className={button.variants.default}>
+              <button.icon className="w-6 h-6" />
+            </button>
+          ))}
+          </div>
+        </div>
+        {/* Hover State */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Hover State</h2>
+          {/* Hover State Buttons */}
+          <div className="flex flex-row gap-4">
+          {buttonData.text.map((button, index) => (
+            <button key={index} className={button.variants.hover}>{button.label}</button>
+          ))}
+          </div>
+          {/* Hover State Icons */}
+          <div className="flex flex-row gap-4">
+          {buttonData.icon.map((button, index) => (
+            <button key={index} className={button.variants.hover}>
+              <button.icon className="w-6 h-6" />
+            </button>
+          ))}
+          </div>
+        </div>
+        
+        {/* Disabled State */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Disabled State</h2>
+          {/* Disabled State Buttons */}
+          <div className="flex flex-row gap-4">
+          {buttonData.text.map((button, index) => (
+            <button key={index} className={button.variants.disabled}>{button.label}</button>
+          ))}
+          </div>
+          {/* Disabled State Icons */}
+          <div className="flex flex-row gap-4">
+          {buttonData.icon.map((button, index) => (
+            <button key={index} className={button.variants.disabled}>
+              <button.icon className="w-6 h-6" />
+            </button>
+          ))}
+          </div>
         </div>
       </div>
     </div>
