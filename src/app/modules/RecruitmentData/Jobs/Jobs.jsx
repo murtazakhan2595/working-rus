@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-import { BriefcaseIcon, CalendarIcon, UsersIcon } from "lucide-react";
+// import { BriefcaseIcon, CalendarIcon, UsersIcon } from "lucide-react";
 import Header from "../../../../components/Header";
 import { FilterInput } from "components/form-control";
 import { fetchJobPosts } from "app/hooks/recruitment";
@@ -24,9 +24,9 @@ import JobListingsTable from './JobListingsTable';
 
 import { CreateUpdateJob } from "..";
 
-const safeNumberDisplay = (value) => {
-  return Number.isNaN(value) || value === undefined || value === null ? '-' : value;
-};
+// const safeNumberDisplay = (value) => {
+//   return Number.isNaN(value) || value === undefined || value === null ? '-' : value;
+// };
 
 export default function JobsDataTable() {
   const [isLoading, setIsLoading] = useState(true);
