@@ -1,6 +1,7 @@
 import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
 import {getRandomColor} from "utils/renderValues"
 import Avatar from "./ui/Avatar";
+import { Badge } from "./ui/badge";
 
 // const combineFLName = employee?.first_name?.charAt(0).toUpperCase() +  employee?.last_name?.charAt(0).toUpperCase() 
 const EmployeeNameInfo = ({
@@ -10,10 +11,13 @@ const EmployeeNameInfo = ({
   id,
   leaveTypes,
   allotedLeave,
-  showPosition = true
+  showPosition = true,
+  className,
+  showBadge=false,
+  row
 }) => {
   return (
-    <div className="flex items-center">
+    <div className={`flex items-center ${className}`}>
       <Avatar
        src={'/placeholder-user.jpg'}
        alt="Avatar"
@@ -35,6 +39,12 @@ const EmployeeNameInfo = ({
           {leaveTypes && <div>{`${leaveTypes} Leave types`}</div>}
         </div>
       </div>
+      {showBadge && <Badge
+            variant="secondary"
+            className="absolute bg-blue-100 text-blue-800 top-[-8px] left-[-8px]"
+          >
+            {row?.total_applications}
+          </Badge>}
     </div>
   );
 };

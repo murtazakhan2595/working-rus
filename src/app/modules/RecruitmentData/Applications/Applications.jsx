@@ -137,21 +137,10 @@ const Applications = () => {
           applicationsList={viewApplicationDetails?.list}
         />
       )}
-      <Header
-        title="Applications"
-        content={
-          <FilterInput
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search",
-                name: "id_and_first_name",
-              },
-            ]}
-            onChange={handleFilterChange}
-          />
-        }
-      />
+
+      <Header/>
+      <Stats stats={statsData} />
+
       <Tabs
         onTabChange={setActiveTab}
         activeTab={activeTab}
@@ -160,7 +149,6 @@ const Applications = () => {
           handleFilterChange("job_id", jobId);
         }}
       />
-      <Stats stats={statsData} />
       <Card className="p-0">
         <CardHeader className="flex flex-row justify-end gap-2">
           <FilterInput
