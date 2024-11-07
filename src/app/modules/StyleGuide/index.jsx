@@ -10,6 +10,8 @@ import {
   MoveDown 
 } from "lucide-react"
 
+import  SheetOnBorading  from '../../modules/Employees/Screens/Sections/EmployeeForm';
+
 // Add this button data structure before the StyleGuide component
 const buttonData = {
   text: [
@@ -256,7 +258,7 @@ const typographyData = [
 
       {/* Avatars Section */}
       <h1 className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">Avatars</h1>
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         <div className="flex flex-wrap gap-4">
           {[
             { bg: "bg-neutral-200", text: "CN" },
@@ -275,7 +277,9 @@ const typographyData = [
       </div>
       {/* Buttons Section */}
       <h1 className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">Buttons</h1>
-      <div className="space-y-4">
+      
+      <div className="flex flex-row gap-4 space-y-4">
+      
         {/* Default State */}
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">Default State</h2>
@@ -332,6 +336,10 @@ const typographyData = [
           </div>
         </div>
       </div>
+      <h1 className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">Employee Form</h1>
+      <SheetOnBorading />
+      
+    
     </div>
   )
 }
