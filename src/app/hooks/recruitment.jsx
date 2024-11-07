@@ -2,6 +2,7 @@ import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { JobDetail } from "app/utils/Types/Recruitment.jsx";
 import { handleLogout } from "./general";
+import { toast } from "react-toastify";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -33,7 +34,10 @@ export const fetchJobPosts = async (filterData, sortData) => {
 
 export const fetchJobById = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/recruitment/${id}`);
+    const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
+      headers: headers()
+    });
+    console.log("FETCH JOBS", response.data)
     return response.data;
   } catch (error) {
     console.error("Error fetching job:", error);
@@ -248,6 +252,29 @@ const getJobApplicants = async () => {
   } catch (error) {
     console.error("Error fetching applicants:", error);
     return false;
+  }
+};
+
+
+export const deleteJob = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/recruitment/${id}`, {
+      headers: headers(),
+    });
+    console.log(response, "DELETE RESPONSE")
+    if (response.status === 204) {
+      toast.success("Job Deleted Successfully!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    } else {
+      alert('Failed to delete the job');
+      console.error('Error deleting job:', error);
+    }
   }
 };
 
