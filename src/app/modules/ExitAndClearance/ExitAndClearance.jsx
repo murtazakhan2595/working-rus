@@ -32,8 +32,8 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
   const [filterData, setFilterData] = useState({
-    exit_category: "resignation",
-    status_resignation: StatusList(),
+     exit_category: "resignation",
+     status_resignation: StatusList(),
     ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
   const fetchData = async () => {
@@ -65,7 +65,6 @@ const ExitAndClearance = ({ userProfile, departments }) => {
       filterName === "status_resignation" ||
       (filterName === "status_termination" && filterValue)
     ) {
-      console.log("filterValue", filterValue);
       filterValue = [filterValue];
     }
     setFilterData((prevFilters) => {
