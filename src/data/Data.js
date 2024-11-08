@@ -147,14 +147,16 @@ export const dropdownOptions = [
   { label: "Offer Made", value: "offer_made" },
   { label: "Selected", value: "selected" },
   { label: "Rejected", value: "rejected" },
-  // { label: "Onboard", value: "on_board" },
-  // { label: "Declined", value: "declined" },
-  // { label: "Contacted", value: "contacted" },
-  // { label: "Interview R1 ", value: "interview r1" },
-  // { label: "Interview R2 ", value: "interview r2" },
-  // { label: "Interview R3 ", value: "interview r3" },
-  // { label: "Assessment", value: "assessment" },
+  { label: "Onboard", value: "on_board" },
+  { label: "Reject", value: "rejected" },
+  { label: "Reconsider", value: "reconsider" },
+  { label: "Send Email", value: "send_email" },
+  { label: "Offer Declined", value: "declined" },
+  { label: "Move to Selected", value: "selected" },
+  { label: "Schedule Interview", value: "scheduled" },
+  { label: "Offer Accepted", value: "offer_accepted" },
 ];
+
 
 export const filterDropdownOptions = [
   { label: "Pending", value: "pending" },

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-// import { BriefcaseIcon, CalendarIcon, UsersIcon } from "lucide-react";
+import { BriefcaseIcon, CalendarIcon, UsersIcon } from "lucide-react";
 import Header from "../../../../components/Header";
 import { FilterInput } from "components/form-control";
 import { fetchJobPosts } from "app/hooks/recruitment";
@@ -24,9 +24,9 @@ import JobListingsTable from './JobListingsTable';
 
 import { CreateUpdateJob } from "..";
 
-// const safeNumberDisplay = (value) => {
-//   return Number.isNaN(value) || value === undefined || value === null ? '-' : value;
-// };
+const safeNumberDisplay = (value) => {
+  return Number.isNaN(value) || value === undefined || value === null ? '-' : value;
+};
 
 export default function JobsDataTable() {
   const [isLoading, setIsLoading] = useState(true);
@@ -73,17 +73,17 @@ export default function JobsDataTable() {
     }
   };
 
-  // const statsData = [
-  //   { label: "Total Jobs", value: safeNumberDisplay(posts.count), icon: BriefcaseIcon },
-  //   { label: "Open Jobs", value: safeNumberDisplay(posts.results.filter(job => job.status === "live").length), icon: CalendarIcon },
-  //   { label: "Total Applications", value: safeNumberDisplay(posts.results.reduce((sum, job) => sum + (job.total_applications || 0), 0)), icon: UsersIcon },
-  // ];
+  const statsData = [
+    { label: "Total Jobs", value: safeNumberDisplay(posts.count), icon: BriefcaseIcon },
+    { label: "Open Jobs", value: safeNumberDisplay(posts.results.filter(job => job.status === "live").length), icon: CalendarIcon },
+    { label: "Total Applications", value: safeNumberDisplay(posts.results.reduce((sum, job) => sum + (job.total_applications || 0), 0)), icon: UsersIcon },
+  ];
 
   return (
       <section className="flex flex-col p-[18px] text-sm">
         <Header content={<CreateUpdateJob />} />
 
-        {/* <Stats stats={statsData} /> */}
+        <Stats stats={statsData} />
         <Tabs
           defaultValue=""
           className="w-full"
