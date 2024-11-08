@@ -142,18 +142,18 @@ export const locationTypeOptions = [
 ];
 
 export const dropdownOptions = [
-  { label: "Selected", value: "selected" },
   { label: "Pending", value: "pending" },
   { label: "Shortlisted", value: "shortlisted" },
   { label: "Offer Made", value: "offer_made" },
-  { label: "Onboard", value: "on_board" },
-  { label: "Declined", value: "declined" },
-  { label: "Contacted", value: "contacted" },
+  { label: "Selected", value: "selected" },
   { label: "Rejected", value: "rejected" },
-  { label: "Interview R1 ", value: "interview r1" },
-  { label: "Interview R2 ", value: "interview r2" },
-  { label: "Interview R3 ", value: "interview r3" },
-  { label: "Assessment", value: "assessment" },
+  // { label: "Onboard", value: "on_board" },
+  // { label: "Declined", value: "declined" },
+  // { label: "Contacted", value: "contacted" },
+  // { label: "Interview R1 ", value: "interview r1" },
+  // { label: "Interview R2 ", value: "interview r2" },
+  // { label: "Interview R3 ", value: "interview r3" },
+  // { label: "Assessment", value: "assessment" },
 ];
 
 export const filterDropdownOptions = [

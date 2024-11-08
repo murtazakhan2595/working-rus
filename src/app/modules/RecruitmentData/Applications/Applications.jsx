@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { dropdownOptions } from "data/Data";
 import { PageLoader } from "components";
-import { Row, Col } from "reactstrap";
 import { Tabs } from "./Sections";
 import { ViewApplicantDetails } from ".";
 import {
@@ -23,6 +22,7 @@ import { Header } from "components";
 import Stats from "components/ui/Stats";
 import { File, List, Scissors } from "lucide-react";
 import { DateInput } from "components/form-control";
+import SheetComponent from "components/ui/SheetComponent";
 
 const Applications = () => {
   const location = useLocation();
@@ -31,6 +31,7 @@ const Applications = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterDate, setFilterDate] = useState(null);
   const [viewApplicationDetails, setViewApplicationDetails] = useState(null);
+  const [isViewApplicationDetailOpen, setIsViewApplicationDetailOpen] = useState(false)
   const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
   const [filterData, setFilterData] = useState({});
   const [totalApplications, setTotalApplications] = useState(0);
@@ -48,6 +49,8 @@ const Applications = () => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
+
+  console.log(viewApplicationDetails, "VIEW APPLICATION DETAILS")
 
   useEffect(() => {
     if (jobIdForFilter) {
@@ -125,9 +128,22 @@ const Applications = () => {
     onPageChange: onPageChange,
   };
 
+  const formSheetData = {
+    triggerText: null,
+    title: "Application Details",
+    description: null,
+    footer: null,
+  };
+
   return (
     <>
       {viewApplicationDetails && (
+        <SheetComponent
+        {...formSheetData}
+         isOpen={isViewApplicationDetailOpen}
+         setIsOpen={setIsViewApplicationDetailOpen}
+         width="568px"
+        >
         <ViewApplicantDetails
           applicantIndex={viewApplicationDetails?.index}
           closeModel={() => {
@@ -136,9 +152,23 @@ const Applications = () => {
           handleOptionSelect={handleOptionSelect}
           applicationsList={viewApplicationDetails?.list}
         />
+        </SheetComponent>
       )}
 
-      <Header/>
+      <Header
+        content={
+          <FilterInput
+            filters={[
+              {
+                type: "search",
+                placeholder: "Search",
+                name: "id_and_first_name",
+              },
+            ]}
+            onChange={handleFilterChange}
+          />
+        }
+      />
       <Stats stats={statsData} />
 
       <Tabs
@@ -188,7 +218,8 @@ const Applications = () => {
                   data={Applications?.results || []}
                   columns={AllJobApplicationColumns(
                     handleOptionSelect,
-                    setViewApplicationDetails
+                    setViewApplicationDetails,
+                    setIsViewApplicationDetailOpen
                   )}
                   pagination={true}
                   dataTotalSize={Applications?.count || 0}
