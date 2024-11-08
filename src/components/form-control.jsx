@@ -1035,7 +1035,7 @@ const FilterInput = ({
           placeholder={filter.placeholder}
           className={`${filter.className ?? classNamesStyle} ${
             filter.width ?? width
-          } ${filter.height ?? height}`}
+          } ${filter.height ?? height} rounded-sm text-neutral-1000`}
           name={filter.name}
           id={filter.name}
           value={inputValues[filter.name] || ''}
@@ -1046,6 +1046,17 @@ const FilterInput = ({
   };
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
+    // Add "All" option to the options array if it exists
+    const allOptions = filter.option ? [
+      { value: '', label: 'All' },
+      ...filter.option
+    ] : [];
+    
+    // Only find selectedOption if there's a value
+    const selectedOption = filter.values ? 
+      allOptions.find(option => option.value === filter.values) : 
+      null;
+    
     return (
       <Popover key={index} open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -1055,11 +1066,11 @@ const FilterInput = ({
             aria-expanded={open}
             className={`${
               filter.width ? filter.width : "w-[200px]"
-            } justify-between`}
+            } justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200`}
           >
-            {filter.option.value
-              ? filter.option.find((option) => option.value === value)?.label
-              : filter.placeholder}
+            <span className={selectedOption ? "text-neutral-1000" : "text-muted-foreground"}>
+              {selectedOption ? selectedOption.label : filter.placeholder}
+            </span>
             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
           </Button>
         </PopoverTrigger>
@@ -1069,19 +1080,18 @@ const FilterInput = ({
             <CommandList>
               <CommandEmpty>No option found.</CommandEmpty>
               <CommandGroup>
-                {filter.option?.map((option) => (
+                {allOptions.map((option) => (
                   <CommandItem
                     key={option.value}
                     value={option.value}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                    onSelect={() => {
                       onChange(filter.name, option.value);
                       setOpen(false);
                     }}
                   >
                     <Check
                       className={`mr-2 h-4 w-4 ${
-                        value === option.value ? "opacity-100" : "opacity-0"
+                        filter.values === option.value ? "opacity-100" : "opacity-0"
                       }`}
                     />
                     {option.label}

@@ -27,13 +27,15 @@ const EmployeeNameInfo = ({
 
       <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces">
         <div className="font-medium">{`${name ?? "N/A"}`}</div>
-        <div className="hidden text-sm text-muted-foreground md:inline">
-          <div>
-            <DesignationName value={position} />
+        <div className="hidden text-sm text-neutral-1200 md:inline">
+          <div className="flex flex-col items-start gap-1">
+            <DesignationName value={position} className="text-neutral-1200" />
             {showPosition && (
               <span>
                 {" "}
-                | <DepartmentName value={department} />{" "}
+              <DepartmentName value={department} className="text-neutral-1000"/>{" "}
+
+              
               </span>
             )}
           </div>
