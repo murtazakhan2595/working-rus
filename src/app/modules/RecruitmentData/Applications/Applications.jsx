@@ -50,7 +50,6 @@ const Applications = () => {
     }
   };
 
-  console.log(viewApplicationDetails, "VIEW APPLICATION DETAILS")
 
   useEffect(() => {
     if (jobIdForFilter) {
