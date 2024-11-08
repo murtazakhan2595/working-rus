@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { dropdownOptions } from "data/Data";
-import { PageLoader} from "components";
-import {  Row, Col } from "reactstrap";
+import { PageLoader } from "components";
+import { Row, Col } from "reactstrap";
 import { Tabs } from "./Sections";
 import { ViewApplicantDetails } from ".";
 import {
@@ -13,16 +13,23 @@ import {
 import { FilterInput } from "components/form-control";
 import { AllJobApplicationColumns } from "app/utils/Types/TableColumns";
 import TableCustom from "components/CustomTable";
-import { Card, CardContent, CardHeader, CardDescription } from "components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardDescription,
+} from "components/ui/card";
 import { Header } from "components";
 import Stats from "components/ui/Stats";
-import {  File, List, Scissors } from "lucide-react";
+import { File, List, Scissors } from "lucide-react";
+import { DateInput } from "components/form-control";
 
 const Applications = () => {
   const location = useLocation();
   const jobIdForFilter = location?.state?.jobId ?? "";
   const [Applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [filterDate, setFilterDate] = useState(null);
   const [viewApplicationDetails, setViewApplicationDetails] = useState(null);
   const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
   const [filterData, setFilterData] = useState({});
@@ -71,9 +78,17 @@ const Applications = () => {
 
   const statsData = [
     { label: "Total applications", value: totalApplications, icon: File },
-    { label: "Shortlisted applications", value: shortlistedApplications, icon: List },
-    { label: "Selected applications", value: selectedApplications, icon: File},
-    { label: "Rejected applications", value: rejectedApplications, icon: Scissors },
+    {
+      label: "Shortlisted applications",
+      value: shortlistedApplications,
+      icon: List,
+    },
+    { label: "Selected applications", value: selectedApplications, icon: File },
+    {
+      label: "Rejected applications",
+      value: rejectedApplications,
+      icon: Scissors,
+    },
   ];
 
   const handleOptionSelect = async (applicant, option) => {
@@ -122,82 +137,68 @@ const Applications = () => {
           applicationsList={viewApplicationDetails?.list}
         />
       )}
-      <Header
-        title="Applications"
-        content={
+
+      <Header/>
+      <Stats stats={statsData} />
+
+      <Tabs
+        onTabChange={setActiveTab}
+        activeTab={activeTab}
+        activeJobId={jobIdForFilter}
+        changeJobFilter={(jobId) => {
+          handleFilterChange("job_id", jobId);
+        }}
+      />
+      <Card className="p-0">
+        <CardHeader className="flex flex-row justify-end gap-2">
           <FilterInput
             filters={[
               {
                 type: "search",
-                placeholder: "Search",
+                placeholder: "Search by Keyword",
                 name: "id_and_first_name",
+              },
+              {
+                type: "select-one",
+                option: dropdownOptions,
+                name: "application_status",
+                placeholder: "Status",
               },
             ]}
             onChange={handleFilterChange}
           />
-        }
-      />
-          <Tabs
-            onTabChange={setActiveTab}
-            activeTab={activeTab}
-            activeJobId={jobIdForFilter}
-            changeJobFilter={(jobId) => {
-              handleFilterChange("job_id", jobId);
+          <DateInput
+            placeholder="Applied On"
+            value={filterDate}
+            className="flex align-middle items-center"
+            name="updated_at"
+            onChange={(field, value) => {
+              setFilterDate(value);
+              handleFilterChange(field, value);
             }}
           />
-        <Stats stats={statsData} />
-          <Card className="p-0">
-            <CardHeader>
-              <Row>
-                <Col lg={12}>
-                  <div className="px-3 py-3">
-                    <FilterInput
-                      filters={[
-                        {
-                          type: "search",
-                          placeholder: "Search by Keyword",
-                          name: "id_and_first_name",
-                        },
-                        {
-                          type: "date",
-                          name: "updated_at",
-                          placeholder: "Applied On",
-                          value: filterData?.updated_at,
-                        },
-                        {
-                          type: "select",
-                          option: dropdownOptions,
-                          name: "application_status",
-                          placeholder: "Status",
-                        },
-                      ]}
-                      onChange={handleFilterChange}
-                    />
-                  </div>
-                </Col>
-              </Row>
-            </CardHeader>
-            <CardDescription>
-              {isLoading ? (
-                <PageLoader />
-              ) : (
-                <Card>
-                  <CardContent>
-                    <TableCustom
-                      data={Applications?.results || []}
-                      columns={AllJobApplicationColumns(
-                        handleOptionSelect,
-                        setViewApplicationDetails
-                      )}
-                      pagination={true}
-                      dataTotalSize={Applications?.count || 0}
-                      tableOptions={tableOptions}
-                    />
-                  </CardContent>
-                </Card>
-              )}
-            </CardDescription>
-          </Card>
+        </CardHeader>
+        <CardDescription>
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <Card>
+              <CardContent>
+                <TableCustom
+                  data={Applications?.results || []}
+                  columns={AllJobApplicationColumns(
+                    handleOptionSelect,
+                    setViewApplicationDetails
+                  )}
+                  pagination={true}
+                  dataTotalSize={Applications?.count || 0}
+                  tableOptions={tableOptions}
+                />
+              </CardContent>
+            </Card>
+          )}
+        </CardDescription>
+      </Card>
     </>
   );
 };

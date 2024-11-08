@@ -1,58 +1,32 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Row,
-  Col,
-} from "reactstrap";
-import { BsThreeDots } from "react-icons/bs";
+import React from "react";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../../../../../src/@/components/ui/dropdown-menu"
+import {Button} from "../../../../../components/ui/button";
+import { MoreHorizontal  } from "lucide-react";
 import { dropdownOptions } from "data/Data";
 
-const RenderJobApplicationActions = ({
-  labelContact,
-  row,
-  handleOptionSelect,
-}) => {
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
-  const toggleDropdown = (index) => {
-    setOpenDropdownRow(index === openDropdownRow ? null : index);
-  };
-  if(!row) return <></>;
+const RenderJobApplicationActions = ({ row, handleOptionSelect }) => {
 
   return (
-    <div>
-      <ButtonDropdown
-        isOpen={openDropdownRow === row.id}
-        toggle={() => toggleDropdown(row.id)}
-        className="float-end"
+    <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button
+        aria-haspopup="true"
+        size="icon"
+        variant="ghost"
       >
-        <DropdownToggle size="sm" className={`btn-brand ${labelContact ? 'bg-white rounded' : ''}`}>
-          {labelContact ? (
-            labelContact
-          ) : (
-            <BsThreeDots onClick={() => toggleDropdown(row.id)} />
-          )}
-        </DropdownToggle>
-        <DropdownMenu right>
-          {dropdownOptions.map((option) => {
-            return (
-              <>
-                <DropdownItem
-                  onClick={() => handleOptionSelect(row, option.value)}
-                >
-                  {option.label}
-                </DropdownItem>
-              </>
-            );
-          })}
-        </DropdownMenu>
-      </ButtonDropdown>
-    </div>
+        <MoreHorizontal className="w-4 h-4" />
+        <span className="sr-only">Toggle menu</span>
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end">
+     {dropdownOptions.map((option) => (
+          <DropdownMenuItem key={option.value} onSelect={() => handleOptionSelect(row, option.value)}>
+            {option.label}
+          </DropdownMenuItem>
+        ))}
+    </DropdownMenuContent>
+  </DropdownMenu>
+   
   );
 };
 

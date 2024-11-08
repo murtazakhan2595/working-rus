@@ -19,7 +19,6 @@ import moment from "moment";
 import { IoIosArrowDown } from "react-icons/io";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
-import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
 import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
 import { filebase64Download } from "utils/fileUtils";
 import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
