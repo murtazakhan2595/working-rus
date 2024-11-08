@@ -34,10 +34,8 @@ import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock, Download } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
-import { calculateTotalMonthlyEarningsAndDeductions } from "app/modules/payroll/Sections/CalculationsHelperFunctions";
 import { MembersList } from "app/modules/TaskManagment/Sections";
-import { formatters } from "date-fns";
-import { StatusCircleLabel } from "components/StatusLabel";
+
 
 /**
  * LeaveHistoryColumns

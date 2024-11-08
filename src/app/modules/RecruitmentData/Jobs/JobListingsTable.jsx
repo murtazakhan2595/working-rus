@@ -94,10 +94,6 @@ export default function JobListingsTable({ posts, loading }) {
       formatter: (cell, row) =>
         `${moment(row.updated_at).format("DD-MM-YYYY")}`,
     },
-    // {
-    //   dataField: "total_applications",
-    //   text: "Applications",
-    // },
     {
       dataField: "Work_type",
       text: "Work Type",
@@ -122,15 +118,6 @@ export default function JobListingsTable({ posts, loading }) {
         </Badge>
       ),
     },
-    // {
-    //   dataField: "status",
-    //   text: "Status",
-    //   formatter: (cell, row) => (
-
-    //     <StatusLabel status={row.status === "live" ? "Open" : "Close"} />
-
-    //   ),
-    // },
     {
       dataField: "location",
       text: "Job Location",
@@ -144,46 +131,6 @@ export default function JobListingsTable({ posts, loading }) {
         <JobsActions row={row}/>
       )
     }
-    // {
-    //   dataField: "viewApplicants",
-    //   text: "View Applicants",
-    //   formatter: (cell, row) => (
-    //     <Link to="/applicants" state={{ jobId: row.id }}>
-    //       <Button variant="outline">View Applicants</Button>
-    //     </Link>
-    //   ),
-    // },
-    // {
-    //   dataField: "viewDetail",
-    //   text: "View Detail",
-    //   formatter: (cell, row) => (
-    //     <Sheet>
-    //       <SheetTrigger asChild>
-    //         <Button variant="outline" onClick={() => setSelectedJob(row)}>View Detail</Button>
-    //       </SheetTrigger>
-    //       <SheetContent>
-    //         <SheetHeader>
-    //           <SheetTitle>Job Details</SheetTitle>
-    //           <SheetDescription>
-    //             {selectedJob && (
-    //               <div>
-    //                 <h3 className="text-lg font-bold text-gray-950">{selectedJob.Job_Title}</h3>
-    //                 <p>ID: <EmployeeID value={selectedJob.id} /></p>
-    //                 <p>Date Range: {`${moment(selectedJob.updated_at).format("DD-MM-YYYY")} to ${moment(selectedJob.Deadline).format("DD-MM-YYYY")}`}</p>
-    //                 <p>Applications: {selectedJob.total_applications}</p>
-    //                 <p>Work Type: {getWorkType(selectedJob.Work_type)}</p>
-    //                 <p>Job Type: {getJobType(selectedJob.Job_Type)}</p>
-    //                 <p>Status: <StatusLabel status={selectedJob.status === "live" ? "Open" : "Close"} /></p>
-    //                 <p>Location: {getWorkLocation(selectedJob.location)}</p>
-    //                 <p>Employee Type: {getEmployeeType(selectedJob.Employee_Type)}</p>
-    //               </div>
-    //             )}
-    //           </SheetDescription>
-    //         </SheetHeader>
-    //       </SheetContent>
-    //     </Sheet>
-    //   ),
-    // },
   ];
 
   return (

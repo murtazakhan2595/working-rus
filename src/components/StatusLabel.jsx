@@ -31,61 +31,38 @@ export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
 };
 
 export const StatusLabel = ({ status, value }) => {
+  console.log("STAUTS", status)
   if (!status) {
     return "";
   }
   let className = "";
   if (status === "Onboard") {
-    className = "label-green-2FD115";
+    className = "bg-amber-100 text-amber-500";
   } else if (status === "Contacted" || status === "warning-orange") {
     className = "label-warning-FF9900";
   } else if (status === "warning") {
     className = "label-warning";
   } else if (status === "Offered") {
     className = "label-warning-D5D912";
-  } else if (status === "Rejected") {
-    className = "label-danger";
-  } else if (status === "Declined" || status === "Denied") {
-    className = "label-Denied";
+  } else if (status === "Rejected" || status === "Declined" || status === "Denied" ) {
+    className = "bg-red-100 text-red-500";
   } else if (status === "Selected" || status === "Approved") {
     className = "label-success";
   } else if (status === "Shortlisted") {
-    className = "label-green-28D9AC";
+    className = "bg-emerald-100 text-emerald-500";
   } else if (status === "Pending") {
-    className = "label-Pending";
+    className = "bg-neutral-300 text-neutral-1100";
   } else {
-    className = "label-draft";
+    className = "bg-neutral-300 text-neutral-1100";
   }
   return (
-    <>
-      <span
-        className={`${className} h-[22px] px-3 py-[3px] rounded-[999px] justify-center items-center gap-1.5 inline-flex`}
-        // style={{ color: "#323333", minWidth: "100px", fontWeight: "normal" }}
-      >
-        <div
-          className={`${className} font-semibold text-xs  leading-3`}
-        >
-          {value ?? status}
-        </div>
-      </span>
-    </>
+    <Badge className={className}>
+    {value ?? status}
+    </Badge>
   );
 };
 
-export const LabelHolo = ({ text, color }) => {
-  return (
-    <div
-      className="flex items-center mx-1 space-x-2"
-      style={{ borderBottom: "0.75px solid #5C5E64" }}
-    >
-      <span
-        className={`w-3 h-3 rounded-full ${color}`}
-        style={{ backgroundColor: color }}
-      ></span>
-      <span className="ml-0 text-gray-600">{` ${text}`}</span>
-    </div>
-  );
-};
+
 
 export const StatusCircleLabel = ({ label, status }) => {
   const normalizedStatus = status.toLowerCase();
