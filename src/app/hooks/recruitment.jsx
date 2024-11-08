@@ -34,9 +34,7 @@ export const fetchJobPosts = async (filterData, sortData) => {
 
 export const fetchJobById = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/recruitment/${id}`, {
-      headers: headers()
-    });
+    const response = await axios.get(`${baseUrl}/recruitment/${id}`);
     console.log("FETCH JOBS", response.data)
     return response.data;
   } catch (error) {
@@ -272,7 +270,9 @@ export const deleteJob = async (id) => {
     if (error?.response?.status === 401) {
       handleLogout();
     } else {
-      alert('Failed to delete the job');
+      toast.error("Failed to delete the job", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       console.error('Error deleting job:', error);
     }
   }
