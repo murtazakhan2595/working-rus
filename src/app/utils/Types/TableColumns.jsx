@@ -351,7 +351,8 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
 };
 export const AllJobApplicationColumns = (
   handleOptionSelect,
-  setViewApplicationDetails
+  setViewApplicationDetails,
+  setIsViewApplicationDetailOpen
 ) => [
   {
     dataField: "id",
@@ -373,6 +374,7 @@ export const AllJobApplicationColumns = (
     ),
     onClick: (index, list) => {
       setViewApplicationDetails({ index, list });
+      setIsViewApplicationDetailOpen(true)
     },
   },
   {

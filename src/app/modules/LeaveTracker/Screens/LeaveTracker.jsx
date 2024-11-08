@@ -34,17 +34,7 @@ import EmployeeLeavesDetailSheet from "../Sections/EmployeeLeavesDetailSheet.jsx
 import { getLeaveStatsEmployee } from "app/hooks/leaveTracker.jsx";
 import { getLeavestatesCustomApi } from "app/hooks/leaveTracker.jsx";
 
-const dummyData = [
-  {
-    id: 1,
-    work_email: "khan@gmail.com",
-    full_name: "Khan",
-    department: "IT",
-    total_Alloted: 10,
-    total_used: 5,
-    total_remaining: 5,
-  },
-];
+
 const LeaveTracker = ({ userProfile, departments }) => {
   const [Leave, setLeave] = useState([]);
   const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
