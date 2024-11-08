@@ -33,9 +33,9 @@ export default function Component() {
   }, []);
 
   const statusColors = {
-    completed: "var(--color-completed)",
-    on_hold: "var(--color-on_hold)",
-    on_going: "var(--color-on_going)"
+    completed: "hsl(var(--emerald-500))",
+    on_hold: "hsl(var(--red-200))",
+    on_going: "hsl(var(--primary))"
 };
 
 const statusCounts = data?.reduce((acc, project) => {
@@ -54,14 +54,17 @@ const chartData = Object.keys(statusCounts).map(status => ({
   fill: statusColors[status] 
 }));
 
+console.log('Chart Data with fills:', chartData);
+console.log('Status Colors:', statusColors);
 
-  const chartConfig = {
+const chartConfig = {
     visitors: {
       label: "Compeletd",
+      color: "hsl(var(--chart-1))",
     },
     project1: {
       label: "On Hold",
-      color: "hsl(var(--chart-1))",
+      color: "hsl(var(--chart-4))",
     },
     project2: {
       label: "On Going",
@@ -86,7 +89,18 @@ const chartData = Object.keys(statusCounts).map(status => ({
         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
         <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Pie data={chartData} dataKey="count" nameKey="status" innerRadius={60} strokeWidth={5}>
+            <Pie 
+              data={chartData} 
+              dataKey="count" 
+              nameKey="status" 
+              innerRadius={60} 
+              strokeWidth={5}
+              fill="hsl(var(--chart-1))"
+            >
+              {chartData.map((entry, index) => {
+                console.log(`Segment ${index} fill:`, entry.fill);
+                return null;
+              })}
               <Label
                 content={({ viewBox }) => {
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {
