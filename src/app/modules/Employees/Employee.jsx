@@ -27,6 +27,9 @@ export default function EmployeeManagement() {
   const [totalManagers, setTotalManagers] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedDesignation, setSelectedDesignation] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -75,6 +78,10 @@ export default function EmployeeManagement() {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
+    if (filterName === "department_name") setSelectedDepartment(filterValue);
+    if (filterName === "department_position") setSelectedDesignation(filterValue);
+    if (filterName === "user_role") setSelectedRole(filterValue);
+    
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -122,18 +129,21 @@ export default function EmployeeManagement() {
               option: departments,
               name: "department_name",
               placeholder: "Department",
+              values: selectedDepartment,
             },
             {
               type: "select-two",
               option: designations,
               name: "department_position",
               placeholder: "Designation",
+              values: selectedDesignation,
             },
             {
               type: "select-three",
               option: UserRoles,
               name: "user_role",
               placeholder: "Role",
+              values: selectedRole,
             },
           ]}
           onChange={handleFilterChange}

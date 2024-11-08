@@ -21,7 +21,7 @@ import { SidebarNew } from "components/ui/sidebar-new";
            
         <main
         className={cn(
-          "min-h-[calc(100vh_-_56px)] bg-mauve-200 transition-[margin-left] ease-in-out duration-300",
+          "min-h-[calc(100vh_-_56px)]  transition-[margin-left] ease-in-out duration-300",
           sidebar?.isOpen === false ? "lg:ml-[90px]" : "lg:ml-72"
         )}
       > <ContentLayout userRole={userRole}/>
