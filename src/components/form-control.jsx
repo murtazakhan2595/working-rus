@@ -74,7 +74,7 @@ const SelectComponent = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="justify-between w-full rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
+            className="justify-between w-full rounded-sm text-neutral-1100 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
             disabled={disabled}
           >
             {value ? (
