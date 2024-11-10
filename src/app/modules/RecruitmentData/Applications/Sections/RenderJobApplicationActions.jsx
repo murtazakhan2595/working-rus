@@ -34,7 +34,7 @@ const RenderJobApplicationActions = ({ row, handleOptionSelect }) => {
     }
   };
 
-  const filteredOptions = getFilteredOptions(row.application_status);
+  const filteredOptions = getFilteredOptions(row?.application_status);
 
   return (
     <DropdownMenu>
