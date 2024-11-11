@@ -305,7 +305,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJ
 
   const formSheetData = {
     triggerText: !isEditMode ?"Add New Job": null,
-    title: "Add New Job",
+    title: !isEditMode ? "Add New Job": "Update Job",
 
     description: null,
     footer: null,
@@ -318,7 +318,6 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJ
       let response;
       if (isEditMode && id) {
         response = await updateJob(baseUrl, id, values, token);
-        console.log(response, "UDPATE JOBS")
       } else {
         response = await addJob(baseUrl, values, token);
       }
