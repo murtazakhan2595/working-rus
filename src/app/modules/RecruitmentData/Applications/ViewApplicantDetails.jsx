@@ -169,10 +169,10 @@ const ApplicantDetail = ({ label, value }) => {
   return (
     <div>
       <div className="flex gap-4 items-center mt-4 max-w-full">
-        <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
+        <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
           <div>{label}</div>
         </div>
-        <div className="flex-1 shrink leading-5 basis-0 text-neutral-800">
+        <div className="flex-1 shrink leading-5 basis-0">
           {value ?? "N/A"}
         </div>
       </div>

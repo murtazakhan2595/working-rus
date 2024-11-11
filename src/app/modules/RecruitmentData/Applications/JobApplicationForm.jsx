@@ -1,6 +1,6 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
 import React, { useState, useRef } from "react";
-import { Card, CardHeader, CardBody, Row, Col, Button } from "reactstrap";
+import { CardHeader } from "reactstrap";
 import { Formik } from "formik";
 import {
   TextInput,
@@ -18,8 +18,8 @@ import { addApplication } from "../../../hooks/recruitment.jsx";
 import { Header } from "../Sections/index.js";
 import { ApplicationDetail } from "../../../utils/Types/Recruitment.jsx";
 import { countriesList, countriesCallingCodes } from "data/Data.js";
-
-
+import {Card, CardContent } from "components/ui/card.jsx";
+import { Button } from "components/ui/button.jsx";
 
 const JobApplicationForm = () => {
   const { id } = useParams();
@@ -51,236 +51,179 @@ const JobApplicationForm = () => {
   };
 
   return (
-    <div className="screen bg-[#F0F1F2]">
+    <div className="bg-[#F0F1F2]">
       <Header title="Job Application" />
-      <Row>
-        <Col lg={12} className="mx-auto">
-          <Card>
-            <CardHeader>
-              <Row>
-                <Col lg={10}>
-                  <div className="mb-0 h4 d-flex align-items-center">
-                    <i className="nav-icon fas fa-id-card-alt" />
-                    <span className="ml-2 fw-700">Application Form</span>
-                  </div>
-                </Col>
-              </Row>
-            </CardHeader>
-            <CardBody style={{ maxWidth: "800px" }}>
-              <>
-                {isLoading ? (
-                  <Row>
-                    <Col lg={12}>
-                      <PageLoader />
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row>
-                    <Col lg={12}>
-                      <Formik
-                        initialValues={formData}
-                        innerRef={formRef}
-                        onSubmit={(values, { resetForm }) => {
-                          handleSubmit(values, resetForm);
-                        }}
-                        validate={(values) => {
-                          const errors = {};
+      <Card>
+        <CardHeader>
+          <div className="mb-0 h4 d-flex align-items-center">
+            <i className="nav-icon fas fa-id-card-alt" />
+            <span className="ml-2 fw-700">Application Form</span>
+          </div>
+        </CardHeader>
+        <CardContent className="flex justify-center">
+          <>
+            {isLoading ? (
+              <PageLoader />
+            ) : (
+              <Formik
+                initialValues={formData}
+                innerRef={formRef}
+                onSubmit={(values, { resetForm }) => {
+                  handleSubmit(values, resetForm);
+                }}
+                validate={(values) => {
+                  const errors = {};
 
-                          return errors;
-                        }}
-                      >
-                        {(props) => (
-                          <form onSubmit={props.handleSubmit}>
-                            <Row>
-                              <Col md="6">
-                                <TextInput
-                                  name="first_name"
-                                  error={props.errors.first_name}
-                                  touch={props.touched.first_name}
-                                  value={props.values.first_name}
-                                  label="First Name"
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.handleChange(field)(value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <TextInput
-                                  name="last_name"
-                                  error={props.errors.last_name}
-                                  touch={props.touched.last_name}
-                                  value={props.values.last_name}
-                                  label="Last Name"
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.handleChange(field)(value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md={12}>
-                                <SelectComponent
-                                  name={"location"}
-                                  options={countriesList}
-                                  error={props.errors.location}
-                                  touch={props.touched.location}
-                                  value={props.values.location}
-                                  label={"Location"}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md={6}>
-                                <PhoneNumberInput
-                                  name={"phone_number"}
-                                  error={props.errors.phone_number}
-                                  touch={props.touched.phone_number}
-                                  value={props.values.phone_number}
-                                  label={"Contact no."}
-                                  countryCode={props.values.country_code}
-                                  countryCodeName={"country_code"}
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  countryOptions={countriesCallingCodes} 
-                                />
-                              </Col>
-                              <Col md="6">
-                                <EmailInput
-                                  name={"email"}
-                                  error={props.errors.email}
-                                  touch={props.touched.email}
-                                  value={props.values.email}
-                                  label={"Email"}
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.handleChange(field)(value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <TextInput
-                                  name="notice_period"
-                                  error={props.errors.notice_period}
-                                  touch={props.touched.notice_period}
-                                  value={props.values.notice_period}
-                                  label="Notice Period"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  required={true}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <TextInput
-                                  name="Year_of_Experience"
-                                  error={props.errors.Year_of_Experience}
-                                  touch={props.touched.Year_of_Experience}
-                                  value={props.values.Year_of_Experience}
-                                  label="Experience (in years)"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  maxLength={3}
-                                  required={true}
-                                  regEx={/^[0-9.]+$/}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <TextInput
-                                  name="current_salary"
-                                  error={props.errors.current_salary}
-                                  touch={props.touched.current_salary}
-                                  value={props.values.current_salary}
-                                  label="Current Salary"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  maxLength="14,2"
-                                  regEx={/^[0-9.]+$/}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <TextInput
-                                  name="expected_salary"
-                                  error={props.errors.expected_salary}
-                                  touch={props.touched.expected_salary}
-                                  value={props.values.expected_salary}
-                                  label="Expected Salary"
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  maxLength="14,2"
-                                  regEx={/^[0-9.]+$/}
-                                />
-                              </Col>
-                              <Col md="6">
-                                <DateInput
-                                  name="availability_for_interview"
-                                  error={
-                                    props.errors.availability_for_interview
-                                  }
-                                  touch={
-                                    props.touched.availability_for_interview
-                                  }
-                                  value={
-                                    props.values.availability_for_interview
-                                  }
-                                  label="Availability for interview"
-                                  required={true}
-                                  minDate={new Date()}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                              <Col md="12">
-                                <FileInput
-                                  name="cv"
-                                  label=" resume or drag it here"
-                                  acceptType=".pdf"
-                                  error={props.errors?.cv}
-                                  touch={props.touched?.cv}
-                                  value={props.values?.cv}
-                                  required={true}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                />
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col md="2">
-                                <Link
-                                  type="button"
-                                  className="btn btn-outline-dark w-100"
-                                  to="/jobs"
-                                >
-                                  Cancel
-                                </Link>
-                              </Col>
-                              <Col md="4">
-                                <Button
-                                  type="submit"
-                                  className="btn btn-dark w-100"
-                                >
-                                  {"Submit"}
-                                </Button>
-                              </Col>
-                            </Row>
-                          </form>
-                        )}
-                      </Formik>
-                    </Col>
-                  </Row>
+                  return errors;
+                }}
+              >
+                {(props) => (
+                  <form onSubmit={props.handleSubmit}>
+                    <TextInput
+                      name="first_name"
+                      error={props.errors.first_name}
+                      touch={props.touched.first_name}
+                      value={props.values.first_name}
+                      label="First Name"
+                      required={true}
+                      onChange={(field, value) => {
+                        props.handleChange(field)(value);
+                      }}
+                    />
+                    <TextInput
+                      name="last_name"
+                      error={props.errors.last_name}
+                      touch={props.touched.last_name}
+                      value={props.values.last_name}
+                      label="Last Name"
+                      required={true}
+                      onChange={(field, value) => {
+                        props.handleChange(field)(value);
+                      }}
+                    />
+                    <SelectComponent
+                      name={"location"}
+                      options={countriesList}
+                      error={props.errors.location}
+                      touch={props.touched.location}
+                      value={props.values.location}
+                      label={"Location"}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                    <PhoneNumberInput
+                      name={"phone_number"}
+                      error={props.errors.phone_number}
+                      touch={props.touched.phone_number}
+                      value={props.values.phone_number}
+                      label={"Contact no."}
+                      countryCode={props.values.country_code}
+                      countryCodeName={"country_code"}
+                      required={true}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                      countryOptions={countriesCallingCodes}
+                    />
+                    <EmailInput
+                      name={"email"}
+                      error={props.errors.email}
+                      touch={props.touched.email}
+                      value={props.values.email}
+                      label={"Email"}
+                      required={true}
+                      onChange={(field, value) => {
+                        props.handleChange(field)(value);
+                      }}
+                    />
+                    <TextInput
+                      name="notice_period"
+                      error={props.errors.notice_period}
+                      touch={props.touched.notice_period}
+                      value={props.values.notice_period}
+                      label="Notice Period"
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                      required={true}
+                    />
+                    <TextInput
+                      name="Year_of_Experience"
+                      error={props.errors.Year_of_Experience}
+                      touch={props.touched.Year_of_Experience}
+                      value={props.values.Year_of_Experience}
+                      label="Experience (in years)"
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                      maxLength={3}
+                      required={true}
+                      regEx={/^[0-9.]+$/}
+                    />
+                    <TextInput
+                      name="current_salary"
+                      error={props.errors.current_salary}
+                      touch={props.touched.current_salary}
+                      value={props.values.current_salary}
+                      label="Current Salary"
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                      maxLength="14,2"
+                      regEx={/^[0-9.]+$/}
+                    />
+                    <TextInput
+                      name="expected_salary"
+                      error={props.errors.expected_salary}
+                      touch={props.touched.expected_salary}
+                      value={props.values.expected_salary}
+                      label="Expected Salary"
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                      maxLength="14,2"
+                      regEx={/^[0-9.]+$/}
+                    />
+                    <DateInput
+                      name="availability_for_interview"
+                      error={props.errors.availability_for_interview}
+                      touch={props.touched.availability_for_interview}
+                      value={props.values.availability_for_interview}
+                      label="Availability for interview"
+                      required={true}
+                      minDate={new Date()}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                    <FileInput
+                      name="cv"
+                      label=" resume or drag it here"
+                      acceptType=".pdf"
+                      error={props.errors?.cv}
+                      touch={props.touched?.cv}
+                      value={props.values?.cv}
+                      required={true}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                    <Link
+                      type="button"
+                      className="btn btn-outline-dark w-100"
+                      to="/jobs"
+                    >
+                      Cancel
+                    </Link>
+                    <Button type="submit">{"Submit"}</Button>
+                  </form>
                 )}
-              </>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
+              </Formik>
+            )}
+          </>
+        </CardContent>
+      </Card>
     </div>
   );
 };

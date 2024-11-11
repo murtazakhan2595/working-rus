@@ -81,7 +81,7 @@ export default function JobListingsTable({ posts, loading }) {
           <EmployeeNameInfo
             className="relative"
             name={row.Job_Title}
-            department={getEmployeeType(row.Employee_Type)}
+            department={false}
             position={getJobType(row.Job_Type)}
             showBadge={true}
             row={row}
@@ -115,6 +115,18 @@ export default function JobListingsTable({ posts, loading }) {
           className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
         >
           {getJobType(row.Job_Type)}
+        </Badge>
+      ),
+    },
+    {
+      dataField: "Employee_Type",
+      text: "Employee Type",
+      formatter: (cell, row) => (
+        <Badge
+          variant="secondary"
+          className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
+        >
+          {getEmployeeType(row.Employee_Type)}
         </Badge>
       ),
     },
