@@ -9,12 +9,14 @@ const EmployeeNameInfo = ({
   department,
   position,
   id,
+  jobId,
   leaveTypes,
   allotedLeave,
   showPosition = true,
   className,
   showBadge = false,
   row,
+  date
 }) => {
   return (
     <div className={`flex items-center ${className}`}>
@@ -26,16 +28,21 @@ const EmployeeNameInfo = ({
       />
 
       <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces">
+        {jobId && <p className="sm:inline text-xs">{jobId}</p>}
         <div className="font-medium">{`${name ?? "N/A"}`}</div>
+        {
+        date && <p className="sm:inline text-sm">{date}</p>
+      }
         <div className="hidden text-sm text-neutral-1200 md:inline">
           <div className="flex flex-col items-start gap-1">
-            <DesignationName value={position} className="text-neutral-1200" />
+            {position && <DesignationName value={position} className="text-neutral-1200" />}
             {showPosition && (
               <span>
                 {" "}
-              <DepartmentName value={department} className="text-neutral-1000"/>{" "}
-
-              
+                <DepartmentName
+                  value={department}
+                  className="text-neutral-1000"
+                />{" "}
               </span>
             )}
           </div>
@@ -52,6 +59,7 @@ const EmployeeNameInfo = ({
           {row?.total_applications}
         </Badge>
       )}
+ 
     </div>
   );
 };

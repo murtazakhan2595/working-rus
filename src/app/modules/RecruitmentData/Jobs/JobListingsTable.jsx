@@ -23,9 +23,11 @@ import moment from "moment";
 import EmployeeNameInfo from "../../../../components/EmployeeNameInfo";
 import { PageLoader } from "../../../../components";
 import JobsActions from "./JobsActions";
+import ViewJobDetails from "./ViewJobDetails";
 
-export default function JobListingsTable({ posts, loading }) {
+export default function JobListingsTable({ posts, loading ,fetchJobPosts }) {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [selectedJob, setSelectedJob] = useState(null)
 
   // const getPosts = async () => {
   //   setLoading(true)
@@ -66,13 +68,21 @@ export default function JobListingsTable({ posts, loading }) {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onRowClick: (row) => {
+      setSelectedJob({
+        isOpen: true,
+        JobId: row?.id
+      })
+      // setIsSelectedLeaveSheet(true);
+      // setSelectedLeave(row);
+    },
   };
 
   const columns = [
     {
       dataField: "id",
       text: "ID",
-      formatter: (cell, row) => <EmployeeID value={row.id} />,
+      formatter: (cell, row) => <EmployeeID value={row.serial_number} />,
     },
     {
       dataField: "Job_Title",
@@ -140,7 +150,7 @@ export default function JobListingsTable({ posts, loading }) {
     {
       text:"Action",
       formatter: (cell, row)=>(
-        <JobsActions row={row}/>
+        <JobsActions row={row} fetchJobPosts={fetchJobPosts}/>
       )
     }
   ];
@@ -162,6 +172,16 @@ export default function JobListingsTable({ posts, loading }) {
           />
         )}
       </CardContent>
+      {
+        selectedJob?.isOpen && (
+          <ViewJobDetails
+            isOpen={selectedJob?.isOpen}
+            setIsOpen={()=> setSelectedJob(null)}
+            jobId={selectedJob?.JobId}
+            fetchJobPosts={fetchJobPosts}
+          />
+        )
+      }
     </Card>
   );
 }

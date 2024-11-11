@@ -170,8 +170,8 @@ const getNewJobCode = async () => {
     const response = await axios.get(`${baseUrl}/lastrecruitment/`, {
       headers: headers(),
     });
-    const id = response.data?.id;
-    return id + 1;
+    const id = response.data?.serial_number;
+    return Number(id) + 1;
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();

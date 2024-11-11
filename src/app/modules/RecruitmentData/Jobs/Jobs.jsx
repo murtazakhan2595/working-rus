@@ -14,7 +14,6 @@ import {
 } from "../../../../src/@/components/ui/tabs";
 import Stats from "../../../../components/ui/Stats";
 import {
-  JobSortingFilters,
   jobsStatusOptions,
   jobTypeOptions
 } from '../../../../data/Data';
@@ -31,9 +30,9 @@ export default function JobsDataTable() {
   const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({});
-  const [sortData, setSortData] = useState("dsc");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedJob, setSelectedJob] = useState("");
 
 
   const onPageChange = (name, value) => {
@@ -43,7 +42,7 @@ export default function JobsDataTable() {
   const getPosts = async () => {
     setIsLoading(true);
     try {
-      const data = await fetchJobPosts({ ...filterData, status: selectedStatus }, sortData);
+      const data = await fetchJobPosts({ ...filterData, status: selectedStatus });
       setPosts(data);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -56,21 +55,37 @@ export default function JobsDataTable() {
     getPosts()
   }, [filterData, selectedStatus]);
 
-  const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
+  // const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
+  //   onPageChange("page", 1);
+  //   if (filterName === "Job_Type") {
+  //     setSelectedJob(filterValue)
+  //     // setSortData(filterCheckStatus ? filterValue : "dsc");
+  //   } else {
+  //     setFilterData((prevFilters) => {
+  //       const updatedFilters = { ...prevFilters };
+  //       if (!filterValue || filterCheckStatus === false) {
+  //         delete updatedFilters[filterName];
+  //       } else {
+  //         updatedFilters[filterName] = filterCheckStatus === false ? "" : filterValue;
+  //       }
+  //       return updatedFilters;
+  //     });
+  //   }
+  // };
+
+  const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "sort_by_date") {
-      setSortData(filterCheckStatus ? filterValue : "dsc");
-    } else {
-      setFilterData((prevFilters) => {
-        const updatedFilters = { ...prevFilters };
-        if (!filterValue || filterCheckStatus === false) {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterCheckStatus === false ? "" : filterValue;
-        }
-        return updatedFilters;
-      });
-    }
+    if (filterName === "Job_Type") setSelectedJob(filterValue);
+    
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
   };
 
   const statsData = [
@@ -116,6 +131,8 @@ export default function JobsDataTable() {
                     option: jobTypeOptions,
                     name: "Job_Type",
                     placeholder: "Job Type",
+                    values: selectedJob
+
                   },
                 ]}
                 onChange={handleFilterChange}
@@ -127,7 +144,7 @@ export default function JobsDataTable() {
               {isLoading ? (
                 <PageLoader />
               ) : (
-                <JobListingsTable posts={posts} loading={isLoading}/>
+                <JobListingsTable posts={posts} loading={isLoading} fetchJobPosts={getPosts}/>
               )}
             </TabsContent>
           ))}

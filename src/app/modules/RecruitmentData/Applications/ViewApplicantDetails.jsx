@@ -12,6 +12,7 @@ import { fetchJobById, downloadCV } from "app/hooks/recruitment";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { Button } from "components/ui/button";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
+import { DetailBox } from "components/SheetCardExtension";
 
 const ViewApplicantDetails = ({
   applicantIndex,
@@ -109,28 +110,28 @@ const ViewApplicantDetails = ({
         <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
           Details
         </div>
-        <ApplicantDetail label={"Email"} value={applicant?.email} />
-        <ApplicantDetail
+        <DetailBox label={"Email"} value={applicant?.email} />
+        <DetailBox
           label={"Phone number"}
           value={applicant?.phone_number}
         />
-        <ApplicantDetail label={"Education"} value={jobDetails?.Education} />
-        <ApplicantDetail
+        <DetailBox label={"Education"} value={jobDetails?.Education} />
+        <DetailBox
           label={"Applied on"}
           value={moment(applicant?.updated_at).format("DD-MM-YYYY")}
         />
-        <ApplicantDetail label={"Applied for"} value={jobDetails?.Job_Title} />
-        <ApplicantDetail
+        <DetailBox label={"Applied for"} value={jobDetails?.Job_Title} />
+        <DetailBox
           label={"Expected Salary"}
           value={`${jobDetails?.currency} ${formatNumber(
             applicant?.expected_salary
           )}`}
         />
-        <ApplicantDetail
+        <DetailBox
           label={"Notice Period"}
           value={applicant?.notice_period}
         />
-        <ApplicantDetail
+        <DetailBox
           label={"Available for Interview"}
           value={applicant?.availability_for_interview}
         />
@@ -165,19 +166,5 @@ const ViewApplicantDetails = ({
   );
 };
 
-const ApplicantDetail = ({ label, value }) => {
-  return (
-    <div>
-      <div className="flex gap-4 items-center mt-4 max-w-full">
-        <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
-          <div>{label}</div>
-        </div>
-        <div className="flex-1 shrink leading-5 basis-0">
-          {value ?? "N/A"}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default ViewApplicantDetails;

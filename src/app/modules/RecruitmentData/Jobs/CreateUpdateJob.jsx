@@ -27,7 +27,7 @@ import { JobDetail } from "app/utils/Types/Recruitment.jsx";
 import { validationJobFormSchema } from "app/utils/FormSchema/jobFormSchema.jsx";
 import SheetComponent from "components/ui/SheetComponent.jsx";
 import { Button } from "components/ui/button";
-import SheetCardExtension from "components/SheetCardExtension";
+import {SheetCardExtension }from "components/SheetCardExtension";
 
 const JobForm = forwardRef(
   ({ isLoading, formData, handleSubmit, isEditMode, id, onClose }, formRef) => {
@@ -54,9 +54,10 @@ const JobForm = forwardRef(
       const fetchData = async () => {
         try {
           if (formData?.id) {
-            setJob_Id(formData?.id);
+            setJob_Id(formData?.serial_number);
           } else {
             const response = await getNewJobCode();
+            console.log(response, "JOB CODE")
             setJob_Id(response);
           }
         } catch (error) {
@@ -92,7 +93,7 @@ const JobForm = forwardRef(
                         name="id"
                         error={props.errors.id}
                         touch={props.touched.id}
-                        value={job_Id || props.values.id}
+                        value={job_Id}
                         label="Job Id"
                         required
                         onChange={(field, value) => {
@@ -164,7 +165,6 @@ const JobForm = forwardRef(
                         }}
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
                     <SelectComponent
                       name="location"
                       options={countriesList}
@@ -198,7 +198,6 @@ const JobForm = forwardRef(
                         props.handleChange(field)(value);
                       }}
                     />
-                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <TextInput
                         name="min_salary"

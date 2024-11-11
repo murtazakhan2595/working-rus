@@ -5,9 +5,8 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "components/ui/button";
 import { deleteJob } from "app/hooks/recruitment";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { fetchJobPosts } from "app/hooks/recruitment";
 
-const JobsActions = ({ row }) => {
+const JobsActions = ({ row, fetchJobPosts }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [jobId, setJobId] = useState(null);

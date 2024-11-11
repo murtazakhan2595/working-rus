@@ -1,12 +1,4 @@
-import { RxCross2 } from "react-icons/rx";
 import { useEffect } from "react";
-import { LuExternalLink } from "react-icons/lu";
-import { Link } from "react-router-dom";
-import { CiEdit } from "react-icons/ci";
-import { PiBriefcaseThin } from "react-icons/pi";
-import { IoArrowForward } from "react-icons/io5";
-import { Labels } from "../Sections";
-import { PiDotsThreeOutlineFill } from "react-icons/pi";
 import {
   getCountryFullName,
   getEmployeeType,
@@ -19,11 +11,17 @@ import { getJobById } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import { formatNumber } from "data/Data";
 import moment from "moment";
-import { Col,Row } from "reactstrap";
+import SheetComponent from "components/ui/SheetComponent";
+import { DetailBox } from "components/SheetCardExtension";
+import { EmployeeNameInfo } from "components";
+import { EmployeeID } from "utils/getValuesFromTables";
+import JobsActions from "./JobsActions";
+import { StatusLabel } from "components";
 
-const ViewJobDetails = ({ jobId, onClose }) => {
+const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) => {
   const [showEdit, setShowEdit] = useState(false);
   const [job, setJob] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
 
   const handleEditClick = () => {
@@ -50,23 +48,47 @@ const ViewJobDetails = ({ jobId, onClose }) => {
   useEffect(() => {
     getPosts();
   }, [jobId]);
-  console.log(job)
+
+  const formSheetData = {
+    triggerText: null,
+    title: "Jobs",
+
+    description: null,
+    footer: null,
+  };
 
   return (
-    <div className="fixed top-0 right-0 w-[650px] h-full z-10 overflow-y-auto hideScroll pl-10">
-      <div className="bg-white h-auto shadow-lg p-10">
-        <div
-          className="absolute right-6 top-6 cursor-pointer"
-          onClick={onClose}
-        >
-          <RxCross2 className="text-baseGray" />
-        </div>
+    <SheetComponent
+      {...formSheetData}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      width="568px"
+    >
+      <div className="">
         {isLoading ? (
           <PageLoader />
         ) : (
           <>
-            <div className="flex justify-between items-center mb-1">
-              <Labels
+              <div className="flex justify-between w-full">
+                <EmployeeNameInfo
+                  jobId={<EmployeeID value={job?.serial_number} />}
+                  name={job?.Job_Title}
+                  showPosition={false}
+                  position={null}
+                  date={
+                    job?.created_at
+                      ? moment(job?.created_at).format("MMM D, YYYY")
+                      : ""
+                  }
+                />
+                <JobsActions row={job} fetchJobPosts={fetchJobPosts}/>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <StatusLabel  status={getWorkType(job?.Work_type)}/>
+                <StatusLabel  status={getJobType(job?.Job_Type)}/>
+                <StatusLabel  status={getEmployeeType(job?.Employee_Type)}/>
+              </div>
+              {/* <Labels
                 label={job?.status === "live" ? "Open" : "Close"}
                 iconDot={true}
                 iconColor={`${
@@ -75,17 +97,8 @@ const ViewJobDetails = ({ jobId, onClose }) => {
                 backgroungColor={`${
                   job?.status === "live" ? "bg-green-100" : "bg-red-100"
                 }`}
-              />
-            </div>
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <p className="text-capitalize text-base text-baseGray mb-3">
-                  {job?.id}
-                </p>
-                <h2 className="text-2xl text-capitalize font-bold text-[#323333]">
-                  {job?.Job_Title}
-                </h2>
-              </div>
+              /> */}
+            {/* <div className="mb-4 flex items-center justify-between">
               <div className="text-base text-baseGray flex items-center gap-x-4">
                 <button
                   onClick={handleEditClick}
@@ -94,75 +107,58 @@ const ViewJobDetails = ({ jobId, onClose }) => {
                   <CiEdit className="text-xl" />
                   Edit Job
                 </button>
-                <Link to={`/job-description/${job?.id}`}>
-                  <LuExternalLink />
-                </Link>
-                <PiDotsThreeOutlineFill />
+  
               </div>
-            </div>
-            <Row className="mb-4 border border-gray-400 rounded-lg px-3 py-4">
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Education</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {job?.Education}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Job type</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {getJobType(job?.Job_Type)}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Start date</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {job?.created_at
+            </div> */}
+            <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-8">
+              <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
+                Details
+              </div>
+              <DetailBox label="Eductation" value={job?.Education} />
+              <DetailBox
+                label="Start Date"
+                value={
+                  job?.created_at
                     ? moment(job?.created_at).format("DD-MM-YYYY")
-                    : ""}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Work type</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {getWorkType(job?.Work_type)}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Location</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {getCountryFullName(job?.location)}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Deadline</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {job?.Deadline
-                    ? moment(job?.Deadline).format("DD-MM-YYYY")
-                    : ""}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">
-                  Employee type
-                </p>
-                <p className="text-base font-semibold text-baseGray">
-                  {getEmployeeType(job?.Employee_Type)}
-                </p>
-              </Col>
-              <Col lg={8}>
-                <p className="text-[14px] font-normal text-baseGray">Salary</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {job?.currency} {formatNumber(job?.min_salary)} -{" "}
-                 {formatNumber(job?.max_salary)}
-                </p>
-              </Col>
-            </Row>
+                    : ""
+                }
+              />
 
-            <div className="flex justify-between items-center">
-              <button className="flex items-center gap-x-2 rounded-full bg-[#E6E9F0] px-3 py-1 text-baseGray text-base font-normal">
-                <PiBriefcaseThin className="text-xl" />{" "}
-                {job?.total_applications} Applications
-              </button>
+              <DetailBox
+                label="Location"
+                value={getCountryFullName(job?.location)}
+              />
+              <DetailBox
+                label="End Date"
+                value={
+                  job?.Deadline
+                    ? moment(job?.Deadline).format("DD-MM-YYYY")
+                    : ""
+                }
+              />
+              <DetailBox
+                label="Salary"
+                value={`${job?.currency} ${formatNumber(
+                  job?.min_salary
+                )}-${formatNumber(job?.max_salary)}`}
+              />
+              <DetailBox label="Applications" value={job?.total_applications} />
+              <DetailBox label="Status" />
+            </div>
+
+            <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-2">
+              <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
+                Job Description
+              </div>
+              <p>{job?.Job_Description}</p>
+
+              <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
+                Job Requirement
+              </div>
+              <p>{job?.Job_Requirement}</p>
+            </div>
+
+            {/* <div className="flex justify-between items-center">
               <Link
                 to="/applicants"
                 state={{ jobId: job.id }}
@@ -171,29 +167,13 @@ const ViewJobDetails = ({ jobId, onClose }) => {
                 Applications
                 <IoArrowForward className="text-xl" />
               </Link>
-            </div>
-            <div className="mt-3">
-              <h3 className="font-bold text-base text-[#323333]">
-                Job Description
-              </h3>
-              <p className="text-base font-normal text-baseGray">
-                {job?.Job_Description}
-              </p>
-            </div>
-            <div className="mt-4">
-              <h3 className="font-bold text-base text-[#323333]">
-                Job Requirements
-              </h3>
-              <p className="text-base font-normal text-baseGray">
-                {job?.Job_Requirement}
-              </p>
-            </div>
+            </div> */}
           </>
         )}
       </div>
 
       {showEdit && <EditJobDetails job={job} onClose={handleEditClose} />}
-    </div>
+    </SheetComponent>
   );
 };
 
