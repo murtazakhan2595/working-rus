@@ -57,7 +57,6 @@ const JobForm = forwardRef(
             setJob_Id(formData?.serial_number);
           } else {
             const response = await getNewJobCode();
-            console.log(response, "JOB CODE")
             setJob_Id(response);
           }
         } catch (error) {
@@ -300,12 +299,12 @@ const JobForm = forwardRef(
 const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJobPosts }) => {
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(isEditMode || false);
   const navigate = useNavigate();
   const id = formData?.id;
 
   const formSheetData = {
-    triggerText: "Add New Job",
+    triggerText: !isEditMode ?"Add New Job": null,
     title: "Add New Job",
 
     description: null,
@@ -319,6 +318,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJ
       let response;
       if (isEditMode && id) {
         response = await updateJob(baseUrl, id, values, token);
+        console.log(response, "UDPATE JOBS")
       } else {
         response = await addJob(baseUrl, values, token);
       }
@@ -352,36 +352,23 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJ
 
   return (
     <>
-      {isEditMode ? (
-        <JobForm
-          isLoading={isLoading}
-          formData={formData}
-          handleSubmit={handleSubmit}
-          formRef={formRef}
-          isEditMode={isEditMode}
-          id={id}
-          onClose={onClose}
-        />
-      ) : (
-        <SheetComponent
-        {...formSheetData}
-        contentClassName="custom-sheet-width"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        width="600px"
-      >
-              <JobForm
-                isLoading={isLoading}
-                formData={formData}
-                handleSubmit={handleSubmit}
-                formRef={formRef}
-                isEditMode={isEditMode}
-                id={id}
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-              />
-        </SheetComponent>
-      )}
+    <SheetComponent
+      {...formSheetData}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      contentClassName="custom-sheet-width"
+      width="600px"
+    >
+      <JobForm
+        isLoading={isLoading}
+        formData={formData}
+        handleSubmit={handleSubmit}
+        formRef={formRef}
+        isEditMode={isEditMode}
+        id={id}
+        onClose={onClose}
+      />
+    </SheetComponent>
     </>
   );
 };

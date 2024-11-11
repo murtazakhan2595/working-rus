@@ -17,6 +17,7 @@ import { EmployeeNameInfo } from "components";
 import { EmployeeID } from "utils/getValuesFromTables";
 import JobsActions from "./JobsActions";
 import { StatusLabel } from "components";
+import { JobStatusLabel } from "components/StatusLabel";
 
 const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) => {
   const [showEdit, setShowEdit] = useState(false);
@@ -26,6 +27,7 @@ const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) =>
 
   const handleEditClick = () => {
     setShowEdit(true);
+    // setIsOpen(false)
   };
 
   const handleEditClose = () => {
@@ -81,7 +83,7 @@ const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) =>
                       : ""
                   }
                 />
-                <JobsActions row={job} fetchJobPosts={fetchJobPosts}/>
+                <JobsActions row={job} fetchJobPosts={fetchJobPosts} isEdit={handleEditClick}/>
               </div>
               <div className="flex gap-2 mt-4">
                 <StatusLabel  status={getWorkType(job?.Work_type)}/>
@@ -98,18 +100,6 @@ const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) =>
                   job?.status === "live" ? "bg-green-100" : "bg-red-100"
                 }`}
               /> */}
-            {/* <div className="mb-4 flex items-center justify-between">
-              <div className="text-base text-baseGray flex items-center gap-x-4">
-                <button
-                  onClick={handleEditClick}
-                  className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2"
-                >
-                  <CiEdit className="text-xl" />
-                  Edit Job
-                </button>
-  
-              </div>
-            </div> */}
             <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-8">
               <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
                 Details
@@ -143,7 +133,7 @@ const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) =>
                 )}-${formatNumber(job?.max_salary)}`}
               />
               <DetailBox label="Applications" value={job?.total_applications} />
-              <DetailBox label="Status" />
+              <DetailBox label="Status" value={<JobStatusLabel status={job?.status}/>} />
             </div>
 
             <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-2">
@@ -172,7 +162,7 @@ const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) =>
         )}
       </div>
 
-      {showEdit && <EditJobDetails job={job} onClose={handleEditClose} />}
+      {showEdit && <EditJobDetails job={job} onClose={handleEditClose} fetchJobPosts={fetchJobPosts}/>}
     </SheetComponent>
   );
 };

@@ -6,7 +6,7 @@ import { Button } from "components/ui/button";
 import { deleteJob } from "app/hooks/recruitment";
 import AlertDialogue from "components/ui/AlertDialogue";
 
-const JobsActions = ({ row, fetchJobPosts }) => {
+const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [jobId, setJobId] = useState(null);
@@ -51,6 +51,7 @@ const JobsActions = ({ row, fetchJobPosts }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+        {isEdit && <DropdownMenuItem onClick={isEdit}>Edit</DropdownMenuItem>}
           <DropdownMenuItem onClick={() => navigate(`/applicants`)}>View Applications</DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate(`/job-description/${row?.id}`)}>Share Link</DropdownMenuItem>
           <DropdownMenuItem onClick={handleCopyLink}>Copy Link</DropdownMenuItem>
