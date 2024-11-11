@@ -30,7 +30,6 @@ export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
 };
 
 export const StatusLabel = ({ status, value }) => {
-  console.log("STAUTS", status)
   if (!status) {
     return "";
   }
@@ -159,4 +158,31 @@ export const StatusIcon = ({ status }) => {
       />
     );
   else return <></>;
+};
+
+
+export const JobStatusLabel = ({ status, value }) => {
+  if (!status) {
+    return "";
+  }
+
+  let className = "";
+  
+  // Set the class based on the status prop
+  if (status === "live") {
+    className = " text-white";
+  } else if (status === "closed") {
+    className = "bg-red-200 text-red-800";
+  } else {
+    className = "bg-neutral-300 text-neutral-1100";
+  }
+
+  return (
+    <Badge
+     variant="secondary"
+     className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
+    >
+      {value ?? status}
+    </Badge>
+  );
 };
