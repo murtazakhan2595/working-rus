@@ -4,7 +4,6 @@ import { FaCheck } from "react-icons/fa6";
 import { BsCircleFill } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
-import { RiArrowDropDownLine } from "react-icons/ri";
 import { Badge } from "../components/ui/badge";
 import { CircleCheck, CircleDot, X } from "lucide-react";
 
