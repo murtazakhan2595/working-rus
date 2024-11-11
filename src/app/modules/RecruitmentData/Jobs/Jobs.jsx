@@ -40,19 +40,20 @@ export default function JobsDataTable() {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
+  const getPosts = async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchJobPosts({ ...filterData, status: selectedStatus }, sortData);
+      setPosts(data);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const getPosts = async () => {
-      setIsLoading(true);
-      try {
-        const data = await fetchJobPosts({ ...filterData, status: selectedStatus }, sortData);
-        setPosts(data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getPosts();
+    getPosts()
   }, [filterData, selectedStatus]);
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
@@ -80,7 +81,7 @@ export default function JobsDataTable() {
 
   return (
       <section className="flex flex-col p-[18px] text-sm">
-        <Header content={<CreateUpdateJob />} />
+        <Header content={<CreateUpdateJob fetchJobPosts={getPosts}/>} />
 
         <Stats stats={statsData} />
         <Tabs
