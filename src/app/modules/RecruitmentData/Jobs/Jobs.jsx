@@ -14,7 +14,6 @@ import {
 } from "../../../../src/@/components/ui/tabs";
 import Stats from "../../../../components/ui/Stats";
 import {
-  getJobTypeOptions,
   JobSortingFilters,
   jobsStatusOptions,
   jobTypeOptions
@@ -113,7 +112,7 @@ export default function JobsDataTable() {
                   },
                   {
                     type: "select-one",
-                    option: getJobTypeOptions(true),
+                    option: jobTypeOptions,
                     name: "Job_Type",
                     placeholder: "Job Type",
                   },
