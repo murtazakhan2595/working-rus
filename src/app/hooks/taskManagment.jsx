@@ -175,7 +175,7 @@ const addProject = async (payload) => {
   try {
     if (payload?.id) {
       const response = await axios.patch(
-        `${baseUrl}/project/${payload.id}`,
+        `${baseUrl}/project/${payload.id}/`,
         payload,
         {
           headers: headers(),
