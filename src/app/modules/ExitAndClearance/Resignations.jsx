@@ -38,11 +38,9 @@ const Resignations = React.memo(({ filterData }) => {
 
   const fetchData = async () => {
     try {
+      setSelectedResignationId(null);
       setLoading(true);
       const response = await getEmployeesResignations({ filterData, options });
-      console.log("response", response);
-      console.log("filterData", filterData);
-      console.log("options", options);
       setResignations(response);
     } catch (e) {
       console.error(e);
@@ -51,7 +49,6 @@ const Resignations = React.memo(({ filterData }) => {
     }
   };
   useEffect(() => {
-    console.log("calling");
     fetchData();
   }, [options, filterData]);
 

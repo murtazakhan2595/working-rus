@@ -588,9 +588,9 @@ export const ResignationStatusOptions = [
 
 export const ResignationReasons = [
   // { value: "career-advance", label: "Career growth" },
-  { value: "better-opportunity", label: "Better opportunity" },
+  //{ value: "better-opportunity", label: "Better opportunity" },
   { value: "family-reasons", label: "Personal Reasons" },
-  { value: "relocation", label: "Relocation" },
+  { value: "Rrelocation", label: "Relocation" },
   { value: "health-reasons", label: "Health reasons" },
   // { value: "Job dissatisfaction", label: "Job dissatisfaction" },
   { value: "Others", label: "Others" },

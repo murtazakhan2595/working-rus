@@ -5,6 +5,7 @@ const StatusList = (isResignation = true) => {
     const status_list = ResignationStatusOptions.map(
       (status) => status.value
     ).filter((value) => value !== "exit interview");
+    console.log(status_list,'123456788');
     return status_list;
   } else {
     // Iterate over TerminationStatusOptions and collect the values in the status_list array

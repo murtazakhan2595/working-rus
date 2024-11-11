@@ -82,6 +82,7 @@ const ExitDetailsCard = ({
   const handleSubmit = async (data) => {
     try {
       if (data) {
+        data.exit_type='Relocation';
         const payload = {
           ...data,
           ...(isResignation
@@ -98,7 +99,6 @@ const ExitDetailsCard = ({
     }
   };
 
-  console.log("==============================", resignation);
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent side="right" className="w-full p-6 sm:max-w-4xl ">
