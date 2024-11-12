@@ -11,12 +11,12 @@ import {
 } from "../../src/@/components/ui/alert-dialog";
 import { Button } from "./button";
 
-const AlertDialogue = ({ isOpen, setIsOpen, handleContinue , continueText = "Continue", description, title, cancelText ="Cancel"}) => {
+const AlertDialogue = ({ isOpen, setIsOpen, handleContinue , continueText = "Continue", description, title, cancelText ="Cancel", buttonType="destructive", className="bg-red-700"}) => {
   return (
     <AlertDialog className="z-[999]" open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-red-700">{title}</AlertDialogTitle>
+          <AlertDialogTitle className={className}>{title}</AlertDialogTitle>
           <AlertDialogDescription className="text-neutral-1100">
             {description}
           </AlertDialogDescription>
@@ -26,7 +26,7 @@ const AlertDialogue = ({ isOpen, setIsOpen, handleContinue , continueText = "Con
             {cancelText}
           </AlertDialogCancel>
           <Button
-            variant="destructive"
+            variant={buttonType}
             onClick={() => {
               handleContinue(); 
               setIsOpen(false); 
