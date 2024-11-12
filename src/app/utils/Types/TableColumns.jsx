@@ -361,45 +361,48 @@ export const AllJobApplicationColumns = (
     dataField: "first_name",
     text: "Candidate",
     formatter: (cell, row) => (
-      <>
-        <div className="cursor-pointer">
-          {cell} {row.last_name}
-        </div>
-        <div className="text-base text-baseGray">
-          {`Exp. ${row?.Year_of_Experience} years`}
-        </div>
-      </>
+        <EmployeeNameInfo
+          name={`${cell} ${row?.last_name}`}
+          date={row?.email}
+          department={false}
+        />
     ),
     onClick: (index, list) => {
       setViewApplicationDetails({ index, list });
       setIsViewApplicationDetailOpen(true)
     },
   },
+  // {
+  //   dataField: "phone_number",
+  //   text: "Phone",
+  //   formatter: (cell, row) => (
+  //     <>
+  //       <div className="text-base ">{cell || ""}</div>
+  //       {/* <div className="text-base ">{row.email || ""}</div> */}
+  //     </>
+  //   ),
+  // },
+  // {
+  //   dataField: "current_salary",
+  //   text: "Current Salary",
+  //   formatter: (cell) => <>{formatNumber(cell)}</>,
+  // },
   {
-    dataField: "phone_number",
-    text: "Phone no/Email",
-    formatter: (cell, row) => (
-      <>
-        <div className="text-base ">{cell || ""}</div>
-        <div className="text-base ">{row.email || ""}</div>
-      </>
-    ),
+    dataField: "updated_at",
+    text: "Applied On",
+    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
   },
   {
-    dataField: "current_salary",
-    text: "Current Salary",
-    formatter: (cell) => <>{formatNumber(cell)}</>,
+    dataField:"Year_of_Experience",
+    text:"Experience",
+    formatter:(cell)=> <p>{cell} Years</p>
   },
   {
     dataField: "expected_salary",
     text: "Expected Salary",
     formatter: (cell) => <>{formatNumber(cell)}</>,
   },
-  {
-    dataField: "updated_at",
-    text: "Applied On",
-    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-  },
+
   {
     dataField: "",
     text: "Resume",
