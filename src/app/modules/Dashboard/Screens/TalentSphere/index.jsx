@@ -13,6 +13,7 @@ import { Briefcase, UserPlus, UserCheck, Users } from "lucide-react";
 import Stats from "./../../../../../components/ui/Stats";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../../../../src/@/components/ui/table";
 import { Badge } from "../../../../../components/ui/badge";
+import { CreateUpdateJob } from "app/modules/RecruitmentData";
 
 /**
  * TalentSphere component
@@ -43,7 +44,8 @@ const TalentSphere = () => {
     try {
       setIsLoading(true);
       const data = await fetchJobPosts();
-      setPosts(data.results);
+      console.log(data, "DATA IN JOB POST")
+      setPosts(data.results.reverse());
       setJobOpenings(data.results.length); // Set job openings count
       setInterviewed(data.results.length); // Set job openings count
     } catch (error) {
@@ -78,12 +80,12 @@ const TalentSphere = () => {
     fetchLists();
   }, []);
 
-  const statsData = [
-    { icon: Briefcase, label: "Job Openings", value: jobOpenings },
-    { icon: UserPlus, label: "Applications", value: applications },
-    { icon: UserCheck, label: "Shortlisted", value: shortlisted },
-    { icon: Users, label: "Interviewed", value: interviewed },
-  ];
+  // const statsData = [
+  //   { icon: Briefcase, label: "Job Openings", value: jobOpenings },
+  //   { icon: UserPlus, label: "Applications", value: applications },
+  //   { icon: UserCheck, label: "Shortlisted", value: shortlisted },
+  //   { icon: Users, label: "Interviewed", value: interviewed },
+  // ];
   return (
     <>
       <Card className="col-span-2">
@@ -94,9 +96,10 @@ const TalentSphere = () => {
               <Button variant="outline">
                 <Link to="/jobs">View Detail</Link>
               </Button>
-              <Button variant="secondary">
+              <CreateUpdateJob fetchJobPosts={fetchData} isDashboard={true}/>
+              {/* <Button variant="secondary">
                 <Link to="/job-post">Add New Job</Link>
-              </Button>
+              </Button> */}
             </div>
           </CardTitle>
         </CardHeader>

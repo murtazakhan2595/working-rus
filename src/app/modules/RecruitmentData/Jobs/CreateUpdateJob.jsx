@@ -296,7 +296,7 @@ const JobForm = forwardRef(
   }
 );
 
-const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJobPosts }) => {
+const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJobPosts, isDashboard = false }) => {
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(isEditMode || false);
@@ -329,6 +329,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJ
         setIsOpen(false);
         fetchJobPosts()
         if (isEditMode) onClose();
+        else if(isDashboard) console.log("");
         else navigate("/jobs");
         
 
