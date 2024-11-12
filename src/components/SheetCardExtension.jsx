@@ -31,8 +31,8 @@ export const DetailCard = ({
   date,
 }) => {
   return (
-    <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200  mt-8">
-      <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
+    <div className="flex flex-col rounded-lg shadow border  mt-8">
+      <section className="flex flex-col justify-center p-6 text-sm  max-w-[479px]">
         <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
           {detailCardTitle}
         </div>

@@ -580,6 +580,40 @@ export const ResignationReasons = [
   { value: "Others", label: "Others" },
 ];
 
+export const ReasonForLeaving=[
+  { value: "voluntary", label: "Voluntary" },
+  { value: "involuntary", label: "Involuntary" },
+  {
+    value: "end-of-contract",
+    label: "End of Contract",
+  },
+  { value: "retirement", label: "Retirement" },
+  { value: "layoff", label: "Layoff" },
+  { value: "dismissal", label: "Dismissal" },
+  {
+    value: "mutual-agreement",
+    label: "Mutual Agreement",
+  },
+  {
+    value: "career-advance",
+    label: "Career Advancement",
+  },
+  { value: "relocation", label: "Relocation" },
+  {
+    value: "health-reasons",
+    label: "Health Reasons",
+  },
+  {
+    value: "family-reasons",
+    label: "Family Reasons",
+  },
+  { value: "education", label: "Education" },
+  {
+    value: "better-opportunity",
+    label: "Better Opportunity",
+  },
+]
+
 export const terminationReasonsOptions = [
   {
     value: 1,
