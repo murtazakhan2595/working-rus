@@ -430,10 +430,10 @@ const CreatePayRun = () => {
             </CardHeader>
             <CardContent>
               <CustomTable
-                data={employeeData || []}
+                data={employeeData?.results || []}
                 columns={createPayrunColumns(component)}
                 pagination={true}
-                dataTotalSize={employeeData?.length || 0}
+                dataTotalSize={employeeData?.count || 0}
                 tableOptions={tableOptions}
                 selectable={true}
                 setSelectedRows={setSelectedRows}
