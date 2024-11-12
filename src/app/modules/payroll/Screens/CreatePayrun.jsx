@@ -20,20 +20,14 @@ import { CircleCheckBig } from "lucide-react";
 
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogCancel,
-  DialogAction,
 } from "../../../../src/@/components/ui/dialog.jsx";
 import { savePayrun } from "app/hooks/payroll";
 import moment from "moment";
 import { getPayun } from "app/hooks/payroll";
 import { getEmpPayrolDetails } from "app/hooks/payroll";
 import { PageLoader } from "components";
+import AlertDialogue from "components/ui/AlertDialogue";
 
 const CreatePayRun = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -479,35 +473,20 @@ function PayRunSubmitDialog({ isOpen, onClose, onConfirm, payrunDraft }) {
   const year = date.format("YYYY");
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="flex overflow-hidden flex-col gap-2 justify-center p-6 text-sm bg-white rounded-xl border border-gray-100 border-solid shadow-lg max-w-[594px] max-md:px-5">
-        <DialogHeader>
-          <DialogTitle className="font-semibold text-neutral-800">
-            {`Submit Pay Run for ${monthName} ${year}?`}
-          </DialogTitle>
-          <p className="mt-2 leading-4 opacity-90 text-neutral-400">
-            {`Are you sure you want to submit the pay run for ${monthName} ${year}.`}
-          </p>
-        </DialogHeader>
-        <div className="flex gap-2 items-center justify-end font-medium  text-center whitespace-nowrap min-w-[240px]">
-          <Button
-            variant="outline"
-            className="gap-2 self-stretch px-3 py-2.5 my-auto bg-white rounded-3xl border border-gray-200 border-solid min-h-[36px] min-w-[120px] text-neutral-800"
-            onClick={onClose}
-          >
-            No
-          </Button>
-          <Button
-            className="gap-2 self-stretch px-3 py-2.5 my-auto text-white rounded-3xl bg-neutral-800 min-h-[36px] min-w-[120px]"
-            onClick={onConfirm}
-          >
-            Yes
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    
+    <AlertDialogue
+     isOpen={isOpen}
+     setIsOpen={onClose}
+     handleContinue={onConfirm}
+     continueText="Yes"
+     buttonType=""
+     title={`Submit Pay Run for ${monthName} ${year}?`}
+     description={`Are you sure you want to submit the pay run for ${monthName} ${year}.`}
+     cancelText="No"
+     className="text-neutral-900"
+    />
   );
 }
-export default CreatePayRun;
+export default CreatePayRun; 
 
 
