@@ -144,7 +144,7 @@ export default function JobListingsTable({ posts, loading ,fetchJobPosts }) {
       dataField: "location",
       text: "Job Location",
       formatter: (cell, row) => (
-        <Badge variant="outline">{getWorkLocation(row.location)}</Badge>
+        <Badge variant="outline">{row.location}</Badge>
       ),
     },
     {

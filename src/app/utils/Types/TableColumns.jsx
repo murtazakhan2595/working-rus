@@ -390,7 +390,7 @@ export const AllJobApplicationColumns = (
   {
     dataField: "updated_at",
     text: "Applied On",
-    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
+    formatter: (cell) => <>{moment(cell).format("MMM D, YYYY")}</>,
   },
   {
     dataField:"Year_of_Experience",
@@ -429,7 +429,7 @@ export const AllJobApplicationColumns = (
   },
   {
     dataField: "",
-    text: "",
+    text: "Actions",
     formatter: (cell, row) => (
       <RenderJobApplicationActions
         row={row}
