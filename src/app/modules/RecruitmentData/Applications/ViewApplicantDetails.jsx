@@ -98,71 +98,61 @@ const ViewApplicantDetails = ({
           />
         </div>
       </div>
-      {/* <div className="flex items-center gap-x-4 mb-8">
-          <Labels label={`${applicant?.Year_of_Experience} Years`} />
-          <Labels
-            label={
-              applicant?.current_salary ? `${jobDetails?.currency} ${formatNumber(applicant?.current_salary)}` : ""
-            }
-          />
-          <Labels label={getCountryFullName(applicant?.location)} />
-        </div> */}
-      <DetailCard detailCardTitle="Details">
-        <DetailBox label={"Email"} value={applicant?.email} />
-        <DetailBox
-          label={"Phone number"}
-          value={applicant?.phone_number}
-        />
-        <DetailBox label={"Education"} value={jobDetails?.Education} />
+
+      <DetailCard detailCardTitle="Details" date={applicant?.created_at}>
+        <DetailBox label={"Phone number"} value={applicant?.phone_number} />
+        <DetailBox label={"Applied for"} value={jobDetails?.Job_Title} />
         <DetailBox
           label={"Applied on"}
-          value={moment(applicant?.updated_at).format("DD-MM-YYYY")}
+          value={moment(applicant?.updated_at).format("MMM D, YYYY")}
         />
-        <DetailBox label={"Applied for"} value={jobDetails?.Job_Title} />
+        <DetailBox
+          label={"Current Salary"}
+          value={`${jobDetails?.currency} ${formatNumber(
+            applicant?.current_salary
+          )}`}
+        />
         <DetailBox
           label={"Expected Salary"}
           value={`${jobDetails?.currency} ${formatNumber(
             applicant?.expected_salary
           )}`}
         />
+        <DetailBox label={"Experience"} value={applicant?.Year_of_Experience} />
+        <DetailBox label={"Education"} value={jobDetails?.Education} />
         <DetailBox
           label={"Notice Period"}
-          value={applicant?.notice_period}
+          value={`${applicant?.notice_period} months`}
         />
         <DetailBox
           label={"Available for Interview"}
-          value={applicant?.availability_for_interview}
+          value={moment(applicant?.availability_for_interview).format("MMM D, YYYY")}
         />
-              <div className="mt-3">
-        <h3 className="font-bold text-base text-[#323333]">Resume</h3>
+        <div className="mt-3 flex justify-between">
+          <h3 className="font-bold text-base text-[#323333]">Resume</h3>
 
-        <div className="bg-[#F0F1F2] rounded-lg p-2 flex justify-between items-center">
-          <div className="flex gap-x-3">
-            <img src={pdfIcon} alt="" />
-            <p class="text-[14px] text-[#323333]">
-              {applicant?.first_name} {applicant?.last_name}
-            </p>
-          </div>
-          <div
-            className="flex gap-x-2 cursor-pointer"
-            onClick={() =>
-              downloadCV(
-                applicant?.cv,
-                `${applicant?.first_name} ${applicant?.last_name}`
-              )
-            }
-          >
-            <p class="text-[14px] text-[#323333]">Download</p>
-            <AiOutlineDownload />
+          <div className="border rounded-lg p-2 flex justify-between items-center min-w-80">
+            <div className="flex gap-x-3">
+              <img src={pdfIcon} alt="" />
+              <p class="text-[14px] text-[#323333]">
+                {applicant?.first_name} {applicant?.last_name}
+              </p>
+            </div>
+            <Button
+              onClick={() =>
+                downloadCV(
+                  applicant?.cv?.file,
+                  `${applicant?.first_name} ${applicant?.last_name}`
+                )
+              }
+            >
+              Download
+            </Button>
           </div>
         </div>
-      </div>
       </DetailCard>
-
-
     </div>
   );
 };
-
 
 export default ViewApplicantDetails;

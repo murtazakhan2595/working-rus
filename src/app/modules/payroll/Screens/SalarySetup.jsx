@@ -152,16 +152,6 @@ const SalarySetup = ({ departments }) => {
               </TabsTrigger>
             ))}
           </TabsList>
-          {/* <div className="flex justify-end">
-            <FilterInput
-              filters={filters}
-              onChange={
-                activeTab === "salary"
-                  ? handleSalaryFilterChange
-                  : handleComponentFilterChange
-              } // Dynamic filter handler
-            />
-          </div> */}
         </div>
         <Card>
           <CardHeader>

@@ -183,9 +183,7 @@ const getNewJobCode = async () => {
 
 export const addApplication = async (values) => {
   try {
-    const response = await axios.post(`${baseUrl}/candidate/`, values, {
-      headers: headers(),
-    });
+    const response = await axios.post(`${baseUrl}/candidate/`, values);
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
