@@ -134,7 +134,7 @@ const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) =>
               <DetailBox label="Status" value={<JobStatusLabel status={job?.status}/>} />
               </DetailCard>
 
-            <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-2">
+            <DetailCard>
               <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
                 Job Description
               </div>
@@ -144,7 +144,7 @@ const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) =>
                 Job Requirement
               </div>
               <p>{job?.Job_Requirement}</p>
-            </div>
+            </DetailCard>
 
             {/* <div className="flex justify-between items-center">
               <Link

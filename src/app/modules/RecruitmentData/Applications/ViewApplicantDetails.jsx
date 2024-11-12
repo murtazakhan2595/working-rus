@@ -57,9 +57,8 @@ const ViewApplicantDetails = ({
   };
 
   return (
-    <div className="p-4">
-      <div>
-        <div className="flex gap-2">
+    <div>
+        <div className="flex justify-end gap-2">
           <Button
             variant="outline"
             onClick={() => {
@@ -77,8 +76,7 @@ const ViewApplicantDetails = ({
             Next <IoChevronForward className="ml-2" />
           </Button>
         </div>
-      </div>
-      <div class="mb-4 flex items-center justify-between mt-9">
+      <div class="mb-4 flex items-center justify-between mt-4">
         <EmployeeDataInfo
           name={applicant?.first_name + " " + applicant?.last_name}
           email={applicant?.email}
