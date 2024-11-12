@@ -18,6 +18,7 @@ import { EmployeeID } from "utils/getValuesFromTables";
 import JobsActions from "./JobsActions";
 import { StatusLabel } from "components";
 import { JobStatusLabel } from "components/StatusLabel";
+import { DetailCard } from "components/SheetCardExtension";
 
 const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) => {
   const [showEdit, setShowEdit] = useState(false);
@@ -100,10 +101,7 @@ const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) =>
                   job?.status === "live" ? "bg-green-100" : "bg-red-100"
                 }`}
               /> */}
-            <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-8">
-              <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
-                Details
-              </div>
+            <DetailCard detailCardTitle={"Details"} date={job?.created_at}>
               <DetailBox label="Eductation" value={job?.Education} />
               <DetailBox
                 label="Start Date"
@@ -134,7 +132,7 @@ const ViewJobDetails = ({ jobId, onClose, isOpen, setIsOpen ,fetchJobPosts }) =>
               />
               <DetailBox label="Applications" value={job?.total_applications} />
               <DetailBox label="Status" value={<JobStatusLabel status={job?.status}/>} />
-            </div>
+              </DetailCard>
 
             <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-2">
               <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">

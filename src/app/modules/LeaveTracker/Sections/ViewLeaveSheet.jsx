@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import statusRejectedIcon from "assets/images/status-rejected.svg";
 import { getAttachmentById } from "app/hooks/leaveTracker";
 import { saveLeaveTransaction } from "app/hooks/leaveTracker";
+import { DetailBox, DetailCard } from "components/SheetCardExtension";
 
 const ViewLeaveSheet = ({
   leaveApplication,
@@ -134,75 +135,43 @@ const ViewLeaveSheet = ({
           }
           id={leaveApplication?.leave_request?.employee_info?.id}
         />
-        <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
-          <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
-            <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
-              Details
-            </div>
-            <div className="flex mt-3 w-full">
-              <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
-                {detailItems.map((item, index) => (
-                  <div className="flex gap-4 items-center mt-4 max-w-full">
-                    <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
-                      <div>{item.label}</div>
-                    </div>
-                    <div className="flex-1 shrink leading-5 basis-0 text-neutral-800">
-                      {item.value}
-                    </div>
-                  </div>
-                ))}
-                {attachment && (
-                  <div className="flex gap-4 items-center mt-4 max-w-full">
-                    <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
-                      <div>Attachment</div>
-                    </div>
-                    {attachment?.attachment && (
-                      <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <Paperclip size={16} />
-                          <div className="text-neutral-1200 text-sm font-medium truncate max-w-14">
-                            {attachment?.attachment?.name}
-                          </div>
-                          <div className="text-[#8b8d98] text-sm font-normal">
-                            {getFileSizeInKB(attachment?.attachment?.file)}KB
-                          </div>
-                        </div>
-                        <button
-                          className="text-[#ab4aba] text-xs font-semibold "
-                          onClick={() => {
-                            filebase64Download(attachment?.attachment);
-                          }}
-                        >
-                          Download
-                        </button>
+        <DetailCard date={leaveApplication?.created_at} detailCardTitle="Details">
+          <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
+            {detailItems.map((item, index) => (
+              <DetailBox label={item?.label} value={item?.value} />
+            ))}
+            {attachment && (
+              <div className="flex gap-4 items-center mt-4 max-w-full">
+                <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
+                  <div>Attachment</div>
+                </div>
+                {attachment?.attachment && (
+                  <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Paperclip size={16} />
+                      <div className="text-neutral-1200 text-sm font-medium truncate max-w-14">
+                        {attachment?.attachment?.name}
                       </div>
-                    )}
+                      <div className="text-[#8b8d98] text-sm font-normal">
+                        {getFileSizeInKB(attachment?.attachment?.file)}KB
+                      </div>
+                    </div>
+                    <button
+                      className="text-[#ab4aba] text-xs font-semibold "
+                      onClick={() => {
+                        filebase64Download(attachment?.attachment);
+                      }}
+                    >
+                      Download
+                    </button>
                   </div>
                 )}
               </div>
-            </div>
-          </section>
-          <div className="h-[45px] px-6 pt-[13px] pb-3 bg-zinc-100/50 border-t border-zinc-200 justify-start items-center inline-flex">
-            <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
-              <div>
-                <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
-                  Sent on:
-                </span>
-                <span className="text-[#8b8d98] text-xs font-normal  leading-3">
-                  {` ${moment(leaveApplication?.created_at).format(
-                    "MMMM DD, YYYY"
-                  )}`}
-                </span>
-              </div>
-            </div>
+            )}
           </div>
-        </div>
+        </DetailCard>
 
-        <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
-          <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
-            <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
-              Approval Status
-            </div>
+        <DetailCard detailCardTitle="Approval Status">
             <section className="flex relative flex-col max-w-[382px] mt-3">
               <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
               {approvalSteps.map((step, index) => (
@@ -228,8 +197,7 @@ const ViewLeaveSheet = ({
                 </div>
               ))}
             </section>
-          </section>
-        </div>
+            </DetailCard>
         {!isMyLeave && showButtons && (
           <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
             <Button

@@ -13,6 +13,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { Button } from "components/ui/button";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import { DetailBox } from "components/SheetCardExtension";
+import { DetailCard } from "components/SheetCardExtension";
 
 const ViewApplicantDetails = ({
   applicantIndex,
@@ -106,10 +107,7 @@ const ViewApplicantDetails = ({
           />
           <Labels label={getCountryFullName(applicant?.location)} />
         </div> */}
-      <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-8">
-        <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
-          Details
-        </div>
+      <DetailCard detailCardTitle="Details">
         <DetailBox label={"Email"} value={applicant?.email} />
         <DetailBox
           label={"Phone number"}
@@ -159,7 +157,7 @@ const ViewApplicantDetails = ({
           </div>
         </div>
       </div>
-      </div>
+      </DetailCard>
 
 
     </div>
