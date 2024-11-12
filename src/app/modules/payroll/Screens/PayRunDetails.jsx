@@ -72,38 +72,48 @@ const PayRunDetails = () => {
     navigate(-1);
   };
 
-   const handleDownloadSlip = async () => {
-     const filteredPayslips = paySlipsData?.results?.filter((payslip) =>
-       selectedRows.includes(payslip.id)
-     );
-     console.log("filteredPayslips", filteredPayslips);
-     // Create the data structure with the required fields
-     const formattedData = filteredPayslips.map((payslip) => ({
-       employeeid: payslip.employeeid,
-       department_name: payslip.department_name,
-       full_name: payslip.full_name,
-       work_email: payslip.work_email,
-       gross_salary: payslip.gross_salary,
-       net_salary: payslip.net_salary,
-     }));
-
-     console.log("formattedData", formattedData);
-
-     //  // Convert data to worksheet
-      const ws = XLSX.utils.json_to_sheet(formattedData);
-
-     //  // Create a new workbook and append the worksheet
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Payslips Data");
-
-     //  // Generate Excel file
-      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-
-     //  // Save the file
-      const file = new Blob([excelBuffer], { type: "application/octet-stream" });
-      saveAs(file, `Payslips_Data.xlsx`);
-      setSelectedRows([]);
-   };
+  const handleDownloadSlip = async () => {
+    const filteredPayslips = paySlipsData?.results?.filter((payslip) =>
+      selectedRows.includes(payslip.id)
+    );
+  
+    // Create the data structure with the required fields
+    const formattedData = filteredPayslips.map((payslip) => ({
+      "Employee ID": `TXB-${payslip.employeeid}`,
+      "Department Name": payslip.department_name,
+      "Full Name": payslip.full_name,
+      "Work Email": payslip.work_email,
+      "Gross Salary": payslip.gross_salary,
+      "Net Salary": payslip.net_salary,
+    }));
+  
+    // Convert data to worksheet
+    const ws = XLSX.utils.json_to_sheet(formattedData);
+  
+    // Set column widths for proper spacing
+    const wscols = [
+      { wch: 15 }, // "employeeid"
+      { wch: 20 }, // "Department Name"
+      { wch: 25 }, // "Full Name"
+      { wch: 30 }, // "Work Email"
+      { wch: 15 }, // "Gross Salary"
+      { wch: 15 }, // "Net Salary"
+    ];
+    ws['!cols'] = wscols;
+  
+    // Create a new workbook and append the worksheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Payslips Data");
+  
+    // Generate Excel file
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  
+    // Save the file
+    const file = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(file, `Payslips_Data.xlsx`);
+    setSelectedRows([]);
+  };
+  
 
 
   return (
@@ -145,13 +155,10 @@ const PayRunDetails = () => {
             </div>
             {selectedRows.length > 0 && (
               <Button
-                className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
                 onClick={handleDownloadSlip}
               >
-                <Download color="#1c2024" size={16} />
-                <div className="text-center text-neutral-1200 text-sm font-medium">
+                <Download color="#fff" size={16} />
                   Download
-                </div>
               </Button>
             )}
           </div>
