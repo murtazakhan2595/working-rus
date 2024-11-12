@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 
 
 function CardValues({ values }) {
-  console.log("IN CARD VALUES", values);
   const items = [
     {
       label: "Employee's Net Pay",
@@ -42,13 +41,11 @@ function CardValues({ values }) {
   );
 }
 function PaySlipCard({ cardData }) {
-  console.log("IN PAYSLIP CARD CARD DATA", cardData)
   const currentMonthStart = moment().startOf("month");
   const currentMonthEnd = moment().endOf("month");
   const navigate = useNavigate();
 
   function processCardData(data) {
-    console.log("DATA IN PROCESSSCARD DATA", data);
     const runDate = moment(data.run_date); 
     const monthName = runDate.format("MMMM"); 
     const year = runDate.format("YYYY");
@@ -73,7 +70,6 @@ function PaySlipCard({ cardData }) {
     <>
       {cardData?.results?.map((data, index) => {
         const processedData = processCardData(data);
-        console.log("PROCESSED DATA", processedData);
         return (
           <Card className="mb-4" key={index}>
             <CardHeader>

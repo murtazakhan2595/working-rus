@@ -79,6 +79,7 @@ const PayRunDetails = () => {
   
     // Create the data structure with the required fields
     const formattedData = filteredPayslips.map((payslip) => ({
+      "Date": moment(payrun?.run_date).format("MMM D, YYYY"),
       "Employee ID": `TXB-${payslip.employeeid}`,
       "Department Name": payslip.department_name,
       "Full Name": payslip.full_name,
@@ -92,6 +93,7 @@ const PayRunDetails = () => {
   
     // Set column widths for proper spacing
     const wscols = [
+      { wch: 15 }, //"DATE"
       { wch: 15 }, // "employeeid"
       { wch: 20 }, // "Department Name"
       { wch: 25 }, // "Full Name"
