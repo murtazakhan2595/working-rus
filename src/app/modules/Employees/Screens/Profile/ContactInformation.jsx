@@ -85,11 +85,11 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                     <div className="space-y-2">
                       <PhoneNumberInput
                         name={"emergency_phone_no"}
-                        error={props.errors.mobile_no}
-                        touch={props.touched.mobile_no}
-                        value={props.values.mobile_no}
+                        error={props.errors.emergency_phone_no}
+                        touch={props.touched.emergency_phone_no}
+                        value={props.values.emergency_phone_no}
                         label="Emergency Contact"
-                        countryCode={props.values.country_code}
+                        countryCode={props.values.emergency_country_code}
                         countryCodeName={"emergency_country_code"}
                         required={true}
                         onChange={(field, value) => {

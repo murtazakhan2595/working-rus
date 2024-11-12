@@ -560,39 +560,41 @@ const PhoneNumberInput = ({
   countryOptions, // Receive the country options here
 }) => {
   const [selectedCountryCode, setSelectedCountryCode] = useState(countryCode);
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState(value || "");
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Handles the country code selection
   const handleSelectChange = (value) => {
-    const selectedOption = countryOptions.find(
-      (option) => option.value === value
-    );
+    const selectedOption = countryOptions.find((option) => option.value === value);
     if (selectedOption) {
       setSelectedCountryCode(selectedOption.value);
-      setInputValue(`+${selectedOption.value}`); // Set input value to phone code
-      onChange("country_code", selectedOption.value); // Update the country code in the parent component
+      setInputValue(`+${selectedOption.value}`); // Update the input with the selected country code
+      onChange("country_code", selectedOption.value); // Notify parent about country code change
       setOpen(false); // Close the popover
     }
   };
 
+  // Handles the phone number input change
   const handleInputChange = (event) => {
     const regExTelephone = /^[0-9-]+$/;
-    let value = event.target.value;
-    value = value.replace(`+${selectedCountryCode}`, "");
-    if (value.includes("+")) {
-      value = "";
-    }
-    if (!value || regExTelephone.test(value)) {
-      setInputValue(`+${selectedCountryCode}${value}`);
-      onChange(name, value);
+    let inputValue = event.target.value.replace(`+${selectedCountryCode}`, "");
+    
+    if (!inputValue || regExTelephone.test(inputValue)) {
+      setInputValue(`+${selectedCountryCode}${inputValue}`);
+      onChange(name, inputValue); // Send the stripped value (without country code) to the parent
     }
   };
 
+  // Filters the country options based on the search query
+  const filteredCountries = countryOptions.filter((option) =>
+    option.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="flex flex-col gap-4">
-      <Label check>{label}</Label>
-      <div className="flex items-center ">
+      <Label check>{label}{required && <span className="text-red-500">*</span>}</Label>
+      <div className="flex items-center">
         <div className="flex-shrink-0 w-fit">
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -602,42 +604,44 @@ const PhoneNumberInput = ({
                 aria-expanded={open}
                 className="justify-start w-full rounded-l-sm rounded-r-none h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
               >
-                {selectedCountryCode
-                  ? `+${selectedCountryCode}`
-                  : "Select code"}
+                {selectedCountryCode ?? "Select code"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[300px]">
               <Command>
                 <CommandInput
                   placeholder="Search country..."
+                  value={searchQuery}
                   onValueChange={(value) => setSearchQuery(value)}
                 />
                 <CommandList>
                   <CommandEmpty>No country found.</CommandEmpty>
                   <CommandGroup>
-                    {countryOptions?.map((option) => (
-                      <CommandItem
-                        key={option.label}
-                        value={option.label}
-                        onSelect={() => handleSelectChange(option.value)}
-                      >
-                        {option.label}
-                      </CommandItem>
-                    ))}
+                    {filteredCountries.length ? (
+                      filteredCountries.map((option) => (
+                        <CommandItem
+                          key={option.value}
+                          onSelect={() => handleSelectChange(option.value)}
+                        >
+                          {option.label}
+                        </CommandItem>
+                      ))
+                    ) : (
+                      <CommandEmpty>No country found.</CommandEmpty>
+                    )}
                   </CommandGroup>
                 </CommandList>
               </Command>
             </PopoverContent>
           </Popover>
         </div>
-        <div className="w-full col-span-4 col-start-3">
+        <div className="w-full">
           <Input
             id={name}
             name={name}
-            disabled={!selectedCountryCode || disabled} // Input is disabled if no country code is selected or if disabled prop is true
-            autoComplete="Off"
-            placeholder={!selectedCountryCode ? "Select country code first" : "Enter " + label}
+            disabled={!selectedCountryCode || disabled}
+            autoComplete="off"
+            placeholder={!selectedCountryCode ? "Select country code first" : `Enter ${label}`}
             value={inputValue}
             className={`
               ${error && touch ? "is-invalid" : ""} 
@@ -652,6 +656,7 @@ const PhoneNumberInput = ({
     </div>
   );
 };
+
 const EmailInput = ({
   name,
   value,
