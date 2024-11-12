@@ -19,6 +19,7 @@ import { getDepartmentName } from "utils/getValuesFromTables";
 import { getDesignationName } from "utils/getValuesFromTables";
 import { getManagerName } from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
+import { ReasonForLeaving } from "data/Data";
 
 const PersonalInformation = ({
   personalInfo,
@@ -40,6 +41,7 @@ const PersonalInformation = ({
       exit_date: data.exit_date,
       resignation_letter: data.resignation_Letter,
       notice_period: data.notice_period,
+      exit_type: data?.reason_for_leaving
     };
 
     try {
@@ -146,9 +148,9 @@ const PersonalInformation = ({
                   <SelectComponent
                     name={"notice_period"}
                     options={NoticePeriod}
-                    error={props.errors.reason_for_leaving}
-                    touch={props.touched.reason_for_leaving}
-                    value={props.values.reason_for_leaving}
+                    error={props.errors.notice_period}
+                    touch={props.touched.notice_period}
+                    value={props.values.notice_period}
                     label={"Notice Period"}
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
@@ -156,39 +158,7 @@ const PersonalInformation = ({
                   />
                   <SelectComponent
                     name={"reason_for_leaving"}
-                    options={[
-                      { value: "voluntary", label: "Voluntary" },
-                      { value: "involuntary", label: "Involuntary" },
-                      {
-                        value: "end-of-contract",
-                        label: "End of Contract",
-                      },
-                      { value: "retirement", label: "Retirement" },
-                      { value: "layoff", label: "Layoff" },
-                      { value: "dismissal", label: "Dismissal" },
-                      {
-                        value: "mutual-agreement",
-                        label: "Mutual Agreement",
-                      },
-                      {
-                        value: "career-advance",
-                        label: "Career Advancement",
-                      },
-                      { value: "relocation", label: "Relocation" },
-                      {
-                        value: "health-reasons",
-                        label: "Health Reasons",
-                      },
-                      {
-                        value: "family-reasons",
-                        label: "Family Reasons",
-                      },
-                      { value: "education", label: "Education" },
-                      {
-                        value: "better-opportunity",
-                        label: "Better Opportunity",
-                      },
-                    ]}
+                    options={ReasonForLeaving}
                     error={props.errors.reason_for_leaving}
                     touch={props.touched.reason_for_leaving}
                     value={props.values.reason_for_leaving}
