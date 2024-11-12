@@ -579,7 +579,6 @@ export const ResignationReasons = [
   // { value: "Job dissatisfaction", label: "Job dissatisfaction" },
   { value: "Others", label: "Others" },
 ];
-
 export const ReasonForLeaving=[
   { value: "voluntary", label: "Voluntary" },
   { value: "involuntary", label: "Involuntary" },
@@ -594,11 +593,7 @@ export const ReasonForLeaving=[
     value: "mutual-agreement",
     label: "Mutual Agreement",
   },
-  {
-    value: "career-advance",
-    label: "Career Advancement",
-  },
-  { value: "relocation", label: "Relocation" },
+  { value: "Relocation", label: "Relocation" },
   {
     value: "health-reasons",
     label: "Health Reasons",
@@ -609,8 +604,8 @@ export const ReasonForLeaving=[
   },
   { value: "education", label: "Education" },
   {
-    value: "better-opportunity",
-    label: "Better Opportunity",
+    value: "others",
+    label: "Other",
   },
 ]
 
