@@ -72,6 +72,10 @@ const Header = ({ content, userProfile }) => {
       "leave-request": "Leave Request",
       "recruitment": "Recruitment",
       "my-leave-tracker": "My Leave Tracker",
+      "job-application": "Job Application",
+      "job-application-form": "Job Application Form",
+      "job-description": "Job Description",
+      
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);

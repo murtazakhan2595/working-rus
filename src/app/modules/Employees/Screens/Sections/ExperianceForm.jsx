@@ -1,11 +1,10 @@
-
-
 import {
   FileInput,
   DateInput,
   TextAreaInput,
   TextInput,
-  CheckBoxInput
+  CheckBoxInput,
+  CoverFileUpload
 } from "components/form-control";
 import React, { useEffect, useState } from "react";
 import { Label } from "../../../../../src/@/components/ui/label";
@@ -109,7 +108,7 @@ const Experience = ({ errors, touched, values, onChange }) => {
             />
           </div>
           <div className="col-span-2 space-y-2">
-            <FileInput
+            <CoverFileUpload
               name="exp_letter"
               label="Experience Letter or drag it here"
               acceptType=".pdf"

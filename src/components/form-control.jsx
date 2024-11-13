@@ -9,7 +9,7 @@ import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
-import { Calendar as LucideCalendar } from "lucide-react";
+import {  Calendar as LucideCalendar } from "lucide-react";
 
 import {
   Popover,
@@ -593,7 +593,7 @@ const PhoneNumberInput = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <Label check>{label}{required && <span className="text-red-500">*</span>}</Label>
+      <Label check>{label}{required && <span className="text-red-600">*</span>}</Label>
       <div className="flex items-center">
         <div className="flex-shrink-0 w-fit">
           <Popover open={open} onOpenChange={setOpen}>
@@ -602,7 +602,7 @@ const PhoneNumberInput = ({
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="justify-start w-full rounded-l-sm rounded-r-none h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
+                className="justify-start text-neutral-1000 w-full rounded-l-sm rounded-r-none h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
               >
                 {selectedCountryCode ?? "Select code"}
               </Button>
@@ -1184,6 +1184,191 @@ const FilterInput = ({
   );
 };
 
+const CoverFileUpload = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  acceptType,
+  required,
+  maxSize = 10 // in MB
+}) => {
+  const [dragActive, setDragActive] = useState(false);
+  const [preview, setPreview] = useState(null);
+
+  // Set preview when value changes
+  useEffect(() => {
+    if (value?.file) {
+      setPreview(value.file);
+    }
+  }, [value]);
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const validateFile = (file) => {
+    // Check file size
+    if (file.size > maxSize * 1024 * 1024) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      handleFile(file);
+    }
+  };
+
+  const handleChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      handleFile(file);
+    }
+  };
+
+  const handleFile = (file) => {
+    if (validateFile(file)) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // Create file object with name and data
+        const fileData = {
+          name: file.name,
+          file: reader.result
+        };
+        onChange(name, fileData);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i];
+  };
+
+  const renderUploadedFile = (fileData) => {
+    return (
+      <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-neutral-200">
+        <div className="flex items-center gap-3">
+          <div className="text-neutral-500">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-neutral-900">{fileData.name}</p>
+            <p className="text-sm text-neutral-500">{formatFileSize(fileData.size || 2.4 * 1024 * 1024)}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => {
+              // Handle update - trigger file input click
+              document.getElementById(`${name}-update`).click();
+            }}
+            className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+          >
+            Update
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setPreview(null);
+              onChange(name, null);
+            }}
+            className="text-neutral-900 hover:text-neutral-700 text-sm font-medium"
+          >
+            Remove
+          </button>
+        </div>
+        <input
+          id={`${name}-update`}
+          type="file"
+          className="hidden"
+          onChange={handleChange}
+          accept={acceptType}
+        />
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Label className="text-normal" htmlFor={name}>
+        Attachments
+      </Label>
+      
+      {value ? (
+        <div className="space-y-3">
+          {renderUploadedFile(value)}
+          <button
+            type="button"
+            onClick={() => document.getElementById(name).click()}
+            className="flex items-center gap-2 text-sm font-medium text-neutral-900 hover:text-neutral-700"
+          >
+            <span className="text-lg">+</span> Add another attachment
+          </button>
+        </div>
+      ) : (
+        <div
+          className={`relative border-2 border-dashed rounded-lg p-6 ${
+            dragActive ? 'border-primary-500 bg-primary-50' : 'border-neutral-300'
+          }`}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+        >
+          <div className="flex flex-col items-center justify-center min-h-[200px] text-center">
+            <div className="mb-4">
+              <FileUp className="w-16 h-16 text-neutral-1000" />
+            </div>
+            <p className="mb-2">
+              <span className="text-primary font-semibold">Upload a file</span>
+              <span className="text-neutral-1000"> or drag and drop</span>
+            </p>
+            <p className="text-sm text-neutral-1000">
+              {acceptType === '.pdf' ? 'Please upload PNG, JPG, GIF, or PDF up to 10MB' : 'PNG, JPG, GIF up to 10MB'}
+            </p>
+            
+            <input
+              id={name}
+              type="file"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              onChange={handleChange}
+              accept={acceptType}
+              title=""
+            />
+          </div>
+        </div>
+      )}
+      
+      {error && touch && <div className="text-red-600">{error}</div>}
+    </div>
+  );
+};
+
+
+
 export {
   SelectComponent,
   SelectMultiInputComponent,
@@ -1203,4 +1388,5 @@ export {
   PasswordInput,
   RadioGroupInput,
   NumberInput,
+  CoverFileUpload,
 };
