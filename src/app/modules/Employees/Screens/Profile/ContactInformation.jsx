@@ -79,106 +79,106 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                   <CardContent>
                     <h6 className="text-2xl text-secondary-foreground">
                       Emergency Contact
-                </h6>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <PhoneNumberInput
-                        name={"emergency_phone_no"}
-                        error={props.errors.emergency_phone_no}
-                        touch={props.touched.emergency_phone_no}
-                        value={props.values.emergency_phone_no}
-                        label="Emergency Contact"
-                        countryCode={props.values.emergency_country_code}
-                        countryCodeName={"emergency_country_code"}
-                        required={true}
-                        onChange={(field, value) => {
-                          props.setFieldValue(field, value);
-                        }}
-                        countryOptions={countriesCallingCodes} // Pass the country options here
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <TextInput
-                        name="emergency_first_name"
-                        error={props.errors.emergency_first_name}
-                        touch={props.touched.emergency_first_name}
-                        value={props.values.emergency_first_name}
-                        label="Full Name"
-                        required
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <TextInput
-                        name="emergency_relation"
-                        error={props.errors.emergency_relation}
-                        touch={props.touched.emergency_relation}
-                        value={props.values.emergency_relation}
-                        label="Relation"
-                        required
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <TextAreaInput
-                        name="emergency_permanent_address"
-                        error={props.errors.emergency_permanent_address}
-                        touch={props.touched.emergency_permanent_address}
-                        value={props.values.emergency_permanent_address}
-                        label="Permanent Address"
-                        required
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                    <div className="col-span-2 space-y-2">
-                      <TextAreaInput
-                        name="emergency_current_address"
-                        error={props.errors.emergency_current_address}
-                        touch={props.touched.emergency_current_address}
-                        value={props.values.emergency_current_address}
-                        label="Current Address"
-                        required
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                    <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
-                      <div className="flex justify-end space-x-4">
-                        {!isEditMode && (
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            onClick={() => {
-                              prevStep();
+                    </h6>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <PhoneNumberInput
+                            name={"emergency_phone_no"}
+                            error={props.errors.emergency_phone_no}
+                            touch={props.touched.emergency_phone_no}
+                            value={props.values.emergency_phone_no}
+                            label="Emergency Contact"
+                            countryCode={props.values.emergency_country_code}
+                            countryCodeName={"emergency_country_code"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
                             }}
-                          >
-                            Back
-                          </Button>
-                        )}
-                        <Button
-                          type="submit"
-                          size="lg"
-                          variant="default"
-                          onClick={() => {
-                            props.handleSubmit();
-                          }}
-                        >
-                          {isEditMode ? "Save" : "Next"}
-                        </Button>
+                            countryOptions={countriesCallingCodes} // Pass the country options here
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name="emergency_first_name"
+                            error={props.errors.emergency_first_name}
+                            touch={props.touched.emergency_first_name}
+                            value={props.values.emergency_first_name}
+                            label="Full Name"
+                            required
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name="emergency_relation"
+                            error={props.errors.emergency_relation}
+                            touch={props.touched.emergency_relation}
+                            value={props.values.emergency_relation}
+                            label="Relation"
+                            required
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <TextAreaInput
+                            name="emergency_permanent_address"
+                            error={props.errors.emergency_permanent_address}
+                            touch={props.touched.emergency_permanent_address}
+                            value={props.values.emergency_permanent_address}
+                            label="Permanent Address"
+                            required
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                        <div className="col-span-2 space-y-2">
+                          <TextAreaInput
+                            name="emergency_current_address"
+                            error={props.errors.emergency_current_address}
+                            touch={props.touched.emergency_current_address}
+                            value={props.values.emergency_current_address}
+                            label="Current Address"
+                            required
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                        <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
+                          <div className="flex justify-end space-x-4">
+                            {!isEditMode && (
+                              <Button
+                                variant="outline"
+                                size="lg"
+                                onClick={() => {
+                                  prevStep();
+                                }}
+                              >
+                                Back
+                              </Button>
+                            )}
+                            <Button
+                              type="submit"
+                              size="lg"
+                              variant="default"
+                              onClick={() => {
+                                props.handleSubmit();
+                              }}
+                            >
+                              {isEditMode ? "Save" : "Next"}
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                          </CardContent>
+                  </CardContent>
                 </Card>
               </form>
             )}

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { CiEdit } from "react-icons/ci";
-// import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
+import { DetailBox } from "components/SheetCardExtension";
+import Avatar from "components/ui/Avatar";
+import { CardContent, Card, CardHeader, CardTitle } from "components/ui/card";
 
 const PersonalInformation = ({
   personalInfo,
@@ -8,26 +8,31 @@ const PersonalInformation = ({
 }) => {
   return (
     <>
-      <div className="bg-white shadow border w-full rounded-lg p-6 mb-6">
-        <div className="flex justify-between">
-          <h2 className="text-neutral-1200 text-xl font-bold">
+      <Card className="border shadow mb-4">
+        <CardHeader>
+        <CardTitle>
             Employee Information
-          </h2>
-        </div>
+            </CardTitle>
+        </CardHeader>
         <hr />
+        <CardContent>
         <div className="flex flex-col lg:flex-row py-4">
-          {/* Image Section */}
           <div className="md:w-[25%] w-full flex flex-col items-start mb-6 lg:mb-0">
             {userData?.profile_picture?.file || userData?.profile_picture ? (
-              <img
-                src={
-                  userData?.profile_picture?.file || userData?.profile_picture
-                }
-                alt="Profile"
-                className="w-24 h-24 rounded-full mb-4"
+              <Avatar
+              src={
+                userData?.profile_picture?.file || userData?.profile_picture
+              }
+              fallbackText={(userData?.first_name)?.charAt(0)}
+              alt="profile"
+              className="w-24 h-24"
               />
             ) : (
-              <div className="opacity-70">Profile</div>
+              <Avatar
+              fallbackText={(userData?.first_name)?.charAt(0)}
+              alt="profile"
+              className="w-24 h-24"
+              /> 
             )}
 
             <div className="font-semibold text-lg">
@@ -43,20 +48,17 @@ const PersonalInformation = ({
             {personalInfo.map((infoGroup, index) => (
               <div key={index} className="w-full flex flex-col gap-4">
                 {infoGroup.map((info) => (
-                  <div className="flex w-full gap-3" key={info.title}>
-                    <div className="opacity-60 w-[150px] lg:w-[40%]">
-                      {info.title}
-                    </div>
-                    <div className="w-[calc(100%-150px)] lg:w-[60%]">
-                      {info.data || "-----"}
-                    </div>
-                  </div>
+                  <DetailBox
+                    label={info?.title}
+                    value={info?.data || "-----"}
+                  />
                 ))}
               </div>
             ))}
           </div>
         </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   );
 };
