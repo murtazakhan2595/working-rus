@@ -1,15 +1,13 @@
 import { getEmployeeData } from "app/hooks/employee";
 import { PageLoader } from "components";
-import { FileInput } from "components/form-control";
+
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { SelectComponent } from "components/form-control";
 import { DateInput } from "components/form-control";
 import { Formik } from "formik";
-import { DepartmentName } from "utils/getValuesFromTables";
 import { DesignationName } from "utils/getValuesFromTables";
-import { ManagerName } from "utils/getValuesFromTables";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
 import { NoticePeriod } from "data/Data";
@@ -19,6 +17,7 @@ import { getDesignationName } from "utils/getValuesFromTables";
 import { getManagerName } from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
 import { ReasonForLeaving } from "data/Data";
+import { CoverFileUpload } from "components/form-control";
 
 const PersonalInformation = ({
   personalInfo,
@@ -100,10 +99,10 @@ const PersonalInformation = ({
                 </div>
               </div>
             </div>
-            <div className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4">
+            <div className="grid w-full gap-4 sm:grid-cols-1 lg:grid-cols-2">
               {/* Personal Info Sections */}
               {personalInfo[0].map((info) => (
-                <div className="space-y-2 flex flex-col justify-end">
+                <div className="flex flex-col justify-end space-y-2">
                   <TextInput
                     value={info.data}
                     name={info.title}
@@ -132,7 +131,7 @@ const PersonalInformation = ({
           >
             {(props) => (
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-                <div className="grid sm:grid-cols-1 lg:grid-cols-3 w-full gap-4">
+                <div className="grid w-full gap-4 sm:grid-cols-1 lg:grid-cols-3">
                   <DateInput
                     placeholder="Date"
                     label="Exit Date"
@@ -167,7 +166,7 @@ const PersonalInformation = ({
                     }}
                   />
                 </div>
-                <FileInput
+                <CoverFileUpload
                   name={"resignation_Letter"}
                   error={props.errors?.resignation_Letter}
                   touch={props.touched?.resignation_Letter}

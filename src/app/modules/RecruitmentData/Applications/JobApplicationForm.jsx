@@ -1,24 +1,24 @@
-import { Link, useParams, useNavigate } from "react-router-dom";
+/* eslint-disable no-unused-vars */
+import { useParams, useNavigate } from "react-router-dom";
 import React, { useState, useRef, useEffect } from "react";
-import { CardHeader } from "reactstrap";
+
 import { Formik } from "formik";
 import {
   TextInput,
   SelectComponent,
-  DateInput,
-  FileInput,
   PhoneNumberInput,
   EmailInput,
+  CoverFileUpload,
 } from "../../../../components/form-control.jsx";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import PageLoader from "../../../../components/PageLoader.jsx";
+
 import { connect } from "react-redux";
 import { addApplication, fetchJobById } from "../../../hooks/recruitment.jsx";
 import { Header } from "../Sections/index.js";
 import { ApplicationDetail } from "../../../utils/Types/Recruitment.jsx";
 import { countriesList, countriesCallingCodes } from "data/Data.js";
-import {Card, CardContent } from "components/ui/card.jsx";
+import {Card } from "components/ui/card.jsx";
 import { Button } from "components/ui/button.jsx";
 import Newlogo from "assets/images/NewLogo.jsx";
 
@@ -70,7 +70,7 @@ const JobApplicationForm = () => {
     <div className="main-content !pt-0 !px-0">
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
         <Newlogo className="h-8" />
-        <div className="text-gray-500 text-sm">
+        <div className="text-sm text-gray-500">
           A Project by TecBrix
         </div>
       </div>
@@ -81,15 +81,15 @@ const JobApplicationForm = () => {
           showBackButton={true}
           onBack={() => navigate(-1)}
         />
-        <Card className="bg-white dark:bg-neutral-1000 p-6">
-          <h2 className="text-primary text-xl mb-6">
+        <Card className="p-6 bg-white dark:bg-neutral-1000">
+          <h2 className="mb-6 text-xl text-primary">
             {jobDetails?.Job_Title}
           </h2>
           
           <div className="mb-6">
             <label>Photo</label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-gray-200"></div>
+              <div className="w-20 h-20 bg-gray-200 rounded-full"></div>
               <Button variant="outline">Upload</Button>
             </div>
           </div>
@@ -208,7 +208,7 @@ const JobApplicationForm = () => {
                     placeholder="Enter Notice period"
                   />
                 </div>
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-4 mt-4">
                 <SelectComponent
                   name="location"
                   options={countriesList}
@@ -225,36 +225,42 @@ const JobApplicationForm = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mt-4">
-                  <FileInput
-                    name="cover_letter"
-                    label="Attach Cover later"
-                    acceptType=".png,.jpg,.gif"
-                    maxSize="10MB"
-                    error={props.errors?.cover_letter}
-                    touch={props.touched?.cover_letter}
-                    value={props.values?.cover_letter}
-                    required={true}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                  <FileInput
-                    name="cv"
-                    label="Attach Resume"
-                    acceptType=".png,.jpg,.gif"
-                    maxSize="10MB"
-                    error={props.errors?.cv}
-                    touch={props.touched?.cv}
-                    value={props.values?.cv}
-                    required={true}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
+                  <div>
+                    <CoverFileUpload
+                      name="cover_letter"
+                      label="Attach Cover later"
+                      acceptType=".png,.jpg,.gif"
+                      maxSize="10MB"
+                      error={props.errors?.cover_letter}
+                      touch={props.touched?.cover_letter}
+                      value={props.values?.cover_letter}
+                      required={true}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                        props.setFieldTouched(field, true);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <CoverFileUpload
+                      name="cv"
+                      label="Attach Resume"
+                      acceptType=".png,.jpg,.gif"
+                      maxSize="10MB"
+                      error={props.errors?.cv}
+                      touch={props.touched?.cv}
+                      value={props.values?.cv}
+                      required={true}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                        props.setFieldTouched(field, true);
+                      }}
+                    />
+                  </div>
                 </div>
 
-                <div className="mt-6 flex justify-end">
-                  <Button type="submit" className="bg-black text-white px-8">
+                <div className="flex justify-end mt-6">
+                  <Button type="submit" className="px-8 text-white bg-black">
                     Apply
                   </Button>
                 </div>

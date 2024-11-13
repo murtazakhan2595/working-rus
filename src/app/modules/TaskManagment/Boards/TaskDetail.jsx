@@ -26,13 +26,13 @@ import { getRandomColor } from "utils/renderValues";
 import { addCommentAttachment } from "app/hooks/taskManagment";
 import { getCommentsWithAttachments } from "app/hooks/taskManagment";
 import { filebase64Download } from "utils/fileUtils";
-import SheetComponent from "components/ui/SheetComponent";
+
 import { Card } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { Trash } from "lucide-react";
-import { CardTitle } from "components/ui/card";
+
 import { CardContent } from "components/ui/card";
-import { getLabelColor } from "./Sections/getTaskStatus";
+
 
 const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
   const [comments, setComments] = useState([]);
@@ -255,10 +255,10 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
     return (
       <div className="flex flex-col sm:flex-row items-start justify-between flex-wrap w-[60%] gap-4">
         {items.map(({ label, value }, idx) => (
-          <div className="flex gap-4 items-center w-full h-5">
-            <div className=" text-sm">{label}</div>
+          <div className="flex items-center w-full h-5 gap-4">
+            <div className="text-sm ">{label}</div>
             <div className="flex flex-col items-start">
-              <div className="text-gray-900 text-sm">{value}</div>
+              <div className="text-sm text-gray-900">{value}</div>
             </div>
           </div>
         ))}
@@ -334,7 +334,7 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
               </CardContent>
             </Card>
 
-            <div className="flex items-center p-4 gap-4">
+            <div className="flex items-center gap-4 p-4">
               <p>Description: </p>
               <span
                 className="text-sm text-gray-700"
@@ -342,19 +342,19 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
               />
             </div>
 
-            <div className="flex items-center p-4 gap-4">
+            <div className="flex items-center gap-4 p-4">
               <p>SubTasks: </p>
               <p className="text-gray-700">SubTasks 1 </p>
             </div>
 
-            <div className="mb-3 flex">
+            <div className="flex mb-3">
               <h2 className="text-base  font-bold text-[#323333] flex gap-x-2 items-center">
                 Attachments
               </h2>
               {attachments?.map((attachment) => (
                 <div
                   key={attachment.id}
-                  className="flex items-center justify-between w-full p-4  my-1 border border-gray-400 rounded-lg gap-2"
+                  className="flex items-center justify-between w-full gap-2 p-4 my-1 border border-gray-400 rounded-lg"
                   onClick={(e) => {
                     if (!e.target.closest(".download-icon")) {
                       const dataURL = attachment?.attachments?.file;
@@ -371,7 +371,7 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
                   <div className="flex items-center">
                     {/* <FaRegImage className="w-4 h-4 text-gray-500" /> */}
                     <img src={attachment?.attachments?.file} alt={attachment?.attachments?.name} className="w-8 h-8"/>
-                    <span className="ml-4 text-sm  text-baseGray">
+                    <span className="ml-4 text-sm text-baseGray">
                       {attachment?.attachments?.name}
                     </span>
                   </div>

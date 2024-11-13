@@ -8,21 +8,19 @@ import {
 import { RiAttachment2 } from "react-icons/ri";
 import { RxPlus } from "react-icons/rx";
 import members from "assets/images/members.svg";
-import highpriorityIcon from "assets/images/highpriority.svg";
-import lowpriorityIcon from "assets/images/lowpriority.svg";
-import mediumpriorityIcon from "assets/images/mediumpriority.svg";
+
 import plus from "assets/images/plus.svg";
 import { PriorityList } from "data/Data";
 import Members from "../../Sections/Member";
-import { FileInput } from "components/form-control";
+
 import { AiOutlineDownload } from "react-icons/ai";
-import { BiDotsVerticalRounded } from "react-icons/bi";
+
 import { FaRegImage } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { useSelector } from "react-redux";
-import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
+
 import { getAllLabels } from "app/hooks/taskManagment";
-import { Textarea } from "components/ui/textarea";
+
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import Labels from "../../Sections/Labels";
@@ -231,7 +229,7 @@ const CreateAndEditCardForm = ({
                       <div className="flex items-center justify-between p-2 mb-2 bg-gray-100 rounded-lg shadow-md w-fit">
                         <div className="flex items-center">
                           <FaRegImage className="w-4 h-4 text-gray-500" />
-                          <span className="ml-4 text-sm  text-baseGray">
+                          <span className="ml-4 text-sm text-baseGray">
                             {file.name}
                           </span>
                         </div>
@@ -317,7 +315,7 @@ const CreateAndEditCardForm = ({
                   />
                 </div>
 
-                <div className="space-y-2 flex items-center gap-2">
+                <div className="flex items-center gap-2 space-y-2">
                   <div>Label</div>
 
                   <Labels
@@ -326,7 +324,7 @@ const CreateAndEditCardForm = ({
                   />
                 </div>
                 <div>
-                  <ul className="flex gap-2 flex-wrap">
+                  <ul className="flex flex-wrap gap-2">
                     {labels?.map((label) => (
                       <li
                         key={label.id}
@@ -398,7 +396,7 @@ const CreateAndEditCardForm = ({
                 )}
 
               {isEdit &&  <div>
-                <div className="space-y-2 flex items-center gap-2">
+                <div className="flex items-center gap-2 space-y-2">
                   <div>CheckList</div>
                   <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                     <PopoverTrigger asChild>
@@ -441,7 +439,7 @@ const CreateAndEditCardForm = ({
               </div>
             </div>
 
-            <div className="mt-4 border-t border-gray-200 flex justify-end gap-2">
+            <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
               <Button
                 type=""
                 variant="outline"

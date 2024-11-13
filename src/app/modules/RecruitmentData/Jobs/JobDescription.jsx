@@ -1,11 +1,11 @@
+/* eslint-disable no-unused-vars */
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { restart, education, money, proCheck } from "../../../../assets/images";
-import { Header, Labels } from "../Sections";
+import { Header} from "../Sections";
 import { fetchJobById } from "../../../hooks/recruitment";
 import { formatNumber } from "data/Data";
-import { RxCross2 } from "react-icons/rx";
 import moment from "moment";
 import {
   getCountryFullName,
@@ -42,12 +42,21 @@ const JobDescription = ({ baseUrl }) => {
     const diffTime = deadlineDate - currentDate;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays > 0) {
-      return `${diffDays} days left`;
-    } else if (diffDays < 0) {
-      return ` expired ${Math.abs(diffDays)} days ago`;
+    let color;
+    if (diffDays <= 1) {
+      color = 'text-red-300';
+    } else if (diffDays <= 5) {
+      color = 'text-amber-300';
     } else {
-      return `Today is the deadline`;
+      color = 'text-emerald-300';
+    }
+
+    if (diffDays > 0) {
+      return { text: `${diffDays} days left`, color };
+    } else if (diffDays < 0) {
+      return { text: `expired ${Math.abs(diffDays)} days ago`, color: 'text-red-500' };
+    } else {
+      return { text: `Today is the deadline`, color: 'text-red-500' };
     }
   };
 
@@ -55,54 +64,61 @@ const JobDescription = ({ baseUrl }) => {
     <div className="main-content !pt-0 !px-0  mx-auto">
     <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
         <Newlogo className="h-8" />
-        <div className="text-gray-500 text-sm">
+        <div className="text-sm text-gray-500">
           A Project by TecBrix
         </div>
       </div>
+      <div className=" max-w-[800px] mx-auto">
       <Header title={"Job Description"}/>
       <Card className="p-6 relative  rounded-lg shadow-sm md:mx-4 h-[90vh] overflow-y-auto hideScroll">
         
 
         <div className="max-w-4xl">
           <div className="mb-6">
-            <span className="text-gray-600">
+            <span className="text-neutral-900">
               Job ID: {jobDetails?.id}
             </span>
-            <h3 className="text-xl font-semibold text-purple-600 mt-1">
+            <h3 className="mt-1 text-xl font-semibold text-primary">
               {jobDetails?.Job_Title}
             </h3>
             
-            <div className="flex justify-between items-center mt-2">
+            <div className="flex items-center justify-between mt-2">
               <div>
                 <div className="flex items-center gap-2">
                   <span>{getCountryFullName(jobDetails?.location)}</span>
                   <span>•</span>
                   <span>{getJobType(jobDetails?.Job_Type)}</span>
                 </div>
-                <div className="text-sm text-gray-600 mt-1">
-                  Apply before {moment(jobDetails?.Deadline).format("DD-MM-YYYY")} • {calculateRemainingDays(jobDetails?.Deadline)}
+                <div className="mt-1 text-sm">
+                  Apply before {moment(jobDetails?.Deadline).format("DD-MM-YYYY")} • 
+                  <span className={`ml-1 ${calculateRemainingDays(jobDetails?.Deadline).color}`}>
+                    {calculateRemainingDays(jobDetails?.Deadline).text}
+                  </span>
                 </div>
               </div>
-              <button className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800">
+              <Link 
+                to={`/apply/jobDetail?id=${jobDetails?.id}`} 
+                className="px-6 py-2 text-white bg-black rounded-md hover:bg-neutral-50 hover:text-black"
+              >
                 Apply Now
-              </button>
+              </Link>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-4 mb-6">
-            <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full">
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
               <img src={restart} alt="" className="w-5 h-5" />
               <span>{getEmployeeType(jobDetails?.Employee_Type)}</span>
             </div>
-            <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full">
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
               <img src={education} alt="" className="w-5 h-5" />
               <span>{jobDetails?.Education}</span>
             </div>
-            <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full">
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
               <img src={proCheck} alt="" className="w-5 h-5" />
               <span>{getWorkType(jobDetails?.Work_type)}</span>
             </div>
-            <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full">
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
               <img src={money} alt="" className="w-5 h-5" />
               <span>{`${jobDetails?.currency} ${formatNumber(jobDetails?.min_salary)} - ${formatNumber(jobDetails?.max_salary)} /month`}</span>
             </div>
@@ -110,16 +126,17 @@ const JobDescription = ({ baseUrl }) => {
 
           <div className="space-y-6">
             <div>
-              <h4 className="text-lg font-semibold mb-2">Job Description:</h4>
-              <p className="text-gray-700">{jobDetails?.Job_Description}</p>
+              <h4 className="mb-2 text-lg font-semibold">Job Description:</h4>
+              <p className="text-neutral-900">{jobDetails?.Job_Description}</p>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-2">Job Requirements:</h4>
-              <p className="text-gray-700">{jobDetails?.Job_Requirement}</p>
+              <h4 className="mb-2 text-lg font-semibold">Job Requirements:</h4>
+              <p className="text-neutral-900">{jobDetails?.Job_Requirement}</p>
             </div>
           </div>
         </div>
       </Card>
+      </div>
     </div>
   );
 };
