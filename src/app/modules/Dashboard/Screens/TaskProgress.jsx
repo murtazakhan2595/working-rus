@@ -61,9 +61,9 @@ export default function Component() {
   }, [activeStatus]);
 
   const statusColors = {
-    completed: "hsl(var(--success-4))",
-    on_hold: "hsl(var(--red-2))",
-    on_going: "hsl(var(--primary))"
+    completed: "hsl(var(--primary))",
+    on_hold: "hsl(var(--neutral-5))",
+    on_going: "hsl(var(--plum-7))"
 };
 
 const statusCounts = data?.reduce((acc, project) => {
@@ -87,16 +87,16 @@ console.log('Status Colors:', statusColors);
 
 const chartConfig = {
     visitors: {
-      label: "Compeletd",
-      color: "hsl(var(--success-4))",
+      label: "Completed",
+      color: "hsl(var(--primary))",
     },
     project1: {
       label: "On Hold",
-      color: "hsl(var(--red-2))",
+      color: "hsl(var(--neutral-5))",
     },
     project2: {
       label: "On Going",
-      color: "hsl(var(--primary))",
+      color: "hsl(var(--plum-7))",
     },
     // project3: {
     //   label: "Closed",
@@ -127,7 +127,7 @@ const chartConfig = {
                   const data = payload[0].payload;
                   return (
                     <div className="p-2 bg-white border rounded shadow">
-                      <p className="flex items-center text-neutral-1200">
+                      <p className="flex items-center text-neutral-1100">
                         <span 
                           className="inline-block w-2 h-2 mr-2 rounded-full"
                           style={{ backgroundColor: data.fill }}
