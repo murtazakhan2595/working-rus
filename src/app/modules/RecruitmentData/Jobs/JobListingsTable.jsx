@@ -1,23 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "../../../../components/ui/card";
 import CustomTable from "../../../../components/CustomTable";
-import { Button } from "../../../../components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "../../../../src/@/components/ui/sheet";
+
 import { Badge } from "../../../../components/ui/badge";
-import { Link } from "react-router-dom";
 import {
   EmployeeID,
   getEmployeeType,
   getWorkType,
   getJobType,
-  getWorkLocation,
 } from "../../../../utils/getValuesFromTables";
 import moment from "moment";
 import EmployeeNameInfo from "../../../../components/EmployeeNameInfo";
@@ -29,40 +19,12 @@ export default function JobListingsTable({ posts, loading ,fetchJobPosts }) {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedJob, setSelectedJob] = useState(null)
 
-  // const getPosts = async () => {
-  //   setLoading(true)
-  //   try {
-  //     const data = await fetchJobPosts(filterData, sortData)
-  //     setPosts(data)
-  //   } catch (error) {
-  //     console.error("Error fetching posts:", error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   getPosts()
-  // }, [filterData, sortData])
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
-  // const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
-  //   if (filterName === "sort_by_date") {
-  //     setSortData(filterCheckStatus ? filterValue : "dsc")
-  //   }
-  //   setFilterData((prevFilters) => {
-  //     const updatedFilters = { ...prevFilters }
-  //     if (!filterValue || filterCheckStatus === false) {
-  //       delete updatedFilters[filterName]
-  //     } else {
-  //       updatedFilters[filterName] = filterCheckStatus === false ? "" : filterValue
-  //     }
-  //     return updatedFilters
-  //   })
-  // }
+
 
   const tableOptions = {
     page: options.page,
@@ -71,7 +33,7 @@ export default function JobListingsTable({ posts, loading ,fetchJobPosts }) {
     onRowClick: (row) => {
       setSelectedJob({
         isOpen: true,
-        JobId: row?.id
+        JobId: row
       })
       // setIsSelectedLeaveSheet(true);
       // setSelectedLeave(row);
@@ -177,8 +139,9 @@ export default function JobListingsTable({ posts, loading ,fetchJobPosts }) {
           <ViewJobDetails
             isOpen={selectedJob?.isOpen}
             setIsOpen={()=> setSelectedJob(null)}
-            jobId={selectedJob?.JobId}
+            job={selectedJob?.JobId}
             fetchJobPosts={fetchJobPosts}
+            posts={posts}
           />
         )
       }
