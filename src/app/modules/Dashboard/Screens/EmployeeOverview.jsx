@@ -55,7 +55,7 @@ export default function Component() {
   const chartConfig = {
     total: {
       label: "Total",
-      color: "hsl(var(--success-4))",
+      color: "hsl(var(--neutral-5))",
       value: employeeData.total,
     },
     active: {
@@ -65,7 +65,7 @@ export default function Component() {
     },
     offboarding: {
       label: "Offboarding",
-      color: "hsl(var(--red-4))",
+      color: "hsl(var(--plum-7))",
       value: employeeData.offboarding,
     },
   };
@@ -105,7 +105,28 @@ export default function Component() {
             innerRadius={80}
             outerRadius={130}
           >
-            <ChartTooltip cursor={false} content={<ChartTooltipContent className="text-neutral-1100" />} />
+            <ChartTooltip 
+              cursor={false} 
+              content={({ payload }) => {
+                if (payload && payload.length > 0) {
+                  const dataKey = payload[0].dataKey;
+                  const value = payload[0].value;
+                  const label = chartConfig[dataKey]?.label || dataKey;
+                  return (
+                    <div className="p-2 bg-white border rounded shadow">
+                      <p className="flex items-center text-neutral-1100">
+                        <span 
+                          className="inline-block w-2 h-2 mr-2 rounded-full"
+                          style={{ backgroundColor: payload[0].fill }}
+                        />
+                        {label}: {value}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <Label
                 content={({ viewBox }) => {
