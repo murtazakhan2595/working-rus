@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 
 import { Formik } from "formik";
@@ -12,19 +13,14 @@ import { EmployeeCertifiation } from "app/utils/Types/Employee";
 import {
   DateInput,
   TextInput,
-  CustomDarkButton,
-  CustomLightOutlineButton,
-  FileInput,
+  CoverFileUpload
 } from "components/form-control";
 import { Link } from "react-router-dom";
 
-import { Label } from "../../../../../src/@/components/ui/label";
-import { Input } from "../../../../../components/ui/input";
+
 import { Button } from "../../../../../components/ui/button";
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from '../../../../../src/@/components/ui/calendar';
-import { CircleX, X } from "lucide-react";
+
+import { CircleX } from "lucide-react";
 
 const CertificationsInformation = ({
   nextstep,
@@ -170,7 +166,7 @@ const CertificationsInformation = ({
                                     />
                                   </div>
                                   <div className="col-span-2 space-y-2 ">
-                                    <FileInput
+                                    <CoverFileUpload
                                       acceptType=".pdf"
                                       name={`certifications[${index}].certification_body`}
                                       value={certification.certification_body}

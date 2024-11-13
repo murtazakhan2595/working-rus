@@ -1,19 +1,12 @@
 import {
-  FileInput,
   DateInput,
   TextAreaInput,
   TextInput,
   CheckBoxInput,
   CoverFileUpload
 } from "components/form-control";
-import React, { useEffect, useState } from "react";
-import { Label } from "../../../../../src/@/components/ui/label";
-import { Input } from "../../../../../components/ui/input";
-import { Button } from "../../../../../components/ui/button";
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from '../../../../../src/@/components/ui/calendar';
-import { Card, CardContent } from "components/ui/card";
+import React, {  useState } from "react";
+
 
 const Experience = ({ errors, touched, values, onChange }) => {
   const [date, setDate] = useState(new Date());

@@ -3,7 +3,6 @@ import { Formik } from "formik";
 import { Col, Form, Row } from "reactstrap";
 import { DateInput } from "components/form-control";
 import { SelectComponent } from "components/form-control";
-import { FileInput } from "components/form-control";
 import { connect } from "react-redux";
 import { getEmployeeData } from "app/hooks/employee";
 import { DesignationName } from "utils/getValuesFromTables";
@@ -16,6 +15,7 @@ import { toast } from "react-toastify";
 import { terminationReasonsOptions } from "data/Data";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 import { NoticePeriod } from "data/Data";
+import { CoverFileUpload } from "components/form-control";
 
 const { RxCross2 } = require("react-icons/rx");
 
@@ -153,11 +153,11 @@ const RequestTerminationCard = ({
       className="fixed top-0 text-[#323333] right-0 w-[95%] h-[100vh] z-10 overflow-y-auto p-8 hideScroll bg-white"
       style={{ maxWidth: "806px", minHeight: "100vh" }}
     >
-      <div className="flex justify-between items-center ">
-        <h2 className="font-bold text-xl ">Termination</h2>
+      <div className="flex items-center justify-between ">
+        <h2 className="text-xl font-bold ">Termination</h2>
 
         <RxCross2
-          className=" cursor-pointer"
+          className="cursor-pointer "
           onClick={() => {
             closeModel();
           }}
@@ -182,11 +182,11 @@ const RequestTerminationCard = ({
               {(props) => (
                 <Form onSubmit={props.handleSubmit}>
                   <Row>
-                    <div className=" flex flex-col lg:flex-row gap-8 overflow-visible no-scrollbar whitespace-break-spaces mb-4 ">
+                    <div className="flex flex-col gap-8 mb-4 overflow-visible  lg:flex-row no-scrollbar whitespace-break-spaces">
                       {employeeData.map((infoGroup, index) => (
                         <div
                           key={index}
-                          className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4"
+                          className="grid w-full gap-4 sm:grid-cols-1 lg:grid-cols-2"
                         >
                           <SelectComponent
                             name="terminate_employee"
@@ -204,10 +204,10 @@ const RequestTerminationCard = ({
                           {infoGroup.length > 0
                             ? infoGroup.map((info) => (
                                 <div
-                                  className="flex flex-col w-full border px-3 py-1 h-fit  rounded-md"
+                                  className="flex flex-col w-full px-3 py-1 border rounded-md h-fit"
                                   key={info.title}
                                 >
-                                  <div className="opacity-60 w-full ">
+                                  <div className="w-full opacity-60 ">
                                     {info.title}
                                   </div>
 
@@ -222,7 +222,7 @@ const RequestTerminationCard = ({
                                     className="flex w-full border items-center px-3 py-[1rem] h-fit  rounded-md"
                                     key={info.title}
                                   >
-                                    <div className="opacity-60 w-full ">
+                                    <div className="w-full opacity-60 ">
                                       {info.title}
                                     </div>
                                   </div>
@@ -231,7 +231,7 @@ const RequestTerminationCard = ({
                         </div>
                       ))}
                     </div>
-                    <div className="font-bold text-lg mb-4">Exit Details</div>
+                    <div className="mb-4 text-lg font-bold">Exit Details</div>
                     <Col md={6}>
                       <DateInput
                         name={"last_working_day"}
@@ -284,7 +284,7 @@ const RequestTerminationCard = ({
                       />
                     </Col>
                     <Col md="12">
-                      <FileInput
+                      <CoverFileUpload
                         name={"termination_letter"}
                         error={props.errors?.termination_letter}
                         touch={props.touched?.termination_letter}
@@ -300,14 +300,14 @@ const RequestTerminationCard = ({
                       <div className="flex flex-row gap-9 ">
                         <button
                           type="submit"
-                          className="mt-4 bg-white border-2 border-black rounded-lg flex items-center justify-center gap-x-2 text-black  text-base  w-48 h-12"
+                          className="flex items-center justify-center w-48 h-12 mt-4 text-base text-black bg-white border-2 border-black rounded-lg gap-x-2"
                         >
                           Reset
                         </button>
 
                         <button
                           type="submit"
-                          className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white  text-base  w-48 h-12"
+                          className="flex items-center justify-center w-48 h-12 mt-4 text-base text-white bg-black rounded-lg gap-x-2"
                         >
                           Submit
                         </button>

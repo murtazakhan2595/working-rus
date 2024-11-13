@@ -4,7 +4,6 @@ import { Formik } from "formik";
 import { connect } from "react-redux";
 import { countriesList, visaOptions } from "../../../../../data/Data.js";
 import {
-  FileInput,
   DateInput,
   SelectComponent,
   TextInput,
@@ -20,6 +19,7 @@ import {
 
 import { Button } from "../../../../../components/ui/button";
 import { validateEmployeeIdentificationForm } from "app/utils/FormSchema/employeeFormSchema.jsx";
+import { CoverFileUpload } from "components/form-control.jsx";
 
 
 // const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
@@ -180,7 +180,7 @@ const IdentificationInformation = ({
                       </div>
                       <div className="space-y-2">
                         {console.log(props.values?.id_front)}
-                        <FileInput
+                        <CoverFileUpload
                           name={"id_front"}
                           error={props.errors?.id_front}
                           touch={props.touched?.id_front}
@@ -193,7 +193,7 @@ const IdentificationInformation = ({
                         />
                       </div>
                       <div className="space-y-2">
-                        <FileInput
+                        <CoverFileUpload
                           name={"id_back"}
                           error={props.errors?.id_back}
                           touch={props.touched?.id_back}
@@ -269,7 +269,7 @@ const IdentificationInformation = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <FileInput
+                            <CoverFileUpload
                               name={"passport_copy"}
                               error={props.errors?.passport_copy}
                               touch={props.touched?.passport_copy}
@@ -413,7 +413,7 @@ const IdentificationInformation = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <FileInput
+                            <CoverFileUpload
                               name={"enter_permit"}
                               error={props.errors?.enter_permit}
                               touch={props.touched?.enter_permit}
@@ -427,7 +427,7 @@ const IdentificationInformation = ({
                           </div>
 
                           <div className="space-y-2">
-                            <FileInput
+                            <CoverFileUpload
                               name={"visa_page"}
                               error={props.errors?.visa_page}
                               touch={props.touched?.visa_page}
@@ -440,7 +440,7 @@ const IdentificationInformation = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <FileInput
+                            <CoverFileUpload
                               name={"medical"}
                               error={props.errors?.medical}
                               touch={props.touched?.medical}
@@ -453,7 +453,7 @@ const IdentificationInformation = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <FileInput
+                            <CoverFileUpload
                               name={"id_application"}
                               error={props.errors?.id_application}
                               touch={props.touched?.id_application}
@@ -570,7 +570,7 @@ const IdentificationInformation = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <FileInput
+                            <CoverFileUpload
                               name={"insurance_card"}
                               error={props.errors?.insurance_card}
                               touch={props.touched?.insurance_card}

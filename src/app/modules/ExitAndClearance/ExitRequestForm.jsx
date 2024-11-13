@@ -1,7 +1,6 @@
 import { PageLoader } from "components";
 import { connect } from "react-redux";
 import {
-  FileInput,
   SelectComponent,
   DateInput,
   TextInput,
@@ -13,6 +12,7 @@ import { Formik } from "formik";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
 import { countriesList, NoticePeriod, ResignationReasons } from "data/Data";
+import { CoverFileUpload } from "components/form-control";
 
 function ExitRequestForm({
   reload,
@@ -63,7 +63,7 @@ function ExitRequestForm({
               </div>
               <div className="flex flex-col">
                 {/* Image Section */}
-                <div className="flex justify-center w-full gap-4  sm:flex-col md:flex-row lg:flex-row lg:items-center">
+                <div className="flex justify-center w-full gap-4 sm:flex-col md:flex-row lg:flex-row lg:items-center">
                   {userDetails?.profile_picture?.file ||
                   userDetails?.profile_picture ? (
                     <img
@@ -281,7 +281,7 @@ function ExitRequestForm({
                             />
                           </Col>
                           <Col md="12">
-                            <FileInput
+                            <CoverFileUpload
                               name={"resignation_Letter"}
                               error={props.errors?.resignation_Letter}
                               touch={props.touched?.resignation_Letter}

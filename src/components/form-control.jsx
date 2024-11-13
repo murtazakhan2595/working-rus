@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // import Select from "react-select";
 import { Label } from "../src/@/components/ui/label";
 import DatePicker from "react-datepicker";
@@ -602,7 +602,7 @@ const PhoneNumberInput = ({
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="justify-start text-neutral-1000 w-full rounded-l-sm rounded-r-none h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
+                className="justify-start w-full rounded-l-sm rounded-r-none text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
               >
                 {selectedCountryCode ?? "Select code"}
               </Button>
@@ -1196,12 +1196,13 @@ const CoverFileUpload = ({
   maxSize = 10 // in MB
 }) => {
   const [dragActive, setDragActive] = useState(false);
-  const [preview, setPreview] = useState(null);
+  const [files, setFiles] = useState([]); // Store multiple files
+  const fileInputRef = useRef(null);
 
-  // Set preview when value changes
+  // Initialize files from value
   useEffect(() => {
-    if (value?.file) {
-      setPreview(value.file);
+    if (value) {
+      setFiles(Array.isArray(value) ? value : [value]);
     }
   }, [value]);
 
@@ -1245,15 +1246,24 @@ const CoverFileUpload = ({
     if (validateFile(file)) {
       const reader = new FileReader();
       reader.onload = () => {
-        // Create file object with name and data
         const fileData = {
           name: file.name,
           file: reader.result
         };
-        onChange(name, fileData);
+        
+        // Add new file to existing files
+        const updatedFiles = [...files, fileData];
+        setFiles(updatedFiles);
+        onChange(name, updatedFiles); // Send array of files to parent
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleRemoveFile = (indexToRemove) => {
+    const updatedFiles = files.filter((_, index) => index !== indexToRemove);
+    setFiles(updatedFiles);
+    onChange(name, updatedFiles.length ? updatedFiles : null);
   };
 
   const formatFileSize = (bytes) => {
@@ -1264,12 +1274,18 @@ const CoverFileUpload = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i];
   };
 
-  const renderUploadedFile = (fileData) => {
-    return (
-      <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-neutral-200">
+  const handleNewFileClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const renderUploadedFiles = () => {
+    return files.map((fileData, index) => (
+      <div key={index} className="flex items-center justify-between p-4 bg-white border rounded-lg border-neutral-500">
         <div className="flex items-center gap-3">
           <div className="text-neutral-500">
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
             </svg>
           </div>
@@ -1281,52 +1297,60 @@ const CoverFileUpload = ({
         <div className="flex items-center gap-4">
           <button
             type="button"
-            onClick={() => {
-              // Handle update - trigger file input click
-              document.getElementById(`${name}-update`).click();
-            }}
-            className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+            onClick={handleNewFileClick}
+            className="text-sm font-medium text-primary hover:text-plum-700"
           >
             Update
           </button>
           <button
             type="button"
-            onClick={() => {
-              setPreview(null);
-              onChange(name, null);
-            }}
-            className="text-neutral-900 hover:text-neutral-700 text-sm font-medium"
+            onClick={() => handleRemoveFile(index)}
+            className="text-sm font-medium text-neutral-900 hover:text-neutral-700"
           >
             Remove
           </button>
         </div>
-        <input
-          id={`${name}-update`}
-          type="file"
-          className="hidden"
-          onChange={handleChange}
-          accept={acceptType}
-        />
       </div>
-    );
+    ));
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <Label className="text-normal" htmlFor={name}>
-        Attachments
+    <div className="flex flex-col gap-4 mb-4">
+      <Label className="text-normal " htmlFor={name}>
+        {required && <span className="text-red-600">* </span>}
+        {label || "Attachments"}
       </Label>
       
       {value ? (
         <div className="space-y-3">
-          {renderUploadedFile(value)}
-          <button
-            type="button"
-            onClick={() => document.getElementById(name).click()}
-            className="flex items-center gap-2 text-sm font-medium text-neutral-900 hover:text-neutral-700"
+          {renderUploadedFiles(value)}
+          <div
+            className={`relative border-2 border-dashed rounded-lg p-6 ${
+              dragActive ? 'border-neutral-600 bg-plum-200' : 'border-neutral-600'
+            }`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
           >
-            <span className="text-lg">+</span> Add another attachment
-          </button>
+            <div className="flex flex-col items-center justify-center min-h-[100px] text-center">
+              <p className="mb-2">
+                <span className="font-semibold text-primary">Upload a file</span>
+                <span className="text-neutral-1000"> or drag and drop</span>
+              </p>
+              <p className="text-sm text-neutral-1000">
+                {acceptType === '.pdf' ? 'Please upload PNG, JPG, GIF, or PDF up to 10MB' : 'PNG, JPG, GIF up to 10MB'}
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                onChange={handleChange}
+                accept={acceptType}
+                title=""
+              />
+            </div>
+          </div>
         </div>
       ) : (
         <div
@@ -1340,10 +1364,10 @@ const CoverFileUpload = ({
         >
           <div className="flex flex-col items-center justify-center min-h-[200px] text-center">
             <div className="mb-4">
-              <FileUp className="w-16 h-16 text-neutral-1000" />
+              <FileUp className="w-16 h-16 text-neutral-400" />
             </div>
             <p className="mb-2">
-              <span className="text-primary font-semibold">Upload a file</span>
+              <span className="font-semibold text-primary">Upload a file</span>
               <span className="text-neutral-1000"> or drag and drop</span>
             </p>
             <p className="text-sm text-neutral-1000">
@@ -1351,7 +1375,7 @@ const CoverFileUpload = ({
             </p>
             
             <input
-              id={name}
+              ref={fileInputRef}
               type="file"
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               onChange={handleChange}
