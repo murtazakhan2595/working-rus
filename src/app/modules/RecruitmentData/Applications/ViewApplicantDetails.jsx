@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import pdfIcon from "assets/images/pdfIcon.svg";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { getCountryFullName } from "utils/getValuesFromTables";
-import { AiOutlineDownload } from "react-icons/ai";
 import { formatNumber } from "data/Data";
 import moment from "moment";
-import { Labels } from "../Sections";
 import { RenderJobApplicationActions } from "./Sections";
 import { fetchJobById, downloadCV } from "app/hooks/recruitment";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { Button } from "components/ui/button";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
-import { DetailBox } from "components/SheetCardExtension";
-import { DetailCard } from "components/SheetCardExtension";
+import { DetailBox, DisplayFile, DetailCard } from "components/SheetCardExtension";
 
 const ViewApplicantDetails = ({
   applicantIndex,
@@ -126,27 +120,15 @@ const ViewApplicantDetails = ({
           label={"Available for Interview"}
           value={moment(applicant?.availability_for_interview).format("MMM D, YYYY")}
         />
-        <div className="mt-3 flex justify-between">
+        <div className="mt-3 flex gap-24">
           <h3 className="font-bold text-base text-[#323333]">Resume</h3>
-
-          <div className="border rounded-lg p-2 flex justify-between items-center min-w-80">
-            <div className="flex gap-x-3">
-              <img src={pdfIcon} alt="" />
-              <p class="text-[14px] text-[#323333]">
-                {applicant?.first_name} {applicant?.last_name}
-              </p>
-            </div>
-            <Button
-              onClick={() =>
-                downloadCV(
-                  applicant?.cv?.file,
-                  `${applicant?.first_name} ${applicant?.last_name}`
-                )
-              }
-            >
-              Download
-            </Button>
-          </div>
+          <DisplayFile
+            firstName={applicant?.first_name}
+            lastName={applicant?.last_name}
+            file={applicant?.cv?.file}
+            onDownload={()=>downloadCV(applicant?.cv?.file,
+              `${applicant?.first_name} ${applicant?.last_name}`)}
+          />
         </div>
       </DetailCard>
     </div>
