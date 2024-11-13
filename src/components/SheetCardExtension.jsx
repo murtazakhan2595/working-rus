@@ -2,6 +2,7 @@ import { Paperclip } from "lucide-react";
 import moment from "moment";
 import React from "react";
 import { getFileSizeInKB } from "utils/fileUtils";
+import { Button } from "./ui/button";
 
 export const SheetCardExtension = ({ title, children }) => {
   return (
@@ -73,9 +74,9 @@ export const DisplayFile = ({ firstName, lastName, file, onDownload })=>{
       <p>{getFileSizeInKB(file)}KB</p>
       </div>
     </div>
-    <button className="text-[#ab4aba] text-xs font-semibold " onClick={() => onDownload(file, `${firstName} ${lastName}`)}>
+    <Button variant="link" onClick={() => onDownload(file, `${firstName} ${lastName}`)}>
       Download
-    </button>
+    </Button>
   </div>
   )
 }
