@@ -113,7 +113,7 @@ const RequestTerminationForm = ({
           { title: "Phone Number", data: response.mobile_no },
           {
             title: "Work Location",
-            data: getAllCountries()[response.employee_location]?.name || "",
+            data: response.employee_location || "",
           },
           {
             title: "Organization",

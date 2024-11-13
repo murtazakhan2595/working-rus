@@ -56,7 +56,6 @@ const PersonalInformation = ({
     }
   };
 
-  console.log("personalInfo,personalInfo", personalInfo);
   return (
     <>
       {isLoading ? (
@@ -213,7 +212,6 @@ export default function ExitRequestForm({
     setLoading(true);
     try {
       let empData = await getEmployeeData(userId);
-      console.log(empData, "EMPT DATA")
       setUserData(empData);
     } catch (error) {
       console.error("Error fetching data:", error);
