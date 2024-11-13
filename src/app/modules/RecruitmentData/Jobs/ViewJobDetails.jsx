@@ -20,6 +20,7 @@ import { StatusLabel } from "components";
 import { JobStatusLabel } from "components/StatusLabel";
 import { DetailCard } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts }) => {
   const [showEdit, setShowEdit] = useState(false);
@@ -72,8 +73,8 @@ const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts 
         ) : (
           <>
           <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={handlePreviousJob}>Previous</Button>
-          <Button variant="outline" onClick={handleNexJob}>Next</Button>
+          <Button variant="outline" onClick={handlePreviousJob}> <ChevronLeft/> Previous</Button>
+          <Button variant="outline" onClick={handleNexJob}>Next <ChevronRight/> </Button>
           </div>
               <div className="flex justify-between w-full">
                 <EmployeeNameInfo
