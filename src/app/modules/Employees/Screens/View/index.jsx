@@ -106,6 +106,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
   return (
     <>
       {loading? <PageLoader/> : <div className="container p-4 mx-auto">
+      {/* if the pathname starts with /user/ then show the go back button */}
         {location.pathname.startsWith("/user/") && (
           <div className="mb-4">
             <Button
@@ -118,6 +119,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
             </Button>
           </div>
         )}
+        {/* if the pathname is /my-profile then show the header */}
         {location.pathname === "/my-profile" && <Header />}
         <div className="my-5">
           <Card>
@@ -169,7 +171,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
               </TabsList>
             </div>
             <TabsContent value="personal">
-              <div className="grid grid-cols-1 gap-4 my-2 mb-4">
+              <div className="grid grid-cols-2 gap-4 my-2 mb-4">
                 <PersonalDetials
                   isEditable={profileView}
                   userData={employeeData}
