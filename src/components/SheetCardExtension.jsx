@@ -1,5 +1,7 @@
+import { Paperclip } from "lucide-react";
 import moment from "moment";
 import React from "react";
+import { getFileSizeInKB } from "utils/fileUtils";
 
 export const SheetCardExtension = ({ title, children }) => {
   return (
@@ -29,6 +31,7 @@ export const DetailCard = ({
   detailCardTitle,
   children,
   date,
+  dateTitle="Sent on:"
 }) => {
   return (
     <div className="flex flex-col rounded-lg shadow border  mt-8">
@@ -43,7 +46,7 @@ export const DetailCard = ({
           <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
             <div>
               <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
-                Sent on:
+                {dateTitle}
               </span>
               <span className="text-[#8b8d98] text-xs font-normal  leading-3">
               {` ${moment(date).format(
@@ -57,3 +60,22 @@ export const DetailCard = ({
     </div>
   );
 };
+
+export const DisplayFile = ({ firstName, lastName, file, onDownload })=>{
+  return(
+    <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-2 max-w-64 px-4 border border-[#f0f0f3] flex justify-between items-center gap-4">
+    <div className="flex gap-x-3 items-center">
+      <Paperclip size={16} />
+      <div className="flex flex-col">
+      <p className="text-sm text-[#323333]">
+        {firstName} {lastName}
+      </p>
+      <p>{getFileSizeInKB(file)}KB</p>
+      </div>
+    </div>
+    <button className="text-[#ab4aba] text-xs font-semibold " onClick={() => onDownload(file, `${firstName} ${lastName}`)}>
+      Download
+    </button>
+  </div>
+  )
+}
