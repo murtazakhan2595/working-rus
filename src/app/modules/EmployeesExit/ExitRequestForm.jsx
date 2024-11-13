@@ -10,7 +10,6 @@ import { Formik } from "formik";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
-import { getAllCountries } from "countries-and-timezones";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
 import { NoticePeriod } from "data/Data";
@@ -28,6 +27,7 @@ const PersonalInformation = ({
   reload,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  console.log(personalInfo, "PERSONAL INFO")
 
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   const [visaDetails, setVisaDetails] = useState({});
@@ -213,7 +213,7 @@ export default function ExitRequestForm({
     setLoading(true);
     try {
       let empData = await getEmployeeData(userId);
-
+      console.log(empData, "EMPT DATA")
       setUserData(empData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -240,7 +240,7 @@ export default function ExitRequestForm({
       },
       {
         title: "Work Location",
-        data: getAllCountries()[userData?.employee_location]?.name || "",
+        data: userData?.employee_location || "",
       },
 
       { title: "Organization", data: userData?.organization },
