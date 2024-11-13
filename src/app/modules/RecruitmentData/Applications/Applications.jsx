@@ -23,6 +23,8 @@ import Stats from "components/ui/Stats";
 import { File, List, Scissors } from "lucide-react";
 import { DateInput } from "components/form-control";
 import SheetComponent from "components/ui/SheetComponent";
+import { JobDetails } from "./Sections/Tabs";
+import { jobIcon } from "assets/images";
 
 const Applications = () => {
   const location = useLocation();
@@ -42,6 +44,11 @@ const Applications = () => {
     page: 1,
     sizePerPage: 10,
   });
+
+  const [jobs, setJobs] = useState(null)
+  const [currentJob, setCurrentJob] = useState("");
+
+
   const onPageChange = (name, value) => {
     const pageOptions = options;
     if (pageOptions[name] !== value) {
@@ -108,6 +115,8 @@ const Applications = () => {
       console.error("Error updating application status:", error);
     }
   };
+
+  console.log(jobs, "JOBS DATA IS HERE")
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
@@ -133,6 +142,18 @@ const Applications = () => {
     description: null,
     footer: null,
   };
+ 
+  const handleJobChange = (isPrevious) => {
+    if (jobs && currentJob === jobs.length - 1) {
+      setCurrentJob(0);
+      handleFilterChange("job_id", jobs[0].id);
+    } else {
+      const newJobIndex = isPrevious ? currentJob -1 : currentJob + 1;
+      setCurrentJob(newJobIndex);
+      handleFilterChange("job_id",jobs[newJobIndex]?.id);
+    }
+  };
+
 
   return (
     <>
@@ -174,10 +195,22 @@ const Applications = () => {
         onTabChange={setActiveTab}
         activeTab={activeTab}
         activeJobId={jobIdForFilter}
+        setActiveTab={setActiveTab}
+        setJobs={setJobs}
+        jobs={jobs}
+        currentJob={currentJob}
+        setCurrentJob={setCurrentJob}
         changeJobFilter={(jobId) => {
           handleFilterChange("job_id", jobId);
         }}
       />
+      {
+        activeTab === 1 && (
+          <Card className="p-4 mb-4">
+             <JobDetails job={jobs[currentJob]} jobIcon={jobIcon} handleJobChange={handleJobChange} jobs={jobs}/>
+          </Card>
+        )
+      }
       <Card className="p-0">
         <CardHeader className="flex flex-row justify-end gap-2">
           <FilterInput
@@ -185,7 +218,7 @@ const Applications = () => {
               {
                 type: "search",
                 placeholder: "Search by Keyword",
-                name: "id_and_first_name",
+                name: "first_name",
               },
               {
                 type: "select-one",

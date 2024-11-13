@@ -32,10 +32,11 @@ export const DetailCard = ({
   detailCardTitle,
   children,
   date,
-  dateTitle="Sent on:"
+  dateTitle="Sent on:",
+  classNames=""
 }) => {
   return (
-    <div className="flex flex-col rounded-lg shadow border  mt-8">
+    <div className={`${classNames} flex flex-col rounded-lg shadow border  mt-8`}>
       <section className="flex flex-col justify-center p-6 text-sm  max-w-[479px]">
         <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
           {detailCardTitle}
