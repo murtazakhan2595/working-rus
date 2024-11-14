@@ -22,8 +22,6 @@ import { Card } from "components/ui/card.jsx";
 import { Button } from "components/ui/button.jsx";
 import Newlogo from "assets/images/NewLogo.jsx";
 import { educationTypeOptions } from "data/Data.js";
-import AlertDialogue from "components/ui/AlertDialogue.jsx";
-import { CardContent } from "@mui/material";
 import ApplicationSuccessPage from "./ApplicationSuccessPage.jsx";
 
 const JobApplicationForm = () => {
