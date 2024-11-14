@@ -22,10 +22,14 @@ import { Card } from "components/ui/card.jsx";
 import { Button } from "components/ui/button.jsx";
 import Newlogo from "assets/images/NewLogo.jsx";
 import { educationTypeOptions } from "data/Data.js";
+import AlertDialogue from "components/ui/AlertDialogue.jsx";
+import { CardContent } from "@mui/material";
+import ApplicationSuccessPage from "./ApplicationSuccessPage.jsx";
 
 const JobApplicationForm = () => {
   const { id } = useParams();
   const formRef = useRef();
+  const [showSuccess, setShowSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const formData = { ...ApplicationDetail, ...{ job_id: id } };
@@ -51,7 +55,8 @@ const JobApplicationForm = () => {
         toast.success(`Application submitted successfully!`, {
           autoClose: 1000,
         });
-        navigate("/jobs");
+        setShowSuccess(true)
+        // navigate("/jobs");
       } else {
         toast.error(`Failed to submit application. Please try again.`);
       }
@@ -73,7 +78,7 @@ const JobApplicationForm = () => {
           <div className="text-sm text-gray-500">A Project by TecBrix</div>
         </div>
 
-        <div className=" max-w-[800px] mx-auto">
+       {!showSuccess ? <div className=" max-w-[800px] mx-auto">
           <Header
             title="Job Application Form"
             showBackButton={true}
@@ -284,9 +289,12 @@ const JobApplicationForm = () => {
                 </form>
               )}
             </Formik>
-          </Card>
-        </div>
+          </Card> 
+        </div> :(
+          <ApplicationSuccessPage/>
+        )}
       </div>
+
     </>
   );
 };
