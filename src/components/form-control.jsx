@@ -1339,7 +1339,7 @@ const CoverFileUpload = ({
                 <span className="text-neutral-1000"> or drag and drop</span>
               </p>
               <p className="text-sm text-neutral-1000">
-                {acceptType === '.pdf' ? 'Please upload PNG, JPG, GIF, or PDF up to 10MB' : 'PNG, JPG, GIF up to 10MB'}
+                {acceptType === '.pdf' ? 'Please upload PNG, JPG or PDF up to 10MB' : 'PNG, JPG or PDF up to 10MB'}
               </p>
               <input
                 ref={fileInputRef}
@@ -1371,7 +1371,7 @@ const CoverFileUpload = ({
               <span className="text-neutral-1000"> or drag and drop</span>
             </p>
             <p className="text-sm text-neutral-1000">
-              {acceptType === '.pdf' ? 'Please upload PNG, JPG, GIF, or PDF up to 10MB' : 'PNG, JPG, GIF up to 10MB'}
+              {acceptType === '.pdf' ? 'Please upload PNG, JPG or PDF up to 10MB' : 'PNG, JPG or PDF up to 10MB'}
             </p>
             
             <input
