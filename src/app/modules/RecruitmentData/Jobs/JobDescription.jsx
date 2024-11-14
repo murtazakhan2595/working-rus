@@ -97,7 +97,7 @@ const JobDescription = ({ baseUrl }) => {
                 </div>
               </div>
               <Link 
-                to={`/apply/jobDetail?id=${jobDetails?.id}`} 
+                to={`/apply/${jobDetails?.id}`} 
                 className="px-6 py-2 text-white bg-black rounded-md hover:bg-neutral-50 hover:text-black"
               >
                 Apply Now
