@@ -38,6 +38,7 @@ import { format, parse, isValid } from "date-fns";
 import { Calendar } from "../src/@/components/ui/calendar";
 
 import { PatternFormat } from "react-number-format";
+import { getFileSizeInKB } from "utils/fileUtils";
 
 const SelectComponent = ({
   name,
@@ -1197,6 +1198,7 @@ const CoverFileUpload = ({
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState([]); // Store multiple files
+  console.log(files, "FILES ARE HERE")
   const fileInputRef = useRef(null);
 
   // Initialize files from value
@@ -1267,6 +1269,7 @@ const CoverFileUpload = ({
   };
 
   const formatFileSize = (bytes) => {
+    console.log(bytes, "BYES ARE HERE")
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -1291,7 +1294,7 @@ const CoverFileUpload = ({
           </div>
           <div>
             <p className="text-sm font-medium text-neutral-900">{fileData.name}</p>
-            <p className="text-sm text-neutral-500">{formatFileSize(fileData.size || 2.4 * 1024 * 1024)}</p>
+            <p className="text-sm text-neutral-500">{formatFileSize(getFileSizeInKB(fileData?.file)*1024)}</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
