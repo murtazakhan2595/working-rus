@@ -1,4 +1,4 @@
-import { Paperclip } from "lucide-react";
+import { ChevronLeft, ChevronRight, Paperclip } from "lucide-react";
 import moment from "moment";
 import React from "react";
 import { getFileSizeInKB } from "utils/fileUtils";
@@ -79,5 +79,14 @@ export const DisplayFile = ({ firstName, lastName, file, onDownload })=>{
       Download
     </Button>
   </div>
+  )
+}
+
+export const DisplayButton = ({handlePrevious, handleNext})=>{
+  return(
+    <div className="flex justify-end gap-2">
+    <Button variant="outline"onClick={handlePrevious}> <ChevronLeft/> Previous</Button>
+    <Button variant="outline" onClick={handleNext}>Next <ChevronRight/></Button>
+    </div>
   )
 }
