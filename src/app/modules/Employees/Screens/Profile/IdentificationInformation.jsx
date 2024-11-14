@@ -20,6 +20,7 @@ import {
 import { Button } from "../../../../../components/ui/button";
 import { validateEmployeeIdentificationForm } from "app/utils/FormSchema/employeeFormSchema.jsx";
 import { CoverFileUpload } from "components/form-control.jsx";
+import { Card, CardContent  } from "components/ui/card.jsx";
 
 
 // const countryOptions = Object.keys(getAllCountries()).map((countryCode) => ({
@@ -111,6 +112,8 @@ const IdentificationInformation = ({
         </div>
       ) : (
         <div>
+          <Card>
+          <CardContent>
           <div className="space-y-4">
             <Formik
               initialValues={visaDetails}
@@ -611,10 +614,13 @@ const IdentificationInformation = ({
                       </div>
                     </div>
                   </div>
+
                 </form>
               )}
             </Formik>
           </div>
+          </CardContent>
+          </Card>
         </div>
       )}
     </>
