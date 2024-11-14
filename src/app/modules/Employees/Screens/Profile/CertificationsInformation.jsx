@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../../../../../components/ui/button";
 
 import { CircleX } from "lucide-react";
+import { Card, CardContent } from "components/ui/card";
 
 const CertificationsInformation = ({
   nextstep,
@@ -89,6 +90,8 @@ const CertificationsInformation = ({
         ) :
         (
           <>
+          <Card>
+            <CardContent>
             <div className="space-y-4">
             <Formik
               initialValues={{ certifications: certifications }}
@@ -238,6 +241,8 @@ const CertificationsInformation = ({
               )}
             </Formik>
             </div>
+            </CardContent>
+            </Card>
           </>
         )
       }
