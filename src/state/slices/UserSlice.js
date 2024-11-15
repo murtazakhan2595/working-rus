@@ -6,6 +6,10 @@ const URLS = [
     Backend: "https://hrms-be.tecbrix.cloud/api",
   },
   {
+    Frontend: "https://app.cohrus.com",
+    Backend: "https://app.cohrus.com/api",
+  },
+  {
     Frontend: "https://staging-hrms.tecbrix.cloud",
     Backend: "https://staging-hrms-be.tecbrix.cloud/api",
   },

@@ -46,6 +46,7 @@ import CreateEmployeeProfile from "./app/modules/Employees/Screens/AddProfile/Cr
 import EmployeesExit from "app/modules/EmployeesExit";
 import { ExitAndClearance } from "app/modules/ExitAndClearance";
 import "./index.css";
+import { SidebarRoutes, LoginRoutes, GeneralRoutes } from "constants/routes";
 import {
   Payslip,
   EmployeeSalaryDetails,
@@ -135,18 +136,15 @@ function App() {
   if (loading) {
     return <PageLoader />; // Render the loader if loading is true
   }
-  console.log(userRole, userProfile);
+  console.log(SidebarRoutes, userProfile);
   return (
     <>
       <Routes>
-
         {isLogin && (
           <>
-            <Route
-              exact
-              path="/create-profile"
-              element={<CreateEmployeeProfile />}
-            />
+            {LoginRoutes.map((route) => {
+              return <Route path={route.path} element={route.component} />;
+            })}
             <Route
               element={
                 <Sidebar
@@ -156,166 +154,24 @@ function App() {
                 />
               }
             >
-              <Route path="/coming-soon" element={<ComingSoon />} />
-              
-              <Route path="/services" element={<Services />} />
-              <Route exact path="/" element={<Dashboard />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/project-board/:projectId" element={<Board />} />
-              <Route
-                path="/my-profile"
-                element={<ViewEmployee profileView />}
-              />
-              <Route exact path="/test" element={<Test />} />
-              <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-              {/* <Route path="/leave-request" element={<CreateLeaveRequest />} /> */}
+              {SidebarRoutes.map((route) => {
+                return <Route path={route.path} element={route.component} />;
+              })}
 
-              {/* <Route path="/notifications" element={<Notifications />} /> */}
-              <Route path="/my-team" element={<ComingSoon />} />
-              <Route path="/my-task" element={<ComingSoon />} />
-              <Route path="/calender" element={<ComingSoon />} />
-              <Route path="/attendence" element={<ComingSoon />} />
-              <Route path="/leave-tracker" element={<LeaveTracker />} />
-              <Route path="/files-data" element={<ComingSoon />} />
-              <Route path="/announcement" element={<ComingSoon />} />
-              <Route path="/recognition" element={<ComingSoon />} />
-              <Route path="/my-travel-details" element={<ComingSoon />} />
-              <Route path="/letter-request" element={<ComingSoon />} />
-              {/* <Route path="/leave-history" element={<LeaveHistory />} /> */}
-              <Route path="/edit-post/:id" element={<CreateUpdateJob />} />
-              <Route path="/leave-calender" element={<ComingSoon />} />
-              <Route path="/my-payroll" element={<MyPayroll />} />
-              <Route path="/payroll/:id" element={<EmployeeSalaryDetails />} />
-              <Route path="/payslip/:id" element={<Payslip />} />
-              <Route path="/payslip-eos/:id" element={<Payslip />} />
-              <Route exact path="/exit-employee" element={<EmployeesExit />} />
-              <Route path="/my-claims" element={<MyClaims />} />
-              <Route path="/my-leave-tracker" element={<MyLeaveTracker />} />
-
-              {userRole === 1 && (
-                <>
-                  <Route path="/create-task" element={<CreateTask />} />
-                  <Route path="/my-dtr" element={<MyDtr />} />
-                  <Route path="/reports" element={<ComingSoon />} />
-                </>
-              )}
-
-              {(userRole === 1 || userRole === 3) && (
-                <>
-                  <Route
-                    exact
-                    path="/profile-management"
-                    element={<Employee />}
-                  />
-                  <Route path="/settings" element={<ComingSoon />} />
-                  <Route
-                    exact
-                    path="/travel-details"
-                    element={<ComingSoon />}
-                  />
-
-                  <Route path="/customise-employees" element={<ComingSoon />} />
-                  <Route path="/relocation" element={<ComingSoon />} />
-                  <Route
-                    exact
-                    path="/create-employee"
-                    element={<CreateUpdateEmployee />}
-                  />
-
-                  {/* <Route
-                    path="/leave-allotement"
-                    element={<LeaveAllotement />}
-                  /> */}
-
-                  <Route
-                    path="/edit-employee/:id"
-                    element={<CreateUpdateEmployee />}
-                  />
-                  <Route
-                    path="/profile/:id"
-                    element={<EditEmployeeProfile />}
-                  />
-                  <Route exact path="/payroll" element={<EmployeesPayroll />} />
-                  <Route
-                    exact
-                    path="/payroll/salary-setup/:id"
-                    element={<SalarySetupDetail />}
-                  />
-                  <Route
-                    exact
-                    path="/payroll/salary-setup-eos/:id"
-                    element={<SalarySetupDetail />}
-                  />
-                  <Route
-                    path="/payroll/create-payrun"
-                    element={<CreatePayRun />}
-                  />
-                  <Route
-                    path="/payroll/pay-slip-details/:id"
-                    element={<PayRunDetails />}
-                  />
-
-                  <Route path="/salary-setup" element={<SalarySetup />} />
-                  <Route path="/loans" element={<ComingSoon />} />
-
-                  <Route path="/pay-run" element={<PayRun />} />
-                  <Route path="/payslips" element={<ComingSoon />} />
-
-                  <Route path="/attendance" element={<Attendance/>} />
-                  <Route path="/development-plan" element={<ComingSoon />} />
-                  <Route path="/user/:id" element={<ViewEmployee profileView={false} />} />
-                </>
-              )}
-              {(userRole === 1 || userRole === 2 || userRole === 3) && (
-                <>
-                  <Route
-                    path="/personnel-requisition"
-                    element={<ComingSoon />}
-                  />
-                  <Route path="/jobs" element={<Jobs />} />
-                  <Route path="/job-post" element={<CreateUpdateJob />} />
-                  <Route path="/applicants/:id" element={<Applications />} />
-                  <Route path="/applicants" element={<Applications />} />
-                  <Route path="/tests" element={<Test />} />
-                  <Route path="/referals" element={<ComingSoon />} />
-                  <Route path="/learn" element={<ComingSoon />} />
-                  <Route path="/career-planning" element={<ComingSoon />} />
-                  <Route path="/on-boarding" element={<ComingSoon />} />
-                  <Route path="/employee-evaluation" element={<ComingSoon />} />
-                  <Route path="/leave-request" element={<LeaveRequests />} />
-                  <Route path="/leave-records" element={<LeaveTracker />} />
-                  <Route path="/claim-request" element={<ClaimRequest />} />
-                  <Route
-                    path="/exit-clearance"
-                    element={<ExitAndClearance />}
-                  />
-                </>
-              )}
+              <Route path="*" element={<Err404 />} />
             </Route>
-            {(userRole !== 1 || userRole !== 2) && (
-              <Route path="/recruitment" element={<Err401 />} />
-            )}
-            {(userRole !== 1 || userRole !== 2) && (
-              <Route path="/applicants/:id" element={<Err401 />} />
-            )}
-            {(userRole !== 1 || userRole !== 2) && (
-              <Route exact path="/emp-dataform" element={<Err401 />} />
-            )}
-            <Route path="*" element={<Err404 />} />
           </>
         )}
-        {!isLogin && (
+        {/* {!isLogin && (
           <>
             <Route path="/" element={<Login />} />
             <Route path="*" element={<Err404 />} />
           </>
-        )}
-        <Route path="/login" element={<Login />} />
-        <Route path="/style-guide" element={<StyleGuide />} />
-        <Route path="/apply/:id" element={<JobApplicationForm />} />
-        <Route path="/job-description/:id" element={<JobDescription />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/confirm-password" element={<ResetPassword />} />
+        )} */}
+        {GeneralRoutes.map((route) => {
+          return <Route path={route.path} element={route.component} />;
+        })}
+        <Route path="*" element={<Err404 />} />
       </Routes>
     </>
   );
